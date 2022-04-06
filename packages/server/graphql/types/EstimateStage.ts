@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
@@ -95,6 +96,18 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
               type: existingDimensionField.fieldType
             }
 
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
+        if (service === 'jiraServer') {
+          const {providerId, repositoryId: projectId} = integration as TaskIntegrationJiraServer
+          const dimensionName = await getDimensionName(meetingId)
+          const existingDimensionField = await dataLoader.get('jiraServerDimensionFieldMap').load({providerId, projectId, teamId, dimensionName})
+          if (existingDimensionField) {
+            return {
+              name: existingDimensionField.fieldName,
+              type: existingDimensionField.fieldType
+            }
+          }
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'azureDevOps') {

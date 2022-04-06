@@ -1,0 +1,125 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useMemo} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {PALETTE} from '~/styles/paletteV3'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import UpdateJiraServerDimensionFieldMutation from '../mutations/UpdateJiraServerDimensionFieldMutation'
+import {SprintPokerDefaults} from '../types/constEnums'
+import {JiraServerFieldMenu_stage} from '../__generated__/JiraServerFieldMenu_stage.graphql'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import MenuItemHR from './MenuItemHR'
+
+const NoFieldsLabel = styled('div')({
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  padding: '8px 16px 0'
+})
+
+
+interface Props {
+  menuProps: MenuProps
+  stage: JiraServerFieldMenu_stage
+  submitScore(): void
+}
+
+const JiraServerFieldMenu = (props: Props) => {
+  const {menuProps, stage, submitScore} = props
+  const atmosphere = useAtmosphere()
+  const {portalStatus, isDropdown, closePortal} = menuProps
+  const {meetingId, dimensionRef, serviceField, task} = stage
+  if (task?.integration?.__typename !== 'JiraServerIssue') return null
+
+  const {integration} = task
+  const {projectId, issueTypeId, fieldMetadata} = integration
+
+  const possibleEstimationFieldNames = fieldMetadata?.map(({name}) => name) ?? []
+  const {name: dimensionName} = dimensionRef
+  const {name: serviceFieldName} = serviceField
+  const defaultActiveidx = useMemo(() => {
+    if (possibleEstimationFieldNames.length === 0) return undefined
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
+      return possibleEstimationFieldNames.length + 1
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL)
+      return possibleEstimationFieldNames.length + 2
+    const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
+    return idx === -1 ? undefined : idx
+  }, [serviceFieldName, possibleEstimationFieldNames])
+
+  const handleClick = (fieldName: string) => () => {
+    UpdateJiraServerDimensionFieldMutation(
+      atmosphere,
+      {
+        dimensionName,
+        fieldName,
+        issueTypeId,
+        projectId,
+        meetingId,
+      },
+      {
+        onCompleted: submitScore,
+        onError: () => {
+        }
+      }
+    )
+    closePortal()
+  }
+  return (
+    <Menu
+      ariaLabel={'Select the JiraServer Field to push to'}
+      portalStatus={portalStatus}
+      isDropdown={isDropdown}
+      defaultActiveIdx={defaultActiveidx}
+    >
+      {possibleEstimationFieldNames.length === 0 && 
+        <NoFieldsLabel>No fields found</NoFieldsLabel>
+      }
+      {possibleEstimationFieldNames.map((fieldName) => {
+        return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
+      })}
+      <MenuItemHR />
+      <MenuItem
+        key={'__comment'}
+        label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
+      />
+      <MenuItem
+        key={'__null'}
+        label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
+      />
+    </Menu>
+  )
+}
+
+export default createFragmentContainer(JiraServerFieldMenu, {
+  stage: graphql`
+    fragment JiraServerFieldMenu_stage on EstimateStage {
+      dimensionRef {
+        name
+      }
+      meetingId
+      serviceField {
+        name
+      }
+      task {
+        integration {
+          ... on JiraServerIssue {
+            __typename
+            id
+            projectId
+            issueTypeId
+            fieldMetadata {
+              id
+              name
+              typeId
+              allowedValues
+            }
+          }
+        }
+      }
+    }
+  `
+})

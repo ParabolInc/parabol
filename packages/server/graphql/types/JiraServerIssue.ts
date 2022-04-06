@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -7,9 +7,18 @@ import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import {JiraServerRestProject} from '../../integrations/jiraServer/JiraServerRestManager'
+import JiraServerIssueFieldMetadata from './JiraServerIssueFieldMetadata'
+import { JiraServerIssue as JiraServerRestIssue } from '../../dataloader/jiraServerLoaders'
 
-const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
+type JiraServerIssueSource = JiraServerRestIssue & {
+  userId: string
+  teamId: string
+  providerId: number
+}
+
+const VOTE_FIELD_ID_BLACKLIST = ['description','summary']
+
+const JiraServerIssue = new GraphQLObjectType<JiraServerIssueSource, GQLContext>({
   name: 'JiraServerIssue',
   description: 'The Jira Issue that comes direct from Jira Server',
   interfaces: () => [TaskIntegration],
@@ -18,24 +27,21 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'GUID providerId:repositoryId:issueId',
-      resolve: ({
-        id,
-        project,
-        providerId
-      }: {
-        id: string
-        project: JiraServerRestProject
-        providerId: number
-      }) => {
-        return JiraServerIssueId.join(providerId, project.id, id)
+      resolve: ({id, projectId, providerId}) => {
+        return JiraServerIssueId.join(providerId, projectId, id)
       }
     },
     issueKey: {
       type: new GraphQLNonNull(GraphQLID)
     },
+    issueTypeId: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    projectId: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: ({project}) => project.key
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -63,7 +69,25 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
     descriptionHTML: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The description converted into raw HTML'
-    }
+    },
+    fieldMetadata: {
+      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraServerIssueFieldMetadata))),
+      resolve: async ({teamId, userId, providerId, issueTypeId, projectId}, _args, {dataLoader}) => {
+        const issueMeta = await dataLoader.get('jiraServerFieldTypes').load({teamId, userId, projectId, issueTypeId, providerId})
+        if (!issueMeta) return []
+          const meta = issueMeta.filter(({fieldId, operations, schema}) => 
+                                        !VOTE_FIELD_ID_BLACKLIST.includes(fieldId)
+                                        && operations.includes('set')
+                                        && ['string', 'number'].includes(schema.type))
+                        .map(({fieldId, name, allowedValues, schema}) => ({
+          id: fieldId,
+          name,
+          typeId: schema.type,
+          allowedValues
+        }))
+        return meta
+      }
+    },
   })
 })
 
@@ -90,3 +114,4 @@ const {connectionType, edgeType} = connectionDefinitions({
 export const JiraServerIssueConnection = connectionType
 export const JiraServerIssueEdge = edgeType
 export default JiraServerIssue
+

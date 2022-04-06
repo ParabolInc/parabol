@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -157,18 +158,12 @@ const setTaskEstimate = {
 
       const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
 
-      // TODO: only comment field implemented for now
-      // const jiraDimensionFields = team?.jiraServerDimensionFields || []
-      // const dimensionField = jiraServerDimensionFields.find(
-      //   (dimensionField) =>
-      //     dimensionField.dimensionName === dimensionName &&
-      //     dimensionField.cloudId === cloudId &&
-      //     dimensionField.projectKey === projectKey
-      // )
-      // const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
-      const fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT
+      const {providerId, repositoryId: projectId} = integration as TaskIntegrationJiraServer
+      const existingDimensionField = await dataLoader.get('jiraServerDimensionFieldMap').load({providerId, projectId, teamId, dimensionName})
 
-      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+      const fieldId = existingDimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+
+      if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         const res = await manager.addScoreComment(
           dimensionName,
           value || '<None>',
@@ -177,6 +172,13 @@ const setTaskEstimate = {
           issueId
         )
 
+        if (res instanceof Error) {
+          return {error: {message: res.message}}
+        }
+      }
+      else {
+        const updatedStoryPoints = existingDimensionField?.fieldType === 'number' ? Number(value) : value
+        const res = await manager.setField(issueId, fieldId, updatedStoryPoints)        
         if (res instanceof Error) {
           return {error: {message: res.message}}
         }

@@ -35,6 +35,7 @@
           "Organization": "../../database/types/Organization#default as Organization",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
+          "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },
