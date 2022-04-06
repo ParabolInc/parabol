@@ -77,6 +77,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
                             __typename
                             id
                             fullPath
+                            path
                           }
                         }
                       }

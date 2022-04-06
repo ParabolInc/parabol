@@ -1,15 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
-import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
 import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
-import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
-import Ellipsis from './Ellipsis/Ellipsis'
 import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -18,14 +15,6 @@ import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
-})
-
-const LoadingNext = styled('div')({
-  display: 'flex',
-  height: 32,
-  fontSize: 24,
-  justifyContent: 'center',
-  width: '100%'
 })
 
 interface Props {
@@ -42,27 +31,6 @@ const GitLabScopingSearchResults = (props: Props) => {
         $queryString: String!
         $selectedProjectsIds: [ID!]
       ) {
-        ...GitLabScopingSearchResults_query
-      }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
-  )
-
-  const paginationRes = usePaginationFragment<
-    GitLabScopingSearchResultsPaginationQuery,
-    GitLabScopingSearchResults_query$key
-  >(
-    graphql`
-      fragment GitLabScopingSearchResults_query on Query
-        @argumentDefinitions(
-          projectsFirst: {type: "Int", defaultValue: 75}
-          issuesFirst: {type: "Int", defaultValue: 25}
-          projectsAfter: {type: "String"}
-          issuesAfter: {type: "String"}
-          projectIds: {type: "[ID!]", defaultValue: null}
-        )
-        @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           ...NewGitLabIssueInput_viewer
           teamMember(teamId: $teamId) {
@@ -85,8 +53,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                   query {
                     projects(
                       membership: true
-                      first: $projectsFirst
-                      after: $projectsAfter
+                      first: 75
                       sort: "latest_activity_desc"
                       ids: $selectedProjectsIds
                     ) @connection(key: "GitLabScopingSearchResults_projects") {
@@ -99,8 +66,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                               state: opened
                               search: $queryString
                               sort: UPDATED_DESC
-                              first: $issuesFirst
-                              after: $issuesAfter
+                              first: 25
                             ) {
                               edges {
                                 node {
@@ -126,11 +92,11 @@ const GitLabScopingSearchResults = (props: Props) => {
         }
       }
     `,
-    query
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
 
-  const {data, hasNext, loadNext} = paginationRes
-  const {viewer} = data
+  const {viewer} = query
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -158,11 +124,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
-
-  // gitlab bug: a server error is returned and query is null when there are more projects available. For me, if the projectsFirst arg is <16, an error is returned and loadNext is required. See: https://github.com/ParabolInc/parabol/pull/6160#discussion_r826871705
-  if (gitlab?.api?.query === null) {
-    loadNext(20)
-  }
   if (!issues) return <MockScopingList />
   if (issues.length === 0 && !isEditing) {
     return (
@@ -201,11 +162,6 @@ const GitLabScopingSearchResults = (props: Props) => {
             providerId={providerId}
           />
         ))}
-        {hasNext && (
-          <LoadingNext key={'loadingNext'}>
-            <Ellipsis />
-          </LoadingNext>
-        )}
       </ResultScroller>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
