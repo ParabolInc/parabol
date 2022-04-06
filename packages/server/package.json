@@ -130,7 +130,7 @@
     "mailgun.js": "^3.5.2",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
-    "nest-graphql-endpoint": "^0.5.1",
+    "nest-graphql-endpoint": "^0.6.1",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.1",
     "node-pg-migrate": "^5.9.0",
