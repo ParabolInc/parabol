@@ -1,6 +1,14 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
-import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -8,7 +16,6 @@ import {AzureDevOpsIssueConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
 
@@ -122,20 +129,26 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       ) => {
         const {first} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
-        if (viewerId !== userId) {
-          const err = new Error('Cannot access another team members issues')
+        if (!isTeamMember(authToken, teamId)) {
+          const err = new Error('Cannot access another team members user stories')
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId}) as IGetTeamMemberIntegrationAuthQueryResult | null
+        const auth = (await dataLoader
+          .get('freshAzureDevOpsAuth')
+          .load({teamId, userId})) as IGetTeamMemberIntegrationAuthQueryResult | null
         if (auth === null) {
-          const err = new Error('You cannot get user stories from Azure DevOps without have an auth token')
+          const err = new Error(
+            'You cannot get user stories from Azure DevOps without have an auth token'
+          )
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
         const {accessToken} = auth
         if (accessToken === null) {
-          const err = new Error('You cannot get user stories from Azure DevOps without have an accessToken')
+          const err = new Error(
+            'You cannot get user stories from Azure DevOps without have an accessToken'
+          )
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
@@ -161,11 +174,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
               }
             })
           )
-          return connectionFromTasks(
-            userStories,
-            first,
-            undefined
-          )
+          return connectionFromTasks(userStories, first, undefined)
         }
       }
     },
