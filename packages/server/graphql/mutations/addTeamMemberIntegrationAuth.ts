@@ -104,11 +104,6 @@ const addTeamMemberIntegrationAuth = {
         tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
       }
       if (service === 'azureDevOps') {
-        if (!oauthVerifier) {
-          return {
-            error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
-          }
-        }
         tokenMetadata = (await AzureDevOpsServerManager.init(oauthCodeOrPat, oauthVerifier)) as
           | OAuth2Auth
           | Error
