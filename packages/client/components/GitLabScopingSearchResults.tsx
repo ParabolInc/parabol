@@ -59,15 +59,15 @@ const GitLabScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-        @argumentDefinitions(
-          projectsFirst: {type: "Int", defaultValue: 20}
-          issuesFirst: {type: "Int", defaultValue: 25}
-          projectsAfter: {type: "String"}
-          issuesAfter: {type: "String"}
-          search: {type: "String"}
-          projectIds: {type: "[ID!]", defaultValue: null}
-        )
-        @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
+      @argumentDefinitions(
+        projectsFirst: {type: "Int", defaultValue: 20}
+        issuesFirst: {type: "Int", defaultValue: 25}
+        projectsAfter: {type: "String"}
+        issuesAfter: {type: "String"}
+        search: {type: "String"}
+        projectIds: {type: "[ID!]", defaultValue: null}
+      )
+      @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           ...NewGitLabIssueInput_viewer
           teamMember(teamId: $teamId) {
@@ -98,7 +98,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                       edges {
                         node {
                           ... on _xGitLabProject {
-                            fullPath
                             issues(
                               includeSubepics: true
                               state: opened
