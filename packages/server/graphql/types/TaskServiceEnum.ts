@@ -3,6 +3,7 @@ import {GraphQLEnumType} from 'graphql'
 const values = {
   github: {},
   jira: {},
+  jiraServer: {},
   gitlab: {},
   PARABOL: {}
 } as const
