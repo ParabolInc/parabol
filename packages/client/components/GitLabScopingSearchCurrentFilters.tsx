@@ -41,8 +41,20 @@ const GitLabScopingSearchCurrentFilters = (props: Props) => {
     graphql`
       fragment GitLabScopingSearchCurrentFilters_meeting on PokerMeeting {
         gitlabSearchQuery {
-          selectedProjects {
-            fullPath
+          selectedProjectsIds
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              gitlab {
+                projects {
+                  ... on _xGitLabProject {
+                    id
+                    fullPath
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -50,11 +62,18 @@ const GitLabScopingSearchCurrentFilters = (props: Props) => {
     meetingRef
   )
   const {gitlabSearchQuery} = meeting
-  const {selectedProjects} = gitlabSearchQuery
-  const selectedProjectsFullPaths = selectedProjects?.map((project, idx) =>
-    idx === 0 ? project.fullPath : `, ${project.fullPath}`
-  )
-  const currentFilters = selectedProjectsFullPaths?.length ? selectedProjectsFullPaths : 'None'
+  const {selectedProjectsIds} = gitlabSearchQuery
+  const {viewerMeetingMember} = meeting
+  const {teamMember} = viewerMeetingMember!
+  const {integrations} = teamMember
+  const {gitlab} = integrations
+  const {projects} = gitlab
+
+  const selectedProjectsNames = selectedProjectsIds?.map((projectId, idx) => {
+    const selectedProject = projects.find((project) => project.id === projectId)!
+    return idx === 0 ? selectedProject.fullPath : `, ${selectedProject.fullPath}`
+  })
+  const currentFilters = selectedProjectsNames?.length ? selectedProjectsNames : 'None'
 
   return (
     <Wrapper>

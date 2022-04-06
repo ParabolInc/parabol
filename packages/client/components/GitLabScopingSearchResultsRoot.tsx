@@ -21,9 +21,7 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
         ...GitLabScopingSearchResults_meeting
         gitlabSearchQuery {
           queryString
-          selectedProjects {
-            id
-          }
+          selectedProjectsIds
         }
         teamId
       }
@@ -31,8 +29,7 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
     meetingRef
   )
   const {teamId, gitlabSearchQuery} = meeting
-  const {queryString, selectedProjects} = gitlabSearchQuery!
-  const selectedProjectsIds = selectedProjects?.map((project) => project.id)
+  const {queryString, selectedProjectsIds} = gitlabSearchQuery!
   const normalizedQueryString = queryString.trim()
   const normalizedSelectedProjectsIds = selectedProjectsIds?.length
     ? (selectedProjectsIds as string[])

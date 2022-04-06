@@ -37,7 +37,7 @@ const handleGitLabCreateIssue = (
   const query = queryString?.trim() ?? ''
 
   const issueArgs = {
-    first: 25,
+    first: 75,
     includeSubepics: true,
     sort: 'UPDATED_DESC',
     state: 'opened',
