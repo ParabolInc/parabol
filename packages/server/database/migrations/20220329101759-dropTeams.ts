@@ -1,13 +1,12 @@
-import {Client} from 'pg'
-import getPgConfig from '../../postgres/getPgConfig'
+import getPg from '../../postgres/getPg'
 import {Team} from '../../postgres/queries/getTeamsByIds'
 import checkTeamEq from '../../postgres/utils/checkTeamEq'
 import {dropUndefined} from '../../postgres/utils/dropUndefined'
 
 export const up = async function (r) {
-  const client = new Client(getPgConfig())
-  await client.connect()
-  const teamTableExists = await client.query<{exists: boolean}>(`SELECT EXISTS (SELECT 1 FROM "pg_tables" WHERE tablename = 'Team');`)
+  const pg = await getPg()
+
+  const teamTableExists = await pg.query<{exists: boolean}>(`SELECT EXISTS (SELECT 1 FROM "pg_tables" WHERE tablename = 'Team');`)
 
   // table does not exist on fresh DBs
   if (teamTableExists.rows[0].exists) {
@@ -18,7 +17,6 @@ export const up = async function (r) {
   }
 
   await r.tableDrop('Team').run()
-  await client.end()
 };
 
 export const down = async function (r) {
@@ -39,9 +37,8 @@ export const down = async function (r) {
     .indexWait()
     .run()
 
-  const client = new Client(getPgConfig())
-  await client.connect()
-  const teams = await client.query<Team>(`SELECT * FROM "Team";`)
+  const pg = await getPg()
+  const teams = await pg.query<Team>(`SELECT * FROM "Team";`)
 
   const batchSize = 1000
 
@@ -49,5 +46,4 @@ export const down = async function (r) {
     const filteredTeams = teams.rows.slice(current, current + batchSize).map(dropUndefined)
     await r.table('Team').insert(filteredTeams).run()
   }
-  await client.end()
 };
