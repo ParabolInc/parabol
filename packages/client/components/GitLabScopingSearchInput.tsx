@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {GitLabScopingSearchInput_meeting$key} from '../__generated__/GitLabScopingSearchInput_meeting.graphql'
@@ -64,10 +65,15 @@ const GitLabScopingSearchInput = (props: Props) => {
   const {queryString} = gitlabSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(atmosphere, meetingId, value)
+    SendClientSegmentEventMutation(atmosphere, 'Start GitLab search', {
+      viewerId,
+      meetingId
+    })
   }
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
