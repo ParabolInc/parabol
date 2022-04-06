@@ -44,20 +44,17 @@ export const authorizeOAuth2 = async <
     Accept: 'application/json',
     ...additonalHeaders
   }
-
   if (typeof contentType !== 'undefined') {
     headers['Content-Type'] = contentType
   } else {
     headers['Content-Type'] = 'application/json'
   }
-
   const url = new URL(authUrl)
   if (searchParams) {
     Object.entries(searchParams).forEach((entry) => {
       url.searchParams.append(...entry)
     })
   }
-
   const oauth2Response = await fetch(url, {
     method: 'POST',
     headers,
@@ -67,12 +64,11 @@ export const authorizeOAuth2 = async <
   if (!contentTypeHeader.toLowerCase().startsWith('application/json')) {
     return new Error('Received non-JSON OAuth2 Response')
   }
-
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
-  if ('error' in tokenJson) return new Error(tokenJson.error)
+  if ('error' in tokenJson) {
+    return new Error(tokenJson.error)
+  }
   const {access_token: accessToken, refresh_token: oauthRefreshToken, scope} = tokenJson
-  console.log(`accessToken - ${accessToken}`)
-  console.log(`scope - ${scope}`)
   return {
     accessToken,
     refreshToken: oauthRefreshToken,
