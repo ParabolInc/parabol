@@ -75,6 +75,14 @@ const GitLabScopingSearchInput = (props: Props) => {
       meetingId
     })
   }
+
+  const onBlur = () => {
+    SendClientSegmentEventMutation(atmosphere, 'End of GitLab search', {
+      viewerId,
+      meetingId
+    })
+  }
+
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
@@ -85,6 +93,7 @@ const GitLabScopingSearchInput = (props: Props) => {
         autoFocus
         value={queryString}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={'Search GitLab issues...'}
       />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
