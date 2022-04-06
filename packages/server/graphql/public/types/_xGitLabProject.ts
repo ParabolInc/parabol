@@ -1,7 +1,7 @@
 import {_XGitLabProjectResolvers} from '../resolverTypes'
 
 const _xGitLabProject: _XGitLabProjectResolvers = {
-  __isTypeOf: ({__typename}) => __typename === '_xGitLabProject',
+  __isTypeOf: ({id}) => id.startsWith('gid://'),
   service: () => 'gitlab'
 }
 
