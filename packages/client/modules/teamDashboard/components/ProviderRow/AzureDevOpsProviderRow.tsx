@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import FlatButton from '../../../../components/FlatButton'
-import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
 import AzureDevOpsConfigMenu from '../../../../components/AzureDevOpsConfigMenu'
+import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
+import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
 import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
@@ -36,7 +36,7 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<any> {
   teamId: string
   viewer: AzureDevOpsProviderRow_viewer
 }
@@ -82,18 +82,18 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {integrations} = teamMember!
   const {azureDevOps} = integrations
   console.log(azureDevOps)
-  const cloudProvider = azureDevOps?.cloudProvider
-  console.log(`Inside AzureDevOpsProviderRow with a cloudProvider of ${cloudProvider}`)
-  if (!cloudProvider) return null
-  console.log(cloudProvider)
   const accessToken = azureDevOps?.accessToken ?? undefined
-
-  const openOAuth = async () => {
-    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, cloudProvider.id, mutationProps)
-  }
-
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+
+  const provider = azureDevOps?.sharedProviders[0]
+
+  if (!provider) return null
+
+  const openOAuth = async () => {
+    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider.id, mutationProps)
+  }
+
   return (
     <ProviderCard>
       <AzureDevOpsProviderLogo />
@@ -121,7 +121,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
               menuProps={menuProps}
               mutationProps={mutationProps}
               teamId={teamId}
-              providerId={cloudProvider.id}
+              providerId={provider.id}
             />
           )}
         </ListAndMenu>
@@ -134,7 +134,7 @@ graphql`
   fragment AzureDevOpsProviderRowAzureDevOpsIntegration on AzureDevOpsIntegration {
     accessToken
     id
-    cloudProvider {
+    sharedProviders {
       id
     }
   }
