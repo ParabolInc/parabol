@@ -1,16 +1,67 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
-import {Link} from 'react-router-dom'
-
-import { TeamPromptMeeting_meeting$key } from '~/__generated__/TeamPromptMeeting_meeting.graphql'
-import logoMarkPurple from '../styles/theme/images/brand/mark-color.svg'
+import React, {Suspense, useMemo} from 'react'
+import {useFragment} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import useMeeting from '~/hooks/useMeeting'
+import useTransition, {TransitionStatus} from '~/hooks/useTransition'
+import {Elevation} from '~/styles/elevation'
+import {BezierCurve, Breakpoint, Card} from '~/types/constEnums'
+import {isNotNull} from '~/utils/predicates'
+import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
+import Avatar from './Avatar/Avatar'
+import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
-import PhaseWrapper from './PhaseWrapper'
-import {useFragment} from 'react-relay'
+
+const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+  height: '100%',
+  overflow: 'auto',
+  padding: maybeTabletPlus ? '32px 10%' : 16
+}))
+
+const ResponsesGrid = styled('div')({
+  flex: 1,
+  display: 'flex',
+  flexWrap: 'wrap',
+  position: 'relative'
+})
+
+//TODO: replace with real team prompt response comopnent
+const ResponseCard = styled('div')({
+  background: Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: Elevation.CARD_SHADOW,
+  flex: 1,
+  margin: 8,
+  minHeight: 100,
+  userSelect: 'none'
+})
+
+const TeamMemberResponse = styled('div')<{
+  status: TransitionStatus
+}>(({status}) => ({
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
+  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
+  display: 'flex',
+  flexDirection: 'column',
+  width: 296,
+  flexShrink: 0
+}))
+
+const ResponseHeader = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: '0 8px'
+})
+
+const TeamMemmberName = styled('h3')({
+  padding: '0 8px'
+})
 
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
@@ -22,10 +73,47 @@ const TeamPromptMeeting = (props: Props) => {
     graphql`
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
         ...TeamPromptTopBar_meeting
+        id
+        ...useMeeting_meeting
+        phases {
+          id
+          phaseType
+          stages {
+            ... on TeamPromptResponseStage {
+              id
+              teamMember {
+                id
+                preferredName
+                picture
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
+
+  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const teamMembers = useMemo(() => {
+    return meeting.phases
+      .flatMap((phase) => phase.stages)
+      .flatMap((stage) => stage.teamMember)
+      .map((teamMember) => {
+        if (!teamMember) {
+          return null
+        }
+
+        return {
+          ...teamMember,
+          key: teamMember.id
+        }
+      })
+      .filter(isNotNull)
+  }, [meeting.phases])
+  const transitioningTeamMembers = useTransition(teamMembers)
+  const {safeRoute} = useMeeting(meeting)
+  if (!safeRoute) return null
 
   return (
     <MeetingStyles>
@@ -34,11 +122,30 @@ const TeamPromptMeeting = (props: Props) => {
           <MeetingContent>
             <MeetingHeaderAndPhase hideBottomBar={true}>
               <TeamPromptTopBar meetingRef={meeting} />
-              <PhaseWrapper>
-                <Link title='My Dashboard' to='/meetings'>
-                  <img alt='Parabol' src={logoMarkPurple} />
-                </Link>
-              </PhaseWrapper>
+              <ErrorBoundary>
+                <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
+                  <ResponsesGrid>
+                    {transitioningTeamMembers.map((teamMember) => {
+                      const {child, onTransitionEnd, status} = teamMember
+                      const {id, picture, preferredName} = child
+
+                      return (
+                        <TeamMemberResponse
+                          key={id}
+                          status={status}
+                          onTransitionEnd={onTransitionEnd}
+                        >
+                          <ResponseHeader>
+                            <Avatar picture={picture} size={48} />
+                            <TeamMemmberName>{preferredName}</TeamMemmberName>
+                          </ResponseHeader>
+                          <ResponseCard>Test</ResponseCard>
+                        </TeamMemberResponse>
+                      )
+                    })}
+                  </ResponsesGrid>
+                </ResponsesGridContainer>
+              </ErrorBoundary>
             </MeetingHeaderAndPhase>
           </MeetingContent>
         </Suspense>
