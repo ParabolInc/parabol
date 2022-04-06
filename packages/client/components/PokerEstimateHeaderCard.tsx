@@ -4,12 +4,59 @@ import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardContent from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
-import PokerEstimateHeaderCardGitHub from './PokerEstimateHeaderCardGitHub'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
 interface Props {
   stage: PokerEstimateHeaderCard_stage
 }
+
+type Integration = NonNullable<NonNullable<PokerEstimateHeaderCard_stage['task']>['integration']>
+
+export type IntegrationHeaderFields = {
+  cardTitle: string
+  descriptionHTML: string
+  url: string
+  linkTitle: string
+  linkText: string
+}
+
+const getHeaderFields = (integration: Integration | null): IntegrationHeaderFields | null => {
+  if (!integration) return null
+  const {__typename} = integration
+  switch (__typename) {
+    case 'JiraServerIssue':
+    case 'JiraIssue':
+      const name = __typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
+      const {summary, descriptionHTML, jiraUrl, issueKey} = integration
+      return {
+        cardTitle: summary,
+        descriptionHTML,
+        url: jiraUrl,
+        linkTitle: `${name} Issue #${issueKey}`,
+        linkText: issueKey
+      }
+    case '_xGitHubIssue':
+      const {number, title: githubTitle, bodyHTML, url} = integration
+      return {
+        cardTitle: githubTitle,
+        descriptionHTML: bodyHTML,
+        url,
+        linkTitle: `GitHub Issue #${number}`,
+        linkText: `#${number}`
+      }
+    case '_xGitLabIssue':
+      const {iid, title, descriptionHtml, webUrl} = integration
+      return {
+        cardTitle: title,
+        descriptionHTML: descriptionHtml || '',
+        url: webUrl,
+        linkTitle: `GitLab Issue #${iid}`,
+        linkText: `#${iid}`
+      }
+  }
+  return null
+}
+
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage} = props
   const {task} = stage
@@ -23,26 +70,21 @@ const PokerEstimateHeaderCard = (props: Props) => {
     return <PokerEstimateHeaderCardParabol task={task} />
   }
   // it's an integrated task, but the service might be down
-  if (!integration) {
+  const headerFields = getHeaderFields(integration)
+  if (!headerFields) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }
 
-  if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
-    const name = integration.__typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
-    return (
-      <PokerEstimateHeaderCardContent
-        summary={integration.summary}
-        descriptionHTML={integration.descriptionHTML}
-        url={integration.jiraUrl}
-        linkTitle={`${name} Issue #${integration.issueKey}`}
-        linkText={integration.issueKey}
-      />
-    )
-  }
-  if (integration.__typename === '_xGitHubIssue') {
-    return <PokerEstimateHeaderCardGitHub issueRef={integration} />
-  }
-  return null
+  const {cardTitle, descriptionHTML, url, linkTitle, linkText} = headerFields
+  return (
+    <PokerEstimateHeaderCardContent
+      cardTitle={cardTitle}
+      descriptionHTML={descriptionHTML}
+      url={url}
+      linkTitle={linkTitle}
+      linkText={linkText}
+    />
+  )
 }
 
 export default createFragmentContainer(PokerEstimateHeaderCard, {
@@ -68,7 +110,17 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
           }
           ... on _xGitHubIssue {
             __typename
-            ...PokerEstimateHeaderCardGitHub_issue
+            number
+            title
+            bodyHTML
+            url
+          }
+          ... on _xGitLabIssue {
+            __typename
+            descriptionHtml
+            title
+            webUrl
+            iid
           }
         }
       }
