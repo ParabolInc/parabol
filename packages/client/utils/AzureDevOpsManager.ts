@@ -211,15 +211,12 @@ export default abstract class AzureDevOpsManager {
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
     const payload = !!fields ? {ids: workItemIds, fields: fields} : {ids: workItemIds}
     const res = await this.post<WorkItemBatchResponse>(uri, payload)
-    console.log(`returned object from getWOrkItemData - ${JSON.stringify(res)}`)
     if (res instanceof Error) {
       if (!firstError) {
         firstError = res
       }
     } else {
-      console.log(`res = ${res.value}`)
       const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
-        console.log(`Inside map with a workitem value pf ${workItem}`)
         return {
           ...workItem
         }
@@ -230,7 +227,6 @@ export default abstract class AzureDevOpsManager {
   }
 
   async executeWiqlQuery(instanceId: string, query: string) {
-    console.log(`inside executeWiqlQuery with an instanceId of ${instanceId}`)
     const workItemReferences = [] as WorkItemReference[]
     let firstError: Error | undefined
     const payload = {
@@ -252,21 +248,18 @@ export default abstract class AzureDevOpsManager {
           url
         }
       })
-      console.log(`workItems - ${workItems}`)
       workItemReferences.push(...workItems)
     }
     return {error: firstError, workItems: workItemReferences}
   }
 
   async getUserStories(instanceId: string) {
-    console.log(`Inside getUserStories with an instanceId of ${instanceId}`)
     const queryString =
       "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
     return await this.executeWiqlQuery(instanceId, queryString)
   }
 
   async getAllUserWorkItems() {
-    console.log('Inside getAllUserWorkItems')
     const allWorkItems = [] as WorkItem[]
     let firstError: Error | undefined
 
@@ -275,29 +268,21 @@ export default abstract class AzureDevOpsManager {
     if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
 
     const {id} = azureDevOpsUser
-    console.log(`azureDevOpsUser.id = ${id}`)
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-    console.log(`accessibleOrgs - ${JSON.stringify(accessibleOrgs)}`)
     if (!!accessibleError) return {error: accessibleError, projects: null}
 
     // this forEach is not returning
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
-      console.log(`accountName - ${accountName}`)
       const instanceId = `dev.azure.com/${accountName}`
-      console.log(`instanceId = ${instanceId}`)
       const {error: workItemsError, workItems} = await this.getUserStories(instanceId)
-      console.log(`workItemsError - ${workItemsError}`)
-      console.log(`workItems - ${workItems}`)
       if (!!workItemsError) {
         if (!firstError) {
           firstError = workItemsError
         }
       }
       if (!!workItems) {
-        console.log('inside workItems')
         const resturnedIds = workItems.map((workItem) => workItem.id)
-        console.log(`returnedIds - ${resturnedIds}`)
         if (resturnedIds.length > 0) {
           const {error: fullWorkItemsError, workItems: fullWorkItems} = await this.getWorkItemData(
             instanceId,
@@ -308,15 +293,11 @@ export default abstract class AzureDevOpsManager {
               firstError = fullWorkItemsError
             }
           } else {
-            console.log(`prior to pushing fullWorkItems - ${fullWorkItems.length}`)
             allWorkItems.push(...fullWorkItems)
-            console.log(`after pushing fullWorkItems....allWorkItems - ${allWorkItems}`)
           }
         }
       }
     }
-
-    console.log(`prior to returning from getAllUserWorkItems - ${allWorkItems}`)
     return {error: firstError, workItems: allWorkItems}
   }
 

@@ -75,24 +75,21 @@ export const freshAzureDevOpsAuth = (
         keys.map(async ({userId, teamId}) => {
           const azureDevOpsAuthToRefresh = await parent
             .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+            .load({service: 'azureDevOps', teamId, userId}) as IGetTeamMemberIntegrationAuthQueryResult | null
 
-          if (!azureDevOpsAuthToRefresh) {
+          if (azureDevOpsAuthToRefresh === null) {
             console.log('error line 61')
             return null
           }
-          const {accessToken: existingAccessToken, refreshToken} = azureDevOpsAuthToRefresh
-          console.log(
-            `returned token in freshAzureDevOpsAuth - existingAccessToken: ${existingAccessToken} | refreshToken: ${refreshToken}`
-          )
+
+          const {accessToken: existingAccessToken, refreshToken, accessTokenSecret} = azureDevOpsAuthToRefresh
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            if (!refreshToken) {
+            if (!refreshToken || !accessTokenSecret) {
               return null
             }
-            console.log('about to call refresh token - the token expired')
             const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
               //sendToSentry(oautRes)
@@ -114,12 +111,9 @@ export const freshAzureDevOpsAuth = (
               accessToken,
               refreshToken: updatedRefreshToken
             }
-            console.log(`object prior to upsert ${newAzureDevOpsAuth}`)
             await upsertTeamMemberIntegrationAuth(newAzureDevOpsAuth)
             return newAzureDevOpsAuth
           }
-
-          console.log('returning azureDevOpsAuthToRefresh')
           return azureDevOpsAuthToRefresh
         })
       )
@@ -141,20 +135,16 @@ export const azureDevOpsAllWorkItems = (
         keys.map(async ({userId, teamId}) => {
           const returnWorkItems = [] as WorkItem[]
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          console.log(`auth - ${auth}`)
           if (!auth) return []
           const {accessToken} = auth
-          console.log(`accessToken - ${accessToken}`)
           if (!accessToken) return undefined
           const manager = new AzureDevOpsServerManager(accessToken)
           const restResult = await manager.getAllUserWorkItems()
-          console.log('returned restResult.....destructuring')
           const {error, workItems} = restResult
-          console.log(`destructured error = ${error}`)
-          console.log(`destructured workItems - ${workItems}`)
           if (error !== undefined || workItems === undefined) {
             console.log(error)
           } else {
-            console.log(`pushing workItems to returnWorkItems - ${workItems.length}`)
             returnWorkItems.push(...workItems)
           }
           return returnWorkItems
@@ -188,7 +178,6 @@ export const azureDevUserInfo = (
             return undefined
           }
           const user = azureDevOpsUser as unknown as AzureDevOpsUser
-          console.log(`resturned user of ${user}`)
           return {
             ...user
           }
@@ -213,20 +202,15 @@ export const allAzureDevOpsAccessibleOrgs = (
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return []
           const {accessToken} = auth
-          console.log(
-            `setting accessToken to ${accessToken} | teamId: ${teamId} | userId: ${userId}`
-          )
-
           const userInfo = await parent.get('azureDevUserInfo').load({teamId, userId})
-          console.log(`userInfo: ${JSON.stringify(userInfo)}`)
           if (!userInfo) return []
           const {id} = userInfo
 
           if (!accessToken) return []
           const manager = new AzureDevOpsServerManager(accessToken)
           const results = await manager.getAccessibleOrgs(id)
-          console.log(`results in accessible orgs - ${JSON.stringify(results)}`)
           const {error, accessibleOrgs} = results
+          // handle error if defined
           console.log(error)
           return accessibleOrgs.map((resource) => ({
             ...resource
@@ -277,13 +261,16 @@ export const azureDevOpsUserStories = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, instanceId}) => {
+          console.log(`calling freshAzureDevOpsAuth in azureDevOpsUserStories`)
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          console.log(`auth - ${auth}`)
           if (!auth) return []
           const {accessToken} = auth
           if (!accessToken) return []
           const manager = new AzureDevOpsServerManager(accessToken)
           const result = await manager.getUserStories(instanceId)
           const {error, workItems} = result
+          // handle error if defined
           console.log(error)
           return workItems.map((workItem) => ({
             id: workItem.id.toString(),

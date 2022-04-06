@@ -9,18 +9,22 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsWorkItem',
   description: 'The Azure DevOps Issue that comes direct from Azure DevOps',
   //interfaces: () => [TaskIntegration],
-  //isTypeOf: ({instanceId, issueKey}) => !!(instanceId && issueKey),
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'GUID instanceId:issueKey'
-      //resolve: ({instanceId, issueKey}) => {
-      //  return AzureDevOpsIssueId.join(instanceId, issueKey)
-      //}
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'URL to the issue'
+    },
+    state: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The Current State of the Work item'
+    },
+    type: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The Type of the Work item'
     }
   })
 })

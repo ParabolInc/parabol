@@ -1,14 +1,21 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import AzureDevOpsWorkItem from './AzureDevOpsWorkItem'
+import {AzureDevOpsIssueConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
+
+type WorkItemArgs = {
+  first: number
+  after?: string
+}
 
 interface IGetAzureDevOpsAuthByUserIdTeamIdQueryResult {
   createdAt: Date
@@ -94,34 +101,71 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The user that the access token is attached to'
     },
-    workItems: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsWorkItem))),
+    userStories: {
+      type: new GraphQLNonNull(AzureDevOpsIssueConnection),
       description:
         'A list of work items coming straight from the azure dev ops integration for a specific team member',
+      args: {
+        first: {
+          type: GraphQLInt,
+          defaultValue: 100
+        },
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        }
+      },
       resolve: async (
         {teamId, userId}: AzureDevOpsAuth,
-        {},
+        args: any,
         {authToken, dataLoader}: GQLContext
       ) => {
+        const {first} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const workItems = await dataLoader.get('azureDevOpsAllWorkItems').load({teamId, userId})
-        if (workItems === undefined) {
-          return []
+        const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId}) as IGetTeamMemberIntegrationAuthQueryResult | null
+        if (auth === null) {
+          const err = new Error('You cannot get user stories from Azure DevOps without have an auth token')
+          standardError(err, {tags: {teamId, userId}, userId: viewerId})
+          return connectionFromTasks([], 0, err)
+        }
+        const {accessToken} = auth
+        if (accessToken === null) {
+          const err = new Error('You cannot get user stories from Azure DevOps without have an accessToken')
+          standardError(err, {tags: {teamId, userId}, userId: viewerId})
+          return connectionFromTasks([], 0, err)
+        }
+        const manager = new AzureDevOpsServerManager(accessToken)
+        const restResult = await manager.getAllUserWorkItems()
+        const {error, workItems: innerWorkItems} = restResult
+        if (error !== undefined) {
+          console.log(error)
+          standardError(error, {tags: {teamId, userId}, userId: viewerId})
+          return connectionFromTasks([], 0, error)
+        }
+        if (innerWorkItems === undefined) {
+          return connectionFromTasks([], 0, undefined)
         } else {
           const userStories = Array.from(
-            workItems.map((workItem) => {
+            innerWorkItems.map((workItem) => {
               return {
                 id: workItem.id.toString(),
-                url: workItem.url
+                url: workItem.url,
+                state: workItem.fields['System.State'],
+                type: workItem.fields['System.WorkItemType'],
+                updatedAt: new Date()
               }
             })
           )
-          return userStories
+          return connectionFromTasks(
+            userStories,
+            first,
+            undefined
+          )
         }
       }
     },
