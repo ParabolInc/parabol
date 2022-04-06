@@ -1,13 +1,13 @@
+import {JSONContent} from '@tiptap/core'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getTeamPromptResponseById} from '../../postgres/queries/getTeamPromptResponsesByIds'
+import {updateTeamPromptResponseContentById} from '../../postgres/queries/updateTeamPromptResponseContentById'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import UpdatePromptResponsePayload from '../types/UpdatePromptResponsePayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
-import {updateTeamPromptResponseContentById} from '../../postgres/queries/updateTeamPromptResponseContentById'
-import {getTeamPromptResponseById} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import standardError from '../../utils/standardError'
-import {JSONContent} from '@tiptap/core'
+import {GQLContext} from '../graphql'
+import UpdatePromptResponsePayload from '../types/UpdatePromptResponsePayload'
 
 const extractTextFromTipTapJSONContent = (input: JSONContent) => {
   if (input.text) {
@@ -15,7 +15,9 @@ const extractTextFromTipTapJSONContent = (input: JSONContent) => {
   } else if (input.content) {
     const content = input.content
     const newLine = input.type === 'paragraph' ? '\n' : ''
-    return content.map((subContent) => extractTextFromTipTapJSONContent(subContent)).join('') + newLine
+    return (
+      content.map((subContent) => extractTextFromTipTapJSONContent(subContent)).join('') + newLine
+    )
   } else {
     return input.type === 'paragraph' ? '\n' : ''
   }
@@ -49,7 +51,7 @@ const updatePromptResponse = {
     }
     const {userId} = promptResponse
     if (userId !== viewerId) {
-      return standardError(new Error('Can\'t edit other\'s response'), {userId: viewerId})
+      return standardError(new Error("Can't edit other's response"), {userId: viewerId})
     }
     const {meetingId} = promptResponse
 
@@ -58,7 +60,7 @@ const updatePromptResponse = {
     const plaintextContent = extractTextFromTipTapJSONContent(contentJSON)
 
     // RESOLUTION
-    updateTeamPromptResponseContentById({
+    await updateTeamPromptResponseContentById({
       content,
       plaintextContent,
       id: promptResponseId
