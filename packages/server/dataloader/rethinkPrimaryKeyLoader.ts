@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import getRethink, {DBType} from '../database/rethinkDriver'
-import normalizeRethinkDbResults from './normalizeRethinkDbResults'
+import normalizeResults from './normalizeRethinkDbResults'
 
 const rethinkPrimaryKeyLoader = <T extends keyof DBType>(
   options: DataLoader.Options<string, DBType[T]>,
@@ -13,7 +13,7 @@ const rethinkPrimaryKeyLoader = <T extends keyof DBType>(
       .table(table)
       .getAll(r.args(keys as string[]), {index: 'id'})
       .run()) as any
-    return normalizeRethinkDbResults<DBType[T]>(keys, docs)
+    return normalizeResults<string, DBType[T]>(keys, docs)
   }
   return new DataLoader<string, DBType[T]>(batchFn, options)
 }
