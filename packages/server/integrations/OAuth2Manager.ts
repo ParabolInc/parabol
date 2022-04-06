@@ -18,7 +18,7 @@ export interface OAuth2RefreshAuthorizationParams {
 export interface OAuth2PkceRefreshAuthorizationParams extends OAuth2RefreshAuthorizationParams {
   scope: string
   redirect_uri: string
-  client_secret: string
+  //client_secret: string
 }
 
 export default abstract class OAuth2Manager {

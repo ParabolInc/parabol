@@ -8,6 +8,7 @@ import {AzureDevOpsIssueConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
 
@@ -126,8 +127,18 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
+        const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId}) as IGetTeamMemberIntegrationAuthQueryResult | null
+        if (auth === null) {
+          const err = new Error('You cannot get user stories from Azure DevOps without have an auth token')
+          standardError(err, {tags: {teamId, userId}, userId: viewerId})
+          return connectionFromTasks([], 0, err)
+        }
         const {accessToken} = auth
+        if (accessToken === null) {
+          const err = new Error('You cannot get user stories from Azure DevOps without have an accessToken')
+          standardError(err, {tags: {teamId, userId}, userId: viewerId})
+          return connectionFromTasks([], 0, err)
+        }
         const manager = new AzureDevOpsServerManager(accessToken)
         const restResult = await manager.getAllUserWorkItems()
         const {error, workItems: innerWorkItems} = restResult

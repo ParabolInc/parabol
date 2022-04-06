@@ -20,14 +20,12 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
     })
   }
 
-  static async refresh(refreshToken: string, tokenSecret: string) {
-    console.log(`tokenSecret: ${tokenSecret}`)
+  static async refresh(refreshToken: string) {
     return AzureDevOpsServerManager.fetchToken({
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
       scope: '499b84ac-1321-427f-aa17-267ca6975798/.default',
-      redirect_uri: 'http://localhost:8081/',
-      client_secret: tokenSecret
+      redirect_uri: 'http://localhost:8081/'
     })
   }
 

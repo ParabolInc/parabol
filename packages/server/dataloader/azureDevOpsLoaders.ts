@@ -75,9 +75,9 @@ export const freshAzureDevOpsAuth = (
         keys.map(async ({userId, teamId}) => {
           const azureDevOpsAuthToRefresh = await parent
             .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+            .load({service: 'azureDevOps', teamId, userId}) as IGetTeamMemberIntegrationAuthQueryResult | null
 
-          if (!azureDevOpsAuthToRefresh) {
+          if (azureDevOpsAuthToRefresh === null) {
             console.log('error line 61')
             return null
           }
@@ -90,7 +90,7 @@ export const freshAzureDevOpsAuth = (
             if (!refreshToken || !accessTokenSecret) {
               return null
             }
-            const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken, accessTokenSecret)
+            const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
               //sendToSentry(oautRes)
               return null
@@ -135,6 +135,7 @@ export const azureDevOpsAllWorkItems = (
         keys.map(async ({userId, teamId}) => {
           const returnWorkItems = [] as WorkItem[]
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          console.log(`auth - ${auth}`)
           if (!auth) return []
           const {accessToken} = auth
           if (!accessToken) return undefined
@@ -260,7 +261,9 @@ export const azureDevOpsUserStories = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, instanceId}) => {
+          console.log(`calling freshAzureDevOpsAuth in azureDevOpsUserStories`)
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          console.log(`auth - ${auth}`)
           if (!auth) return []
           const {accessToken} = auth
           if (!accessToken) return []
