@@ -11,7 +11,6 @@ interface Props {
 }
 
 type Integration = NonNullable<NonNullable<PokerEstimateHeaderCard_stage['task']>['integration']>
-
 export type IntegrationHeaderFields = {
   cardTitle: string
   descriptionHTML: string
