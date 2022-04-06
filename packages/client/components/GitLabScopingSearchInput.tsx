@@ -67,20 +67,21 @@ const GitLabScopingSearchInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {value} = e.target
-    setSearch(atmosphere, meetingId, value)
-    SendClientSegmentEventMutation(atmosphere, 'Start GitLab search', {
+  const trackEvent = (eventTitle: string) => {
+    SendClientSegmentEventMutation(atmosphere, eventTitle, {
       viewerId,
       meetingId
     })
   }
 
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {value} = e.target
+    setSearch(atmosphere, meetingId, value)
+    trackEvent('Start GitLab search')
+  }
+
   const onBlur = () => {
-    SendClientSegmentEventMutation(atmosphere, 'End of GitLab search', {
-      viewerId,
-      meetingId
-    })
+    trackEvent('End of GitLab search')
   }
 
   const clearSearch = () => {
