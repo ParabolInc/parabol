@@ -20,7 +20,7 @@ module.exports = {
       config: [__filename]
     }
   },
-  stats: 'minimal',
+  stats: 'errors-warnings',
   devServer: {
     client: {
       logging: 'warn'
@@ -144,7 +144,7 @@ module.exports = {
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
       // Environment variables go in the __ACTION__ object above, not here
       // This build may be deployed to many different environments
-    }),
+    })
   ],
   module: {
     rules: [
