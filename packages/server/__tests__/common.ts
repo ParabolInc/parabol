@@ -56,7 +56,7 @@ export async function sendPublic(req: {
     })
   })
   const body = await response.json()
-  return body.payload
+  return body
 }
 
 const SIGNUP_WITH_PASSWORD_MUTATION = `
