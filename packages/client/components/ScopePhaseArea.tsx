@@ -81,11 +81,21 @@ const ScopePhaseArea = (props: Props) => {
   const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
 
   const baseTabs = [
-    {icon: <GitHubSVG />, label: 'GitHub', allow: true},
-    {icon: <JiraSVG />, label: 'Jira', allow: true},
-    {icon: <ParabolLogoSVG />, label: 'Parabol', allow: true},
-    {icon: <JiraServerSVG />, label: 'Jira Server', allow: allowJiraServer},
-    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab}
+    {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},
+    {icon: <JiraSVG />, label: 'Jira', allow: true, Component: ScopePhaseAreaJira},
+    {
+      icon: <ParabolLogoSVG />,
+      label: 'Parabol',
+      allow: true,
+      Component: ScopePhaseAreaParabolScoping
+    },
+    {
+      icon: <JiraServerSVG />,
+      label: 'Jira Server',
+      allow: allowJiraServer,
+      Component: ScopePhaseAreaJiraServer
+    },
+    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab, Component: ScopePhaseAreaGitLab}
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
@@ -111,40 +121,8 @@ const ScopePhaseArea = (props: Props) => {
     selectIdx(idx)
   }
 
-  const goToParabol = () => {
+  const gotoParabol = () => {
     setActiveIdx(2)
-  }
-
-  const contents: Record<typeof baseTabs[number]['label'], JSX.Element> = {
-    GitHub: (
-      <ScopePhaseAreaGitHub
-        isActive={isTabActive('GitHub')}
-        gotoParabol={goToParabol}
-        meetingRef={meeting}
-      />
-    ),
-    Jira: (
-      <ScopePhaseAreaJira
-        isActive={isTabActive('Jira')}
-        gotoParabol={goToParabol}
-        meeting={meeting}
-      />
-    ),
-    Parabol: <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />,
-    'Jira Server': (
-      <ScopePhaseAreaJiraServer
-        isActive={isTabActive('Jira Server')}
-        gotoParabol={goToParabol}
-        meetingRef={meeting}
-      />
-    ),
-    GitLab: (
-      <ScopePhaseAreaGitLab
-        isActive={isTabActive('GitLab')}
-        gotoParabol={goToParabol}
-        meetingRef={meeting}
-      />
-    )
   }
 
   return (
@@ -171,8 +149,14 @@ const ScopePhaseArea = (props: Props) => {
         style={innerStyle}
       >
         {/* swipeable views won't ignore null children: https://github.com/oliviertassinari/react-swipeable-views/issues/271 */}
-        {tabs.map(({label}) => (
-          <TabContents key={label}>{contents[label]}</TabContents>
+        {tabs.map(({label, Component}) => (
+          <TabContents key={label}>
+            <Component
+              meetingRef={meeting}
+              isActive={isTabActive(label)}
+              gotoParabol={gotoParabol}
+            />
+          </TabContents>
         ))}
       </SwipeableViews>
     </ScopingArea>
