@@ -1,9 +1,9 @@
 import React from 'react'
 import {MenuProps} from '~/hooks/useMenu'
-import RepoIntegrationGitLabMenuItem from './RepoIntegrationGitLabMenuItem'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
+import RepoIntegrationGitLabMenuItem from './RepoIntegrationGitLabMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
@@ -19,14 +19,11 @@ const getValue = (item: {fullPath?: string}) => {
 const NewGitLabIssueMenu = (props: Props) => {
   const {handleSelectFullPath, menuProps, gitlabProjects} = props
 
-  const {query, filteredItems: filteredProjects, onQueryChange} = useSearchFilter(
-    gitlabProjects,
-    getValue
-  )
-
-  const onClick = (fullPath: string) => {
-    handleSelectFullPath(fullPath)
-  }
+  const {
+    query,
+    filteredItems: filteredProjects,
+    onQueryChange
+  } = useSearchFilter(gitlabProjects, getValue)
 
   return (
     <Menu ariaLabel='Select GitLab project' keepParentFocus {...menuProps}>
@@ -34,14 +31,20 @@ const NewGitLabIssueMenu = (props: Props) => {
       {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
-      {filteredProjects.slice(0, 10).map((project) => (
-        <RepoIntegrationGitLabMenuItem
-          key={project.id}
-          fullPath={project.fullPath}
-          onClick={onClick}
-          query={query}
-        />
-      ))}
+      {filteredProjects.slice(0, 10).map((project) => {
+        const {id: projectId, fullPath} = project
+        const onClick = () => {
+          handleSelectFullPath(fullPath)
+        }
+        return (
+          <RepoIntegrationGitLabMenuItem
+            key={projectId}
+            fullPath={fullPath}
+            onClick={onClick}
+            query={query}
+          />
+        )
+      })}
     </Menu>
   )
 }

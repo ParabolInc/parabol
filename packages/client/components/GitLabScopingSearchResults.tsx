@@ -30,6 +30,10 @@ const GitLabScopingSearchResults = (props: Props) => {
         $teamId: ID!
         $queryString: String!
         $selectedProjectsIds: [ID!]
+        $first: Int!
+        $includeSubepics: Boolean!
+        $sort: _xGitLabIssueSort!
+        $state: _xGitLabIssuableState!
       ) {
         viewer {
           ...NewGitLabIssueInput_viewer
@@ -60,13 +64,12 @@ const GitLabScopingSearchResults = (props: Props) => {
                       edges {
                         node {
                           ... on _xGitLabProject {
-                            fullPath
                             issues(
-                              includeSubepics: true
-                              state: opened
+                              includeSubepics: $includeSubepics
+                              state: $state
                               search: $queryString
-                              sort: UPDATED_DESC
-                              first: 25
+                              sort: $sort
+                              first: $first
                             ) {
                               edges {
                                 node {
@@ -124,6 +127,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
+
   if (!issues) return <MockScopingList />
   if (issues.length === 0 && !isEditing) {
     return (

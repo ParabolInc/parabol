@@ -13,7 +13,7 @@ import {ICON_SIZE} from '~/styles/typographyV2'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
-const MeetingTopBarStyles = styled('div')({
+export const MeetingTopBarStyles = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   flexShrink: 0,
@@ -29,8 +29,8 @@ const MeetingTopBarStyles = styled('div')({
   }
 })
 
-const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
-  ({isMeetingSidebarCollapsed}) => ({
+export const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed?: boolean}>(
+  ({isMeetingSidebarCollapsed = true}) => ({
     alignItems: 'flex-start',
     display: 'flex',
     paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
