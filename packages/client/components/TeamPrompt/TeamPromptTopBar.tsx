@@ -6,7 +6,7 @@ import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_mee
 import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
 import {HeadingBlock, IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
-import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
+import TeamPromptOptions from './TeamPromptOptions'
 
 const TeamPromptHeaderTitle = styled('h1')({
   fontSize: 16,
@@ -49,7 +49,7 @@ const TeamPromptTopBar = (props: Props) => {
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         name
-        ...TeamPromptOptionsMenu_meeting
+        ...TeamPromptOptions_meeting
       }
     `,
     meetingRef
@@ -68,7 +68,7 @@ const TeamPromptTopBar = (props: Props) => {
       <IconGroupBlock>
         {/* :TODO: (jmtaber129): Add avatars, etc. */}
         <ButtonContainer>
-          <TeamPromptOptionsMenu meetingRef={meeting} />
+          <TeamPromptOptions meetingRef={meeting} />
         </ButtonContainer>
       </IconGroupBlock>
     </MeetingTopBarStyles>
