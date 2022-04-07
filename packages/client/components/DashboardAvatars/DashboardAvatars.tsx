@@ -2,55 +2,27 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
+import {ElementWidth} from '~/types/constEnums'
 import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
-import ErrorBoundary from '../ErrorBoundary'
+import AvatarList, {sizeToHeightBump} from '../AvatarList'
 import PlainButton from '../PlainButton/PlainButton'
-import DashboardAvatar from './DashboardAvatar'
 
-const AvatarsList = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  marginRight: 6,
-  position: 'relative',
-  // AvatarsWrapper left causes avatars to move into left padding on mobile by 4px (-2px for the transparent border)
-  left: isDesktop ? 0 : 2
-}))
+  position: 'relative'
+})
 
 const AvatarsWrapper = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
-  left: -4 // each avatar is given 20px of width but the final avatar uses 28px
-})
-
-const OverflowWrapper = styled('div')({
-  width: ElementWidth.DASHBOARD_AVATAR_OVERLAPPED
-})
-
-const OverflowCount = styled('div')({
-  alignItems: 'center',
-  border: `2px solid ${PALETTE.SLATE_200}`,
-  backgroundColor: PALETTE.SKY_400,
-  borderRadius: '50%',
-  display: 'flex',
-  height: ElementHeight.DASHBOARD_AVATAR,
-  justifyContent: 'center',
-  color: '#fff',
-  fontSize: 12,
-  fontWeight: 600,
-  overflow: 'hidden',
-  userSelect: 'none',
-  width: ElementWidth.DASHBOARD_AVATAR,
-  '&:hover': {
-    cursor: 'pointer'
-  }
+  minWidth: `${ElementWidth.DASHBOARD_AVATAR_OVERLAPPED * 2 + ElementWidth.DASHBOARD_AVATAR}px`
 })
 
 const StyledButton = styled(PlainButton)({
@@ -64,7 +36,8 @@ const StyledButton = styled(PlainButton)({
   WebkitTapHighlightColor: 'transparent',
   '&:hover': {
     cursor: 'pointer'
-  }
+  },
+  marginTop: sizeToHeightBump[ElementWidth.DASHBOARD_AVATAR] * -1 // coupling with AvatarList styles
 })
 
 interface Props {
@@ -76,11 +49,8 @@ type Avatar = DashboardAvatars_team['teamMembers'][0]
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {id: teamId, teamMembers} = team
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const maxAvatars = isDesktop ? 10 : 6
-  const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const sortedAvatars = useMemo(() => {
     const connectedAvatars = [] as Avatar[]
     const offlineAvatars = [] as Avatar[]
@@ -97,49 +67,62 @@ const DashboardAvatars = (props: Props) => {
       }
     })
     const sortedAvatars = connectedAvatars.concat(offlineAvatars)
-    return overflowCount === 0 ? sortedAvatars : sortedAvatars.slice(0, maxAvatars - 1)
+    return sortedAvatars
   }, [teamMembers])
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
-  const handleClick = (clickedOverflow: boolean) => {
-    if (!submitting) {
-      submitMutation()
-      ToggleTeamDrawerMutation(
-        atmosphere,
-        {teamId, teamDrawerType: 'manageTeam'},
-        {onError, onCompleted}
-      )
-      commitLocalUpdate(atmosphere, (store) => {
-        const viewer = store.getRoot().getLinkedRecord('viewer')
-        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
-        const memberInFocus = teamMembers[clickedOverflow ? maxAvatars - 1 : 0]
-        if (!teamMember || !memberInFocus) return
-        const {id: teamMemberId} = memberInFocus
-        teamMember.setValue(teamMemberId, 'manageTeamMemberId')
-      })
-    }
+  const handleClick = (userId?: string) => {
+    if (submitting) return
+    submitMutation()
+    ToggleTeamDrawerMutation(
+      atmosphere,
+      {teamId, teamDrawerType: 'manageTeam'},
+      {onError, onCompleted}
+    )
+    if (!userId) return
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
+      if (!teamMember) return
+      const memberInFocus = teamMembers.find((x) => x.user.id === userId)
+      if (!memberInFocus) return
+      const {id: teamMemberId} = memberInFocus
+      teamMember.setValue(teamMemberId, 'manageTeamMemberId')
+    })
   }
+  const users = sortedAvatars.map((x) => x.user)
 
   return (
-    <AvatarsList isDesktop={isDesktop}>
+    <Wrapper>
       <AvatarsWrapper>
-        {sortedAvatars.map((teamMember) => {
-          return (
-            <ErrorBoundary key={`dbAvatar${teamMember.id}`}>
-              <DashboardAvatar teamMember={teamMember} />
-            </ErrorBoundary>
-          )
-        })}
-        {overflowCount > 0 && (
-          <OverflowWrapper onClick={() => handleClick(true)}>
-            <OverflowCount>{`+${overflowCount}`}</OverflowCount>
-          </OverflowWrapper>
-        )}
+        <AvatarList
+          users={users}
+          size={ElementWidth.DASHBOARD_AVATAR}
+          borderColor={PALETTE.SLATE_200}
+          onOverflowClick={() => handleClick()}
+          onUserClick={(userId) => handleClick(userId)}
+        />
       </AvatarsWrapper>
-      <StyledButton onClick={() => handleClick(false)}>Manage Team</StyledButton>
-    </AvatarsList>
+      <StyledButton onClick={() => handleClick()}>Manage Team</StyledButton>
+    </Wrapper>
   )
 }
+
+graphql`
+  fragment DashboardAvatars_teamMember on TeamMember {
+    ...TeamMemberAvatarMenu_teamMember
+    ...LeaveTeamModal_teamMember
+    ...PromoteTeamMemberModal_teamMember
+    ...RemoveTeamMemberModal_teamMember
+    id
+    preferredName
+    user {
+      ...AvatarList_users
+      id
+      isConnected
+    }
+  }
+`
 
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`
@@ -147,10 +130,12 @@ export default createFragmentContainer(DashboardAvatars, {
       id
       teamMembers(sortBy: "preferredName") {
         ...AddTeamMemberAvatarButton_teamMembers
-        ...DashboardAvatar_teamMember
+        ...DashboardAvatars_teamMember
         id
         preferredName
         user {
+          ...AvatarList_users
+          id
           isConnected
         }
       }
