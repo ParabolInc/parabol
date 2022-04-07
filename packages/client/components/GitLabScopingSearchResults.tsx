@@ -103,7 +103,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                       edges {
                         node {
                           ... on _xGitLabProject {
-                            fullPath
                             issues(
                               includeSubepics: $includeSubepics
                               state: $state
