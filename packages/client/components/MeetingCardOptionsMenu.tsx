@@ -2,6 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -29,13 +32,21 @@ const OptionMenuItem = styled('div')({
   width: '200px'
 })
 
+const EndMeetingMutationLookup = {
+  teamPrompt: EndTeamPromptMutation
+}
+
 const query = graphql`
-  query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID) {
+  query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
       team(teamId: $teamId) {
         massInvitation(meetingId: $meetingId) {
           id
         }
+      }
+      meeting(meetingId: $meetingId) {
+        id
+        meetingType
       }
     }
   }
@@ -47,11 +58,14 @@ const MeetingCardOptionsMenu = (props: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  const {team} = viewer
-
+  const {team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const copyUrl = getMassInvitationUrl(token)
+  const {id: meetingId, meetingType} = meeting!
+  const canEndMeeting = meetingType === 'teamPrompt'
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError} = useMutationProps()
+
   const {closePortal} = menuProps
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
@@ -66,9 +80,26 @@ const MeetingCardOptionsMenu = (props: Props) => {
         onClick={async () => {
           popTooltip()
           closePortal()
+          const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
         }}
       />
+      {canEndMeeting && (
+        <MenuItem
+          key='close'
+          label={
+            <OptionMenuItem>
+              <StyledIcon>close</StyledIcon>
+              <span>{'End the meeting'}</span>
+            </OptionMenuItem>
+          }
+          onClick={() => {
+            popTooltip()
+            closePortal()
+            EndMeetingMutationLookup[meetingType]?.(atmosphere, {meetingId}, {onError, onCompleted})
+          }}
+        />
+      )}
     </Menu>
   )
 }

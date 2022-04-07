@@ -1,4 +1,3 @@
-import GoogleAnalyzedEntity from '../../../../database/types/GoogleAnalyzedEntity'
 import {GoogleAnalyzedSyntax} from '../../../../GoogleLanguageManager'
 
 const getTokenIndices = (entityName: string, tokens: GoogleAnalyzedSyntax['tokens']) => {
@@ -50,13 +49,11 @@ interface EntityWithoutLemma {
 const addLemmaToEntities = (
   entities: EntityWithoutLemma[],
   syntax: GoogleAnalyzedSyntax | null
-): GoogleAnalyzedEntity[] => {
-  if (!syntax) return entities
-  const {tokens} = syntax
-  if (!Array.isArray(tokens)) return entities
+) => {
+  const tokens = syntax?.tokens
   return entities.map((entity) => ({
     ...entity,
-    lemma: addLemmaToEntity(entity.name, tokens)
+    lemma: tokens ? addLemmaToEntity(entity.name, tokens) : ''
   }))
 }
 

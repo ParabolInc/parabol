@@ -1,5 +1,5 @@
 /*
- Usage: jscodeshift --extensions=tsx,ts,js --parser=tsx -t ./scripts/codeshift/extractResolver.ts ./packages/server/graphql/intranetSchema/queries
+ Usage: jscodeshift --extensions=tsx,ts,js --parser=tsx -t ./scripts/codeshift/extractResolver.ts ./packages/server/graphql/types/FlagOverLimitPayload.ts
  This codemod extracts the resolve function(s) from GraphQLObjectTypes and query/mutations
  and puts them in a file by themselves, following SDL-driven development
  Shortcomings:
@@ -14,46 +14,52 @@ import fs from 'fs'
 import core, {Collection, Transform} from 'jscodeshift/src/core'
 import path from 'path'
 
-  const createArrowFunctionExpression = (j, fn) => {
-    const arrowFunc = j.arrowFunctionExpression(fn.params, fn.body, false)
+const createArrowFunctionExpression = (j, fn) => {
+  const arrowFunc = j.arrowFunctionExpression(fn.params, fn.body, false)
 
-    arrowFunc.returnType = fn.returnType
-    arrowFunc.defaults = fn.defaults
-    arrowFunc.rest = fn.rest
-    arrowFunc.async = fn.async
+  arrowFunc.returnType = fn.returnType
+  arrowFunc.defaults = fn.defaults
+  arrowFunc.rest = fn.rest
+  arrowFunc.async = fn.async
 
-    return arrowFunc
-  }
+  return arrowFunc
+}
 
-  const createArrowProperty = (j, prop) => {
-    return j.objectProperty(
-      j.identifier(prop.key.name),
-      createArrowFunctionExpression(j, prop),
-      null,
-      false,
-    )
-  }
+const createArrowProperty = (j, prop) => {
+  return j.objectProperty(
+    j.identifier(prop.key.name),
+    createArrowFunctionExpression(j, prop),
+    null,
+    false
+  )
+}
 
-
-
-const generateImportHeaders = (from: string, root: Collection<any>, j: core.JSCodeshift, absPath: string) => {
- let importStrs = ''
-    root.find(j.ImportDeclaration).forEach((imp, idx) => {
-      const absPathDir = path.dirname(absPath)
-      const oldRelative = imp.value.source.value as string
-      if (oldRelative.startsWith('.')) {
-        const oldAbsolute = path.resolve(absPathDir, oldRelative)
-        const relative = path.relative(from, oldAbsolute)
-        imp.value.source.value = relative
-      }
-      const bof = idx === 0 ? '' : '\n'
-      importStrs += bof + j(imp.get()).toSource()
-    })
+const generateImportHeaders = (
+  from: string,
+  root: Collection<any>,
+  j: core.JSCodeshift,
+  absPath: string
+) => {
+  let importStrs = ''
+  root.find(j.ImportDeclaration).forEach((imp, idx) => {
+    const absPathDir = path.dirname(absPath)
+    const oldRelative = imp.value.source.value as string
+    if (oldRelative.startsWith('.')) {
+      const oldAbsolute = path.resolve(absPathDir, oldRelative)
+      const relative = path.relative(from, oldAbsolute)
+      imp.value.source.value = relative
+    }
+    const bof = idx === 0 ? '' : '\n'
+    importStrs += bof + j(imp.get()).toSource()
+  })
   return importStrs
 }
 const transform: Transform = (fileInfo, api, options) => {
   const j = api.jscodeshift
-  const {source, path: absPath} = fileInfo
+  const {source, path: maybeAbsPath} = fileInfo
+  const absPath = maybeAbsPath.startsWith('./')
+    ? path.join(process.cwd(), maybeAbsPath)
+    : maybeAbsPath
   const IS_QUERY = absPath.includes('queries')
   const IS_MUTATION = absPath.includes('mutations')
   const IS_OPERATION = IS_QUERY || IS_MUTATION
@@ -80,7 +86,7 @@ const transform: Transform = (fileInfo, api, options) => {
       })
       const entry = j.objectProperty.from({
         key: j.identifier(key),
-        value,
+        value
       })
       resolverMapProperties.push(entry)
     })
@@ -90,7 +96,7 @@ const transform: Transform = (fileInfo, api, options) => {
     })
     const objStr = j(obj).toSource()
 
-    const from = path.dirname(path.join(absPath, '../../../private/types/foo.ts'))
+    const from = path.dirname(path.join(absPath, '../../public/types/foo.ts'))
     const importStrs = generateImportHeaders(from, root, j, absPath)
     // return
     const typeImport = `import {${resolversName}} from '../resolverTypes'`
@@ -113,15 +119,14 @@ ${exportLine}`
 
     const {ext} = path.parse(absPath)
 
-    const newPath = path.join(absPath, `../../../private/types/${typeName}${ext}`)
-        try {
+    const newPath = path.join(absPath, `../../public/types/${typeName}${ext}`)
+    try {
       fs.statSync(newPath)
-    } catch(e) {
+    } catch (e) {
       // doesn't exist, let's make it
       fs.writeFileSync(newPath, prettyNewDoc)
     }
   } else {
-
     // Convert any methods into arrow functions
     root.find(j.ObjectMethod, {key: {name: 'resolve'}}).replaceWith((method) => {
       return createArrowProperty(j, method.node)
@@ -129,13 +134,13 @@ ${exportLine}`
 
     const resolveProp = root.find(j.ObjectProperty, {key: {name: 'resolve'}})
     const value = resolveProp.get().value.value
-      value.params.forEach((param) => {
-        if ('typeAnnotation' in param) {
-          param.typeAnnotation = null
-        }
-      })
+    value.params.forEach((param) => {
+      if ('typeAnnotation' in param) {
+        param.typeAnnotation = null
+      }
+    })
     const dir = IS_QUERY ? 'queries' : 'mutations'
-    const from = path.dirname(path.join(absPath, `../../../private/${dir}/foo.ts`))
+    const from = path.dirname(path.join(absPath, `../../public/${dir}/foo.ts`))
     const importStrs = generateImportHeaders(from, root, j, absPath)
     const resType = IS_QUERY ? 'QueryResolvers' : 'MutationResolvers'
     const typeImport = `import {${resType}} from '../resolverTypes'`
@@ -154,10 +159,10 @@ ${exportLine}`
 
     const {ext} = path.parse(absPath)
 
-    const newPath = path.join(absPath, `../../../private/${dir}/${typeName}${ext}`)
+    const newPath = path.join(absPath, `../../public/${dir}/${typeName}${ext}`)
     try {
       fs.statSync(newPath)
-    } catch(e) {
+    } catch (e) {
       // doesn't exist, let's make it
       fs.writeFileSync(newPath, prettyNewDoc)
     }
