@@ -85,6 +85,7 @@ const GitLabScopingSearchInput = (props: Props) => {
   }
 
   const clearSearch = () => {
+    trackEvent('Cleared GitLab search')
     setSearch(atmosphere, meetingId, '')
   }
 
