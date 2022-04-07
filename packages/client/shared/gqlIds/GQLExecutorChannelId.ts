@@ -1,4 +1,4 @@
-const GQLExecutorId = {
+const GQLExecutorChannelId = {
   join: (serverId: string) => `gqlExecutor:${serverId}`,
   split: (id: string) => {
     const [, serverId] = id.split(':')
@@ -6,4 +6,4 @@ const GQLExecutorId = {
   }
 }
 
-export default GQLExecutorId
+export default GQLExecutorChannelId
