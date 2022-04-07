@@ -38,7 +38,14 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
-      query GitLabScopingSearchResultsQuery($teamId: ID!, $queryString: String!) {
+      query GitLabScopingSearchResultsQuery(
+        $teamId: ID!
+        $queryString: String!
+        $first: Int!
+        $includeSubepics: Boolean!
+        $sort: String!
+        $state: String!
+      ) {
         ...GitLabScopingSearchResults_query
       }
     `,
@@ -52,14 +59,13 @@ const GitLabScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-        @argumentDefinitions(
-          projectsFirst: {type: "Int", defaultValue: 20}
-          issuesFirst: {type: "Int", defaultValue: 25}
-          projectsAfter: {type: "String"}
-          issuesAfter: {type: "String"}
-          projectIds: {type: "[ID!]", defaultValue: null}
-        )
-        @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
+      @argumentDefinitions(
+        projectsFirst: {type: "Int", defaultValue: 20}
+        projectsAfter: {type: "String"}
+        after: {type: "String"}
+        projectIds: {type: "[ID!]", defaultValue: null}
+      )
+      @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           ...NewGitLabIssueInput_viewer
           teamMember(teamId: $teamId) {
@@ -90,14 +96,13 @@ const GitLabScopingSearchResults = (props: Props) => {
                       edges {
                         node {
                           ... on _xGitLabProject {
-                            fullPath
                             issues(
-                              includeSubepics: true
-                              state: opened
+                              includeSubepics: $includeSubepics
+                              state: $state
                               search: $queryString
-                              sort: UPDATED_DESC
-                              first: $issuesFirst
-                              after: $issuesAfter
+                              sort: $sort
+                              first: $first
+                              after: $after
                             ) {
                               edges {
                                 node {

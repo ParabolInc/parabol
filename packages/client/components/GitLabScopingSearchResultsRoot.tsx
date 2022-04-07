@@ -13,6 +13,13 @@ interface Props {
   meetingRef: GitLabScopingSearchResultsRoot_meeting$key
 }
 
+export const gitlabIssueArgs = {
+  first: 25,
+  includeSubepics: true,
+  sort: 'UPDATED_DESC',
+  state: 'opened'
+}
+
 const GitLabScopingSearchResultsRoot = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -31,7 +38,7 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
   const normalizedQueryString = gitlabSearchQuery.queryString.trim() || ''
   const queryRef = useQueryLoaderNow<GitLabScopingSearchResultsQuery>(
     gitlabScopingSearchResultsQuery,
-    {teamId, queryString: normalizedQueryString}
+    {teamId, queryString: normalizedQueryString, ...gitlabIssueArgs}
   )
   return (
     <Suspense fallback={<MockScopingList />}>
