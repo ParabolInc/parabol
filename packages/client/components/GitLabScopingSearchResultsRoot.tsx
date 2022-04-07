@@ -13,6 +13,13 @@ interface Props {
   meetingRef: GitLabScopingSearchResultsRoot_meeting$key
 }
 
+export const gitlabIssueArgs = {
+  first: 25,
+  includeSubepics: true,
+  sort: 'UPDATED_DESC',
+  state: 'opened'
+} as const
+
 const GitLabScopingSearchResultsRoot = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -39,7 +46,8 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
     {
       teamId,
       queryString: normalizedQueryString,
-      selectedProjectsIds: normalizedSelectedProjectsIds
+      selectedProjectsIds: normalizedSelectedProjectsIds,
+      ...gitlabIssueArgs
     }
   )
   return (

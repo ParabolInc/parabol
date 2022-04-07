@@ -1,17 +1,27 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ScopePhaseAreaParabolScoping_meeting} from '../__generated__/ScopePhaseAreaParabolScoping_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {ScopePhaseAreaParabolScoping_meeting$key} from '../__generated__/ScopePhaseAreaParabolScoping_meeting.graphql'
 import ParabolScopingSearchBar from './ParabolScopingSearchBar'
 import ParabolScopingSearchResultsRoot from './ParabolScopingSearchResultsRoot'
 
 interface Props {
   isActive: boolean
-  meeting: ScopePhaseAreaParabolScoping_meeting
+  meetingRef: ScopePhaseAreaParabolScoping_meeting$key
 }
 
 const ScopePhaseAreaParabolScoping = (props: Props) => {
-  const {isActive, meeting} = props
+  const {isActive, meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ScopePhaseAreaParabolScoping_meeting on PokerMeeting {
+        ...ParabolScopingSearchBar_meeting
+        ...ParabolScopingSearchResultsRoot_meeting
+      }
+    `,
+    meetingRef
+  )
+
   if (!isActive) return null
   return (
     <>
@@ -21,11 +31,4 @@ const ScopePhaseAreaParabolScoping = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ScopePhaseAreaParabolScoping, {
-  meeting: graphql`
-    fragment ScopePhaseAreaParabolScoping_meeting on PokerMeeting {
-      ...ParabolScopingSearchBar_meeting
-      ...ParabolScopingSearchResultsRoot_meeting
-    }
-  `
-})
+export default ScopePhaseAreaParabolScoping
