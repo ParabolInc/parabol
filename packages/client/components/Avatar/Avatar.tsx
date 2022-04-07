@@ -1,13 +1,22 @@
-import React, {forwardRef} from 'react'
-import AvatarBadge from '../AvatarBadge/AvatarBadge'
 import styled from '@emotion/styled'
+import React, {forwardRef} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import AvatarBadge from '../AvatarBadge/AvatarBadge'
 
-type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
+type ImageBlockProps = Pick<
+  Props,
+  'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick' | 'isConnected'
+>
 
 const ImageBlock = styled('div')<ImageBlockProps>(
-  ({sansRadius, sansShadow, picture, size, onClick}) => ({
-    backgroundImage: `url(${picture}), url(${defaultUserAvatar})`,
+  ({isConnected, sansRadius, sansShadow, picture, size, onClick}) => ({
+    backgroundImage: `${
+      isConnected ? '' : 'linear-gradient(rgba(255,255,255,.65), rgba(255,255,255,.65)),'
+    } url(${picture}), url(${defaultUserAvatar})`,
+    ':hover': {
+      backgroundImage: `linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)),
+    url(${picture}), url(${defaultUserAvatar})`
+    },
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
@@ -74,6 +83,7 @@ const Avatar = forwardRef((props: Props, ref: any) => {
       sansShadow={sansShadow}
       picture={picture}
       size={size}
+      isConnected={isConnected}
     >
       {hasBadge && (
         <BadgeBlock>
