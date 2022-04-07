@@ -64,13 +64,13 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
-          name: Start dev server
+          name: Start prod server
           command: |
             cp $DEVOPS_WORKDIR/environments/test .env
-            yarn dev || true
+            yarn build && yarn start || true
           background: true
       - run:
-          name: Wait for dev server to be healthy
+          name: Wait for server to be healthy
           command: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
       - run:
           name: Run server tests
