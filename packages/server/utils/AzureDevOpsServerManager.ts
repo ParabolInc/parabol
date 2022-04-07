@@ -11,7 +11,12 @@ import {
 class AzureDevOpsServerManager extends AzureDevOpsManager {
   fetch = fetch as any
 
-  static async init(code: string, codeVerifier: string) {
+  static async init(code: string, codeVerifier: string | null) {
+    if (!codeVerifier) {
+      return {
+        error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
+      }
+    }
     return AzureDevOpsServerManager.fetchToken({
       grant_type: 'authorization_code',
       code: code,
