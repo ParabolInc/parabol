@@ -1,5 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import React from 'react'
+import {useFragment} from 'react-relay'
+
+import { TeamPromptTopBar_meeting$key } from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import BackButton from '../BackButton'
 import {HeadingBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 
@@ -17,13 +21,30 @@ const TeamPromptHeader = styled('div')({
   justifyContent: 'flex-start'
 })
 
-const TeamPromptTopBar = () => {
+interface Props {
+  meetingRef: TeamPromptTopBar_meeting$key
+}
+
+const TeamPromptTopBar = (props: Props) => {
+  const {meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
+        name
+      }
+    `,
+    meetingRef
+  )
+
+  const { name: meetingName } = meeting
+
   return (
     <MeetingTopBarStyles>
       <HeadingBlock>
         <TeamPromptHeader>
           <BackButton ariaLabel='Back to Meetings' to='/meetings' />
-          <TeamPromptHeaderTitle>Hard-coded standup title</TeamPromptHeaderTitle>
+          <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
         </TeamPromptHeader>
       </HeadingBlock>
       {/* :TODO: (jmtaber129): Add avatars, overflow menu, etc. */}
