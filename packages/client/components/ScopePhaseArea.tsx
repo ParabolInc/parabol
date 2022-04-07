@@ -1,19 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React,{ useState } from 'react'
+import { createFragmentContainer } from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
-import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
+import { Breakpoint } from '~/types/constEnums'
+import { ScopePhaseArea_meeting } from '~/__generated__/ScopePhaseArea_meeting.graphql'
+import { Elevation } from '../styles/elevation'
+import { PALETTE } from '../styles/paletteV3'
+import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import Icon from './Icon'
 import JiraServerSVG from './JiraServerSVG'
 import JiraSVG from './JiraSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
+import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
@@ -68,6 +70,7 @@ const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
+  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   if (!viewerMeetingMember) return null
@@ -75,42 +78,38 @@ const ScopePhaseArea = (props: Props) => {
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
   const jiraServerIntegration = teamMember.integrations.jiraServer
+  const azureDevOpsIntegration = teamMember.integrations.azureDevOps
   const isGitLabProviderAvailable = !!(
     gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
 
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
   const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
+  const allowAzureDevOps =
+    !!azureDevOpsIntegration.sharedProviders.length && featureFlags.azureDevOps
+  console.log('allowAzureDevOps in scopephase' + allowAzureDevOps)
 
   const baseTabs = [
     {icon: <GitHubSVG />, label: 'GitHub', allow: true},
     {icon: <JiraSVG />, label: 'Jira', allow: true},
     {icon: <ParabolLogoSVG />, label: 'Parabol', allow: true},
     {icon: <JiraServerSVG />, label: 'Jira Server', allow: allowJiraServer},
-    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab}
+    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab},
+    {icon: <AzureDevOpsSVG />, label: 'Azure DevOps', allow: allowAzureDevOps}
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
-  const [activeIdx, setActiveIdx] = useState(() => {
-    const favoriteService = window.localStorage.getItem('favoriteService') || 'Jira'
-    const idx = tabs.findIndex((tab) => tab.label === favoriteService)
-    return idx === -1 ? 1 : idx
-  })
+
   const isTabActive = (label: typeof baseTabs[number]['label']) => {
     return activeIdx === tabs.findIndex((tab) => tab.label === label)
   }
 
-  const selectIdx = (idx: number) => {
-    setActiveIdx(idx)
-    const service = tabs[idx]?.label ?? 'Jira'
-    window.localStorage.setItem('favoriteService', service)
-  }
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
-    selectIdx(idx)
+    setActiveIdx(idx)
   }
 
   const goToParabol = () => {
@@ -129,7 +128,7 @@ const ScopePhaseArea = (props: Props) => {
                 {tab.label}
               </TabLabel>
             }
-            onClick={() => selectIdx(idx)}
+            onClick={() => setActiveIdx(idx)}
           />
         ))}
       </StyledTabsBar>
@@ -171,6 +170,13 @@ const ScopePhaseArea = (props: Props) => {
             meetingRef={meeting}
           />
         </TabContents>
+        <TabContents>
+          <ScopePhaseAreaAzureDevOps
+            isActive={isTabActive('Azure DevOps')}
+            gotoParabol={goToParabol}
+            meetingRef={meeting}
+          />
+        </TabContents>
       </SwipeableViews>
     </ScopingArea>
   )
@@ -192,6 +198,7 @@ export default createFragmentContainer(ScopePhaseArea, {
       ...ScopePhaseAreaJira_meeting
       ...ScopePhaseAreaJiraServer_meeting
       ...ScopePhaseAreaParabolScoping_meeting
+      ...ScopePhaseAreaAzureDevOps_meeting
       endedAt
       localPhase {
         ...ScopePhaseArea_phase @relay(mask: false)
@@ -219,11 +226,20 @@ export default createFragmentContainer(ScopePhaseArea, {
                 id
               }
             }
+            azureDevOps {
+              sharedProviders {
+                id
+              }
+              sharedProviders {
+                clientId
+              }
+            }
           }
         }
         user {
           featureFlags {
             gitlab
+            azureDevOps
           }
         }
       }

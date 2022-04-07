@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import { createFragmentContainer } from 'react-relay'
+import { RouteComponentProps,withRouter } from 'react-router-dom'
+import AzureDevOpsSVG from '~/components/AzureDevOpsSVG'
 import AzureDevOpsConfigMenu from '../../../../components/AzureDevOpsConfigMenu'
 import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
 import FlatButton from '../../../../components/FlatButton'
@@ -11,19 +12,19 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {
-  WithAtmosphereProps
+import withAtmosphere,{
+WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {MenuPosition} from '../../../../hooks/useCoords'
+import { MenuPosition } from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Providers} from '../../../../types/constEnums'
+import { MenuMutationProps } from '../../../../hooks/useMutationProps'
+import { PALETTE } from '../../../../styles/paletteV3'
+import { ICON_SIZE } from '../../../../styles/typographyV2'
+import { Breakpoint,Providers } from '../../../../types/constEnums'
 import AzureDevOpsClientManager from '../../../../utils/AzureDevOpsClientManager'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {AzureDevOpsProviderRow_viewer} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
+import withMutationProps,{ WithMutationProps } from '../../../../utils/relay/withMutationProps'
+import { AzureDevOpsProviderRow_viewer } from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -36,7 +37,7 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<any> {
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   teamId: string
   viewer: AzureDevOpsProviderRow_viewer
 }
@@ -81,19 +82,16 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {azureDevOps} = integrations
-  console.log(azureDevOps)
+  const sharedProviders = azureDevOps?.sharedProviders
+  if (!sharedProviders) return null
   const accessToken = azureDevOps?.accessToken ?? undefined
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-
-  const provider = azureDevOps?.sharedProviders[0]
-
-  if (!provider) return null
 
   const openOAuth = async () => {
-    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider.id, mutationProps)
+    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, sharedProviders.id, mutationProps)
   }
 
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ProviderCard>
       <AzureDevOpsProviderLogo />
@@ -111,7 +109,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
       {accessToken && (
         <ListAndMenu>
           <AzureDevOpsLogin title={azureDevOps!.id}>
-            <AzureDevOpsProviderLogo />
+            <AzureDevOpsSVG />
           </AzureDevOpsLogin>
           <MenuButton onClick={togglePortal} ref={originRef}>
             <StyledIcon>more_vert</StyledIcon>
@@ -121,7 +119,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
               menuProps={menuProps}
               mutationProps={mutationProps}
               teamId={teamId}
-              providerId={provider.id}
+              providerId={sharedProviders.id}
             />
           )}
         </ListAndMenu>
