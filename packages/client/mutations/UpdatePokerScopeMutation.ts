@@ -100,12 +100,13 @@ type Meeting = NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope'][
 
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
+  selectedAll?: boolean
 }
 
 const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Handlers> = (
   atmosphere,
   variables,
-  {onError, onCompleted, contents}
+  {onError, onCompleted, contents, selectedAll}
 ) => {
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
@@ -295,7 +296,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         service,
         action,
         queryString,
-        searchQueryFilters
+        searchQueryFilters,
+        selectedAll
       })
     },
     onError,
