@@ -70,7 +70,8 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  const {user, teamMember} = viewerMeetingMember!
+  if (!viewerMeetingMember) return null
+  const {user, teamMember} = viewerMeetingMember
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
   const jiraServerIntegration = teamMember.integrations.jiraServer
