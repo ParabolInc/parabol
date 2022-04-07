@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {Link} from 'react-router-dom'
 import {PALETTE} from '~/styles/paletteV3'
 
 import FlatButton from './FlatButton'
@@ -21,14 +22,16 @@ const BackIcon = styled(Icon)({
 
 interface Props {
   ariaLabel: string
-  onClick: () => void
+  to: string
 }
 
-const BackButton = ({ariaLabel, onClick}: Props) => {
+const BackButton = ({ariaLabel, to}: Props) => {
   return (
-    <IconButton aria-label={ariaLabel} onClick={onClick}>
-      <BackIcon>arrow_back</BackIcon>
-    </IconButton>
+    <Link to={to}>
+      <IconButton aria-label={ariaLabel}>
+        <BackIcon>arrow_back</BackIcon>
+      </IconButton>
+    </Link>
   )
 }
 

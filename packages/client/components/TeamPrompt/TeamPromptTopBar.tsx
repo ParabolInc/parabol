@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import useRouter from '~/hooks/useRouter'
 import BackButton from '../BackButton'
 import {HeadingBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 
@@ -19,16 +18,11 @@ const TeamPromptHeader = styled('div')({
 })
 
 const TeamPromptTopBar = () => {
-  const {history} = useRouter()
-
   return (
     <MeetingTopBarStyles>
       <HeadingBlock>
         <TeamPromptHeader>
-          <BackButton
-            ariaLabel='Back to Meetings'
-            onClick={() => history.push('/meetings')}
-          />
+          <BackButton ariaLabel='Back to Meetings' to='/meetings' />
           <TeamPromptHeaderTitle>Hard-coded standup title</TeamPromptHeaderTitle>
         </TeamPromptHeader>
       </HeadingBlock>
