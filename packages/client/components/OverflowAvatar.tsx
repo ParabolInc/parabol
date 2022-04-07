@@ -16,7 +16,8 @@ const OverflowCount = styled('div')<{
   isAnimated: boolean
   width: number
   borderColor?: string
-}>(({status, isAnimated, width, borderColor = '#fff'}) => ({
+  onClick?: () => void
+}>(({status, isAnimated, width, borderColor = '#fff', onClick}) => ({
   alignItems: 'center',
   backgroundColor: PALETTE.SKY_400,
   border: `2px solid ${borderColor}`,
@@ -40,7 +41,8 @@ const OverflowCount = styled('div')<{
     : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
-  width
+  width,
+  cursor: onClick ? 'pointer' : 'default'
 }))
 
 interface Props {
@@ -55,21 +57,13 @@ interface Props {
 }
 
 const OverflowAvatar = (props: Props) => {
-  const {
-    overflowCount,
-    offset,
-    status,
-    onTransitionEnd,
-    isAnimated,
-    onClick,
-    width,
-    borderColor
-  } = props
+  const {overflowCount, offset, status, onTransitionEnd, isAnimated, onClick, width, borderColor} =
+    props
   const ref = useRef<HTMLDivElement>(null)
   const label = overflowCount >= 99 ? 99 : overflowCount
   useResizeFontForElement<HTMLDivElement>(ref, label, 11, 18, 4)
   return (
-    <Wrapper offset={offset} onClick={onClick}>
+    <Wrapper offset={offset}>
       <OverflowCount
         width={width}
         ref={ref}
@@ -77,6 +71,7 @@ const OverflowAvatar = (props: Props) => {
         onTransitionEnd={onTransitionEnd}
         isAnimated={isAnimated}
         borderColor={borderColor}
+        onClick={onClick}
       >
         {label}
       </OverflowCount>
