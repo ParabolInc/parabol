@@ -1,4 +1,4 @@
-import {mergeSchemas} from '@graphql-tools/schema'
+import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
@@ -66,7 +66,13 @@ const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql
 
 const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
-  typeDefs,
+  typeDefs
+})
+
+// IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
+// See https://github.com/ardatan/graphql-tools/issues/4367
+const withNestedResolversSchema = addResolversToSchema({
+  schema: withNestedSchema,
   resolvers: composeResolvers(resolvers, permissions)
 })
 
@@ -80,7 +86,7 @@ const addRequestors = (schema: GraphQLSchema) => {
   }
 }
 
-const rootSchema = addRequestors(withNestedSchema)
+const rootSchema = addRequestors(withNestedResolversSchema)
 
 export type RootSchema = typeof rootSchema
 export default rootSchema
