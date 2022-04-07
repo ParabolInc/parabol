@@ -1,4 +1,5 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {gitlabIssueArgs} from '~/components/GitLabScopingSearchResultsRoot'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -37,14 +38,7 @@ const handleGitLabCreateIssue = (
 
   const query = queryString?.trim() ?? ''
 
-  const issueArgs = {
-    first: 25,
-    includeSubepics: true,
-    sort: 'UPDATED_DESC',
-    state: 'opened',
-    search: query
-  }
-  project.setLinkedRecord(issueConn, 'issues', issueArgs)
+  project.setLinkedRecord(issueConn, 'issues', {...gitlabIssueArgs, search: query})
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = store.get(teamMemberId)
