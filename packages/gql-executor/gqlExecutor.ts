@@ -1,7 +1,8 @@
 import tracer from 'dd-trace'
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
-import GQLExecutorId from '../client/shared/gqlIds/GQLExecutorId'
+import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
+import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
 import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
 import RedisStream from './RedisStream'
@@ -16,23 +17,25 @@ tracer.init({
 const {REDIS_URL, SERVER_ID} = process.env
 interface PubSubPromiseMessage {
   jobId: string
+  socketServerId: string
   request: GQLRequest
 }
 
 const run = async () => {
   const publisher = new Redis(REDIS_URL, {connectionName: 'gql_pub'})
   const subscriber = new Redis(REDIS_URL, {connectionName: 'gql_sub'})
-  const serverChannel = GQLExecutorId.join(SERVER_ID)
+  const executorChannel = GQLExecutorChannelId.join(SERVER_ID)
 
   // subscribe to direct messages
   const onMessage = async (_channel: string, message: string) => {
-    const {jobId, request} = JSON.parse(message) as PubSubPromiseMessage
+    const {jobId, socketServerId, request} = JSON.parse(message) as PubSubPromiseMessage
     const response = await executeGraphQL(request)
-    publisher.publish(ServerChannel.GQL_EXECUTOR_RESPONSE, JSON.stringify({response, jobId}))
+    const channel = SocketServerChannelId.join(socketServerId)
+    publisher.publish(channel, JSON.stringify({response, jobId}))
   }
 
   subscriber.on('message', onMessage)
-  subscriber.subscribe(serverChannel)
+  subscriber.subscribe(executorChannel)
 
   // subscribe to consumer group
   try {
@@ -50,7 +53,7 @@ const run = async () => {
   const incomingStream = new RedisStream(
     ServerChannel.GQL_EXECUTOR_STREAM,
     ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
-    serverChannel
+    executorChannel
   )
   console.log(`\n💧💧💧 Ready for GraphQL Execution: ${SERVER_ID} 💧💧💧`)
 
