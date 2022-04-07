@@ -75,7 +75,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
             <span>{'End this activity'}</span>
           </OptionMenuItem>
         }
-        onClick={async () => {
+        onClick={() => {
           menuProps.closePortal()
           EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError})
         }}
