@@ -66,11 +66,12 @@ jobs:
       - run:
           name: Build Assets
           command: |
-            cp $DEVOPS_WORKDIR/environments/test .env
+            cp $DEVOPS_WORKDIR/environments/staging .env
             yarn build --deploy
       - run:
           name: Start testing server
           command: |
+            cp $DEVOPS_WORKDIR/environments/test .env
             yarn db:migrate
             yarn pg:migrate up
             yarn postdeploy

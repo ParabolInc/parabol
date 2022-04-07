@@ -1,6 +1,6 @@
 require('../../../scripts/webpack/utils/dotenv')
-import fetch from 'node-fetch'
 import faker from 'faker'
+import fetch from 'node-fetch'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
@@ -35,9 +35,15 @@ export async function sendPublic(req: {
   variables?: Record<string, any>
   authToken?: string
 }) {
-  const authToken = req.authToken ?? ''
+  // Mutations like loginWithPassword will not provide an authToken
+  // We provide one here so we can use the intranet-schema
+  // That way, we can provide a GraphQL queryString
+  // instead of a persisted query's docId.
+  // The alternative is running in dev mode, and there are a lot of things
+  // that happen in prod that don't happen in dev mode
+  const authToken = req.authToken ?? encodeAuthToken(new ServerAuthToken())
 
-  const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
+  const response = await fetch(`${PROTOCOL}://${HOST}/intranet-graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',
@@ -45,11 +51,8 @@ export async function sendPublic(req: {
       'x-application-authorization': `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      type: 'start',
-      payload: {
-        query: req.query,
-        variables: req.variables
-      }
+      query: req.query,
+      variables: req.variables
     })
   })
   const body = await response.json()
