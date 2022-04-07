@@ -1,6 +1,6 @@
 import Redis from 'ioredis'
 import ms from 'ms'
-import GQLExecutorId from '../../client/shared/gqlIds/GQLExecutorId'
+import GQLExecutorChannelId from '../../client/shared/gqlIds/GQLExecutorChannelId'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
@@ -64,7 +64,7 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
       const {executorServerId, ...rest} = request
       const message = JSON.stringify({jobId, socketServerId: SERVER_ID, request: rest})
       if (executorServerId) {
-        const executorChannel = GQLExecutorId.join(executorServerId)
+        const executorChannel = GQLExecutorChannelId.join(executorServerId)
         this.publisher.publish(executorChannel, message)
       } else {
         // cap the stream to slightly more than 1000 entries.

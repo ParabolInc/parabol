@@ -1,4 +1,4 @@
-const SocketServerId = {
+const SocketServerChannelId = {
   join: (serverId: string) => `socketServer:${serverId}`,
   split: (id: string) => {
     const [, serverId] = id.split(':')
@@ -6,4 +6,4 @@ const SocketServerId = {
   }
 }
 
-export default SocketServerId
+export default SocketServerChannelId
