@@ -73,7 +73,7 @@ const OverflowAvatar = (props: Props) => {
         borderColor={borderColor}
         onClick={onClick}
       >
-        {label}
+        +{label}
       </OverflowCount>
     </Wrapper>
   )
