@@ -1,8 +1,11 @@
 # Service architecture
+
 Overview how the different services interact with each other.
 
 ## Flow
+
 Data flow for a GraphQL request which also publishes subscription data.
+
 ```mermaid
 flowchart TD
   Client
@@ -10,9 +13,9 @@ flowchart TD
   RedisStream(Redis Stream)
   RedisResultPubSub(Redis PubSub\ngqlExRes)
   RedisSubscriptionPubSub(Redis PubSub\nTeam.teamId)
-  subgraph "per executor {serverChannel}"
+  subgraph "per executor {executorChannel}"
     GQLExecutor[GraphQL Executor]
-    RedisServerPubSub(Redis PubSub\nserverChannel)
+    RedisServerPubSub(Redis PubSub\nexecutorChannel)
     RedisServerPubSub --> GQLExecutor
   end
 
@@ -23,14 +26,16 @@ flowchart TD
   Client <---->|Websocket| Server
   Server -->|gqlStream| RedisStream -->|gqlConsumerGroup| GQLExecutor
   GQLExecutor --> RedisResultPubSub
-  GQLExecutor --> |"{serverChannel}"| RedisSubscriptionPubSub
-  RedisSubscriptionPubSub --> |"{serverChannel}"|Server
+  GQLExecutor --> |"{executorChannel}"| RedisSubscriptionPubSub
+  RedisSubscriptionPubSub --> |"{executorChannel}"|Server
   Server --> RedisServerPubSub
   RedisResultPubSub --> Server
 ```
 
 ## Sequence
+
 Example sequence of a mutation `updateTeamName`.
+
 ```mermaid
 sequenceDiagram
   participant Client
@@ -49,8 +54,8 @@ sequenceDiagram
   and Publish subscription
     GQLExecutor ->>- Redis: Team.teamId
     Redis ->>+ Server: Team.teamId
-    Server ->> Redis: serverChannel
-    Redis ->>+ GQLExecutor: serverChannel
+    Server ->> Redis: executorChannel
+    Redis ->>+ GQLExecutor: executorChannel
     note over GQLExecutor: resolve subscription
     GQLExecutor ->>- Redis: gqlExRes
     Redis ->> Server: gqlExRes
