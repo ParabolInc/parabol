@@ -35,16 +35,10 @@ module.exports = {
         publicPath: '/static/'
       },
       {
-        directory: path.join(PROJECT_ROOT, 'dev'),
-        publicPath: '/static/'
-      },
-      {
+        // ignore proxied servers in /dev
+        // They can restart independently
         directory: path.join(PROJECT_ROOT, 'dev', 'dll'),
         publicPath: '/static/'
-      },
-      {
-        directory: path.join(PROJECT_ROOT, 'self-hosted'),
-        publicPath: '/self-hosted/'
       }
     ],
     devMiddleware: {
