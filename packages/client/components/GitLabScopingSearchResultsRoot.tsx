@@ -18,7 +18,7 @@ export const gitlabIssueArgs = {
   includeSubepics: true,
   sort: 'UPDATED_DESC',
   state: 'opened'
-}
+} as const
 
 const GitLabScopingSearchResultsRoot = (props: Props) => {
   const {meetingRef} = props
