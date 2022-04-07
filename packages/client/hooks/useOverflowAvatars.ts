@@ -25,7 +25,7 @@ const useOverflowAvatars = <T extends {id: string}>(
     if (!el) return
     const {clientWidth: totalWidth} = el
     const lappedAvatarWidth = avatarWidth - avatarOverlap
-    const maxAvatars = Math.floor((totalWidth - avatarWidth) / lappedAvatarWidth)
+    const maxAvatars = Math.floor((totalWidth - avatarWidth) / lappedAvatarWidth) + 1
     setMaxAvatars(maxAvatars)
   }
   useLayoutEffect(checkOverflow, [])
