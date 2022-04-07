@@ -61,7 +61,7 @@ const AvatarListUser = (props: Props) => {
     onClick,
     borderColor
   } = props
-  const {picture, preferredName} = user
+  const {picture, preferredName, isConnected} = user
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -70,7 +70,6 @@ const AvatarListUser = (props: Props) => {
       ref={originRef}
       offset={offset}
       isColumn={isColumn}
-      onClick={onClick}
       onMouseOver={openTooltip}
       onMouseLeave={closeTooltip}
     >
@@ -83,6 +82,8 @@ const AvatarListUser = (props: Props) => {
         isAnimated={isAnimated}
         borderColor={borderColor}
         width={width}
+        isConnected={!!isConnected}
+        onClick={onClick}
       />
       {tooltipPortal(preferredName)}
     </Wrapper>
@@ -94,6 +95,7 @@ export default createFragmentContainer(AvatarListUser, {
     fragment AvatarListUser_user on User {
       picture
       preferredName
+      isConnected
     }
   `
 })
