@@ -23,10 +23,13 @@ const AvatarsWrapper = styled('div')<{totalAvatars: number}>(({totalAvatars}) =>
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
+  // set minWidth to force container has some size
   minWidth: `${
     Math.min(totalAvatars - 1, 2) * ElementWidth.DASHBOARD_AVATAR_OVERLAPPED +
     ElementWidth.DASHBOARD_AVATAR
-  }px`
+  }px`,
+  // set minHeight to prevent vertical jump when switching between teams
+  minHeight: ElementWidth.DASHBOARD_AVATAR + sizeToHeightBump[ElementWidth.DASHBOARD_AVATAR]
 }))
 
 const StyledButton = styled(PlainButton)({
