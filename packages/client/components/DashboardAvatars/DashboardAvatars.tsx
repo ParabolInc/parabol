@@ -62,8 +62,7 @@ const DashboardAvatars = (props: Props) => {
     const offlineAvatars = [] as Avatar[]
     teamMembers.forEach((avatar) => {
       const {user} = avatar
-      const {isConnected} = user
-      const {id: userId} = user
+      const {id: userId, isConnected} = user
       if (userId === viewerId) {
         connectedAvatars.unshift(user)
       } else if (isConnected) {
