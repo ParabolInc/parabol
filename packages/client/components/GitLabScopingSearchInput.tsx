@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
@@ -65,6 +65,7 @@ const GitLabScopingSearchInput = (props: Props) => {
   const {queryString} = gitlabSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const inputRef = useRef<HTMLInputElement>(null)
   const {viewerId} = atmosphere
 
   const trackEvent = (eventTitle: string) => {
@@ -76,17 +77,16 @@ const GitLabScopingSearchInput = (props: Props) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
+    if (!queryString) {
+      trackEvent('Start GitLab search')
+    }
     setSearch(atmosphere, meetingId, value)
-    trackEvent('Start GitLab search')
-  }
-
-  const onBlur = () => {
-    trackEvent('End of GitLab search')
   }
 
   const clearSearch = () => {
     trackEvent('Cleared GitLab search')
     setSearch(atmosphere, meetingId, '')
+    inputRef.current?.focus()
   }
 
   return (
@@ -95,8 +95,8 @@ const GitLabScopingSearchInput = (props: Props) => {
         autoFocus
         value={queryString}
         onChange={onChange}
-        onBlur={onBlur}
-        placeholder={'Search GitLab issues...'}
+        placeholder='Search GitLab issues...'
+        ref={inputRef}
       />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
