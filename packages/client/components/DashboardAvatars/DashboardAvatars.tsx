@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {ElementWidth} from '~/types/constEnums'
-import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
@@ -62,15 +61,15 @@ const DashboardAvatars = (props: Props) => {
     const connectedAvatars = [] as Avatar[]
     const offlineAvatars = [] as Avatar[]
     teamMembers.forEach((avatar) => {
-      const {id: teamMemberId, user} = avatar
+      const {user} = avatar
       const {isConnected} = user
-      const {userId} = fromTeamMemberId(teamMemberId)
+      const {id: userId} = user
       if (userId === viewerId) {
-        connectedAvatars.unshift(avatar.user)
+        connectedAvatars.unshift(user)
       } else if (isConnected) {
-        connectedAvatars.push(avatar.user)
+        connectedAvatars.push(user)
       } else {
-        offlineAvatars.push(avatar.user)
+        offlineAvatars.push(user)
       }
     })
     const sortedAvatars = connectedAvatars.concat(offlineAvatars)
