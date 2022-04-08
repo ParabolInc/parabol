@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -10,7 +10,7 @@ import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {AzureDevOpsScopingSelectAllIssues_issues$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_issues.graphql'
+import {AzureDevOpsScopingSelectAllIssues_userStories} from '../__generated__/AzureDevOpsScopingSelectAllIssues_userStories.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -35,32 +35,21 @@ const ErrorMessage = styled('div')({
 })
 interface Props {
   meetingId: string
-  issuesRef: AzureDevOpsScopingSelectAllIssues_issues$key
+  userStories: AzureDevOpsScopingSelectAllIssues_userStories
   usedServiceTaskIds: Set<string>
   providerId: string
 }
 
 const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issuesRef, providerId} = props
-  const issues = useFragment(
-    graphql`
-      fragment AzureDevOpsScopingSelectAllIssues_issues on AzureDevOpsWorkItemEdge
-      @relay(plural: true) {
-        id
-        url
-        state
-        type
-      }
-    `,
-    issuesRef
-  )
+  const {meetingId, usedServiceTaskIds, userStories, providerId} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => AzureDevOpsIssueId.join(providerId, issue.id))
+  const serviceTaskIds = userStories.map((userStory) =>
+    AzureDevOpsIssueId.join(providerId, userStory.id)
+  )
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
-    if (submitting) return
     submitMutation()
     const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
@@ -79,25 +68,36 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const issue = issues.find(
-        (issue) => AzureDevOpsIssueId.join(providerId, issue.id) === update.serviceTaskId
+      const userStory = userStories.find(
+        (userStoryEdge) => userStoryEdge.node.id === update.serviceTaskId
       )
-      return issue?.type ?? 'Unknown Story'
+      return userStory?.node.summary ?? 'Unknown Story'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
-  if (issues.length < 2) return null
-  const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
+  if (userStories.length < 2) return null
+  const title = getSelectAllTitle(userStories.length, usedServiceTaskIds.size, 'userStory')
 
   return (
-    <Item onClick={onClick}>
-      <Checkbox active={allSelected} />
-      <TitleAndError>
-        <Title>{title}</Title>
-        {error && <ErrorMessage>{error.message}</ErrorMessage>}
-      </TitleAndError>
-    </Item>
+    <>
+      <Item onClick={onClick}>
+        <Checkbox active={allSelected} />
+        <TitleAndError>
+          <Title>{title}</Title>
+          {error && <ErrorMessage>{error.message}</ErrorMessage>}
+        </TitleAndError>
+      </Item>
+    </>
   )
 }
 
-export default AzureDevOpsScopingSelectAllIssues
+export default createFragmentContainer(AzureDevOpsScopingSelectAllIssues, {
+  userStories: graphql`
+    fragment AzureDevOpsScopingSelectAllIssues_userStories on AzureDevOpsWorkItemEdge
+    @relay(plural: true) {
+      node {
+        id
+      }
+    }
+  `
+})

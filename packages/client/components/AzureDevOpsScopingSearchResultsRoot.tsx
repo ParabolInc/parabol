@@ -20,24 +20,22 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
       fragment AzureDevOpsScopingSearchResultsRoot_meeting on PokerMeeting {
         ...AzureDevOpsScopingSearchResults_meeting
         teamId
-        # azureDevOpsSearchQuery {
-        #   queryString
-        # }
       }
     `,
     meetingRef
   )
-  // const {teamId, azureDevOpsSearchQuery} = meeting
+
   const {teamId} = meeting
-  // const {queryString} = azureDevOpsSearchQuery
-  // const normalizedQueryString = queryString.trim()
   const queryRef = useQueryLoaderNow<AzureDevOpsScopingSearchResultsQuery>(
     azureDevOpsScopingSearchResultsQuery,
-    {teamId}
+    {
+      teamId,
+      first: 25
+    }
   )
   return (
     <Suspense fallback={<MockScopingList />}>
-      {queryRef && <AzureDevOpsScopingSearchResults queryRef={queryRef} meetingRef={meeting} />}
+      {queryRef && <AzureDevOpsScopingSearchResults meetingRef={meeting} queryRef={queryRef} />}
     </Suspense>
   )
 }

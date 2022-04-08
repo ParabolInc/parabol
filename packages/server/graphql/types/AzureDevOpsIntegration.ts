@@ -12,7 +12,7 @@ import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import {AzureDevOpsIssueConnection} from './AzureDevOpsWorkItem'
+import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
@@ -109,7 +109,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       description: 'The user that the access token is attached to'
     },
     userStories: {
-      type: new GraphQLNonNull(AzureDevOpsIssueConnection),
+      type: new GraphQLNonNull(AzureDevOpsWorkItemConnection),
       description:
         'A list of work items coming straight from the azure dev ops integration for a specific team member',
       args: {

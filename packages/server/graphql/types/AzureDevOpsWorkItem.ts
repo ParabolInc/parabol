@@ -49,6 +49,6 @@ const {connectionType, edgeType} = connectionDefinitions({
   })
 })
 
-export const AzureDevOpsIssueConnection = connectionType
-export const AzureDevOpsIssueEdge = edgeType
+export const AzureDevOpsWorkItemConnection = connectionType
+export const AzureDevOpsWorkItemEdge = edgeType
 export default AzureDevOpsWorkItem
