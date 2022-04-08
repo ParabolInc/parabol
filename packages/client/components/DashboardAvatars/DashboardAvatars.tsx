@@ -48,7 +48,7 @@ interface Props {
   team: DashboardAvatars_team
 }
 
-type Avatar = DashboardAvatars_team['teamMembers'][0]
+type Avatar = DashboardAvatars_team['teamMembers'][0]['user']
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
@@ -63,11 +63,11 @@ const DashboardAvatars = (props: Props) => {
       const {isConnected} = user
       const {userId} = fromTeamMemberId(teamMemberId)
       if (userId === viewerId) {
-        connectedAvatars.unshift(avatar)
+        connectedAvatars.unshift(avatar.user)
       } else if (isConnected) {
-        connectedAvatars.push(avatar)
+        connectedAvatars.push(avatar.user)
       } else {
-        offlineAvatars.push(avatar)
+        offlineAvatars.push(avatar.user)
       }
     })
     const sortedAvatars = connectedAvatars.concat(offlineAvatars)
@@ -94,13 +94,12 @@ const DashboardAvatars = (props: Props) => {
       teamMember.setValue(teamMemberId, 'manageTeamMemberId')
     })
   }
-  const users = sortedAvatars.map((x) => x.user)
 
   return (
     <Wrapper>
-      <AvatarsWrapper totalAvatars={users.length}>
+      <AvatarsWrapper totalAvatars={sortedAvatars.length}>
         <AvatarList
-          users={users}
+          users={sortedAvatars}
           size={ElementWidth.DASHBOARD_AVATAR}
           borderColor={PALETTE.SLATE_200}
           onOverflowClick={() => handleClick()}
