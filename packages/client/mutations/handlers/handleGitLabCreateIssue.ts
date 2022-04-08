@@ -5,7 +5,6 @@ import createProxyRecord from '~/utils/relay/createProxyRecord'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
 import getGitLabProjectsConn from '../connections/getGitLabProjectsConn'
-import {GitLabSearchQuery} from './../../../server/graphql/public/resolverTypes'
 import {parseWebPath} from './../../utils/parseWebPath'
 
 const handleGitLabCreateIssue = (
@@ -30,7 +29,7 @@ const handleGitLabCreateIssue = (
   issueConn.setLinkedRecords([issueEdge], 'edges')
 
   const gitlabSearchQueryId = SearchQueryId.join('gitlab', meetingId)
-  const gitlabSearchQuery = store.get<GitLabSearchQuery>(gitlabSearchQueryId)
+  const gitlabSearchQuery = store.get(gitlabSearchQueryId)
   const queryString = gitlabSearchQuery?.getValue('queryString') as string | undefined
   const selectedProjectsIds = (gitlabSearchQuery?.getValue('selectedProjectsIds') || null) as
     | string[]
