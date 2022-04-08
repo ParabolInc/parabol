@@ -8,24 +8,11 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdatePromptResponsePayload from '../types/UpdatePromptResponsePayload'
-
-const extractTextFromTipTapJSONContent = (input: JSONContent) => {
-  if (input.text) {
-    return input.text
-  } else if (input.content) {
-    const content = input.content
-    const newLine = input.type === 'paragraph' ? '\n' : ''
-    return (
-      content.map((subContent) => extractTextFromTipTapJSONContent(subContent)).join('') + newLine
-    )
-  } else {
-    return input.type === 'paragraph' ? '\n' : ''
-  }
-}
+import extractTextFromTipTapJSONContent from './helpers/tiptap/extractTextFromTipTapJSONContent'
 
 const updatePromptResponse = {
   type: GraphQLNonNull(UpdatePromptResponsePayload),
-  description: ``,
+  description: `Update the content of a prompt response`,
   args: {
     promptResponseId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -37,7 +24,7 @@ const updatePromptResponse = {
   },
   resolve: async (
     _source: unknown,
-    {promptResponseId, content},
+    {promptResponseId, content}: {promptResponseId: number; content: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

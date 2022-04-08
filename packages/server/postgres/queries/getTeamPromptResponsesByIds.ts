@@ -6,7 +6,7 @@ export interface TeamPromptResponse extends  Omit<IGetTeamPromptResponsesByIdsQu
   content: JSONContent
 }
 
-export const mapToTeamPromptResponse = (results: IGetTeamPromptResponsesByIdsQueryResult[]): TeamPromptResponse[] => {
+const mapToTeamPromptResponse = (results: IGetTeamPromptResponsesByIdsQueryResult[]): TeamPromptResponse[] => {
   return results.map((teamPromptResponse: any) => {
     return {
       ...teamPromptResponse,
@@ -15,8 +15,8 @@ export const mapToTeamPromptResponse = (results: IGetTeamPromptResponsesByIdsQue
   })
 }
 
-export const getTeamPromptResponsesByIds = async (promptResponseIds: readonly number[]): Promise<TeamPromptResponse[]> => {
-  const teamPromptResponses = await getTeamPromptResponsesByIdsQuery.run({ids: promptResponseIds}, getPg())
+export const getTeamPromptResponsesByIds = async (teamPromptResponseIds: readonly number[]): Promise<TeamPromptResponse[]> => {
+  const teamPromptResponses = await getTeamPromptResponsesByIdsQuery.run({ids: teamPromptResponseIds}, getPg())
   return mapToTeamPromptResponse(teamPromptResponses)
 }
 

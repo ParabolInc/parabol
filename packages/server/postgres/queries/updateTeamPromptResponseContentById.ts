@@ -4,8 +4,8 @@ import {
   updateTeamPromptResponseContentByIdQuery
 } from './generated/updateTeamPromptResponseContentByIdQuery'
 
-export const updateTeamPromptResponseContentById = async (
+export const updateTeamPromptResponseContentById = (
   params: IUpdateTeamPromptResponseContentByIdQueryParams
 ) => {
-  await updateTeamPromptResponseContentByIdQuery.run(params, getPg())
+  return updateTeamPromptResponseContentByIdQuery.run(params, getPg())
 }

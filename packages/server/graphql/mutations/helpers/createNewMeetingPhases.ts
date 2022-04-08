@@ -26,6 +26,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import {upsertTeamPromptResponses} from '../../../postgres/queries/upsertTeamPromptResponses'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -148,7 +149,7 @@ const createNewMeetingPhases = async (
           }))
           const teamMemberPromptResponses = teamPromptStages.map((stage, index) => ({
             meetingId,
-            userId: stage.teamMemberId.split('::')[0],
+            userId: TeamMemberId.split(stage.teamMemberId).userId,
             sortOrder: index,
             content: {},
             plaintextContent: ''

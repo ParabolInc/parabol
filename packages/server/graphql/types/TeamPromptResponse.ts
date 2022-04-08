@@ -1,6 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
-import {JSONContent} from '@tiptap/react'
+import {JSONContent} from '@tiptap/core'
 import Reactable, {reactableFields} from './Reactable'
 import Team from './Team'
 

@@ -1,23 +1,25 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import {makeResolve, resolveNewMeeting} from '../resolvers'
 import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
-import StandardMutationError from './StandardMutationError'
 import TeamPromptResponse from './TeamPromptResponse'
 
 export const UpdatePromptResponseSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatePromptResponseSuccess',
   fields: () => ({
-    error: {
-      type: StandardMutationError
+    promptResponseId: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
     },
     meeting: {
-      type: NewMeeting,
+      type: new GraphQLNonNull(NewMeeting),
       resolve: resolveNewMeeting
     },
     promptResponse: {
-      type: TeamPromptResponse,
+      type: new GraphQLNonNull(TeamPromptResponse),
       resolve: makeResolve('promptResponseId', 'promptResponse', 'teamPromptResponses')
     }
   })
