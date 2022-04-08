@@ -15,15 +15,19 @@ import PlainButton from '../PlainButton/PlainButton'
 const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  position: 'relative'
+  position: 'relative',
+  alignItems: 'center'
 })
 
-const AvatarsWrapper = styled('div')({
+const AvatarsWrapper = styled('div')<{totalAvatars: number}>(({totalAvatars}) => ({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
-  minWidth: `${ElementWidth.DASHBOARD_AVATAR_OVERLAPPED * 2 + ElementWidth.DASHBOARD_AVATAR}px`
-})
+  minWidth: `${
+    Math.min(totalAvatars - 1, 2) * ElementWidth.DASHBOARD_AVATAR_OVERLAPPED +
+    ElementWidth.DASHBOARD_AVATAR
+  }px`
+}))
 
 const StyledButton = styled(PlainButton)({
   fontSize: 12,
@@ -94,7 +98,7 @@ const DashboardAvatars = (props: Props) => {
 
   return (
     <Wrapper>
-      <AvatarsWrapper>
+      <AvatarsWrapper totalAvatars={users.length}>
         <AvatarList
           users={users}
           size={ElementWidth.DASHBOARD_AVATAR}
