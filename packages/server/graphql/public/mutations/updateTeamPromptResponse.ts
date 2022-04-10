@@ -2,7 +2,7 @@ import {JSONContent} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getTeamPromptResponseById} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {updateTeamPromptResponseContentById} from '../../../postgres/queries/updateTeamPromptResponseContentById'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import extractTextFromTipTapJSONContent from '../../mutations/helpers/tiptap/extractTextFromTipTapJSONContent'
@@ -28,6 +28,12 @@ const updateTeamPromptResponse: MutationResolvers['updateTeamPromptResponse'] = 
     return standardError(new Error("Can't edit other's response"), {userId: viewerId})
   }
   const {meetingId} = promptResponse
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const {endedAt, teamId} = meeting
+  if (!isTeamMember(authToken, teamId)) {
+    return standardError(new Error('Team not found'), {userId: viewerId})
+  }
+  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
   // VALIDATION
   const contentJSON: JSONContent = JSON.parse(content)
