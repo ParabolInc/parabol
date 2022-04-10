@@ -1,7 +1,9 @@
 require('../../../scripts/webpack/utils/dotenv')
 import faker from 'faker'
 import fetch from 'node-fetch'
+import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+import persistFunction from '../graphql/persistFunction'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
 const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
@@ -30,20 +32,28 @@ export async function sendIntranet(req: {
   return response.json()
 }
 
+const persistQuery = async (query: string) => {
+  const r = await getRethink()
+  const docId = persistFunction(query.trim())
+  const record = {
+    id: docId,
+    query,
+    createdAt: new Date()
+  }
+  await r.table('QueryMap').insert(record, {conflict: 'replace'}).run()
+  return docId
+}
+
 export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
   authToken?: string
 }) {
-  // Mutations like loginWithPassword will not provide an authToken
-  // We provide one here so we can use the intranet-schema
-  // That way, we can provide a GraphQL queryString
-  // instead of a persisted query's docId.
-  // The alternative is running in dev mode, and there are a lot of things
-  // that happen in prod that don't happen in dev mode
-  const authToken = req.authToken ?? encodeAuthToken(new ServerAuthToken())
-
-  const response = await fetch(`${PROTOCOL}://${HOST}/intranet-graphql`, {
+  const authToken = req.authToken ?? ''
+  const {query, variables} = req
+  // the production build doesn't allow ad-hoc queries, so persist it
+  const docId = await persistQuery(query)
+  const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',
@@ -51,12 +61,15 @@ export async function sendPublic(req: {
       'x-application-authorization': `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      query: req.query,
-      variables: req.variables
+      type: 'start',
+      payload: {
+        docId,
+        variables
+      }
     })
   })
   const body = await response.json()
-  return body
+  return body.payload
 }
 
 const SIGNUP_WITH_PASSWORD_MUTATION = `
