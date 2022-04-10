@@ -68,7 +68,6 @@ const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   if (!viewerMeetingMember) return null
@@ -92,16 +91,26 @@ const ScopePhaseArea = (props: Props) => {
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
-
+  const [activeIdx, setActiveIdx] = useState(() => {
+    const favoriteService = window.localStorage.getItem('favoriteService') || 'Jira'
+    const idx = tabs.findIndex((tab) => tab.label === favoriteService)
+    return idx === -1 ? 1 : idx
+  })
   const isTabActive = (label: typeof baseTabs[number]['label']) => {
     return activeIdx === tabs.findIndex((tab) => tab.label === label)
+  }
+
+  const selectIdx = (idx: number) => {
+    setActiveIdx(idx)
+    const service = tabs[idx]?.label ?? 'Jira'
+    window.localStorage.setItem('favoriteService', service)
   }
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
-    setActiveIdx(idx)
+    selectIdx(idx)
   }
 
   const goToParabol = () => {
@@ -120,7 +129,7 @@ const ScopePhaseArea = (props: Props) => {
                 {tab.label}
               </TabLabel>
             }
-            onClick={() => setActiveIdx(idx)}
+            onClick={() => selectIdx(idx)}
           />
         ))}
       </StyledTabsBar>

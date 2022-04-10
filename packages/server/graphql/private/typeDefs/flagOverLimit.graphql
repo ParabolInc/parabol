@@ -1,0 +1,25 @@
+extend type Mutation {
+  """
+  add/remove a flag on a user saying they are over the free tier
+  """
+  flagOverLimit(
+    """
+    The text body of the over limit message, null to remove the previous value
+    """
+    copy: String = ""
+
+    """
+    the user orgId that went over the limit
+    """
+    orgId: ID!
+  ): FlagOverLimitPayload
+}
+
+type FlagOverLimitPayload {
+  error: StandardMutationError
+
+  """
+  the users with the limit added or removed
+  """
+  users: [User!]
+}

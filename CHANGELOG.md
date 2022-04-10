@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.53.0 2022-April-06
+
+### Fixed
+
+- fix(lint): faster, deterministic linting (#6313)
+
+### Added
+
+- feat(standups): Added end team prompt mutation (#6250)
+- feat(sdl): Add SDL to public schema (#6263)
+- feat(standups): Integrate TipTap (#6255)
+- feat(jira-server): add issue to poker scope (#6214)
+- feat(impersonate): keep impersonate token until last tab closes (#6300)
+- feat(integrations): save favorite integration to local storage (#6331)
+
+### Changed
+
+- gitignore github/gitlabTypes
+- refactor(lint): Lint server (#6329)
+
 ## 6.52.0 2022-March-31
 
 ### Fixed
