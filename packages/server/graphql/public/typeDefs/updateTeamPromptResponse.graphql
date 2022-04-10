@@ -1,0 +1,39 @@
+extend type Mutation {
+  """
+  update the content of a team prompt response
+  """
+  updateTeamPromptResponse(
+    """
+    The input object containing the team prompt response id and modified content
+    """
+    updatedTeamPromptResponse: UpdatedTeamPromptResponseInput!
+  ): UpdateTeamPromptResponsePayload!
+}
+
+input UpdatedTeamPromptResponseInput {
+  """
+  The id of the team prompt response to update
+  """
+  teamPromptResponseId: Int!
+
+  """
+  The new stringnified content of the team prompt response
+  """
+  content: String!
+}
+
+type UpdateTeamPromptResponsePayload {
+  error: StandardMutationError
+
+  teamPromptResponseId: Int!
+  meetingId: ID!
+
+  """
+  the updated team prompt response
+  """
+  teamPromptResponse: TeamPromptResponse
+  """
+  the updated meeting
+  """
+  meeting: NewMeeting
+}

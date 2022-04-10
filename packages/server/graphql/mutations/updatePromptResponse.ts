@@ -52,7 +52,7 @@ const updatePromptResponse = {
       plaintextContent,
       id: promptResponseId
     })
-    promptResponse.content = content
+    promptResponse.content = contentJSON
     promptResponse.plaintextContent = plaintextContent
 
     const data = {meetingId, promptResponseId}
