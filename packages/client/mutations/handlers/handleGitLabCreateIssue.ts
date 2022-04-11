@@ -31,10 +31,6 @@ const handleGitLabCreateIssue = (
   const gitlabSearchQueryId = SearchQueryId.join('gitlab', meetingId)
   const gitlabSearchQuery = store.get(gitlabSearchQueryId)
   const queryString = gitlabSearchQuery?.getValue('queryString') as string | undefined
-  const selectedProjectsIds = (gitlabSearchQuery?.getValue('selectedProjectsIds') || null) as
-    | string[]
-    | null
-
   const query = queryString?.trim() ?? ''
 
   project.setLinkedRecord(issueConn, 'issues', {...gitlabIssueArgs, search: query})
@@ -48,7 +44,11 @@ const handleGitLabCreateIssue = (
     ?.getLinkedRecord('query')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue') return
-  const gitlabProjectsConn = getGitLabProjectsConn(gitlab, selectedProjectsIds)
+  const selectedProjectsIds = gitlabSearchQuery?.getValue('selectedProjectsIds') as
+    | string[]
+    | undefined
+  const formattedProjectsIds = selectedProjectsIds?.length ? selectedProjectsIds : null
+  const gitlabProjectsConn = getGitLabProjectsConn(gitlab, formattedProjectsIds)
   if (!gitlabProjectsConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(
