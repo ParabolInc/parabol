@@ -134,7 +134,6 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        console.log(`about to call freshAzureDevOpsAuth`)
         const auth = (await dataLoader
           .get('freshAzureDevOpsAuth')
           .load({teamId, userId})) as IGetTeamMemberIntegrationAuthQueryResult | null

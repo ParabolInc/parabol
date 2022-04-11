@@ -62,21 +62,13 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
     meetingRef
   )
   const {teamId, viewerMeetingMember} = meeting
-  console.log(`teamId: ${teamId}`)
-  console.log(`viewerMeetingMember - ${JSON.stringify(viewerMeetingMember)}`)
   const provider = viewerMeetingMember?.teamMember.integrations.azureDevOps.sharedProviders[0]
-  console.log(
-    `sharedProviders - ${viewerMeetingMember?.teamMember.integrations.azureDevOps.sharedProviders}`
-  )
   if (!provider) {
     return null
-  } else {
-    console.log(`provider - ${JSON.stringify(provider)}`)
   }
   const authAzureDevOps = () => {
     AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider.id, mutationProps)
   }
-  console.log(`about to return AddAzureDevOpsArea`)
   return (
     <AddAzureDevOpsArea>
       <AddAzureDevOpsButton onClick={authAzureDevOps} size={'medium'}>

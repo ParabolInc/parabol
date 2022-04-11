@@ -87,7 +87,6 @@ const ScopePhaseArea = (props: Props) => {
   const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
   const allowAzureDevOps =
     !!azureDevOpsIntegration.sharedProviders.length && featureFlags.azureDevOps
-  console.log('allowAzureDevOps in scopephase ' + allowAzureDevOps)
 
   const baseTabs = [
     {icon: <GitHubSVG />, label: 'GitHub', allow: true},
@@ -101,9 +100,7 @@ const ScopePhaseArea = (props: Props) => {
   const tabs = baseTabs.filter(({allow}) => allow)
 
   const isTabActive = (label: typeof baseTabs[number]['label']) => {
-    console.log(`Inside isTabActive with - label: ${label}`)
     const isActive = activeIdx === tabs.findIndex((tab) => tab.label === label)
-    console.log(`isActive - ${isActive}`)
     return isActive
   }
 
