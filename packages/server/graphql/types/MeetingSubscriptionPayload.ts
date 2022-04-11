@@ -3,6 +3,7 @@ import {AddCommentSuccess} from './AddCommentPayload'
 import {AddReactjiToReactableSuccess} from './AddReactjiToReactablePayload'
 import {AddReactjiToReflectionSuccess} from './AddReactjiToReflectionPayload'
 import AutoGroupReflectionsPayload from './AutoGroupReflectionsPayload'
+import {CreatePollSuccess} from './CreatePollPayload'
 import CreateReflectionPayload from './CreateReflectionPayload'
 import {DeleteCommentSuccess} from './DeleteCommentPayload'
 import DragDiscussionTopicPayload from './DragDiscussionTopicPayload'
@@ -22,6 +23,8 @@ import ResetRetroMeetingToGroupStagePayload from './ResetRetroMeetingToGroupStag
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
 import {SetPokerSpectateSuccess} from './SetPokerSpectatePayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
+import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
+import {SetTaskHighlightSuccess} from './SetTaskHighlightPayload'
 import StartDraggingReflectionPayload from './StartDraggingReflectionPayload'
 import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
 import UpdateDragLocationPayload from './UpdateDragLocationPayload'
@@ -31,11 +34,7 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
-import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
-import {CreatePollSuccess} from './CreatePollPayload'
-import {UpdatePromptResponseSuccess} from './UpdatePromptResponsePayload'
-import {SetTaskHighlightSuccess} from './SetTaskHighlightPayload'
 
 const types = [
   AddCommentSuccess,
@@ -73,8 +72,7 @@ const types = [
   PokerAnnounceDeckHoverSuccess,
   JoinMeetingSuccess,
   SetPokerSpectateSuccess,
-  SetTaskEstimateSuccess,
-  UpdatePromptResponseSuccess
+  SetTaskEstimateSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

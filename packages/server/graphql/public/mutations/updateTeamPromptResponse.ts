@@ -1,6 +1,5 @@
 import {JSONContent} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getTeamPromptResponseById} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {updateTeamPromptResponseContentById} from '../../../postgres/queries/updateTeamPromptResponseContentById'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -19,7 +18,9 @@ const updateTeamPromptResponse: MutationResolvers['updateTeamPromptResponse'] = 
   const {teamPromptResponseId, content} = updatedTeamPromptResponse
 
   // AUTH
-  const promptResponse = await getTeamPromptResponseById(teamPromptResponseId)
+  const promptResponse = await dataLoader
+    .get('teamPromptResponses')
+    .loadNonNull(teamPromptResponseId)
   if (!promptResponse) {
     return standardError(new Error('PromptResponse not found'), {userId: viewerId})
   }
