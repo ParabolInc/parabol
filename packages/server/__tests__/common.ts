@@ -1,4 +1,3 @@
-require('../../../scripts/webpack/utils/dotenv')
 import faker from 'faker'
 import fetch from 'node-fetch'
 import getRethink from '../database/rethinkDriver'
@@ -34,14 +33,14 @@ export async function sendIntranet(req: {
 
 const persistQuery = async (query: string) => {
   const r = await getRethink()
-  const docId = persistFunction(query.trim())
+  const id = await persistFunction(query.trim())
   const record = {
-    id: docId,
+    id,
     query,
     createdAt: new Date()
   }
   await r.table('QueryMap').insert(record, {conflict: 'replace'}).run()
-  return docId
+  return id
 }
 
 export async function sendPublic(req: {
@@ -52,7 +51,7 @@ export async function sendPublic(req: {
   const authToken = req.authToken ?? ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
-  const docId = await persistQuery(query)
+  const documentId = await persistQuery(query)
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
@@ -63,7 +62,7 @@ export async function sendPublic(req: {
     body: JSON.stringify({
       type: 'start',
       payload: {
-        docId,
+        documentId,
         variables
       }
     })
