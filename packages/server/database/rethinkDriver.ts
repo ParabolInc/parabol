@@ -5,6 +5,7 @@ import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
 import {ScheduledJobUnion} from '../graphql/private/mutations/runScheduledJobs'
+import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import AgendaItem from './types/AgendaItem'
@@ -38,7 +39,6 @@ import TemplateDimension from './types/TemplateDimension'
 import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
-import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -231,7 +231,11 @@ const getRethink = async () => {
   }
   // this is important because pm2 will restart the process & for whatever reason r isn't always healthy
   await r.waitForHealthy()
-  return (r as unknown) as ParabolR
+  return r as unknown as ParabolR
+}
+
+export const closeRethink = async () => {
+  await (await promise)?.drain()
 }
 
 export default getRethink

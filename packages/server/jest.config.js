@@ -19,5 +19,6 @@ module.exports = {
     '~/(.*)': ['<rootDir>/../client/$1']
   },
   testRegex: '/__tests__/.*.test\\.ts?$',
-  setupFiles: ['./__tests__/setup.ts']
+  globalSetup: './__tests__/globalSetup.ts',
+  globalTeardown: './__tests__/globalTeardown.ts'
 }
