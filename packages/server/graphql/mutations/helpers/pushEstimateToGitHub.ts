@@ -4,7 +4,9 @@ import interpolateGitHubLabelTemplate from 'parabol-client/shared/interpolateGit
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import appOrigin from '../../../appOrigin'
+import MeetingPoker from '../../../database/types/MeetingPoker'
 import {
   AddCommentMutation,
   AddCommentMutationVariables,
@@ -28,10 +30,8 @@ import getIssueId from '../../../utils/githubQueries/getIssueId.graphql'
 import getRepoLabels from '../../../utils/githubQueries/getRepoLabels.graphql'
 import removeLabels from '../../../utils/githubQueries/removeLabels.graphql'
 import makeScoreGitHubComment from '../../../utils/makeScoreGitHubComment'
-import {isNotNull} from 'parabol-client/utils/predicates'
 import {GQLContext} from '../../graphql'
 import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
-import MeetingPoker from '../../../database/types/MeetingPoker'
 
 const pushEstimateToGitHub = async (
   taskEstimate: ITaskEstimateInput,
@@ -43,7 +43,7 @@ const pushEstimateToGitHub = async (
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
     dataLoader.get('tasks').load(taskId),
-    meetingId ? dataLoader.get('newMeetings').load(meetingId) : undefined
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   const githubIntegration = task.integration as Extract<
     typeof task.integration,
@@ -69,7 +69,8 @@ const pushEstimateToGitHub = async (
   })
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-    if (!stageId || !meeting) return new Error('Cannot add jira comment for non-meeting estimates')
+    if (!stageId || !meeting)
+      return new Error('Cannot add GitHub comment for non-meeting estimates')
 
     // get the issue ID
     const [issueRes, issueResError] = await githubRequest<
