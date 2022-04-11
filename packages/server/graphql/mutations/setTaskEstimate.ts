@@ -61,9 +61,6 @@ const setTaskEstimate = {
       return {error: {message: 'Invalid dimension name'}}
     }
 
-    let stageId: string | undefined = undefined
-    let discussionId: string | undefined = undefined
-
     const {phases, meetingType, templateRefId, name: meetingName} = meeting as MeetingPoker
     if (meetingType !== 'poker') {
       return {error: {message: 'Invalid poker meeting'}}
@@ -83,8 +80,8 @@ const setTaskEstimate = {
     if (!stage) {
       return {error: {message: 'Stage not found for meetingId'}}
     }
-    discussionId = stage.discussionId
-    stageId = stage.id
+    const discussionId = stage.discussionId
+    const stageId = stage.id
 
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
