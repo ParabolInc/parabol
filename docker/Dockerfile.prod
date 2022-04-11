@@ -1,19 +1,42 @@
-FROM node:16.14.0 as base
+# First, install all dependencies, including devDependencies, to run the build process
+FROM node:16.14.0 as build
 
-ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+WORKDIR /parabol
 
-RUN mkdir -p /parabol/node_modules && mkdir -p /home/node/.npm-global
+# Only copy dependency-related files here (vs. COPY . .) to avoid breaking the cache and running
+# the slow `yarn install` more than necessary
+COPY package.json yarn.lock ./
+COPY packages/client/package.json ./packages/client/package.json
+COPY packages/gql-executor/package.json packages/gql-executor/package.json
+# TODO: can we skip integration-tests?
+COPY packages/integration-tests/package.json packages/integration-tests/package.json
+COPY packages/server/package.json packages/server/package.json
+RUN yarn install --frozen-lockfile && \
+      yarn cache clean
 
-WORKDIR /parabol/
-ADD package.json .
-ADD yarn.lock .
 COPY . .
-
-FROM base as prod
-RUN yarn install --frozen-lockfile
 RUN yarn build
-RUN cp docker/entrypoint.prod.sh /bin/entrypoint
-RUN chmod +x /bin/entrypoint
+
+# Now, start over with a new stage so we don't pull over devDependencies
+FROM node:16.14.0 as prod
+
+WORKDIR /parabol
+
+COPY package.json yarn.lock ./
+COPY packages/client/package.json ./packages/client/package.json
+COPY packages/gql-executor/package.json packages/gql-executor/package.json
+# TODO: can we skip integration-tests?
+COPY packages/integration-tests/package.json packages/integration-tests/package.json
+COPY packages/server/package.json packages/server/package.json
+# Only install production dependencies
+RUN yarn install --prod --frozen-lockfile && \
+      yarn cache clean
+
+COPY . .
+COPY --from=build /parabol/build /parabol/dist /parabol/queryMap.json ./
+
+RUN cp docker/entrypoint.prod.sh /bin/entrypoint && \
+      chmod +x /bin/entrypoint
 EXPOSE 80
 ENTRYPOINT [ "entrypoint" ]
 CMD ["yarn", "start"]
