@@ -83,7 +83,6 @@ graphql`
     ...RetroMeeting_meeting
     ...ActionMeeting_meeting
     ...PokerMeeting_meeting
-    ...TeamPromptMeeting_meeting
     meetingType
   }
 `

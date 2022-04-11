@@ -16,7 +16,7 @@ module.exports = {
   },
   extensions: ['js', 'ts', 'tsx'],
   noFutureProofEnums: true,
-  schema: path.join(__dirname, 'packages/server/graphql/public/schema.graphql'),
+  schema: path.join(__dirname, 'schema.graphql'),
   include: ['client/**'],
   exclude: [
     '**/lib/**',

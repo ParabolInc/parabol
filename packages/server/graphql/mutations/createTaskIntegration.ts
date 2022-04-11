@@ -1,19 +1,19 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import makeAppURL from '~/utils/makeAppURL'
-import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
-import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
-import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateTaskIntegrationPayload from '../types/CreateTaskIntegrationPayload'
 import IntegrationProviderServiceEnum, {
   IntegrationProviderServiceEnumType
 } from '../types/IntegrationProviderServiceEnum'
+import makeAppURL from '~/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
+import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
+import sendToSentry from '../../utils/sendToSentry'
 
 type CreateTaskIntegrationMutationVariables = {
   integrationProviderService: IntegrationProviderServiceEnumType
@@ -136,7 +136,11 @@ export default {
 
     const {issueId, ...updateTaskInput} = createTaskResponse
 
-    if (userId && viewerId !== userId) {
+    if (
+      userId &&
+      viewerId !== userId &&
+      'addCreatedBySomeoneElseComment' in taskIntegrationManager
+    ) {
       const addCommentResponse = await taskIntegrationManager.addCreatedBySomeoneElseComment(
         viewerName,
         assigneeName,

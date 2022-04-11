@@ -1,6 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import {requireSU} from '../../../utils/authorization'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
@@ -72,7 +73,12 @@ const makeTopXSection = async (domainCount: DomainCount[]) => {
   }
 }
 
-const dailyPulse: QueryResolvers['dailyPulse'] = async (_source, {after, email, channelId}) => {
+const dailyPulse: QueryResolvers['dailyPulse'] = async (
+  _source,
+  {after, email, channelId},
+  {authToken}
+) => {
+  requireSU(authToken)
   const r = await getRethink()
   const user = await getUserByEmail(email)
   if (!user) throw new Error('Bad user')

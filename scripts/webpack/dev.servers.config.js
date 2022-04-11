@@ -15,12 +15,12 @@ module.exports = {
   stats: 'minimal',
   devtool: 'source-map',
   mode: 'development',
-  cache: {
-    type: 'filesystem',
-    buildDependencies: {
-      config: [__filename]
-    }
-  },
+  // cache: {
+  //   type: 'filesystem',
+  //   buildDependencies: {
+  //     config: [__filename]
+  //   }
+  // },
   node: {
     __dirname: false
   },

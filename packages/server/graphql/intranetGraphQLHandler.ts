@@ -1,6 +1,6 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import parseBody from '../parseBody'
-import {isSuperUser} from '../utils/authorization'
+import {isAuthenticated, isSuperUser} from '../utils/authorization'
 import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import getReqAuth from '../utils/getReqAuth'
 import uwsGetIP from '../utils/uwsGetIP'
@@ -14,7 +14,7 @@ interface IntranetPayload {
 const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
-  if (!isSuperUser(authToken)) {
+  if (!isAuthenticated(authToken) || !isSuperUser(authToken)) {
     res.writeStatus('401').end()
     return
   }
@@ -28,7 +28,7 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
     res.writeStatus('422').end()
     return
   }
-  const {query, variables, isPrivate} = body as any as IntranetPayload
+  const {query, variables, isPrivate} = (body as any) as IntranetPayload
   try {
     const result = await getGraphQLExecutor().publish({
       authToken,

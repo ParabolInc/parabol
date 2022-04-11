@@ -4,6 +4,7 @@ import {RValue} from '../../../database/stricterR'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
+import {requireSU} from '../../../utils/authorization'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
@@ -14,6 +15,9 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   {userId, email, reasonText},
   {authToken, dataLoader}
 ) => {
+  // AUTH
+  requireSU(authToken)
+
   // VALIDATION
   if (userId && email) {
     return {error: {message: 'Provide userId XOR email'}}

@@ -1,5 +1,6 @@
 import fs from 'fs'
 import inspector from 'inspector'
+import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 let session: inspector.Session
@@ -35,6 +36,8 @@ const stop = () => {
 }
 
 const profileCPU: MutationResolvers['profileCPU'] = async (_source, _args, {authToken}) => {
+  // AUTH
+  requireSU(authToken)
   if (!session) {
     session = new inspector.Session()
     session.connect()

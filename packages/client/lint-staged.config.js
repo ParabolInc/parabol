@@ -1,5 +1,4 @@
 module.exports = {
-  '*.{ts,tsx}': ['eslint --fix', 'prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write'],
-  '*.graphql': ['prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write'],
+  'package/client/**/!(*graphql).{js,ts,tsx}': 'eslint --fix',
   '**/*.{ts,tsx}': () => 'tsc --noEmit -p tsconfig.json'
 }

@@ -32,9 +32,8 @@ import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
-import sleep from './utils/sleep'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
@@ -107,7 +106,6 @@ export default class Atmosphere extends Environment {
   viewerId: string = null!
   /** @deprecated */
   userId: string | null = null
-  tabCheckChannel?: BroadcastChannel
   constructor() {
     super({
       store,
@@ -316,37 +314,7 @@ export default class Atmosphere extends Environment {
     this.setAuthToken(authToken)
   }
 
-  private validateImpersonation = async (iat: number) => {
-    const isAnotherParabolTabOpen = async () => {
-      const askOtherTabs = new Promise((resolve) => {
-        if (!this.tabCheckChannel) {
-          this.tabCheckChannel = new BroadcastChannel('tabCheck')
-        }
-        const tabCheckChannel = this.tabCheckChannel
-        tabCheckChannel.onmessage = (event) => {
-          if (event.data === 'ping') {
-            tabCheckChannel.postMessage('pong')
-          }
-          if (event.data === 'pong') {
-            resolve(true)
-          }
-        }
-        tabCheckChannel.postMessage('ping')
-      })
-      return Promise.race([sleep(300), askOtherTabs])
-    }
-    const justOpened = iat > Date.now() / 1000 - 10
-
-    const anotherTabIsOpen = await isAnotherParabolTabOpen()
-    if (anotherTabIsOpen || justOpened) return
-    this.authToken = null
-    this.authObj = null
-    window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
-    // since this is async, useAuthRoute will have already run
-    window.location.href = '/'
-  }
-
-  setAuthToken = async (authToken: string | null) => {
+  setAuthToken = (authToken: string | null) => {
     this.authToken = authToken
     if (!authToken) {
       this.authObj = null
@@ -362,11 +330,8 @@ export default class Atmosphere extends Environment {
 
     if (!this.authObj) return
     const {exp, sub: viewerId, rol, iat} = this.authObj
-    if (rol === 'impersonate') {
-      return this.validateImpersonation(iat)
-    }
     // impersonation token must be < 10 seconds old (ie log them out automatically)
-    if (exp < Date.now() / 1000) {
+    if (exp < Date.now() / 1000 || (rol === 'impersonate' && iat < Date.now() / 1000 - 10)) {
       this.authToken = null
       this.authObj = null
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

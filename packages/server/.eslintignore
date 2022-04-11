@@ -1,9 +1,5 @@
-**/__generated__/
-**/generated/
-githubTypes.ts
-gitlabTypes.ts
-resolverTypes.ts
-githubSchema.graphql
-gitlabSchema.graphql
-_legacy.graphql
-migrationTemplate.ts
+database
+postgres/queries/generated
+segmentFns/*
+types/githubTypes.ts
+postgres/migrationTemplate.ts

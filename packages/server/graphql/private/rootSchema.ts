@@ -1,19 +1,14 @@
+import {loadFilesSync} from '@graphql-tools/load-files'
 import {makeExecutableSchema, mergeSchemas} from '@graphql-tools/schema'
-import composeResolvers from '../composeResolvers'
-import publicSchema from '../public/rootSchema'
+import path from 'path'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
-import permissions from './permissions'
+import publicSchema from '../rootSchema'
 import resolvers from './resolvers'
 
-const importAllStrings = (context: __WebpackModuleApi.RequireContext) => {
-  return context.keys().map((id) => context(id).default)
-}
-const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql$/))
+const typeDefs = loadFilesSync(
+  path.join(__PROJECT_ROOT__, 'packages/server/graphql/private/typeDefs/*.graphql')
+)
 
-const shieldedSchema = makeExecutableSchema({
-  typeDefs,
-  resolvers: composeResolvers(resolvers, permissions)
-})
-const privateSchema = resolveTypesForMutationPayloads(shieldedSchema)
+const privateSchema = resolveTypesForMutationPayloads(makeExecutableSchema({typeDefs, resolvers}))
 const fullSchema = mergeSchemas({schemas: [privateSchema, publicSchema]})
 export default fullSchema

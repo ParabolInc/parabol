@@ -1,4 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
+import {requireSU} from '../../../utils/authorization'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -10,9 +11,13 @@ interface MessageSlackUserError {
 
 const messageAllSlackUsers: MutationResolvers['messageAllSlackUsers'] = async (
   _source,
-  {message}
+  {message},
+  {authToken}
 ) => {
   const r = await getRethink()
+
+  //AUTH
+  requireSU(authToken)
 
   // RESOLUTION
   const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()

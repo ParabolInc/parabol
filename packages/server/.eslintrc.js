@@ -1,6 +1,6 @@
 module.exports = {
-  // prettier comes last to turn off all the eslint rules that conflict with it
-  extends: ['../../.eslintrc.js'],
+  extends: ['../../.eslintrc.js', 'plugin:prettier/recommended'],
+  plugins: ['@typescript-eslint', 'prettier'],
   parserOptions: {
     project: 'tsconfig.eslint.json',
     ecmaVersion: 2020,

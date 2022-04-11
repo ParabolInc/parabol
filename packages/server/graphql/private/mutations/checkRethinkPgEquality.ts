@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import checkTeamEq from '../../../postgres/utils/checkTeamEq'
 import checkUserEq from '../../../postgres/utils/checkUserEq'
+import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 const tableResolvers = {
@@ -29,6 +30,9 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
   {tableName, maxErrors, writeToFile},
   {authToken}
 ) => {
+  // AUTH
+  requireSU(authToken)
+
   // VALIDATION
   const tableResolver = tableResolvers[tableName]
   if (!tableResolver) {

@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
-import PokerEstimateHeaderCardContent from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardGitHub from './PokerEstimateHeaderCardGitHub'
+import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
 interface Props {
@@ -26,18 +26,8 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (!integration) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }
-
-  if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
-    const name = integration.__typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
-    return (
-      <PokerEstimateHeaderCardContent
-        summary={integration.summary}
-        descriptionHTML={integration.descriptionHTML}
-        url={integration.jiraUrl}
-        linkTitle={`${name} Issue #${integration.issueKey}`}
-        linkText={integration.issueKey}
-      />
-    )
+  if (integration.__typename === 'JiraIssue') {
+    return <PokerEstimateHeaderCardJira issue={integration} />
   }
   if (integration.__typename === '_xGitHubIssue') {
     return <PokerEstimateHeaderCardGitHub issueRef={integration} />
@@ -54,17 +44,7 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
         integration {
           ... on JiraIssue {
             __typename
-            issueKey
-            summary
-            descriptionHTML
-            jiraUrl: url
-          }
-          ... on JiraServerIssue {
-            __typename
-            issueKey
-            summary
-            descriptionHTML
-            jiraUrl: url
+            ...PokerEstimateHeaderCardJira_issue
           }
           ... on _xGitHubIssue {
             __typename

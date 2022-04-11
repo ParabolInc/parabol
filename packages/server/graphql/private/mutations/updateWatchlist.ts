@@ -2,6 +2,7 @@ import {User} from '@sentry/node'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
+import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
@@ -9,6 +10,9 @@ const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   {includeInWatchlist, emails, domain},
   {authToken}
 ) => {
+  // AUTH
+  requireSU(authToken)
+
   // RESOLUTION
   const users = [] as User[]
   if (emails) {

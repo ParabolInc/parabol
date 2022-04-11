@@ -1,4 +1,5 @@
 import getPubSub from './getPubSub'
+import GQLExecutorId from '../../client/shared/gqlIds/GQLExecutorId'
 
 export interface SubOptions {
   mutatorId?: string
@@ -6,6 +7,7 @@ export interface SubOptions {
 }
 
 const {SERVER_ID} = process.env
+const serverChannel = GQLExecutorId.join(SERVER_ID!)
 
 const publish = <T>(
   topic: T,
@@ -18,7 +20,7 @@ const publish = <T>(
   const data = {...payload, type}
   const rootValue = {[subName]: data}
   getPubSub()
-    .publish(`${topic}.${channel}`, {rootValue, executorServerId: SERVER_ID!, ...subOptions})
+    .publish(`${topic}.${channel}`, {rootValue, serverChannel, ...subOptions})
     .catch(console.error)
 }
 

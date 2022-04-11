@@ -1,10 +1,18 @@
 import getRethink from '../../../database/rethinkDriver'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
+import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
-const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail, newEmail}) => {
+const updateEmail: MutationResolvers['updateEmail'] = async (
+  _source,
+  {oldEmail, newEmail},
+  {authToken}
+) => {
   const r = await getRethink()
+
+  // AUTH
+  requireSU(authToken)
 
   // VALIDATION
   if (oldEmail === newEmail) {

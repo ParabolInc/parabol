@@ -2,9 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
-import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -32,20 +29,13 @@ const OptionMenuItem = styled('div')({
   width: '200px'
 })
 
-const EndMeetingMutationLookup = {
-  teamPrompt: EndTeamPromptMutation
-}
-
 const MeetingCardOptionsMenu = (props: Props) => {
   const {menuProps, popTooltip, viewer} = props
-  const {team, meeting} = viewer
+  const {team} = viewer
+
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const {id: meetingId, meetingType} = meeting!
-  const canEndMeeting = meetingType === 'teamPrompt'
-  const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
-
+  const copyUrl = getMassInvitationUrl(token)
   const {closePortal} = menuProps
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
@@ -60,26 +50,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
         onClick={async () => {
           popTooltip()
           closePortal()
-          const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
         }}
       />
-      {canEndMeeting && (
-        <MenuItem
-          key='close'
-          label={
-            <OptionMenuItem>
-              <StyledIcon>close</StyledIcon>
-              <span>{'End the meeting'}</span>
-            </OptionMenuItem>
-          }
-          onClick={() => {
-            popTooltip()
-            closePortal()
-            EndMeetingMutationLookup[meetingType]?.(atmosphere, {meetingId}, {onError, onCompleted})
-          }}
-        />
-      )}
     </Menu>
   )
 }
@@ -87,10 +60,6 @@ const MeetingCardOptionsMenu = (props: Props) => {
 export default createFragmentContainer(MeetingCardOptionsMenu, {
   viewer: graphql`
     fragment MeetingCardOptionsMenu_viewer on User {
-      meeting(meetingId: $meetingId) {
-        id
-        meetingType
-      }
       team(teamId: $teamId) {
         massInvitation(meetingId: $meetingId) {
           id

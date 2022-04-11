@@ -17,7 +17,6 @@ interface JiraServerIssue {
   id: string
   self: string
   issueKey: string
-  providerId: number
   descriptionHTML: string
   summary: string
   description: string | null
@@ -70,7 +69,6 @@ export const jiraServerIssue = (
             id: issueRes.id,
             self: issueRes.self,
             issueKey: issueRes.key,
-            providerId: provider.id,
             descriptionHTML: issueRes.renderedFields.description,
             ...issueRes.fields,
             service: 'jiraServer' as const

@@ -1,11 +1,17 @@
 import getRethink from '../../../database/rethinkDriver'
+import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 const setOrganizationDomain: MutationResolvers['setOrganizationDomain'] = async (
   _source,
-  {orgId, domain}
+  {orgId, domain},
+  {authToken}
 ) => {
   const r = await getRethink()
+
+  // AUTH
+  requireSU(authToken)
+
   // VALIDATION
   const organization = await r.table('Organization').get(orgId).run()
 
