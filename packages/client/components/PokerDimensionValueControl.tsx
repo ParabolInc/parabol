@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, Dispatch, SetStateAction, MutableRefObject} from 'react'
+import React, {Dispatch, MutableRefObject, SetStateAction, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
@@ -9,8 +9,7 @@ import useResizeFontForElement from '../hooks/useResizeFontForElement'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
-import PokerDimensionFinalScoreGitHubPicker from './PokerDimensionFinalScoreGitHubPicker'
-import PokerDimensionFinalScoreJiraPicker from './PokerDimensionFinalScoreJiraPicker'
+import PokerDimensionFinalScorePicker from './PokerDimensionFinalScorePicker'
 import StyledError from './StyledError'
 
 const ControlWrap = styled('div')({
@@ -162,28 +161,16 @@ const PokerDimensionValueControl = (props: Props) => {
           />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
-        {integrationType === 'JiraIssue' && (
-          <PokerDimensionFinalScoreJiraPicker
-            canUpdate={isStale}
-            stage={stage}
-            error={errorStr}
-            submitScore={onSubmitScore}
-            clearError={onCompleted}
-            inputRef={inputRef}
-            isFacilitator={isFacilitator}
-          />
-        )}
-        {integrationType === '_xGitHubIssue' && (
-          <PokerDimensionFinalScoreGitHubPicker
-            canUpdate={isStale}
-            stageRef={stage}
-            error={errorStr}
-            submitScore={onSubmitScore}
-            clearError={onCompleted}
-            inputRef={inputRef}
-            isFacilitator={isFacilitator}
-          />
-        )}
+        <PokerDimensionFinalScorePicker
+          canUpdate={isStale}
+          stageRef={stage}
+          error={errorStr}
+          submitScore={onSubmitScore}
+          clearError={onCompleted}
+          inputRef={inputRef}
+          isFacilitator={isFacilitator}
+          integrationType={integrationType}
+        />
         {!integrationType && isFacilitator && (
           <>
             {isStale ? (
@@ -204,8 +191,7 @@ const PokerDimensionValueControl = (props: Props) => {
 export default createFragmentContainer(PokerDimensionValueControl, {
   stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
-      ...PokerDimensionFinalScoreJiraPicker_stage
-      ...PokerDimensionFinalScoreGitHubPicker_stage
+      ...PokerDimensionFinalScorePicker_stage
       ...AddMissingJiraFieldModal_stage
       id
       meetingId
