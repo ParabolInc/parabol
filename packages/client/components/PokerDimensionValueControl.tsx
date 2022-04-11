@@ -170,7 +170,6 @@ const PokerDimensionValueControl = (props: Props) => {
           clearError={onCompleted}
           inputRef={inputRef}
           isFacilitator={isFacilitator}
-          integrationType={integrationType}
         />
 
         {!integrationType && isFacilitator && (
