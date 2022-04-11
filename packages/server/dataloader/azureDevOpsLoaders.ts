@@ -73,29 +73,38 @@ export const freshAzureDevOpsAuth = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const azureDevOpsAuthToRefresh = await parent
+          console.log(`Inside keys.map userId: ${userId} | teamId: ${teamId}`)
+          const azureDevOpsAuthToRefresh = (await parent
             .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId}) as IGetTeamMemberIntegrationAuthQueryResult | null
-
+            .load({
+              service: 'azureDevOps',
+              teamId,
+              userId
+            })) as IGetTeamMemberIntegrationAuthQueryResult | null
           if (azureDevOpsAuthToRefresh === null) {
             console.log('error line 61')
             return null
+          } else {
+            console.log(`azureDevOpsAuthToRefresh: ${JSON.stringify(azureDevOpsAuthToRefresh)}`)
           }
-
-          const {accessToken: existingAccessToken, refreshToken, accessTokenSecret} = azureDevOpsAuthToRefresh
+          const {accessToken: existingAccessToken, refreshToken} = azureDevOpsAuthToRefresh
+          if (!refreshToken) {
+            console.log(`null condition hit - refreshToken:${refreshToken}`)
+            return null
+          }
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            if (!refreshToken || !accessTokenSecret) {
-              return null
-            }
+            console.log(`calling AzureDevOpsServerManager.refresh`)
             const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken)
+            console.log(`oauthRes: ${JSON.stringify(oauthRes)}`)
             if (oauthRes instanceof Error) {
               //sendToSentry(oautRes)
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
+            console.log(`accessToken: ${accessToken} | newRefreshToken: ${newRefreshToken}`)
             const updatedRefreshToken = !!newRefreshToken ? newRefreshToken : refreshToken
             // const updatedSameAccountAzureDevOpsAuths = userAzureDevOpsAuths
             //   .filter((auth) => auth.accountId === azureDevOpsAuthToRefresh.accountId)
@@ -112,8 +121,10 @@ export const freshAzureDevOpsAuth = (
               refreshToken: updatedRefreshToken
             }
             await upsertTeamMemberIntegrationAuth(newAzureDevOpsAuth)
+            console.log(`newAzureDevOpsAuth: ${newAzureDevOpsAuth}`)
             return newAzureDevOpsAuth
           }
+          console.log(`azureDevOpsAuthToRefresh: ${azureDevOpsAuthToRefresh}`)
           return azureDevOpsAuthToRefresh
         })
       )

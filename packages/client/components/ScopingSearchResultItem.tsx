@@ -85,7 +85,7 @@ const ScopingSearchResultItem = (props: Props) => {
       persistQuery()
     }
   }
-
+  console.log(`returning Item`)
   return (
     <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />

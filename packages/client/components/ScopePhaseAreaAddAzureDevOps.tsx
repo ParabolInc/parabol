@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import { useFragment } from 'react-relay'
+import {useFragment} from 'react-relay'
 import AzureDevOpsClientManager from '~/utils/AzureDevOpsClientManager'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import { PALETTE } from '../styles/paletteV3'
-import { ScopePhaseAreaAddAzureDevOps_meeting$key } from '../__generated__/ScopePhaseAreaAddAzureDevOps_meeting.graphql'
+import {PALETTE} from '../styles/paletteV3'
+import {ScopePhaseAreaAddAzureDevOps_meeting$key} from '../__generated__/ScopePhaseAreaAddAzureDevOps_meeting.graphql'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import RaisedButton from './RaisedButton'
 
@@ -62,12 +62,21 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
     meetingRef
   )
   const {teamId, viewerMeetingMember} = meeting
+  console.log(`teamId: ${teamId}`)
+  console.log(`viewerMeetingMember - ${JSON.stringify(viewerMeetingMember)}`)
   const provider = viewerMeetingMember?.teamMember.integrations.azureDevOps.sharedProviders[0]
-  if (!provider) return null
-
+  console.log(
+    `sharedProviders - ${viewerMeetingMember?.teamMember.integrations.azureDevOps.sharedProviders}`
+  )
+  if (!provider) {
+    return null
+  } else {
+    console.log(`provider - ${JSON.stringify(provider)}`)
+  }
   const authAzureDevOps = () => {
     AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider.id, mutationProps)
   }
+  console.log(`about to return AddAzureDevOpsArea`)
   return (
     <AddAzureDevOpsArea>
       <AddAzureDevOpsButton onClick={authAzureDevOps} size={'medium'}>

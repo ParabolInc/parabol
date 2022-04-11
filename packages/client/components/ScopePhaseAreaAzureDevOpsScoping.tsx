@@ -20,9 +20,11 @@ const ScopePhaseAreaAzureDevOpsScoping = (props: Props) => {
     `,
     meetingRef
   )
+  console.log(
+    `pulled meeting in ScopePhaseAreaAzureDevOpsScoping: ${ScopePhaseAreaAzureDevOpsScoping}`
+  )
   return (
     <>
-      {/* <AzureDevOpsScopingSearchBar meeting={meeting} /> */}
       <AzureDevOpsScopingSearchResultsRoot meetingRef={meeting} />
     </>
   )

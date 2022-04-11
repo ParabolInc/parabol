@@ -70,11 +70,15 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   )
 
   const viewer = query.viewer
-
+  console.log(`AzureDevOpsScopingSearchResults.viewer: ${JSON.stringify(viewer)}`)
   const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
+  console.log(`AzureDevOpsScopingSearchResults.azureDevOps: ${JSON.stringify(azureDevOps)} `)
   const userStories = azureDevOps?.userStories ?? null
+  console.log(`userStories: ${JSON.stringify(userStories)}`)
   const edges = userStories?.edges ?? null
+  console.log(`edges: ${JSON.stringify(edges)}`)
   const error = userStories?.error ?? null
+  console.log(`error: ${error}`)
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
@@ -82,9 +86,11 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const handleAddIssueClick = () => setIsEditing(true)
 
   if (!edges) {
+    console.log(`no edge`)
     return <MockScopingList />
   }
   if (edges.length === 0 && !isEditing) {
+    console.log(`IntegrationScopingNoResults`)
     return (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
@@ -92,9 +98,11 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
       </>
     )
   }
+  console.log(`returning ResultsScroller`)
   return (
     <ResultScroller>
       {edges.map(({node}) => {
+        console.log(`node is ${JSON.stringify(node)}`)
         return (
           <ScopingSearchResultItem
             key={node.id}

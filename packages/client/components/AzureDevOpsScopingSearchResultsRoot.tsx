@@ -33,6 +33,7 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
       first: 25
     }
   )
+  console.log(`AzureDevOpsScopingSearchResultsRoot.queryRef: ${queryRef}`)
   return (
     <Suspense fallback={<MockScopingList />}>
       {queryRef && <AzureDevOpsScopingSearchResults meetingRef={meeting} queryRef={queryRef} />}

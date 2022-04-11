@@ -39,12 +39,18 @@ const ScopePhaseAreaAzureDevOps = (props: Props) => {
     meetingRef
   )
   const {viewerMeetingMember} = meeting
+  console.log(`viewer ${JSON.stringify(viewerMeetingMember)}`)
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
+  console.log(`integrations ${JSON.stringify(integrations)}`)
   const hasAuth = !!integrations.azureDevOps?.auth
-  if (!hasAuth)
+  console.log(`hasAuth - ${hasAuth}`)
+  if (!hasAuth) {
+    console.log('returning ScopePhaseAreaAddAzureDevOps')
     return <ScopePhaseAreaAddAzureDevOps gotoParabol={gotoParabol} meetingRef={meeting} />
+  }
+  console.log('returning ScopePhaseAreaAzureDevOpsScoping')
   return <ScopePhaseAreaAzureDevOpsScoping meetingRef={meeting} />
 }
 
