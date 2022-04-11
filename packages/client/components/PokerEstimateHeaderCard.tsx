@@ -47,7 +47,7 @@ const getHeaderFields = (integration: Integration | null): IntegrationHeaderFiel
       const {iid, title, descriptionHtml, webUrl} = integration
       return {
         cardTitle: title,
-        descriptionHTML: descriptionHtml || '',
+        descriptionHTML: descriptionHtml ?? '',
         url: webUrl,
         linkTitle: `GitLab Issue #${iid}`,
         linkText: `#${iid}`
