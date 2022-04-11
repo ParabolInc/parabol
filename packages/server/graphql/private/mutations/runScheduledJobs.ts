@@ -8,7 +8,6 @@ import ScheduledJobMeetingStageTimeLimit from '../../../database/types/Scheduled
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification from '../../../database/types/SlackNotification'
 import {IntegrationProviderMattermost} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -98,12 +97,10 @@ const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: Dat
 const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
   _source,
   {seconds},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
   const r = await getRethink()
   const now = new Date()
-  // AUTH
-  requireSU(authToken)
 
   // RESOLUTION
   const before = new Date(now.getTime() + seconds * 1000)

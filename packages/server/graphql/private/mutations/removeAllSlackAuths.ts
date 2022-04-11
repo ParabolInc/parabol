@@ -1,16 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
-import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
-const removeAllSlackAuths: MutationResolvers['removeAllSlackAuths'] = async (
-  _source,
-  _args,
-  {authToken}
-) => {
+const removeAllSlackAuths: MutationResolvers['removeAllSlackAuths'] = async () => {
   const r = await getRethink()
   const now = new Date()
-  //AUTH
-  requireSU(authToken)
 
   // RESOLUTION
   const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()

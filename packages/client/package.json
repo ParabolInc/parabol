@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.50.0",
+  "version": "6.53.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,10 +13,12 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
+    "format": "yarn typecheck && yarn lint && yarn prettier",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
-    "lint": "eslint --fix ./**/*.{ts,tsx}",
+    "lint": "eslint --fix \"**/*.{ts,tsx}\"",
     "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
@@ -37,15 +39,14 @@
     "@types/stripe-v2": "^2.0.1",
     "babel-plugin-relay": "^12.0.0",
     "eslint": "^8.2.0",
-    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-emotion": "^10.0.14",
-    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
     "html-webpack-plugin": "5.0.0-beta.1",
     "lint-staged": "^10.1.7",
-    "prettier": "^1.19.1",
+    "prettier": "^2.6.1",
     "react-refresh": "^0.9.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "4.5.5",
@@ -60,6 +61,10 @@
     "@mattkrick/sanitize-svg": "0.3.1",
     "@mattkrick/trebuchet-client": "^3.0.1",
     "@sentry/browser": "^5.8.0",
+    "@tiptap/extension-character-count": "^2.0.0-beta.25",
+    "@tiptap/extension-placeholder": "^2.0.0-beta.48",
+    "@tiptap/react": "^2.0.0-beta.108",
+    "@tiptap/starter-kit": "2.0.0-beta.48",
     "core-js": "3.8.1",
     "debug": "^4.1.1",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",

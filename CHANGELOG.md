@@ -5,26 +5,102 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.50.0 2022-Mar-16
-### Added
-- Add task menu to push to Jira Server (#6026)
-### Changed
-- Increase the size of the Poker Scope card (#6032)
+## 6.53.0 2022-April-06
+
 ### Fixed
+
+- fix(lint): faster, deterministic linting (#6313)
+
+### Added
+
+- feat(standups): Added end team prompt mutation (#6250)
+- feat(sdl): Add SDL to public schema (#6263)
+- feat(standups): Integrate TipTap (#6255)
+- feat(jira-server): add issue to poker scope (#6214)
+- feat(impersonate): keep impersonate token until last tab closes (#6300)
+- feat(integrations): save favorite integration to local storage (#6331)
+
+### Changed
+
+- gitignore github/gitlabTypes
+- refactor(lint): Lint server (#6329)
+
+## 6.52.0 2022-March-31
+
+### Fixed
+
+- Ignore common Datadog errors (#6275)
+- Only reset current estimation stage on revote (#6274)
+
+### Added
+
+- Added start team prompt mutation (#6171)
+- Push a task to Jira Server integration (#6059)
+- List issues in sprint poker (#6157)
+
+### Changed
+
+- Codemod it all (#6228)
+
+## 6.51.0 2022-Mar-24
+
+### Added
+
+- feat(standups): Added empty team prompt meeting component (#6170)
+- More typesafety for GraphQL code (#6167
+- chore: enforce conventional commit PR titles (#6258)
+- Add flow diagram for services (#6235)
+- GitLab Issues Functionality (#6160)
+
+### Changed
+
+- remove icebreaker question (#6142)
+- Remove backfilling invoices logic from migration (#6237)
+- ci: use official postgres image & sync with digital ocean version (#6182)
+- chore: remove postcommit git command (#6253)
+- feat: allow admins to call set org user role mutation (#6148)
+- feat: disable rate limiter in test (#6146)
+- chore(deps): bump node-forge from 1.2.1 to 1.3.0 (#6256)
+- chore(deps-dev): bump minimist from 1.2.5 to 1.2.6 (#6264)
+- chore(sdl): codemod it all (#6228)
+- chore: Remove LogRocket (#6266)
+
+### Fixed
+
+- Fix type mismatch GraphQL (#6151)
+- chore(noImplicitAny): fix more errors (#6161)
+- fix(sdl): Default resolveType on mutation payloads (#6270)
+
+## 6.50.0 2022-Mar-16
+
+### Added
+
+- Add task menu to push to Jira Server (#6026)
+
+### Changed
+
+- Increase the size of the Poker Scope card (#6032)
+
+### Fixed
+
 - Always require SAMLRequest (#5985)
 - Remove calculated fields from Jira issue in Sprint Poker (#5864)
 
 ## 6.49.0 2022-Mar-02
+
 ### Added
+
 - Highlight checkin tasks when hovered in current solo update (#5859)
 - Initial team prompt DB schema (#6068)
 
 ### Changed
+
 - Enforce noUncheckedIndexAccess (#6080)
 - Updating text copy in authentication page
 - Change prompt colors for 3 pigs template
 
 ### Fixed
+
 - Fix a bug where types from a dataloader aren't completely accurate (#6129)
 - Fix a bug where dragging item to original position cause an error (#6122)
 - Fix a bug where all the tasks are fetched when adding a task to estimation (#6152)
