@@ -4,7 +4,12 @@ import {
   insertTaskEstimateQuery
 } from './generated/insertTaskEstimateQuery'
 
-interface Input extends Omit<IInsertTaskEstimateQueryParams, 'githubLabelName' | 'jiraFieldId'> {
+interface Input
+  extends Omit<
+    IInsertTaskEstimateQueryParams,
+    'gitlabLabelName' | 'githubLabelName' | 'jiraFieldId'
+  > {
+  gitlabLabelName?: string
   githubLabelName?: string
   jiraFieldId?: string
 }

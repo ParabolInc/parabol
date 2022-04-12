@@ -14,6 +14,7 @@ import {GQLContext} from '../graphql'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
+import pushEstimateToGitLab from './helpers/pushEstimateToGitLab'
 
 const setTaskEstimate = {
   type: new GraphQLNonNull(SetTaskEstimatePayload),
@@ -88,6 +89,7 @@ const setTaskEstimate = {
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
     let githubLabelName: string | undefined = undefined
+    let gitlabLabelName: string | undefined = undefined
     const {integration} = task
     const service = integration?.service
     if (service === 'jira') {
@@ -146,6 +148,13 @@ const setTaskEstimate = {
         return {error: {message}}
       }
       githubLabelName = githubPushRes
+    } else if (service === 'gitlab') {
+      const gitlabPushRes = await pushEstimateToGitLab(taskEstimate, context, info, stageId)
+      if (gitlabPushRes instanceof Error) {
+        const {message} = gitlabPushRes
+        return {error: {message}}
+      }
+      gitlabLabelName = gitlabPushRes
     }
 
     await insertTaskEstimate({
@@ -153,6 +162,7 @@ const setTaskEstimate = {
       discussionId,
       jiraFieldId,
       githubLabelName,
+      gitlabLabelName,
       label: value,
       name: dimensionName,
       meetingId,
