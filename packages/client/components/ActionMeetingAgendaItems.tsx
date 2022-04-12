@@ -11,7 +11,8 @@ import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import {DiscussionThreadables, Header as DiscussionThreadHeader} from './DiscussionThreadList'
+import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -83,6 +84,15 @@ const ActionMeetingAgendaItems = (props: Props) => {
               meetingContentRef={meetingContentRef}
               discussionId={discussionId!}
               allowedThreadables={allowedThreadables}
+              header={
+                <DiscussionThreadHeader>{'Discussion & Takeaway Tasks'}</DiscussionThreadHeader>
+              }
+              emptyState={
+                <DiscussionThreadListEmptyState
+                  allowTasks={true}
+                  isReadOnly={allowedThreadables.length === 0}
+                />
+              }
             />
           </ThreadColumn>
           <EditorHelpModalContainer />

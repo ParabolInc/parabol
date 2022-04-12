@@ -1,4 +1,4 @@
-import React, {RefObject, Suspense} from 'react'
+import React, {ReactNode, RefObject, Suspense} from 'react'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import discussionThreadQuery, {
   DiscussionThreadQuery
@@ -11,13 +11,12 @@ interface Props {
   discussionId: string
   allowedThreadables: DiscussionThreadables[]
   width?: string
-  showHeader?: boolean
-  showEmptyState?: boolean
+  header?: ReactNode
+  emptyState?: ReactNode
 }
 
 const DiscussionThreadRoot = (props: Props) => {
-  const {allowedThreadables, meetingContentRef, discussionId, width, showHeader, showEmptyState} =
-    props
+  const {allowedThreadables, meetingContentRef, discussionId, width, header, emptyState} = props
   const queryRef = useQueryLoaderNow<DiscussionThreadQuery>(discussionThreadQuery, {discussionId})
   return (
     <Suspense fallback={''}>
@@ -27,8 +26,8 @@ const DiscussionThreadRoot = (props: Props) => {
           meetingContentRef={meetingContentRef}
           queryRef={queryRef}
           width={width}
-          showHeader={showHeader}
-          showEmptyState={showEmptyState}
+          header={header}
+          emptyState={emptyState}
         />
       )}
     </Suspense>

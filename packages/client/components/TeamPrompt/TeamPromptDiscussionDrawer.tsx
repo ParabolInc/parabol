@@ -124,8 +124,6 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
               discussionId={localDiscussionId!}
               allowedThreadables={['comment', 'task']}
               width={'100%'}
-              showHeader={false}
-              showEmptyState={false}
             />
           </ThreadColumn>
         )}
