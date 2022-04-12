@@ -126,7 +126,6 @@ function prepareMatches(matches: MatchedRoute<Params>[]): Entry[] {
   return matches.map((match) => {
     const {route, match: matchData} = match
     const prepared = route.prepare(matchData.params)
-    console.log('========route========', route, prepared)
     const Component = route.component.get()
     if (!Component) {
       route.component.load() // eagerly load

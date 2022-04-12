@@ -1,21 +1,17 @@
 import React, {Suspense} from 'react'
+import {PreloadedQuery} from 'react-relay'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import teamArchiveQuery, {TeamArchiveQuery} from '../__generated__/TeamArchiveQuery.graphql'
+import {TeamArchiveQuery} from '../__generated__/TeamArchiveQuery.graphql'
 
 interface Props {
-  teamIds?: string[] | null
-  userIds?: string[] | null
+  prepared: {
+    queryRef: PreloadedQuery<TeamArchiveQuery>
+  }
 }
 
-const ArchiveTaskUserRoot = ({teamIds, userIds}: Props) => {
-  const queryRef = useQueryLoaderNow<TeamArchiveQuery>(teamArchiveQuery, {
-    userIds,
-    teamIds,
-    first: 10
-  })
-
+const ArchiveTaskUserRoot = (props: Props) => {
+  const {queryRef} = props.prepared
   return (
     <Suspense fallback={<UserTasksHeader viewerRef={null} />}>
       {queryRef && <TeamArchive queryRef={queryRef} />}

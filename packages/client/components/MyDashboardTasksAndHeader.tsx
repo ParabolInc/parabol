@@ -6,11 +6,13 @@ import UserColumnsContainer from '../modules/userDashboard/containers/UserColumn
 import {MyDashboardTasksAndHeaderQuery} from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
 
 interface Props {
-  queryRef: PreloadedQuery<MyDashboardTasksAndHeaderQuery>
+  prepared: {
+    queryRef: PreloadedQuery<MyDashboardTasksAndHeaderQuery>
+  }
 }
 
 const MyDashboardTasksAndHeader = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef} = props.prepared
   const data = usePreloadedQuery<MyDashboardTasksAndHeaderQuery>(
     graphql`
       query MyDashboardTasksAndHeaderQuery($after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {

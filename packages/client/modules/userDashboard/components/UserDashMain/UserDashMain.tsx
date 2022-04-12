@@ -5,15 +5,26 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {createRouter, JSResource, RouteRenderer, RoutingContext} from '../../../../routing'
 import {LoaderSize} from '../../../../types/constEnums'
+import {useUserTaskFilters} from '../../../../utils/useUserTaskFilters'
+import myDashboardTasksAndHeaderQuery, {
+  MyDashboardTasksAndHeaderQuery
+} from '../../../../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
 import myDashboardTimelineQuery, {
   MyDashboardTimelineQuery
 } from '../../../../__generated__/MyDashboardTimelineQuery.graphql'
+import teamArchiveQuery, {
+  TeamArchiveQuery
+} from '../../../../__generated__/TeamArchiveQuery.graphql'
 
 interface Props extends RouteComponentProps {}
 
-const UserTaskViewRoot = JSResource(
-  'MyDashboardTasksRoot',
-  () => import('../../../../components/UserTaskViewRoot')
+const ArchiveTaskUserRoot = JSResource(
+  'ArchiveTaskUserRoot',
+  () => import('../../../../components/ArchiveTaskUserRoot')
+)
+const MyDashboardTasksAndHeader = JSResource(
+  'MyDashboardTasksAndHeader',
+  () => import('../../../../components/MyDashboardTasksAndHeader')
 )
 const MyDashboardTimeline = JSResource(
   'MyDashboardTimeline',
@@ -24,10 +35,22 @@ const UserDashMain = (props: Props) => {
   const {match} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const queryRef = useQueryLoaderNow<MyDashboardTimelineQuery>(myDashboardTimelineQuery, {
+  const timelineQueryRef = useQueryLoaderNow<MyDashboardTimelineQuery>(myDashboardTimelineQuery, {
     first: 10,
     userIds: [viewerId]
   })
+
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
+  const myDashboardTasksAndHeaderQueryRef = useQueryLoaderNow<MyDashboardTasksAndHeaderQuery>(
+    myDashboardTasksAndHeaderQuery,
+    {userIds, teamIds}
+  )
+  const archivedTasksQueryRef = useQueryLoaderNow<TeamArchiveQuery>(teamArchiveQuery, {
+    userIds,
+    teamIds,
+    first: 10
+  })
+
   const router = createRouter([
     {
       component: JSResource('DashContentRoot', () => import('./DashContentRoot')),
@@ -37,12 +60,14 @@ const UserDashMain = (props: Props) => {
           path: match.url,
           exact: true,
           component: MyDashboardTimeline,
-          prepare: () => ({queryRef})
+          prepare: () => ({queryRef: timelineQueryRef})
         },
         {
           path: `${match.url}/tasks`,
-          component: UserTaskViewRoot,
-          prepare: () => ({tasksQuery: queryRef})
+          component: showArchived ? ArchiveTaskUserRoot : MyDashboardTasksAndHeader,
+          prepare: () => ({
+            queryRef: showArchived ? archivedTasksQueryRef : myDashboardTasksAndHeaderQueryRef
+          })
         }
       ]
     }
