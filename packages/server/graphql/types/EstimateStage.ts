@@ -109,6 +109,23 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             type: 'string'
           }
         }
+        if (service === 'gitlab') {
+          const {gid} = integration
+          const dimensionName = await getDimensionName(meetingId)
+          const gitlabFieldMap = await dataLoader
+            .get('gitlabDimensionFieldMaps')
+            .load({teamId, dimensionName, projectPath: 'nick460/nuevo-pp'})
+          if (gitlabFieldMap) {
+            return {
+              name: gitlabFieldMap.labelTemplate,
+              type: 'string'
+            }
+          }
+          return {
+            name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            type: 'string'
+          }
+        }
         return NULL_FIELD
       }
     },

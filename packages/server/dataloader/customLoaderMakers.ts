@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
@@ -11,6 +12,9 @@ import getGitHubAuthByUserIdTeamId, {
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
+import getGitLabDimensionFieldMaps, {
+  GitLabDimensionFieldMap
+} from '../postgres/queries/getGitLabDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
@@ -19,7 +23,6 @@ import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RootDataLoader from './RootDataLoader'
-import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -236,6 +239,29 @@ export const githubAuth = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {teamId: string; dimensionName: string; projectPath: string},
+    GitLabDimensionFieldMap | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, projectPath}) =>
+          getGitLabDimensionFieldMaps(teamId, dimensionName, projectPath)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, dimensionName, projectPath}) =>
+        `${teamId}:${dimensionName}:${projectPath}`
     }
   )
 }

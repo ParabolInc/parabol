@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useModal from '../hooks/useModal'
-// import UpdateGitLabDimensionFieldMutation from '../mutations/UpdateGitLabDimensionFieldMutation'
+import UpdateGitLabDimensionFieldMutation from '../mutations/UpdateGitLabDimensionFieldMutation'
 import textOverflow from '../styles/helpers/textOverflow'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
@@ -105,6 +105,7 @@ const GitLabFieldMenu = (props: Props) => {
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ] as string[]
   const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
+  console.log('🚀  ~ serviceField', {serviceField, dimensionRef, defaults, defaultActiveIdx})
   const {
     modalPortal,
     openPortal,
@@ -120,25 +121,25 @@ const GitLabFieldMenu = (props: Props) => {
   // const {repository} = integration
   // const {nameWithOwner} = repository
   const handleClick = (labelTemplate: string) => () => {
-    // if (labelTemplate !== serviceFieldName) {
-    //   UpdateGitLabDimensionFieldMutation(
-    //     atmosphere,
-    //     {
-    //       dimensionName,
-    //       labelTemplate,
-    //       nameWithOwner,
-    //       meetingId
-    //     },
-    //     {
-    //       onCompleted: submitScore,
-    //       onError: () => {
-    //         /* noop */
-    //       }
-    //     }
-    //   )
-    // } else {
-    //   submitScore()
-    // }
+    if (labelTemplate !== serviceFieldName) {
+      UpdateGitLabDimensionFieldMutation(
+        atmosphere,
+        {
+          dimensionName,
+          labelTemplate,
+          projectPath: 'nick460/nuevo-pp',
+          meetingId
+        },
+        {
+          onCompleted: submitScore,
+          onError: () => {
+            /* noop */
+          }
+        }
+      )
+    } else {
+      submitScore()
+    }
     closePortal()
   }
   const openEditModal = (e: React.MouseEvent) => {
@@ -150,31 +151,21 @@ const GitLabFieldMenu = (props: Props) => {
     ? defaultLabelTemplate
     : serviceFieldName
   return (
-    <>
-      <Menu
-        ariaLabel={'Select where to publish the estimate'}
-        portalStatus={portalStatus}
-        isDropdown={isDropdown}
-        defaultActiveIdx={defaultActiveIdx}
-      >
-        <MenuItem
-          label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
-          onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
-        />
-        <MenuItem
-          label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
-          onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
-        />
-      </Menu>
-      {/* {modalPortal(
-        <EditGitLabLabelTemplateModal
-          updateLabelTemplate={handleClick}
-          closePortal={closeModal}
-          defaultValue={serviceFieldTemplate}
-          placeholder={defaultLabelTemplate}
-        />
-      )} */}
-    </>
+    <Menu
+      ariaLabel={'Select where to publish the estimate'}
+      portalStatus={portalStatus}
+      isDropdown={isDropdown}
+      defaultActiveIdx={defaultActiveIdx}
+    >
+      <MenuItem
+        label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
+      />
+      <MenuItem
+        label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
+      />
+    </Menu>
   )
 }
 
