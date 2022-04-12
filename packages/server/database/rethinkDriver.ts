@@ -230,4 +230,13 @@ const getRethink = async () => {
   return r as unknown as ParabolR
 }
 
+export const closeRethink = async () => {
+  if (promise) {
+    await (await promise)?.drain()
+    isLoaded = false
+    isLoading = false
+    promise = undefined
+  }
+}
+
 export default getRethink
