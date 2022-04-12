@@ -94,6 +94,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   return (
     <ResultScroller>
       {edges.map(({node}) => {
+        console.log(`INside map. usedServiceTaskIds: ${JSON.stringify(usedServiceTaskIds)} `)
         return (
           <ScopingSearchResultItem
             key={node.id}
