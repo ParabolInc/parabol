@@ -104,7 +104,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  return (
+  return localDiscussionId ? (
     <ResponsiveDashSidebar
       isOpen={isRightDrawerOpen}
       isRightDrawer
@@ -118,18 +118,16 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
             <CloseIcon>close</CloseIcon>
           </StyledCloseButton>
         </Header>
-        {localDiscussionId && (
-          <ThreadColumn>
-            <DiscussionThreadRoot
-              discussionId={localDiscussionId!}
-              allowedThreadables={['comment', 'task']}
-              width={'100%'}
-            />
-          </ThreadColumn>
-        )}
+        <ThreadColumn>
+          <DiscussionThreadRoot
+            discussionId={localDiscussionId!}
+            allowedThreadables={['comment', 'task']}
+            width={'100%'}
+          />
+        </ThreadColumn>
       </Drawer>
     </ResponsiveDashSidebar>
-  )
+  ) : null
 }
 
 export default TeamPromptDiscussionDrawer
