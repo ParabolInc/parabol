@@ -1,20 +1,33 @@
-import React, {useState} from 'react'
-import Placeholder from '@tiptap/extension-placeholder'
-import {EditorContent, Editor, EditorEvents, useEditor} from '@tiptap/react'
+import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
+import Placeholder from '@tiptap/extension-placeholder'
+import {Editor, EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import React, {useState} from 'react'
+
+const StyledEditor = styled('div')`
+  .ProseMirror p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  .ProseMirror-focused:focus {
+    outline: none;
+  }
+`
 
 interface Props {
   autoFocus?: boolean
-  editorState: EditorState
-  setEditorState: (newEditorState: EditorState) => void
+  content: JSONContent | null
   handleSubmit: (editor: EditorState) => void
   readOnly: boolean
   placeholder: string
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, editorState, setEditorState, handleSubmit, readOnly, placeholder} = props
+  const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
   const [_isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -23,9 +36,8 @@ const PromptResponseEditor = (props: Props) => {
     setAutoFocus(false)
   }
 
-  const onUpdate = ({editor: newEditorState}: EditorEvents['update']) => {
+  const onUpdate = () => {
     setEditing(true)
-    setEditorState(newEditorState)
   }
 
   const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
@@ -33,26 +45,24 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit(newEditorState)
   }
 
-  const doc = editorState.getText()
-  const showPlaceholder = !doc && !!placeholder
   const editor: Editor | null = useEditor({
-    content: editorState.getJSON(),
+    content,
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: showPlaceholder ? placeholder : ''
+        placeholder
       })
     ],
     autofocus: autoFocus,
     onUpdate,
     onBlur: onSubmit,
-    editable: !readOnly,
+    editable: !readOnly
   })
 
   return (
-    <EditorContent
-      editor={editor}
-    />
+    <StyledEditor>
+      <EditorContent editor={editor} />
+    </StyledEditor>
   )
 }
 export default PromptResponseEditor

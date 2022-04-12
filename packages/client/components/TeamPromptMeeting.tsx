@@ -1,20 +1,20 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import React, {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import {Elevation} from '~/styles/elevation'
-import {BezierCurve, Breakpoint, Card} from '~/types/constEnums'
+import {BezierCurve, Breakpoint} from '~/types/constEnums'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
-import Avatar from './Avatar/Avatar'
+import {isNotNull} from '~/utils/predicates'
 import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
+import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
 const Dimensions = {
@@ -55,27 +55,6 @@ const TeamMemberResponse = styled('div')<{
   flexShrink: 0
 }))
 
-const ResponseCard = styled('div')({
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW,
-  flex: 1,
-  padding: Card.PADDING,
-  minHeight: Dimensions.RESPONSE_MIN_HEIGHT,
-  userSelect: 'none'
-})
-
-const ResponseHeader = styled('div')({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  padding: '0 8px'
-})
-
-const TeamMemberName = styled('h3')({
-  padding: '0 8px'
-})
-
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
@@ -91,11 +70,8 @@ const TeamPromptMeeting = (props: Props) => {
           ... on TeamPromptResponsesPhase {
             __typename
             stages {
-              teamMember {
-                id
-                preferredName
-                picture
-              }
+              id
+              ...TeamPromptResponseCard_stage
             }
           }
         }
@@ -107,12 +83,18 @@ const TeamPromptMeeting = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
-  const {stages} = phase
-  const teamMembers = stages.map((stage) => ({
-    ...stage.teamMember,
-    key: stage.teamMember.id
-  }))
-  const transitioningTeamMembers = useTransition(teamMembers)
+  const stages = useMemo(() => {
+    return phase.stages
+      .map((stage) => {
+        return {
+          ...stage,
+          key: stage.id
+        }
+      })
+      .filter(isNotNull)
+  }, [phase])
+  const transitioningStages = useTransition(stages)
+
   const {safeRoute} = useMeeting(meeting)
   if (!safeRoute) return null
 
@@ -127,9 +109,9 @@ const TeamPromptMeeting = (props: Props) => {
               <ErrorBoundary>
                 <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
                   <ResponsesGrid>
-                    {transitioningTeamMembers.map((teamMember) => {
-                      const {child, onTransitionEnd, status} = teamMember
-                      const {key, picture, preferredName} = child
+                    {transitioningStages.map((transitioningStage) => {
+                      const {child: stage, onTransitionEnd, status} = transitioningStage
+                      const {key} = stage
 
                       return (
                         <TeamMemberResponse
@@ -137,11 +119,7 @@ const TeamPromptMeeting = (props: Props) => {
                           status={status}
                           onTransitionEnd={onTransitionEnd}
                         >
-                          <ResponseHeader>
-                            <Avatar picture={picture} size={48} />
-                            <TeamMemberName>{preferredName}</TeamMemberName>
-                          </ResponseHeader>
-                          <ResponseCard>Test</ResponseCard>
+                          <TeamPromptResponseCard stageRef={stage} />
                         </TeamMemberResponse>
                       )
                     })}
