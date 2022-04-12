@@ -245,14 +245,14 @@ export const githubAuth = (parent: RootDataLoader) => {
 
 export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
   return new DataLoader<
-    {teamId: string; dimensionName: string; projectPath: string},
+    {teamId: string; dimensionName: string; gid: string},
     GitLabDimensionFieldMap | null,
     string
   >(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, projectPath}) =>
-          getGitLabDimensionFieldMaps(teamId, dimensionName, projectPath)
+        keys.map(async ({teamId, dimensionName, gid}) =>
+          getGitLabDimensionFieldMaps(teamId, dimensionName, gid)
         )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
@@ -260,8 +260,7 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, dimensionName, projectPath}) =>
-        `${teamId}:${dimensionName}:${projectPath}`
+      cacheKeyFn: ({teamId, dimensionName, gid}) => `${teamId}:${dimensionName}:${gid}`
     }
   )
 }

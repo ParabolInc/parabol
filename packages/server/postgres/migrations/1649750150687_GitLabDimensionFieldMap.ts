@@ -9,9 +9,9 @@ export async function up() {
     "id" SERIAL,
     "teamId" VARCHAR(120) NOT NULL,
     "dimensionName" VARCHAR(120) NOT NULL,
-    "projectPath" VARCHAR(140) NOT NULL,
+    "gid" VARCHAR(140) NOT NULL,
     "labelTemplate" VARCHAR(100) NOT NULL,
-    PRIMARY KEY ("teamId", "dimensionName", "projectPath")
+    PRIMARY KEY ("teamId", "dimensionName", "gid")
   );
   `)
   await client.end()

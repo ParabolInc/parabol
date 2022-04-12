@@ -27,13 +27,13 @@ const mutation = graphql`
   mutation UpdateGitLabDimensionFieldMutation(
     $dimensionName: String!
     $labelTemplate: String!
-    $projectPath: String!
+    $gid: ID!
     $meetingId: ID!
   ) {
     updateGitLabDimensionField(
       dimensionName: $dimensionName
       labelTemplate: $labelTemplate
-      projectPath: $projectPath
+      gid: $gid
       meetingId: $meetingId
     ) {
       ... on ErrorPayload {
@@ -55,14 +55,14 @@ const UpdateGitLabDimensionFieldMutation: StandardMutation<TUpdateGitLabDimensio
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {dimensionName, labelTemplate, projectPath, meetingId} = variables
+      const {dimensionName, labelTemplate, gid, meetingId} = variables
       const meeting = store.get(meetingId)
       if (!meeting) return
       const phases = meeting.getLinkedRecords('phases')
       if (!phases) return
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = estimatePhase.getLinkedRecords<GitLabFieldMenu_stage[]>('stages')
-      console.log('🚀  ~ stages', {stages, projectPath, labelTemplate, dimensionName})
+      console.log('🚀  ~ stages', {stages, gid, labelTemplate, dimensionName})
 
       stages.forEach((stage) => {
         const dimensionRef = stage.getLinkedRecord('dimensionRef')
@@ -72,9 +72,7 @@ const UpdateGitLabDimensionFieldMutation: StandardMutation<TUpdateGitLabDimensio
         const _integration = task.getLinkedRecord('integration')
         if (_integration.getType() !== '_xGitLabIssue') return
         const integration = _integration as DiscriminateProxy<typeof _integration, '_xGitLabIssue'>
-        // const repository = integration.getLinkedRecord('repository')
-        // if (repository.getValue('projectPath') !== projectPath) return
-        console.log('🚀  ~ labelTemplate', labelTemplate)
+        if (integration.getValue('id') !== gid) return
         const nextServiceField = createProxyRecord(store, 'ServiceField', {
           name: labelTemplate,
           type: 'string'

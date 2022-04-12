@@ -114,7 +114,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           const dimensionName = await getDimensionName(meetingId)
           const gitlabFieldMap = await dataLoader
             .get('gitlabDimensionFieldMaps')
-            .load({teamId, dimensionName, projectPath: 'nick460/nuevo-pp'})
+            .load({teamId, dimensionName, gid})
           if (gitlabFieldMap) {
             return {
               name: gitlabFieldMap.labelTemplate,

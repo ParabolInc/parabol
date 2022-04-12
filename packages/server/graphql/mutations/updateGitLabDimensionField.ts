@@ -10,7 +10,7 @@ import UpdateGitLabDimensionFieldPayload from '../types/UpdateGitLabDimensionFie
 interface Args {
   dimensionName: string
   labelTemplate: string
-  projectPath: string
+  gid: string
   meetingId: string
 }
 
@@ -25,9 +25,9 @@ const updateGitLabDimensionField = {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The template string to map to a label'
     },
-    projectPath: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The full path of the project the issue lives on'
+    gid: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The unique global id of the issue'
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -37,7 +37,7 @@ const updateGitLabDimensionField = {
   },
   resolve: async (
     _source: unknown,
-    {dimensionName, labelTemplate, meetingId, projectPath}: Args,
+    {dimensionName, labelTemplate, meetingId, gid}: Args,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const operationId = dataLoader.share()
@@ -60,11 +60,10 @@ const updateGitLabDimensionField = {
     }
 
     // TODO validate labelTemplate
-    // no sense in validating projectPath because that could become invalid at any time
 
     // RESOLUTION
     try {
-      await upsertGitLabDimensionFieldMap(teamId, dimensionName, projectPath, labelTemplate)
+      await upsertGitLabDimensionFieldMap(teamId, dimensionName, gid, labelTemplate)
     } catch (e) {
       console.log(e)
     }

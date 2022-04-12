@@ -4,11 +4,11 @@ import {upsertGitLabDimensionFieldMapQuery} from './generated/upsertGitLabDimens
 const upsertGitLabDimensionFieldMap = async (
   teamId: string,
   dimensionName: string,
-  projectPath: string,
+  gid: string,
   labelTemplate: string
 ) => {
   return upsertGitLabDimensionFieldMapQuery.run(
-    {fieldMap: {teamId, dimensionName, projectPath, labelTemplate}},
+    {fieldMap: {teamId, dimensionName, gid, labelTemplate}},
     getPg()
   )
 }

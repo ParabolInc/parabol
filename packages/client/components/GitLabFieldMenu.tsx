@@ -88,6 +88,7 @@ const GitLabFieldMenu = (props: Props) => {
           integration {
             ... on _xGitLabIssue {
               __typename
+              id
             }
           }
         }
@@ -104,7 +105,7 @@ const GitLabFieldMenu = (props: Props) => {
     SprintPokerDefaults.SERVICE_FIELD_COMMENT,
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ] as string[]
-  const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
+  const defaultActiveIdx = defaults.indexOf(serviceFieldName)
   console.log('🚀  ~ serviceField', {serviceField, dimensionRef, defaults, defaultActiveIdx})
   const {
     modalPortal,
@@ -115,11 +116,9 @@ const GitLabFieldMenu = (props: Props) => {
     parentId: 'githubFieldMenu'
   })
 
-  console.log('🚀  ~ field menu', {task})
   if (task?.integration?.__typename !== '_xGitLabIssue') return null
   const {integration} = task
-  // const {repository} = integration
-  // const {nameWithOwner} = repository
+  const {id: gid} = integration
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
       UpdateGitLabDimensionFieldMutation(
@@ -127,7 +126,7 @@ const GitLabFieldMenu = (props: Props) => {
         {
           dimensionName,
           labelTemplate,
-          projectPath: 'nick460/nuevo-pp',
+          gid,
           meetingId
         },
         {

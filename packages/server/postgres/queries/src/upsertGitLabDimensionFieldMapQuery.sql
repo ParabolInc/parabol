@@ -1,9 +1,9 @@
 /*
   @name upsertGitLabDimensionFieldMapQuery
-  @param fieldMap -> (teamId, dimensionName, projectPath, labelTemplate)
+  @param fieldMap -> (teamId, dimensionName, gid, labelTemplate)
 */
-INSERT INTO "GitLabDimensionFieldMap" ("teamId", "dimensionName", "projectPath", "labelTemplate")
+INSERT INTO "GitLabDimensionFieldMap" ("teamId", "dimensionName", "gid", "labelTemplate")
 VALUES :fieldMap
-ON CONFLICT ("teamId", "dimensionName", "projectPath")
+ON CONFLICT ("teamId", "dimensionName", "gid")
 DO UPDATE
 SET "labelTemplate" = EXCLUDED."labelTemplate";
