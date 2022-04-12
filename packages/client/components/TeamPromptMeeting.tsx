@@ -17,6 +17,19 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
+const Dimensions = {
+  RESPONSE_WIDTH: 296,
+  RESPONSE_MIN_HEIGHT: 100
+}
+
+const Prompt = styled('h1')({
+  textAlign: 'center',
+  margin: 16,
+  fontSize: 20,
+  lineHeight: '32px',
+  fontWeight: 400
+})
+
 const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   height: '100%',
   overflow: 'auto',
@@ -27,18 +40,8 @@ const ResponsesGrid = styled('div')({
   flex: 1,
   display: 'flex',
   flexWrap: 'wrap',
-  position: 'relative'
-})
-
-//TODO: replace with real team prompt response comopnent
-const ResponseCard = styled('div')({
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW,
-  flex: 1,
-  margin: 8,
-  minHeight: 100,
-  userSelect: 'none'
+  position: 'relative',
+  gap: 32
 })
 
 const TeamMemberResponse = styled('div')<{
@@ -48,9 +51,19 @@ const TeamMemberResponse = styled('div')<{
   transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
   display: 'flex',
   flexDirection: 'column',
-  width: 296,
+  width: Dimensions.RESPONSE_WIDTH,
   flexShrink: 0
 }))
+
+const ResponseCard = styled('div')({
+  background: Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: Elevation.CARD_SHADOW,
+  flex: 1,
+  padding: Card.PADDING,
+  minHeight: Dimensions.RESPONSE_MIN_HEIGHT,
+  userSelect: 'none'
+})
 
 const ResponseHeader = styled('div')({
   display: 'flex',
@@ -122,6 +135,7 @@ const TeamPromptMeeting = (props: Props) => {
           <MeetingContent>
             <MeetingHeaderAndPhase hideBottomBar={true}>
               <TeamPromptTopBar meetingRef={meeting} />
+              <Prompt>What are you working on today? Stuck on anything?</Prompt>
               <ErrorBoundary>
                 <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
                   <ResponsesGrid>
