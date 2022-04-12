@@ -15,7 +15,7 @@ const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
       description: 'The query string used to search GitLab issue titles and descriptions'
     },
     selectedProjectsIds: {
-      type: new GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description:
         'The list of ids of projects that have been selected as a filter. Null if none have been selected'
     },
