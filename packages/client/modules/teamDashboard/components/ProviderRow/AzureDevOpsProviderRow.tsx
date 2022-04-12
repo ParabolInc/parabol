@@ -84,7 +84,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {integrations} = teamMember!
   const {azureDevOps} = integrations
   const provider = azureDevOps?.sharedProviders[0]
-  const accessToken = azureDevOps?.accessToken ?? undefined
+  const accessToken = azureDevOps?.auth?.accessToken ?? undefined
 
   if (!provider) return null
 
@@ -101,6 +101,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
         <ProviderName>{Providers.AZUREDEVOPS_NAME}</ProviderName>
         <RowInfoCopy>{Providers.AZUREDEVOPS_DESC}</RowInfoCopy>
       </RowInfo>
+      {console.log('accessToken in providerRow' + accessToken)}
       {!accessToken && (
         <ProviderActions>
           <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
@@ -131,11 +132,17 @@ const AzureDevOpsProviderRow = (props: Props) => {
 }
 
 graphql`
-  fragment AzureDevOpsProviderRowAzureDevOpsIntegration on AzureDevOpsIntegration {
-    accessToken
-    id
-    sharedProviders {
-      id
+  fragment AzureDevOpsProviderRowTeamMember on TeamMember {
+    integrations {
+      azureDevOps {
+        id
+        auth {
+          accessToken
+        }
+        sharedProviders {
+          id
+        }
+      }
     }
   }
 `
@@ -146,11 +153,7 @@ export default createFragmentContainer(
     viewer: graphql`
       fragment AzureDevOpsProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          integrations {
-            azureDevOps {
-              ...AzureDevOpsProviderRowAzureDevOpsIntegration @relay(mask: false)
-            }
-          }
+          ...AzureDevOpsProviderRowTeamMember @relay(mask: false)
         }
       }
     `
