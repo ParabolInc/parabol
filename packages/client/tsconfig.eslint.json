@@ -9,6 +9,7 @@
     "stories/*",
     "components/*",
     "mutations/*",
-    "hooks/*"
+    "hooks/*",
+    "routing/*",
   ]
 }
