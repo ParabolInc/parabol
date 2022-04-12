@@ -15,7 +15,9 @@ export interface IUpsertTeamPromptResponsesQueryParams {
 }
 
 /** 'UpsertTeamPromptResponsesQuery' return type */
-export type IUpsertTeamPromptResponsesQueryResult = void;
+export interface IUpsertTeamPromptResponsesQueryResult {
+  id: number;
+}
 
 /** 'UpsertTeamPromptResponsesQuery' query type */
 export interface IUpsertTeamPromptResponsesQueryQuery {
@@ -23,13 +25,14 @@ export interface IUpsertTeamPromptResponsesQueryQuery {
   result: IUpsertTeamPromptResponsesQueryResult;
 }
 
-const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponsesQuery","params":[{"name":"responses","codeRefs":{"defined":{"a":51,"b":59,"line":3,"col":9},"used":[{"a":239,"b":247,"line":6,"col":8}]},"transform":{"type":"pick_array_spread","keys":["meetingId","userId","sortOrder","content","plaintextContent"]}}],"usedParamSet":{"responses":true},"statement":{"body":"INSERT INTO \"TeamPromptResponse\" (\"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\")\nVALUES :responses","loc":{"a":130,"b":247,"line":5,"col":0}}};
+const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponsesQuery","params":[{"name":"responses","codeRefs":{"defined":{"a":51,"b":59,"line":3,"col":9},"used":[{"a":239,"b":247,"line":6,"col":8}]},"transform":{"type":"pick_array_spread","keys":["meetingId","userId","sortOrder","content","plaintextContent"]}}],"usedParamSet":{"responses":true},"statement":{"body":"INSERT INTO \"TeamPromptResponse\" (\"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\")\nVALUES :responses\nRETURNING id","loc":{"a":130,"b":260,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO "TeamPromptResponse" ("meetingId", "userId", "sortOrder", "content", "plaintextContent")
  * VALUES :responses
+ * RETURNING id
  * ```
  */
 export const upsertTeamPromptResponsesQuery = new PreparedQuery<IUpsertTeamPromptResponsesQueryParams,IUpsertTeamPromptResponsesQueryResult>(upsertTeamPromptResponsesQueryIR);

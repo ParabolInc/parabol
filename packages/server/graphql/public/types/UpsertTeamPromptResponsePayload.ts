@@ -1,13 +1,13 @@
-import {UpdateTeamPromptResponsePayloadResolvers} from '../resolverTypes'
+import {UpsertTeamPromptResponsePayloadResolvers} from '../resolverTypes'
 
-export type UpdateTeamPromptResponsePayloadSource =
+export type UpsertTeamPromptResponsePayloadSource =
   | {
       teamPromptResponseId: number
       meetingId: string
     }
   | {error: {message: string}}
 
-const UpdateTeamPromptResponsePayload: UpdateTeamPromptResponsePayloadResolvers = {
+const UpsertTeamPromptResponsePayload: UpsertTeamPromptResponsePayloadResolvers = {
   teamPromptResponse: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null
     const {teamPromptResponseId} = source
@@ -20,4 +20,4 @@ const UpdateTeamPromptResponsePayload: UpdateTeamPromptResponsePayloadResolvers 
   }
 }
 
-export default UpdateTeamPromptResponsePayload
+export default UpsertTeamPromptResponsePayload

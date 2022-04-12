@@ -1,0 +1,6 @@
+extend type Mutation {
+  """
+  create an empty team prompt response
+  """
+  createTeamPromptResponse(meetingId: ID!, userId: ID!): UpsertTeamPromptResponsePayload!
+}

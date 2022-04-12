@@ -7,7 +7,7 @@ extend type Mutation {
     The input object containing the team prompt response id and modified content
     """
     updatedTeamPromptResponse: UpdatedTeamPromptResponseInput!
-  ): UpdateTeamPromptResponsePayload!
+  ): UpsertTeamPromptResponsePayload!
 }
 
 input UpdatedTeamPromptResponseInput {
@@ -22,14 +22,14 @@ input UpdatedTeamPromptResponseInput {
   content: String!
 }
 
-type UpdateTeamPromptResponsePayload {
+type UpsertTeamPromptResponsePayload {
   error: StandardMutationError
 
   teamPromptResponseId: Int!
   meetingId: ID!
 
   """
-  the updated team prompt response
+  the created/updated team prompt response
   """
   teamPromptResponse: TeamPromptResponse
   """

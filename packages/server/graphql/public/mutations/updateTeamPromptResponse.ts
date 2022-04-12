@@ -36,11 +36,10 @@ const updateTeamPromptResponse: MutationResolvers['updateTeamPromptResponse'] = 
   }
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
-  // VALIDATION
+  // RESOLUTION
   const contentJSON: JSONContent = JSON.parse(content)
   const plaintextContent = extractTextFromTipTapJSONContent(contentJSON)
 
-  // RESOLUTION
   await updateTeamPromptResponseContentById({
     content,
     plaintextContent,
@@ -50,7 +49,13 @@ const updateTeamPromptResponse: MutationResolvers['updateTeamPromptResponse'] = 
   promptResponse.plaintextContent = plaintextContent
 
   const data = {meetingId, teamPromptResponseId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePromptResponseSuccess', data, subOptions)
+  publish(
+    SubscriptionChannel.MEETING,
+    meetingId,
+    'UpdateTeamPromptResponseSuccess',
+    data,
+    subOptions
+  )
 
   return data
 }

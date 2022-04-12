@@ -18,15 +18,13 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import ReflectPhase from '../../../database/types/ReflectPhase'
+import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
-import {upsertTeamPromptResponses} from '../../../postgres/queries/upsertTeamPromptResponses'
-import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -147,14 +145,6 @@ const createNewMeetingPhases = async (
             discussionTopicId: stage.teamMemberId,
             discussionTopicType: 'teamPromptResponse' as const
           }))
-          const teamMemberPromptResponses = teamPromptStages.map((stage, index) => ({
-            meetingId,
-            userId: TeamMemberId.split(stage.teamMemberId).userId,
-            sortOrder: index,
-            content: {},
-            plaintextContent: ''
-          }))
-          asyncSideEffects.push(upsertTeamPromptResponses(teamMemberPromptResponses))
           asyncSideEffects.push(insertDiscussions(teamMemberResponseDiscussion))
           return teamPromptResponsesPhase
         default:
