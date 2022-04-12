@@ -42,7 +42,7 @@ export class Resource<T> {
    */
   load() {
     let promise = this.promise
-    if (promise === null) {
+    if (!promise) {
       promise = this.loader()
         .then((result: T | {default: T}) => {
           if (hasDefaultProperty(result)) {
@@ -71,6 +71,7 @@ export class Resource<T> {
     if (this.state === 'loaded') {
       return this.result
     }
+    return null
   }
 
   /**
@@ -111,7 +112,7 @@ export class Resource<T> {
  */
 export default function JSResource<T>(moduleId: typeof UniqueId, loader: Loader<T>): Resource<T> {
   let resource = resourceMap.get(moduleId)
-  if (resource === null) {
+  if (!resource) {
     resource = new Resource(loader)
     resourceMap.set(moduleId, resource)
   }

@@ -1,33 +1,58 @@
-import React, {lazy, Suspense} from 'react'
-import {Route, RouteComponentProps, Switch} from 'react-router'
-import DashContent from '~/components/Dashboard/DashContent'
+import React from 'react'
+import {RouteComponentProps} from 'react-router'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
-import StartMeetingFAB from '../../../../components/StartMeetingFAB'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import {createRouter, JSResource, RouteRenderer, RoutingContext} from '../../../../routing'
 import {LoaderSize} from '../../../../types/constEnums'
+import myDashboardTimelineQuery, {
+  MyDashboardTimelineQuery
+} from '../../../../__generated__/MyDashboardTimelineQuery.graphql'
 
 interface Props extends RouteComponentProps {}
 
-const UserTaskViewRoot = lazy(() =>
-  import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../../../../components/UserTaskViewRoot')
+const UserTaskViewRoot = JSResource(
+  'MyDashboardTasksRoot',
+  () => import('../../../../components/UserTaskViewRoot')
 )
-const MyDashboardTimelineRoot = lazy(() =>
-  import(
-    /* webpackChunkName: 'MyDashboardTimelineRoot' */ '../../../../components/MyDashboardTimelineRoot'
-  )
+const MyDashboardTimeline = JSResource(
+  'MyDashboardTimeline',
+  () => import('../../../../components/MyDashboardTimeline')
 )
 
 const UserDashMain = (props: Props) => {
   const {match} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const queryRef = useQueryLoaderNow<MyDashboardTimelineQuery>(myDashboardTimelineQuery, {
+    first: 10,
+    userIds: [viewerId]
+  })
+  const router = createRouter([
+    {
+      component: JSResource('DashContentRoot', () => import('./DashContentRoot')),
+      prepare: () => ({}),
+      routes: [
+        {
+          path: match.url,
+          exact: true,
+          component: MyDashboardTimeline,
+          prepare: () => ({queryRef})
+        },
+        {
+          path: `${match.url}/tasks`,
+          component: UserTaskViewRoot,
+          prepare: () => ({tasksQuery: queryRef})
+        }
+      ]
+    }
+  ])
+
   return (
-    <DashContent>
-      <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
-        <Switch>
-          <Route path={`${match.url}/tasks`} component={UserTaskViewRoot} />
-          <Route path={match.url} component={MyDashboardTimelineRoot} />
-        </Switch>
-      </Suspense>
-      <StartMeetingFAB />
-    </DashContent>
+    <RoutingContext.Provider value={router.context}>
+      {/* Render the active route */}
+      <RouteRenderer fallbackLoader={<LoadingComponent spinnerSize={LoaderSize.PANEL} />} />
+    </RoutingContext.Provider>
   )
 }
 

@@ -5,7 +5,7 @@ import {match} from 'react-router'
 import {Resource} from './JSResource'
 
 export type PreparedQuery = {
-  [queryName: string]: PreloadedQuery<any>
+  [queryName: string]: PreloadedQuery<any> | undefined | null
 }
 
 export interface Route {

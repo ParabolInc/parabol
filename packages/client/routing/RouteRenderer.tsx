@@ -1,27 +1,20 @@
 /* eslint-disable react/no-children-prop */
-/// <reference types="react/experimental" />
 import * as React from 'react'
-import {Suspense, useContext, useEffect, useState, useTransition} from 'react'
+import {ReactNode, Suspense, useContext, useEffect, useState} from 'react'
 import ErrorBoundary from './ErrorBoundary'
 import RoutingContext, {Entry, Router} from './RoutingContext'
 
 interface RouterRendererProps {
-  LoadingComponent: React.FC<any>
-  transitionConfig: React.SuspenseConfig
+  fallbackLoader: NonNullable<ReactNode> | null
 }
 
-const RouteRenderer: React.FC<RouterRendererProps> = ({LoadingComponent, transitionConfig}) => {
+const RouteRenderer: React.FC<RouterRendererProps> = ({fallbackLoader}) => {
   // Access the router
-  const router = useContext<Router>(RoutingContext)
+  const router = useContext<Router | null>(RoutingContext)
 
-  if (router === null) {
+  if (!router) {
     throw new Error('RoutingContext not set')
   }
-
-  // Improve the route transition UX by delaying transitions: show the previous route entry
-  // for a brief period while the next route is being prepared. See
-  // https://reactjs.org/docs/concurrent-mode-patterns.html#transitions
-  const [startTransition, isPending] = useTransition(transitionConfig)
 
   // Store the active entry in state - this allows the renderer to use features like
   // useTransition to delay when state changes become visible to the user.
@@ -43,16 +36,14 @@ const RouteRenderer: React.FC<RouterRendererProps> = ({LoadingComponent, transit
       // startTransition() delays the effect of the setRouteEntry (setState) call
       // for a brief period, continuing to show the old state while the new
       // state (route) is prepared.
-      startTransition(() => {
-        setRouteEntry(nextEntry)
-      })
+      setRouteEntry(nextEntry)
     })
     return () => dispose()
     // Note: this hook updates routeEntry manually; we exclude that variable
     // from the hook deps to avoid recomputing the effect after each change
     // triggered by the effect itself.
     // eslint-disable-next-line
-  }, [router, startTransition])
+  }, [router])
 
   // The current route value is an array of matching entries - one entry per
   // level of routes (to allow nested routes). We have to map each one to a
@@ -73,7 +64,7 @@ const RouteRenderer: React.FC<RouterRendererProps> = ({LoadingComponent, transit
   // component, and iteratively construct parent components w the previous
   // value as the child of the next one:
   const reversedItems = [...routeEntry.entries].reverse() // reverse is in place, but we want a copy so concat
-  const firstItem = reversedItems[0]
+  const firstItem = reversedItems[0]!
   // the bottom-most component is special since it will have no children
   // (though we could probably just pass null children to it)
   let routeComponent = (
@@ -84,7 +75,7 @@ const RouteRenderer: React.FC<RouterRendererProps> = ({LoadingComponent, transit
     />
   )
   for (let ii = 1; ii < reversedItems.length; ii++) {
-    const nextItem = reversedItems[ii]
+    const nextItem = reversedItems[ii]!
     routeComponent = (
       <RouteComponent
         component={nextItem.component}
@@ -101,11 +92,7 @@ const RouteRenderer: React.FC<RouterRendererProps> = ({LoadingComponent, transit
 
   return (
     <ErrorBoundary>
-      <Suspense fallback={'Loading fallback...'}>
-        {/* Indicate to the user that a transition is pending, even while showing the previous UI */}
-        {isPending ? <LoadingComponent /> : null}
-        {routeComponent}
-      </Suspense>
+      <Suspense fallback={fallbackLoader}>{routeComponent}</Suspense>
     </ErrorBoundary>
   )
 }
@@ -117,7 +104,7 @@ export default RouteRenderer
  * We use a helper child component to unwrap the resource with component.read(), and then
  * render it if its ready.
  *
- * NOTE: calling routeEntry.route.component.read() directly in RouteRenderer woldn't work the
+ * NOTE: calling routeEntry.route.component.read() directly in RouteRenderer wouldn't work the
  * way we'd expect. Because that method could throw - either suspending or on error - the error
  * would bubble up to the *caller* of RouteRenderer. We want the suspend/error to bubble up to
  * our ErrorBoundary/Suspense components, so we have to ensure that the suspend/error happens

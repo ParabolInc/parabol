@@ -11,9 +11,9 @@ interface Props {
  * our custom RoutingContext.
  */
 const Link: React.FC<Props> = (props) => {
-  const router = useContext<Router>(RoutingContext)
+  const router = useContext<Router | null>(RoutingContext)
 
-  if (router === null) {
+  if (!router) {
     throw new Error('<Link> requires a routing context to be set.')
   }
 

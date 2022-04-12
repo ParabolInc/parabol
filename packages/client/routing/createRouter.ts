@@ -17,7 +17,7 @@ export interface RouteConfig {
   exact?: boolean
   strict?: boolean
   component: Resource<any>
-  prepare: (params: Params) => {[queryName: string]: PreloadedQuery<any>}
+  prepare: (params: Params) => {[queryName: string]: PreloadedQuery<any> | null | undefined}
   routes?: RouteConfig[]
 }
 
@@ -33,6 +33,7 @@ export interface MatchedRoute<Params extends {[K in keyof Params]?: string}> {
  * location to the corresponding route entry, and then preloads the code and data for the route.
  */
 export default function createRouter(routes: RouteConfig[], options?: BrowserHistoryBuildOptions) {
+  // TODO: merge with the default useRouter history?
   // Initialize history
   const history = createBrowserHistory(options)
 
@@ -52,7 +53,7 @@ export default function createRouter(routes: RouteConfig[], options?: BrowserHis
   // Listen for location changes, match to the route entry, prepare the entry,
   // and notify subscribers. Note that this pattern ensures that data-loading
   // occurs *outside* of - and *before* - rendering.
-  const cleanup = history.listen((location, action) => {
+  const cleanup = history.listen((location) => {
     if (location.pathname === currentEntry.location.pathname) {
       return
     }
@@ -125,8 +126,9 @@ function prepareMatches(matches: MatchedRoute<Params>[]): Entry[] {
   return matches.map((match) => {
     const {route, match: matchData} = match
     const prepared = route.prepare(matchData.params)
+    console.log('========route========', route, prepared)
     const Component = route.component.get()
-    if (Component === null) {
+    if (!Component) {
       route.component.load() // eagerly load
     }
     return {

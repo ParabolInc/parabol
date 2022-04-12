@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
+import useNewFeatureSnackbar from '../hooks/useNewFeatureSnackbar'
 import {DashTimeline} from '../types/constEnums'
 import {MyDashboardTimelineQuery} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import ErrorBoundary from './ErrorBoundary'
@@ -10,10 +11,11 @@ import TimelineFeedList from './TimelineFeedList'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
 import TimelineSuggestedAction from './TimelineSuggestedAction'
-import useNewFeatureSnackbar from '../hooks/useNewFeatureSnackbar'
 
 interface Props {
-  queryRef: PreloadedQuery<MyDashboardTimelineQuery>
+  prepared: {
+    queryRef: PreloadedQuery<MyDashboardTimelineQuery>
+  }
 }
 
 const TimelineFeed = styled('div')({
@@ -38,7 +40,7 @@ const FeedAndDrawer = styled('div')({
 })
 
 const MyDashboardTimeline = (props: Props) => {
-  const {queryRef} = props
+  const queryRef = props.prepared.queryRef
   const data = usePreloadedQuery<MyDashboardTimelineQuery>(
     graphql`
       query MyDashboardTimelineQuery($first: Int!, $after: DateTime, $userIds: [ID!]) {
