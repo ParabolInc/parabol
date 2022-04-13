@@ -232,7 +232,7 @@ const getRethink = async () => {
 
 export const closeRethink = async () => {
   if (promise) {
-    await (await promise)?.drain()
+    await (await promise).drain()
     isLoaded = false
     isLoading = false
     promise = undefined
