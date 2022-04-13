@@ -1,4 +1,11 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLInt, GraphQLList, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLString
+} from 'graphql'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import TaskServiceEnum from './TaskServiceEnum'
 
@@ -16,10 +23,11 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     viewerId: {type: GraphQLID},
     reflectionsCount: {type: GraphQLInt},
     action: {type: GraphQLString},
-    queryString: {type: GraphQLString},
+    searchQueryString: {type: GraphQLString},
     service: {type: TaskServiceEnum},
     searchQueryFilters: {type: GraphQLList(GraphQLID)},
-    projectId: {type: GraphQLID}
+    projectId: {type: GraphQLID},
+    selectedAll: {type: GraphQLBoolean}
   })
 })
 

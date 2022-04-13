@@ -2,7 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
-import PokerEstimateHeaderCardContent from './PokerEstimateHeaderCardContent'
+import PokerEstimateHeaderCardContent, {
+  PokerEstimateHeaderCardContentProps
+} from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
@@ -10,16 +12,11 @@ interface Props {
   stage: PokerEstimateHeaderCard_stage
 }
 
-type Integration = NonNullable<NonNullable<PokerEstimateHeaderCard_stage['task']>['integration']>
-export type IntegrationHeaderFields = {
-  cardTitle: string
-  descriptionHTML: string
-  url: string
-  linkTitle: string
-  linkText: string
-}
+type Integration = NonNullable<PokerEstimateHeaderCard_stage['task']>['integration']
 
-const getHeaderFields = (integration: Integration | null): IntegrationHeaderFields | null => {
+const getHeaderFields = (
+  integration: Integration | null
+): PokerEstimateHeaderCardContentProps | null => {
   if (!integration) return null
   const {__typename} = integration
   switch (__typename) {
@@ -74,16 +71,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }
 
-  const {cardTitle, descriptionHTML, url, linkTitle, linkText} = headerFields
-  return (
-    <PokerEstimateHeaderCardContent
-      cardTitle={cardTitle}
-      descriptionHTML={descriptionHTML}
-      url={url}
-      linkTitle={linkTitle}
-      linkText={linkText}
-    />
-  )
+  return <PokerEstimateHeaderCardContent {...headerFields} />
 }
 
 export default createFragmentContainer(PokerEstimateHeaderCard, {
