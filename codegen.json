@@ -49,6 +49,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "User": "../../postgres/types/IUser#default as IUser"

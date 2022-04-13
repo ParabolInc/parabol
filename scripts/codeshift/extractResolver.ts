@@ -54,6 +54,23 @@ const generateImportHeaders = (
   })
   return importStrs
 }
+
+const removeTypeAnnotations = (
+  value: core.ArrowFunctionExpression,
+  key: string,
+  typeName: string
+) => {
+  if (!value.params) {
+    // it's probably a resolve function that needs to get replaced
+    console.warn(`WARNING: ${typeName}#${key}: ${(value as any).name} must be manually replaced`)
+  } else {
+    value.params.forEach((param) => {
+      if ('typeAnnotation' in param) {
+        param.typeAnnotation = null
+      }
+    })
+  }
+}
 const transform: Transform = (fileInfo, api, options) => {
   const j = api.jscodeshift
   const {source, path: maybeAbsPath} = fileInfo
@@ -75,15 +92,15 @@ const transform: Transform = (fileInfo, api, options) => {
     const resolversName = `${typeName}Resolvers`
     const sourceTypeName = `${typeName}Source`
     //
+    // Convert any methods into arrow functions
+    root.find(j.ObjectMethod, {key: {name: 'resolve'}}).replaceWith((method) => {
+      return createArrowProperty(j, method.node)
+    })
     const resolverMapProperties = [] as core.ObjectProperty[]
     root.find(j.ObjectProperty, {key: {name: 'resolve'}}).forEach((node) => {
       const key = node.parent.parent.value.key.name
       const value = node.value.value as core.ArrowFunctionExpression
-      value.params.forEach((param) => {
-        if ('typeAnnotation' in param) {
-          param.typeAnnotation = null
-        }
-      })
+      removeTypeAnnotations(value, key, typeName)
       const entry = j.objectProperty.from({
         key: j.identifier(key),
         value
@@ -134,11 +151,7 @@ ${exportLine}`
 
     const resolveProp = root.find(j.ObjectProperty, {key: {name: 'resolve'}})
     const value = resolveProp.get().value.value
-    value.params.forEach((param) => {
-      if ('typeAnnotation' in param) {
-        param.typeAnnotation = null
-      }
-    })
+    removeTypeAnnotations(value, 'resolve', typeName)
     const dir = IS_QUERY ? 'queries' : 'mutations'
     const from = path.dirname(path.join(absPath, `../../public/${dir}/foo.ts`))
     const importStrs = generateImportHeaders(from, root, j, absPath)

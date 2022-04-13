@@ -39,12 +39,6 @@ export const isTeamLead = async (userId: string, teamId: string) => {
   return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()
 }
 
-export const requireSU = (authToken: AuthToken) => {
-  if (!isSuperUser(authToken)) {
-    throw new Error('Unauthorized. Must be a super user to run this query.')
-  }
-}
-
 interface Options {
   clearCache?: boolean
 }
