@@ -58,14 +58,11 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
     `,
     stageRef
   )
-  const {finalScore, serviceField} = stage
+  const {serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
-    {
-      isDropdown: true,
-      id: 'gitlabFieldMenu'
-    }
+    {isDropdown: true}
   )
 
   const onClick = () => {
