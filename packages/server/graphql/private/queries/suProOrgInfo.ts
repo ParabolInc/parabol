@@ -1,19 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
-import {requireSU} from '../../../utils/authorization'
 import {QueryResolvers} from '../resolverTypes'
 
-const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (
-  _source,
-  {includeInactive},
-  {authToken}
-) => {
+const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeInactive}) => {
   const r = await getRethink()
-
-  // AUTH
-  requireSU(authToken)
-
-  // RESOLUTION
   return r
     .table('Organization')
     .getAll('pro', {index: 'tier'})

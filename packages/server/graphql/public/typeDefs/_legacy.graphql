@@ -7255,20 +7255,6 @@ type Mutation {
     status: NotificationStatusEnum!
   ): SetNotificationStatusPayload
 
-  """
-  for troubleshooting by admins, create a JWT for a given userId
-  """
-  createImposterToken(
-    """
-    The target userId to impersonate
-    """
-    userId: ID
-
-    """
-    The email address of the user to impersonate
-    """
-    email: Email
-  ): CreateImposterTokenPayload!
   createTaskIntegration(
     """
     Which integration to push the task to
@@ -8950,20 +8936,6 @@ type SetNotificationStatusPayload {
   The updated notification
   """
   notification: Notification
-}
-
-type CreateImposterTokenPayload {
-  error: StandardMutationError
-
-  """
-  The new JWT
-  """
-  authToken: ID
-
-  """
-  The user you have assumed
-  """
-  user: User
 }
 
 type CreateTaskIntegrationPayload {
