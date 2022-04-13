@@ -89,7 +89,6 @@ const setTaskEstimate = {
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
     let githubLabelName: string | undefined = undefined
-    let gitlabLabelName: string | undefined = undefined
     const {integration} = task
     const service = integration?.service
     if (service === 'jira') {
@@ -154,7 +153,6 @@ const setTaskEstimate = {
         const {message} = gitlabPushRes
         return {error: {message}}
       }
-      gitlabLabelName = gitlabPushRes
     }
 
     await insertTaskEstimate({
@@ -162,7 +160,6 @@ const setTaskEstimate = {
       discussionId,
       jiraFieldId,
       githubLabelName,
-      gitlabLabelName,
       label: value,
       name: dimensionName,
       meetingId,

@@ -1,0 +1,10 @@
+mutation createIssue($input: CreateNoteInput!) {
+  createNote(input: $input) {
+    clientMutationId
+    errors
+    note {
+      id
+      body
+    }
+  }
+}
