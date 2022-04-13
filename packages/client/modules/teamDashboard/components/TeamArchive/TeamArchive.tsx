@@ -72,11 +72,10 @@ const CardGrid = styled('div')({
 })
 
 const EmptyMsg = styled('div')({
-  backgroundColor: Card.BACKGROUND_COLOR as string,
+  backgroundColor: `${Card.BACKGROUND_COLOR}`,
   border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: Card.BORDER_RADIUS,
   fontSize: Card.FONT_SIZE,
-  display: 'inline-block',
   margin: 20,
   padding: Card.PADDING
 })
@@ -86,11 +85,10 @@ const LinkSpan = styled('div')({
 })
 
 const NoMoreMsg = styled('div')({
-  backgroundColor: Card.BACKGROUND_COLOR as string,
+  backgroundColor: `${Card.BACKGROUND_COLOR}`,
   border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: Card.BORDER_RADIUS,
   fontSize: Card.FONT_SIZE,
-  display: 'inline-block',
   padding: Card.PADDING
 })
 
@@ -196,9 +194,8 @@ const TeamArchive = (props: Props) => {
   const rowCount = Math.ceil(edges.length / columnCount) + 1 // used +1 for "no more" message row
   const noMoreMsgIndex = hasNext ? Number.MAX_VALUE : (rowCount - 1) * columnCount
 
-  const _onRowsRenderedRef = useRef<
-    ({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void
-  >()
+  const _onRowsRenderedRef =
+    useRef<({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void>()
   const gridRef = useRef<any>(null)
   const oldEdgesRef = useRef<typeof edges>()
   const getIndex = (columnIndex: number, rowIndex: number) => {
@@ -280,8 +277,7 @@ const TeamArchive = (props: Props) => {
                   width: 'auto',
                   height: 'auto',
                   left: '50%',
-                  transform: 'translate(-50%, 0)',
-                  padding: '1rem 0.5rem'
+                  transform: 'translate(-50%, 0)'
                 }}
               >
                 🎉 That's all folks! There are no further tasks in the archive.
