@@ -8,7 +8,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import IconLabel from './IconLabel'
-import {IntegrationHeaderFields} from './PokerEstimateHeaderCard'
+
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
@@ -71,7 +71,15 @@ const StyledLabel = styled('span')({
   fontSize: 12
 })
 
-const PokerEstimateHeaderCardContent = (props: IntegrationHeaderFields) => {
+export type PokerEstimateHeaderCardContentProps = {
+  cardTitle: string
+  descriptionHTML: string
+  url: string
+  linkTitle: string
+  linkText: string
+}
+
+const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentProps) => {
   const {cardTitle, descriptionHTML, url, linkTitle, linkText} = props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
