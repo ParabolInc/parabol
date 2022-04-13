@@ -73,30 +73,28 @@ interface Props {
   error?: string | null
   submitScore: () => void
   inputRef: RefObject<HTMLInputElement>
-  integrationType: string
 }
 
 const PokerDimensionFinalScorePicker = (props: Props) => {
-  const {
-    inputRef,
-    isFacilitator,
-    canUpdate,
-    error,
-    stageRef,
-    clearError,
-    submitScore,
-    integrationType
-  } = props
+  const {inputRef, isFacilitator, canUpdate, error, stageRef, clearError, submitScore} = props
   const stage = useFragment(
     graphql`
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
         ...GitHubFieldDimensionDropdown_stage
         ...JiraFieldDimensionDropdown_stage
         ...GitLabFieldDimensionDropdown_stage
+        task {
+          integration {
+            __typename
+          }
+        }
       }
     `,
     stageRef
   )
+
+  const integrationType = stage.task?.integration?.__typename ?? ''
+
   const titleByType = {
     _xGitHubIssue: 'GitHub',
     JiraIssue: 'Jira',
@@ -128,10 +126,10 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-          {integrationType === 'JiraIssue' && (
+          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
-              stage={stage}
+              stageRef={stage}
               isFacilitator={isFacilitator}
               submitScore={submitScore}
             />

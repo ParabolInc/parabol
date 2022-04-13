@@ -141,7 +141,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && cardScore === finalScore
-  const integrationType = task?.integration?.__typename ?? ''
+  const hasIntegration = !!task?.integration?.__typename
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
@@ -169,9 +169,9 @@ const PokerDimensionValueControl = (props: Props) => {
           clearError={onCompleted}
           inputRef={inputRef}
           isFacilitator={isFacilitator}
-          integrationType={integrationType}
         />
-        {!integrationType && isFacilitator && (
+
+        {!hasIntegration && isFacilitator && (
           <>
             {isStale ? (
               <>

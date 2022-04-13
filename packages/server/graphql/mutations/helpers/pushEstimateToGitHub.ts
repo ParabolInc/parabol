@@ -37,14 +37,19 @@ const pushEstimateToGitHub = async (
   taskEstimate: ITaskEstimateInput,
   context: GQLContext,
   info: GraphQLResolveInfo,
-  stageId: string | undefined
+  stageId: string
 ) => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
     dataLoader.get('tasks').load(taskId),
-    meetingId ? dataLoader.get('newMeetings').load(meetingId) : undefined
+    dataLoader.get('newMeetings').load(meetingId)
   ])
+
+  if (!meeting) {
+    return new Error('Meeting does not exist')
+  }
+
   const githubIntegration = task.integration as Extract<
     typeof task.integration,
     {service: 'github'}
@@ -69,10 +74,6 @@ const pushEstimateToGitHub = async (
   })
 
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-    if (!stageId || !meeting) {
-      return new Error('Cannot add github comment for non-meeting estimates')
-    }
-
     // get the issue ID
     const [issueRes, issueResError] = await githubRequest<
       GetIssueIdQuery,
