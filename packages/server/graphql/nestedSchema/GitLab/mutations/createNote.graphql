@@ -1,4 +1,4 @@
-mutation createIssue($input: CreateNoteInput!) {
+mutation createNote($input: CreateNoteInput!) {
   createNote(input: $input) {
     clientMutationId
     errors
