@@ -25,13 +25,16 @@ export interface IUpsertTeamPromptResponsesQueryQuery {
   result: IUpsertTeamPromptResponsesQueryResult;
 }
 
-const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponsesQuery","params":[{"name":"responses","codeRefs":{"defined":{"a":51,"b":59,"line":3,"col":9},"used":[{"a":239,"b":247,"line":6,"col":8}]},"transform":{"type":"pick_array_spread","keys":["meetingId","userId","sortOrder","content","plaintextContent"]}}],"usedParamSet":{"responses":true},"statement":{"body":"INSERT INTO \"TeamPromptResponse\" (\"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\")\nVALUES :responses\nRETURNING id","loc":{"a":130,"b":260,"line":5,"col":0}}};
+const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponsesQuery","params":[{"name":"responses","codeRefs":{"defined":{"a":51,"b":59,"line":3,"col":9},"used":[{"a":239,"b":247,"line":6,"col":8}]},"transform":{"type":"pick_array_spread","keys":["meetingId","userId","sortOrder","content","plaintextContent"]}}],"usedParamSet":{"responses":true},"statement":{"body":"INSERT INTO \"TeamPromptResponse\" (\"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\")\nVALUES :responses\nON CONFLICT (\"meetingId\", \"userId\") DO UPDATE SET\n  \"content\" = EXCLUDED.\"content\",\n  \"plaintextContent\" = EXCLUDED.\"plaintextContent\"\nRETURNING id","loc":{"a":130,"b":395,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO "TeamPromptResponse" ("meetingId", "userId", "sortOrder", "content", "plaintextContent")
  * VALUES :responses
+ * ON CONFLICT ("meetingId", "userId") DO UPDATE SET
+ *   "content" = EXCLUDED."content",
+ *   "plaintextContent" = EXCLUDED."plaintextContent"
  * RETURNING id
  * ```
  */

@@ -1,20 +1,25 @@
 extend type Mutation {
   """
-  update the content of a team prompt response
+  upsert the content of a team prompt response
   """
-  updateTeamPromptResponse(
+  upsertTeamPromptResponse(
     """
     The input object containing the team prompt response id and modified content
     """
-    updatedTeamPromptResponse: UpdatedTeamPromptResponseInput!
+    teamPromptResponse: TeamPromptResponseInput!
   ): UpsertTeamPromptResponsePayload!
 }
 
-input UpdatedTeamPromptResponseInput {
+input TeamPromptResponseInput {
   """
-  The id of the team prompt response to update
+  The id of the team prompt response to upsert
   """
-  teamPromptResponseId: Int!
+  teamPromptResponseId: Int
+
+  """
+  The id of the team prompt meeting
+  """
+  meetingId: String!
 
   """
   The new stringnified content of the team prompt response
