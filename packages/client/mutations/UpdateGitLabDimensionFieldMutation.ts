@@ -62,7 +62,6 @@ const UpdateGitLabDimensionFieldMutation: StandardMutation<TUpdateGitLabDimensio
       if (!phases) return
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = estimatePhase.getLinkedRecords<GitLabFieldMenu_stage[]>('stages')
-      console.log('🚀  ~ stages', {stages, gid, labelTemplate, dimensionName})
 
       stages.forEach((stage) => {
         const dimensionRef = stage.getLinkedRecord('dimensionRef')
