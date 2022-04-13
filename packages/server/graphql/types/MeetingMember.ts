@@ -15,6 +15,7 @@ import MeetingTypeEnum from './MeetingTypeEnum'
 import PokerMeetingMember from './PokerMeetingMember'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import TeamMember from './TeamMember'
+import TeamPromptMeetingMember from './TeamPromptMeetingMember'
 import User from './User'
 
 export const meetingMemberFields = () => ({
@@ -69,7 +70,8 @@ const MeetingMember: GraphQLInterfaceType = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       retrospective: RetrospectiveMeetingMember,
       action: ActionMeetingMember,
-      poker: PokerMeetingMember
+      poker: PokerMeetingMember,
+      teamPrompt: TeamPromptMeetingMember
     } as Record<TMeetingTypeEnum, GraphQLObjectType<any, GQLContext>>
     return resolveTypeLookup[meetingType]
   }
