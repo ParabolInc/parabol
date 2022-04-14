@@ -4,6 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
@@ -12,6 +13,7 @@ import useMutationProps from '../../hooks/useMutationProps'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
 import Avatar from '../Avatar/Avatar'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
+import ReactjiSection from '../ReflectionCard/ReactjiSection'
 
 const MIN_CARD_HEIGHT = 100
 
@@ -37,6 +39,10 @@ const TeamMemberName = styled('h3')({
   padding: '0 8px'
 })
 
+const StyledReactjis = styled(ReactjiSection)({
+  paddingLeft: 8
+})
+
 interface Props {
   stageRef: TeamPromptResponseCard_stage$key
 }
@@ -57,6 +63,11 @@ const TeamPromptResponseCard = (props: Props) => {
           id
           content
           plaintextContent
+          reactjis {
+            ...ReactjiSection_reactjis
+            id
+            isViewerReactji
+          }
         }
       }
     `,
@@ -71,6 +82,7 @@ const TeamPromptResponseCard = (props: Props) => {
 
   const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
   const plaintextContent = response?.plaintextContent ?? ''
+  const reactjis = response?.reactjis
   const isCurrentViewer = userId === viewerId
   const isEmptyResponse = !isCurrentViewer && !plaintextContent
 
@@ -85,6 +97,26 @@ const TeamPromptResponseCard = (props: Props) => {
       atmosphere,
       {teamPromptResponseId: response?.id, meetingId, content},
       {onError, onCompleted}
+    )
+  }
+
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting || !reactjis) return
+    const isRemove = !!reactjis.find((reactji) => {
+      return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
+    })
+    submitMutation()
+    console.log(response.id)
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {
+        reactableId: response?.id,
+        reactableType: 'RESPONSE',
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
+      {onCompleted, onError}
     )
   }
 
@@ -107,7 +139,9 @@ const TeamPromptResponseCard = (props: Props) => {
             placeholder={'Share your response...'}
           />
         )}
-        {/* :TODO: (jmtaber129): Add reactjis + response button */}
+        {/* :TODO: (jmtaber129): Disable for empty response */}
+        <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
+        {/* :TODO: (jmtaber129): Add response button */}
       </ResponseCard>
     </>
   )

@@ -52,7 +52,8 @@ export interface UserTasksKey {
 
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
-  {type: 'REFLECTION', loader: 'retroReflections'}
+  {type: 'REFLECTION', loader: 'retroReflections'},
+  {type: 'RESPONSE', loader: 'teamPromptResponses', keyType: 'number'}
 ] as const
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
@@ -130,6 +131,10 @@ export const reactables = (parent: RootDataLoader) => {
       const reactableResults = (await Promise.all(
         reactableLoaders.map(async (val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
+          if (val.type === 'RESPONSE') {
+            const numberIds = ids.map((id) => parseInt(id, 10))
+            return parent.get(val.loader).loadMany(numberIds)
+          }
           return parent.get(val.loader).loadMany(ids)
         })
       )) as Reactable[][]

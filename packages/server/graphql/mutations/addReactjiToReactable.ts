@@ -1,10 +1,14 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import Comment from '../../database/types/Comment'
-import Reflection from '../../database/types/Reflection'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
+import Comment from '../../database/types/Comment'
 import {Reactable} from '../../database/types/Reactable'
+import Reflection from '../../database/types/Reflection'
+import getPg from '../../postgres/getPg'
+import {appendTeamResponseReactji} from '../../postgres/queries/generated/appendTeamResponseReactjiQuery'
+import {removeTeamResponseReactji} from '../../postgres/queries/generated/removeTeamResponseReactjiQuery'
 import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
@@ -13,11 +17,16 @@ import {GQLContext} from '../graphql'
 import AddReactjiToReactablePayload from '../types/AddReactjiToReactablePayload'
 import getReactableType from '../types/getReactableType'
 import ReactableEnum, {ReactableEnumType} from '../types/ReactableEnum'
-import {RDatum} from '../../database/stricterR'
 
-const tableLookup = {
+const rethinkTableLookup = {
   COMMENT: 'Comment',
   REFLECTION: 'RetroReflection'
+} as const
+
+const dataloaderLookup = {
+  COMMENT: 'comments',
+  REFLECTION: 'retroReflections',
+  RESPONSE: 'teamPromptResponses'
 } as const
 
 const addReactjiToReactable = {
@@ -54,7 +63,7 @@ const addReactjiToReactable = {
       isRemove,
       meetingId
     }: {
-      reactableId: string
+      reactableId: string | number
       reactableType: ReactableEnumType
       reactji: string
       isRemove?: boolean | null
@@ -69,11 +78,15 @@ const addReactjiToReactable = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const dbTable = tableLookup[reactableType]
-    const reactable = (await r
-      .table(dbTable)
-      .get(reactableId)
-      .run()) as Reactable
+    let reactable: Reactable
+    const isPgTable = reactableType === 'RESPONSE'
+    const rethinkDbTable = rethinkTableLookup[reactableType]
+    if (isPgTable) {
+      const loaderName = dataloaderLookup[reactableType]
+      reactable = (await dataLoader.get(loaderName).load(reactableId as number)) as Reactable
+    } else {
+      reactable = (await r.table(rethinkDbTable).get(reactableId).run()) as Reactable
+    }
     if (!reactable) {
       return {error: {message: `Item does not exist`}}
     }
@@ -106,28 +119,44 @@ const addReactjiToReactable = {
     // RESOLUTION
     const subDoc = {id: reactji, userId: viewerId}
     if (isRemove) {
-      await r
-        .table(dbTable)
-        .get(reactableId)
-        .update((row: RDatum<Comment | Reflection>) => ({
-          reactjis: row('reactjis').difference([subDoc]),
-          updatedAt: now
-        }))
-        .run()
+      if (isPgTable) {
+        await removeTeamResponseReactji.run(
+          {id: reactableId as number, reactji: {shortName: reactji, userId: viewerId}},
+          getPg()
+        )
+        // :TODO: (jmtaber129): remove team response reactji
+        // await appendTeamResponseReactji.run
+      } else {
+        await r
+          .table(rethinkDbTable)
+          .get(reactableId)
+          .update((row: RDatum<Comment | Reflection>) => ({
+            reactjis: row('reactjis').difference([subDoc]),
+            updatedAt: now
+          }))
+          .run()
+      }
     } else {
-      await r
-        .table(dbTable)
-        .get(reactableId)
-        .update((row: RDatum<Comment | Reflection>) => ({
-          reactjis: r.branch(
-            row('reactjis').contains(subDoc),
-            row('reactjis'),
-            // don't use distinct, it sorts the fields
-            row('reactjis').append(subDoc)
-          ),
-          updatedAt: now
-        }))
-        .run()
+      if (isPgTable) {
+        await appendTeamResponseReactji.run(
+          {id: reactableId as number, reactji: {shortName: reactji, userId: viewerId}},
+          getPg()
+        )
+      } else {
+        await r
+          .table(rethinkDbTable)
+          .get(reactableId)
+          .update((row: RDatum<Comment | Reflection>) => ({
+            reactjis: r.branch(
+              row('reactjis').contains(subDoc),
+              row('reactjis'),
+              // don't use distinct, it sorts the fields
+              row('reactjis').append(subDoc)
+            ),
+            updatedAt: now
+          }))
+          .run()
+      }
     }
 
     const data = {reactableId, reactableType}
