@@ -1,6 +1,7 @@
-import AzureDevOpsProjectKeyId from './AzureDevOpsProjectKeyId'
+// import AzureDevOpsProjectKeyId from './AzureDevOpsProjectKeyId'
 const AzureDevOpsIssueId = {
-  join: (instanceId: string, projectKey: string, issueKey: string) => `${instanceId}:${projectKey}:${issueKey}`,
+  join: (instanceId: string, projectKey: string, issueKey: string) =>
+    `${instanceId}:${projectKey}:${issueKey}`,
   split: (id: string) => {
     const firstColonIdx = id.indexOf(':')
     const instanceId = id.slice(0, firstColonIdx)
