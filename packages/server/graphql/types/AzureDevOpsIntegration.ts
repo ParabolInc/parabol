@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
@@ -9,6 +8,8 @@ import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds';
 
 type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
 
@@ -134,7 +135,21 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const manager = new AzureDevOpsServerManager(accessToken)
+        const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+        if (!provider) {
+          return null
+        }
+
+        const manager = new AzureDevOpsServerManager(
+          auth,
+          provider as IntegrationProviderAzureDevOps
+        )
+
+        if (!manager) {
+          return null
+        }
+        // const manager = new AzureDevOpsServerManager(accessToken)
         const restResult = await manager.getAllUserWorkItems()
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {

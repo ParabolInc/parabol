@@ -53,7 +53,8 @@ export interface IntegrationProviderJiraServer extends IntegrationProviderOAuth1
 }
 
 export interface IntegrationProviderAzureDevOps extends IntegrationProviderOAuth2 {
-  service: 'azureDevOps'
+  service: 'azureDevOps',
+  tenantId: string
 }
 
 export type TIntegrationProvider =
