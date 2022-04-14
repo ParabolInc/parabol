@@ -89,19 +89,47 @@ export default class RootDataLoader {
 
   get<LoaderName extends Loaders>(loaderName: LoaderName): TypedDataLoader<LoaderName> {
     let loader = this.loaders[loaderName]
+    if (loaderName === 'azureDevOpsWorkItem') {
+      if (loader) {
+        console.log('found azureDevOpsWorkItem')
+      } else {
+        console.log('never found azureDevOpsWorkItem')
+      }
+    }
     if (loader) return loader as TypedDataLoader<LoaderName>
     const loaderMaker = loaderMakers[loaderName]
+    if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+      console.log(`loaderMaker: ${loaderMaker}`)
+    }
     if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
+      if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+        console.log(`RethinkPrimaryKeyLoaderMaker`)
+      }
       const {table} = loaderMaker
       loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
     } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
+      if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+        console.log(`RethinkForeignKeyLoaderMaker`)
+      }
       const {fetch, field, pk} = loaderMaker
       const basePkLoader = this.get(pk as PrimaryLoaders)
       loader = rethinkForeignKeyLoader(basePkLoader, this.dataLoaderOptions, field, fetch)
     } else {
+      if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+        console.log(`other`)
+      }
       loader = (loaderMaker as any)(this)
+      if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+        console.log(`loader: ${loader}`)
+      }
+    }
+    if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+      console.log(`loader: ${loader}`)
     }
     this.loaders[loaderName] = loader!
+    if (loaderName === 'azureDevOpsWorkItem' || loaderName === 'azureDevOpsUserStories') {
+      console.log(`this.loaders[loaderName]: ${this.loaders[loaderName]}`)
+    }
     return loader as TypedDataLoader<LoaderName>
   }
 }

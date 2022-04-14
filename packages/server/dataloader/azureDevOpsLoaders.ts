@@ -44,6 +44,15 @@ export interface AzureDevOpsIssueKey {
   taskId?: string
 }
 
+export interface AzureDevOpsWorkItemKey {
+  teamId: string
+  userId: string
+  instanceId: string
+  projectId: string
+  viewerId: string
+  workItemId: string
+}
+
 export interface AzureDevOpsUserStoriesKey {
   userId: string
   teamId: string
@@ -146,7 +155,6 @@ export const azureDevOpsAllWorkItems = (
         keys.map(async ({userId, teamId}) => {
           const returnWorkItems = [] as WorkItem[]
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          console.log(`auth - ${auth}`)
           if (!auth) return []
           const {accessToken} = auth
           if (!accessToken) return undefined
@@ -264,6 +272,48 @@ export const allAzureDevOpsProjects = (
     }
   )
 }
+
+export const azureDevOpsUserStory = (
+  parent: RootDataLoader
+): DataLoader<AzureDevOpsWorkItemKey, WorkItem | null, string> => {
+  return DataLoader<AzureDevOpsWorkItemKey, WorkItem | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, userId, instanceId, workItemId}) => {
+          console.log('inside azureDevOpsWorkItem')
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return []
+          const {accessToken} = auth
+          if (!accessToken) return null
+          const manager = new AzureDevOpsServerManager(accessToken)
+          const workItemIds: number[] = []
+          const workItemNum = parseInt(workItemId)
+          console.log(`workItemNum: ${workItemNum}`)
+          if (!isNaN(workItemNum)) {
+            workItemIds.push(workItemNum)
+          }
+          console.log(`workItemIds: ${workItemIds}`)
+          const restResult = await manager.getWorkItemData(instanceId, workItemIds)
+          const {error, workItems} = restResult
+          if (error !== undefined
+            || workItems.length !== 1) {
+            console.log(error)
+            return null
+          } else {
+            console.log(`no error and workItems length of 1 returning: ${workItems[0]}`)
+            return workItems[0]
+          }
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}:${key.instanceId}:${key.workItemId}`
+    }
+  )
+}
+
 
 export const azureDevOpsUserStories = (
   parent: RootDataLoader
