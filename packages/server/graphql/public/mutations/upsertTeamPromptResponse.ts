@@ -1,6 +1,10 @@
 import {JSONContent} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
+import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
+import {
+  InputTeamPromptResponse,
+  upsertTeamPromptResponse as upsertTeamPromptResponseQuery
+} from '../../../postgres/queries/upsertTeamPromptResponses'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -15,24 +19,20 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const {teamPromptResponseId, meetingId, content} = teamPromptResponse
+  const {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content} = teamPromptResponse
 
   // AUTH
-  const promptResponse = teamPromptResponseId
-    ? await dataLoader.get('teamPromptResponses').loadNonNull(teamPromptResponseId)
-    : {
-        meetingId,
-        userId: viewerId,
-        sortOrder: 0,
-        content: {},
-        plaintextContent: ''
-      }
-  if (!promptResponse) {
-    return standardError(new Error('PromptResponse not found'), {userId: viewerId})
-  }
-  const {userId} = promptResponse
-  if (userId !== viewerId) {
-    return standardError(new Error("Can't edit other's response"), {userId: viewerId})
+  if (inputTeamPromptResponseId) {
+    const teamPromptResponse: TeamPromptResponse = await dataLoader
+      .get('teamPromptResponses')
+      .load(inputTeamPromptResponseId)
+    if (!teamPromptResponse) {
+      return standardError(new Error('TeamPromptResponse not found'), {userId: viewerId})
+    }
+    const {userId} = teamPromptResponse
+    if (userId !== viewerId) {
+      return standardError(new Error("Can't edit other's response"), {userId: viewerId})
+    }
   }
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
@@ -52,20 +52,18 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   // RESOLUTION
   const contentJSON: JSONContent = JSON.parse(content)
   const plaintextContent = extractTextFromTipTapJSONContent(contentJSON)
-
-  const maybeNewTeamPromptResponseId = await upsertTeamPromptResponseQuery({
+  const teamPromptResponseInput: InputTeamPromptResponse = {
     meetingId,
-    userId,
-    sortOrder: promptResponse.sortOrder,
+    userId: viewerId,
+    sortOrder: 0, //TODO: set correct sort order, need to fetch all responses for meeting
     content,
     plaintextContent
-  })
-  promptResponse.content = contentJSON
-  promptResponse.plaintextContent = plaintextContent
+  }
+  const teamPromptResponseId = await upsertTeamPromptResponseQuery(teamPromptResponseInput)
 
   const data = {
     meetingId,
-    teamPromptResponseId: teamPromptResponseId || maybeNewTeamPromptResponseId
+    teamPromptResponseId
   }
   publish(
     SubscriptionChannel.MEETING,

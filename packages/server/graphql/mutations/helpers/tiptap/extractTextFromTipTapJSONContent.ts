@@ -1,6 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 
-const extractTextFromTipTapJSONContent = (input: JSONContent) => {
+const extractTextFromTipTapJSONContent = (input: JSONContent): string => {
   if (input.text) {
     return input.text
   } else if (input.content) {
