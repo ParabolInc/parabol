@@ -7,8 +7,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
@@ -29,11 +31,9 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
-import AzureDevOpsServerManager from '../../../server/utils/AzureDevOpsServerManager'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
+// import AzureDevOpsServerManager from '../../../server/utils/AzureDevOpsServerManager'
+// import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+// import {WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',

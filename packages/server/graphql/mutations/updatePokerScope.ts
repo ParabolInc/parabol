@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {XGitHubCheckConclusionState} from 'parabol-client/types/graphql'
+// import {XGitHubCheckConclusionState} from 'parabol-client/types/graphql'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import {Writeable} from '../../../client/types/generics'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
@@ -87,17 +87,16 @@ const updatePokerScope = {
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     let stages = estimatePhase.stages
 
-
     // delete stages
     const subtractiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
       //return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
-      const a = action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      const a =
+        action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
       console.log('after a')
       return a
     })
     subtractiveUpdates.forEach((update) => {
-
       const {serviceTaskId} = update
       const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
       const removingTatorStage = stagesToRemove.find((stage) => stage.id === facilitatorStageId)
