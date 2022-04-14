@@ -25,6 +25,7 @@ extend type PokerMeeting {
   githubSearchQuery: GitHubSearchQuery!
   gitlabSearchQuery: GitLabSearchQuery!
   jiraSearchQuery: JiraSearchQuery!
+  jiraServerSearchQuery: JiraSearchQuery!
   parabolSearchQuery: ParabolSearchQuery!
 }
 

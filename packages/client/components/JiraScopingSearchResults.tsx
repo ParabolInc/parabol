@@ -9,10 +9,10 @@ import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryM
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
-import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import NewJiraIssueInput from './NewJiraIssueInput'
+import ScopingSearchResultItem from './ScopingSearchResultItem'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -87,12 +87,17 @@ const JiraScopingSearchResults = (props: Props) => {
         )}
         {edges.map(({node}) => {
           return (
-            <JiraScopingSearchResultItem
+            <ScopingSearchResultItem
               key={node.id}
-              issue={node}
+              service={'jira'}
               usedServiceTaskIds={usedServiceTaskIds}
+              serviceTaskId={node.id}
               meetingId={meetingId}
               persistQuery={persistQuery}
+              summary={node.summary}
+              url={node.url}
+              linkText={node.issueKey}
+              linkTitle={`Jira Issue #${node.issueKey}`}
             />
           )
         })}
@@ -144,9 +149,10 @@ export default createFragmentContainer(JiraScopingSearchResults, {
               edges {
                 ...JiraScopingSelectAllIssues_issues
                 node {
-                  ...JiraScopingSearchResultItem_issue
                   id
                   summary
+                  url
+                  issueKey
                 }
               }
             }

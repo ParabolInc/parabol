@@ -1,55 +1,126 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
+import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {JiraScopingSearchBar_meeting$key} from '../__generated__/JiraScopingSearchBar_meeting.graphql'
-import JiraScopingSearchCurrentFilters from './JiraScopingSearchCurrentFilters'
 import JiraScopingSearchFilterToggle from './JiraScopingSearchFilterToggle'
-import JiraScopingSearchHistoryToggle from './JiraScopingSearchHistoryToggle'
-import JiraScopingSearchInput from './JiraScopingSearchInput'
+import ScopingSearchBar from './ScopingSearchBar'
+import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
+import ScopingSearchInput from './ScopingSearchInput'
 
-const SearchBar = styled('div')({
-  padding: 16
-})
-
-const SearchBarWrapper = styled('div')({
-  alignItems: 'center',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: '40px',
-  display: 'flex',
-  height: 44,
-  padding: '0 16px',
-  width: '100%'
-})
 interface Props {
   meetingRef: JiraScopingSearchBar_meeting$key
 }
 
 const JiraScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+  const atmosphere = useAtmosphere()
 
   const meeting = useFragment(
     graphql`
       fragment JiraScopingSearchBar_meeting on PokerMeeting {
-        ...JiraScopingSearchHistoryToggle_meeting
-        ...JiraScopingSearchInput_meeting
         ...JiraScopingSearchFilterToggle_meeting
-        ...JiraScopingSearchCurrentFilters_meeting
+        id
+        teamId
+        jiraSearchQuery {
+          projectKeyFilters
+          queryString
+          isJQL
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              atlassian {
+                jiraSearchQueries {
+                  id
+                  queryString
+                  isJQL
+                  projectKeyFilters
+                }
+                projects {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
 
+  const {id: meetingId, teamId} = meeting
+  const {jiraSearchQueries} = meeting.viewerMeetingMember?.teamMember.integrations?.atlassian ?? {}
+  const searchQueries =
+    jiraSearchQueries?.map((jiraSearchQuery) => {
+      const {id, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
+
+      const selectQuery = () => {
+        commitLocalUpdate(atmosphere, (store) => {
+          const searchQueryId = SearchQueryId.join('jira', meetingId)
+          const jiraSearchQuery = store.get(searchQueryId)!
+          jiraSearchQuery.setValue(isJQL, 'isJQL')
+          jiraSearchQuery.setValue(queryString, 'queryString')
+          jiraSearchQuery.setValue(projectKeyFilters as string[], 'projectKeyFilters')
+        })
+      }
+      const queryStringLabel = isJQL ? queryString : `“${queryString}”`
+      const projectFilters = projectKeyFilters
+        .map((filter) => filter.slice(filter.indexOf(':') + 1))
+        .join(', ')
+
+      const removeJiraSearchQuery = (jiraSearchQuery) => {
+        const {queryString, isJQL, projectKeyFilters} = jiraSearchQuery
+
+        PersistJiraSearchQueryMutation(atmosphere, {
+          teamId,
+          input: {queryString, isJQL, projectKeyFilters, isRemove: true}
+        })
+      }
+
+      const handleRemoveJiraSearchQueryClick = () => {
+        removeJiraSearchQuery(jiraSearchQuery)
+      }
+
+      return {
+        id,
+        ariaLabel: 'Remove this Jira Search Query',
+        labelFirstLine: queryStringLabel,
+        labelSecondLine: projectFilters && `in ${projectFilters}`,
+        onClick: selectQuery,
+        onDelete: handleRemoveJiraSearchQueryClick
+      }
+    }) ?? []
+
+  const {jiraSearchQuery, viewerMeetingMember} = meeting
+  const {projectKeyFilters} = jiraSearchQuery
+  const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
+  const projectFilterNames = [] as string[]
+  projectKeyFilters.forEach((projectId, idx) => {
+    const projectName = projects?.find((project) => project?.id === projectId)?.name
+    if (projectName) {
+      const formattedName = idx === 0 ? projectName : `, ${projectName}`
+      projectFilterNames.push(formattedName)
+    }
+  })
+  const currentFilters = projectFilterNames.length ? projectFilterNames : 'None'
+
+  const {isJQL, queryString} = jiraSearchQuery
+  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira'
   return (
-    <SearchBar>
-      <SearchBarWrapper>
-        <JiraScopingSearchHistoryToggle meeting={meeting} />
-        <JiraScopingSearchInput meeting={meeting} />
-        <JiraScopingSearchFilterToggle meeting={meeting} />
-      </SearchBarWrapper>
-      <JiraScopingSearchCurrentFilters meetingRef={meeting} />
-    </SearchBar>
+    <ScopingSearchBar currentFilters={currentFilters}>
+      <ScopingSearchHistoryToggle searchQueries={searchQueries} />
+      <ScopingSearchInput
+        placeholder={placeholder}
+        queryString={queryString}
+        meetingId={meetingId}
+        linkedRecordName={'jiraSearchQuery'}
+      />
+      <JiraScopingSearchFilterToggle meeting={meeting} />
+    </ScopingSearchBar>
   )
 }
 
