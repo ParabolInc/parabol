@@ -133,8 +133,6 @@ module.exports = {
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
-        azureDevOpsTenant: process.env.AZUREDEVOPS_TENANT,
-        azureDevOpsClientId: process.env.AZUREDEVOPS_CLIENT_ID,
       })
     }),
     new ReactRefreshWebpackPlugin(),
