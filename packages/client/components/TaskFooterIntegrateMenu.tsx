@@ -32,7 +32,7 @@ const isIntegrated = (integrations: Integrations) => {
   const {atlassian, github, jiraServer, azureDevOps} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
-  const hasAzureDevOps = azureDevOps?.isActive ?? false
+  const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
   const hasJiraServer = jiraServer.auth?.isActive ?? false
   return hasAtlassian || hasGitHub || hasJiraServer || hasAzureDevOps
     ? {
@@ -75,10 +75,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {
-    integrations: viewerIntegrations,
-    repoIntegrations: viewerRepoIntegrations
-  } = viewerTeamMember
+  const {integrations: viewerIntegrations, repoIntegrations: viewerRepoIntegrations} =
+    viewerTeamMember
   const {
     integrations: assigneeIntegrations,
     repoIntegrations: assigneeRepoIntegrations,
@@ -161,7 +159,9 @@ graphql`
 
 graphql`
   fragment TaskFooterIntegrateMenuViewerAzureDevOpsIntegration on AzureDevOpsIntegration {
-    isActive
+    auth {
+      isActive
+    }
   }
 `
 

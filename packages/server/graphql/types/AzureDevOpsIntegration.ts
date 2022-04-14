@@ -1,11 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType
-} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
@@ -72,17 +65,6 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'Composite key in ado:teamId:userId format',
       resolve: ({teamId, userId}: {teamId: string; userId: string}) => `ado:${teamId}:${userId}`
-    },
-    isActive: {
-      description: 'true if the auth is valid, else false',
-      type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({accessToken}) => !!accessToken
-    },
-    accessToken: {
-      description:
-        'The access token to Azure DevOps. null if no access token available or the viewer is not the user',
-      type: GraphQLID
-      // Add resolver
     },
     accountId: {
       type: new GraphQLNonNull(GraphQLID),
