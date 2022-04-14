@@ -87,7 +87,6 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
   ) {
     const body = {
       ...params,
-      // client_id: process.env.AZUREDEVOPS_CLIENT_ID!
       client_id: this.provider.clientId
     }
 
@@ -97,7 +96,6 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
     }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
-    // const authUrl = `https://login.microsoftonline.com/${process.env.AZUREDEVOPS_TENANT}/oauth2/v2.0/token`
     const contentType = 'application/x-www-form-urlencoded'
     const oAuthRes = await authorizeOAuth2({authUrl, body, additonalHeaders, contentType})
     if (!isError(oAuthRes)) {
