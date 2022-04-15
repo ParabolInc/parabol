@@ -1,10 +1,10 @@
 exports.up = async (r) => {
   // rename the Project/ProjectHistory tables
   await r.table('Project').config().update({name: 'Task'}).run()
-  await r.table('Task').wait()
+  await r.table('Task').wait().run()
   await r.table('ProjectHistory').config().update({name: 'TaskHistory'}).run()
   await r.table('TaskHistory').indexDrop('projectIdUpdatedAt').run()
-  await r
+  await r´
     .table('TaskHistory')
     .indexCreate('taskIdUpdatedAt', (row) => [row('taskId'), row('updatedAt')])
     .run()
