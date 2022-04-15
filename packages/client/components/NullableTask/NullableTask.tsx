@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw} from 'draft-js'
-import React, {useEffect, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -14,7 +14,6 @@ interface Props {
   className?: string
   isAgenda?: boolean
   isDraggingOver?: TaskStatusEnum
-  measure?: () => void
   task: NullableTask_task
   dataCy: string
   isViewerMeetingSection?: boolean
@@ -34,20 +33,6 @@ const NullableTask = (props: Props) => {
   }, [content])
 
   const atmosphere = useAtmosphere()
-  useEffect(
-    () => {
-      let isMounted = true
-      setTimeout(() => {
-        isMounted && props.measure && props.measure()
-      })
-      return () => {
-        isMounted = false
-      }
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
 
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId || integration
   return showOutcome ? (

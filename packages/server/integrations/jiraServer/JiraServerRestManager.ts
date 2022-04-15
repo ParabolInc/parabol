@@ -258,7 +258,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     }
   }
 
-  private makeCreateJiraServerTaskComment(
+  private makeCreateTaskComment(
     creator: string,
     assignee: string,
     teamName: string,
@@ -267,7 +267,19 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     return `Created by ${creator} for ${assignee}
     See the dashboard of [${teamName}|${teamDashboardUrl}]
   
-    *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`
+    _Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]_`
+  }
+
+  private makeScoreComment(
+    dimensionName: string,
+    finalScore: string,
+    meetingName: string,
+    discussionURL: string
+  ) {
+    return `*${dimensionName}: ${finalScore}*
+    [See the discussion|${discussionURL}] in ${meetingName}
+  
+    _Powered by [Parabol|${ExternalLinks.GETTING_STARTED_SPRINT_POKER}]_`
   }
 
   async addCreatedBySomeoneElseComment(
@@ -277,13 +289,23 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     teamDashboardUrl: string,
     issueId: string
   ): Promise<string | Error> {
-    const comment = this.makeCreateJiraServerTaskComment(
-      viewerName,
-      assigneeName,
-      teamName,
-      teamDashboardUrl
-    )
+    const comment = this.makeCreateTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
     const res = await this.addComment(comment, issueId)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
+  }
+
+  async addScoreComment(
+    dimensionName: string,
+    finalScore: string,
+    meetingName: string,
+    discussionURL: string,
+    remoteIssueId: string
+  ) {
+    const comment = this.makeScoreComment(dimensionName, finalScore, meetingName, discussionURL)
+    const res = await this.addComment(comment, remoteIssueId)
     if (res instanceof Error) {
       return res
     }
