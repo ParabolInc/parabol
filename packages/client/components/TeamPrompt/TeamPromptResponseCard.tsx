@@ -131,16 +131,18 @@ const TeamPromptResponseCard = (props: Props) => {
         {isEmptyResponse ? (
           'No response, yet...'
         ) : (
-          <PromptResponseEditor
-            autoFocus={true}
-            handleSubmit={handleSubmit}
-            content={contentJSON}
-            readOnly={!isCurrentViewer}
-            placeholder={'Share your response...'}
-          />
+          <>
+            <PromptResponseEditor
+              autoFocus={true}
+              handleSubmit={handleSubmit}
+              content={contentJSON}
+              readOnly={!isCurrentViewer}
+              placeholder={'Share your response...'}
+            />
+            {/* :TODO: (jmtaber129): Disable for empty response */}
+            <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
+          </>
         )}
-        {/* :TODO: (jmtaber129): Disable for empty response */}
-        <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
         {/* :TODO: (jmtaber129): Add response button */}
       </ResponseCard>
     </>
