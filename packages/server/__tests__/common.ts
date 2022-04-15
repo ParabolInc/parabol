@@ -31,6 +31,11 @@ export async function sendIntranet(req: {
   return response.json()
 }
 
+export const drainRethink = async () => {
+  const r = await getRethink()
+  r.getPoolMaster()?.drain()
+}
+
 const persistQuery = async (query: string) => {
   const r = await getRethink()
   const id = await persistFunction(query.trim())

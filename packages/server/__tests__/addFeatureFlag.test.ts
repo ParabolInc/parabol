@@ -1,6 +1,10 @@
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
-import {sendPublic, signUp} from './common'
+import {drainRethink, sendPublic, signUp} from './common'
+
+afterAll(() => {
+  return drainRethink()
+})
 
 const ADD_FEATURE_FLAG = `
   mutation AddFeatureFlag($emails: [String!], $domain: String, $flag: UserFlagEnum!) {

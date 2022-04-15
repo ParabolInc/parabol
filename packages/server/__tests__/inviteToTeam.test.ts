@@ -1,4 +1,8 @@
-import {getUserTeams, sendPublic, signUp} from './common'
+import {drainRethink, getUserTeams, sendPublic, signUp} from './common'
+
+afterAll(() => {
+  return drainRethink()
+})
 
 test('Invite to team', async () => {
   const {userId, authToken} = await signUp()

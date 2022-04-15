@@ -27,9 +27,6 @@ test('Delete user', async () => {
     }
   })
 
-  // Delete happens only after 30s
-  await new Promise((resolve) => setTimeout(resolve, 35000))
-
   const user = await sendIntranet({
     query: `
       query User($userId: ID!) {

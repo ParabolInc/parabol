@@ -1,7 +1,8 @@
-import {closeRethink} from '../database/rethinkDriver'
+import getRethink from '../database/rethinkDriver'
 
 async function teardown() {
-  await closeRethink()
+  const r = await getRethink()
+  return r.getPoolMaster()?.drain()
 }
 
 export default teardown
