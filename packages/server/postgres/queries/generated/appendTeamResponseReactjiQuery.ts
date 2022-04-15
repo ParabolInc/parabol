@@ -19,16 +19,13 @@ export interface IAppendTeamResponseReactjiQuery {
   result: IAppendTeamResponseReactjiResult;
 }
 
-const appendTeamResponseReactjiIR: any = {"name":"appendTeamResponseReactji","params":[{"name":"reactji","codeRefs":{"defined":{"a":46,"b":52,"line":3,"col":9},"used":[{"a":143,"b":149,"line":7,"col":11},{"a":233,"b":239,"line":8,"col":36}]},"transform":{"type":"pick_tuple","keys":["shortName","userId"]}},{"name":"id","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":272,"b":273,"line":10,"col":12}]}}],"usedParamSet":{"reactji":true,"id":true},"statement":{"body":"UPDATE \"TeamPromptResponse\" SET\n  \"reactjis\" = CASE\n    WHEN (:reactji)::\"Reactji\" = ANY(\"reactjis\") THEN \"reactjis\"\n    ELSE array_append(\"reactjis\", (:reactji)::\"Reactji\")\n  END\nWHERE id = :id","loc":{"a":80,"b":273,"line":5,"col":0}}};
+const appendTeamResponseReactjiIR: any = {"name":"appendTeamResponseReactji","params":[{"name":"reactji","codeRefs":{"defined":{"a":46,"b":52,"line":3,"col":9},"used":[{"a":157,"b":163,"line":6,"col":45}]},"transform":{"type":"pick_tuple","keys":["shortName","userId"]}},{"name":"id","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":190,"b":191,"line":7,"col":12}]}}],"usedParamSet":{"reactji":true,"id":true},"statement":{"body":"UPDATE \"TeamPromptResponse\" SET\n  \"reactjis\" = arr_append_uniq(\"reactjis\", (:reactji)::\"Reactji\")\nWHERE id = :id","loc":{"a":80,"b":191,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "TeamPromptResponse" SET
- *   "reactjis" = CASE
- *     WHEN (:reactji)::"Reactji" = ANY("reactjis") THEN "reactjis"
- *     ELSE array_append("reactjis", (:reactji)::"Reactji")
- *   END
+ *   "reactjis" = arr_append_uniq("reactjis", (:reactji)::"Reactji")
  * WHERE id = :id
  * ```
  */
