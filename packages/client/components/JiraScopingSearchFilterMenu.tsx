@@ -1,22 +1,20 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
-import TypeAheadLabel from './TypeAheadLabel'
-import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
-import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import TypeAheadLabel from './TypeAheadLabel'
 
 const StyledMenu = styled(Menu)({
   width: 250
@@ -47,25 +45,21 @@ const FilterLabel = styled(DropdownMenuLabel)({
 
 interface Props {
   menuProps: MenuProps
-  viewer: JiraScopingSearchFilterMenu_viewer | null
-  error: Error | null
+  meetingId: string
+  projects: any // FIXME
+  jiraSearchQuery: any // FIXME
 }
 
-type JiraSearchQuery = NonNullable<
-  NonNullable<JiraScopingSearchFilterMenu_viewer['meeting']>['jiraSearchQuery']
->
+// FIXME
+type JiraSearchQuery = any
 
 const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 
 const JiraScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, viewer} = props
-  const isLoading = viewer === null
-  const projects = viewer?.teamMember?.integrations.atlassian?.projects ?? []
-  const meeting = viewer?.meeting ?? null
-  const meetingId = meeting?.id ?? ''
-  const jiraSearchQuery = meeting?.jiraSearchQuery ?? null
+  const {menuProps, projects, meetingId, jiraSearchQuery} = props
+  const isLoading = meetingId === null
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
 
@@ -166,29 +160,4 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchFilterMenu, {
-  viewer: graphql`
-    fragment JiraScopingSearchFilterMenu_viewer on User {
-      meeting(meetingId: $meetingId) {
-        id
-        ... on PokerMeeting {
-          jiraSearchQuery {
-            projectKeyFilters
-            isJQL
-          }
-        }
-      }
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            projects {
-              id
-              name
-              avatar
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default JiraScopingSearchFilterMenu

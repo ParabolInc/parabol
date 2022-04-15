@@ -157,7 +157,11 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     )
   }
 
-  async getIssues() {
+  async getIssues() // FIXME
+  // queryString: string | null,
+  // isJQL: boolean,
+  // projectFilters: {[cloudId: string]: string[]}
+  {
     // TODO: support JQL
     const jql = 'order by lastViewed DESC'
     const payload = {

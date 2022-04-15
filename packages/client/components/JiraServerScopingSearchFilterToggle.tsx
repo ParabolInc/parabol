@@ -4,32 +4,34 @@ import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import lazyPreload from '../utils/lazyPreload'
-import {GitLabScopingSearchFilterToggle_meeting$key} from '../__generated__/GitLabScopingSearchFilterToggle_meeting.graphql'
+import {JiraServerScopingSearchFilterToggle_meeting$key} from '../__generated__/JiraServerScopingSearchFilterToggle_meeting.graphql'
 import FilterButton from './FilterButton'
 
-const GitLabScopingSearchFilterMenuRoot = lazyPreload(
+const JiraServerScopingSearchFilterMenuRoot = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'GitLabScopingSearchFilterMenuRoot' */ './GitLabScopingSearchFilterMenuRoot'
+      /* webpackChunkName: 'JiraServerScopingSearchFilterMenuRoot' */ './JiraServerScopingSearchFilterMenuRoot'
     )
 )
 interface Props {
-  meetingRef: GitLabScopingSearchFilterToggle_meeting$key
+  meetingRef: JiraServerScopingSearchFilterToggle_meeting$key
 }
 
-const GitLabScopingSearchFilterToggle = (props: Props) => {
+const JiraServerScopingSearchFilterToggle = (props: Props) => {
   const {meetingRef} = props
+
   const meeting = useFragment(
     graphql`
-      fragment GitLabScopingSearchFilterToggle_meeting on PokerMeeting {
-        ...GitLabScopingSearchFilterMenuRoot_meeting
+      fragment JiraServerScopingSearchFilterToggle_meeting on PokerMeeting {
         id
         teamId
       }
     `,
     meetingRef
   )
-  const {teamId} = meeting
+
+  const {id: meetingId, teamId} = meeting
+
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     loadingWidth: 200,
     noClose: true
@@ -38,9 +40,9 @@ const GitLabScopingSearchFilterToggle = (props: Props) => {
     <>
       <FilterButton onClick={togglePortal} ref={originRef} />
       {menuPortal(
-        <GitLabScopingSearchFilterMenuRoot
+        <JiraServerScopingSearchFilterMenuRoot
           teamId={teamId}
-          meetingRef={meeting}
+          meetingId={meetingId}
           menuProps={menuProps}
         />
       )}
@@ -48,4 +50,4 @@ const GitLabScopingSearchFilterToggle = (props: Props) => {
   )
 }
 
-export default GitLabScopingSearchFilterToggle
+export default JiraServerScopingSearchFilterToggle

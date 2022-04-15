@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {JiraServerScopingSearchBar_meeting$key} from '../__generated__/JiraServerScopingSearchBar_meeting.graphql'
+import JiraServerScopingSearchFilterToggle from './JiraServerScopingSearchFilterToggle'
 import ScopingSearchBar from './ScopingSearchBar'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 import ScopingSearchInput from './ScopingSearchInput'
@@ -22,6 +23,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
           queryString
           isJQL
         }
+        ...JiraServerScopingSearchFilterToggle_meeting
       }
     `,
     meetingRef
@@ -40,6 +42,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
         meetingId={id}
         linkedRecordName={'jiraServerSearchQuery'}
       />
+      <JiraServerScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>
   )
 }

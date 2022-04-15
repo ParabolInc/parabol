@@ -21,6 +21,15 @@ import {JiraServerIssueConnection} from './JiraServerIssue'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
 
+type IssueArgs = {
+  first: number
+  after?: string
+  queryString: string | null
+  isJQL: boolean
+  projectKeyFilters: string[] | null
+  [argName: string]: any
+}
+
 const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'JiraServerIntegration',
   description: 'Jira Server integration data for a given team member',
@@ -83,12 +92,8 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
             'A list of projects to restrict the search to. format is cloudId:projectKey. If null, will search all'
         }
       },
-      resolve: async (
-        {teamId, userId},
-        // {first, queryString, isJQL, projectKeyFilters},
-        {first},
-        {authToken, dataLoader}: GQLContext
-      ) => {
+      resolve: async ({teamId, userId}, args: any, {authToken, dataLoader}) => {
+        const {first /* queryString, isJQL, projectKeyFilters*/} = args as IssueArgs
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -119,6 +124,8 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
+        // FIXME
+        // const issueRes = await integrationManager.getIssues(queryString, isJQL, projectKeyFilters)
         const issueRes = await integrationManager.getIssues()
 
         if (issueRes instanceof Error) {
