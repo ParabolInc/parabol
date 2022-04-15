@@ -1,6 +1,6 @@
 /*
   @name removeTeamResponseReactji
-  @param reactji -> (shortName, userId)
+  @param reactji -> (shortname, userid)
 */
 UPDATE "TeamPromptResponse" SET
   "reactjis" = array_remove("reactjis", (:reactji)::"Reactji")

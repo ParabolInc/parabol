@@ -121,7 +121,7 @@ const addReactjiToReactable = {
     if (isRemove) {
       if (isPgTable) {
         await removeTeamResponseReactji.run(
-          {id: reactableId as number, reactji: {shortName: reactji, userId: viewerId}},
+          {id: reactableId as number, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
         // :TODO: (jmtaber129): remove team response reactji
@@ -139,7 +139,7 @@ const addReactjiToReactable = {
     } else {
       if (isPgTable) {
         await appendTeamResponseReactji.run(
-          {id: reactableId as number, reactji: {shortName: reactji, userId: viewerId}},
+          {id: reactableId as number, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {

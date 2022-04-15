@@ -1,6 +1,6 @@
 /*
   @name appendTeamResponseReactji
-  @param reactji -> (shortName, userId)
+  @param reactji -> (shortname, userid)
 */
 UPDATE "TeamPromptResponse" SET
   "reactjis" = arr_append_uniq("reactjis", (:reactji)::"Reactji")
