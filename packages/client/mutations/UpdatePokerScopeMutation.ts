@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
-import AzureDevOpsIssueId from '~/shared/gqlIds/AzureDevOpsIssueId'
+//import AzureDevOpsIssueId from '~/shared/gqlIds/AzureDevOpsIssueId'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
@@ -197,11 +197,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             })
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'azureDevOps') {
-            const descriptionHTML = stateToHTML(contentState)
-            const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
-            console.log(`instanceId: ${instanceId}`)
-            console.log(`issueKey: ${issueKey}`)
-            console.log(`projectKey: ${projectKey}`)
+            //const descriptionHTML = stateToHTML(contentState)
+            //const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
             const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
               teamId,
               meetingId,
@@ -213,9 +210,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {
             const bodyHTML = stateToHTML(contentState)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
-              serviceTaskId
-            )
+            const {issueNumber, nameWithOwner, repoName, repoOwner} =
+              GitHubIssueId.split(serviceTaskId)
             const repository = createProxyRecord(store, '_xGitHubRepository', {
               nameWithOwner,
               name: repoName,

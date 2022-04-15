@@ -149,9 +149,12 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
             innerWorkItems.map((workItem) => {
               return {
                 id: workItem.id.toString(),
+                title: workItem.fields['System.Title'],
+                teamProject: workItem.fields['System.Title'],
                 url: workItem.url,
                 state: workItem.fields['System.State'],
                 type: workItem.fields['System.WorkItemType'],
+                service: 'azureDevOps',
                 updatedAt: new Date()
               }
             })

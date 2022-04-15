@@ -31,9 +31,9 @@ import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
-import AzureDevOpsServerManager from '../../../server/utils/AzureDevOpsServerManager'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
+//import AzureDevOpsServerManager from '../../../server/utils/AzureDevOpsServerManager'
+//import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+//import {WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',

@@ -78,6 +78,7 @@ interface Props {
   linkText: string
 }
 const PokerEstimateHeaderCardContent = (props: Props) => {
+  console.log(`entered PokerEstimateHeaderCardContent - props: ${props}`)
   const {summary, descriptionHTML, url, linkTitle, linkText} = props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {

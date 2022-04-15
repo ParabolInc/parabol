@@ -4,15 +4,25 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
+import TaskIntegration from './TaskIntegration'
 
 const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsWorkItem',
   description: 'The Azure DevOps Issue that comes direct from Azure DevOps',
-  //interfaces: () => [TaskIntegration],
+  interfaces: () => [TaskIntegration],
+  isTypeOf: ({service}) => service === 'azureDevOps',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'GUID instanceId:issueKey'
+    },
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Title of the work item'
+    },
+    teamProject: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name of the Team Project the work item belongs to'
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),

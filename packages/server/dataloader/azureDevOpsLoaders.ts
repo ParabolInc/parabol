@@ -62,7 +62,12 @@ export interface AzureDevOpsUserStoriesKey {
 
 export interface AzureDevOpsWorkItem {
   id: string
+  title: string
+  teamProject: string
   url: string
+  state: string
+  type: string
+  service: 'azureDevOps'
 }
 
 export interface AzureUserInfo {
@@ -275,14 +280,14 @@ export const allAzureDevOpsProjects = (
 
 export const azureDevOpsUserStory = (
   parent: RootDataLoader
-): DataLoader<AzureDevOpsWorkItemKey, WorkItem | null, string> => {
-  return DataLoader<AzureDevOpsWorkItemKey, WorkItem | null, string>(
+): DataLoader<AzureDevOpsWorkItemKey, AzureDevOpsWorkItem | null, string> => {
+  return new DataLoader<AzureDevOpsWorkItemKey, AzureDevOpsWorkItem | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, instanceId, workItemId}) => {
           console.log('inside azureDevOpsWorkItem')
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) return []
+          if (!auth) return null
           const {accessToken} = auth
           if (!accessToken) return null
           const manager = new AzureDevOpsServerManager(accessToken)
@@ -296,12 +301,24 @@ export const azureDevOpsUserStory = (
           const restResult = await manager.getWorkItemData(instanceId, workItemIds)
           const {error, workItems} = restResult
           if (error !== undefined
-            || workItems.length !== 1) {
+            || workItems.length !== 1
+            || !workItems[0]) {
             console.log(error)
             return null
           } else {
             console.log(`no error and workItems length of 1 returning: ${workItems[0]}`)
-            return workItems[0]
+            const returnedWorkItem: WorkItem = workItems[0]
+            const azureDevOpsWorkItem: AzureDevOpsWorkItem = {
+              id: returnedWorkItem.id.toString(),
+              title: returnedWorkItem.fields['System.Title'],
+              teamProject: returnedWorkItem.fields['System.TeamProject'],
+              url: returnedWorkItem.url,
+              state: returnedWorkItem.fields['System.State'],
+              type: returnedWorkItem.fields['System.WorkItemType'],
+              service: 'azureDevOps'
+            }
+            console.log(`azureDevOpsWorkItem: ${JSON.stringify(azureDevOpsWorkItem)}`)
+            return azureDevOpsWorkItem
           }
         })
       )
@@ -331,12 +348,24 @@ export const azureDevOpsUserStories = (
           const manager = new AzureDevOpsServerManager(accessToken)
           const result = await manager.getUserStories(instanceId)
           const {error, workItems} = result
-          // handle error if defined
-          console.log(error)
-          return workItems.map((workItem) => ({
-            id: workItem.id.toString(),
-            url: workItem.url
+          const workItemIds = workItems.map((workItem) => workItem.id)
+          const workItemData = await manager.getWorkItemData(instanceId, workItemIds)
+          const {error: workItemDataError, workItems: returnedWorkItems} = workItemData
+          if (workItemDataError !== undefined) {
+            console.log(error)
+            return []
+          }
+          const mappedWorkItems: AzureDevOpsWorkItem[] = returnedWorkItems.map((returnedWorkItem) => ({
+            id: returnedWorkItem.id.toString(),
+            title: returnedWorkItem.fields['System.Title'],
+            teamProject: returnedWorkItem.fields['System.TeamProject'],
+            url: returnedWorkItem.url,
+            state: returnedWorkItem.fields['System.State'],
+            type: returnedWorkItem.fields['System.WorkItemType'],
+            service: 'azureDevOps'
           }))
+          
+          return mappedWorkItems
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
