@@ -72,7 +72,7 @@ const ResponseHeader = styled('div')({
   padding: '0 8px'
 })
 
-const TeamMemmberName = styled('h3')({
+const TeamMemberName = styled('h3')({
   padding: '0 8px'
 })
 
@@ -86,14 +86,10 @@ const TeamPromptMeeting = (props: Props) => {
     graphql`
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
         ...TeamPromptTopBar_meeting
-        id
         ...useMeeting_meeting
         phases {
-          id
-          phaseType
           stages {
             ... on TeamPromptResponseStage {
-              id
               teamMember {
                 id
                 preferredName
@@ -141,17 +137,17 @@ const TeamPromptMeeting = (props: Props) => {
                   <ResponsesGrid>
                     {transitioningTeamMembers.map((teamMember) => {
                       const {child, onTransitionEnd, status} = teamMember
-                      const {id, picture, preferredName} = child
+                      const {key, picture, preferredName} = child
 
                       return (
                         <TeamMemberResponse
-                          key={id}
+                          key={key}
                           status={status}
                           onTransitionEnd={onTransitionEnd}
                         >
                           <ResponseHeader>
                             <Avatar picture={picture} size={48} />
-                            <TeamMemmberName>{preferredName}</TeamMemmberName>
+                            <TeamMemberName>{preferredName}</TeamMemberName>
                           </ResponseHeader>
                           <ResponseCard>Test</ResponseCard>
                         </TeamMemberResponse>
