@@ -9,7 +9,8 @@ module.exports = {
       ignore_watch: ['**/__tests__', '**/rootSchema.graphql'],
       max_memory_restart: '3000M',
       env_production: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        SERVER_ID: 0
       }
     },
     {
@@ -20,7 +21,8 @@ module.exports = {
       watch: false,
       max_memory_restart: '3000M',
       env_production: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        SERVER_ID: 3
       }
     },
     {

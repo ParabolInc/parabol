@@ -26,7 +26,6 @@ jobs:
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
-      SERVER_ID: "1"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
     working_directory: ~/action
     resource_class: medium+
@@ -77,7 +76,7 @@ jobs:
             yarn postdeploy
       - run:
           name: Start Testing Server
-          command: yarn start
+          command: yarn start || true
           background: true
       - run:
           name: Wait for testing server to be healthy
