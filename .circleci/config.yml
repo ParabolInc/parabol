@@ -69,13 +69,15 @@ jobs:
             cp $DEVOPS_WORKDIR/environments/staging .env
             yarn build --deploy
       - run:
-          name: Start testing server
+          name: Migration Testing DBs
           command: |
             cp $DEVOPS_WORKDIR/environments/test .env
             yarn db:migrate
             yarn pg:migrate up
             yarn postdeploy
-            yarn start || true
+      - run:
+          name: Start Testing Server
+          command: yarn start
           background: true
       - run:
           name: Wait for testing server to be healthy
