@@ -8,7 +8,6 @@ WORKDIR /parabol
 COPY package.json yarn.lock ./
 COPY packages/client/package.json ./packages/client/package.json
 COPY packages/gql-executor/package.json packages/gql-executor/package.json
-# TODO: can we skip integration-tests?
 COPY packages/integration-tests/package.json packages/integration-tests/package.json
 COPY packages/server/package.json packages/server/package.json
 RUN yarn install --frozen-lockfile && \
@@ -25,7 +24,6 @@ WORKDIR /parabol
 COPY package.json yarn.lock ./
 COPY packages/client/package.json ./packages/client/package.json
 COPY packages/gql-executor/package.json packages/gql-executor/package.json
-# TODO: can we skip integration-tests?
 COPY packages/integration-tests/package.json packages/integration-tests/package.json
 COPY packages/server/package.json packages/server/package.json
 # Only install production dependencies
