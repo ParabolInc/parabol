@@ -1,18 +1,18 @@
-import {LeaveTeamModal_teamMember} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import IconLabel from '../../../../components/IconLabel'
 import DialogContainer from '../../../../components/DialogContainer'
-import DialogTitle from '../../../../components/DialogTitle'
 import DialogContent from '../../../../components/DialogContent'
+import DialogTitle from '../../../../components/DialogTitle'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
+import {LeaveTeamModal_teamMember} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 356
@@ -22,7 +22,7 @@ const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props extends WithAtmosphereProps, RouteComponentProps {
   teamMember: LeaveTeamModal_teamMember
   closePortal: () => void
 }

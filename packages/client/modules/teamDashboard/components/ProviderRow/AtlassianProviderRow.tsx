@@ -13,7 +13,9 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -39,7 +41,7 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps {
   teamId: string
   retry: () => void
   viewer: AtlassianProviderRow_viewer
@@ -107,16 +109,8 @@ const ProviderName = styled('div')({
 })
 
 const AtlassianProviderRow = (props: Props) => {
-  const {
-    atmosphere,
-    retry,
-    viewer,
-    teamId,
-    submitting,
-    submitMutation,
-    onError,
-    onCompleted
-  } = props
+  const {atmosphere, retry, viewer, teamId, submitting, submitMutation, onError, onCompleted} =
+    props
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!

@@ -40,7 +40,12 @@ const MockScopingTask = (props: Props) => {
   const {idx} = props
   return (
     <MockTemplateItemBody>
-      <Checkbox active={false} onClick={() => {}} />
+      <Checkbox
+        active={false}
+        onClick={() => {
+          return
+        }}
+      />
       <MockTemplateItemTitle delay={idx * 20} />
     </MockTemplateItemBody>
   )

@@ -12,7 +12,9 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
@@ -35,7 +37,7 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps {
   teamId: string
   viewer: GitHubProviderRow_viewer
 }

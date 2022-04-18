@@ -1,5 +1,5 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -16,7 +16,7 @@ const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps {
   orgId: string
 }
 

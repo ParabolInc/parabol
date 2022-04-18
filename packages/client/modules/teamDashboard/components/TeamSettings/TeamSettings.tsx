@@ -1,17 +1,17 @@
-import {TeamSettings_viewer} from '../../../../__generated__/TeamSettings_viewer.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps} from 'react-router-dom'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout, TierLabel} from '../../../../types/constEnums'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import useRouter from '../../../../hooks/useRouter'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Layout, TierLabel} from '../../../../types/constEnums'
+import {TeamSettings_viewer} from '../../../../__generated__/TeamSettings_viewer.graphql'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 
 const TeamSettingsLayout = styled('div')({
@@ -36,7 +36,7 @@ const StyledRow = styled(Row)({
   borderTop: 0
 })
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props extends WithAtmosphereProps, RouteComponentProps {
   viewer: TeamSettings_viewer
 }
 
