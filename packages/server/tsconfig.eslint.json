@@ -8,6 +8,7 @@
     "postgres/migrations/postDeploy/*",
     "postgres/types/*",
     "graphql/queries",
+    "graphql/types/**/*.ts",
     "graphql/private/**/*.ts",
     "graphql/public/**/*.ts",
     "integrations",
