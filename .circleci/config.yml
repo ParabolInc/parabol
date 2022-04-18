@@ -60,6 +60,9 @@ jobs:
           paths:
             - ~/.cache/yarn
       - run:
+          name: Lint
+          command: yarn lint
+      - run:
           name: DevOps checkout
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
