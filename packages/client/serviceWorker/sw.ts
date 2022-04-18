@@ -6,9 +6,9 @@ declare let self: ServiceWorkerGlobalScope
 
 declare global {
   interface ServiceWorkerGlobalScope {
-    __precacheManifest: {
+    __WB_MANIFEST: {
       url: string
-      revision?: string
+      revision: string | null
     }[]
   }
 }
@@ -23,7 +23,7 @@ const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => 
 
 const onInstall = async (_event: ExtendableEvent) => {
   await self.skipWaiting()
-  const urls = self.__precacheManifest.map(({url}) => url)
+  const urls = self.__WB_MANIFEST.map(({url}) => url)
   const cacheNames = await caches.keys()
   const oldStaticCacheName = cacheNames.find((cacheName) => cacheName.startsWith('parabol-static'))
   const newCache = await caches.open(STATIC_CACHE)
