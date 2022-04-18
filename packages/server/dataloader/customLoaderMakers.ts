@@ -53,7 +53,7 @@ export interface UserTasksKey {
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
   {type: 'REFLECTION', loader: 'retroReflections'},
-  {type: 'RESPONSE', loader: 'teamPromptResponses', keyType: 'number'}
+  {type: 'RESPONSE', loader: 'teamPromptResponses'}
 ] as const
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {

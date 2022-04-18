@@ -23,9 +23,7 @@ const rethinkTableLookup = {
   REFLECTION: 'RetroReflection'
 } as const
 
-const dataloaderLookup = {
-  COMMENT: 'comments',
-  REFLECTION: 'retroReflections',
+const pgDataloaderLookup = {
   RESPONSE: 'teamPromptResponses'
 } as const
 
@@ -82,7 +80,7 @@ const addReactjiToReactable = {
     const isPgTable = reactableType === 'RESPONSE'
     const rethinkDbTable = rethinkTableLookup[reactableType]
     if (isPgTable) {
-      const loaderName = dataloaderLookup[reactableType]
+      const loaderName = pgDataloaderLookup[reactableType]
       reactable = (await dataLoader.get(loaderName).load(reactableId as number)) as Reactable
     } else {
       reactable = (await r.table(rethinkDbTable).get(reactableId).run()) as Reactable
@@ -124,8 +122,6 @@ const addReactjiToReactable = {
           {id: reactableId as number, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
-        // :TODO: (jmtaber129): remove team response reactji
-        // await appendTeamResponseReactji.run
       } else {
         await r
           .table(rethinkDbTable)
