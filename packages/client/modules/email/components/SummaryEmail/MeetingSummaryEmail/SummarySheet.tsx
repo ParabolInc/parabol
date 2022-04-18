@@ -6,6 +6,7 @@ import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_me
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import ExportToCSV from '../ExportToCSV'
+import ExportToPDF from '../ExportToPDF'
 import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
 import MeetingMembersWithoutTasks from './MeetingMembersWithoutTasks'
@@ -47,6 +48,7 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
+        <ExportToPDF />
         <ExportToCSV
           emailCSVUrl={emailCSVUrl}
           meetingId={meetingId}

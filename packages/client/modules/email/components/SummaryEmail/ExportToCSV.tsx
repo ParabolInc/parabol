@@ -359,7 +359,7 @@ class ExportToCSV extends Component<Props> {
     const {emailCSVUrl, referrer} = this.props
     return (
       <>
-        <tr>
+        <tr className='hide-print'>
           <td align='center' style={iconLinkLabel} width='100%'>
             <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
               <img

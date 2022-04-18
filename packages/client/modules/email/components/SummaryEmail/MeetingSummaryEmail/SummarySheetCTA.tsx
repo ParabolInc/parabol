@@ -35,7 +35,7 @@ const SummarySheetCTA = (props: Props) => {
   const {isDemo, referrer, teamDashUrl} = props
   if (isDemo) return null
   return (
-    <tr>
+    <tr className="hide-print">
       <td align={'center'} style={buttonCellStyle}>
         <AnchorIfEmail
           isEmail={referrer === 'email'}
