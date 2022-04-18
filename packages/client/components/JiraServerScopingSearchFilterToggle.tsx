@@ -31,7 +31,6 @@ const JiraServerScopingSearchFilterToggle = (props: Props) => {
   )
 
   const {id: meetingId, teamId} = meeting
-
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     loadingWidth: 200,
     noClose: true

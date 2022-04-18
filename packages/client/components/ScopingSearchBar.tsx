@@ -44,7 +44,7 @@ const Items = styled('div')({
 
 interface Props {
   children: ReactNode
-  currentFilters?: string | string[]
+  currentFilters?: string
 }
 
 const ScopingSearchBar = (props: Props) => {

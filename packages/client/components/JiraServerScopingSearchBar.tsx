@@ -23,18 +23,38 @@ const JiraServerScopingSearchBar = (props: Props) => {
           queryString
           isJQL
         }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              jiraServer {
+                projects {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
         ...JiraServerScopingSearchFilterToggle_meeting
       }
     `,
     meetingRef
   )
 
-  const {id} = meeting
-  const {isJQL, queryString} = meeting.jiraServerSearchQuery
+  const {id, viewerMeetingMember, jiraServerSearchQuery} = meeting
+  const {isJQL, queryString, projectKeyFilters} = jiraServerSearchQuery
+
+  const projects = viewerMeetingMember?.teamMember.integrations.jiraServer?.projects
+  const currentFilters =
+    projects
+      ?.filter((project) => projectKeyFilters.includes(project.id))
+      .map((project) => project.name)
+      .join(', ') ?? 'None'
+
   const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira Server'
 
   return (
-    <ScopingSearchBar>
+    <ScopingSearchBar currentFilters={currentFilters}>
       <ScopingSearchHistoryToggle />
       <ScopingSearchInput
         placeholder={placeholder}

@@ -96,19 +96,15 @@ const JiraScopingSearchBar = (props: Props) => {
     }) ?? []
 
   const {jiraSearchQuery, viewerMeetingMember} = meeting
-  const {projectKeyFilters} = jiraSearchQuery
+  const {isJQL, queryString, projectKeyFilters} = jiraSearchQuery
   const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
-  const projectFilterNames = [] as string[]
-  projectKeyFilters.forEach((projectId, idx) => {
-    const projectName = projects?.find((project) => project?.id === projectId)?.name
-    if (projectName) {
-      const formattedName = idx === 0 ? projectName : `, ${projectName}`
-      projectFilterNames.push(formattedName)
-    }
-  })
-  const currentFilters = projectFilterNames.length ? projectFilterNames : 'None'
 
-  const {isJQL, queryString} = jiraSearchQuery
+  const currentFilters =
+    projects
+      ?.filter((project) => projectKeyFilters.includes(project.id))
+      .map((project) => project.name)
+      .join(', ') ?? 'None'
+
   const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira'
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
@@ -119,7 +115,7 @@ const JiraScopingSearchBar = (props: Props) => {
         meetingId={meetingId}
         linkedRecordName={'jiraSearchQuery'}
       />
-      <JiraScopingSearchFilterToggle meeting={meeting} />
+      <JiraScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>
   )
 }

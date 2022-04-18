@@ -62,7 +62,7 @@ const JiraServerScopingSearchFilterMenuRoot = (props: Props) => {
       jiraSearchQuery={jiraSearchQuery}
       projects={projects}
       menuProps={menuProps}
-      service={'jiraServer'}
+      service='jiraServer'
     />
   )
 }
