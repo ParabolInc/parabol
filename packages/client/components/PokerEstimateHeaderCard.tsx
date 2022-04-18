@@ -13,6 +13,8 @@ interface Props {
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage} = props
   const {task} = stage
+  console.log(`stage: ${stage}`)
+  console.log(`stage: ${task}`)
   if (!task) {
     return <PokerEstimateHeaderCardError />
   }
@@ -25,6 +27,8 @@ const PokerEstimateHeaderCard = (props: Props) => {
   // it's an integrated task, but the service might be down
   if (!integration) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
+  } else {
+    console.log(`integration json: ${JSON.stringify(integration)}`)
   }
 
   if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
@@ -36,6 +40,17 @@ const PokerEstimateHeaderCard = (props: Props) => {
         url={integration.jiraUrl}
         linkTitle={`${name} Issue #${integration.issueKey}`}
         linkText={integration.issueKey}
+      />
+    )
+  }
+  if (integration.__typename === 'AzureDevOpsWorkItem') {
+    return (
+      <PokerEstimateHeaderCardContent
+        summary={integration.title}
+        descriptionHTML={integration.teamProject}
+        url={integration.url}
+        linkTitle={`${integration.title} Issue #${integration.id}`}
+        linkText={integration.id}
       />
     )
   }
@@ -52,6 +67,15 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
         ...PokerEstimateHeaderCardParabol_task
         integrationHash
         integration {
+          ... on AzureDevOpsWorkItem {
+            __typename
+            id
+            title
+            teamProject
+            type
+            state
+            url
+          }
           ... on JiraIssue {
             __typename
             issueKey

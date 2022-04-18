@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+// import {XGitHubCheckConclusionState} from 'parabol-client/types/graphql'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import {Writeable} from '../../../client/types/generics'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
@@ -62,6 +63,12 @@ const updatePokerScope = {
     }
 
     const {endedAt, teamId, phases, meetingType, templateRefId, facilitatorStageId} = meeting
+    console.log(`endedAt: ${endedAt}`)
+    console.log(`teamId: ${teamId}`)
+    console.log(`phases: ${phases}`)
+    console.log(`meetingType: ${meetingType}`)
+    console.log(`templateRefId: ${templateRefId}`)
+    console.log(`facilitatorStageId: ${facilitatorStageId}`)
     if (!isTeamMember(authToken, teamId)) {
       // bad actors could be naughty & just lock meetings that they don't own. Limit bad actors to team members
       await redisLock.unlock()
@@ -83,9 +90,12 @@ const updatePokerScope = {
     // delete stages
     const subtractiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
-      return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      //return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      const a =
+        action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      console.log('after a')
+      return a
     })
-
     subtractiveUpdates.forEach((update) => {
       const {serviceTaskId} = update
       const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
@@ -117,7 +127,8 @@ const updatePokerScope = {
     const newDiscussions = [] as Writeable<InputDiscussions>
     const additiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
-      return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      const a = action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+      return a
     })
 
     const requiredJiraMappers = additiveUpdates
@@ -139,7 +150,7 @@ const updatePokerScope = {
       viewerId,
       meetingId
     )
-
+    console.log(`additiveUpdatesWithTaskIds: ${additiveUpdatesWithTaskIds}`)
     let newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update
@@ -165,8 +176,11 @@ const updatePokerScope = {
       }))
       // MUTATIVE
       newDiscussions.push(...discussions)
+      console.log(`newDiscussions: ${newDiscussions}`)
       stages.push(...newStages)
+      console.log(`stages: ${stages}`)
       newStageIds = newStages.map(({id}) => id)
+      console.log(`newStageIds: ${newStageIds}`)
     })
 
     if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
@@ -182,6 +196,7 @@ const updatePokerScope = {
       })
       .run()
     if (newDiscussions.length > 0) {
+      console.log('inserting newDiscussions')
       await insertDiscussions(newDiscussions)
     }
     const data = {meetingId, newStageIds}

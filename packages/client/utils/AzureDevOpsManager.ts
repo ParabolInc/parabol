@@ -157,6 +157,10 @@ export default abstract class AzureDevOpsManager {
     this.accessToken = accessToken
     this.headers.Authorization = `Bearer ${accessToken}`
   }
+  setToken(token: string) {
+    this.accessToken = token
+    this.headers.Authorization = `Bearer ${token}`
+  }
   private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
     const controller = new AbortController()
     const {signal} = controller

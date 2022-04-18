@@ -7,8 +7,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
@@ -29,8 +31,9 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
+// import AzureDevOpsServerManager from '../../../server/utils/AzureDevOpsServerManager'
+// import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+// import {WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -159,6 +162,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
         context,
         info
       ) => {
+        console.log(`entered TaskIntegration with integration" ${JSON.stringify(integration)}`)
         const {dataLoader, authToken} = context
         const viewerId = getUserId(authToken)
         if (!integration) return null
@@ -175,6 +179,17 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             userId: accessUserId,
             issueId,
             providerId: integration.providerId
+          })
+        } else if (integration.service === 'azureDevOps') {
+          console.log(`integration.service is azureDevOps`)
+          const {instanceId, projectKey, issueKey} = integration
+          return dataLoader.get('azureDevOpsUserStory').load({
+            teamId,
+            userId: accessUserId,
+            instanceId,
+            projectId: projectKey,
+            viewerId,
+            workItemId: issueKey
           })
         } else if (integration.service === 'github') {
           const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})

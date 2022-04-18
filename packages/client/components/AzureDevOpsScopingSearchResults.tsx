@@ -44,6 +44,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                     cursor
                     node {
                       id
+                      title
                       url
                       state
                       type
@@ -105,14 +106,14 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
-            serviceTaskId={node.id}
+            serviceTaskId={'dev.azure.com/jacobsrj:2649cbcf-37c1-484d-a290-1409d9d5b1cf:'+ node.id}
             meetingId={meetingId}
             persistQuery={() => {
               return null
             }}
-            summary={node.state}
+            summary={node.title}
             url={node.url}
-            linkText={node.type}
+            linkText={`${node.type} #${node.id}`}
             linkTitle={`Azure DevOps Work Item #${node.id}`}
           />
         )

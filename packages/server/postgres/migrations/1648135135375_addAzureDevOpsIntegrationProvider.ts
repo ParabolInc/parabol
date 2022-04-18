@@ -9,6 +9,9 @@ export async function up() {
   BEGIN
     ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE 'azureDevOps';
 
+    ALTER TABLE "IntegrationProvider"
+      ADD COLUMN IF NOT EXISTS "tenantId" VARCHAR(255);
+
     AlTER TABLE "TeamMemberIntegrationAuth"
       ALTER COLUMN "accessToken" TYPE VARCHAR(2056),
       ALTER COLUMN "refreshToken" TYPE VARCHAR(2056);
@@ -24,6 +27,9 @@ export async function down() {
   await client.query(`
   DO $$
   BEGIN
+    ALTER TABLE "IntegrationProvider"
+      DROP COLUMN IF EXISTS "tenantId";
+
     DELETE FROM "IntegrationProvider" WHERE "service" = 'azureDevOps';
 
     ALTER TYPE "IntegrationProviderServiceEnum" RENAME TO "IntegrationProviderServiceEnum_delete";

@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
+//import AzureDevOpsIssueId from '~/shared/gqlIds/AzureDevOpsIssueId'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
@@ -95,6 +96,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
     mutation,
     variables,
     updater: (store) => {
+      console.log(`updater called`)
       const payload = store.getRootField('updatePokerScope')
       const meeting = payload.getLinkedRecord('meeting')
       const newStages = payload.getLinkedRecords('newStages')
@@ -177,7 +179,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             .setLinkedRecords([], 'estimates')
             .setLinkedRecords([], 'editors')
             .setLinkedRecord(team!, 'team')
-
           if (service === 'jira') {
             const descriptionHTML = stateToHTML(contentState)
             const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
@@ -195,11 +196,22 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               descriptionHTML
             })
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+          } else if (service === 'azureDevOps') {
+            //const descriptionHTML = stateToHTML(contentState)
+            //const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
+            const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
+              teamId,
+              meetingId,
+              userId: viewerId,
+              url: '',
+              state: '',
+              type: ''
+            })
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {
             const bodyHTML = stateToHTML(contentState)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
-              serviceTaskId
-            )
+            const {issueNumber, nameWithOwner, repoName, repoOwner} =
+              GitHubIssueId.split(serviceTaskId)
             const repository = createProxyRecord(store, '_xGitHubRepository', {
               nameWithOwner,
               name: repoName,
@@ -247,8 +259,10 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               .setLinkedRecord(store.get(dimensionRefId)!, 'dimensionRef')
             return nextStage
           })
+          console.log(`newStages: ${newStages}`)
 
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
+          console.log(`nextStages: ${nextStages}`)
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
           const nextStages = stages.filter((stage) => {
