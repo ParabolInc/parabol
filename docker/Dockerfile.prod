@@ -33,7 +33,9 @@ RUN yarn install --prod --frozen-lockfile && \
       yarn cache clean
 
 COPY . .
-COPY --from=build /parabol/build /parabol/dist /parabol/queryMap.json ./
+COPY --from=build /parabol/build ./build
+COPY --from=build /parabol/dist ./dist
+COPY --from=build /parabol/queryMap.json ./
 
 RUN cp docker/entrypoint.prod.sh /bin/entrypoint && \
       chmod +x /bin/entrypoint
