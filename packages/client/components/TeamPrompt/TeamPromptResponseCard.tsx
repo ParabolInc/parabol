@@ -29,6 +29,9 @@ const ResponseCard = styled('div')<{isEmpty: boolean}>(({isEmpty = false}) => ({
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: isEmpty ? undefined : Elevation.CARD_SHADOW,
   flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
   color: isEmpty ? PALETTE.SLATE_600 : undefined,
   padding: Card.PADDING,
   minHeight: MIN_CARD_HEIGHT,
@@ -40,7 +43,7 @@ const TeamMemberName = styled('h3')({
 })
 
 const StyledReactjis = styled(ReactjiSection)({
-  paddingLeft: 8
+  paddingTop: 12
 })
 
 interface Props {
@@ -139,7 +142,7 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            {/* :TODO: (jmtaber129): Disable for empty response */}
+            {/* :TODO: (jmtaber129): Disable reactjis for empty response */}
             <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
           </>
         )}
