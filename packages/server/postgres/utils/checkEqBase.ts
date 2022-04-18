@@ -1,6 +1,17 @@
+import areDeep from 'fbjs/lib/areEqual'
 import {RTable, TableSchema} from '../../database/stricterR'
-import areEqual from 'fbjs/lib/areEqual'
 import getPg from '../getPg'
+
+function areEqualIgnoringOrder(a, b): boolean {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return (
+      a.length === b.length &&
+      a.every((aa) => b.some((bb) => areDeep(aa, bb))) &&
+      b.every((bb) => a.some((aa) => areDeep(aa, bb)))
+    )
+  }
+  return areDeep(a, b)
+}
 
 interface DBDoc {
   id: string
@@ -39,7 +50,7 @@ function getPairNeFields(
 
   for (const f of alwaysDefinedFields) {
     const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
-    if (!areEqual(rethinkValue, pgValue)) {
+    if (!areEqualIgnoringOrder(rethinkValue, pgValue)) {
       neFields.push(f)
     }
   }
@@ -49,17 +60,17 @@ function getPairNeFields(
     const [rethinkValue, pgValue] = [rethinkRow[maybeUndefinedField], pgRow[maybeUndefinedField]]
 
     if (rethinkValue === undefined) {
-      if (areEqual(pgValue, defaultValueForUndefinedField)) {
+      if (areEqualIgnoringOrder(pgValue, defaultValueForUndefinedField)) {
         continue
       }
     } else if (rethinkValue === null && pgValue !== null) {
       if (
         maybeNullFieldsDefaultValues &&
-        areEqual(maybeNullFieldsDefaultValues[maybeUndefinedField], pgValue)
+        areEqualIgnoringOrder(maybeNullFieldsDefaultValues[maybeUndefinedField], pgValue)
       ) {
         continue
       }
-    } else if (areEqual(pgValue, rethinkValue)) {
+    } else if (areEqualIgnoringOrder(pgValue, rethinkValue)) {
       continue
     }
 
