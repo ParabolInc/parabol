@@ -1,20 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "include": [
-    "database/types/*",
-    "database/migrations/*",
-    "postgres/migrations/*",
-    "postgres/queries/generated/*",
-    "postgres/migrations/postDeploy/*",
-    "postgres/types/*",
-    "graphql/queries",
-    "graphql/private/**/*.ts",
-    "graphql/public/**/*.ts",
-    "integrations",
-    "email/**/*",
-    "segmentFns/*",
-    "utils/*",
-    "server.dev.ts",
-    "**/__tests__/*"
-  ]
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules"]
 }
