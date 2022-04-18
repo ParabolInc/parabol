@@ -25,12 +25,17 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
 
   const query = usePreloadedQuery(
     graphql`
-      query AzureDevOpsScopingSearchResultsQuery($teamId: ID!, $first: Int) {
+      query AzureDevOpsScopingSearchResultsQuery(
+        $teamId: ID!
+        $first: Int
+        $queryString: String
+        $isWIQL: Boolean!
+      ) {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
-                userStories(first: $first)
+                userStories(first: $first, queryString: $queryString, isWIQL: $isWIQL)
                   @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
                   error {
                     message

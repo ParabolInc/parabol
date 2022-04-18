@@ -5,7 +5,8 @@ const values = {
   jira: {},
   jiraServer: {},
   gitlab: {},
-  PARABOL: {}
+  PARABOL: {},
+  azureDevOps: {}
 } as const
 
 const TaskServiceEnum = new GraphQLEnumType({

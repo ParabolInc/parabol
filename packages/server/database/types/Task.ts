@@ -10,9 +10,19 @@ import TaskIntegrationJiraServer from './TaskIntegrationJiraServer'
 export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
 export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
-export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira' | 'jiraServer' | 'gitlab'
+export type TaskServiceEnum =
+  | 'PARABOL'
+  | 'github'
+  | 'jira'
+  | 'jiraServer'
+  | 'gitlab'
+  | 'azureDevOps'
 
-export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub | TaskIntegrationJiraServer | TaskIntegrationGitLab
+export type TaskIntegration =
+  | TaskIntegrationJira
+  | TaskIntegrationGitHub
+  | TaskIntegrationJiraServer
+  | TaskIntegrationGitLab
 export interface TaskInput {
   id?: string
   content: string

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {ScopePhaseAreaAzureDevOpsScoping_meeting$key} from '../__generated__/ScopePhaseAreaAzureDevOpsScoping_meeting.graphql'
-// import AzureDevOpsScopingSearchBar from './AzureDevOpsScopingSearchBar'
+import AzureDevOpsScopingSearchBar from './AzureDevOpsScopingSearchBar'
 import AzureDevOpsScopingSearchResultsRoot from './AzureDevOpsScopingSearchResultsRoot'
 
 interface Props {
@@ -14,7 +14,7 @@ const ScopePhaseAreaAzureDevOpsScoping = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment ScopePhaseAreaAzureDevOpsScoping_meeting on PokerMeeting {
-        # ...AzureDevOpsScopingSearchBar_meeting
+        ...AzureDevOpsScopingSearchBar_meeting
         ...AzureDevOpsScopingSearchResultsRoot_meeting
       }
     `,
@@ -25,6 +25,7 @@ const ScopePhaseAreaAzureDevOpsScoping = (props: Props) => {
   )
   return (
     <>
+      <AzureDevOpsScopingSearchBar meeting={meeting} />
       <AzureDevOpsScopingSearchResultsRoot meetingRef={meeting} />
     </>
   )

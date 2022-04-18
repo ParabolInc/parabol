@@ -253,13 +253,21 @@ export default abstract class AzureDevOpsManager {
     return {error: firstError, workItems: workItemReferences}
   }
 
-  async getUserStories(instanceId: string) {
-    const queryString =
-      "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
-    return await this.executeWiqlQuery(instanceId, queryString)
+  async getUserStories(instanceId: string, queryString: string | null, isWIQL: boolean) {
+    if (isWIQL)
+      return await this.executeWiqlQuery(
+        instanceId,
+        queryString ??
+          "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+      )
+    const textFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
+    console.log('Text filter is ' + textFilter)
+    const customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    console.log('the custom wiql query ' + customQueryString)
+    return await this.executeWiqlQuery(instanceId, customQueryString)
   }
 
-  async getAllUserWorkItems() {
+  async getAllUserWorkItems(queryString: string | null, isWIQL: boolean) {
     const allWorkItems = [] as WorkItem[]
     let firstError: Error | undefined
 
@@ -275,7 +283,11 @@ export default abstract class AzureDevOpsManager {
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
-      const {error: workItemsError, workItems} = await this.getUserStories(instanceId)
+      const {error: workItemsError, workItems} = await this.getUserStories(
+        instanceId,
+        queryString,
+        isWIQL
+      )
       if (!!workItemsError) {
         if (!firstError) {
           firstError = workItemsError

@@ -1,10 +1,19 @@
-import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import AzureDevOpsSearchQuery from './AzureDevOpsSearchQuery'
 import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
@@ -15,6 +24,8 @@ type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 
 type WorkItemArgs = {
   first: number
   after?: string
+  queryString: string | null
+  isWIQL: boolean
 }
 
 interface IGetAzureDevOpsAuthByUserIdTeamIdQueryResult {
@@ -37,7 +48,7 @@ interface AzureDevOpsAuth
   extends Omit<IGetAzureDevOpsAuthByUserIdTeamIdQueryResult, 'azureDevOpsSearchQueries'> {
   azureDevOpsSearchQueries: {
     id: string
-    queryString: string
+    queryString: string | null
     projectKeyFilters?: string[]
     lastUsedAt: Date
     isWIQL: boolean
@@ -102,6 +113,14 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         after: {
           type: GraphQLISO8601Type,
           description: 'the datetime cursor'
+        },
+        queryString: {
+          type: GraphQLString,
+          description: 'A string of text to search for, or WIQL if isWIQL is true'
+        },
+        isWIQL: {
+          type: new GraphQLNonNull(GraphQLBoolean),
+          description: 'true if the queryString is isWIQL, else false'
         }
       },
       resolve: async (
@@ -109,7 +128,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         args: any,
         {authToken, dataLoader}: GQLContext
       ) => {
-        const {first} = args as WorkItemArgs
+        const {first, queryString, isWIQL} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
           const err = new Error('Cannot access another team members user stories')
@@ -135,7 +154,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new AzureDevOpsServerManager(accessToken)
-        const restResult = await manager.getAllUserWorkItems()
+        const restResult = await manager.getAllUserWorkItems(queryString, isWIQL)
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {
           console.log(error)
@@ -172,6 +191,12 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           .get('sharedIntegrationProviders')
           .load({service: 'azureDevOps', orgTeamIds, teamIds: [teamId]})
       }
+    },
+    azureDevOpsSearchQueries: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsSearchQuery))),
+      description:
+        'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old'
+      //resolve: async ({teamId, userId, jiraSearchQueries}) => {}
     }
   })
 })

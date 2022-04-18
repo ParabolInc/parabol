@@ -31,6 +31,15 @@ const defaults = [
     defaultQuery: {
       queryString: ''
     }
+  },
+  {
+    service: 'azureDevOps',
+    meetingPropName: 'azureDevOpsSearchQuery',
+    type: 'AzureDevOpsSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      isWIQL: false
+    }
   }
 ] as const
 
