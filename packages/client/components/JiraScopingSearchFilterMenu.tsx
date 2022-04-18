@@ -43,22 +43,31 @@ const FilterLabel = styled(DropdownMenuLabel)({
   borderBottom: 0
 })
 
+type JiraSearchQuery = {
+  readonly isJQL: boolean
+  readonly projectKeyFilters: readonly string[]
+}
+
+type Project = {
+  id: string
+  name: string
+  avatar: string
+}
+
 interface Props {
   menuProps: MenuProps
   meetingId: string
-  projects: any // FIXME
-  jiraSearchQuery: any // FIXME
+  projects: readonly Project[]
+  jiraSearchQuery: JiraSearchQuery | null
+  service: 'jira' | 'jiraServer'
 }
-
-// FIXME
-type JiraSearchQuery = any
 
 const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 
 const JiraScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, projects, meetingId, jiraSearchQuery} = props
+  const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
   const isLoading = meetingId === null
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
@@ -84,7 +93,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const {portalStatus, isDropdown} = menuProps
   const toggleJQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      const searchQueryId = SearchQueryId.join('jira', meetingId)
+      const searchQueryId = SearchQueryId.join(service, meetingId)
       const jiraSearchQuery = store.get(searchQueryId)
       // this might bork if the checkbox is ticked before the full query loads
       if (!jiraSearchQuery) return
@@ -126,7 +135,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         const {id: globalProjectKey, avatar, name} = project
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = SearchQueryId.join('jira', meetingId)
+            const searchQueryId = SearchQueryId.join(service, meetingId)
             const jiraSearchQuery = store.get<JiraSearchQuery>(searchQueryId)!
             const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
             const keyIdx = projectKeyFiltersProxy.indexOf(globalProjectKey)
