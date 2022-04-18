@@ -48,20 +48,19 @@ interface Props {
 const AzureDevOpsScopingSearchInput = (props: Props) => {
   const {meeting} = props
   const {id: meetingId, azureDevOpsSearchQuery} = meeting
-  const {queryString} = azureDevOpsSearchQuery
+  const {isWIQL, queryString} = azureDevOpsSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const placeholder = isWIQL
+    ? `[System.WorkItemType] = 'User Story' AND [System.State] <> 'Closed'`
+    : 'Search issues on Azure DevOps'
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, meetingId, e.target.value)
   }
   const clearSearch = () => setSearch(atmosphere, meetingId, '')
   return (
     <Wrapper>
-      <SearchInput
-        value={queryString!}
-        placeholder={'Search Azure DevOps tasks'}
-        onChange={onChange}
-      />
+      <SearchInput value={queryString!} placeholder={placeholder} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>

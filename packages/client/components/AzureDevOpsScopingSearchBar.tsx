@@ -31,7 +31,7 @@ const AzureDevOpsScopingSearchBar = (props: Props) => {
     <SearchBar>
       <SearchIcon>search</SearchIcon>
       <AzureDevOpsScopingSearchInput meeting={meeting} />
-      <AzureDevOpsScopingSearchFilterToggle /*meeting={meeting}*/ />
+      <AzureDevOpsScopingSearchFilterToggle meeting={meeting} />
     </SearchBar>
   )
 }

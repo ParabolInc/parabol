@@ -258,16 +258,19 @@ export default abstract class AzureDevOpsManager {
   }
 
   async getUserStories(instanceId: string, queryString: string | null, isWIQL: boolean) {
-    if (isWIQL)
-      return await this.executeWiqlQuery(
-        instanceId,
-        queryString ??
-          "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
-      )
+    console.log(`is WIQL? ${isWIQL}`)
+    if (isWIQL) {
+      const customQueryString = queryString
+        ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString}`
+        : "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+
+      console.log('the wiql query ' + customQueryString)
+      return await this.executeWiqlQuery(instanceId, customQueryString)
+    }
     const textFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
     console.log('Text filter is ' + textFilter)
     const customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
-    console.log('the custom wiql query ' + customQueryString)
+    console.log('the custom query ' + customQueryString)
     return await this.executeWiqlQuery(instanceId, customQueryString)
   }
 
