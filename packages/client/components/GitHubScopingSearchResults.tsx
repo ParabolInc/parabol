@@ -188,13 +188,11 @@ const GitHubScopingSearchResults = (props: Props) => {
   }
   return (
     <>
-      {
-        <GitHubScopingSelectAllIssues
-          usedServiceTaskIds={usedServiceTaskIds}
-          issuesRef={issues}
-          meetingId={meetingId}
-        />
-      }
+      <GitHubScopingSelectAllIssues
+        usedServiceTaskIds={usedServiceTaskIds}
+        issuesRef={issues}
+        meetingId={meetingId}
+      />
       <ResultScroller>
         {query && (
           <NewGitHubIssueInput

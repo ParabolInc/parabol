@@ -26,6 +26,10 @@ const StyledCheckBox = styled(Checkbox)({
 })
 const StyledMenuItemLabel = styled(MenuItemLabel)({})
 
+const StyledMenu = styled(Menu)({
+  maxWidth: '100%'
+})
+
 interface Props {
   menuProps: MenuProps
   queryRef: PreloadedQuery<GitHubScopingSearchFilterMenuQuery>
@@ -126,9 +130,9 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
 
   const {portalStatus, isDropdown} = menuProps
   return (
-    <Menu
+    <StyledMenu
       keepParentFocus
-      ariaLabel={'Define the GitHub search query'}
+      ariaLabel='Define the GitHub search query'
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
@@ -172,7 +176,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </StyledMenu>
   )
 }
 

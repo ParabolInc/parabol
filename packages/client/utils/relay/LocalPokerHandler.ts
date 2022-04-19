@@ -40,6 +40,15 @@ const defaults = [
       queryString: '',
       isWIQL: false
     }
+  },
+  {
+    service: 'gitlab',
+    meetingPropName: 'gitlabSearchQuery',
+    type: 'GitLabSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      selectedProjectsIds: [] as string[]
+    }
   }
 ] as const
 
