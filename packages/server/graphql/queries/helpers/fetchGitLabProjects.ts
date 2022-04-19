@@ -1,9 +1,7 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
-import {GetProjectsQuery} from '../../../types/gitlabTypes'
 import {GQLContext} from '../../graphql'
-import getProjects from '../../nestedSchema/GitLab/queries/getProjects.graphql'
 
 const fetchGitLabProjects = async (
   teamId: string,
@@ -20,8 +18,7 @@ const fetchGitLabProjects = async (
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   if (!provider?.serverBaseUrl) return []
   const manager = new GitLabServerManager(auth, context, info, provider!.serverBaseUrl!)
-  const gitlabRequest = manager.getGitLabRequest(info, context)
-  const [data, error] = await gitlabRequest<GetProjectsQuery>(getProjects, {teamId})
+  const [data, error] = await manager.getProjects({teamId})
   if (error) {
     console.error(error.message)
     return []
