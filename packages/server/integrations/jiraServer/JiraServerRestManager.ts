@@ -7,6 +7,7 @@ import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import composeJQL from '~/utils/composeJQL'
 
 export interface JiraServerRestProject {
   /// more available fields
@@ -116,9 +117,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     const json = await response.json()
 
     if (response.status !== 201 && response.status !== 200) {
-      return new Error(
-        `Fetching projects failed with status ${response.status}, ${this.formatError(json)}`
-      )
+      return new Error(this.formatError(json))
     }
 
     return json
@@ -157,13 +156,14 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     )
   }
 
-  async getIssues() // FIXME
-  // queryString: string | null,
-  // isJQL: boolean,
-  // projectFilters: {[cloudId: string]: string[]}
-  {
-    // TODO: support JQL
-    const jql = 'order by lastViewed DESC'
+  async getIssues(
+    queryString: string | null,
+    isJQL: boolean,
+    projectKeys: string[]
+  ) {
+    const jql = composeJQL(queryString, isJQL, projectKeys)
+
+    console.log('jira server jql', jql)
     const payload = {
       jql,
       maxResults: 100,

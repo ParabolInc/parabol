@@ -11,7 +11,6 @@ import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {getUserId} from '../../utils/authorization'
-import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -20,6 +19,7 @@ import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
 import {JiraServerIssueConnection} from './JiraServerIssue'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
+import IntegrationRepoId from "~/shared/gqlIds/IntegrationRepoId";
 
 type IssueArgs = {
   first: number
@@ -93,7 +93,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         }
       },
       resolve: async ({teamId, userId}, args: any, {authToken, dataLoader}) => {
-        const {first /* queryString, isJQL, projectKeyFilters*/} = args as IssueArgs
+        const {first, queryString, isJQL, projectKeyFilters} = args as IssueArgs
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -124,13 +124,14 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
-        // FIXME
-        // const issueRes = await integrationManager.getIssues(queryString, isJQL, projectKeyFilters)
-        const issueRes = await integrationManager.getIssues()
+        const projectKeys = (projectKeyFilters ?? []).map((projectKeyFilter) => IntegrationRepoId.split(projectKeyFilter).projectKey!)
+
+        const issueRes = await integrationManager.getIssues(queryString, isJQL, projectKeys)
 
         if (issueRes instanceof Error) {
-          sendToSentry(issueRes, {userId, tags: {teamId}})
-          return null
+          return connectionFromTasks([], first, {
+            message: issueRes.message
+          })
         }
 
         const {issues} = issueRes
