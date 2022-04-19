@@ -1,10 +1,11 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
+import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import {RootSchema} from '../../graphql/public/rootSchema'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {CreateIssueMutation, GetProfileQuery} from '../../types/gitlabTypes'
+import {CreateIssueMutation, CreateNoteMutation, GetProfileQuery} from '../../types/gitlabTypes'
 import {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 class GitLabServerManager implements TaskIntegrationManager {
@@ -104,7 +105,7 @@ class GitLabServerManager implements TaskIntegrationManager {
         }
       }
     )
-    return [createIssueData, createIssueError]
+    return [createIssueData, createIssueError] as const
     // if (createIssueError) return createIssueError
     // const issue = createIssueData.createIssue?.issue
     // if (!issue) return new Error('GitLab create issue failed')
@@ -120,6 +121,16 @@ class GitLabServerManager implements TaskIntegrationManager {
     //     gid
     //   }
     // }
+  }
+
+  // gitlab refers to comments in issues as notes
+  async createNote({body, noteableId}: {body: string; noteableId: string}) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    // const [noteData, noteError] = await gitlabRequest<CreateNotePayload>(createNote, {
+    const [noteData, noteError] = await gitlabRequest<CreateNoteMutation>(createNote, {
+      input: {body, noteableId}
+    })
+    return [noteData, noteError] as const
   }
 
   async isTokenValid(

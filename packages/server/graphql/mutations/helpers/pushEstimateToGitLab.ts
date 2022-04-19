@@ -6,7 +6,6 @@ import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManage
 import getPhase from '../../../utils/getPhase'
 import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
 import {GQLContext} from '../../graphql'
-import createNote from '../../nestedSchema/GitLab/mutations/createNote.graphql'
 import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
 
 const pushEstimateToGitLab = async (
@@ -37,12 +36,9 @@ const pushEstimateToGitLab = async (
 
   const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
-
   const {accessToken, providerId} = auth
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   if (!provider?.serverBaseUrl || !accessToken) return new Error('Invalid integration provider')
-  const manager = new GitLabServerManager(auth, context, info, provider!.serverBaseUrl!)
-  const gitlabRequest = manager.getGitLabRequest(info, context)
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     if (!stageId || !meeting) {
       return new Error('Cannot add gitlab comment for non-meeting estimates')
@@ -58,12 +54,8 @@ const pushEstimateToGitLab = async (
       meetingName,
       discussionURL
     )
-    const [, commentError] = await gitlabRequest(createNote, {
-      input: {
-        body,
-        noteableId: gid
-      }
-    })
+    const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
+    const [, commentError] = await manager.createNote({body, noteableId: gid})
     if (commentError) return commentError
   }
   return null
