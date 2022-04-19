@@ -1,5 +1,6 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import GitLabSearchQuery from './GitLabSearchQuery'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
@@ -43,6 +44,10 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           .get('sharedIntegrationProviders')
           .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
       }
+    },
+    gitlabSearchQueries: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitLabSearchQuery))),
+      resolve: async () => []
     }
     // The GitLab schema get injected here as 'api'
   })
