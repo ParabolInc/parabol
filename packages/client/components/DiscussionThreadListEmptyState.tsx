@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import TangledArrowSVG from './TangledArrowSVG'
-import EmptyDiscussionSVG from './EmptyDiscussionSVG'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
+import TangledArrowSVG from './TangledArrowSVG'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -18,9 +18,15 @@ const DiscussionThreadEmptyStateRoot = styled('div')({
 const EmptyDiscussionContainer = styled('div')({
   width: 160,
   margin: '14px auto',
+  textAlign: 'center',
   [mobileBreakpoint]: {
     width: 260
   }
+})
+
+const EmptyDiscussionImage = styled('img')({
+  width: '80%',
+  height: 'auto'
 })
 
 const TangledArrowContainer = styled('div')({
@@ -53,11 +59,12 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const message = `Start the conversation${
     allowTasks ? ' or add takeaway task cards' : ''
   } to capture next steps.`
+  const src = EmptyDiscussionIllustration
 
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
-        <EmptyDiscussionSVG />
+        <EmptyDiscussionImage src={src} />
       </EmptyDiscussionContainer>
       <Message>{isReadOnly ? readOnlyMessage : message}</Message>
       {!isReadOnly && (
