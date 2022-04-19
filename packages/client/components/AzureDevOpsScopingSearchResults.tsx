@@ -38,6 +38,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                   edges {
                     cursor
                     node {
+                      title
                       id
                       url
                       state
@@ -105,7 +106,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             persistQuery={() => {
               return null
             }}
-            summary={node.state}
+            summary={node.title}
             url={node.url}
             linkText={node.type}
             linkTitle={`Azure DevOps Work Item #${node.id}`}

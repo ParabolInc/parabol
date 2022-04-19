@@ -28,6 +28,7 @@ interface Props {
 }
 
 const PokerDiscussVoting = (props: Props) => {
+  console.log(`Inside PokerDiscussVoting`)
   const atmosphere = useAtmosphere()
   const {closePortal, openPortal, modalPortal} = useModal()
   const {setTaskEstimate, error, submitting, onCompleted, onError} = useSetTaskEstimate()
@@ -83,6 +84,7 @@ const PokerDiscussVoting = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
 
   useEffect(() => {
+    console.log(`Inside PokerDiscussVoting useEffect()`)
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
     lastSubmittedFieldRef.current = serviceFieldName
