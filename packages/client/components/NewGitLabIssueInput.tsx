@@ -116,7 +116,6 @@ const NewGitLabIssueInput = (props: Props) => {
           id
         }
         teamMember(teamId: $teamId) {
-          id
           integrations {
             gitlab {
               api {
@@ -128,16 +127,13 @@ const NewGitLabIssueInput = (props: Props) => {
                   }
                   path
                 }
-                query {
-                  # use alias otherwise projects args must be the same as GitLabScopingSearchResults query
-                  allProjects: projects(
-                    membership: true
-                    first: 100
-                    sort: "latest_activity_desc"
-                  ) {
+                # use alias to tell relay that this query shouldn't be cached with GitLabScopingSearchResults query
+                newIssueQuery: query {
+                  projects(membership: true, first: 100, sort: "latest_activity_desc") {
                     edges {
                       node {
                         ... on _xGitLabProject {
+                          __typename
                           id
                           fullPath
                         }
@@ -155,7 +151,7 @@ const NewGitLabIssueInput = (props: Props) => {
   )
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const nullableEdges = teamMember?.integrations?.gitlab?.api?.query?.allProjects?.edges ?? []
+  const nullableEdges = teamMember?.integrations?.gitlab?.api?.newIssueQuery?.projects?.edges ?? []
   const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()

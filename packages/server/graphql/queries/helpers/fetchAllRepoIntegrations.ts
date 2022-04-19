@@ -14,19 +14,14 @@ const fetchAllRepoIntegrations = async (
   const {dataLoader} = context
 
   const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-  const [
-    prevRepoIntegrations,
-    jiraProjects,
-    githubRepos,
-    gitlabProjects,
-    jiraServerProjects
-  ] = await Promise.all([
-    getPrevRepoIntegrations(userId, teamId, permLookup),
-    dataLoader.get('allJiraProjects').load({teamId, userId}),
-    fetchGitHubRepos(teamId, userId, dataLoader, context, info),
-    fetchGitLabProjects(teamId, userId, dataLoader, context, info),
-    dataLoader.get('allJiraServerProjects').load({teamId, userId})
-  ])
+  const [prevRepoIntegrations, jiraProjects, githubRepos, gitlabProjects, jiraServerProjects] =
+    await Promise.all([
+      getPrevRepoIntegrations(userId, teamId, permLookup),
+      dataLoader.get('allJiraProjects').load({teamId, userId}),
+      fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+      fetchGitLabProjects(teamId, userId, context, info),
+      dataLoader.get('allJiraServerProjects').load({teamId, userId})
+    ])
   const fetchedRepoIntegrations = [
     ...jiraProjects,
     ...githubRepos,
