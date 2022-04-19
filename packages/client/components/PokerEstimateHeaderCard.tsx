@@ -40,6 +40,20 @@ const getHeaderFields = (
         linkTitle: `GitHub Issue #${number}`,
         linkText: `#${number}`
       }
+    case 'AzureDevOpsWorkItem':
+      const {
+        title: azureDevOpsTitle,
+        teamProject,
+        url: azureDevOpsUrl,
+        id: workItemId
+      } = integration
+      return {
+        cardTitle: azureDevOpsTitle,
+        descriptionHTML: teamProject,
+        url: azureDevOpsUrl,
+        linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
+        linkText: `#${workItemId}`
+      }
     case '_xGitLabIssue':
       const {iid, title, descriptionHtml, webUrl} = integration
       return {
@@ -69,18 +83,18 @@ const PokerEstimateHeaderCard = (props: Props) => {
   }
   // it's an integrated task, but the service might be down
   const headerFields = getHeaderFields(integration)
+  console.log(`headerFields: ${headerFields}`)
   if (!headerFields) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   } else {
     console.log(`integration json: ${JSON.stringify(integration)}`)
   }
-
-
+  /*
   if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
     const name = integration.__typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
     return (
       <PokerEstimateHeaderCardContent
-        summary={integration.summary}
+        cardTitle={integration.summary}
         descriptionHTML={integration.descriptionHTML}
         url={integration.jiraUrl}
         linkTitle={`${name} Issue #${integration.issueKey}`}
@@ -91,7 +105,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (integration.__typename === 'AzureDevOpsWorkItem') {
     return (
       <PokerEstimateHeaderCardContent
-        summary={integration.title}
+        cardTitle={integration.title}
         descriptionHTML={integration.teamProject}
         url={integration.url}
         linkTitle={`${integration.title} Issue #${integration.id}`}
@@ -99,9 +113,10 @@ const PokerEstimateHeaderCard = (props: Props) => {
       />
     )
   }
+
   if (integration.__typename === '_xGitHubIssue') {
     return <PokerEstimateHeaderCardGitHub issueRef={integration} />
-  }
+  }*/
 
   return <PokerEstimateHeaderCardContent {...headerFields} />
 }
