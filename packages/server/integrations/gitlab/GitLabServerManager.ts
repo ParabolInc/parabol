@@ -1,15 +1,33 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {GQLContext} from '../../graphql/graphql'
+import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import {RootSchema} from '../../graphql/public/rootSchema'
-import {GetProfileQuery} from '../../types/gitlabTypes'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {CreateIssueMutation, GetProfileQuery} from '../../types/gitlabTypes'
+import {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
-class GitLabServerManager {
-  readonly accessToken: string
-  readonly serverBaseUrl: string
+class GitLabServerManager implements TaskIntegrationManager {
+  public title = 'GitLab'
+  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
+  private readonly context: GQLContext
+  private readonly info: GraphQLResolveInfo
+  private readonly serverBaseUrl: string
 
-  constructor(accessToken: string, serverBaseUrl: string) {
-    this.accessToken = accessToken
+  constructor(
+    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    context: GQLContext,
+    info: GraphQLResolveInfo,
+    serverBaseUrl: string
+  ) {
     this.serverBaseUrl = serverBaseUrl
+    this.auth = auth
+    this.context = context
+    this.info = info
+  }
+
+  addCreatedBySomeoneElseComment(): Promise<string | Error> {
+    throw new Error('Method not implemented yet.')
   }
 
   getGitLabRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
@@ -21,7 +39,7 @@ class GitLabServerManager {
         variables,
         info,
         endpointContext: {
-          accessToken: this.accessToken,
+          accessToken: this.auth.accessToken,
           baseUri: this.serverBaseUrl
         },
         batchRef
@@ -32,11 +50,83 @@ class GitLabServerManager {
     }
   }
 
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }) {
+    return null
+    // }): Promise<CreateTaskResponse> {
+    // const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
+    // const res = await createGitHubTask(
+    //   rawContentStr,
+    //   repoOwner,
+    //   repoName,
+    //   this.auth,
+    //   this.context,
+    //   this.info
+    // )
+    // if (res.error) return res.error
+    // const {issueNumber, issueId} = res
+    // return {
+    //   integrationHash: GitHubIssueId.join(integrationRepoId, issueNumber),
+    //   issueId,
+    //   integration: {
+    //     accessUserId: this.auth.userId,
+    //     service: 'github',
+    //     issueNumber,
+    //     nameWithOwner: integrationRepoId
+    //   }
+    // }
+  }
+
+  async createIssue({
+    title,
+    description,
+    projectPath
+  }: {
+    title: string
+    description: string
+    projectPath: string
+  }) {
+    // }): [CreateIssueMutation, Error | null] {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    // const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
+    const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
+      createIssueMutation,
+      {
+        input: {
+          title,
+          description,
+          projectPath
+        }
+      }
+    )
+    return [createIssueData, createIssueError]
+    // if (createIssueError) return createIssueError
+    // const issue = createIssueData.createIssue?.issue
+    // if (!issue) return new Error('GitLab create issue failed')
+    // const {id: gid} = issue
+    // const providerId = `${this.auth.providerId}`
+    // return {
+    //   integrationHash: GitLabIssueId.join(`${providerId}`, gid),
+    //   issueId: gid,
+    //   integration: {
+    //     accessUserId: this.auth.userId,
+    //     service: 'gitlab',
+    //     providerId,
+    //     gid
+    //   }
+    // }
+  }
+
   async isTokenValid(
     info: GraphQLResolveInfo,
     context: Record<any, any>
   ): Promise<[boolean, Error | null]> {
-    if (!this.accessToken) return [false, new Error('GitLabServerManager has no access token')]
+    if (!this.auth.accessToken) return [false, new Error('GitLabServerManager has no access token')]
 
     const gitlabRequest = this.getGitLabRequest(info, context)
     const [, error] = await gitlabRequest<GetProfileQuery>(getProfile, {})

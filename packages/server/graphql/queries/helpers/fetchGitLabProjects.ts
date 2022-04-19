@@ -16,10 +16,10 @@ const fetchGitLabProjects = async (
     .get('teamMemberIntegrationAuths')
     .load({service: 'gitlab', teamId, userId})
   if (!auth?.accessToken) return []
-  const {accessToken, providerId} = auth
+  const {providerId} = auth
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   if (!provider?.serverBaseUrl) return []
-  const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+  const manager = new GitLabServerManager(auth, context, info, provider!.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
   const [data, error] = await gitlabRequest<GetProjectsQuery>(getProjects, {teamId})
   if (error) {

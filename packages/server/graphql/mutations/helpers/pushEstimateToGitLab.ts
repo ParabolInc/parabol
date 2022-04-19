@@ -41,7 +41,7 @@ const pushEstimateToGitLab = async (
   const {accessToken, providerId} = auth
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   if (!provider?.serverBaseUrl || !accessToken) return new Error('Invalid integration provider')
-  const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+  const manager = new GitLabServerManager(auth, context, info, provider!.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     if (!stageId || !meeting) {
