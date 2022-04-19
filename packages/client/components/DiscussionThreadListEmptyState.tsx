@@ -3,7 +3,6 @@ import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
-import TangledArrowSVG from './TangledArrowSVG'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -27,15 +26,6 @@ const EmptyDiscussionContainer = styled('div')({
 const EmptyDiscussionImage = styled('img')({
   width: '80%',
   height: 'auto'
-})
-
-const TangledArrowContainer = styled('div')({
-  display: 'none',
-  margin: '48px auto 0px auto',
-  [mobileBreakpoint]: {
-    width: 76,
-    display: 'block'
-  }
 })
 
 const Message = styled('div')({
@@ -67,11 +57,6 @@ const DiscussionThreadListEmptyState = (props: Props) => {
         <EmptyDiscussionImage src={src} />
       </EmptyDiscussionContainer>
       <Message>{isReadOnly ? readOnlyMessage : message}</Message>
-      {!isReadOnly && (
-        <TangledArrowContainer>
-          <TangledArrowSVG />
-        </TangledArrowContainer>
-      )}
     </DiscussionThreadEmptyStateRoot>
   )
 }
