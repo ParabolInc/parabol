@@ -38,8 +38,8 @@ class GitLabServerManager {
   ): Promise<[boolean, Error | null]> {
     if (!this.accessToken) return [false, new Error('GitLabServerManager has no access token')]
 
-    const gitLabRequest = this.getGitLabRequest(info, context)
-    const [, error] = await gitLabRequest<GetProfileQuery>(getProfile, {})
+    const gitlabRequest = this.getGitLabRequest(info, context)
+    const [, error] = await gitlabRequest<GetProfileQuery>(getProfile, {})
     if (error) return [false, error]
 
     return [true, null]

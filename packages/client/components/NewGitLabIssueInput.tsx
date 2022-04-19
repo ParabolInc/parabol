@@ -7,20 +7,19 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
-import {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
+import getNonNullEdges from '~/utils/getNonNullEdges'
+import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {CompletedHandler} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
 import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
-import NewGitHubIssueMenu from './NewGitHubIssueMenu'
+import NewGitLabIssueMenu from './NewGitLabIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -98,32 +97,53 @@ const Error = styled(StyledError)({
 
 interface Props {
   isEditing: boolean
-  meetingRef: NewGitHubIssueInput_meeting$key
+  meetingId: string
   setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewGitHubIssueInput_viewer$key
+  viewerRef: NewGitLabIssueInput_viewer$key
 }
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
-const NewGitHubIssueInput = (props: Props) => {
-  const {isEditing, meetingRef, setIsEditing, viewerRef} = props
+const NewGitLabIssueInput = (props: Props) => {
+  const {isEditing, meetingId, setIsEditing, viewerRef} = props
   const viewer = useFragment(
     graphql`
-      fragment NewGitHubIssueInput_viewer on User {
+      fragment NewGitLabIssueInput_viewer on User {
         id
         team(teamId: $teamId) {
           id
         }
         teamMember(teamId: $teamId) {
-          ... on TeamMember {
-            repoIntegrations {
-              ...NewGitHubIssueMenu_repoIntegrations
-              items {
-                ... on _xGitHubRepository {
-                  id
-                  nameWithOwner
+          id
+          integrations {
+            gitlab {
+              api {
+                errors {
+                  message
+                  locations {
+                    line
+                    column
+                  }
+                  path
+                }
+                query {
+                  # use alias otherwise projects args must be the same as GitLabScopingSearchResults query
+                  allProjects: projects(
+                    membership: true
+                    first: 100
+                    sort: "latest_activity_desc"
+                  ) {
+                    edges {
+                      node {
+                        ... on _xGitLabProject {
+                          id
+                          fullPath
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -133,24 +153,13 @@ const NewGitHubIssueInput = (props: Props) => {
     `,
     viewerRef
   )
-  const meeting = useFragment(
-    graphql`
-      fragment NewGitHubIssueInput_meeting on PokerMeeting {
-        id
-      }
-    `,
-    meetingRef
-  )
-  const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const {repoIntegrations} = teamMember!
+  const nullableEdges = teamMember?.integrations?.gitlab?.api?.query?.allProjects?.edges ?? []
+  const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {items} = repoIntegrations
-  const repoIntegration = items?.find((item) => item.nameWithOwner)
-  const nameWithOwner = repoIntegration?.nameWithOwner
-  const [selectedNameWithOwner, setSelectedNameWithOwner] = useState(nameWithOwner)
+  const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
@@ -171,7 +180,7 @@ const NewGitHubIssueInput = (props: Props) => {
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited || !selectedNameWithOwner) return
+    if (portalStatus !== PortalStatus.Exited || !selectedFullPath) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -192,22 +201,19 @@ const NewGitHubIssueInput = (props: Props) => {
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
-        service: 'github' as const,
-        serviceProjectHash: selectedNameWithOwner
+        service: 'gitlab' as const,
+        serviceProjectHash: selectedFullPath
       }
     }
     const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
-      const integration = res.createTask?.task?.integration ?? null
-      if (!integration) return
-      if (integration.__typename !== '_xGitHubIssue') return
-      const {number: issueNumber, repository} = integration
-      const {nameWithOwner} = repository
+      const integrationHash = res.createTask?.task?.integrationHash ?? null
+      if (!integrationHash) return
       const pokerScopeVariables = {
         meetingId,
         updates: [
           {
-            service: 'github',
-            serviceTaskId: GitHubIssueId.join(nameWithOwner, issueNumber),
+            service: 'gitlab',
+            serviceTaskId: integrationHash,
             action: 'ADD'
           } as const
         ]
@@ -241,22 +247,20 @@ const NewGitHubIssueInput = (props: Props) => {
             {dirty && error && <Error>{error}</Error>}
           </Form>
           <StyledButton ref={originRef} onMouseDown={togglePortal}>
-            <StyledLink>{selectedNameWithOwner}</StyledLink>
+            <StyledLink>{selectedFullPath}</StyledLink>
             <StyledIcon>expand_more</StyledIcon>
           </StyledButton>
         </Issue>
       </Item>
       {menuPortal(
-        <NewGitHubIssueMenu
-          handleSelectNameWithOwner={setSelectedNameWithOwner}
+        <NewGitLabIssueMenu
+          gitlabProjects={gitlabProjects}
+          handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
-          repoIntegrations={repoIntegrations}
-          teamId={teamId}
-          userId={userId}
         />
       )}
     </>
   )
 }
 
-export default NewGitHubIssueInput
+export default NewGitLabIssueInput

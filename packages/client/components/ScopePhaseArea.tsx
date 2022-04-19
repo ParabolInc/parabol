@@ -70,24 +70,32 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  if (!viewerMeetingMember) return null
-  const {user, teamMember} = viewerMeetingMember
+  const {user, teamMember} = viewerMeetingMember!
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
   const jiraServerIntegration = teamMember.integrations.jiraServer
   const isGitLabProviderAvailable = !!(
     gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
-
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
   const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
 
   const baseTabs = [
-    {icon: <GitHubSVG />, label: 'GitHub', allow: true},
-    {icon: <JiraSVG />, label: 'Jira', allow: true},
-    {icon: <ParabolLogoSVG />, label: 'Parabol', allow: true},
-    {icon: <JiraServerSVG />, label: 'Jira Server', allow: allowJiraServer},
-    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab}
+    {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},
+    {icon: <JiraSVG />, label: 'Jira', allow: true, Component: ScopePhaseAreaJira},
+    {
+      icon: <ParabolLogoSVG />,
+      label: 'Parabol',
+      allow: true,
+      Component: ScopePhaseAreaParabolScoping
+    },
+    {
+      icon: <JiraServerSVG />,
+      label: 'Jira Server',
+      allow: allowJiraServer,
+      Component: ScopePhaseAreaJiraServer
+    },
+    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab, Component: ScopePhaseAreaGitLab}
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
@@ -113,7 +121,7 @@ const ScopePhaseArea = (props: Props) => {
     selectIdx(idx)
   }
 
-  const goToParabol = () => {
+  const gotoParabol = () => {
     setActiveIdx(2)
   }
 
@@ -140,37 +148,16 @@ const ScopePhaseArea = (props: Props) => {
         containerStyle={containerStyle}
         style={innerStyle}
       >
-        <TabContents>
-          <ScopePhaseAreaGitHub
-            isActive={isTabActive('GitHub')}
-            gotoParabol={goToParabol}
-            meetingRef={meeting}
-          />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaJira
-            isActive={isTabActive('Jira')}
-            gotoParabol={goToParabol}
-            meeting={meeting}
-          />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaJiraServer
-            isActive={isTabActive('Jira Server')}
-            gotoParabol={goToParabol}
-            meetingRef={meeting}
-          />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaGitLab
-            isActive={isTabActive('GitLab')}
-            gotoParabol={goToParabol}
-            meetingRef={meeting}
-          />
-        </TabContents>
+        {/* swipeable views won't ignore null children: https://github.com/oliviertassinari/react-swipeable-views/issues/271 */}
+        {tabs.map(({label, Component}) => (
+          <TabContents key={label}>
+            <Component
+              meetingRef={meeting}
+              isActive={isTabActive(label)}
+              gotoParabol={gotoParabol}
+            />
+          </TabContents>
+        ))}
       </SwipeableViews>
     </ScopingArea>
   )
