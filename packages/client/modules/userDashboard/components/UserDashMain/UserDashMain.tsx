@@ -1,6 +1,6 @@
 import React from 'react'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
-import {createRouter, JSResource, RouteRenderer, RoutingContext} from '../../../../routing'
+import {JSResource, RouteRenderer, RoutingContext, useCreateRouter} from '../../../../routing'
 import {LoaderSize} from '../../../../types/constEnums'
 import {useTasksRoute} from './useTasksRoute'
 import {useTimelineRoute} from './useTimelineRoute'
@@ -8,8 +8,7 @@ import {useTimelineRoute} from './useTimelineRoute'
 const UserDashMain = () => {
   const timelineRoute = useTimelineRoute()
   const tasksRoute = useTasksRoute()
-
-  const router = createRouter([
+  const router = useCreateRouter([
     {
       component: JSResource('DashContentRoot', () => import('./DashContentRoot')),
       prepare: () => ({}),

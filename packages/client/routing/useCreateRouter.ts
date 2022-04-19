@@ -1,8 +1,8 @@
-import {BrowserHistoryBuildOptions, createBrowserHistory} from 'history'
 import * as React from 'react'
 import {PreloadedQuery} from 'react-relay'
 import {match} from 'react-router'
 import {matchRoutes, RouteConfig as DefaultRouteConfig} from 'react-router-config'
+import useRouter from '../hooks/useRouter'
 import {Resource} from './JSResource'
 import {Entry, Route, Router} from './RoutingContext'
 
@@ -32,10 +32,13 @@ export interface MatchedRoute<Params extends {[K in keyof Params]?: string}> {
  * The router watches for changes to the current location via the `history` package, maps the
  * location to the corresponding route entry, and then preloads the code and data for the route.
  */
-export default function createRouter(routes: RouteConfig[], options?: BrowserHistoryBuildOptions) {
-  // TODO: merge with the default useRouter history?
-  // Initialize history
-  const history = createBrowserHistory(options)
+export default function useCreateRouter(
+  routes: RouteConfig[]
+  // options?: BrowserHistoryBuildOptions
+) {
+  // Initialize history, merge with the default history of useRouter
+  // const history = createBrowserHistory(options)
+  const {history} = useRouter()
 
   // Find the initial match and prepare it
   // @ts-ignore

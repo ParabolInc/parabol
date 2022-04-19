@@ -1,5 +1,5 @@
+import {useQueryLoader} from 'react-relay'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {JSResource} from '../../../../routing'
 import {useUserTaskFilters} from '../../../../utils/useUserTaskFilters'
 import myDashboardTasksAndHeaderQuery, {
@@ -14,16 +14,12 @@ export function useTasksRoute() {
   const {viewerId} = atmosphere
 
   const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
-  const myDashboardTasksAndHeaderQueryRef = useQueryLoaderNow<MyDashboardTasksAndHeaderQuery>(
-    myDashboardTasksAndHeaderQuery,
-    {userIds, teamIds}
+  const [tasksRef, loadTasksQuery] = useQueryLoader<MyDashboardTasksAndHeaderQuery>(
+    myDashboardTasksAndHeaderQuery
   )
-  const archivedTasksQueryRef = useQueryLoaderNow<TeamArchiveQuery>(teamArchiveQuery, {
-    userIds,
-    teamIds,
-    first: 10
-  })
-  const tasksQueryRef = showArchived ? archivedTasksQueryRef : myDashboardTasksAndHeaderQueryRef
+
+  const [archivedTasksQueryRef, loadArchivedTasksQuery] =
+    useQueryLoader<TeamArchiveQuery>(teamArchiveQuery)
 
   const TasksComponent = showArchived
     ? JSResource('ArchiveTaskUserRoot', () => import('../../../../components/ArchiveTaskUserRoot'))
@@ -34,6 +30,22 @@ export function useTasksRoute() {
   return {
     path: `/me/tasks`,
     component: TasksComponent,
-    prepare: () => ({queryRef: tasksQueryRef})
+    prepare: () => {
+      if (showArchived) {
+        if (!archivedTasksQueryRef) {
+          loadArchivedTasksQuery({
+            userIds,
+            teamIds,
+            first: 10
+          })
+        }
+        return {queryRef: archivedTasksQueryRef}
+      }
+
+      if (!tasksRef) {
+        loadTasksQuery({userIds, teamIds})
+      }
+      return {queryRef: tasksRef}
+    }
   }
 }
