@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.54.0 2022-April-13
+
+### Fixed
+
+- fix(standups): Include TeamPromptMeetingMember in MeetingMember type resolution
+
+### Added
+
+- feat(gitlab): bump nest-graphql-endpoint (#6363)
+- feat(scale): give a pubsub channel to each socket server (#6317)
+- feat(standups): Top Bar Back Button (#6318)
+- feat(standups): Top Bar Component Stub (#6307)
+
+### Changed
+
+- refactor(requireSU): Remove requireSU (#6330)
+
 ## 6.53.0 2022-April-06
 
 ### Fixed
