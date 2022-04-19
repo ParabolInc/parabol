@@ -28,6 +28,8 @@ const GitLabScopingSearchResults = (props: Props) => {
     graphql`
       query GitLabScopingSearchResultsQuery(
         $teamId: ID!
+        $queryString: String!
+        $selectedProjectsIds: [ID!]
         $first: Int!
         $includeSubepics: Boolean!
         $sort: _xGitLabIssueSort!
@@ -57,7 +59,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                       membership: true
                       first: 75
                       sort: "latest_activity_desc"
-                      ids: null # $selectedProjectsIds
+                      ids: $selectedProjectsIds
                     ) @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
                         node {
@@ -65,6 +67,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                             issues(
                               includeSubepics: $includeSubepics
                               state: $state
+                              search: $queryString
                               sort: $sort
                               first: $first
                             ) {
