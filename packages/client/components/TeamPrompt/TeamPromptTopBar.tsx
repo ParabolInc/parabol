@@ -1,11 +1,12 @@
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-
-import { TeamPromptTopBar_meeting$key } from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
-import {HeadingBlock, MeetingTopBarStyles} from '../MeetingTopBar'
+import {HeadingBlock, IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
+import TeamPromptOptions from './TeamPromptOptions'
 
 const TeamPromptHeaderTitle = styled('h1')({
   fontSize: 16,
@@ -21,6 +22,22 @@ const TeamPromptHeader = styled('div')({
   justifyContent: 'flex-start'
 })
 
+const ButtonContainer = styled('div')({
+  alignItems: 'center',
+  alignContent: 'center',
+  display: 'flex',
+  height: 32,
+  marginLeft: 11,
+  position: 'relative',
+  [meetingAvatarMediaQueries[0]]: {
+    height: 48,
+    marginLeft: 10
+  },
+  [meetingAvatarMediaQueries[1]]: {
+    height: 56
+  }
+})
+
 interface Props {
   meetingRef: TeamPromptTopBar_meeting$key
 }
@@ -32,12 +49,13 @@ const TeamPromptTopBar = (props: Props) => {
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         name
+        ...TeamPromptOptions_meeting
       }
     `,
     meetingRef
   )
 
-  const { name: meetingName } = meeting
+  const {name: meetingName} = meeting
 
   return (
     <MeetingTopBarStyles>
@@ -47,7 +65,12 @@ const TeamPromptTopBar = (props: Props) => {
           <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
         </TeamPromptHeader>
       </HeadingBlock>
-      {/* :TODO: (jmtaber129): Add avatars, overflow menu, etc. */}
+      <IconGroupBlock>
+        {/* :TODO: (jmtaber129): Add avatars, etc. */}
+        <ButtonContainer>
+          <TeamPromptOptions meetingRef={meeting} />
+        </ButtonContainer>
+      </IconGroupBlock>
     </MeetingTopBarStyles>
   )
 }
