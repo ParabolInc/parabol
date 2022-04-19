@@ -1,4 +1,3 @@
-import {RouteComponentProps} from 'react-router'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {JSResource} from '../../../../routing'
@@ -10,7 +9,7 @@ import teamArchiveQuery, {
   TeamArchiveQuery
 } from '../../../../__generated__/TeamArchiveQuery.graphql'
 
-export function useTasksRoute(match: RouteComponentProps['match']) {
+export function useTasksRoute() {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -33,7 +32,7 @@ export function useTasksRoute(match: RouteComponentProps['match']) {
         () => import('../../../../components/MyDashboardTasksAndHeader')
       )
   return {
-    path: `${match.url}/tasks`,
+    path: `/me/tasks`,
     component: TasksComponent,
     prepare: () => ({queryRef: tasksQueryRef})
   }

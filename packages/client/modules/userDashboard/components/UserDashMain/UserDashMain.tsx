@@ -1,17 +1,13 @@
 import React from 'react'
-import {RouteComponentProps} from 'react-router'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {createRouter, JSResource, RouteRenderer, RoutingContext} from '../../../../routing'
 import {LoaderSize} from '../../../../types/constEnums'
 import {useTasksRoute} from './useTasksRoute'
 import {useTimelineRoute} from './useTimelineRoute'
 
-interface Props extends RouteComponentProps {}
-
-const UserDashMain = (props: Props) => {
-  const {match} = props
-  const timelineRoute = useTimelineRoute(match)
-  const tasksRoute = useTasksRoute(match)
+const UserDashMain = () => {
+  const timelineRoute = useTimelineRoute()
+  const tasksRoute = useTasksRoute()
 
   const router = createRouter([
     {
