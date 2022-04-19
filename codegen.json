@@ -15,7 +15,10 @@
     },
     "packages/server/types/gitlabTypes.ts": {
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
-      "documents": "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
+      "documents": [
+        "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
+        "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"
+      ],
       "plugins": ["typescript", "typescript-operations", "add"],
       "config": {
         "assumeValidSDL": true
