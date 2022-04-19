@@ -11,9 +11,11 @@ import Icon from './Icon'
 const SearchInput = styled('input')({
   appearance: 'none',
   border: 'none',
+  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
+  padding: 12,
   outline: 0,
   backgroundColor: 'transparent',
   width: '100%'

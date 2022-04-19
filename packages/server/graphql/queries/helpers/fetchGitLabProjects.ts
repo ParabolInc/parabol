@@ -1,18 +1,17 @@
-import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
-import {GetProjectsQuery} from '../../../types/gitlabTypes'
-import {DataLoaderWorker} from '../../graphql'
-import getProjects from '../../nestedSchema/GitLab/queries/getProjects.graphql'
-import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import {GetProjectsQuery} from '../../../types/gitlabTypes'
+import {GQLContext} from '../../graphql'
+import getProjects from '../../nestedSchema/GitLab/queries/getProjects.graphql'
 
 const fetchGitLabProjects = async (
   teamId: string,
   userId: string,
-  dataLoader: DataLoaderWorker,
   context: GQLContext,
   info: GraphQLResolveInfo
 ) => {
+  const {dataLoader} = context
   const auth = await dataLoader
     .get('teamMemberIntegrationAuths')
     .load({service: 'gitlab', teamId, userId})

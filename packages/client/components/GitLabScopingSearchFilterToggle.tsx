@@ -8,18 +8,30 @@ import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
 import {GitLabScopingSearchFilterToggle_meeting$key} from '../__generated__/GitLabScopingSearchFilterToggle_meeting.graphql'
+import FlatButton from './FlatButton'
 import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
 
-const FilterIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
+const StyledButton = styled(FlatButton)({
+  height: 24,
+  marginLeft: 4,
+  padding: 0,
+  width: 24,
+  background: PALETTE.SKY_500,
+  '&:hover': {
+    background: PALETTE.SKY_500
+  }
 })
 
-const GitLabScopingSearchFilterMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'GitLabScopingSearchFilterMenuRoot' */ './GitLabScopingSearchFilterMenuRoot'
-  )
+const FilterIcon = styled(Icon)({
+  color: PALETTE.WHITE,
+  fontSize: ICON_SIZE.MD18
+})
+
+const GitLabScopingSearchFilterMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'GitLabScopingSearchFilterMenuRoot' */ './GitLabScopingSearchFilterMenuRoot'
+    )
 )
 interface Props {
   meetingRef: GitLabScopingSearchFilterToggle_meeting$key
@@ -44,9 +56,9 @@ const GitLabScopingSearchFilterToggle = (props: Props) => {
   })
   return (
     <>
-      <PlainButton onClick={togglePortal} ref={originRef}>
+      <StyledButton onClick={togglePortal} ref={originRef}>
         <FilterIcon>filter_list</FilterIcon>
-      </PlainButton>
+      </StyledButton>
       {menuPortal(
         <GitLabScopingSearchFilterMenuRoot
           teamId={teamId}

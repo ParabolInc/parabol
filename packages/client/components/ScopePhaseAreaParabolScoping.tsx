@@ -25,7 +25,7 @@ const ScopePhaseAreaParabolScoping = (props: Props) => {
   if (!isActive) return null
   return (
     <>
-      <ParabolScopingSearchBar meeting={meeting} />
+      <ParabolScopingSearchBar meetingRef={meeting} />
       <ParabolScopingSearchResultsRoot meeting={meeting} />
     </>
   )
