@@ -65,15 +65,12 @@ const GitLabScopingSearchCurrentFilters = (props: Props) => {
   const {selectedProjectsIds} = gitlabSearchQuery
   const projects = viewerMeetingMember?.teamMember.integrations.gitlab.projects
 
-  const selectedProjectsNames = [] as string[]
-  selectedProjectsIds?.forEach((projectId, idx) => {
+  const selectedProjectsPaths = [] as string[]
+  selectedProjectsIds?.forEach((projectId) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.fullPath
-    if (selectedProjectPath) {
-      const formattedProject = idx === 0 ? selectedProjectPath : `, ${selectedProjectPath}`
-      selectedProjectsNames.push(formattedProject)
-    }
+    if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
   })
-  const currentFilters = selectedProjectsNames?.length ? selectedProjectsNames : 'None'
+  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
 
   return (
     <Wrapper>

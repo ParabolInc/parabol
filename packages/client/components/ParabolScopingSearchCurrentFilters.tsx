@@ -49,10 +49,7 @@ const ParabolScopingSearchCurrentFilters = (props: Props) => {
   )
   const {parabolSearchQuery} = meeting
   const {statusFilters} = parabolSearchQuery
-  const formattedStatusFilters = statusFilters?.map((status, idx) =>
-    idx === 0 ? status : `, ${status}`
-  )
-  const currentFilters = formattedStatusFilters?.length ? formattedStatusFilters : 'None'
+  const currentFilters = statusFilters?.length ? statusFilters.join(', ') : 'None'
 
   return (
     <Wrapper>
