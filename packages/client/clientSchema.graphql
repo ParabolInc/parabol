@@ -23,8 +23,10 @@ extend type PokerMeeting {
   localStage: NewMeetingStage!
   showSidebar: Boolean!
   githubSearchQuery: GitHubSearchQuery!
+  gitlabSearchQuery: GitLabSearchQuery!
   jiraSearchQuery: JiraSearchQuery!
   parabolSearchQuery: ParabolSearchQuery!
+  azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
 }
 
 extend type RetrospectiveMeeting {

@@ -20,17 +20,25 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
       fragment AzureDevOpsScopingSearchResultsRoot_meeting on PokerMeeting {
         ...AzureDevOpsScopingSearchResults_meeting
         teamId
+        azureDevOpsSearchQuery {
+          queryString
+          isWIQL
+        }
       }
     `,
     meetingRef
   )
 
-  const {teamId} = meeting
+  const {teamId, azureDevOpsSearchQuery} = meeting
+  const {queryString, isWIQL} = azureDevOpsSearchQuery
+  const normalizedQueryString = queryString.trim()
   const queryRef = useQueryLoaderNow<AzureDevOpsScopingSearchResultsQuery>(
     azureDevOpsScopingSearchResultsQuery,
     {
       teamId,
-      first: 25
+      first: 25,
+      queryString: normalizedQueryString,
+      isWIQL
     }
   )
   console.log(`AzureDevOpsScopingSearchResultsRoot.queryRef: ${queryRef}`)

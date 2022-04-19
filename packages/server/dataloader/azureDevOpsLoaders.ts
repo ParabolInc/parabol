@@ -89,13 +89,11 @@ export const freshAzureDevOpsAuth = (
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           console.log(`Inside keys.map userId: ${userId} | teamId: ${teamId}`)
-          const azureDevOpsAuthToRefresh = (await parent
-            .get('teamMemberIntegrationAuths')
-            .load({
-              service: 'azureDevOps',
-              teamId,
-              userId
-            })) as IGetTeamMemberIntegrationAuthQueryResult | null
+          const azureDevOpsAuthToRefresh = (await parent.get('teamMemberIntegrationAuths').load({
+            service: 'azureDevOps',
+            teamId,
+            userId
+          })) as IGetTeamMemberIntegrationAuthQueryResult | null
           if (azureDevOpsAuthToRefresh === null) {
             console.log('error line 61')
             return null
@@ -203,7 +201,7 @@ export const azureDevOpsAllWorkItems = (
           const manager = new AzureDevOpsServerManager(auth, provider as IntegrationProviderAzureDevOps)
 
           // const manager = new AzureDevOpsServerManager(accessToken)
-          const restResult = await manager.getAllUserWorkItems()
+          const restResult = await manager.getAllUserWorkItems(null, false)
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
             console.log(error)
@@ -465,7 +463,7 @@ export const azureDevOpsUserStories = (
           const manager = new AzureDevOpsServerManager(auth, provider as IntegrationProviderAzureDevOps)
 
           // const manager = new AzureDevOpsServerManager(accessToken)
-          const result = await manager.getUserStories(instanceId)
+          const result = await manager.getUserStories(instanceId, null, false)
           const {error, workItems} = result
           const workItemIds = workItems.map((workItem) => workItem.id)
           const workItemData = await manager.getWorkItemData(instanceId, workItemIds)

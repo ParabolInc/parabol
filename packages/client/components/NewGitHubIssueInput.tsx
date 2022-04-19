@@ -32,6 +32,7 @@ const StyledButton = styled(PlainButton)({
   justifyContent: 'flex-start',
   margin: 0,
   opacity: 1,
+  width: 'fit-content',
   ':hover, :focus': {
     backgroundColor: 'transparent'
   }
@@ -157,7 +158,8 @@ const NewGitHubIssueInput = (props: Props) => {
     }
   })
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_RIGHT
+    MenuPosition.UPPER_LEFT,
+    {isDropdown: true}
   )
   const ref = useRef<HTMLInputElement>(null)
   const {dirty, error} = fields.newIssue

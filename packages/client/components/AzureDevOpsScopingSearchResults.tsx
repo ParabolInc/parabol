@@ -25,12 +25,17 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
 
   const query = usePreloadedQuery(
     graphql`
-      query AzureDevOpsScopingSearchResultsQuery($teamId: ID!, $first: Int) {
+      query AzureDevOpsScopingSearchResultsQuery(
+        $teamId: ID!
+        $first: Int
+        $queryString: String
+        $isWIQL: Boolean!
+      ) {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
-                userStories(first: $first)
+                userStories(first: $first, queryString: $queryString, isWIQL: $isWIQL)
                   @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
                   error {
                     message
@@ -40,6 +45,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                     node {
                       title
                       id
+                      title
                       url
                       state
                       type
@@ -108,7 +114,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             }}
             summary={node.title}
             url={node.url}
-            linkText={node.type}
+            linkText={`${node.type} #${node.id}`}
             linkTitle={`Azure DevOps Work Item #${node.id}`}
           />
         )
