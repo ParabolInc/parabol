@@ -28,7 +28,7 @@ const JiraSearchQuery = new GraphQLObjectType<any, GQLContext>({
     },
     projectKeyFilters: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
-      description: 'The list of project keys selected as a filter. null if not set',
+      description: 'The list of project keys selected as a filter',
       resolve: ({projectKeyFilters}) => projectKeyFilters || []
     },
     lastUsedAt: {

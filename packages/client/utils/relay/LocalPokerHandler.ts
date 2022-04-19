@@ -37,7 +37,8 @@ const defaults = [
     meetingPropName: 'gitlabSearchQuery',
     type: 'GitLabSearchQuery',
     defaultQuery: {
-      queryString: ''
+      queryString: '',
+      selectedProjectsIds: [] as string[]
     }
   }
 ] as const

@@ -44,7 +44,11 @@ const handleGitLabCreateIssue = (
     ?.getLinkedRecord('query')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue') return
-  const gitlabProjectsConn = getGitLabProjectsConn(gitlab)
+  const selectedProjectsIds = gitlabSearchQuery?.getValue('selectedProjectsIds') as
+    | string[]
+    | undefined
+  const formattedProjectsIds = selectedProjectsIds?.length ? selectedProjectsIds : null
+  const gitlabProjectsConn = getGitLabProjectsConn(gitlab, formattedProjectsIds)
   if (!gitlabProjectsConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(

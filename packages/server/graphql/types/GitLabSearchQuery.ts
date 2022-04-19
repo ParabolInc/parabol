@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
@@ -13,6 +13,11 @@ const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
     queryString: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The query string used to search GitLab issue titles and descriptions'
+    },
+    selectedProjectsIds: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+      description:
+        'The list of ids of projects that have been selected as a filter. Null if none have been selected'
     },
     lastUsedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

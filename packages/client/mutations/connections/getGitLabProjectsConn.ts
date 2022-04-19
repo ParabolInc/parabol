@@ -1,7 +1,8 @@
 import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
 
 const getGitLabProjectsConn = (
-  gitlabTeamMemberIntegration: ReadOnlyRecordProxy | null | undefined
+  gitlabTeamMemberIntegration: ReadOnlyRecordProxy | null | undefined,
+  selectedProjectsIds: string[] | null
 ) => {
   if (!gitlabTeamMemberIntegration) return null
   return ConnectionHandler.getConnection(
@@ -9,7 +10,8 @@ const getGitLabProjectsConn = (
     'GitLabScopingSearchResults_projects',
     {
       membership: true,
-      sort: 'latest_activity_desc'
+      sort: 'latest_activity_desc',
+      ids: selectedProjectsIds
     }
   )
 }

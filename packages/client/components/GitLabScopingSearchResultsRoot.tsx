@@ -28,6 +28,7 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
         ...GitLabScopingSearchResults_meeting
         gitlabSearchQuery {
           queryString
+          selectedProjectsIds
         }
         teamId
       }
@@ -35,10 +36,19 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
     meetingRef
   )
   const {teamId, gitlabSearchQuery} = meeting
-  const normalizedQueryString = gitlabSearchQuery.queryString.trim() || ''
+  const {queryString, selectedProjectsIds} = gitlabSearchQuery!
+  const normalizedQueryString = queryString.trim()
+  const normalizedSelectedProjectsIds = selectedProjectsIds?.length
+    ? (selectedProjectsIds as string[])
+    : null
   const queryRef = useQueryLoaderNow<GitLabScopingSearchResultsQuery>(
     gitlabScopingSearchResultsQuery,
-    {teamId, queryString: normalizedQueryString, ...gitlabIssueArgs}
+    {
+      teamId,
+      queryString: normalizedQueryString,
+      selectedProjectsIds: normalizedSelectedProjectsIds,
+      ...gitlabIssueArgs
+    }
   )
   return (
     <Suspense fallback={<MockScopingList />}>
