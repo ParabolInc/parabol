@@ -99,11 +99,12 @@ const JiraScopingSearchBar = (props: Props) => {
   const {isJQL, queryString, projectKeyFilters} = jiraSearchQuery
   const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
 
-  const currentFilters =
-    projects
-      ?.filter((project) => projectKeyFilters.includes(project.id))
-      .map((project) => project.name)
-      .join(', ') ?? 'None'
+  const selectedProjectsPaths = [] as string[]
+  projectKeyFilters?.forEach((projectId) => {
+    const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
+    if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
+  })
+  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
 
   const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira'
   return (
