@@ -55,7 +55,7 @@ export const authorizeOAuth2 = async <
       url.searchParams.append(...entry)
     })
   }
-  console.log(`about to call AzureDevOps with url: ${url} and headers: ${headers}`)
+
   const oauth2Response = await fetch(url, {
     method: 'POST',
     headers,

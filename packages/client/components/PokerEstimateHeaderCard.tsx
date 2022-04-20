@@ -70,8 +70,6 @@ const getHeaderFields = (
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage} = props
   const {task} = stage
-  console.log(`stage: ${stage}`)
-  console.log(`stage: ${task}`)
   if (!task) {
     return <PokerEstimateHeaderCardError />
   }
@@ -83,41 +81,9 @@ const PokerEstimateHeaderCard = (props: Props) => {
   }
   // it's an integrated task, but the service might be down
   const headerFields = getHeaderFields(integration)
-  console.log(`headerFields: ${headerFields}`)
   if (!headerFields) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
-  } else {
-    console.log(`integration json: ${JSON.stringify(integration)}`)
   }
-  /*
-  if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
-    const name = integration.__typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
-    return (
-      <PokerEstimateHeaderCardContent
-        cardTitle={integration.summary}
-        descriptionHTML={integration.descriptionHTML}
-        url={integration.jiraUrl}
-        linkTitle={`${name} Issue #${integration.issueKey}`}
-        linkText={integration.issueKey}
-      />
-    )
-  }
-  if (integration.__typename === 'AzureDevOpsWorkItem') {
-    return (
-      <PokerEstimateHeaderCardContent
-        cardTitle={integration.title}
-        descriptionHTML={integration.teamProject}
-        url={integration.url}
-        linkTitle={`${integration.title} Issue #${integration.id}`}
-        linkText={integration.id}
-      />
-    )
-  }
-
-  if (integration.__typename === '_xGitHubIssue') {
-    return <PokerEstimateHeaderCardGitHub issueRef={integration} />
-  }*/
-
   return <PokerEstimateHeaderCardContent {...headerFields} />
 }
 

@@ -1,7 +1,4 @@
 import AbortController from 'abort-controller'
-//import {id} from 'parabol-client/validation/templates'
-//import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
-//import {SprintPokerDefaults} from '../types/constEnums'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -131,13 +128,6 @@ export interface ProjectVisibility {
   public: string
 }
 
-/*interface AvatarURLs {
-  '48x48': string
-  '24x24': string
-  '16x16': string
-  '32x32': string
-}*/
-
 export interface AzureDevOpsError {
   code: number
   message: string
@@ -173,7 +163,6 @@ export default abstract class AzureDevOpsManager {
       return res
     } catch (e) {
       clearTimeout(timeout)
-      console.log(`Error returned - ${e}`)
       return new Error('Azure DevOps is down')
     }
   }
@@ -187,7 +176,7 @@ export default abstract class AzureDevOpsManager {
     if (!contentType.includes('application/json')) {
       return new Error('Received non-JSON Azure DevOps Response')
     }
-    const json = (await res.json()) as AzureDevOpsError | T // as AtlassianError | JiraNoAccessError | JiraGetError | T
+    const json = (await res.json()) as AzureDevOpsError | T
     if ('message' in json) {
       return new Error(json.message)
     }

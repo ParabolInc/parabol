@@ -62,13 +62,11 @@ const ScopingSearchResultItem = (props: Props) => {
     service
   } = props
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
-  console.log(`serviceTaskId:${serviceTaskId}`)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const isTemp = isTempId(serviceTaskId)
   const onClick = () => {
-    console.log(`Entered onclick.  disabled: ${disabled} | isTemp: ${isTemp}`)
     if (disabled || isTemp) return
     submitMutation()
     const variables = {
@@ -81,15 +79,12 @@ const ScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    console.log(`calling UpdatePokerScopeMutation with variables ${JSON.stringify(variables)} `)
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [summary]})
     if (!isSelected) {
-      console.log(`calling persistQuery()`)
       // if they are adding an item, then their search criteria must be good, so persist it
       persistQuery()
     }
   }
-  console.log(`returning Item`)
   return (
     <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />

@@ -75,7 +75,6 @@ interface Props {
 }
 
 const PokerDimensionFinalScorePicker = (props: Props) => {
-  console.log(`PokerDimensionFinalScorePicker`)
   const {inputRef, isFacilitator, canUpdate, error, stageRef, clearError, submitScore} = props
   const stage = useFragment(
     graphql`
@@ -93,8 +92,6 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
   )
 
   const integrationType = stage.task?.integration?.__typename ?? ''
-  console.log(`integrationType: ${integrationType}`)
-  console.log(`stage: ${JSON.stringify(stage)}`)
 
   const titleByType = {
     _xGitHubIssue: 'GitHub',
@@ -128,7 +125,9 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
             />
           )}
 
-          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue' || integrationType === 'AzureDevOpsWorkItem') && (
+          {(integrationType === 'JiraIssue' ||
+            integrationType === 'JiraServerIssue' ||
+            integrationType === 'AzureDevOpsWorkItem') && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}

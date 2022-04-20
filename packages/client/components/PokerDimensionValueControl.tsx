@@ -95,7 +95,6 @@ const PokerDimensionValueControl = (props: Props) => {
     cardScore
   } = props
   const {dimensionRef, serviceField, task} = stage
-  console.log(`PokerDimensionValueControl.task.integration: ${JSON.stringify(task?.integration)}`)
   const finalScore = stage.finalScore || ''
   const {type: serviceFieldType} = serviceField
   const {scale} = dimensionRef
@@ -143,7 +142,6 @@ const PokerDimensionValueControl = (props: Props) => {
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && cardScore === finalScore
   const hasIntegration = !!task?.integration?.__typename
-  console.log(`hastIntegration: ${hasIntegration}`)
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (

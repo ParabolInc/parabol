@@ -31,9 +31,6 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-// import AzureDevOpsServerManager from '../../../server/utils/AzureDevOpsServerManager'
-// import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../server/postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-// import {WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',

@@ -8,7 +8,6 @@ import {
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds';
-// import getIntegrationProvidersByIds, {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds';
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery';
 import {isError} from 'util';
 
@@ -28,12 +27,9 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
       redirect_uri: makeAppURL(appOrigin, 'auth/ado')
     })
   }
-  // private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
+
   private readonly provider: IntegrationProviderAzureDevOps
-  // static provider: any;
-  // private readonly serverBaseUrl: string
-  // private readonly oauth: OAuth
-  // private readonly token: OAuth.Token
+
 
   constructor(
     auth: IGetTeamMemberIntegrationAuthQueryResult | null,
@@ -43,35 +39,11 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
     }
-    // super(auth?.accessToken?)
-    // super(auth?.accessToken ?? '')
-    // super((!!auth?.accessToken) ? '' : auth.accessToken);
-    // super(isNotNull(auth?.accessToken) ? auth.accessToken : '')
-    // if (!!auth) {
-    //   super(auth.accessToken?)
-    // }
-    // this.auth = auth
+
     this.provider = provider
 
-    // const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
-    // const {accessToken, accessTokenSecret} = this.auth
-    // super(accessToken)
-    // this.serverBaseUrl = serverBaseUrl
-
-    // this.token = {
-    //   key: accessToken!,
-    //   secret: accessTokenSecret!
-    // }
   }
 
-  // async init(code: string, codeVerifier: string) {
-  //   return this.fetchToken({
-  //     grant_type: 'authorization_code',
-  //     code: code,
-  //     code_verifier: codeVerifier,
-  //     redirect_uri: makeAppURL(appOrigin, 'auth/ado')
-  //   })
-  // }
 
   async refresh(refreshToken: string) {
     return this.fetchToken({
@@ -104,9 +76,6 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
     return oAuthRes
   }
 
-  // constructor(accessToken: string) {
-  //   super(accessToken)
-  // }
 }
 
 export default AzureDevOpsServerManager

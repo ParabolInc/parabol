@@ -1,4 +1,3 @@
-
 // this is just to get typescript to stop complaining about imports
 // declare module '*'
 declare module '*.jpeg'
@@ -29,8 +28,6 @@ interface Window {
     AUTH_INTERNAL_ENABLED: boolean
     AUTH_GOOGLE_ENABLED: boolean
     AUTH_SSO_ENABLED: boolean
-    azureDevOpsTenant: string
-    azureDevOpsClientId: string
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}

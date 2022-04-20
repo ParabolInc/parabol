@@ -115,7 +115,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
     mutation,
     variables,
     updater: (store) => {
-      console.log(`updater called`)
       const payload = store.getRootField('updatePokerScope')
       const meeting = payload.getLinkedRecord('meeting')
       const newStages = payload.getLinkedRecords('newStages')
@@ -278,10 +277,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               .setLinkedRecord(store.get(dimensionRefId)!, 'dimensionRef')
             return nextStage
           })
-          console.log(`newStages: ${newStages}`)
 
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
-          console.log(`nextStages: ${nextStages}`)
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
           const nextStages = stages.filter((stage) => {

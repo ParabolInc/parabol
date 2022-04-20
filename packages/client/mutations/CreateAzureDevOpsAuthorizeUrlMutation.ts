@@ -34,10 +34,6 @@ const CreateAzureDevOpsAuthorizeUrlMutation: StandardMutation<
   return commitMutation<TCreateAzureDevOpsAuthorizeUrlMutation>(atmosphere, {
     mutation,
     variables,
-    // optimisticUpdater: (store) => {
-    //   const { } = variables
-
-    // },
     onCompleted,
     onError
   })
