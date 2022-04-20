@@ -9,22 +9,26 @@ import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
 
-const Wrapper = styled('div')<{minHeight: number; size: number}>(({minHeight, size}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  // This left margin accounts for the border on the avatar
-  // giving us tighter vertical alignment on the left edge
-  marginLeft: size >= 40 ? -3 : -2,
-  position: 'relative',
-  width: '100%',
-  transition: `min-height 100ms ${BezierCurve.DECELERATE}`,
-  minHeight
-}))
+const Wrapper = styled('div')<{minHeight: number; minWidth: number; size: number}>(
+  ({minHeight, minWidth, size}) => ({
+    alignItems: 'center',
+    display: 'flex',
+    // This left margin accounts for the border on the avatar
+    // giving us tighter vertical alignment on the left edge
+    marginLeft: size >= 40 ? -3 : -2,
+    position: 'relative',
+    width: '100%',
+    transition: `min-height 100ms ${BezierCurve.DECELERATE}`,
+    minHeight,
+    // setting the min-width so that the current container has some size
+    minWidth
+  })
+)
 
 const widthToOverlap = {
   28: 8,
   46: 16
-}
+} as const
 
 // hard coding for now until we have
 // a better solution for handling gutters
@@ -42,6 +46,8 @@ interface Props {
   emptyEl?: ReactElement
   isAnimated?: boolean
   borderColor?: string
+  // the current container may not be sized so that we can observe some parent container
+  containerRef?: React.RefObject<HTMLDivElement>
 }
 
 const AvatarList = (props: Props) => {
@@ -49,14 +55,21 @@ const AvatarList = (props: Props) => {
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
-  const transitionChildren = useOverflowAvatars(rowRef, users, size, overlap)
+  const transitionChildren = useOverflowAvatars(
+    props.containerRef ? props.containerRef : rowRef,
+    users,
+    size,
+    overlap
+  )
   const showAnimated = isAnimated ?? true
   const activeTChildren = transitionChildren.filter(
     (child) => child.status !== TransitionStatus.EXITING
   )
   const minHeight = activeTChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
+  const minWidth =
+    activeTChildren.length === 0 ? 0 : (activeTChildren.length - 1) * offsetSize + size
   return (
-    <Wrapper ref={rowRef} minHeight={minHeight} size={size}>
+    <Wrapper ref={rowRef} minHeight={minHeight} size={size} minWidth={minWidth}>
       {transitionChildren.length === 0 && emptyEl}
       {transitionChildren.map(({onTransitionEnd, child, status, displayIdx}) => {
         const {id: userId} = child

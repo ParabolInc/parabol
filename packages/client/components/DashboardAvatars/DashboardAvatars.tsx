@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React, {useMemo, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {ElementWidth} from '~/types/constEnums'
+import {Breakpoint, ElementWidth} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
@@ -11,7 +12,19 @@ import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.g
 import AvatarList, {sizeToHeightBump} from '../AvatarList'
 import PlainButton from '../PlainButton/PlainButton'
 
-const Wrapper = styled('div')({
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
+
+const Row = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  [desktopBreakpoint]: {
+    flexGrow: 1,
+    justifyContent: 'flex-end'
+  }
+})
+
+const Column = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
@@ -22,10 +35,9 @@ const AvatarsWrapper = styled('div')<{totalUsers: number}>(({totalUsers}) => ({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
-  // set minWidth to force container has some size
-  minWidth: `${
-    Math.min(totalUsers - 1, 2) * ElementWidth.DASHBOARD_AVATAR_OVERLAPPED +
-    ElementWidth.DASHBOARD_AVATAR
+  // setting maxWidth allows to center avatars
+  maxWidth: `${
+    (totalUsers - 1) * ElementWidth.DASHBOARD_AVATAR_OVERLAPPED + ElementWidth.DASHBOARD_AVATAR
   }px`,
   // set minHeight to prevent vertical jump when switching between teams
   minHeight: ElementWidth.DASHBOARD_AVATAR + sizeToHeightBump[ElementWidth.DASHBOARD_AVATAR]
@@ -53,6 +65,7 @@ interface Props {
 type User = DashboardAvatars_team['teamMembers'][0]['user']
 
 const DashboardAvatars = (props: Props) => {
+  const rowRef = useRef<HTMLDivElement>(null)
   const {team} = props
   const {id: teamId, teamMembers} = team
   const atmosphere = useAtmosphere()
@@ -96,18 +109,21 @@ const DashboardAvatars = (props: Props) => {
   }
 
   return (
-    <Wrapper>
-      <AvatarsWrapper totalUsers={sortedUsers.length}>
-        <AvatarList
-          users={sortedUsers}
-          size={ElementWidth.DASHBOARD_AVATAR}
-          borderColor={PALETTE.SLATE_200}
-          onOverflowClick={() => handleClick()}
-          onUserClick={(userId) => handleClick(userId)}
-        />
-      </AvatarsWrapper>
-      <StyledButton onClick={() => handleClick()}>Manage Team</StyledButton>
-    </Wrapper>
+    <Row ref={rowRef}>
+      <Column>
+        <AvatarsWrapper totalUsers={sortedUsers.length}>
+          <AvatarList
+            users={sortedUsers}
+            containerRef={rowRef}
+            size={ElementWidth.DASHBOARD_AVATAR}
+            borderColor={PALETTE.SLATE_200}
+            onOverflowClick={() => handleClick()}
+            onUserClick={(userId) => handleClick(userId)}
+          />
+        </AvatarsWrapper>
+        <StyledButton onClick={() => handleClick()}>Manage Team</StyledButton>
+      </Column>
+    </Row>
   )
 }
 

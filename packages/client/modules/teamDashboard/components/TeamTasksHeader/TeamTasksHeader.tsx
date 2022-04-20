@@ -95,7 +95,8 @@ const Avatars = styled('div')({
   display: 'flex',
   paddingTop: 12,
   [desktopBreakpoint]: {
-    paddingTop: 0
+    paddingTop: 0,
+    flexGrow: 1
   }
 })
 
