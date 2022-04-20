@@ -144,10 +144,11 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
               : [...selectedProjectsIds, projectId]
             gitlabSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
           })
-          SendClientSegmentEventMutation(atmosphere, 'Selected GitLab Project Filter', {
+          SendClientSegmentEventMutation(atmosphere, 'Selected Poker Scope Project Filter', {
             viewerId,
             meetingId,
-            projectId
+            projectId,
+            service: 'gitlab'
           })
         }
         return (

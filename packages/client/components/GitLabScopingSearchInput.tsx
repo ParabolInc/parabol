@@ -71,20 +71,21 @@ const GitLabScopingSearchInput = (props: Props) => {
   const trackEvent = (eventTitle: string) => {
     SendClientSegmentEventMutation(atmosphere, eventTitle, {
       viewerId,
-      meetingId
+      meetingId,
+      service: 'gitlab'
     })
   }
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     if (!queryString) {
-      trackEvent('Start GitLab search')
+      trackEvent('Started Poker Scope search')
     }
     setSearch(atmosphere, meetingId, value)
   }
 
   const clearSearch = () => {
-    trackEvent('Cleared GitLab search')
+    trackEvent('Cleared Poker Scope search')
     setSearch(atmosphere, meetingId, '')
     inputRef.current?.focus()
   }
