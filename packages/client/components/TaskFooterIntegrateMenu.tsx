@@ -18,25 +18,36 @@ interface Props {
   viewer: TaskFooterIntegrateMenu_viewer$key
 }
 
-const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
+type IntegrationLookup = {
+  hasGitHub: boolean
+  hasAtlassian: boolean
+  hasGitLab: boolean
+  hasJiraServer: boolean
+}
+
+const makePlaceholder = (integrationLookup: IntegrationLookup) => {
+  const {hasGitHub, hasAtlassian, hasGitLab} = integrationLookup
   const names = [] as string[]
   if (hasGitHub) names.push('GitHub')
   if (hasAtlassian) names.push('Jira')
+  if (hasGitLab) names.push('GitLab')
   return `Search ${names.join(' & ')}`
 }
 
 type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['viewerTeamMember']>['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
-  const {atlassian, github, jiraServer} = integrations
+  const {atlassian, github, jiraServer, gitlab} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
+  const hasGitLab = gitlab.auth?.isActive ?? false
   const hasJiraServer = jiraServer.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer
+  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab
     ? {
         hasAtlassian,
         hasGitHub,
-        hasJiraServer
+        hasJiraServer,
+        hasGitLab
       }
     : null
 }
@@ -58,6 +69,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenu_viewer on User {
         id
+        featureFlags {
+          gitlab
+        }
         assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
           preferredName
           ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
@@ -70,12 +84,10 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     viewerRef
   )
 
-  const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
+  const {id: viewerId, viewerTeamMember, assigneeTeamMember, featureFlags} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {
-    integrations: viewerIntegrations,
-    repoIntegrations: viewerRepoIntegrations
-  } = viewerTeamMember
+  const {integrations: viewerIntegrations, repoIntegrations: viewerRepoIntegrations} =
+    viewerTeamMember
   const {
     integrations: assigneeIntegrations,
     repoIntegrations: assigneeRepoIntegrations,
@@ -87,10 +99,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
 
   if (isViewerIntegrated) {
-    const placeholder = makePlaceholder(
-      isViewerIntegrated.hasGitHub,
-      isViewerIntegrated.hasAtlassian
-    )
+    const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
@@ -105,10 +114,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   }
 
   if (isAssigneeIntegrated) {
-    const placeholder = makePlaceholder(
-      isAssigneeIntegrated.hasGitHub,
-      isAssigneeIntegrated.hasAtlassian
-    )
+    const placeholder = makePlaceholder(isAssigneeIntegrated)
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
       <TaskFooterIntegrateMenuList
@@ -131,6 +137,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
+      gitlabRef={viewerIntegrations.gitlab}
+      featureFlags={featureFlags}
     />
   )
 }
@@ -155,6 +163,14 @@ graphql`
 `
 
 graphql`
+  fragment TaskFooterIntegrateMenuViewerGitLabIntegration on GitLabIntegration {
+    auth {
+      isActive
+    }
+  }
+`
+
+graphql`
   fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
     repoIntegrations {
       ...TaskFooterIntegrateMenuList_repoIntegrations
@@ -173,6 +189,10 @@ graphql`
       }
       github {
         ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
+      }
+      gitlab {
+        ...TaskFooterIntegrateMenuSignup_GitLabIntegration
+        ...TaskFooterIntegrateMenuViewerGitLabIntegration @relay(mask: false)
       }
     }
     ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)
