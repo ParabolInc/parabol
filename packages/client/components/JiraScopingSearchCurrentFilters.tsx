@@ -63,14 +63,11 @@ const JiraScopingSearchCurrentFilters = (props: Props) => {
   const {projectKeyFilters} = jiraSearchQuery
   const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
   const projectFilterNames = [] as string[]
-  projectKeyFilters.forEach((projectId, idx) => {
+  projectKeyFilters.forEach((projectId) => {
     const projectName = projects?.find((project) => project?.id === projectId)?.name
-    if (projectName) {
-      const formattedName = idx === 0 ? projectName : `, ${projectName}`
-      projectFilterNames.push(formattedName)
-    }
+    if (projectName) projectFilterNames.push(projectName)
   })
-  const currentFilters = projectFilterNames.length ? projectFilterNames : 'None'
+  const currentFilters = projectFilterNames.length ? projectFilterNames.join(', ') : 'None'
 
   return (
     <Wrapper>

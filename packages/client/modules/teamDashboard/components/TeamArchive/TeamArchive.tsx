@@ -9,7 +9,7 @@ import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout, MathEnum} from '../../../../types/constEnums'
+import {Card, Layout, MathEnum} from '../../../../types/constEnums'
 import {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
 import {TeamArchiveQuery} from '../../../../__generated__/TeamArchiveQuery.graphql'
 import {TeamArchive_query$key} from '../../../../__generated__/TeamArchive_query.graphql'
@@ -72,17 +72,24 @@ const CardGrid = styled('div')({
 })
 
 const EmptyMsg = styled('div')({
-  backgroundColor: '#FFFFFF',
+  backgroundColor: `${Card.BACKGROUND_COLOR}`,
   border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: 4,
-  fontSize: 14,
-  display: 'inline-block',
+  borderRadius: Card.BORDER_RADIUS,
+  fontSize: Card.FONT_SIZE,
   margin: 20,
-  padding: 16
+  padding: Card.PADDING
 })
 
 const LinkSpan = styled('div')({
   color: PALETTE.AQUA_400
+})
+
+const NoMoreMsg = styled('div')({
+  backgroundColor: `${Card.BACKGROUND_COLOR}`,
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  borderRadius: Card.BORDER_RADIUS,
+  fontSize: Card.FONT_SIZE,
+  padding: Card.PADDING
 })
 
 interface Props {
@@ -184,24 +191,27 @@ const TeamArchive = (props: Props) => {
 
   const {edges} = filteredTasks
   const [columnCount] = useState(getColumnCount)
-  const _onRowsRenderedRef = useRef<
-    ({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void
-  >()
+  const rowCount = Math.ceil(edges.length / columnCount) + 1 // used +1 for "no more" message row
+  const noMoreMsgIndex = hasNext ? Number.MAX_VALUE : (rowCount - 1) * columnCount
+
+  const _onRowsRenderedRef =
+    useRef<({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void>()
   const gridRef = useRef<any>(null)
   const oldEdgesRef = useRef<typeof edges>()
   const getIndex = (columnIndex: number, rowIndex: number) => {
     return columnCount * rowIndex + columnIndex
   }
-  const isRowLoaded = ({index}) => index < edges.length
+  const isRowLoaded = ({index}) => index < edges.length || index === noMoreMsgIndex
   const maybeLoadMore = () => {
-    if (!hasNext || isLoadingNext) return
-    loadNext(columnCount * 10)
+    if (!hasNext || isLoadingNext) return Promise.resolve()
+    return new Promise<void>((resolve, reject) => {
+      loadNext(columnCount * 10, {onComplete: (err) => (err ? reject(err) : resolve())})
+    })
   }
   const [cellCache] = useState(
     () =>
       new CellMeasurerCache({
-        defaultHeight: 182,
-        minHeight: 106,
+        defaultHeight: 70,
         fixedWidth: true
       })
   )
@@ -244,11 +254,11 @@ const TeamArchive = (props: Props) => {
     oldEdgesRef.current = edges
   }, [edges, oldEdgesRef])
 
-  const rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
+  const cellRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const index = getIndex(columnIndex, rowIndex)
     if (!isRowLoaded({index})) return undefined
-    const task = edges[index]!.node
+
     return (
       <CellMeasurer
         cache={cellCache}
@@ -257,20 +267,32 @@ const TeamArchive = (props: Props) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        {({measure}) => {
+        {({registerChild}) => {
+          if (index === noMoreMsgIndex) {
+            return (
+              <NoMoreMsg
+                ref={registerChild as any}
+                style={{
+                  ...style,
+                  width: 'auto',
+                  height: 'auto',
+                  left: '50%',
+                  transform: 'translate(-50%, 0)'
+                }}
+              >
+                🎉 That's all folks! There are no further tasks in the archive.
+              </NoMoreMsg>
+            )
+          }
+          const task = edges[index]!.node
           return (
             // put styles here because aphrodite is async
             <div
+              ref={registerChild as any}
               key={`cardBlockFor${task.id}`}
               style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem'}}
             >
-              <NullableTask
-                dataCy={`archive-task`}
-                key={key}
-                area='teamDash'
-                measure={measure}
-                task={task}
-              />
+              <NullableTask dataCy={`archive-task`} key={key} area='teamDash' task={task} />
             </div>
           )
         }}
@@ -278,7 +300,7 @@ const TeamArchive = (props: Props) => {
     )
   }
 
-  const _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
+  const onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
     if (!_onRowsRenderedRef.current) return
     _onRowsRenderedRef.current({
       startIndex: getIndex(columnStartIndex, rowStartIndex),
@@ -312,7 +334,7 @@ const TeamArchive = (props: Props) => {
                         {({height, width}) => {
                           return (
                             <Grid
-                              cellRenderer={rowRenderer}
+                              cellRenderer={cellRenderer}
                               columnCount={columnCount}
                               columnWidth={CARD_WIDTH}
                               deferredMeasurementCache={cellCache}
@@ -320,12 +342,12 @@ const TeamArchive = (props: Props) => {
                               estimatedRowSize={182}
                               height={height}
                               onRowsRendered={onRowsRendered}
-                              onSectionRendered={_onSectionRendered}
+                              onSectionRendered={onSectionRendered}
                               ref={(c) => {
                                 gridRef.current = c
                                 registerChild(c)
                               }}
-                              rowCount={Math.ceil(edges.length / columnCount)}
+                              rowCount={rowCount}
                               rowHeight={cellCache.rowHeight}
                               style={{outline: 'none'}}
                               width={width}

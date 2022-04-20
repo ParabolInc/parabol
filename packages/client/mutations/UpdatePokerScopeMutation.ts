@@ -96,7 +96,9 @@ const mutation = graphql`
   }
 `
 
-type Meeting = NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']>
+export type PokerScopeMeeting = NonNullable<
+  UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']
+>
 
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
@@ -127,7 +129,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       if (!viewer) return
       const viewerId = viewer?.getValue('id')
       const {meetingId, updates} = variables
-      const meeting = store.get<Meeting>(meetingId)
+      const meeting = store.get<PokerScopeMeeting>(meetingId)
       if (!meeting) return
       const teamId = (meeting.getValue('teamId') || '') as string
       const team = store.get(teamId)

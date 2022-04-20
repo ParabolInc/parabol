@@ -1,12 +1,7 @@
-import {
-  TaskServiceEnum,
-  UpdatePokerScopeMutationResponse
-} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {PokerScopeMeeting} from '~/mutations/UpdatePokerScopeMutation'
+import {TaskServiceEnum} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
-const getSearchQueryFromMeeting = (
-  meeting: NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']>,
-  service: TaskServiceEnum
-) => {
+const getSearchQueryFromMeeting = (meeting: PokerScopeMeeting, service: TaskServiceEnum) => {
   switch (service) {
     case 'PARABOL':
       const {parabolSearchQuery} = meeting
