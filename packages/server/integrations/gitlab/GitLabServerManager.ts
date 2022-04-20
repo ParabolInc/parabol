@@ -1,5 +1,7 @@
+import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
+import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
@@ -65,9 +67,11 @@ class GitLabServerManager implements TaskIntegrationManager {
     rawContentStr: string
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
+    const {title, contentState} = splitDraftContent(rawContentStr)
+    const description = stateToMarkdown(contentState) as string
     const [createIssueData, createIssueError] = await this.createIssue({
-      title: rawContentStr,
-      description: '',
+      title,
+      description,
       projectPath: integrationRepoId
     })
     if (createIssueError) return createIssueError

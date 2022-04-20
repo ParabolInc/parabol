@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {parseWebPath} from '~/utils/parseWebPath'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
 import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
@@ -77,6 +78,23 @@ const TaskIntegrationLink = (props: Props) => {
         {children}
       </StyledLink>
     )
+  } else if (integration.__typename === '_xGitLabIssue') {
+    const {webPath, iid, webUrl} = integration
+    const {fullPath} = parseWebPath(webPath)
+    const href =
+      fullPath === 'ParabolInc/ParabolDemo' ? 'https://github.com/ParabolInc/parabol' : webUrl
+    return (
+      <StyledLink
+        href={href}
+        rel='noopener noreferrer'
+        target='_blank'
+        title={`GitLab Issue #${iid} on ${fullPath}`}
+        className={className}
+      >
+        {`Issue #${iid}`}
+        {children}
+      </StyledLink>
+    )
   }
   return null
 }
@@ -99,6 +117,14 @@ graphql`
 `
 
 graphql`
+  fragment TaskIntegrationLinkIntegrationGitLab on _xGitLabIssue {
+    iid
+    webPath
+    webUrl
+  }
+`
+
+graphql`
   fragment TaskIntegrationLinkIntegrationJiraServer on JiraServerIssue {
     id
     issueKey
@@ -114,6 +140,7 @@ export default createFragmentContainer(TaskIntegrationLink, {
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
+      ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
     }
   `
 })
