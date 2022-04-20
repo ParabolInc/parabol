@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {AzureDevOpsScopingSearchBar_meeting} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
+import {AzureDevOpsScopingSearchBar_meeting$key} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
 import AzureDevOpsScopingSearchFilterToggle from './AzureDevOpsScopingSearchFilterToggle'
 import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'
 import Icon from './Icon'
@@ -22,11 +22,21 @@ const SearchBar = styled('div')({
 })
 
 interface Props {
-  meeting: AzureDevOpsScopingSearchBar_meeting
+  meetingRef: AzureDevOpsScopingSearchBar_meeting$key
 }
 
 const AzureDevOpsScopingSearchBar = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment AzureDevOpsScopingSearchBar_meeting on PokerMeeting {
+        ...AzureDevOpsScopingSearchInput_meeting
+        ...AzureDevOpsScopingSearchFilterToggle_meeting
+      }
+    `,
+    meetingRef
+  )
   return (
     <SearchBar>
       <SearchIcon>search</SearchIcon>
@@ -36,11 +46,4 @@ const AzureDevOpsScopingSearchBar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AzureDevOpsScopingSearchBar, {
-  meeting: graphql`
-    fragment AzureDevOpsScopingSearchBar_meeting on PokerMeeting {
-      ...AzureDevOpsScopingSearchInput_meeting
-      ...AzureDevOpsScopingSearchFilterToggle_meeting
-    }
-  `
-})
+export default AzureDevOpsScopingSearchBar

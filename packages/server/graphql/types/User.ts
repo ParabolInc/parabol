@@ -85,10 +85,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       type: new GraphQLNonNull(UserFeatureFlags),
       description: 'Any super power given to the user via a super user',
       resolve: ({featureFlags}: {featureFlags: UserFeatureFlagEnum[]}) => {
-        console.log('Inside featureFlags resolver')
         const flagObj = {} as Record<UserFeatureFlagEnum, boolean>
         featureFlags.forEach((flag) => {
-          console.log(`Inside featureFlags with a value of ${flag}`)
           flagObj[flag] = true
         })
         return flagObj

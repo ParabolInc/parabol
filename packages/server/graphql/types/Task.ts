@@ -162,7 +162,6 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
         context,
         info
       ) => {
-        console.log(`entered TaskIntegration with integration" ${JSON.stringify(integration)}`)
         const {dataLoader, authToken} = context
         const viewerId = getUserId(authToken)
         if (!integration) return null
