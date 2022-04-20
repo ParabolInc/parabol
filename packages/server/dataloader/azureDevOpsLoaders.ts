@@ -1,14 +1,13 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {
+import AzureDevOpsServerManager, {
   Resource,
   TeamProjectReference,
   WorkItem
-} from 'parabol-client/utils/AzureDevOpsManager'
+} from '../utils/AzureDevOpsServerManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {

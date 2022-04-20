@@ -1,5 +1,4 @@
 import fetch from 'node-fetch'
-import AzureDevOpsManager from 'parabol-client/utils/AzureDevOpsManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
@@ -148,7 +147,7 @@ const MAX_REQUEST_TIME = 5000
 
 class AzureDevOpsServerManager {
   fetch = fetch as any
-  accessToken: string
+  accessToken = ''
   private headers = {
     Authorization: '',
     Accept: 'application/json' as const,
@@ -178,7 +177,7 @@ class AzureDevOpsServerManager {
   ) {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
-    }
+    } 
     this.provider = provider
   }
 
