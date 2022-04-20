@@ -68,7 +68,8 @@ export default class TaskIntegrationManagerFactory {
       if (!auth) return null
       const {providerId} = auth
       const provider = await dataLoader.get('integrationProviders').load(providerId)
-      return auth && new GitLabServerManager(auth, context, info, provider!.serverBaseUrl!)
+      if (!provider?.serverBaseUrl) return null
+      return auth && new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
     }
 
     if (service === 'jiraServer') {
