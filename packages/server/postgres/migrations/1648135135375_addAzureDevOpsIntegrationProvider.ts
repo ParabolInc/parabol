@@ -41,10 +41,7 @@ export async function down() {
     );
 
     ALTER TABLE "IntegrationProvider"
-      ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
-      ADD CONSTRAINT global_provider_must_be_oauth2 CHECK (
-        "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "authStrategy" = 'oauth2')
-      );
+      ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
 
     ALTER TABLE "TeamMemberIntegrationAuth"
       ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
