@@ -1,4 +1,5 @@
 import {GraphQLResolveInfo} from 'graphql'
+import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
@@ -12,7 +13,7 @@ import {
   GetProfileQuery,
   GetProjectsQuery
 } from '../../types/gitlabTypes'
-import {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
@@ -63,30 +64,26 @@ class GitLabServerManager implements TaskIntegrationManager {
   }: {
     rawContentStr: string
     integrationRepoId: string
-  }) {
-    return null
-    // }): Promise<CreateTaskResponse> {
-    // const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
-    // const res = await createGitHubTask(
-    //   rawContentStr,
-    //   repoOwner,
-    //   repoName,
-    //   this.auth,
-    //   this.context,
-    //   this.info
-    // )
-    // if (res.error) return res.error
-    // const {issueNumber, issueId} = res
-    // return {
-    //   integrationHash: GitHubIssueId.join(integrationRepoId, issueNumber),
-    //   issueId,
-    //   integration: {
-    //     accessUserId: this.auth.userId,
-    //     service: 'github',
-    //     issueNumber,
-    //     nameWithOwner: integrationRepoId
-    //   }
-    // }
+  }): Promise<CreateTaskResponse> {
+    const [createIssueData, createIssueError] = await this.createIssue({
+      title: rawContentStr,
+      description: '',
+      projectPath: integrationRepoId
+    })
+    if (createIssueError) return createIssueError
+    const issue = createIssueData.createIssue?.issue
+    if (!issue) return new Error('Failed to create issue')
+    const {id: gid} = issue
+    return {
+      integrationHash: GitLabIssueId.join(`${this.auth.providerId}`, gid),
+      issueId: gid,
+      integration: {
+        accessUserId: this.auth.userId,
+        service: 'gitlab',
+        gid,
+        providerId: `${this.auth.providerId}`
+      }
+    }
   }
 
   async createIssue({
@@ -98,9 +95,7 @@ class GitLabServerManager implements TaskIntegrationManager {
     description: string
     projectPath: string
   }) {
-    // }): [CreateIssueMutation, Error | null] {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
-    // const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
     const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
       createIssueMutation,
       {
@@ -112,27 +107,11 @@ class GitLabServerManager implements TaskIntegrationManager {
       }
     )
     return [createIssueData, createIssueError] as const
-    // if (createIssueError) return createIssueError
-    // const issue = createIssueData.createIssue?.issue
-    // if (!issue) return new Error('GitLab create issue failed')
-    // const {id: gid} = issue
-    // const providerId = `${this.auth.providerId}`
-    // return {
-    //   integrationHash: GitLabIssueId.join(`${providerId}`, gid),
-    //   issueId: gid,
-    //   integration: {
-    //     accessUserId: this.auth.userId,
-    //     service: 'gitlab',
-    //     providerId,
-    //     gid
-    //   }
-    // }
   }
 
   // gitlab refers to comments in issues as notes
   async createNote({body, noteableId}: {body: string; noteableId: string}) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
-    // const [noteData, noteError] = await gitlabRequest<CreateNotePayload>(createNote, {
     const [noteData, noteError] = await gitlabRequest<CreateNoteMutation>(createNote, {
       input: {body, noteableId}
     })
