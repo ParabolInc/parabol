@@ -3,11 +3,11 @@ import OAuth from 'oauth-1.0a'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
+import composeJQL from '~/utils/composeJQL'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
-import composeJQL from '~/utils/composeJQL'
 
 export interface JiraServerRestProject {
   /// more available fields
@@ -156,14 +156,9 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     )
   }
 
-  async getIssues(
-    queryString: string | null,
-    isJQL: boolean,
-    projectKeys: string[]
-  ) {
+  async getIssues(queryString: string | null, isJQL: boolean, projectKeys: string[]) {
     const jql = composeJQL(queryString, isJQL, projectKeys)
 
-    console.log('jira server jql', jql)
     const payload = {
       jql,
       maxResults: 100,
