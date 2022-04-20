@@ -6,12 +6,12 @@ import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {GitLabScopingSelectAllIssues_issues$key} from '../__generated__/GitLabScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
-import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 
 const Item = styled('div')({
   display: 'flex',
@@ -83,7 +83,12 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
       )
       return issue?.title ?? 'Unknown Story'
     })
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents,
+      selectedAll: true
+    })
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
