@@ -3,11 +3,10 @@ import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import CreateAzureDevOpsAuthorizeUrlMutation from '../mutations/CreateAzureDevOpsAuthorizeUrlMutation'
-import AzureDevOpsManager from './AzureDevOpsManager'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
-class AzureDevOpsClientManager extends AzureDevOpsManager {
+class AzureDevOpsClientManager {
   fetch = window.fetch.bind(window)
   static generateVerifier(): string {
     const array = new Uint32Array(28)
