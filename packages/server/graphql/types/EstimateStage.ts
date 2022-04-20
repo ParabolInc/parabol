@@ -53,13 +53,10 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         _args: unknown,
         {dataLoader}
       ) => {
-        console.log('entered EstimateStage')
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
         const {integration} = task
-        console.log(`integration: ${integration}`)
-        console.log(`integration json: ${JSON.stringify(integration)}`)
         if (!integration) return NULL_FIELD
         const {service} = integration
         const getDimensionName = async (meetingId: string) => {
@@ -96,19 +93,6 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'azureDevOps') {
-          const {instanceId, issueKey, projectKey} = integration
-          console.log(`instanceId: ${instanceId}`)
-          console.log(`issueKey: ${issueKey}`)
-          console.log(`projectKey: ${projectKey}`)
-          const [dimensionName, team] = await Promise.all([
-            getDimensionName(meetingId),
-            dataLoader.get('teams').load(teamId)
-          ])
-          console.log(`dimensionName: ${dimensionName}`)
-          console.log(`team: ${JSON.stringify(team)}`)
-
-          // pull dimension fields for azuredevops
-
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
 
