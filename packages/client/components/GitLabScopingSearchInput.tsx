@@ -79,13 +79,13 @@ const GitLabScopingSearchInput = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     if (!queryString) {
-      trackEvent('Started Poker Scope search')
+      trackEvent('Started Poker Scope Search')
     }
     setSearch(atmosphere, meetingId, value)
   }
 
   const clearSearch = () => {
-    trackEvent('Cleared Poker Scope search')
+    trackEvent('Cleared Poker Scope Search')
     setSearch(atmosphere, meetingId, '')
     inputRef.current?.focus()
   }
