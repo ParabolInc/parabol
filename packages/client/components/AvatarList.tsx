@@ -32,7 +32,7 @@ const widthToOverlap = {
 export const sizeToHeightBump = {
   28: 4,
   46: 0
-}
+} as const
 
 interface Props {
   users: AvatarList_users
