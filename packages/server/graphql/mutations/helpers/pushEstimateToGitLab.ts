@@ -21,6 +21,7 @@ const pushEstimateToGitLab = async (
     dataLoader.get('tasks').load(taskId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  if (!meeting) return new Error('Meeting does not exist')
   const gitlabIntegration = task.integration as Extract<
     typeof task.integration,
     {service: 'gitlab'}
@@ -39,10 +40,9 @@ const pushEstimateToGitLab = async (
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
 
   const {accessToken, providerId} = auth
-  if (!accessToken) return new Error('Invalid GitLab auth')
   const provider = await dataLoader.get('integrationProviders').load(providerId)
-  if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
-  const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+  if (!provider) return new Error('Integration provider not found')
+  const manager = new GitLabServerManager(accessToken!, provider.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
