@@ -13,13 +13,13 @@ const pushEstimateToGitLab = async (
   taskEstimate: ITaskEstimateInput,
   context: GQLContext,
   info: GraphQLResolveInfo,
-  stageId: string | undefined
+  stageId: string
 ) => {
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
     dataLoader.get('tasks').load(taskId),
-    meetingId ? dataLoader.get('newMeetings').load(meetingId) : undefined
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   const gitlabIntegration = task.integration as Extract<
     typeof task.integration,
@@ -39,14 +39,12 @@ const pushEstimateToGitLab = async (
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
 
   const {accessToken, providerId} = auth
+  if (!accessToken) return new Error('Invalid GitLab auth')
   const provider = await dataLoader.get('integrationProviders').load(providerId)
-  if (!provider?.serverBaseUrl || !accessToken) return new Error('Invalid integration provider')
+  if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
   const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
   const gitlabRequest = manager.getGitLabRequest(info, context)
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-    if (!stageId || !meeting) {
-      return new Error('Cannot add gitlab comment for non-meeting estimates')
-    }
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
