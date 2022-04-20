@@ -46,7 +46,7 @@ const useOverflowAvatars = <T extends {id: string}>(
 
   const transitioningAvatars = useTransition(visibleAvatars)
   return transitioningAvatars.map((transitionChild, idx) => {
-    const visibleIdx = visibleAvatars.findIndex((x) => x.id === transitionChild.child.id)
+    const visibleIdx = visibleAvatars.findIndex((avatar) => avatar.id === transitionChild.child.id)
     const displayIdx = visibleIdx === -1 ? idx : visibleIdx
     return {
       ...transitionChild,

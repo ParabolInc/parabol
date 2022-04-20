@@ -18,13 +18,13 @@ const Wrapper = styled('div')({
   alignItems: 'center'
 })
 
-const AvatarsWrapper = styled('div')<{totalAvatars: number}>(({totalAvatars}) => ({
+const AvatarsWrapper = styled('div')<{totalUsers: number}>(({totalUsers}) => ({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
   // set minWidth to force container has some size
   minWidth: `${
-    Math.min(totalAvatars - 1, 2) * ElementWidth.DASHBOARD_AVATAR_OVERLAPPED +
+    Math.min(totalUsers - 1, 2) * ElementWidth.DASHBOARD_AVATAR_OVERLAPPED +
     ElementWidth.DASHBOARD_AVATAR
   }px`,
   // set minHeight to prevent vertical jump when switching between teams
@@ -50,29 +50,28 @@ interface Props {
   team: DashboardAvatars_team
 }
 
-type Avatar = DashboardAvatars_team['teamMembers'][0]['user']
+type User = DashboardAvatars_team['teamMembers'][0]['user']
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {id: teamId, teamMembers} = team
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const sortedAvatars = useMemo(() => {
-    const connectedAvatars = [] as Avatar[]
-    const offlineAvatars = [] as Avatar[]
-    teamMembers.forEach((avatar) => {
-      const {user} = avatar
+  const sortedUsers = useMemo(() => {
+    const connectedUsers = [] as User[]
+    const offlineUsers = [] as User[]
+    teamMembers.forEach((teamMember) => {
+      const {user} = teamMember
       const {id: userId, isConnected} = user
       if (userId === viewerId) {
-        connectedAvatars.unshift(user)
+        connectedUsers.unshift(user)
       } else if (isConnected) {
-        connectedAvatars.push(user)
+        connectedUsers.push(user)
       } else {
-        offlineAvatars.push(user)
+        offlineUsers.push(user)
       }
     })
-    const sortedAvatars = connectedAvatars.concat(offlineAvatars)
-    return sortedAvatars
+    return connectedUsers.concat(offlineUsers)
   }, [teamMembers])
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
@@ -98,9 +97,9 @@ const DashboardAvatars = (props: Props) => {
 
   return (
     <Wrapper>
-      <AvatarsWrapper totalAvatars={sortedAvatars.length}>
+      <AvatarsWrapper totalUsers={sortedUsers.length}>
         <AvatarList
-          users={sortedAvatars}
+          users={sortedUsers}
           size={ElementWidth.DASHBOARD_AVATAR}
           borderColor={PALETTE.SLATE_200}
           onOverflowClick={() => handleClick()}

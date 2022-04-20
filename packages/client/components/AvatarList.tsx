@@ -29,10 +29,10 @@ const widthToOverlap = {
 // hard coding for now until we have
 // a better solution for handling gutters
 // for a component that may not be there
-export const sizeToHeightBump = Object.freeze({
+export const sizeToHeightBump = {
   28: 4,
   46: 0
-})
+}
 
 interface Props {
   users: AvatarList_users
