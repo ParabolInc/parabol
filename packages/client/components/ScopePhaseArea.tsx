@@ -101,7 +101,12 @@ const ScopePhaseArea = (props: Props) => {
       Component: ScopePhaseAreaJiraServer
     },
     {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab, Component: ScopePhaseAreaGitLab},
-    {icon: <AzureDevOpsSVG />, label: 'Azure DevOps', allow: allowAzureDevOps, Component: ScopePhaseAreaAzureDevOps}
+    {
+      icon: <AzureDevOpsSVG />,
+      label: 'Azure DevOps',
+      allow: allowAzureDevOps,
+      Component: ScopePhaseAreaAzureDevOps
+    }
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
@@ -125,7 +130,7 @@ const ScopePhaseArea = (props: Props) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
-    setActiveIdx(idx)
+    selectIdx(idx)
   }
 
   const gotoParabol = () => {
@@ -144,7 +149,7 @@ const ScopePhaseArea = (props: Props) => {
                 {tab.label}
               </TabLabel>
             }
-            onClick={() => setActiveIdx(idx)}
+            onClick={() => selectIdx(idx)}
           />
         ))}
       </StyledTabsBar>

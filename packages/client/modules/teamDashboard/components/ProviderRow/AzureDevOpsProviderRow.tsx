@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {useFragment} from 'react-relay'
 import AzureDevOpsSVG from '~/components/AzureDevOpsSVG'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import AzureDevOpsConfigMenu from '../../../../components/AzureDevOpsConfigMenu'
 import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
 import FlatButton from '../../../../components/FlatButton'
@@ -12,19 +12,15 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
 import AzureDevOpsClientManager from '../../../../utils/AzureDevOpsClientManager'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {AzureDevOpsProviderRow_viewer} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
+import {AzureDevOpsProviderRow_viewer$key} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -37,10 +33,9 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props {
   teamId: string
-  viewer: AzureDevOpsProviderRow_viewer
+  viewerRef: AzureDevOpsProviderRow_viewer$key
 }
 
 const MenuButton = styled(FlatButton)({
@@ -77,8 +72,36 @@ const ProviderName = styled('div')({
   verticalAlign: 'middle'
 })
 
+graphql`
+  fragment AzureDevOpsProviderRowTeamMember on TeamMember {
+    integrations {
+      azureDevOps {
+        id
+        auth {
+          accessToken
+        }
+        sharedProviders {
+          id
+        }
+      }
+    }
+  }
+`
+
 const AzureDevOpsProviderRow = (props: Props) => {
-  const {atmosphere, viewer, teamId, submitting, submitMutation, onError, onCompleted} = props
+  const {viewerRef, teamId} = props
+  const viewer = useFragment(
+    graphql`
+      fragment AzureDevOpsProviderRow_viewer on User {
+        teamMember(teamId: $teamId) {
+          ...AzureDevOpsProviderRowTeamMember @relay(mask: false)
+        }
+      }
+    `,
+    viewerRef
+  )
+  const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
@@ -131,31 +154,4 @@ const AzureDevOpsProviderRow = (props: Props) => {
   )
 }
 
-graphql`
-  fragment AzureDevOpsProviderRowTeamMember on TeamMember {
-    integrations {
-      azureDevOps {
-        id
-        auth {
-          accessToken
-        }
-        sharedProviders {
-          id
-        }
-      }
-    }
-  }
-`
-
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(withRouter(AzureDevOpsProviderRow))),
-  {
-    viewer: graphql`
-      fragment AzureDevOpsProviderRow_viewer on User {
-        teamMember(teamId: $teamId) {
-          ...AzureDevOpsProviderRowTeamMember @relay(mask: false)
-        }
-      }
-    `
-  }
-)
+export default AzureDevOpsProviderRow
