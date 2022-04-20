@@ -1,8 +1,4 @@
-import {drainRethink, sendPublic, signUp} from './common'
-
-afterAll(() => {
-  return drainRethink()
-})
+import {sendPublic, signUp} from './common'
 
 test('Login after signup', async () => {
   const {email, password} = await signUp()

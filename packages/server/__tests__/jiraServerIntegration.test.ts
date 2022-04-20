@@ -1,8 +1,4 @@
-import {drainRethink, getUserTeams, sendPublic, signUp} from './common'
-
-afterAll(() => {
-  return drainRethink()
-})
+import {getUserTeams, sendPublic, signUp} from './common'
 
 const serverBaseUrl = 'https://jira.example.com/'
 const consumerKey = 'CvSE+9fww8PLH07mWTHKUZMiGyX7liUSFbB1pRLVDyQ='
