@@ -41,7 +41,6 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
       isWIQL
     }
   )
-  console.log(`AzureDevOpsScopingSearchResultsRoot.queryRef: ${queryRef}`)
   return (
     <Suspense fallback={<MockScopingList />}>
       {queryRef && <AzureDevOpsScopingSearchResults meetingRef={meeting} queryRef={queryRef} />}

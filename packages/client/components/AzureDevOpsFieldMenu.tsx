@@ -1,9 +1,8 @@
-/*import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import UpdateAzureDevOpsDimensionFieldMutation from '../mutations/UpdateAzureDevOpsDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -22,42 +21,12 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
   const {integration} = task
-  const {instanceId, projectKey, possibleEstimationFieldNames} = integration
+  const {id: workItemId, title, teamProject, url, state, type} = integration
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
-  const defaultActiveidx = useMemo(() => {
-    if (possibleEstimationFieldNames.length === 0) return undefined
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
-      return possibleEstimationFieldNames.length + 1
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) return possibleEstimationFieldNames.length + 2
-    const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
-    return idx === -1 ? undefined : idx
-  }, [serviceFieldName, possibleEstimationFieldNames])
-
-  if (possibleEstimationFieldNames.length === 0) {
-    return (
-      <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
-        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
-      </Menu>
-    )
-  }
 
   const handleClick = (fieldName: string) => () => {
-    UpdateAzureDevOpsDimensionFieldMutation(
-      atmosphere,
-      {
-        dimensionName,
-        fieldName,
-        meetingId,
-        instanceId,
-        projectKey
-      },
-      {
-        onCompleted: submitScore,
-        onError: () => {
-        }
-      }
-    )
+    // todo: push results back to AzureDevOps
     closePortal()
   }
   return (
@@ -65,11 +34,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
       ariaLabel={'Select the Jira Field to push to'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
-      defaultActiveIdx={defaultActiveidx}
+      defaultActiveIdx={1}
     >
-      {possibleEstimationFieldNames.map((fieldName) => {
-        return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
-      })}
       <MenuItemHR />
       <MenuItem
         key={'__comment'}
@@ -99,13 +65,15 @@ export default createFragmentContainer(AzureDevOpsFieldMenu, {
         integration {
           ... on AzureDevOpsWorkItem {
             __typename
-            projectKey
-            instanceId
-            possibleEstimationFieldNames
+            id
+            title
+            teamProject
+            url
+            state
+            type
           }
         }
       }
     }
   `
 })
-*/
