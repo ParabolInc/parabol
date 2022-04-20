@@ -7,7 +7,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
-import {AzureDevOpsFieldDimensionDropdown_stage$key} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
+import {AzureDevOpsFieldDimensionDropdown_stage$key} from '../__generated__/AzureDevOpsFieldDimensionDropdown_stage.graphql'
 import AzureDevOpsFieldMenu from './AzureDevOpsFieldMenu'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -44,7 +44,7 @@ const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
 }
 
-const AzureDevOpsDimensionDropdown = (props: Props) => {
+const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   const {clearError, isFacilitator, stageRef, submitScore} = props
 
   const stage = useFragment(
@@ -96,3 +96,5 @@ const AzureDevOpsDimensionDropdown = (props: Props) => {
     </Wrapper>
   )
 }
+
+export default AzureDevOpsFieldDimensionDropdown
