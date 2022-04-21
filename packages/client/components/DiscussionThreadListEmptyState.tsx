@@ -49,12 +49,11 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const message = `Start the conversation${
     allowTasks ? ' or add takeaway task cards' : ''
   } to capture next steps.`
-  const src = EmptyDiscussionIllustration
 
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
-        <EmptyDiscussionImage src={src} />
+        <EmptyDiscussionImage src={EmptyDiscussionIllustration} />
       </EmptyDiscussionContainer>
       <Message>{isReadOnly ? readOnlyMessage : message}</Message>
     </DiscussionThreadEmptyStateRoot>
