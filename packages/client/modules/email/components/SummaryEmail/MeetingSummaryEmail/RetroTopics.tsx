@@ -63,51 +63,56 @@ const RetroTopics = (props: Props) => {
           {plural(stages.length, RETRO_TOPIC_LABEL)}
         </td>
       </tr>
-      {stages.length ? (
-        stages.map((stage, idx) => {
-          const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
-          const topicUrl = isEmail
-            ? makeAppURL(appOrigin, topicUrlPath, {
-                searchParams: {
-                  utm_source: 'summary email',
-                  utm_medium: 'email',
-                  utm_campaign: 'after-meeting'
-                }
-              })
-            : topicUrlPath
-          return (
-            <RetroTopic
-              key={stage.id}
-              isDemo={isDemo}
-              isEmail={isEmail}
-              stage={stage}
-              to={topicUrl}
-            />
-          )
-        })
-      ) : reflectionGroups.map((reflectionGroup) => {
-          const {reflections, title} = reflectionGroup
-          const grid = useEmailItemGrid(reflections, 3)
-          return (
-            <React.Fragment key={reflectionGroup.id}>
-              <tr>
-                <td align='center' style={{paddingTop: 20}}>
-                  <AnchorIfEmail href={meetingUrl} isDemo={isDemo} isEmail={isEmail} style={stageThemeHeading}>
-                    {title}
-                  </AnchorIfEmail>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  {grid((reflectionCard) => (
-                    <EmailReflectionCard reflection={reflectionCard} />
-                  ))}
-                </td>
-              </tr>
-            </React.Fragment>
-          )
-        }
-      )}
+      {stages.length
+        ? stages.map((stage, idx) => {
+            const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
+            const topicUrl = isEmail
+              ? makeAppURL(appOrigin, topicUrlPath, {
+                  searchParams: {
+                    utm_source: 'summary email',
+                    utm_medium: 'email',
+                    utm_campaign: 'after-meeting'
+                  }
+                })
+              : topicUrlPath
+            return (
+              <RetroTopic
+                key={stage.id}
+                isDemo={isDemo}
+                isEmail={isEmail}
+                stage={stage}
+                to={topicUrl}
+              />
+            )
+          })
+        : reflectionGroups.map((reflectionGroup) => {
+            const {reflections, title} = reflectionGroup
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const grid = useEmailItemGrid(reflections, 3)
+            return (
+              <React.Fragment key={reflectionGroup.id}>
+                <tr>
+                  <td align='center' style={{paddingTop: 20}}>
+                    <AnchorIfEmail
+                      href={meetingUrl}
+                      isDemo={isDemo}
+                      isEmail={isEmail}
+                      style={stageThemeHeading}
+                    >
+                      {title}
+                    </AnchorIfEmail>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {grid((reflectionCard) => (
+                      <EmailReflectionCard reflection={reflectionCard} />
+                    ))}
+                  </td>
+                </tr>
+              </React.Fragment>
+            )
+          })}
       <EmailBorderBottom />
     </>
   )
