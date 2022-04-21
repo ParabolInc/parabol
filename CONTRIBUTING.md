@@ -18,31 +18,44 @@ You can read our latest blog post on our
 
 To get started, simply follow these steps:
 
-   1. **Find a project:** review the projects listed under the
+1. **Find a project:** review the projects listed under the
    “Help Requested” list on the
    [Equity For Effort Projects Board](https://github.com/ParabolInc/parabol/projects/1)
    and select one you're interested in working on.
 
-   2. **Bid on it:** leave a comment on the project saying how many points
+2. **Bid on it:** leave a comment on the project saying how many points
    you’ll do the project for and we’ll move the project to the “Bid” stage
    (see: [Points and sizes](#points-and-sizes)) – if a project is unclear, you
    can ask for more clarification at this stage
 
-   3. **Do it:** once we've received your bid, we'll reach out via email and
+3. **Do it:** once we've received your bid, we'll reach out via email and
    verify you're qualified to participate in the E4E program. When that's
    out of the way we'll accept your bid and move the issue to the
    “Building” stage. You can then go ahead and perform the work. Once you’re
    done, submit a pull request and we'll move the project to the “Reviewing”
    stage.
 
-   4. **Collect points:** After the work has been reviewed and merged into the
+4. **Collect points:** After the work has been reviewed and merged into the
    source tree, we’ll update our public scoreboard and credit the creator(s)
    with the agreed upon number of points. Once you accrue more than
    100 points we issue options for equity in Parabol, Inc.
 
-# Git Strategy
+## Making changes
 
-`git pull --ff-only` is recommended git pull stratagey if possible to keep the history as clean as possible.
+- Fork the repository on GitHub.
+- Create a feature branch from where you want to base your work (this is usually the master branch).
+- Make commits of logical and atomic units.
+- Before committing, check for unnecessary whitespace with `git diff --check`.
+- Make sure your commit messages are in the proper format.
+- Use git pull strategy (`git pull --ff-only`) to keep the history as clean as possible during updating your local branch with changes from a tracked remote.
+- [Submit a pull request](https://github.com/ParabolInc/parabol/pull/new/master) (or PR for short) with a clear list of what you've done.
+- Follow the [Code review policy](./docs/codeReview.md):
+  - A PR needs to be approved by a Reviewer initially and then by a [Maintainer](./README.md#parabol-maintainers).
+  - For the initial review, you can request a review from anyone except for [Maintainers](./README.md#parabol-maintainers).
+    - If you use `git blame`, you can see who previously worked on the code that you’re working on. That would be a good person to request an initial review from.
+    - Use GitHub mention to notify the reviewer of your choice.
+  - Once a Reviewer approves your PR, they’ll request a second review from the [Maintainers](./README.md#parabol-maintainers).
+  - If you haven’t heard anything from the reviewer after one week, feel free to ping them again on GitHub.
 
 # Compensation
 
