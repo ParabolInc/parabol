@@ -1,7 +1,8 @@
-require('../../../scripts/webpack/utils/dotenv')
-import fetch from 'node-fetch'
 import faker from 'faker'
+import fetch from 'node-fetch'
+import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+import persistFunction from '../graphql/persistFunction'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
 const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
@@ -30,13 +31,32 @@ export async function sendIntranet(req: {
   return response.json()
 }
 
+export const drainRethink = async () => {
+  const r = await getRethink()
+  r.getPoolMaster()?.drain()
+}
+
+const persistQuery = async (query: string) => {
+  const r = await getRethink()
+  const id = await persistFunction(query.trim())
+  const record = {
+    id,
+    query,
+    createdAt: new Date()
+  }
+  await r.table('QueryMap').insert(record, {conflict: 'replace'}).run()
+  return id
+}
+
 export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
   authToken?: string
 }) {
   const authToken = req.authToken ?? ''
-
+  const {query, variables} = req
+  // the production build doesn't allow ad-hoc queries, so persist it
+  const documentId = await persistQuery(query)
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
@@ -47,8 +67,8 @@ export async function sendPublic(req: {
     body: JSON.stringify({
       type: 'start',
       payload: {
-        query: req.query,
-        variables: req.variables
+        documentId,
+        variables
       }
     })
   })
