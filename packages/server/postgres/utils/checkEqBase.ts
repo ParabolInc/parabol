@@ -1,16 +1,95 @@
-import areDeep from 'fbjs/lib/areEqual'
 import {RTable, TableSchema} from '../../database/stricterR'
 import getPg from '../getPg'
 
-function areEqualIgnoringOrder(a, b): boolean {
-  if (Array.isArray(a) && Array.isArray(b)) {
+export function areEqual(a, b): boolean {
+  if (a === b) return true
+  const aType = typeof a
+  const bType = typeof b
+  // eslint-disable-next-line eqeqeq
+  if (aType !== bType) return a == b // to handle cases like wrapped types for primitives
+  switch (aType) {
+    case 'string':
+    case 'bigint':
+    case 'number':
+    case 'symbol':
+    case 'undefined':
+    case 'function':
+    case 'boolean':
+      return a === b
+    case 'number':
+      return (Number.isNaN(a) && Number.isNaN(b)) || a === b
+    case 'object':
+      if (a === null || b === null) return a === b
+
+      let result = areEqualArray(a, b)
+      if (result !== undefined) return result
+
+      result = areEqualDate(a, b)
+      if (result !== undefined) return result
+
+      result = areEqualRegExp(a, b)
+      if (result !== undefined) return result
+
+      return areEqualObject(a, b)
+    default:
+      // ts check that all types are handled
+      const _: never = aType
+      return a === b
+  }
+}
+
+function areEqualDate(a, b): boolean | undefined {
+  const isADate = a instanceof Date
+  const isBDate = b instanceof Date
+  if (isADate && isBDate) {
+    return +a === +b
+  } else if (isADate || isBDate) {
+    return false
+  }
+}
+
+function areEqualRegExp(a: RegExp, b: RegExp): boolean | undefined {
+  const isARegExp = a instanceof RegExp
+  const isBRegExp = b instanceof RegExp
+  if (isARegExp && isBRegExp) {
+    return (
+      a.source === b.source &&
+      a.global === b.global &&
+      a.multiline === b.multiline &&
+      a.ignoreCase === b.ignoreCase
+    )
+  } else if (isARegExp || isBRegExp) {
+    return false
+  }
+}
+
+function areEqualArray(a, b): boolean | undefined {
+  const isAArray = Array.isArray(a)
+  const isBArray = Array.isArray(b)
+  if (isAArray && isBArray) {
     return (
       a.length === b.length &&
-      a.every((aa) => b.some((bb) => areDeep(aa, bb))) &&
-      b.every((bb) => a.some((aa) => areDeep(aa, bb)))
+      a.every((aa) => b.some((bb) => areEqual(aa, bb))) &&
+      b.every((bb) => a.some((aa) => areEqual(aa, bb)))
     )
+  } else if (isAArray || isBArray) {
+    return false
   }
-  return areDeep(a, b)
+}
+
+function areEqualObject(a: object, b: object): boolean {
+  const aKeys = Object.keys(a).filter((key) => a[key] !== undefined)
+  const bKeys = Object.keys(b).filter((key) => b[key] !== undefined)
+
+  if (aKeys.length !== bKeys.length) return false
+  if (!aKeys.every((key) => bKeys.includes(key))) return false
+
+  for (let i = 0; i < aKeys.length; i++) {
+    if (!areEqual(a[aKeys[i]], b[aKeys[i]])) {
+      return false
+    }
+  }
+  return true
 }
 
 interface DBDoc {
@@ -50,7 +129,7 @@ function getPairNeFields(
 
   for (const f of alwaysDefinedFields) {
     const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
-    if (!areEqualIgnoringOrder(rethinkValue, pgValue)) {
+    if (!areEqual(rethinkValue, pgValue)) {
       neFields.push(f)
     }
   }
@@ -60,17 +139,17 @@ function getPairNeFields(
     const [rethinkValue, pgValue] = [rethinkRow[maybeUndefinedField], pgRow[maybeUndefinedField]]
 
     if (rethinkValue === undefined) {
-      if (areEqualIgnoringOrder(pgValue, defaultValueForUndefinedField)) {
+      if (areEqual(pgValue, defaultValueForUndefinedField)) {
         continue
       }
     } else if (rethinkValue === null && pgValue !== null) {
       if (
         maybeNullFieldsDefaultValues &&
-        areEqualIgnoringOrder(maybeNullFieldsDefaultValues[maybeUndefinedField], pgValue)
+        areEqual(maybeNullFieldsDefaultValues[maybeUndefinedField], pgValue)
       ) {
         continue
       }
-    } else if (areEqualIgnoringOrder(pgValue, rethinkValue)) {
+    } else if (areEqual(pgValue, rethinkValue)) {
       continue
     }
 
