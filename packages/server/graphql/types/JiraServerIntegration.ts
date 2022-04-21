@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
@@ -19,7 +20,6 @@ import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
 import {JiraServerIssueConnection} from './JiraServerIssue'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
-import IntegrationRepoId from "~/shared/gqlIds/IntegrationRepoId";
 
 type IssueArgs = {
   first: number
@@ -27,7 +27,6 @@ type IssueArgs = {
   queryString: string | null
   isJQL: boolean
   projectKeyFilters: string[] | null
-  [argName: string]: any
 }
 
 const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
@@ -111,10 +110,6 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
 
         const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
-        if (!provider) {
-          return null
-        }
-
         const integrationManager = new JiraServerRestManager(
           auth,
           provider as IntegrationProviderJiraServer
@@ -124,7 +119,9 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
-        const projectKeys = (projectKeyFilters ?? []).map((projectKeyFilter) => IntegrationRepoId.split(projectKeyFilter).projectKey!)
+        const projectKeys = (projectKeyFilters ?? []).map(
+          (projectKeyFilter) => IntegrationRepoId.split(projectKeyFilter).projectKey!
+        )
 
         const issueRes = await integrationManager.getIssues(queryString, isJQL, projectKeys)
 

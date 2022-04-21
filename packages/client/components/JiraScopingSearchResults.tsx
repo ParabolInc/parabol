@@ -86,18 +86,19 @@ const JiraScopingSearchResults = (props: Props) => {
           />
         )}
         {edges.map(({node}) => {
+          const {id, url, issueKey} = node
           return (
             <ScopingSearchResultItem
-              key={node.id}
+              key={id}
               service={'jira'}
               usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={node.id}
+              serviceTaskId={id}
               meetingId={meetingId}
               persistQuery={persistQuery}
               summary={node.summary}
-              url={node.url}
-              linkText={node.issueKey}
-              linkTitle={`Jira Issue #${node.issueKey}`}
+              url={url}
+              linkText={issueKey}
+              linkTitle={`Jira Issue #${issueKey}`}
             />
           )
         })}

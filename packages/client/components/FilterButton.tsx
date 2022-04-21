@@ -26,8 +26,9 @@ interface Props {
 }
 
 const FilterButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
+  const {onClick} = props
   return (
-    <StyledButton onClick={props.onClick} ref={ref}>
+    <StyledButton onClick={onClick} ref={ref}>
       <FilterIcon>filter_list</FilterIcon>
     </StyledButton>
   )

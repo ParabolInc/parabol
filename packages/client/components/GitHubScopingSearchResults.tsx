@@ -208,7 +208,7 @@ const GitHubScopingSearchResults = (props: Props) => {
           />
         )}
         {issues.map((node) => {
-          const {repository, number} = node
+          const {repository, number, title, url} = node
           const {nameWithOwner} = repository
           const linkText = `#${number} ${nameWithOwner}`
           return (
@@ -219,8 +219,8 @@ const GitHubScopingSearchResults = (props: Props) => {
               serviceTaskId={GitHubIssueId.join(nameWithOwner, number)}
               meetingId={meetingId}
               persistQuery={persistQuery}
-              summary={node.title}
-              url={node.url}
+              summary={title}
+              url={url}
               linkText={linkText}
               linkTitle={linkText}
             />
