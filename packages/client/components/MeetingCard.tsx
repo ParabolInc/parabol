@@ -159,6 +159,7 @@ const MeetingCard = (props: Props) => {
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
+  /* eslint-disable react-hooks/rules-of-hooks */
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const ref = useAnimatedMeetingCard(displayIdx, status)
