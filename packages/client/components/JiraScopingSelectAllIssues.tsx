@@ -67,7 +67,12 @@ const JiraScopingSelectAllIssues = (props: Props) => {
       const issue = issues.find((issueEdge) => issueEdge.node.id === update.serviceTaskId)
       return issue?.node.summary ?? 'Unknown Story'
     })
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents,
+      selectedAll: true
+    })
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
