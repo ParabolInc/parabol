@@ -1,4 +1,14 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
@@ -9,8 +19,6 @@ import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds';
 
 type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
 
@@ -187,6 +195,17 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           )
           return connectionFromTasks(userStories, first, undefined)
         }
+      }
+    },
+    projects: {
+      // Create a new object for ADO Projects (new schema object)
+      type: new GraphQLNonNull(AzureDevOpsWorkItemConnection),
+      description:
+        'A list of projects coming straight from the azure dev ops integration for a specific team member',
+      resolve: ({teamId, userId}: AzureDevOpsAuth, _args: unknown, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return []
+        return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
       }
     },
     sharedProviders: {
