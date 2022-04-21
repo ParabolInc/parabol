@@ -6,6 +6,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
+import AzureDevOpsFieldDimensionDropdown from './AzureDevOpsFieldDimensionDropdown'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
 import LinkButton from './LinkButton'
@@ -81,6 +82,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
         ...GitHubFieldDimensionDropdown_stage
         ...JiraFieldDimensionDropdown_stage
+        ...AzureDevOpsFieldDimensionDropdown_stage
         task {
           integration {
             __typename
@@ -125,10 +127,17 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
             />
           )}
 
-          {(integrationType === 'JiraIssue' ||
-            integrationType === 'JiraServerIssue' ||
-            integrationType === 'AzureDevOpsWorkItem') && (
+          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
             <JiraFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+
+          {integrationType === 'AzureDevOpsWorkItem' && (
+            <AzureDevOpsFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
               isFacilitator={isFacilitator}

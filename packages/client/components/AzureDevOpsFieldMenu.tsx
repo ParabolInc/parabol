@@ -1,20 +1,20 @@
-import styled from '@emotion/styled-base'
+//import styled from '@emotion/styled-base'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+//import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useModal from '../hooks/useModal'
-import textOverflow from '../styles/helpers/textOverflow'
-import {PALETTE} from '../styles/paletteV3'
-import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
+//import textOverflow from '../styles/helpers/textOverflow'
+//import {PALETTE} from '../styles/paletteV3'
+//import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
-import FlatButton from './FlatButton'
-import Icon from './Icon'
+//import FlatButton from './FlatButton'
+//import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-
+/*
 const LabelOptionRoot = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
@@ -63,7 +63,7 @@ const Button = styled(FlatButton)({
 
 const ActionButton = styled(Icon)({
   fontSize: ICON_SIZE.MD18
-})
+})*/
 
 interface Props {
   menuProps: MenuProps
@@ -73,7 +73,7 @@ interface Props {
 
 const AzureDevOpsFieldMenu = (props: Props) => {
   const {menuProps, stageRef, submitScore} = props
-  const atmosphere = useAtmosphere()
+  //const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
       fragment AzureDevOpsFieldMenu_stage on EstimateStage {
@@ -97,8 +97,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     stageRef
   )
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const {serviceField, task, dimensionRef, meetingId} = stage
-  const {name: dimensionName} = dimensionRef
+  const {serviceField, task} = stage
   const {name: serviceFieldName} = serviceField
   const defaults = [
     SprintPokerDefaults.SERVICE_FIELD_COMMENT,
@@ -113,10 +112,13 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     id: 'editAzureDevOpsLabel',
     parentId: 'azureDevOpsFieldMenu'
   })
+  console.log(`modalPortal: ${modalPortal}`)
+  console.log(`openPortal: ${openPortal}`)
+  console.log(`closeModal: ${closeModal}`)
 
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
-  const {integration} = task
-  const {type} = integration
+  //const {integration} = task
+  //const {type} = integration
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
       // call the mutation
@@ -125,14 +127,14 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     }
     closePortal()
   }
-  const openEditModal = (e: React.MouseEvent) => {
+  /*const openEditModal = (e: React.MouseEvent) => {
     e.stopPropagation()
     openPortal()
-  }
-  const defaultLabelTemplate = `${dimensionName}: {{#}}`
-  const serviceFieldTemplate = defaults.includes(serviceFieldName)
-    ? defaultLabelTemplate
-    : serviceFieldName
+  }*/
+  //const defaultLabelTemplate = `${dimensionName}: {{#}}`
+  //const serviceFieldTemplate = defaults.includes(serviceFieldName)
+  //  ? defaultLabelTemplate
+  //  : serviceFieldName
   return (
     <>
       <Menu

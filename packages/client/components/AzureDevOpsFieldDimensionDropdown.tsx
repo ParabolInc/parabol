@@ -66,9 +66,9 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     stageRef
   )
 
-  const {serviceField, task} = stage
-  const workItemType = task?.integration?.type
-  const {name: serviceFieldName} = serviceField
+  //const {serviceField, task} = stage
+  //const workItemType = task?.integration?.type
+  //const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
