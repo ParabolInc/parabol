@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useMemo} from 'react'
+import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {Elevation} from '~/styles/elevation'
 import {BezierCurve, Breakpoint, Card} from '~/types/constEnums'
-import {isNotNull} from '~/utils/predicates'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
+import getPhaseByTypename from '../utils/getPhaseByTypename'
 import Avatar from './Avatar/Avatar'
 import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
@@ -88,8 +88,9 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptTopBar_meeting
         ...useMeeting_meeting
         phases {
-          stages {
-            ... on TeamPromptResponseStage {
+          ... on TeamPromptResponsesPhase {
+            __typename
+            stages {
               teamMember {
                 id
                 preferredName
@@ -102,24 +103,15 @@ const TeamPromptMeeting = (props: Props) => {
     `,
     meetingRef
   )
-
+  const {phases} = meeting
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const teamMembers = useMemo(() => {
-    return meeting.phases
-      .flatMap((phase) => phase.stages)
-      .flatMap((stage) => stage.teamMember)
-      .map((teamMember) => {
-        if (!teamMember) {
-          return null
-        }
 
-        return {
-          ...teamMember,
-          key: teamMember.id
-        }
-      })
-      .filter(isNotNull)
-  }, [meeting.phases])
+  const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
+  const {stages} = phase
+  const teamMembers = stages.map((stage) => ({
+    ...stage.teamMember,
+    key: stage.teamMember.id
+  }))
   const transitioningTeamMembers = useTransition(teamMembers)
   const {safeRoute} = useMeeting(meeting)
   if (!safeRoute) return null
