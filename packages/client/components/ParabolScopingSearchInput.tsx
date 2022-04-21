@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import Atmosphere from '../Atmosphere'
@@ -16,10 +16,12 @@ const Wrapper = styled('div')({
 
 const SearchInput = styled('input')({
   appearance: 'none',
-  border: '1px solid transparent',
+  border: 'none',
+  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
+  padding: 12,
   outline: 0,
   backgroundColor: 'transparent',
   width: '100%'
@@ -51,13 +53,22 @@ const ParabolScopingSearchInput = (props: Props) => {
   const {queryString} = parabolSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const inputRef = useRef<HTMLInputElement>(null)
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, meetingId, e.target.value)
   }
-  const clearSearch = () => setSearch(atmosphere, meetingId, '')
+  const clearSearch = () => {
+    setSearch(atmosphere, meetingId, '')
+    inputRef.current?.focus()
+  }
   return (
     <Wrapper>
-      <SearchInput value={queryString!} placeholder={'Search Parabol tasks'} onChange={onChange} />
+      <SearchInput
+        value={queryString!}
+        placeholder={'Search Parabol tasks'}
+        onChange={onChange}
+        ref={inputRef}
+      />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>

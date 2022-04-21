@@ -1,14 +1,14 @@
+import styled from '@emotion/styled'
 import React, {
   forwardRef,
   ReactNode,
+  RefObject,
   useEffect,
   useImperativeHandle,
-  useRef,
-  RefObject
+  useRef
 } from 'react'
-import styled from '@emotion/styled'
-import MenuItemLabel from './MenuItemLabel'
 import {PALETTE} from '../styles/paletteV3'
+import MenuItemLabel from './MenuItemLabel'
 
 export interface MenuItemProps {
   isActive: boolean
@@ -49,7 +49,8 @@ const getIsHidden = (el: HTMLElement, parent: HTMLElement) => {
   return parentBottom < isViewedThreshold
 }
 const MenuItem = forwardRef((props: Props, ref: any) => {
-  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick, onView, parentRef, dataCy} = props
+  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick, onView, parentRef, dataCy} =
+    props
   const itemRef = useRef<HTMLDivElement>(null)
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
   const {activate, closePortal, isActive} = ref as MenuItemProps

@@ -1,4 +1,6 @@
 import {GraphQLResolveInfo} from 'graphql'
+import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
+import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
 import GitHubIssueId from '../../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
@@ -10,6 +12,8 @@ import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
 import createGitHubTask from './createGitHubTask'
 import createJiraTask from './createJiraTask'
+import createGitLabTask from './createGitLabTask'
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 
 const createTaskInService = async (
   integrationInput: CreateTaskIntegrationInput | null | undefined,
@@ -68,6 +72,34 @@ const createTaskInService = async (
         issueNumber
       }),
       integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber)
+    }
+  } else if (service === 'gitlab') {
+    const gitlabAuth = await dataLoader
+      .get('teamMemberIntegrationAuths')
+      .load({service: 'gitlab', teamId, userId: accessUserId})
+    if (!gitlabAuth) {
+      return {error: new Error('Cannot create GitLab task without a valid GitHLab token')}
+    }
+    const gitlabTaskRes = await createGitLabTask(
+      taglessContentJSON,
+      serviceProjectHash,
+      gitlabAuth,
+      context,
+      info,
+      dataLoader
+    )
+    if (gitlabTaskRes.error) {
+      return {error: gitlabTaskRes.error}
+    }
+    const {gid, providerId} = gitlabTaskRes
+    const integrationProviderId = IntegrationProviderId.join(providerId)
+    return {
+      integration: new TaskIntegrationGitLab({
+        accessUserId,
+        providerId: integrationProviderId,
+        gid
+      }),
+      integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }
   }
   return {error: new Error('Unknown integration')}

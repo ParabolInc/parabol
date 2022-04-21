@@ -15,7 +15,7 @@ const TaskEstimateInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString)
     },
     meetingId: {
-      type: GraphQLID
+      type: new GraphQLNonNull(GraphQLID)
     }
   })
 })
@@ -24,6 +24,6 @@ export interface ITaskEstimateInput {
   taskId: string
   value: string
   dimensionName: string
-  meetingId?: string | null
+  meetingId: string
 }
 export default TaskEstimateInput

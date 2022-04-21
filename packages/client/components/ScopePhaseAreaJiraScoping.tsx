@@ -12,7 +12,7 @@ const ScopePhaseAreaJiraScoping = (props: Props) => {
   const {meeting} = props
   return (
     <>
-      <JiraScopingSearchBar meeting={meeting} />
+      <JiraScopingSearchBar meetingRef={meeting} />
       <JiraScopingSearchResultsRoot meeting={meeting} />
     </>
   )
