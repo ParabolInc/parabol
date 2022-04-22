@@ -1,5 +1,5 @@
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import {IntegrationProviderServiceEnum} from 'parabol-client/types/graphql'
+import {IntegrationProviderServiceEnum} from 'parabol-client/__generated__/CreateTaskIntegrationMutation.graphql'
 
 type GitHubRepoIntegration = {
   nameWithOwner: string

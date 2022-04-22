@@ -5,9 +5,11 @@ import {createFragmentContainer} from 'react-relay'
 import {mod} from 'react-swipeable-views-core'
 import WaveSVG from 'static/images/wave.svg'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
+import {NonEmptyArray} from '~/types/generics'
 import {MeetingTypeEnum, NewMeeting_viewer} from '~/__generated__/NewMeeting_viewer.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
+import {Elevation} from '../styles/elevation'
 import {Breakpoint} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import NewMeetingActions from './NewMeetingActions'
@@ -17,8 +19,6 @@ import NewMeetingIllustration from './NewMeetingIllustration'
 import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
-import {Elevation} from '../styles/elevation'
-import {NonEmptyArray} from '~/types/generics'
 
 interface Props {
   retry(): void
@@ -170,7 +170,6 @@ const NewMeeting = (props: Props) => {
 export default createFragmentContainer(NewMeeting, {
   viewer: graphql`
     fragment NewMeeting_viewer on User {
-      ...NewMeetingExistingMeetings_viewer
       featureFlags {
         standups
       }
