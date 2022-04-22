@@ -1,22 +1,22 @@
-import React, {lazy, useEffect} from 'react'
 import styled from '@emotion/styled'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React, {lazy, useEffect} from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import Avatar from '../../../../components/Avatar/Avatar'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import EditableOrgName from '../../../../components/EditableOrgName'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import useModal from '../../../../hooks/useModal'
+import useRouter from '../../../../hooks/useRouter'
+import {PALETTE} from '../../../../styles/paletteV3'
+import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
+import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
-import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
-import {PALETTE} from '../../../../styles/paletteV3'
-import useModal from '../../../../hooks/useModal'
-import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -58,7 +58,7 @@ const OrgAvatarInput = lazy(
   () => import(/* webpackChunkName: 'OrgAvatarInput' */ '../../../../components/OrgAvatarInput')
 )
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   queryRef: PreloadedQuery<OrganizationQuery>
 }
 
@@ -91,13 +91,13 @@ const query = graphql`
 `
 
 const Organization = (props: Props) => {
-  const {history} = props
   const {queryRef} = props
   const data = usePreloadedQuery<OrganizationQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
   const {organization} = viewer
+  const {history} = useRouter()
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
     if (!organization) {
@@ -152,4 +152,4 @@ const Organization = (props: Props) => {
   )
 }
 
-export default withRouter(Organization)
+export default Organization

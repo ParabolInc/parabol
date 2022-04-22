@@ -4,9 +4,11 @@ import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {mod} from 'react-swipeable-views-core'
 import WaveSVG from 'static/images/wave.svg'
+import {NonEmptyArray} from '~/types/generics'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
+import {Elevation} from '../styles/elevation'
 import {Breakpoint} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import NewMeetingActions from './NewMeetingActions'
@@ -16,8 +18,6 @@ import NewMeetingIllustration from './NewMeetingIllustration'
 import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
-import {Elevation} from '../styles/elevation'
-import {NonEmptyArray} from '~/types/generics'
 
 interface Props {
   teamId?: string | null
@@ -119,7 +119,6 @@ const createMeetingOrder = ({standups}: {standups: boolean}) => {
 const query = graphql`
   query NewMeetingQuery {
     viewer {
-      ...NewMeetingExistingMeetings_viewer
       featureFlags {
         standups
       }

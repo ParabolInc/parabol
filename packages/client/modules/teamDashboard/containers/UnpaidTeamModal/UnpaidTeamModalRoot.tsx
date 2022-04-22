@@ -1,13 +1,12 @@
 import React, {Suspense} from 'react'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import UnpaidTeamModal from '../../components/UnpaidTeamModal/UnpaidTeamModal'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 import unpaidTeamModalQuery, {
   UnpaidTeamModalQuery
 } from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
-import {renderLoader} from '../../../../utils/relay/renderLoader'
+import UnpaidTeamModal from '../../components/UnpaidTeamModal/UnpaidTeamModal'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   teamId: string
 }
 
@@ -21,4 +20,4 @@ const UnpaidTeamModalRoot = (props: Props) => {
   )
 }
 
-export default withRouter(UnpaidTeamModalRoot)
+export default UnpaidTeamModalRoot

@@ -1,16 +1,16 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout, TierLabel} from '../../../../types/constEnums'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import useRouter from '../../../../hooks/useRouter'
-import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Layout, TierLabel} from '../../../../types/constEnums'
 import {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
+import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',

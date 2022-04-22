@@ -13,27 +13,42 @@ interface Props {
   meetingRef: GitLabScopingSearchResultsRoot_meeting$key
 }
 
+export const gitlabIssueArgs = {
+  first: 25,
+  includeSubepics: true,
+  sort: 'UPDATED_DESC',
+  state: 'opened'
+} as const
+
 const GitLabScopingSearchResultsRoot = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResultsRoot_meeting on PokerMeeting {
         ...GitLabScopingSearchResults_meeting
+        gitlabSearchQuery {
+          queryString
+          selectedProjectsIds
+        }
         teamId
-        # gitlabSearchQuery {
-        #   queryString
-        # }
       }
     `,
     meetingRef
   )
-  // const {teamId, gitlabSearchQuery} = meeting
-  const {teamId} = meeting
-  // const {queryString} = gitlabSearchQuery
-  // const normalizedQueryString = queryString.trim()
+  const {teamId, gitlabSearchQuery} = meeting
+  const {queryString, selectedProjectsIds} = gitlabSearchQuery!
+  const normalizedQueryString = queryString.trim()
+  const normalizedSelectedProjectsIds = selectedProjectsIds?.length
+    ? (selectedProjectsIds as string[])
+    : null
   const queryRef = useQueryLoaderNow<GitLabScopingSearchResultsQuery>(
     gitlabScopingSearchResultsQuery,
-    {teamId}
+    {
+      teamId,
+      queryString: normalizedQueryString,
+      selectedProjectsIds: normalizedSelectedProjectsIds,
+      ...gitlabIssueArgs
+    }
   )
   return (
     <Suspense fallback={<MockScopingList />}>
