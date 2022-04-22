@@ -63,7 +63,9 @@ const useCommentPlugins = (props: Props) => {
     removeModal: emoji.removeModal,
     renderModal: emoji.renderModal,
     editorRef,
-    useTaskChild: () => {}
+    useTaskChild: () => {
+      /* noop */
+    }
   })
 
   return {

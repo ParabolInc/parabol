@@ -26,7 +26,6 @@ jobs:
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
-      SERVER_ID: "0"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
     working_directory: ~/action
     resource_class: medium+
@@ -53,7 +52,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            MEDIASOUP_MAX_CORES=8 yarn --frozen-lockfile
+            yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
       - save_cache:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -64,13 +63,23 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
-          name: Start dev server
+          name: Build Assets
+          command: |
+            cp $DEVOPS_WORKDIR/environments/staging .env
+            yarn build --deploy
+      - run:
+          name: Migration Testing DBs
           command: |
             cp $DEVOPS_WORKDIR/environments/test .env
-            yarn dev || true
+            yarn db:migrate
+            yarn pg:migrate up
+            yarn postdeploy
+      - run:
+          name: Start Testing Server
+          command: yarn start || true
           background: true
       - run:
-          name: Wait for dev server to be healthy
+          name: Wait for testing server to be healthy
           command: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
       - run:
           name: Run server tests
@@ -97,17 +106,6 @@ jobs:
           name: Kill server
           command: pkill node
           when: always
-      - run:
-          name: Build Assets
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
-              cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
-              yarn build --deploy
-            fi
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              cp $DEVOPS_WORKDIR/environments/development .env
-              yarn build --deploy
-            fi
       - deploy:
           name: Commit Deployment
           command: |

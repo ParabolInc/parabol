@@ -1,15 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "dnd/*",
     "validation/*",
-    "utils/*",
-    "types/*",
-    "styles/*",
-    "stories/*",
-    "components/*",
-    "mutations/*",
-    "hooks/*",
+    "utils",
+    "shared",
+    "mutations/fragments",
+    "mutations/InvalidateSessionsMutation.ts",
+    "modules/email/components",
+    "hooks",
+    "polyfills.ts",
+    "components/promptResponse/PromptResponseEditor.tsx",
+    "components/WebcamPermissionsModal.tsx",
+    "components/EstimatePhaseEmptyState.tsx",
     "routing/*",
   ]
 }

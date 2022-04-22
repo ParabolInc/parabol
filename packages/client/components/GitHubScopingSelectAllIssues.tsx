@@ -86,7 +86,12 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
       )
       return issue?.title ?? 'Unknown Story'
     })
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents,
+      selectedAll: true
+    })
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
