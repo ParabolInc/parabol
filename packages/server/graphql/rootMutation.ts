@@ -119,7 +119,6 @@ import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
-import updateGitLabDimensionField from './mutations/updateGitLabDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
@@ -278,7 +277,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setTaskEstimate,
       toggleTeamDrawer,
       updateGitHubDimensionField,
-      updateGitLabDimensionField,
       createPoll,
       addTeamMemberIntegrationAuth,
       addIntegrationProvider,
