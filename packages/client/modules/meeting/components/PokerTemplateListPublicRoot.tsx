@@ -1,22 +1,20 @@
 import React, {Suspense} from 'react'
-import MockTemplateList from './MockTemplateList'
-import PokerTemplateListPublic from './PokerTemplateListPublic'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import pokerTemplateListPublicQuery, {
   PokerTemplateListPublicQuery
 } from '../../../__generated__/PokerTemplateListPublicQuery.graphql'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import MockTemplateList from './MockTemplateList'
+import PokerTemplateListPublic from './PokerTemplateListPublic'
 
 interface Props {
-  isActive: boolean
   teamId: string
 }
 
 const PokerTemplateListPublicRoot = (props: Props) => {
-  const {isActive, teamId} = props
+  const {teamId} = props
   const queryRef = useQueryLoaderNow<PokerTemplateListPublicQuery>(pokerTemplateListPublicQuery, {
     teamId
   })
-  if (!isActive) return null
 
   return (
     <Suspense fallback={<MockTemplateList />}>
