@@ -53,7 +53,7 @@ const ScopingSearchHistoryMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Select a Jira search query'}
+      ariaLabel={'Select a search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       closePortal={closePortal}
