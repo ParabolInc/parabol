@@ -1,25 +1,23 @@
 import React, {Suspense} from 'react'
-import MockTemplateList from './MockTemplateList'
-import ReflectTemplateListPublic from './ReflectTemplateListPublic'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import reflectTemplateListPublicQuery, {
   ReflectTemplateListPublicQuery
 } from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import MockTemplateList from './MockTemplateList'
+import ReflectTemplateListPublic from './ReflectTemplateListPublic'
 
 interface Props {
-  isActive: boolean
   teamId: string
 }
 
 const ReflectTemplateListPublicRoot = (props: Props) => {
-  const {isActive, teamId} = props
+  const {teamId} = props
   const queryRef = useQueryLoaderNow<ReflectTemplateListPublicQuery>(
     reflectTemplateListPublicQuery,
     {
       teamId
     }
   )
-  if (!isActive) return null
   return (
     <Suspense fallback={<MockTemplateList />}>
       {queryRef && <ReflectTemplateListPublic queryRef={queryRef} />}
