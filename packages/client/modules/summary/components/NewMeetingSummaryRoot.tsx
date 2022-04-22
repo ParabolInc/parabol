@@ -1,16 +1,15 @@
 import React, {Suspense} from 'react'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import NewMeetingSummary from './NewMeetingSummary'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import useRouter from '../../../hooks/useRouter'
+import {LoaderSize} from '../../../types/constEnums'
+import {renderLoader} from '../../../utils/relay/renderLoader'
 import newMeetingSummaryQuery, {
   NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
-import {LoaderSize} from '../../../types/constEnums'
-import {renderLoader} from '../../../utils/relay/renderLoader'
+import NewMeetingSummary from './NewMeetingSummary'
 
-interface Props extends RouteComponentProps<{urlAction?: 'csv'; meetingId: string}> {}
-
-const NewMeetingSummaryRoot = ({match}: Props) => {
+const NewMeetingSummaryRoot = () => {
+  const {match} = useRouter<{urlAction?: 'csv'; meetingId: string}>()
   const {
     params: {urlAction, meetingId = 'demoMeeting'}
   } = match
@@ -22,4 +21,4 @@ const NewMeetingSummaryRoot = ({match}: Props) => {
   )
 }
 
-export default withRouter(NewMeetingSummaryRoot)
+export default NewMeetingSummaryRoot
