@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import meetingSummaryEmailRootSsrQuery, {
-  MeetingSummaryEmailRootSSRQuery
+import {
+  MeetingSummaryEmailRootSSRQuery,
+  MeetingSummaryEmailRootSSRQueryResponse
 } from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import React from 'react'
+import {useLazyLoadQuery} from 'react-relay'
 import {Environment} from 'relay-runtime'
 import makeAppURL from '../../../utils/makeAppURL'
 import MeetingSummaryEmail from './SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 
 const query = graphql`
   query MeetingSummaryEmailRootSSRQuery($meetingId: ID!) {
@@ -36,37 +36,29 @@ export const meetingSummaryUrlParams = {
 }
 
 const MeetingSummaryEmailRootSSR = (props: Props) => {
-  const {appOrigin, environment, meetingId} = props
-  const queryRef = useQueryLoaderNow<MeetingSummaryEmailRootSSRQuery>(
-    meetingSummaryEmailRootSsrQuery,
+  const {appOrigin, meetingId} = props
+  const data = useLazyLoadQuery<MeetingSummaryEmailRootSSRQuery>(
+    query,
     {meetingId},
-    undefined,
-    false,
-    environment
+    {UNSTABLE_renderPolicy: 'full'}
   )
   return (
-    queryRef && (
-      <MeetingSummaryEmailContainer
-        queryRef={queryRef}
-        meetingId={meetingId}
-        appOrigin={appOrigin}
-      />
-    )
+    <MeetingSummaryEmailContainer
+      viewer={data.viewer}
+      meetingId={meetingId}
+      appOrigin={appOrigin}
+    />
   )
 }
 
 interface MeetingSummaryEmailContainerProps {
-  queryRef: PreloadedQuery<MeetingSummaryEmailRootSSRQuery>
+  viewer: MeetingSummaryEmailRootSSRQueryResponse['viewer']
   appOrigin: string
   meetingId: string
 }
 
 function MeetingSummaryEmailContainer(props: MeetingSummaryEmailContainerProps) {
-  const {queryRef, meetingId, appOrigin} = props
-  const data = usePreloadedQuery<MeetingSummaryEmailRootSSRQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
-  const {viewer} = data
+  const {viewer, meetingId, appOrigin} = props
   if (!viewer) return null
   const {newMeeting} = viewer
   if (!newMeeting) return null
