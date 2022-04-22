@@ -29,10 +29,6 @@ const JiraScopingSearchHistoryToggle = (props: Props) => {
                   isJQL
                   projectKeyFilters
                 }
-                projects {
-                  id
-                  name
-                }
               }
             }
           }
