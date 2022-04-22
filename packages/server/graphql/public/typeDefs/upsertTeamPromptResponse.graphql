@@ -22,14 +22,12 @@ input TeamPromptResponseInput {
   meetingId: String!
 
   """
-  The new stringnified content of the team prompt response
+  The stringified content of the team prompt response
   """
   content: String!
 }
 
-type UpsertTeamPromptResponsePayload {
-  error: StandardMutationError
-
+type UpsertTeamPromptResponseSuccess {
   teamPromptResponseId: Int!
   meetingId: ID!
 
@@ -42,3 +40,5 @@ type UpsertTeamPromptResponsePayload {
   """
   meeting: NewMeeting
 }
+
+union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload

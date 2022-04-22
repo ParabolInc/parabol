@@ -1,22 +1,14 @@
-import {UpsertTeamPromptResponsePayloadResolvers} from '../resolverTypes'
+import {ErrorPayload, UpsertTeamPromptResponsePayloadResolvers} from '../../private/resolverTypes'
+import {UpsertTeamPromptResponseSuccessSource} from './UpsertTeamPromptResponseSuccess'
 
 export type UpsertTeamPromptResponsePayloadSource =
-  | {
-      teamPromptResponseId: number
-      meetingId: string
-    }
-  | {error: {message: string}}
+  | UpsertTeamPromptResponseSuccessSource
+  | ErrorPayload
 
 const UpsertTeamPromptResponsePayload: UpsertTeamPromptResponsePayloadResolvers = {
-  teamPromptResponse: async (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
-    const {teamPromptResponseId} = source
-    return dataLoader.get('teamPromptResponses').loadNonNull(teamPromptResponseId)
-  },
-  meeting: async (source, _args, {dataLoader}) => {
-    if ('error' in source) return null
-    const {meetingId} = source
-    return dataLoader.get('newMeetings').load(meetingId)
+  __resolveType: (source) => {
+    if ('error' in source) return 'ErrorPayload'
+    return 'UpsertTeamPromptResponseSuccess'
   }
 }
 

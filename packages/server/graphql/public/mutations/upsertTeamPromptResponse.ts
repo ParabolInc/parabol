@@ -1,10 +1,7 @@
 import {JSONContent} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
-import {
-  InputTeamPromptResponse,
-  upsertTeamPromptResponse as upsertTeamPromptResponseQuery
-} from '../../../postgres/queries/upsertTeamPromptResponses'
+import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -21,7 +18,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   const subOptions = {mutatorId, operationId}
   const {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content} = teamPromptResponse
 
-  // AUTH
+  // VALIDATION
   if (inputTeamPromptResponseId) {
     const teamPromptResponse: TeamPromptResponse = await dataLoader
       .get('teamPromptResponses')
@@ -29,41 +26,44 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     if (!teamPromptResponse) {
       return standardError(new Error('TeamPromptResponse not found'), {userId: viewerId})
     }
-    const {userId} = teamPromptResponse
+    const {userId, meetingId: responseMeetingId} = teamPromptResponse
     if (userId !== viewerId) {
       return standardError(new Error("Can't edit other's response"), {userId: viewerId})
+    }
+    if (responseMeetingId !== meetingId) {
+      return standardError(new Error("Can't edit response in another meeting"), {userId: viewerId})
     }
   }
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
-  const {endedAt, teamId, meetingType} = meeting
-  if (meetingType !== 'teamPrompt') {
-    return standardError(new Error('Cannot insert/update response to non-teamPrompt meeting'), {
-      userId: viewerId
-    })
-  }
+  const {endedAt, teamId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
   // RESOLUTION
-  const contentJSON: JSONContent = JSON.parse(content)
+  let contentJSON: JSONContent
+  try {
+    contentJSON = JSON.parse(content)
+  } catch (e) {
+    return standardError(new Error('Invalid stringified JSON'), {userId: viewerId})
+  }
+
   const plaintextContent = extractTextFromTipTapJSONContent(contentJSON)
-  const teamPromptResponseInput: InputTeamPromptResponse = {
+  const teamPromptResponseId = await upsertTeamPromptResponseQuery({
     meetingId,
     userId: viewerId,
-    sortOrder: 0, //TODO: set correct sort order, need to fetch all responses for meeting
+    sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
     content,
     plaintextContent
-  }
-  const teamPromptResponseId = await upsertTeamPromptResponseQuery(teamPromptResponseInput)
+  })
   const updatedTeamPromptResponse = await dataLoader
     .get('teamPromptResponses')
     .load(teamPromptResponseId)
-  updatedTeamPromptResponse.content = content
+  updatedTeamPromptResponse.content = contentJSON
   updatedTeamPromptResponse.plaintextContent = plaintextContent
 
   const data = {
@@ -73,7 +73,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   publish(
     SubscriptionChannel.MEETING,
     meetingId,
-    'UpdateTeamPromptResponseSuccess',
+    'UpsertTeamPromptResponseSuccess',
     data,
     subOptions
   )

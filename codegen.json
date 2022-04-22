@@ -48,7 +48,7 @@
         "mappers": {
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
-          "UpsertTeamPromptResponsePayload": "./types/UpsertTeamPromptResponsePayload#UpsertTeamPromptResponsePayloadSource",
+          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
