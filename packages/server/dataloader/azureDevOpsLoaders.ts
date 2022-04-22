@@ -1,10 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {
-  Resource,
-  TeamProjectReference,
-  WorkItem
-} from 'parabol-client/utils/AzureDevOpsManager'
+import {Resource, TeamProjectReference, WorkItem} from 'parabol-client/utils/AzureDevOpsManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
@@ -123,7 +119,7 @@ export const freshAzureDevOpsAuth = (
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
-            const updatedRefreshToken =  newRefreshToken || refreshToken
+            const updatedRefreshToken = newRefreshToken || refreshToken
             const newAzureDevOpsAuth = {
               ...azureDevOpsAuthToRefresh,
               accessToken,
@@ -302,8 +298,15 @@ export const allAzureDevOpsProjects = (
 
           const {error, projects} = await manager.getAllUserProjects()
           if (!error) console.log(error)
+          console.log('projectshere ' + projects?.at(0)?.name)
           if (projects !== null) resultReferences.push(...projects)
-          return resultReferences
+          // return resultReferences
+          return resultReferences.map((project) => ({
+            ...project,
+            userId,
+            teamId,
+            service: 'azureDevOps' as const
+          }))
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
@@ -314,6 +317,33 @@ export const allAzureDevOpsProjects = (
     }
   )
 }
+
+/*
+  return new DataLoader<TeamUserKey, JiraGQLProject[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+          if (!auth) return []
+          const cloudNameLookup = await parent
+            .get('atlassianCloudNameLookup')
+            .load({teamId, userId})
+          const cloudIds = Object.keys(cloudNameLookup)
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
+          const projects = await manager.getAllProjects(cloudIds)
+          return projects.map((project) => ({
+            ...project,
+            id: JiraProjectId.join(project.cloudId, project.key),
+            userId,
+            teamId,
+            service: 'jira' as const
+          }))
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+    }
+*/
 
 export const azureDevOpsUserStory = (
   parent: RootDataLoader

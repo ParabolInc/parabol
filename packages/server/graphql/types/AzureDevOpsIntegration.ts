@@ -14,6 +14,7 @@ import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
 import AzureDevOpsSearchQuery from './AzureDevOpsSearchQuery'
 import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -199,7 +200,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     projects: {
       // Create a new object for ADO Projects (new schema object)
-      type: new GraphQLNonNull(AzureDevOpsWorkItemConnection),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsRemoteProject))),
       description:
         'A list of projects coming straight from the azure dev ops integration for a specific team member',
       resolve: ({teamId, userId}: AzureDevOpsAuth, _args: unknown, {authToken, dataLoader}) => {

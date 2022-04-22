@@ -100,10 +100,12 @@ export interface WorkItemRelations {
   url: string
 }
 
+export interface AccountProjects {
+  count: number
+  value: TeamProjectReference[]
+}
+
 export interface TeamProjectReference {
-  abbreviation: string
-  defaultTeamImageUrl: string
-  description: string
   id: string
   lastUpdateTime: string
   name: string
@@ -327,17 +329,25 @@ export default abstract class AzureDevOpsManager {
     let firstError: Error | undefined
     const meResult = await this.getMe()
     const {error: meError, azureDevOpsUser} = meResult
-    if (!meError || !azureDevOpsUser) return {error: meError, projects: null}
+    console.log('azureDevOpsUser ' + azureDevOpsUser?.id)
+    console.log('meError ' + !!meError)
+    if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
 
     const {id} = azureDevOpsUser
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-    if (!accessibleError) return {error: accessibleError, projects: null}
+    console.log('accessibleError ' + accessibleError?.message)
+    console.log('accessibleError ' + !!accessibleError)
+    console.log('orgs ' + accessibleOrgs.length)
+    if (!!accessibleError) return {error: accessibleError, projects: null}
 
     for (const resource of accessibleOrgs) {
+      console.log('acc name ' + resource.accountName)
+      console.log('call getprojects ' + (await this.getAccountProjects(resource.accountName)))
       const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
         resource.accountName
       )
-      if (!accountProjectsError && !firstError) {
+      console.log('projects ' + accountProjects[0]?.name)
+      if (!!accountProjectsError && !firstError) {
         firstError = accountProjectsError
         break
       } else {
@@ -350,16 +360,21 @@ export default abstract class AzureDevOpsManager {
   async getAccountProjects(accountName: string) {
     const teamProjectReferences = [] as TeamProjectReference[]
     let firstError: Error | undefined
-    const result = await this.get<TeamProjectReference[]>(
+    const result = await this.get<AccountProjects>(
       `https://dev.azure.com/${accountName}/_apis/projects?api-version=7.1-preview.4`
     )
+    console.log(result)
     if (result instanceof Error) {
       if (!firstError) {
         firstError = result
       }
     } else {
-      const resultReferences = result as TeamProjectReference[]
-      teamProjectReferences.push(...resultReferences)
+      const projects = result.value.map((project) => {
+        return {
+          ...project
+        }
+      })
+      teamProjectReferences.push(...projects)
     }
     return {error: firstError, accountProjects: teamProjectReferences}
   }
