@@ -45,9 +45,10 @@ To get started, simply follow these steps:
 - Fork the repository on GitHub.
 - Create a feature branch from where you want to base your work (this is usually the master branch).
 - Make commits of logical and atomic units.
-- Before committing, check for unnecessary whitespace with `git diff --check`.
 - Make sure your commit messages are in the proper format.
-- Use git pull strategy (`git pull --ff-only`) to keep the history as clean as possible during updating your local branch with changes from a tracked remote.
+- Keep the git history as clean as possible (no extra merge commits).
+  - Use `git pull --ff-only` or `git pull --rebase` if you are working on some feature branch with someone.
+  - Use `git fetch upstream && git merge upstream/master --ff-only` to update the feature branch with the base branch.
 - [Submit a pull request](https://github.com/ParabolInc/parabol/pull/new/master) (or PR for short) with a clear list of what you've done.
 - Follow the [Code review policy](./docs/codeReview.md):
   - A PR needs to be approved by a Reviewer initially and then by a [Maintainer](./README.md#parabol-maintainers).
