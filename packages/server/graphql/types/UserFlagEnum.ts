@@ -8,7 +8,8 @@ const UserFlagEnum = new GraphQLEnumType({
   values: {
     spotlight: {},
     standups: {},
-    gitlab: {}
+    gitlab: {},
+    msTeams: {}
   }
 })
 
