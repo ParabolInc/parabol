@@ -83,7 +83,6 @@ const PokerDiscussVoting = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
 
   useEffect(() => {
-    console.log(`Inside PokerDiscussVoting useEffect()`)
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
     lastSubmittedFieldRef.current = serviceFieldName
