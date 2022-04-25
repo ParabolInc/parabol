@@ -7,18 +7,25 @@
     "paths": {
       "server/*": [""],
       "parabol-client/*": ["client/*"],
-      "~/*": ["client/*"],
+      "~/*": ["client/*"]
     },
     "lib": ["esnext", "dom"],
     "types": ["node", "jest", "jest-extended"]
   },
-  "exclude": ["**/node_modules", "types/githubTypes.ts", "postgres/migrationTemplate.ts"],
+
+  "exclude": [
+    "**/node_modules",
+    "types/githubTypes.ts",
+    "postgres/migrationTemplate.ts",
+    "graphql/intranetSchema/sdl/resolverTypes.ts"
+  ],
   "files": [
     "types/webpackEnv.ts",
     "types/modules.d.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
+    "graphql/types/MSTeamsIntegration.ts",
     "billing/debug.ts",
     "hubspot/backfillHubSpot.ts",
     "server.ts",

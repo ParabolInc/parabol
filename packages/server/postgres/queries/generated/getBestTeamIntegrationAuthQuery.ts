@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getBestTeamIntegrationAuthQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams';
 
 /** 'GetBestTeamIntegrationAuthQuery' parameters type */
 export interface IGetBestTeamIntegrationAuthQueryParams {

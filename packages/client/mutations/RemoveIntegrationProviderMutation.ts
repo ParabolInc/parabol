@@ -7,6 +7,7 @@ graphql`
   fragment RemoveIntegrationProviderMutation_team on RemoveIntegrationProviderSuccess {
     teamMember {
       ...MattermostProviderRowTeamMember @relay(mask: false)
+      ...MSTeamsProviderRowTeamMember @relay(mask: false)
       ...GitLabProviderRowTeamMember @relay(mask: false)
     }
   }

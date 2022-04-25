@@ -5,7 +5,7 @@ export type IntegrationProviderAuthStrategyEnum = 'oauth1' | 'oauth2' | 'pat' | 
 
 export type IntegrationProviderScopeEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams';
 
 /** 'UpsertIntegrationProviderQuery' parameters type */
 export interface IUpsertIntegrationProviderQueryParams {

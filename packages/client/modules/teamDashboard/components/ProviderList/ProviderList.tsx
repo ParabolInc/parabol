@@ -5,10 +5,11 @@ import {createFragmentContainer} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {ProviderList_viewer} from '../../../../__generated__/ProviderList_viewer.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
-import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
+import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
+import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 
 interface Props {
@@ -24,7 +25,7 @@ const StyledWrapper = styled(SettingsWrapper)({
 const ProviderList = (props: Props) => {
   const {viewer, retry, teamId} = props
   const {
-    featureFlags: {gitlab: allowGitlab}
+    featureFlags: { gitlab: allowGitlab, msTeams: allowMSTeams }
   } = viewer
   return (
     <StyledWrapper>
@@ -34,6 +35,7 @@ const ProviderList = (props: Props) => {
       {allowGitlab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
+      {allowMSTeams && <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />}
     </StyledWrapper>
   )
 }
@@ -47,9 +49,11 @@ export default createFragmentContainer(ProviderList, {
       ...GitLabProviderRow_viewer
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
+      ...MSTeamsProviderRow_viewer
 
       featureFlags {
         gitlab
+        msTeams
       }
     }
   `
