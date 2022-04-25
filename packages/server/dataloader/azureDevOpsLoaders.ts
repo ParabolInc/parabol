@@ -8,6 +8,7 @@ import AzureDevOpsServerManager, {
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -57,6 +58,23 @@ export interface AzureDevOpsUserStoriesKey {
   teamId: string
   instanceId: string
   projectId: string
+}
+
+export interface AzureDevOpsDimensionFieldMapKey {
+  teamId: string
+  dimensionName: string
+  instanceId: string
+  projectKey: string
+}
+
+export interface AzureDevOpsDimensionFieldMapEntry {
+  teamId: string
+  dimensionName: string
+  fieldName: string
+  fieldId: string
+  instanceId: string
+  fieldType: string
+  projectKey: string
 }
 
 export interface AzureDevOpsWorkItem {
@@ -310,6 +328,27 @@ export const allAzureDevOpsProjects = (
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const azureDevOpsDimensionFieldMap = (
+  parent: RootDataLoader
+): DataLoader<AzureDevOpsDimensionFieldMapKey, AzureDevOpsDimensionFieldMapEntry | null, string> => {
+  return new DataLoader<AzureDevOpsDimensionFieldMapKey, AzureDevOpsDimensionFieldMapEntry | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, instanceId, projectKey}) => {
+          console.log(`calling getAzureDevOpsDimensionFieldMaps in azureDevOpsDimensionFieldMap with the following values:`)
+          console.log(`teamId:${teamId} | dimensionName:${dimensionName} | instanceId:${instanceId} | projectKey: ${projectKey}`)
+          return getAzureDevOpsDimensionFieldMaps(teamId, dimensionName, instanceId, projectKey)
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}`
     }
   )
 }

@@ -41,7 +41,9 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
 
 const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
-  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
+  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
+  [SprintPokerDefaults.AZUREDEVOPS_TASK_FIELD]: SprintPokerDefaults.AZUREDEVOPS_TAKS_FIELD_LABEL,
+  [SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD]: SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD_LABEL
 }
 
 const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
@@ -66,9 +68,9 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     stageRef
   )
 
-  //const {serviceField, task} = stage
+  const {serviceField} = stage
   //const workItemType = task?.integration?.type
-  //const {name: serviceFieldName} = serviceField
+  const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
@@ -83,7 +85,7 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   }
 
   // get this from the defaul field name for the type
-  const lookupServiceFieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  const lookupServiceFieldName = serviceFieldName
   const label =
     labelLookup[lookupServiceFieldName] || SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
   return (

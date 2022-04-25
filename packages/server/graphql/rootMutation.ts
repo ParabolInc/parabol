@@ -122,6 +122,7 @@ import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
+import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
 import updatePokerScope from './mutations/updatePokerScope'
@@ -286,6 +287,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
       endTeamPrompt,
-      createAzureDevOpsAuthorizeUrl
+      createAzureDevOpsAuthorizeUrl,
+      updateAzureDevOpsDimensionField
     } as any)
 })

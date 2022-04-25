@@ -53,12 +53,14 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         _args: unknown,
         {dataLoader}
       ) => {
+        console.log('Inside the serviceField resolver')
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
         const {integration} = task
         if (!integration) return NULL_FIELD
         const {service} = integration
+        console.log(`The service is ${service}`)
         const getDimensionName = async (meetingId: string) => {
           const meeting = await dataLoader.get('newMeetings').load(meetingId)
           const {templateRefId} = meeting as MeetingPoker
@@ -93,9 +95,22 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'azureDevOps') {
+          console.log('The service is azureDevOps')
+          const {instanceId, projectKey} = integration
+          const dimensionName = await getDimensionName(meetingId)
+          const azureDevOpsDimensionFieldMapEntry = await dataLoader
+            .get('azureDevOpsDimensionFieldMap')
+            .load({teamId, dimensionName, instanceId, projectKey })
+          if (azureDevOpsDimensionFieldMapEntry) {
+            console.log(`azureDevOpsDimensionFieldMapEntry was returned and wasn't null - ${JSON.stringify(azureDevOpsDimensionFieldMapEntry)}`)
+            return {
+              name: azureDevOpsDimensionFieldMapEntry.fieldName,
+              type: azureDevOpsDimensionFieldMapEntry.fieldType
+            }
+          }
+          console.log(`return default serviceField type for comment`)
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
-
         if (service === 'github') {
           const {nameWithOwner} = integration
           const dimensionName = await getDimensionName(meetingId)

@@ -45,7 +45,7 @@ interface IGetAzureDevOpsAuthByUserIdTeamIdQueryResult {
   instanceIds: string[]
 }
 
-interface AzureDevOpsAuth
+export interface AzureDevOpsAuth
   extends Omit<IGetAzureDevOpsAuthByUserIdTeamIdQueryResult, 'azureDevOpsSearchQueries'> {
   azureDevOpsSearchQueries: {
     id: string

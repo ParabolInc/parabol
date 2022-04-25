@@ -91,7 +91,9 @@ const PokerDiscussVoting = (props: Props) => {
   }, [finalScore])
 
   const submitScore = (value?: string) => {
+    console.log(`submitScore called with a value of ${value}`)
     const score = value ?? cardScore
+    console.log(`score: ${score}`)
     if (submitting || !isStale(score) || !isLocallyValidatedRef.current) {
       return
     }
@@ -108,11 +110,13 @@ const PokerDiscussVoting = (props: Props) => {
     }
 
     const onSuccess = () => {
+      console.log(`onSuccess called.  serviceFieldName:${serviceFieldName}`)
       // set field A to 1, change fields to B, then submit again. it should not say update
       lastSubmittedFieldRef.current = serviceFieldName
       forceUpdate()
     }
 
+    console.log(`Inside submitScore prior to calling setTaskEstimate.  score: ${score}`)
     setTaskEstimate(
       {taskId, dimensionName, meetingId, value: score},
       stageId,
@@ -141,9 +145,11 @@ const PokerDiscussVoting = (props: Props) => {
       <GroupedVotes>
         {rows.map(({scaleValue, scores, key}) => {
           const {label} = scaleValue
+          console.log(`Poker Voting row called. scaleValue:${scaleValue} | scores: ${scores} | key: ${key} | label: ${label}`)
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
 
           const setFinalScore = () => {
+            console.log(`setFinalScore called`)
             // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
             if (submitting || !label || finalScore === label) return
             setCardScore(label)
