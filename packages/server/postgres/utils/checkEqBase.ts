@@ -31,14 +31,15 @@ export function areEqual(a, b): boolean {
       if (result !== undefined) return result
 
       return areEqualObject(a, b)
-    default:
-      // ts check that all types are handled
-      const _: never = aType
-      return a === b
+    default: {
+      // ts check with never that all types are handled
+      const noop = (_: never) => a === b
+      return noop(aType)
+    }
   }
 }
 
-function areEqualDate(a, b): boolean | undefined {
+function areEqualDate(a: unknown, b: unknown): boolean | undefined {
   const isADate = a instanceof Date
   const isBDate = b instanceof Date
   if (isADate && isBDate) {
@@ -46,9 +47,10 @@ function areEqualDate(a, b): boolean | undefined {
   } else if (isADate || isBDate) {
     return false
   }
+  return undefined
 }
 
-function areEqualRegExp(a: RegExp, b: RegExp): boolean | undefined {
+function areEqualRegExp(a: unknown, b: unknown): boolean | undefined {
   const isARegExp = a instanceof RegExp
   const isBRegExp = b instanceof RegExp
   if (isARegExp && isBRegExp) {
@@ -61,9 +63,10 @@ function areEqualRegExp(a: RegExp, b: RegExp): boolean | undefined {
   } else if (isARegExp || isBRegExp) {
     return false
   }
+  return undefined
 }
 
-function areEqualArray(a, b): boolean | undefined {
+function areEqualArray(a: unknown, b: unknown): boolean | undefined {
   const isAArray = Array.isArray(a)
   const isBArray = Array.isArray(b)
   if (isAArray && isBArray) {
@@ -75,6 +78,7 @@ function areEqualArray(a, b): boolean | undefined {
   } else if (isAArray || isBArray) {
     return false
   }
+  return undefined
 }
 
 function areEqualObject(a: object, b: object): boolean {
@@ -84,8 +88,8 @@ function areEqualObject(a: object, b: object): boolean {
   if (aKeys.length !== bKeys.length) return false
   if (!aKeys.every((key) => bKeys.includes(key))) return false
 
-  for (let i = 0; i < aKeys.length; i++) {
-    if (!areEqual(a[aKeys[i]], b[aKeys[i]])) {
+  for (const key of aKeys) {
+    if (!areEqual(a[key], b[key])) {
       return false
     }
   }
