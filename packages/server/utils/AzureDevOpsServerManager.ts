@@ -170,14 +170,13 @@ class AzureDevOpsServerManager {
 
   private readonly provider: IntegrationProviderAzureDevOps
 
-
   constructor(
     auth: IGetTeamMemberIntegrationAuthQueryResult | null,
     provider: IntegrationProviderAzureDevOps
   ) {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
-    } 
+    }
     this.provider = provider
   }
 

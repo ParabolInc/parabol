@@ -353,6 +353,12 @@ export const azureDevOpsDimensionFieldMap = (
   )
 }
 
+const getProjectId = (url: URL) => {
+  const firstIndex = url.pathname.indexOf('/', 1)
+  const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
+  return url.pathname.substring(firstIndex + 1, seconedIndex)
+}
+
 export const azureDevOpsUserStory = (
   parent: RootDataLoader
 ): DataLoader<AzureDevOpsWorkItemKey, AzureDevOpsWorkItem | null, string> => {
@@ -389,7 +395,8 @@ export const azureDevOpsUserStory = (
             const azureDevOpsWorkItem: AzureDevOpsWorkItem = {
               id: returnedWorkItem.id.toString(),
               title: returnedWorkItem.fields['System.Title'],
-              teamProject: returnedWorkItem.fields['System.TeamProject'],
+              //teamProject: returnedWorkItem.fields['System.TeamProject'],
+              teamProject: getProjectId(new URL(returnedWorkItem.url)),
               url: returnedWorkItem.url,
               state: returnedWorkItem.fields['System.State'],
               type: returnedWorkItem.fields['System.WorkItemType'],
