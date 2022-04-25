@@ -11,5 +11,5 @@
     "types": ["node"]
   },
   "files": ["client.tsx"],
-  "exclude": ["serviceWorker", "**/node_modules", "types/graphql.ts"]
+  "exclude": ["serviceWorker", "**/node_modules"]
 }

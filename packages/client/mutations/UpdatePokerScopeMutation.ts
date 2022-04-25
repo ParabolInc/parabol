@@ -8,12 +8,14 @@ import {PALETTE} from '../styles/paletteV3'
 import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
+import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {
   UpdatePokerScopeMutation as TUpdatePokerScopeMutation,
   UpdatePokerScopeMutationResponse
 } from '../__generated__/UpdatePokerScopeMutation.graphql'
+import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
@@ -53,6 +55,20 @@ graphql`
       }
     }
     meeting {
+      gitlabSearchQuery {
+        queryString
+        selectedProjectsIds
+      }
+      githubSearchQuery {
+        queryString
+      }
+      jiraSearchQuery {
+        queryString
+        projectKeyFilters
+      }
+      parabolSearchQuery {
+        queryString
+      }
       phases {
         ... on EstimatePhase {
           stages {
@@ -80,16 +96,19 @@ const mutation = graphql`
   }
 `
 
-type Meeting = NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']>
+export type PokerScopeMeeting = NonNullable<
+  UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']
+>
 
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
+  selectedAll?: boolean
 }
 
 const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Handlers> = (
   atmosphere,
   variables,
-  {onError, onCompleted, contents}
+  {onError, onCompleted, contents, selectedAll}
 ) => {
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
@@ -99,7 +118,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       if (!viewer) return
       const viewerId = viewer?.getValue('id')
       const {meetingId, updates} = variables
-      const meeting = store.get<Meeting>(meetingId)
+      const meeting = store.get<PokerScopeMeeting>(meetingId)
       if (!meeting) return
       const teamId = (meeting.getValue('teamId') || '') as string
       const team = store.get(teamId)
@@ -248,7 +267,30 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         }
       })
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      const {updatePokerScope} = res
+      const {meeting} = updatePokerScope
+      if (!meeting) return
+      const {viewerId} = atmosphere
+      const {meetingId, updates} = variables
+      const update = updates[0]!
+      const {service, action} = update
+      const searchQuery = getSearchQueryFromMeeting(meeting, service)
+      if (!searchQuery) return
+      const [searchQueryString, searchQueryFilters] = searchQuery
+      SendClientSegmentEventMutation(atmosphere, 'Updated Poker Scope', {
+        viewerId,
+        meetingId,
+        service,
+        action,
+        searchQueryString,
+        searchQueryFilters,
+        selectedAll
+      })
+    },
     onError,
     cacheConfig: {
       metadata: {

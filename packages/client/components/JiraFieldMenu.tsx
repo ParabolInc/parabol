@@ -26,11 +26,13 @@ const JiraFieldMenu = (props: Props) => {
   const {cloudId, projectKey, possibleEstimationFieldNames} = integration
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
+  /* eslint-disable react-hooks/rules-of-hooks */
   const defaultActiveidx = useMemo(() => {
     if (possibleEstimationFieldNames.length === 0) return undefined
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
       return possibleEstimationFieldNames.length + 1
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) return possibleEstimationFieldNames.length + 2
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL)
+      return possibleEstimationFieldNames.length + 2
     const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, possibleEstimationFieldNames])

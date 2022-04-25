@@ -46,6 +46,7 @@ const MeetingMembersWithoutTasks = (props: Props) => {
   membersWithoutTasks.sort((a, b) =>
     a.user.preferredName.toLowerCase() < b.user.preferredName.toLowerCase() ? -1 : 1
   )
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const grid = useEmailItemGrid(membersWithoutTasks || [], 4)
   if (membersWithoutTasks.length === 0) return null
   return (

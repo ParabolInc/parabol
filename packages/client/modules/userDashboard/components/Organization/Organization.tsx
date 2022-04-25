@@ -1,22 +1,22 @@
-import {Organization_viewer} from '../../../../__generated__/Organization_viewer.graphql'
-import React, {lazy, useEffect} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React, {lazy, useEffect} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import Avatar from '../../../../components/Avatar/Avatar'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import EditableOrgName from '../../../../components/EditableOrgName'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import useModal from '../../../../hooks/useModal'
+import useRouter from '../../../../hooks/useRouter'
+import {PALETTE} from '../../../../styles/paletteV3'
+import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
+import {Organization_viewer} from '../../../../__generated__/Organization_viewer.graphql'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
-import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
-import {PALETTE} from '../../../../styles/paletteV3'
-import useModal from '../../../../hooks/useModal'
-import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -54,19 +54,19 @@ const ToggleNavBlock = styled('div')({
   margin: 0
 })
 
-const OrgAvatarInput = lazy(() =>
-  import(/* webpackChunkName: 'OrgAvatarInput' */ '../../../../components/OrgAvatarInput')
+const OrgAvatarInput = lazy(
+  () => import(/* webpackChunkName: 'OrgAvatarInput' */ '../../../../components/OrgAvatarInput')
 )
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   viewer: Organization_viewer
 }
 
 const Organization = (props: Props) => {
   const {
-    history,
     viewer: {organization}
   } = props
+  const {history} = useRouter()
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
     if (!organization) {
@@ -121,7 +121,7 @@ const Organization = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withRouter(Organization), {
+export default createFragmentContainer(Organization, {
   viewer: graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {

@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from '../../../../components/FlatButton'
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'
 import GitHubProviderLogo from '../../../../components/GitHubProviderLogo'
@@ -12,16 +11,15 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {GitHubProviderRow_viewer} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
@@ -35,7 +33,7 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props {
   teamId: string
   viewer: GitHubProviderRow_viewer
 }
@@ -75,7 +73,9 @@ const ProviderName = styled('div')({
 })
 
 const GitHubProviderRow = (props: Props) => {
-  const {atmosphere, viewer, teamId, submitting, submitMutation, onError, onCompleted} = props
+  const {viewer, teamId} = props
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
@@ -124,19 +124,16 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(withRouter(GitHubProviderRow))),
-  {
-    viewer: graphql`
-      fragment GitHubProviderRow_viewer on User {
-        teamMember(teamId: $teamId) {
-          integrations {
-            github {
-              ...GitHubProviderRowGitHubIntegration @relay(mask: false)
-            }
+export default createFragmentContainer(GitHubProviderRow, {
+  viewer: graphql`
+    fragment GitHubProviderRow_viewer on User {
+      teamMember(teamId: $teamId) {
+        integrations {
+          github {
+            ...GitHubProviderRowGitHubIntegration @relay(mask: false)
           }
         }
       }
-    `
-  }
-)
+    }
+  `
+})
