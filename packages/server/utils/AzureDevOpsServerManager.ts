@@ -177,7 +177,7 @@ class AzureDevOpsServerManager {
   ) {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
-    } 
+    }
     this.provider = provider
   }
 

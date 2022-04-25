@@ -8,7 +8,7 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsRemoteProject',
   description: 'A project fetched from Azure DevOps in real time',
   interfaces: () => [RepoIntegration],
-  isTypeOf: ({service}) => service === 'azuredevops',
+  isTypeOf: ({service}) => service === 'azureDevOps',
   fields: () => ({
     ...repoIntegrationFields(),
     id: {
