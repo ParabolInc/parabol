@@ -100,6 +100,7 @@ const ScopePhaseArea = (props: Props) => {
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [activeIdx, setActiveIdx] = useState(() => {
     const favoriteService = window.localStorage.getItem('favoriteService') || 'Jira'
     const idx = tabs.findIndex((tab) => tab.label === favoriteService)
