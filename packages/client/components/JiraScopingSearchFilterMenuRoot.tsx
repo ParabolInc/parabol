@@ -53,8 +53,8 @@ const JiraScopingSearchFilterMenuRoot = (props: Props) => {
     }
   )
 
-  const projects = data?.viewer.teamMember?.integrations.atlassian?.projects ?? []
-  const jiraSearchQuery = data?.viewer.meeting?.jiraSearchQuery ?? null
+  const projects = data.viewer.teamMember?.integrations.atlassian?.projects ?? []
+  const jiraSearchQuery = data.viewer.meeting?.jiraSearchQuery ?? null
 
   return (
     <JiraScopingSearchFilterMenu

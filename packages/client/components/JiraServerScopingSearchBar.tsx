@@ -41,7 +41,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
     meetingRef
   )
 
-  const {id, viewerMeetingMember, jiraServerSearchQuery} = meeting
+  const {id: meetingId, viewerMeetingMember, jiraServerSearchQuery} = meeting
   const {isJQL, queryString, projectKeyFilters} = jiraServerSearchQuery
 
   const projects = viewerMeetingMember?.teamMember.integrations.jiraServer?.projects
@@ -60,7 +60,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
       <ScopingSearchInput
         placeholder={placeholder}
         queryString={queryString}
-        meetingId={id}
+        meetingId={meetingId}
         linkedRecordName={'jiraServerSearchQuery'}
       />
       <JiraServerScopingSearchFilterToggle meetingRef={meeting} />
