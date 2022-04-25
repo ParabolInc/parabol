@@ -17,7 +17,7 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
     },
     service: {
       type: new GraphQLNonNull(IntegrationProviderServiceEnum),
-      resolve: () => 'azuredevops'
+      resolve: () => 'azureDevOps'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -33,16 +33,13 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
     instanceId: {
       type: new GraphQLNonNull(GraphQLID),
       description:
-        'The instance ID that the project lives on. Does not exist on the Azure DevOps object!'
+        'The instance ID that the project lives on'
     },
     key: {
       type: new GraphQLNonNull(GraphQLString)
     },
     name: {
       type: new GraphQLNonNull(GraphQLString)
-    },
-    simplified: {
-      type: new GraphQLNonNull(GraphQLBoolean)
     },
     style: {
       type: new GraphQLNonNull(GraphQLString)
