@@ -1,14 +1,14 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
+import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import AzureDevOpsServerManager, {
   Resource,
   TeamProjectReference,
   WorkItem
 } from '../utils/AzureDevOpsServerManager'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -121,7 +121,6 @@ export const freshAzureDevOpsAuth = (
           if (!refreshToken) {
             return null
           }
-
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
@@ -130,7 +129,6 @@ export const freshAzureDevOpsAuth = (
               return null
             }
             const provider = await parent.get('integrationProviders').loadNonNull(providerId)
-
             const manager = new AzureDevOpsServerManager(
               azureDevOpsAuthToRefresh,
               provider as IntegrationProviderAzureDevOps
@@ -140,7 +138,7 @@ export const freshAzureDevOpsAuth = (
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
-            const updatedRefreshToken =  newRefreshToken || refreshToken
+            const updatedRefreshToken = newRefreshToken || refreshToken
             const newAzureDevOpsAuth = {
               ...azureDevOpsAuthToRefresh,
               accessToken,
@@ -172,18 +170,14 @@ export const azureDevOpsAllWorkItems = (
           const auth = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-
           if (!auth) {
             return undefined
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const restResult = await manager.getAllUserWorkItems(null, false)
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
@@ -213,25 +207,20 @@ export const azureDevUserInfo = (
           const auth = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-
           if (!auth) {
             return undefined
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const restResult = await manager.getMe()
           const {error, azureDevOpsUser} = restResult
           if (error !== undefined || azureDevOpsUser === undefined) {
             console.log(error)
             return undefined
           }
-
           return {
             ...azureDevOpsUser
           }
@@ -256,22 +245,17 @@ export const allAzureDevOpsAccessibleOrgs = (
           const auth = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-
           if (!auth) {
             return []
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const userInfo = await parent.get('azureDevUserInfo').load({teamId, userId})
           if (!userInfo) return []
           const {id} = userInfo
-
           const results = await manager.getAccessibleOrgs(id)
           const {error, accessibleOrgs} = results
           // handle error if defined
@@ -301,22 +285,17 @@ export const allAzureDevOpsProjects = (
           const auth = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-
           if (!auth) {
             return []
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           if (!provider) {
             return []
           }
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const {error, projects} = await manager.getAllUserProjects()
           if (!error) console.log(error)
           if (projects !== null) resultReferences.push(...projects)
@@ -334,13 +313,25 @@ export const allAzureDevOpsProjects = (
 
 export const azureDevOpsDimensionFieldMap = (
   parent: RootDataLoader
-): DataLoader<AzureDevOpsDimensionFieldMapKey, AzureDevOpsDimensionFieldMapEntry | null, string> => {
-  return new DataLoader<AzureDevOpsDimensionFieldMapKey, AzureDevOpsDimensionFieldMapEntry | null, string>(
+): DataLoader<
+  AzureDevOpsDimensionFieldMapKey,
+  AzureDevOpsDimensionFieldMapEntry | null,
+  string
+> => {
+  return new DataLoader<
+    AzureDevOpsDimensionFieldMapKey,
+    AzureDevOpsDimensionFieldMapEntry | null,
+    string
+  >(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, dimensionName, instanceId, projectKey}) => {
-          console.log(`calling getAzureDevOpsDimensionFieldMaps in azureDevOpsDimensionFieldMap with the following values:`)
-          console.log(`teamId:${teamId} | dimensionName:${dimensionName} | instanceId:${instanceId} | projectKey: ${projectKey}`)
+          console.log(
+            `calling getAzureDevOpsDimensionFieldMaps in azureDevOpsDimensionFieldMap with the following values:`
+          )
+          console.log(
+            `teamId:${teamId} | dimensionName:${dimensionName} | instanceId:${instanceId} | projectKey: ${projectKey}`
+          )
           return getAzureDevOpsDimensionFieldMaps(teamId, dimensionName, instanceId, projectKey)
         })
       )
@@ -369,13 +360,10 @@ export const azureDevOpsUserStory = (
           const auth = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-
           if (!auth) {
             return null
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
@@ -425,18 +413,14 @@ export const azureDevOpsUserStories = (
           const auth = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-
           if (!auth) {
             return []
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const result = await manager.getUserStories(instanceId, null, false)
           const {error, workItems} = result
           const workItemIds = workItems.map((workItem) => workItem.id)
@@ -450,7 +434,7 @@ export const azureDevOpsUserStories = (
             (returnedWorkItem) => ({
               id: returnedWorkItem.id.toString(),
               title: returnedWorkItem.fields['System.Title'],
-              teamProject: returnedWorkItem.fields['System.TeamProject'],
+              teamProject: getProjectId(new URL(returnedWorkItem.url)),
               url: returnedWorkItem.url,
               state: returnedWorkItem.fields['System.State'],
               type: returnedWorkItem.fields['System.WorkItemType'],
