@@ -94,17 +94,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('updatePokerScope')
-      const meeting = payload.getLinkedRecord('meeting')
-      const newStages = payload.getLinkedRecords('newStages')
-      if (!meeting || !newStages) return
-      const phases = meeting.getLinkedRecords('phases')
-      const estimatePhase = phases.find((phase) => phase.getType() === 'EstimatePhase')!
-      const stages = estimatePhase.getLinkedRecords('stages')
-      const nextStages = [...stages, ...newStages]
-      estimatePhase.setLinkedRecords(nextStages, 'stages')
-    },
     optimisticUpdater: (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!viewer) return
@@ -197,9 +186,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {
             const bodyHTML = stateToHTML(contentState)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
-              serviceTaskId
-            )
+            const {issueNumber, nameWithOwner, repoName, repoOwner} =
+              GitHubIssueId.split(serviceTaskId)
             const repository = createProxyRecord(store, '_xGitHubRepository', {
               nameWithOwner,
               name: repoName,

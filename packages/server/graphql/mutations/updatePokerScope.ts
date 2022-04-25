@@ -140,7 +140,7 @@ const updatePokerScope = {
       meetingId
     )
 
-    let newStageIds = [] as string[]
+    const newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update
       const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
@@ -166,10 +166,15 @@ const updatePokerScope = {
       // MUTATIVE
       newDiscussions.push(...discussions)
       stages.push(...newStages)
-      newStageIds = newStages.map(({id}) => id)
+      const newIds = newStages.map(({id}) => id)
+      newStageIds.push(...newIds)
     })
 
-    if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
+    const thresh =
+      updates[0]?.service === 'gitlab'
+        ? Threshold.MAX_GITLAB_POKER_STORIES // GitLab query complexity exceeds limit with MAX_POKER_STORIES
+        : Threshold.MAX_POKER_STORIES
+    if (stages.length > thresh * dimensions.length) {
       return {error: {message: 'Story limit reached'}}
     }
     await r

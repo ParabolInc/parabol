@@ -6,12 +6,12 @@ import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {GitLabScopingSelectAllIssues_issues$key} from '../__generated__/GitLabScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
-import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 
 const Item = styled('div')({
   display: 'flex',
@@ -56,8 +56,12 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const serviceTaskIds = issues.map((issue) => GitLabIssueId.join(providerId, issue.id))
-  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
-  const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
+  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(
+    serviceTaskIds,
+    usedServiceTaskIds,
+    Threshold.MAX_GITLAB_POKER_STORIES
+  )
+  const availableCountToAdd = Threshold.MAX_GITLAB_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
     submitMutation()
@@ -86,7 +90,12 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
   if (issues.length < 2) return null
-  const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
+  const title = getSelectAllTitle(
+    issues.length,
+    usedServiceTaskIds.size,
+    'issue',
+    Threshold.MAX_GITLAB_POKER_STORIES
+  )
 
   return (
     <Item onClick={onClick}>
