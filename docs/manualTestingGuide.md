@@ -40,9 +40,9 @@ To test the new feature or update, load your web browser and goto localhost:3000
 **_TIP: Trace the respective branch where the changes on the issue are pushed by the developer. Pull it, test and comment if expected behavior is there._**
 
 ### 03) Release Testing
-Release tests are completed through the staging environment and are done weekly (Tues/Weds depending on your timezone). The purpose of these is to identify issues that can block the release. Use the [release test guide](https://github.com/ParabolInc/parabol/issues/6155#issue-1157867836) as a template for testing. Copy the release test checklist directly into the release test thread as a comment and check each box as they are completed. Comment on any unexpected or unwanted behaviors. Running live demos of the current release from production will help you to identify any unexpected behavior(s) that may show up in the release tests.
+Release tests are completed through the staging environment and are done weekly (Tues/Weds depending on your timezone). The purpose of these is to identify issues that can block the release. For each release one developer(release-owner) is responsible and will create a release test issue. Testers will be notified when the staging environment is ready for testing. Use the [release test guide](https://github.com/ParabolInc/parabol/issues/6155#issue-1157867836) as a template for testing. Copy the release test checklist directly into the release test thread as a comment and check each box as they are completed. Comment on any unexpected or unwanted behaviors. Running live demos of the current release from production will help you to identify any unexpected behavior(s) that may show up in the release tests.
 
-* Release Blocking features/issues: Unexpected behaviors in the current release that are not in the production environment.
+* Release Blocking features/issues: Decided by the release owner.
 
 * Release Non-Blocking features/issues: Unexpected behaviors in the current release and the production environment.
 
