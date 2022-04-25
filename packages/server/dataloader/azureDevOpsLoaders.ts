@@ -220,25 +220,18 @@ export const allAzureDevOpsAccessibleOrgs = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
-
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const userInfo = await parent.get('azureDevUserInfo').load({teamId, userId})
           if (!userInfo) return []
           const {id} = userInfo
-
           const results = await manager.getAccessibleOrgs(id)
           const {error, accessibleOrgs} = results
           // handle error if defined
@@ -265,25 +258,18 @@ export const allAzureDevOpsProjects = (
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const resultReferences = [] as TeamProjectReference[]
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
-
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           if (!provider) {
             return []
           }
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const {error, projects} = await manager.getAllUserProjects()
           if (!error) console.log(error)
           if (projects !== null) resultReferences.push(...projects)
@@ -306,16 +292,11 @@ export const azureDevOpsUserStory = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, instanceId, workItemId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
-
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return null
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
@@ -361,21 +342,15 @@ export const azureDevOpsUserStories = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, instanceId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
-
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
           }
-
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-
           const result = await manager.getUserStories(instanceId, null, false)
           const {error, workItems} = result
           const workItemIds = workItems.map((workItem) => workItem.id)
