@@ -7,7 +7,7 @@ export async function up() {
   await client.query(`
   CREATE TABLE IF NOT EXISTS "GitLabDimensionFieldMap" (
     "id" SERIAL,
-    "teamId" VARCHAR(120) NOT NULL,
+    "teamId" VARCHAR(100) NOT NULL,
     "dimensionName" VARCHAR(120) NOT NULL,
     "gid" VARCHAR(140) NOT NULL,
     "labelTemplate" VARCHAR(100) NOT NULL,
