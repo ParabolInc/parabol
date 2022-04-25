@@ -81,11 +81,9 @@ const TaskIntegrationLink = (props: Props) => {
   } else if (integration.__typename === '_xGitLabIssue') {
     const {webPath, iid, webUrl} = integration
     const {fullPath} = parseWebPath(webPath)
-    const href =
-      fullPath === 'ParabolInc/ParabolDemo' ? 'https://github.com/ParabolInc/parabol' : webUrl
     return (
       <StyledLink
-        href={href}
+        href={webUrl}
         rel='noopener noreferrer'
         target='_blank'
         title={`GitLab Issue #${iid} on ${fullPath}`}
