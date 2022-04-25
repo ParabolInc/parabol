@@ -3,10 +3,10 @@ import TeamMemberIntegrationsId from '../../../client/shared/gqlIds/TeamMemberIn
 import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
-import JiraServerIntegration from './JiraServerIntegration'
-import GitHubIntegration from './GitHubIntegration'
 import AzureDevOpsIntegration from './AzureDevOpsIntegration'
+import GitHubIntegration from './GitHubIntegration'
 import GitLabIntegration from './GitLabIntegration'
+import JiraServerIntegration from './JiraServerIntegration'
 import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
 
@@ -63,12 +63,6 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
       type: new GraphQLNonNull(AzureDevOpsIntegration),
       description: 'All things associated with a A integration for a team member',
       resolve: (source) => source
-      // resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
-      //   //if (!isTeamMember(authToken, teamId)) return null
-      //   console.log(`authToken: ${authToken}`)
-      //   console.log(`teamId: ${teamId}`)
-      //   return dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
-      // }
     }
   })
 })
