@@ -1337,11 +1337,6 @@ type TeamMemberIntegrations {
 
   """All things associated with a slack integration for a team member"""
   slack: SlackIntegration
-
-  """
-  All things associated with a Microsoft Teams integration for a team member
-  """
-  msTeams: MSTeamsIntegration!
 }
 
 """The atlassian auth + integration helpers for a specific team member"""
@@ -1847,15 +1842,6 @@ enum SlackNotificationEventTypeEnum {
 
   """notification that concerns a single member on the team"""
   member
-}
-
-"""Integration Auth and shared providers available to the team member"""
-type MSTeamsIntegration {
-  """The OAuth2 Authorization for this team member"""
-  auth: TeamMemberIntegrationAuthWebhook
-
-  """The non-global providers shared with the team or organization"""
-  sharedProviders: [IntegrationProviderWebhook!]!
 }
 
 """All the user details for a specific meeting"""
@@ -2578,9 +2564,6 @@ type UserFeatureFlags {
 
   """true if gitlab is allowed"""
   gitlab: Boolean!
-
-  """true if msTeams is allowed"""
-  msTeams: Boolean!
 }
 
 """A monthly billing invoice for an organization"""

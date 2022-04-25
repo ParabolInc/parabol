@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/removeTeamMemberIntegrationAuthQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
 
 /** 'RemoveTeamMemberIntegrationAuthQuery' parameters type */
 export interface IRemoveTeamMemberIntegrationAuthQueryParams {

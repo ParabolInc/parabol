@@ -19,11 +19,6 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if gitlab is allowed',
       resolve: ({gitlab}) => !!gitlab
-    },
-    msTeams: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if msTeams is allowed',
-      resolve: ({msTeams}) => !!msTeams
     }
   })
 })
