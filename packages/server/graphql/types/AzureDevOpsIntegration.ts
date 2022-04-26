@@ -20,40 +20,11 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
-type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
-
 type WorkItemArgs = {
   first: number
   after?: string
   queryString: string | null
   isWIQL: boolean
-}
-
-interface IGetAzureDevOpsAuthByUserIdTeamIdQueryResult {
-  createdAt: Date
-  updatedAt: Date
-  teamId: string
-  userId: string
-  providerId: number
-  service: IntegrationProviderServiceEnum
-  isActive: boolean
-  accessToken: string | null
-  refreshToken: string | null
-  scopes: string | null
-  accessTokenSecret: string | null
-  // Note: instanceIds does not belong here, in fact this type as a whole should be removed eventually
-  instanceIds: string[]
-}
-
-export interface AzureDevOpsAuth
-  extends Omit<IGetAzureDevOpsAuthByUserIdTeamIdQueryResult, 'azureDevOpsSearchQueries'> {
-  azureDevOpsSearchQueries: {
-    id: string
-    queryString: string | null
-    projectKeyFilters?: string[]
-    lastUsedAt: Date
-    isWIQL: boolean
-  }[]
 }
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -125,7 +96,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async (
-        {teamId, userId}: AzureDevOpsAuth,
+        {teamId, userId},
         args: any,
         {authToken, dataLoader}: GQLContext
       ) => {

@@ -43,7 +43,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                   edges {
                     cursor
                     node {
-                      title
                       id
                       title
                       url
@@ -87,6 +86,21 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
+  const getProjectId = (url: URL) => {
+    const firstIndex = url.pathname.indexOf('/', 1)
+    const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
+    return url.pathname.substring(firstIndex + 1, seconedIndex)
+  }
+
+  const getInstanceId = (url: URL) => {
+    const firstIndex = url.pathname.indexOf('/', 1)
+    return url.host + '/' + url.pathname.substring(1, firstIndex)
+  }
+
+  const getServiceTaskId = (url: URL) => {
+    return getInstanceId(url) + ':' + getProjectId(url)
+  }
+
   if (!edges) {
     return <MockScopingList />
   }
@@ -101,13 +115,13 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   return (
     <ResultScroller>
       {edges.map(({node}) => {
-        console.log(`INside map. usedServiceTaskIds: ${JSON.stringify(usedServiceTaskIds)} `)
         return (
           <ScopingSearchResultItem
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
-            serviceTaskId={'dev.azure.com/jacobsrj:2649cbcf-37c1-484d-a290-1409d9d5b1cf:'+ node.id}
+            // serviceTaskId={'dev.azure.com/wdfox3:3143c869-ae4a-48d2-93e6-5503b338c6bc:' + node.id}
+            serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
             meetingId={meetingId}
             persistQuery={() => {
               return null

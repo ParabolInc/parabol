@@ -7,7 +7,6 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class AzureDevOpsClientManager {
-  fetch = window.fetch.bind(window)
   static generateVerifier(): string {
     const array = new Uint32Array(28)
     window.crypto.getRandomValues(array)

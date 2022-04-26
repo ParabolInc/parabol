@@ -9,6 +9,7 @@ import {
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds';
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery';
 import {isError} from 'util';
+import {ExternalLinks} from '~/types/constEnums';
 
 export interface AzureDevOpsUser {
   // self: string
@@ -143,6 +144,18 @@ export interface AzureDevOpsError {
   message: string
 }
 
+interface WorkItemAddCommentResponse {
+  workItemId: number
+  id: number
+  version: number
+  text: string
+  createdBy: object
+  createdDate: string
+  modifiedBy: object
+  modifiedDate: string
+  url: string
+}
+
 const MAX_REQUEST_TIME = 5000
 
 class AzureDevOpsServerManager {
@@ -168,16 +181,19 @@ class AzureDevOpsServerManager {
     })
   }
 
-  private readonly provider: IntegrationProviderAzureDevOps
+  private readonly provider: IntegrationProviderAzureDevOps | undefined
 
   constructor(
     auth: IGetTeamMemberIntegrationAuthQueryResult | null,
-    provider: IntegrationProviderAzureDevOps
+    provider: IntegrationProviderAzureDevOps | null
   ) {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
     }
-    this.provider = provider
+    // this.provider = provider
+    if (!!provider) {
+      this.provider = provider
+    }
   }
 
   setToken(token: string) {
@@ -432,6 +448,10 @@ class AzureDevOpsServerManager {
   private async fetchToken(
     params: OAuth2PkceAuthorizationParams | OAuth2PkceRefreshAuthorizationParams
   ) {
+    if (!this.provider) {
+      return new Error('No Azure DevOps provider found')
+    }
+
     const body = {
       ...params,
       client_id: this.provider.clientId
@@ -449,6 +469,34 @@ class AzureDevOpsServerManager {
       this.accessToken = oAuthRes.accessToken
     }
     return oAuthRes
+  }
+
+  async addScoreComment(
+    instanceId: string,
+    dimensionName: string,
+    finalScore: string,
+    meetingName: string,
+    discussionURL: string,
+    remoteIssueId: string,
+    projectKey: string
+  ) {
+    const comment = `*${dimensionName}: ${finalScore}*
+    \n[See the discussion | ${discussionURL}] in ${meetingName}
+
+    \n_Powered by [Parabol | ${ExternalLinks.GETTING_STARTED_SPRINT_POKER}]_`
+
+    const res = await this.post<WorkItemAddCommentResponse>(
+      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${remoteIssueId}/comments?api-version=7.1-preview.3`,
+      {
+        text: comment
+      }
+    )
+
+    if (res instanceof Error) {
+      return res
+    }
+
+    return res
   }
 
 }

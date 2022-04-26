@@ -80,12 +80,12 @@ export type PokerEstimateHeaderCardContentProps = {
 }
 
 const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentProps) => {
+  const {cardTitle, descriptionHTML, url, linkTitle, linkText} = props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {cardTitle, descriptionHTML, url, linkTitle, linkText} = props
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
