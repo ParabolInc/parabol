@@ -6,13 +6,22 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {AzureDevOpsScopingSearchFilterMenu_meeting} from '../__generated__/AzureDevOpsScopingSearchFilterMenu_meeting.graphql'
 import Checkbox from './Checkbox'
+import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 
+const StyledMenuItemLabel = styled(MenuItemLabel)<{isDisabled: boolean}>(({isDisabled}) => ({
+  opacity: isDisabled ? 0.5 : undefined
+}))
+
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
   marginRight: 8
+})
+
+const FilterLabel = styled(DropdownMenuLabel)({
+  borderBottom: 0
 })
 
 const UseWIQLLabel = styled('span')({
@@ -24,11 +33,16 @@ interface Props {
   meeting: AzureDevOpsScopingSearchFilterMenu_meeting
 }
 
+type AzureDevOpsSearchQuery = NonNullable<
+  NonNullable<AzureDevOpsScopingSearchFilterMenu_meeting>['azureDevOpsSearchQuery']
+>
+
 const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   const {meeting, menuProps} = props
   const {portalStatus, isDropdown} = menuProps
-  const {azureDevOpsSearchQuery, id: meetingId} = meeting
-  const {isWIQL} = azureDevOpsSearchQuery
+  const {viewerMeetingMember, azureDevOpsSearchQuery, id: meetingId} = meeting
+  const {isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
+  const projects = viewerMeetingMember?.teamMember?.integrations.azureDevOps?.projects ?? []
   const atmosphere = useAtmosphere()
   const toggleWIQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -38,6 +52,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
       // this might bork if the checkbox is ticked before the full query loads
       if (!azureDevOpsSearchQuery) return
       azureDevOpsSearchQuery.setValue(!isWIQL, 'isWIQL')
+      azureDevOpsSearchQuery.setValue([], 'projectKeyFilters')
     })
   }
   return (
@@ -57,6 +72,43 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
         }
         onClick={toggleWIQL}
       />
+
+      {projects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
+      {projects.map((project) => {
+        // ProjectKeyFilters is actually all the projects from the user
+        const {id: globalProjectKey, name} = project
+        const toggleProjectKeyFilter = () => {
+          commitLocalUpdate(atmosphere, (store) => {
+            const meeting = store.get(meetingId)!
+            const azureDevOpsSearchQuery =
+              meeting.getLinkedRecord<AzureDevOpsSearchQuery>('azureDevOpsSearchQuery')!
+            const projectKeyFiltersProxy = azureDevOpsSearchQuery
+              .getValue('projectKeyFilters')!
+              .slice()
+            const keyIdx = projectKeyFiltersProxy.indexOf(name)
+            keyIdx !== -1
+              ? projectKeyFiltersProxy.splice(keyIdx, 1)
+              : projectKeyFiltersProxy.push(name)
+            azureDevOpsSearchQuery.setValue(projectKeyFiltersProxy, 'projectKeyFilters')
+          })
+        }
+        return (
+          <MenuItem
+            key={globalProjectKey}
+            label={
+              <StyledMenuItemLabel isDisabled={isWIQL}>
+                <StyledCheckBox
+                  active={projectKeyFilters?.includes(name) ?? null}
+                  disabled={isWIQL}
+                />
+                {name}
+              </StyledMenuItemLabel>
+            }
+            onClick={toggleProjectKeyFilter}
+            isDisabled={isWIQL}
+          />
+        )
+      })}
     </Menu>
   )
 }
@@ -66,8 +118,20 @@ export default createFragmentContainer(AzureDevOpsScopingSearchFilterMenu, {
     fragment AzureDevOpsScopingSearchFilterMenu_meeting on PokerMeeting {
       id
       azureDevOpsSearchQuery {
-        queryString
+        projectKeyFilters
         isWIQL
+      }
+      viewerMeetingMember {
+        teamMember {
+          integrations {
+            azureDevOps {
+              projects {
+                id
+                name
+              }
+            }
+          }
+        }
       }
     }
   `

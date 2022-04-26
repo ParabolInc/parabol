@@ -29,14 +29,19 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         $teamId: ID!
         $first: Int
         $queryString: String
+        $projectKeyFilters: [String!]!
         $isWIQL: Boolean!
       ) {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
-                userStories(first: $first, queryString: $queryString, isWIQL: $isWIQL)
-                  @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
+                userStories(
+                  first: $first
+                  queryString: $queryString
+                  projectKeyFilters: $projectKeyFilters
+                  isWIQL: $isWIQL
+                ) @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
                   error {
                     message
                   }
@@ -101,13 +106,12 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   return (
     <ResultScroller>
       {edges.map(({node}) => {
-        console.log(`INside map. usedServiceTaskIds: ${JSON.stringify(usedServiceTaskIds)} `)
         return (
           <ScopingSearchResultItem
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
-            serviceTaskId={'dev.azure.com/jacobsrj:2649cbcf-37c1-484d-a290-1409d9d5b1cf:'+ node.id}
+            serviceTaskId={'dev.azure.com/jacobsrj:2649cbcf-37c1-484d-a290-1409d9d5b1cf:' + node.id}
             meetingId={meetingId}
             persistQuery={() => {
               return null

@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
@@ -14,6 +21,10 @@ const AzureDevOpsSearchQuery = new GraphQLObjectType<any, GQLContext>({
     queryString: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The query string, either simple or WIQL depending on the isWIQL flag'
+    },
+    projectKeyFilters: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+      description: 'A list of projects to restrict the search to, if null will search all'
     },
     isWIQL: {
       type: new GraphQLNonNull(GraphQLBoolean),

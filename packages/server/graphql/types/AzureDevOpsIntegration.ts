@@ -27,6 +27,7 @@ type WorkItemArgs = {
   first: number
   after?: string
   queryString: string | null
+  projectKeyFilters: string[] | null
   isWIQL: boolean
 }
 
@@ -120,9 +121,13 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLString,
           description: 'A string of text to search for, or WIQL if isWIQL is true'
         },
+        projectKeyFilters: {
+          type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+          description: 'A list of projects to restrict the search to, if null will search all'
+        },
         isWIQL: {
           type: new GraphQLNonNull(GraphQLBoolean),
-          description: 'true if the queryString is isWIQL, else false'
+          description: 'true if the queryString is WIQL, else false'
         }
       },
       resolve: async (
@@ -130,7 +135,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         args: any,
         {authToken, dataLoader}: GQLContext
       ) => {
-        const {first, queryString, isWIQL} = args as WorkItemArgs
+        const {first, queryString, projectKeyFilters, isWIQL} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
           const err = new Error('Cannot access another team members user stories')
@@ -170,7 +175,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           return null
         }
         // const manager = new AzureDevOpsServerManager(accessToken)
-        const restResult = await manager.getAllUserWorkItems(queryString, isWIQL)
+        const restResult = await manager.getAllUserWorkItems(queryString, projectKeyFilters, isWIQL)
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {
           console.log(error)

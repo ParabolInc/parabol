@@ -248,20 +248,42 @@ export default abstract class AzureDevOpsManager {
     return {error: firstError, workItems: workItemReferences}
   }
 
-  async getUserStories(instanceId: string, queryString: string | null, isWIQL: boolean) {
-    if (isWIQL) {
-      const customQueryString = queryString
-        ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString}`
-        : "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+  async getUserStories(
+    instanceId: string,
+    queryString: string | null,
+    projectKeyFilters: string[] | null,
+    isWIQL: boolean
+  ) {
+    let customQueryString = ''
 
-      return await this.executeWiqlQuery(instanceId, customQueryString)
+    let projectFilter = ''
+    if (projectKeyFilters && projectKeyFilters.length > 0) {
+      let firstLoop = true
+      for (const projectKey of projectKeyFilters) {
+        if (firstLoop) {
+          firstLoop = false
+          projectFilter = `AND ( [System.TeamProject] = '${projectKey}'`
+        } else projectFilter += ` OR [System.TeamProject] = '${projectKey}'`
+      }
+      projectFilter += ` )`
     }
-    const textFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
-    const customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+
+    if (isWIQL)
+      customQueryString = queryString
+        ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString} ${projectFilter}`
+        : `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    else {
+      const queryFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
+      customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' ${queryFilter} ${projectFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    }
     return await this.executeWiqlQuery(instanceId, customQueryString)
   }
 
-  async getAllUserWorkItems(queryString: string | null, isWIQL: boolean) {
+  async getAllUserWorkItems(
+    queryString: string | null,
+    projectKeyFilters: string[] | null,
+    isWIQL: boolean
+  ) {
     const allWorkItems = [] as WorkItem[]
     let firstError: Error | undefined
 
@@ -280,6 +302,7 @@ export default abstract class AzureDevOpsManager {
       const {error: workItemsError, workItems} = await this.getUserStories(
         instanceId,
         queryString,
+        projectKeyFilters,
         isWIQL
       )
       if (!!workItemsError) {
@@ -329,24 +352,16 @@ export default abstract class AzureDevOpsManager {
     let firstError: Error | undefined
     const meResult = await this.getMe()
     const {error: meError, azureDevOpsUser} = meResult
-    console.log('azureDevOpsUser ' + azureDevOpsUser?.id)
-    console.log('meError ' + !!meError)
     if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
 
     const {id} = azureDevOpsUser
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-    console.log('accessibleError ' + accessibleError?.message)
-    console.log('accessibleError ' + !!accessibleError)
-    console.log('orgs ' + accessibleOrgs.length)
     if (!!accessibleError) return {error: accessibleError, projects: null}
 
     for (const resource of accessibleOrgs) {
-      console.log('acc name ' + resource.accountName)
-      console.log('call getprojects ' + (await this.getAccountProjects(resource.accountName)))
       const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
         resource.accountName
       )
-      console.log('projects ' + accountProjects[0]?.name)
       if (!!accountProjectsError && !firstError) {
         firstError = accountProjectsError
         break
@@ -363,7 +378,6 @@ export default abstract class AzureDevOpsManager {
     const result = await this.get<AccountProjects>(
       `https://dev.azure.com/${accountName}/_apis/projects?api-version=7.1-preview.4`
     )
-    console.log(result)
     if (result instanceof Error) {
       if (!firstError) {
         firstError = result

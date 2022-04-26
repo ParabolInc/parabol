@@ -22,6 +22,7 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
         teamId
         azureDevOpsSearchQuery {
           queryString
+          projectKeyFilters
           isWIQL
         }
       }
@@ -30,7 +31,8 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
   )
 
   const {teamId, azureDevOpsSearchQuery} = meeting
-  const {queryString, isWIQL} = azureDevOpsSearchQuery
+  const {queryString, isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
+  const projectFilters = projectKeyFilters as string[]
   const normalizedQueryString = queryString.trim()
   const queryRef = useQueryLoaderNow<AzureDevOpsScopingSearchResultsQuery>(
     azureDevOpsScopingSearchResultsQuery,
@@ -38,6 +40,7 @@ const AzureDevOpsScopingSearchResultsRoot = (props: Props) => {
       teamId,
       first: 25,
       queryString: normalizedQueryString,
+      projectKeyFilters: projectFilters,
       isWIQL
     }
   )

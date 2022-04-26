@@ -163,7 +163,7 @@ export const azureDevOpsAllWorkItems = (
             provider as IntegrationProviderAzureDevOps
           )
 
-          const restResult = await manager.getAllUserWorkItems(null, false)
+          const restResult = await manager.getAllUserWorkItems(null, null, false)
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
             console.log(error)
@@ -298,7 +298,6 @@ export const allAzureDevOpsProjects = (
 
           const {error, projects} = await manager.getAllUserProjects()
           if (!error) console.log(error)
-          console.log('projectshere ' + projects?.at(0)?.name)
           if (projects !== null) resultReferences.push(...projects)
           // return resultReferences
           return resultReferences.map((project) => ({
@@ -422,7 +421,7 @@ export const azureDevOpsUserStories = (
             provider as IntegrationProviderAzureDevOps
           )
 
-          const result = await manager.getUserStories(instanceId, null, false)
+          const result = await manager.getUserStories(instanceId, null, null, false)
           const {error, workItems} = result
           const workItemIds = workItems.map((workItem) => workItem.id)
           const workItemData = await manager.getWorkItemData(instanceId, workItemIds)
