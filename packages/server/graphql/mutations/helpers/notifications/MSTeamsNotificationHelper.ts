@@ -1,21 +1,17 @@
 import * as AdaptiveCards from 'adaptivecards'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import formatTime from 'parabol-client/utils/date/formatTime'
-import formatWeekday from 'parabol-client/utils/date/formatWeekday'
-// import findStageById from 'parabol-client/utils/meetings/findStageById'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
 import appOrigin from '../../../../appOrigin'
 import {MSTeamsNotificationEventEnum as EventEnum} from '../../../../database/types/MSTeamsNotifications'
 import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
-// import { AnyMeeting } from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import getSummaryText from './getSummaryText'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import Meeting from '../../../../database/types/Meeting'
-// import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
-import {toEpochSeconds} from '../../../../utils/epochTime'
+import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 
 const notifyMSTeams = async (
   event: EventEnum,
@@ -174,44 +170,129 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
   },
 
   async startTimeLimit(scheduledEndTime, meeting, team) {
-    const {facilitatorUserId} = meeting
     const {webhookUrl} = notificationChannel
 
-    // const {name: teamName} = team
-    // const stageRes = findStageById(phases, facilitatorStageId)
-    // const {stage} = stageRes!
-    // const maybeMeetingShortLink = makeAppURL(
-    //   process.env.INVITATION_SHORTLINK || appOrigin,
-    //   `${meeting.id}`
-    // )
-    // const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
-    // const {phaseType} = stage
-    // const phaseLabel = phaseLabelLookup[phaseType]
+    const {phases, facilitatorStageId, facilitatorUserId} = meeting
 
-    const fallbackDate = formatWeekday(scheduledEndTime)
-    const fallbackTime = formatTime(scheduledEndTime)
-    const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
-    const fallback = `${fallbackDate} at ${fallbackTime} (${fallbackZone})`
-    const constraint = `You have until *<!date^${toEpochSeconds(
-      scheduledEndTime
-    )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
+    const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meeting.id}`)
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
+
+    const stageRes = findStageById(phases, facilitatorStageId)
+    const {stage} = stageRes!
+    const {phaseType} = stage
+    const phaseLabel = phaseLabelLookup[phaseType]
+
+    const meetingTitle = `The **${phaseLabel} Phase** has begun ⌛`
+
+    const card = new AdaptiveCards.AdaptiveCard()
+    card.version = new AdaptiveCards.Version(1.2, 0)
+
+    const titleTextBlock = GenerateACMeetingTitle(meetingTitle)
+    card.addItem(titleTextBlock)
+
+    const meetingDetailColumnSet = GenerateACMeetingAndTeamsDetails(team, meeting)
+    card.addItem(meetingDetailColumnSet)
+
+    let teamfixedtime = scheduledEndTime.toISOString()
+    teamfixedtime = teamfixedtime.replace(/.\d+Z$/g, 'Z')
+    const timelimitText = `You have until {{DATE(${teamfixedtime},SHORT)}} at {{TIME(${teamfixedtime})}} to complete it.`
+
+    const timeLimitColumnSet = new AdaptiveCards.ColumnSet()
+    timeLimitColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
+    const timeLimitColumn = new AdaptiveCards.Column()
+    timeLimitColumn.width = 'stretch'
+    const timeLimitTextBlock = new AdaptiveCards.TextBlock(timelimitText)
+    timeLimitTextBlock.wrap = true
+
+    timeLimitColumn.addItem(timeLimitTextBlock)
+    timeLimitColumnSet.addColumn(timeLimitColumn)
+
+    card.addItem(timeLimitColumnSet)
+
+    const meetingLinkColumnSet = new AdaptiveCards.ColumnSet()
+    meetingLinkColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
+    const meetingLinkColumn = new AdaptiveCards.Column()
+    meetingLinkColumn.width = 'stretch'
+    const meetingLinkHeaderTextBlock = new AdaptiveCards.TextBlock('Link: ')
+    meetingLinkHeaderTextBlock.wrap = true
+    meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
+    const meetingLinkTextBlock = new AdaptiveCards.TextBlock()
+    meetingLinkTextBlock.text = maybeMeetingShortLink
+    meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
+    meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
+    meetingLinkTextBlock.wrap = true
+    const joinMeetingActionSet = new AdaptiveCards.ActionSet()
+    const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
+    joinMeetingAction.title = 'Open Meeting'
+    joinMeetingAction.url = meetingUrl
+    joinMeetingAction.id = 'openMeeting'
+
+    joinMeetingActionSet.addAction(joinMeetingAction)
+
+    meetingLinkColumn.addItem(meetingLinkHeaderTextBlock)
+    meetingLinkColumn.addItem(meetingLinkTextBlock)
+    meetingLinkColumn.addItem(joinMeetingActionSet)
+
+    meetingLinkColumnSet.addColumn(meetingLinkColumn)
+
+    card.addItem(meetingLinkColumnSet)
+
+    const adaptivecard = JSON.stringify(card.toJSON())
+    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
 
     return notifyMSTeams(
       'MEETING_STAGE_TIME_LIMIT_START',
       webhookUrl,
       facilitatorUserId,
       team.id,
-      constraint
+      attachments
     )
   },
+
   async endTimeLimit(meeting, team) {
     const {facilitatorUserId: userId} = meeting
     const {webhookUrl} = notificationChannel
 
-    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
-    const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
+    const card = new AdaptiveCards.AdaptiveCard()
+    card.version = new AdaptiveCards.Version(1.2, 0)
 
-    return notifyMSTeams('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, team.id, userId, messageText)
+    const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
+
+    const meetingLinkColumnSet = new AdaptiveCards.ColumnSet()
+    meetingLinkColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
+    const meetingLinkColumn = new AdaptiveCards.Column()
+    meetingLinkColumn.width = 'stretch'
+
+    const meetingLinkHeaderTextBlock = new AdaptiveCards.TextBlock(
+      'Time’s up! Advance your meeting to the next phase'
+    )
+    meetingLinkHeaderTextBlock.wrap = true
+    meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
+    const meetingLinkTextBlock = new AdaptiveCards.TextBlock()
+    meetingLinkTextBlock.text = meetingUrl
+    meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
+    meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
+    meetingLinkTextBlock.wrap = true
+    const joinMeetingActionSet = new AdaptiveCards.ActionSet()
+    const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
+    joinMeetingAction.title = 'Advance Meeting'
+    joinMeetingAction.url = meetingUrl
+    joinMeetingAction.id = 'advanceMeeting'
+
+    joinMeetingActionSet.addAction(joinMeetingAction)
+
+    meetingLinkColumn.addItem(meetingLinkHeaderTextBlock)
+    meetingLinkColumn.addItem(meetingLinkTextBlock)
+    meetingLinkColumn.addItem(joinMeetingActionSet)
+
+    meetingLinkColumnSet.addColumn(meetingLinkColumn)
+
+    card.addItem(meetingLinkColumnSet)
+
+    const adaptivecard = JSON.stringify(card.toJSON())
+    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
+
+    return notifyMSTeams('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, userId, team.id, attachments)
   }
 })
 

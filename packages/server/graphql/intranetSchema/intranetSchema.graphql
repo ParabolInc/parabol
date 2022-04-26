@@ -443,6 +443,7 @@ enum IntegrationProviderServiceEnum {
   github
   gitlab
   mattermost
+  msTeams
   jiraServer
 }
 
