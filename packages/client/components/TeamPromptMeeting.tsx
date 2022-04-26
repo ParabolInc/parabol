@@ -1,23 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useMemo} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
+import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
-import logoMarkPurple from '../styles/theme/images/brand/mark-color.svg'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
 import ErrorBoundary from './ErrorBoundary'
-import LinkButton from './LinkButton'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
-import PhaseWrapper from './PhaseWrapper'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
@@ -72,7 +68,6 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 
 const TeamPromptMeeting = (props: Props) => {
   const {meeting: meetingRef} = props
-  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
@@ -117,20 +112,6 @@ const TeamPromptMeeting = (props: Props) => {
 
   const {isRightDrawerOpen} = meeting
 
-  const selectDiscussion = () => {
-    // :TODO: (jmtaber129): Get the discussionId from the response card that was clicked.
-    const {id: meetingId} = meeting
-    const stage = stages[0]
-    const {discussionId} = stage!
-
-    commitLocalUpdate(atmosphere, (store) => {
-      const meetingProxy = store.get(meetingId)
-      if (!meetingProxy) return
-      meetingProxy.setValue(discussionId, 'localDiscussionId')
-      meetingProxy.setValue(true, 'isRightDrawerOpen')
-    })
-  }
-
   if (!safeRoute) return null
 
   return (
@@ -164,11 +145,6 @@ const TeamPromptMeeting = (props: Props) => {
                   </ResponsesGrid>
                 </ResponsesGridContainer>
               </ErrorBoundary>
-              <PhaseWrapper>
-                <LinkButton>
-                  <img onClick={selectDiscussion} alt='Parabol' src={logoMarkPurple} />
-                </LinkButton>
-              </PhaseWrapper>
             </StyledMeetingHeaderAndPhase>
             <TeamPromptDiscussionDrawer meetingRef={meeting} isDesktop={isDesktop} />
           </MeetingContent>

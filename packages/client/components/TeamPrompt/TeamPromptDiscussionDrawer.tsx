@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import findStageById from '~/utils/meetings/findStageById'
 import {TeamPromptDiscussionDrawer_meeting$key} from '~/__generated__/TeamPromptDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
@@ -83,9 +84,17 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptDiscussionDrawer_meeting on TeamPromptMeeting {
-        localDiscussionId
+        localStageId
         isRightDrawerOpen
         id
+        phases {
+          stages {
+            id
+            ... on TeamPromptResponseStage {
+              discussionId
+            }
+          }
+        }
       }
     `,
     meetingRef
@@ -93,7 +102,16 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
 
   const atmosphere = useAtmosphere()
 
-  const {localDiscussionId, id: meetingId, isRightDrawerOpen} = meeting
+  const {localStageId, id: meetingId, isRightDrawerOpen} = meeting
+  if (!localStageId) {
+    return null
+  }
+
+  const stage = findStageById(meeting.phases, localStageId)
+  const discussionId = stage?.stage.discussionId
+  if (!discussionId) {
+    return null
+  }
 
   const onToggle = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -104,7 +122,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  return localDiscussionId ? (
+  return (
     <ResponsiveDashSidebar
       isOpen={isRightDrawerOpen}
       isRightDrawer
@@ -120,14 +138,14 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
         </Header>
         <ThreadColumn>
           <DiscussionThreadRoot
-            discussionId={localDiscussionId!}
+            discussionId={discussionId}
             allowedThreadables={['comment', 'task']}
             width={'100%'}
           />
         </ThreadColumn>
       </Drawer>
     </ResponsiveDashSidebar>
-  ) : null
+  )
 }
 
 export default TeamPromptDiscussionDrawer
