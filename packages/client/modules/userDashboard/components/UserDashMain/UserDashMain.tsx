@@ -1,26 +1,13 @@
-import React from 'react'
-import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
-import {JSResource, RouteRenderer, RoutingContext, useCreateRouter} from '../../../../routing'
-import {LoaderSize} from '../../../../types/constEnums'
-import {useTasksRoute} from './useTasksRoute'
-import {useTimelineRoute} from './useTimelineRoute'
+import React, {ReactNode} from 'react'
+import DashContent from '../../../../components/Dashboard/DashContent'
+import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 
-const UserDashMain = () => {
-  const timelineRoute = useTimelineRoute()
-  const tasksRoute = useTasksRoute()
-  const router = useCreateRouter([
-    {
-      component: JSResource('DashContentRoot', () => import('./DashContentRoot')),
-      prepare: () => ({}),
-      routes: [timelineRoute, tasksRoute]
-    }
-  ])
-
+const UserDashMain = ({children}: {children: ReactNode}) => {
   return (
-    <RoutingContext.Provider value={router.context}>
-      {/* Render the active route */}
-      <RouteRenderer fallbackLoader={<LoadingComponent spinnerSize={LoaderSize.PANEL} />} />
-    </RoutingContext.Provider>
+    <DashContent>
+      {children}
+      <StartMeetingFAB />
+    </DashContent>
   )
 }
 

@@ -1,23 +1,20 @@
 import {useQueryLoader} from 'react-relay'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {JSResource} from '../../../../routing'
+import {JSResource} from '../routing'
 import myDashboardTimelineQuery, {
   MyDashboardTimelineQuery
-} from '../../../../__generated__/MyDashboardTimelineQuery.graphql'
+} from '../__generated__/MyDashboardTimelineQuery.graphql'
+import useAtmosphere from './useAtmosphere'
 
-export function useTimelineRoute() {
+export function useTimelineRoute(path: string) {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const [timelineQueryRef, loadQuery] =
     useQueryLoader<MyDashboardTimelineQuery>(myDashboardTimelineQuery)
 
   return {
-    path: '/me',
+    path,
     exact: true,
-    component: JSResource(
-      'MyDashboardTimeline',
-      () => import('../../../../components/MyDashboardTimeline')
-    ),
+    component: JSResource('MyDashboardTimeline', () => import('../components/MyDashboardTimeline')),
     prepare: () => {
       if (!timelineQueryRef) {
         // via [Introducing Relay Hooks | Relay](https://relay.dev/blog/2021/03/09/introducing-relay-hooks/#starting-to-fetch-data-before-rendering-a-component)

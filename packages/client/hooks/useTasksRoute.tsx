@@ -1,15 +1,13 @@
 import {useQueryLoader} from 'react-relay'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {JSResource} from '../../../../routing'
-import {useUserTaskFilters} from '../../../../utils/useUserTaskFilters'
+import {JSResource} from '../routing'
+import {useUserTaskFilters} from '../utils/useUserTaskFilters'
 import myDashboardTasksAndHeaderQuery, {
   MyDashboardTasksAndHeaderQuery
-} from '../../../../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
-import teamArchiveQuery, {
-  TeamArchiveQuery
-} from '../../../../__generated__/TeamArchiveQuery.graphql'
+} from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
+import teamArchiveQuery, {TeamArchiveQuery} from '../__generated__/TeamArchiveQuery.graphql'
+import useAtmosphere from './useAtmosphere'
 
-export function useTasksRoute() {
+export function useTasksRoute(path: string) {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -22,13 +20,14 @@ export function useTasksRoute() {
     useQueryLoader<TeamArchiveQuery>(teamArchiveQuery)
 
   const TasksComponent = showArchived
-    ? JSResource('ArchiveTaskUserRoot', () => import('../../../../components/ArchiveTaskUserRoot'))
+    ? JSResource('ArchiveTaskUserRoot', () => import('../components/ArchiveTaskUserRoot'))
     : JSResource(
         'MyDashboardTasksAndHeader',
-        () => import('../../../../components/MyDashboardTasksAndHeader')
+        () => import('../components/MyDashboardTasksAndHeader')
       )
   return {
-    path: `/me/tasks`,
+    path,
+    exact: true,
     component: TasksComponent,
     prepare: () => {
       if (showArchived) {

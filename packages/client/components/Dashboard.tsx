@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy, useRef} from 'react'
+import React, {useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
 import {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
@@ -14,27 +14,12 @@ import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
-import {PALETTE} from '~/styles/paletteV3'
-
-const MeetingsDash = lazy(() =>
-  import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
-)
-const UserDashboard = lazy(() =>
-  import(
-    /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
-  )
-)
-const TeamRoot = lazy(() =>
-  import(/* webpackChunkName: 'TeamRoot' */ '../modules/teamDashboard/components/TeamRoot')
-)
-const NewTeam = lazy(() =>
-  import(
-    /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
-  )
-)
 
 interface Props {
-  queryRef: PreloadedQuery<DashboardQuery>
+  prepared: {
+    queryRef: PreloadedQuery<DashboardQuery>
+  }
+  children: React.ReactNode
 }
 
 const DashLayout = styled('div')({
@@ -86,7 +71,8 @@ const SkipLink = styled('a')({
 })
 
 const Dashboard = (props: Props) => {
-  const {queryRef} = props
+  const {prepared, children} = props
+  const {queryRef} = prepared
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
       query DashboardQuery($first: Int!, $after: DateTime) {
@@ -134,17 +120,7 @@ const Dashboard = (props: Props) => {
           </SwipeableDashSidebar>
         )}
         <DashMain id='main' ref={meetingsDashRef}>
-          <Switch>
-            <Route
-              path='/meetings'
-              render={(routeProps) => (
-                <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
-              )}
-            />
-            <Route path='/me' component={UserDashboard} />
-            <Route path='/team/:teamId' component={TeamRoot} />
-            <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-          </Switch>
+          {children}
         </DashMain>
       </DashPanel>
     </DashLayout>
