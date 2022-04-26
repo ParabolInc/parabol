@@ -55,6 +55,10 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   if (discussionId) {
     const threadConn = getDiscussionThreadConn(store, discussionId)
     safePutNodeInConn(threadConn, comment, store, 'threadSortOrder', true)
+    const discussion = store.get(discussionId)
+    if (discussion) {
+      discussion.setValue((discussion.getValue('commentCount') as number) + 1, 'commentCount')
+    }
   }
 }
 
