@@ -1,20 +1,26 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useMemo} from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useMeeting from '~/hooks/useMeeting'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {BezierCurve, Breakpoint} from '~/types/constEnums'
-import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
 import {isNotNull} from '~/utils/predicates'
 import ErrorBoundary from './ErrorBoundary'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMeeting from '~/hooks/useMeeting'
+import {DiscussionThreadEnum} from '~/types/constEnums'
+import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
+import logoMarkPurple from '../styles/theme/images/brand/mark-color.svg'
+import LinkButton from './LinkButton'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
+import PhaseWrapper from './PhaseWrapper'
+import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
 const Dimensions = {
@@ -59,19 +65,32 @@ interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
 
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
+  ({isOpen}) => ({
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+  })
+)
+
 const TeamPromptMeeting = (props: Props) => {
   const {meeting: meetingRef} = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
-        ...TeamPromptTopBar_meeting
         ...useMeeting_meeting
+        ...TeamPromptTopBar_meeting
+        ...TeamPromptDiscussionDrawer_meeting
+        id
+        isRightDrawerOpen
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
             stages {
               id
               ...TeamPromptResponseCard_stage
+              ... on TeamPromptResponseStage {
+                discussionId
+              }
             }
           }
         }
@@ -95,7 +114,24 @@ const TeamPromptMeeting = (props: Props) => {
   }, [phase])
   const transitioningStages = useTransition(stages)
 
-  const {safeRoute} = useMeeting(meeting)
+  const {safeRoute, isDesktop} = useMeeting(meeting)
+
+  const {isRightDrawerOpen} = meeting
+
+  const selectDiscussion = () => {
+    // :TODO: (jmtaber129): Get the discussionId from the response card that was clicked.
+    const {id: meetingId} = meeting
+    const stage = stages[0]
+    const {discussionId} = stage!
+
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(discussionId, 'localDiscussionId')
+      meetingProxy.setValue(true, 'isRightDrawerOpen')
+    })
+  }
+
   if (!safeRoute) return null
 
   return (
@@ -103,7 +139,10 @@ const TeamPromptMeeting = (props: Props) => {
       <MeetingArea>
         <Suspense fallback={''}>
           <MeetingContent>
-            <MeetingHeaderAndPhase hideBottomBar={true}>
+            <StyledMeetingHeaderAndPhase
+              isOpen={isRightDrawerOpen && isDesktop}
+              hideBottomBar={true}
+            >
               <TeamPromptTopBar meetingRef={meeting} />
               <Prompt>What are you working on today? Stuck on anything?</Prompt>
               <ErrorBoundary>
@@ -126,7 +165,13 @@ const TeamPromptMeeting = (props: Props) => {
                   </ResponsesGrid>
                 </ResponsesGridContainer>
               </ErrorBoundary>
-            </MeetingHeaderAndPhase>
+              <PhaseWrapper>
+                <LinkButton>
+                  <img onClick={selectDiscussion} alt='Parabol' src={logoMarkPurple} />
+                </LinkButton>
+              </PhaseWrapper>
+            </StyledMeetingHeaderAndPhase>
+            <TeamPromptDiscussionDrawer meetingRef={meeting} isDesktop={isDesktop} />
           </MeetingContent>
         </Suspense>
       </MeetingArea>
