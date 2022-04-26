@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import Avatar from '../../../../components/Avatar/Avatar'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
@@ -12,7 +12,7 @@ import useModal from '../../../../hooks/useModal'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import {Organization_viewer} from '../../../../__generated__/Organization_viewer.graphql'
+import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
 import OrganizationDetails from './OrganizationDetails'
@@ -59,13 +59,44 @@ const OrgAvatarInput = lazy(
 )
 
 interface Props {
-  viewer: Organization_viewer
+  queryRef: PreloadedQuery<OrganizationQuery>
 }
 
+const query = graphql`
+  query OrganizationQuery($orgId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
+        ...EditableOrgName_organization
+        ...OrganizationPage_organization
+        orgId: id
+        isBillingLeader
+        createdAt
+        name
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
+        picture
+        creditCard {
+          brand
+          expiry
+          last4
+        }
+        periodStart
+        periodEnd
+        tier
+      }
+    }
+  }
+`
+
 const Organization = (props: Props) => {
-  const {
-    viewer: {organization}
-  } = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<OrganizationQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
+  const {organization} = viewer
   const {history} = useRouter()
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
@@ -121,30 +152,4 @@ const Organization = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(Organization, {
-  viewer: graphql`
-    fragment Organization_viewer on User {
-      organization(orgId: $orgId) {
-        ...EditableOrgName_organization
-        ...OrganizationPage_organization
-        orgId: id
-        isBillingLeader
-        createdAt
-        name
-        orgUserCount {
-          activeUserCount
-          inactiveUserCount
-        }
-        picture
-        creditCard {
-          brand
-          expiry
-          last4
-        }
-        periodStart
-        periodEnd
-        tier
-      }
-    }
-  `
-})
+export default Organization
