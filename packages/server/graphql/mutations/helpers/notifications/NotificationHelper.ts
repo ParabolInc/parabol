@@ -4,6 +4,8 @@ import {SlackNotificationEvent} from '../../../../database/types/SlackNotificati
 import {DataLoaderWorker} from '../../../graphql'
 import {MattermostNotificationHelper} from './MattermostNotificationHelper'
 import {SlackNotificationHelper} from './SlackNotificationHelper'
+import {MSTeamsNotificationHelper} from './MSTeamsNotificationHelper'
+import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 
 async function getSlack(
   dataLoader: DataLoaderWorker,
@@ -24,6 +26,14 @@ async function getMattermost(dataLoader: DataLoaderWorker, meeting: Meeting, tea
   return provider ? [MattermostNotificationHelper(provider as IntegrationProviderMattermost)] : []
 }
 
+async function getMSTeams(dataLoader: DataLoaderWorker, meeting: Meeting, teamId: string) {
+  const {facilitatorUserId} = meeting
+  const provider = await dataLoader
+    .get('bestTeamIntegrationProviders')
+    .load({service: 'msTeams', teamId, userId: facilitatorUserId})
+  return provider ? [MSTeamsNotificationHelper(provider as IntegrationProviderMSTeams)] : []
+}
+
 async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
   const [team, meeting] = await Promise.all([
     dataLoader.get('teams').load(teamId),
@@ -41,12 +51,13 @@ async function getAllNotifiers(
   meeting: Meeting,
   teamId: string
 ) {
-  const [slack, mattermost] = await Promise.all([
+  const [slack, mattermost, msTeams] = await Promise.all([
     getSlack(dataLoader, event, teamId),
-    getMattermost(dataLoader, meeting, teamId)
+    getMattermost(dataLoader, meeting, teamId),
+    getMSTeams(dataLoader, meeting, teamId)
   ])
 
-  return [...slack, ...mattermost]
+  return [...slack, ...mattermost, ...msTeams]
 }
 
 export const NotificationHelper = {
