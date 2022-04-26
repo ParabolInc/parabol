@@ -1,14 +1,15 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import OrganizationUser from '../../database/types/OrganizationUser'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {TierEnum as ETierEnum} from '../../database/types/Invoice'
+import OrganizationType from '../../database/types/Organization'
+import OrganizationUser from '../../database/types/OrganizationUser'
+import {Team} from '../../postgres/queries/getTeamsByIds'
 import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import TierEnum from './TierEnum'
-import OrganizationType from '../../database/types/Organization'
-import {RValue} from '../../database/stricterR'
 
 const Company = new GraphQLObjectType<any, GQLContext>({
   name: 'Company',
@@ -24,9 +25,29 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
-        const teamsByOrgId = await dataLoader.get('teamsByOrgIds').loadMany(orgIds)
-        const teams = teamsByOrgId.flat()
-        return teams.length
+        const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
+          errorFilter
+        )
+        const teams = teamsByOrgId.flat().filter(({isArchived}: Team) => !isArchived)
+        const teamIds = teams.map(({id}: Team) => id)
+
+        const AreTeamActive = await Promise.all(
+          teamIds.map(async (teamId) => {
+            const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+            if (activeMeetings.length > 0) {
+              return true
+            } else {
+              const completedMeetings = await dataLoader
+                .get('completedMeetingsByTeamId')
+                .load(teamId)
+              const completedMeetingsLast30Days = completedMeetings.filter(
+                ({endedAt}) => new Date().getTime() - endedAt!.getTime() < 30 * 24 * 60 * 60 * 1000
+              )
+              return completedMeetingsLast30Days.length > 0
+            }
+          })
+        )
+        return AreTeamActive.filter(Boolean).length
       }
     },
     activeUserCount: {
