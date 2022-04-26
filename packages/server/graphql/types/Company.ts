@@ -31,7 +31,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
         const teams = teamsByOrgId.flat().filter(({isArchived}: Team) => !isArchived)
         const teamIds = teams.map(({id}: Team) => id)
 
-        const AreTeamActive = await Promise.all(
+        const AreTeamsActive = await Promise.all(
           teamIds.map(async (teamId) => {
             const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
             if (activeMeetings.length > 0) {
@@ -47,7 +47,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
             }
           })
         )
-        return AreTeamActive.filter(Boolean).length
+        return AreTeamsActive.filter(Boolean).length
       }
     },
     activeUserCount: {
