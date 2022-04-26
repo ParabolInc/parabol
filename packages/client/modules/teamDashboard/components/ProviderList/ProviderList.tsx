@@ -5,12 +5,12 @@ import {createFragmentContainer} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {ProviderList_viewer} from '../../../../__generated__/ProviderList_viewer.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
-import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
+import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
+import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
-import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 
 interface Props {
   viewer: ProviderList_viewer
@@ -35,7 +35,7 @@ const ProviderList = (props: Props) => {
       {allowGitlab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
-      {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewer={viewer} />}
+      {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />}
     </StyledWrapper>
   )
 }

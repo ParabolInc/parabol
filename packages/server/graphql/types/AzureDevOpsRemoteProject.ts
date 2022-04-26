@@ -28,6 +28,17 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
     lastUpdateTime: {
       type: new GraphQLNonNull(GraphQLString)
     },
+    self: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    instanceId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description:
+        'The instance ID that the project lives on'
+    },
+    key: {
+      type: new GraphQLNonNull(GraphQLString)
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString)
     },
