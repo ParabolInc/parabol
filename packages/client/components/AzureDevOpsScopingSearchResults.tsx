@@ -107,7 +107,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
-            serviceTaskId={'dev.azure.com/jacobsrj:2649cbcf-37c1-484d-a290-1409d9d5b1cf:'+ node.id}
+            serviceTaskId={'dev.azure.com/wdfox3:3143c869-ae4a-48d2-93e6-5503b338c6bc:' + node.id}
             meetingId={meetingId}
             persistQuery={() => {
               return null
