@@ -124,7 +124,6 @@ const AzureDevOpsProviderRow = (props: Props) => {
         <ProviderName>{Providers.AZUREDEVOPS_NAME}</ProviderName>
         <RowInfoCopy>{Providers.AZUREDEVOPS_DESC}</RowInfoCopy>
       </RowInfo>
-      {console.log('accessToken in providerRow' + accessToken)}
       {!accessToken && (
         <ProviderActions>
           <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>

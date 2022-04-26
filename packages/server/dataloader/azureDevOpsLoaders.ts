@@ -167,9 +167,7 @@ export const azureDevOpsAllWorkItems = (
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const returnWorkItems = [] as WorkItem[]
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return undefined
           }
@@ -204,9 +202,7 @@ export const azureDevUserInfo = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return undefined
           }
@@ -242,9 +238,7 @@ export const allAzureDevOpsAccessibleOrgs = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
           }
@@ -282,9 +276,7 @@ export const allAzureDevOpsProjects = (
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const resultReferences = [] as TeamProjectReference[]
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
           }
@@ -357,9 +349,7 @@ export const azureDevOpsUserStory = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, instanceId, workItemId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return null
           }
@@ -410,9 +400,7 @@ export const azureDevOpsUserStories = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, instanceId}) => {
-          const auth = await parent
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'azureDevOps', teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
           }
