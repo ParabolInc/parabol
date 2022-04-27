@@ -59,23 +59,24 @@ const JiraScopingSearchHistoryToggle = (props: Props) => {
         .map((filter) => filter.slice(filter.indexOf(':') + 1))
         .join(', ')
 
+      const deleteQuery = () => {
+        PersistJiraSearchQueryMutation(atmosphere, {
+          teamId,
+          input: {
+            queryString,
+            isJQL,
+            projectKeyFilters: projectKeyFilters as string[],
+            isRemove: true
+          }
+        })
+      }
+
       return {
         id,
-        ariaLabel: 'Remove this Jira Search Query',
         labelFirstLine: queryStringLabel,
         labelSecondLine: projectFilters && `in ${projectFilters}`,
         onClick: selectQuery,
-        onDelete: () => {
-          PersistJiraSearchQueryMutation(atmosphere, {
-            teamId,
-            input: {
-              queryString,
-              isJQL,
-              projectKeyFilters: projectKeyFilters as string[],
-              isRemove: true
-            }
-          })
-        }
+        onDelete: deleteQuery
       }
     }) ?? []
 

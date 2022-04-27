@@ -15,7 +15,6 @@ const JiraScopingSearchInput = (props: Props) => {
       fragment JiraScopingSearchInput_meeting on PokerMeeting {
         id
         jiraSearchQuery {
-          projectKeyFilters
           queryString
           isJQL
         }

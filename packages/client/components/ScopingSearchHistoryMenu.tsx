@@ -34,7 +34,6 @@ const DeleteIconButton = styled(IconButton)({
 
 export interface SearchQueries {
   id: string
-  ariaLabel: string
   labelFirstLine: string
   labelSecondLine: string
   onClick: () => void
@@ -63,7 +62,7 @@ const ScopingSearchHistoryMenu = (props: Props) => {
           No saved queries yet!
         </EmptyDropdownMenuItemLabel>
       )}
-      {searchQueries.map(({id, labelFirstLine, labelSecondLine, ariaLabel, onClick, onDelete}) => {
+      {searchQueries.map(({id, labelFirstLine, labelSecondLine, onClick, onDelete}) => {
         const handleDelete = (event: MouseEvent) => {
           if (searchQueries.length > 1) {
             event.stopPropagation() // prevents closing the menu when remove button is clicked
@@ -81,7 +80,7 @@ const ScopingSearchHistoryMenu = (props: Props) => {
                   {labelSecondLine && <Filter>{labelSecondLine}</Filter>}
                 </StyledMenuItemContent>
                 <DeleteIconButton
-                  aria-label={ariaLabel}
+                  aria-label={'Remove this search query'}
                   icon='cancel'
                   onClick={handleDelete}
                   palette='midGray'

@@ -48,8 +48,8 @@ const ScopingSearchInput = (props: Props) => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
-      const jiraSearchQuery = meeting.getLinkedRecord(linkedRecordName)!
-      jiraSearchQuery.setValue(value, 'queryString')
+      const searchQuery = meeting.getLinkedRecord(linkedRecordName)!
+      searchQuery.setValue(value, 'queryString')
     })
   }
 
