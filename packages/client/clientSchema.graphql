@@ -39,6 +39,11 @@ extend type RetrospectiveMeeting {
   spotlightSearchQuery: String
 }
 
+extend type TeamPromptMeeting {
+  localDiscussionId: String
+  isRightDrawerOpen: Boolean!
+}
+
 extend type Team {
   teamMemberFilter: TeamMember
   editingScaleId: ID

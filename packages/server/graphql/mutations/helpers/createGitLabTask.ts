@@ -1,11 +1,11 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
-import createIssueMutation from '../../nestedSchema/GitLab/mutations/createIssue.graphql'
-import {DataLoaderWorker, GQLContext} from '../../graphql'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {CreateIssueMutation} from '../../../types/gitlabTypes'
+import {DataLoaderWorker, GQLContext} from '../../graphql'
+import createIssueMutation from '../../nestedSchema/GitLab/mutations/createIssue.graphql'
 
 const createGitLabTask = async (
   rawContent: string,

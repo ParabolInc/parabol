@@ -1,19 +1,19 @@
 import {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
-import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import GitHubIssueId from '../../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import removeRangesForEntity from '../../../../client/utils/draftjs/removeRangesForEntity'
 import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
+import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
 import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
 import createGitHubTask from './createGitHubTask'
-import createJiraTask from './createJiraTask'
 import createGitLabTask from './createGitLabTask'
-import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import createJiraTask from './createJiraTask'
 
 const createTaskInService = async (
   integrationInput: CreateTaskIntegrationInput | null | undefined,

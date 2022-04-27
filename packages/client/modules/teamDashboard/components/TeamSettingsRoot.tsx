@@ -1,33 +1,22 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {QueryRenderer} from 'react-relay'
-import TeamSettings from './TeamSettings/TeamSettings'
+import React, {Suspense} from 'react'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../types/constEnums'
-import renderQuery from '../../../utils/relay/renderQuery'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-
-const query = graphql`
-  query TeamSettingsRootQuery($teamId: ID!) {
-    viewer {
-      ...TeamSettings_viewer
-    }
-  }
-`
+import {renderLoader} from '../../../utils/relay/renderLoader'
+import teamSettingsQuery, {
+  TeamSettingsQuery
+} from '../../../__generated__/TeamSettingsQuery.graphql'
+import TeamSettings from './TeamSettings/TeamSettings'
 
 interface Props {
   teamId: string
 }
 
 const TeamSettingsRoot = ({teamId}: Props) => {
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<TeamSettingsQuery>(teamSettingsQuery, {teamId})
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{teamId}}
-      render={renderQuery(TeamSettings, {size: LoaderSize.PANEL})}
-      fetchPolicy={'store-or-network' as any}
-    />
+    <Suspense fallback={renderLoader({size: LoaderSize.PANEL})}>
+      {queryRef && <TeamSettings queryRef={queryRef} />}
+    </Suspense>
   )
 }
 

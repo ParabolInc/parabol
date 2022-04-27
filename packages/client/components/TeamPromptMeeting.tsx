@@ -1,20 +1,25 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
-import {useFragment} from 'react-relay'
+import React, {Suspense, useMemo} from 'react'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import {Elevation} from '~/styles/elevation'
-import {BezierCurve, Breakpoint, Card} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+import {isNotNull} from '~/utils/predicates'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
+import logoMarkPurple from '../styles/theme/images/brand/mark-color.svg'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
-import Avatar from './Avatar/Avatar'
 import ErrorBoundary from './ErrorBoundary'
+import LinkButton from './LinkButton'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
+import PhaseWrapper from './PhaseWrapper'
+import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
+import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
 const Dimensions = {
@@ -55,46 +60,35 @@ const TeamMemberResponse = styled('div')<{
   flexShrink: 0
 }))
 
-const ResponseCard = styled('div')({
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW,
-  flex: 1,
-  padding: Card.PADDING,
-  minHeight: Dimensions.RESPONSE_MIN_HEIGHT,
-  userSelect: 'none'
-})
-
-const ResponseHeader = styled('div')({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  padding: '0 8px'
-})
-
-const TeamMemberName = styled('h3')({
-  padding: '0 8px'
-})
-
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
 
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
+  ({isOpen}) => ({
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+  })
+)
+
 const TeamPromptMeeting = (props: Props) => {
   const {meeting: meetingRef} = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
-        ...TeamPromptTopBar_meeting
         ...useMeeting_meeting
+        ...TeamPromptTopBar_meeting
+        ...TeamPromptDiscussionDrawer_meeting
+        id
+        isRightDrawerOpen
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
             stages {
-              teamMember {
-                id
-                preferredName
-                picture
+              id
+              ...TeamPromptResponseCard_stage
+              ... on TeamPromptResponseStage {
+                discussionId
               }
             }
           }
@@ -107,13 +101,36 @@ const TeamPromptMeeting = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
-  const {stages} = phase
-  const teamMembers = stages.map((stage) => ({
-    ...stage.teamMember,
-    key: stage.teamMember.id
-  }))
-  const transitioningTeamMembers = useTransition(teamMembers)
-  const {safeRoute} = useMeeting(meeting)
+  const stages = useMemo(() => {
+    return phase.stages
+      .map((stage) => {
+        return {
+          ...stage,
+          key: stage.id
+        }
+      })
+      .filter(isNotNull)
+  }, [phase])
+  const transitioningStages = useTransition(stages)
+
+  const {safeRoute, isDesktop} = useMeeting(meeting)
+
+  const {isRightDrawerOpen} = meeting
+
+  const selectDiscussion = () => {
+    // :TODO: (jmtaber129): Get the discussionId from the response card that was clicked.
+    const {id: meetingId} = meeting
+    const stage = stages[0]
+    const {discussionId} = stage!
+
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(discussionId, 'localDiscussionId')
+      meetingProxy.setValue(true, 'isRightDrawerOpen')
+    })
+  }
+
   if (!safeRoute) return null
 
   return (
@@ -121,15 +138,18 @@ const TeamPromptMeeting = (props: Props) => {
       <MeetingArea>
         <Suspense fallback={''}>
           <MeetingContent>
-            <MeetingHeaderAndPhase hideBottomBar={true}>
+            <StyledMeetingHeaderAndPhase
+              isOpen={isRightDrawerOpen && isDesktop}
+              hideBottomBar={true}
+            >
               <TeamPromptTopBar meetingRef={meeting} />
               <Prompt>What are you working on today? Stuck on anything?</Prompt>
               <ErrorBoundary>
                 <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
                   <ResponsesGrid>
-                    {transitioningTeamMembers.map((teamMember) => {
-                      const {child, onTransitionEnd, status} = teamMember
-                      const {key, picture, preferredName} = child
+                    {transitioningStages.map((transitioningStage) => {
+                      const {child: stage, onTransitionEnd, status} = transitioningStage
+                      const {key} = stage
 
                       return (
                         <TeamMemberResponse
@@ -137,18 +157,20 @@ const TeamPromptMeeting = (props: Props) => {
                           status={status}
                           onTransitionEnd={onTransitionEnd}
                         >
-                          <ResponseHeader>
-                            <Avatar picture={picture} size={48} />
-                            <TeamMemberName>{preferredName}</TeamMemberName>
-                          </ResponseHeader>
-                          <ResponseCard>Test</ResponseCard>
+                          <TeamPromptResponseCard stageRef={stage} />
                         </TeamMemberResponse>
                       )
                     })}
                   </ResponsesGrid>
                 </ResponsesGridContainer>
               </ErrorBoundary>
-            </MeetingHeaderAndPhase>
+              <PhaseWrapper>
+                <LinkButton>
+                  <img onClick={selectDiscussion} alt='Parabol' src={logoMarkPurple} />
+                </LinkButton>
+              </PhaseWrapper>
+            </StyledMeetingHeaderAndPhase>
+            <TeamPromptDiscussionDrawer meetingRef={meeting} isDesktop={isDesktop} />
           </MeetingContent>
         </Suspense>
       </MeetingArea>
