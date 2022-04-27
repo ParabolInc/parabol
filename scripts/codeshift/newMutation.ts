@@ -30,13 +30,9 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
     path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutation.ts'),
     'utf-8'
   )
-  const ast = j(baseMutation, {parser: tsParser()})
-  // rename mutation
-  ast.findVariableDeclarators('MUTATION_NAME').renameTo(camelMutationName)
-  // rename export
-  ast.find(j.ExportDefaultDeclaration).forEach((path) => {
-    ;(path.value.declaration as any).name = camelMutationName
-  })
+
+  const nextMutation = baseMutation.replace(/MUTATION_NAME/g, camelMutationName)
+  const ast = j(nextMutation, {parser: tsParser()})
 
   // add the publisher
   if (subscription) {
