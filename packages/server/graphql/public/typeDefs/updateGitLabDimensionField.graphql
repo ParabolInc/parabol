@@ -16,9 +16,9 @@ extend type Mutation {
     """
     meetingId: ID
     """
-    The unique global id of the issue
+    The id of the project the issue belongs to
     """
-    gid: ID
+    projectId: Int
   ): UpdateGitLabDimensionFieldPayload!
 }
 

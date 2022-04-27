@@ -12,9 +12,13 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
+import {getUserId} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
+import getIssue from '../nestedSchema/GitLab/queries/getIssue.graphql'
+import {GetIssueQuery} from './../../types/gitlabTypes'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -51,8 +55,11 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       resolve: async (
         {dimensionRefIdx, meetingId, teamId, taskId},
         _args: unknown,
-        {dataLoader}
+        context,
+        info
       ) => {
+        const {authToken, dataLoader} = context
+        const viewerId = getUserId(authToken)
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -111,10 +118,23 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         }
         if (service === 'gitlab') {
           const {gid} = integration
+          const gitlabAuth = await dataLoader
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'gitlab', teamId, userId: viewerId})
+          if (!gitlabAuth?.accessToken) return null
+          const {providerId, accessToken} = gitlabAuth
+          const provider = await dataLoader.get('integrationProviders').load(providerId)
+          if (!provider?.serverBaseUrl) return null
+          const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+          const gitlabRequest = manager.getGitLabRequest(info, context)
+          const [data] = await gitlabRequest<GetIssueQuery>(getIssue, {gid})
+          const {issue} = data
+          if (!issue) return null
+          const {projectId} = issue
           const dimensionName = await getDimensionName(meetingId)
           const gitlabFieldMap = await dataLoader
             .get('gitlabDimensionFieldMaps')
-            .load({teamId, dimensionName, gid})
+            .load({teamId, dimensionName, projectId, providerId})
           if (gitlabFieldMap) {
             return {
               name: gitlabFieldMap.labelTemplate,

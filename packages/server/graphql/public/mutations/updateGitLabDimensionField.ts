@@ -4,10 +4,11 @@ import upsertGitLabDimensionFieldMap from '../../../postgres/queries/upsertGitLa
 import {isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
+import {getUserId} from './../../../utils/authorization'
 
 const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'] = async (
   _source,
-  {dimensionName, labelTemplate, meetingId, gid},
+  {dimensionName, labelTemplate, meetingId, projectId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -28,12 +29,18 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
   if (!matchingDimension) {
     return {error: {message: 'Invalid dimension name'}}
   }
+  const viewerId = getUserId(authToken)
+  const gitlabAuth = await dataLoader
+    .get('teamMemberIntegrationAuths')
+    .load({service: 'gitlab', teamId, userId: viewerId})
+  if (!gitlabAuth.providerId) return {error: {message: 'Invalid dimension name'}}
 
   // TODO validate labelTemplate
 
   // RESOLUTION
   try {
-    await upsertGitLabDimensionFieldMap(teamId, dimensionName, gid, labelTemplate)
+    const {providerId} = gitlabAuth
+    await upsertGitLabDimensionFieldMap(teamId, dimensionName, projectId, providerId, labelTemplate)
   } catch (e) {
     console.log(e)
   }

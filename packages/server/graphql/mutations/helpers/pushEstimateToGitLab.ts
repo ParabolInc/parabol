@@ -7,6 +7,7 @@ import getPhase from '../../../utils/getPhase'
 import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
 import {GQLContext} from '../../graphql'
 import createNote from '../../nestedSchema/GitLab/mutations/createNote.graphql'
+import getIssue from '../../nestedSchema/GitLab/queries/getIssue.graphql'
 import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
 
 const pushEstimateToGitLab = async (
@@ -28,22 +29,26 @@ const pushEstimateToGitLab = async (
   >
   const {teamId} = task
   const {accessUserId, gid} = gitlabIntegration
-  const [auth, fieldMap] = await Promise.all([
-    dataLoader
-      .get('teamMemberIntegrationAuths')
-      .load({service: 'gitlab', teamId, userId: accessUserId}),
-    dataLoader.get('gitlabDimensionFieldMaps').load({teamId, dimensionName, gid})
-  ])
+  const auth = await dataLoader.get('teamMemberIntegrationAuths').load({
+    service: 'gitlab',
+    teamId,
+    userId: accessUserId
+  })
   if (!auth) return new Error('User no longer has access to GitLab')
-
-  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
-
   const {accessToken, providerId} = auth
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   if (!provider) return new Error('Integration provider not found')
   const manager = new GitLabServerManager(accessToken!, provider.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
+
+  const [data] = await gitlabRequest(getIssue, {gid})
+  const {issue} = data
+  const {projectId} = issue
+  const fieldMap = await dataLoader
+    .get('gitlabDimensionFieldMaps')
+    .load({teamId, dimensionName, projectId, providerId})
+  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')

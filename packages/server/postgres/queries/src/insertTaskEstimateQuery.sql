@@ -11,7 +11,7 @@ INSERT INTO "TaskEstimate" (
   "stageId",
   "discussionId",
   "jiraFieldId",
-  "githubLabelName",
+  "githubLabelName"
 ) VALUES (
   :changeSource,
   :name,
@@ -22,5 +22,5 @@ INSERT INTO "TaskEstimate" (
   :stageId,
   :discussionId,
   :jiraFieldId,
-  :githubLabelName,
+  :githubLabelName
 );
