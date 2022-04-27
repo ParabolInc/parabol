@@ -22,7 +22,7 @@ const ImageBlock = styled('div')<ImageBlockProps>(
     backgroundSize: 'cover',
     borderRadius: sansRadius ? 0 : '100%',
     boxShadow: sansShadow ? 'none' : undefined,
-    cursor: onClick ? 'pointer' : 'default',
+    ...(onClick ? {cursor: 'pointer'} : null),
     display: 'block',
     flexShrink: 0,
     width: size,

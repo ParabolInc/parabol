@@ -42,7 +42,7 @@ const OverflowCount = styled('div')<{
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
   width,
-  cursor: onClick ? 'pointer' : 'default'
+  ...(onClick ? {cursor: 'pointer'} : null)
 }))
 
 interface Props {
