@@ -9,11 +9,13 @@ import {desktopSidebarShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ICON_SIZE} from '../../styles/typographyV2'
 import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
+import Avatar from '../Avatar/Avatar'
 import DiscussionThreadRoot from '../DiscussionThreadRoot'
 import Icon from '../Icon'
-import LabelHeading from '../LabelHeading/LabelHeading'
 import PlainButton from '../PlainButton/PlainButton'
+import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import {TeamMemberName} from './TeamPromptResponseCard'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -57,22 +59,26 @@ const CloseIcon = styled(Icon)({
   }
 })
 
-const Header = styled('div')({
-  alignItems: 'center',
+const DiscussionResponseCard = styled('div')({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   display: 'flex',
+  flexDirection: 'column',
   justifyContent: 'space-between',
   padding: '8px 8px 8px 12px',
   width: '100%'
 })
 
-const HeaderLabel = styled(LabelHeading)({
-  textTransform: 'none',
-  width: '100%'
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: '0 8px'
 })
 
 const StyledCloseButton = styled(PlainButton)({
-  height: 24
+  height: 24,
+  marginLeft: 'auto'
 })
 
 interface Props {
@@ -92,6 +98,10 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
             id
             ... on TeamPromptResponseStage {
               discussionId
+              teamMember {
+                picture
+                preferredName
+              }
             }
           }
         }
@@ -108,8 +118,17 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
   }
 
   const stage = findStageById(meeting.phases, localStageId)
-  const discussionId = stage?.stage.discussionId
+  if (!stage) {
+    return null
+  }
+
+  const discussionId = stage.stage.discussionId
   if (!discussionId) {
+    return null
+  }
+
+  const teamMember = stage.stage.teamMember
+  if (!teamMember) {
     return null
   }
 
@@ -122,6 +141,20 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
+  const content = {
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          {type: 'text', text: "What's up! This editor instance exports its "},
+          {type: 'text', marks: [{type: 'bold'}], text: 'content'},
+          {type: 'text', text: ' as JSON.'}
+        ]
+      }
+    ]
+  }
+
   return (
     <ResponsiveDashSidebar
       isOpen={isRightDrawerOpen}
@@ -130,12 +163,18 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
       <Drawer isDesktop={isDesktop} isOpen={isRightDrawerOpen}>
-        <Header>
-          <HeaderLabel>{'TODO: show response card'}</HeaderLabel>
-          <StyledCloseButton onClick={onToggle}>
-            <CloseIcon>close</CloseIcon>
-          </StyledCloseButton>
-        </Header>
+        <DiscussionResponseCard>
+          <Header>
+            <Avatar picture={teamMember.picture} size={48} />
+            <TeamMemberName>{teamMember.preferredName}</TeamMemberName>
+            {/* :TODO: (jmtaber129): Show when response was last updated */}
+            <StyledCloseButton onClick={onToggle}>
+              <CloseIcon>close</CloseIcon>
+            </StyledCloseButton>
+          </Header>
+          <PromptResponseEditor autoFocus={true} content={content} readOnly={true} />
+          {/* :TODO: (jmtaber129): Include reactjis */}
+        </DiscussionResponseCard>
         <ThreadColumn>
           <DiscussionThreadRoot
             discussionId={discussionId}
