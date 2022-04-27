@@ -7,6 +7,7 @@ import composeResolvers from '../composeResolvers'
 import {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
 import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
+import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import mutation from '../rootMutation'
 import query from '../rootQuery'
 import subscription from '../rootSubscription'
@@ -86,7 +87,7 @@ const addRequestors = (schema: GraphQLSchema) => {
   }
 }
 
-const rootSchema = addRequestors(withNestedResolversSchema)
+const rootSchema = addRequestors(resolveTypesForMutationPayloads(withNestedResolversSchema))
 
 export type RootSchema = typeof rootSchema
 export default rootSchema

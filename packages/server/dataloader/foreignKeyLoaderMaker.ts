@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
-import RootDataLoader from './RootDataLoader'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import RootDataLoader from './RootDataLoader'
 
 type LoaderMakers = typeof primaryKeyLoaderMakers
 type LoaderKeys = keyof LoaderMakers
@@ -13,6 +13,14 @@ type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends Data
   ? NonNullable<T>
   : any
 
+type LoaderKeyType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends DataLoader<
+  infer KeyT,
+  any,
+  infer KeyT
+>
+  ? KeyT
+  : any
+
 /**
  * Used to register loaders for types by foreign key.
  *
@@ -22,22 +30,24 @@ type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends Data
  */
 export function foreignKeyLoaderMaker<
   LoaderName extends LoaderKeys,
-  T extends LoaderType<LoaderName> & {id: string},
-  KeyName extends keyof T
+  KeyName extends keyof LoaderType<LoaderName>
 >(
   primaryLoaderKey: LoaderName,
   foreignKey: KeyName,
-  fetchFn: (keys: readonly T[KeyName][]) => Promise<T[]>
+  fetchFn: (keys: readonly LoaderType<LoaderName>[KeyName][]) => Promise<LoaderType<LoaderName>[]>
 ) {
+  type T = LoaderType<LoaderName>
+  type PrimaryKeyT = LoaderKeyType<LoaderName>
   type KeyValue = T[KeyName]
   return (parent: RootDataLoader) => {
-    const primaryLoader = parent.get(primaryLoaderKey)
+    const primaryLoader = parent.get(primaryLoaderKey) as DataLoader<PrimaryKeyT, T, PrimaryKeyT>
     return new DataLoader<KeyValue, T[], KeyValue>(
       async (ids) => {
         const items = await fetchFn(ids)
         items.forEach((item) => {
-          if (item && item['id']) {
-            primaryLoader.clear(item['id']).prime(item['id'], item as any)
+          const key = item?.['id']
+          if (key) {
+            primaryLoader.clear(key).prime(key, item)
           }
         })
         return ids.map((id) => items.filter((item) => item && item[foreignKey] === id))
