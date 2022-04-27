@@ -64,12 +64,7 @@ const AvatarList = (props: Props) => {
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
-  const transitionChildren = useOverflowAvatars(
-    containerRef ? containerRef : rowRef,
-    users,
-    size,
-    overlap
-  )
+  const transitionChildren = useOverflowAvatars(containerRef ?? rowRef, users, size, overlap)
   const showAnimated = isAnimated ?? true
   const activeTChildren = transitionChildren.filter(
     (child) => child.status !== TransitionStatus.EXITING
