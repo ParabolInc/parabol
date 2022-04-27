@@ -3,6 +3,7 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import {GetIssueQuery} from '../../../types/gitlabTypes'
 import getPhase from '../../../utils/getPhase'
 import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
 import {GQLContext} from '../../graphql'
@@ -41,8 +42,9 @@ const pushEstimateToGitLab = async (
   const manager = new GitLabServerManager(accessToken!, provider.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
 
-  const [data] = await gitlabRequest(getIssue, {gid})
+  const [data] = await gitlabRequest<GetIssueQuery>(getIssue, {gid})
   const {issue} = data
+  if (!issue) return new Error(`Unable to get GitLab issue with id: ${gid}`)
   const {projectId} = issue
   const fieldMap = await dataLoader
     .get('gitlabDimensionFieldMaps')
