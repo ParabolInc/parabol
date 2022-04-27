@@ -80,16 +80,19 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     const mountingKeys = [] as Key[]
     children.forEach((nextChild) => {
       const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)
-      const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev]!.status
+      const needToUpdateStatus =
+        idxInPrev === -1 || prevTChildren[idxInPrev]!.status === TransitionStatus.EXITING
+      const status = needToUpdateStatus
+        ? TransitionStatus.MOUNTED
+        : prevTChildren[idxInPrev]!.status
       currentTChildren.push({
         status,
         child: nextChild,
         onTransitionEnd: transitionEndFactory(nextChild.key)
       })
-      if (idxInPrev === -1) {
+      if (needToUpdateStatus) {
         touched = true
         mountingKeys.push(nextChild.key)
-        // beginTransition(nextChild.key)
       }
     })
     if (touched) {
