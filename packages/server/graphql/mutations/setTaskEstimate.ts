@@ -9,6 +9,7 @@ import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrati
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
@@ -16,7 +17,6 @@ import {GQLContext} from '../graphql'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager';
 
 const setTaskEstimate = {
   type: new GraphQLNonNull(SetTaskEstimatePayload),
@@ -188,17 +188,33 @@ const setTaskEstimate = {
       githubLabelName = githubPushRes
     } else if (service === 'azureDevOps') {
       const {accessUserId, instanceId, issueKey, projectKey} = integration!
-      const [auth, azureDevOpsDimensionFieldMapEntry] = await Promise.all([
+      const [auth, azureDevOpsDimensionFieldMapEntry, azureDevOpsWorkItem] = await Promise.all([
         dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
-        dataLoader.get('azureDevOpsDimensionFieldMap').load({teamId, dimensionName, instanceId, projectKey })
+        dataLoader
+          .get('azureDevOpsDimensionFieldMap')
+          .load({teamId, dimensionName, instanceId, projectKey}),
+        dataLoader
+          .get('azureDevOpsUserStory')
+          .load({
+            teamId,
+            userId: accessUserId,
+            instanceId,
+            projectId: projectKey,
+            viewerId: accessUserId,
+            workItemId: issueKey
+          })
       ])
-
+      // console.log(azureDevOpsWorkItem)
       if (!auth) {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
 
       if (!azureDevOpsDimensionFieldMapEntry) {
         return {error: {message: 'Cannot find the correct field to push changes to.'}}
+      }
+
+      if (!azureDevOpsWorkItem) {
+        return {error: {message: 'Cannot find the correct work item to push changes to.'}}
       }
 
       const fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
@@ -217,10 +233,19 @@ const setTaskEstimate = {
           projectKey
         )
         if ('message' in res) {
-          return {error: {message:res.message}}
+          return {error: {message: res.message}}
         }
       } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        const fieldId = '/fields/Microsoft.VSTS.Scheduling.StoryPoints'
+        // Agile fields in map, TODO add Scrum and CMMI fields
+        const fieldTypeToId = {
+          Epic: '/fields/Microsoft.VSTS.Scheduling.Effort',
+          Feature: '/fields/Microsoft.VSTS.Scheduling.Effort',
+          'User Story': '/fields/Microsoft.VSTS.Scheduling.StoryPoints',
+          Task: '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate',
+          Bug: '/fields/Microsoft.VSTS.Scheduling.StoryPoints'
+        }
+
+        const fieldId = fieldTypeToId[azureDevOpsWorkItem.type]
         try {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
           await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
