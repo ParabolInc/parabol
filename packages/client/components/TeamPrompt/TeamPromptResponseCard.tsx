@@ -8,9 +8,9 @@ import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
 import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import Avatar from '../Avatar/Avatar'
-import AvatarList from '../AvatarList'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
+import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
 
@@ -35,11 +35,13 @@ const ResponseCard = styled('div')<{isEmpty: boolean}>(({isEmpty = false}) => ({
   userSelect: 'none'
 }))
 
-const TeamMemberName = styled('h3')({
+export const TeamMemberName = styled('h3')({
   padding: '0 8px'
 })
 
 const ReplyButton = styled(PlainButton)({
+  display: 'flex',
+  alignItems: 'flex-start',
   fontWeight: 600,
   lineHeight: '24px',
   color: PALETTE.SKY_500,
@@ -67,16 +69,7 @@ const TeamPromptResponseCard = (props: Props) => {
         }
         discussion {
           commentCount
-          thread(first: 1000) @connection(key: "TeamPromptResponseCard_thread") {
-            edges {
-              node {
-                createdByUser {
-                  id
-                  ...AvatarList_users
-                }
-              }
-            }
-          }
+          ...TeamPromptRepliesAvatarList_discussion
         }
       }
     `,
@@ -99,14 +92,7 @@ const TeamPromptResponseCard = (props: Props) => {
   const {picture, preferredName, userId} = teamMember
 
   const isCurrentViewer = userId === viewerId
-  const isEmptyResponse = !isCurrentViewer // :TODO: (jmtaber129): Determine based on actual response, too
-
-  const discussionUsers = responseStage.discussion.thread.edges
-    .map((node) => node.node.createdByUser)
-    .filter((user) => !!user)
-  const distinctDiscussionUsers = Object.values(
-    Object.fromEntries(discussionUsers.map((user) => [user!.id, user!]))
-  )
+  const isEmptyResponse = false // :TODO: (jmtaber129): Determine based on actual response, too
 
   return (
     <>
@@ -132,7 +118,7 @@ const TeamPromptResponseCard = (props: Props) => {
             <ReplyButton onClick={() => onSelectDiscussion()}>
               {responseStage.discussion.commentCount > 0 ? (
                 <>
-                  <AvatarList users={distinctDiscussionUsers} size={28} />
+                  <TeamPromptRepliesAvatarList discussionRef={responseStage.discussion} />
                   {`${responseStage.discussion.commentCount} replies`}
                 </>
               ) : (
