@@ -9,6 +9,7 @@ import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrati
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
@@ -193,16 +194,14 @@ const setTaskEstimate = {
         dataLoader
           .get('azureDevOpsDimensionFieldMap')
           .load({teamId, dimensionName, instanceId, projectKey}),
-        dataLoader
-          .get('azureDevOpsUserStory')
-          .load({
-            teamId,
-            userId: accessUserId,
-            instanceId,
-            projectId: projectKey,
-            viewerId: accessUserId,
-            workItemId: issueKey
-          })
+        dataLoader.get('azureDevOpsUserStory').load({
+          teamId,
+          userId: accessUserId,
+          instanceId,
+          projectId: projectKey,
+          viewerId: accessUserId,
+          workItemId: issueKey
+        })
       ])
       // console.log(azureDevOpsWorkItem)
       if (!auth) {
@@ -236,15 +235,6 @@ const setTaskEstimate = {
           return {error: {message: res.message}}
         }
       } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        // Agile fields in map, TODO add Scrum and CMMI fields
-        const fieldTypeToId = {
-          Epic: '/fields/Microsoft.VSTS.Scheduling.Effort',
-          Feature: '/fields/Microsoft.VSTS.Scheduling.Effort',
-          'User Story': '/fields/Microsoft.VSTS.Scheduling.StoryPoints',
-          Task: '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate',
-          Bug: '/fields/Microsoft.VSTS.Scheduling.StoryPoints'
-        }
-
         const fieldId = fieldTypeToId[azureDevOpsWorkItem.type]
         try {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
