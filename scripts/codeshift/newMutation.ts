@@ -87,8 +87,8 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
     PROJECT_ROOT,
     'packages',
     'server',
-    'public',
     'graphql',
+    'public',
     'typeDefs'
   )
   const payloadPath = path.join(TYPEDEF_ROOT, `${camelMutationName}.graphql`)

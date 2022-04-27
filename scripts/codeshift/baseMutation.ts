@@ -1,3 +1,4 @@
+import publish from '../../../utils/publish'
 import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
