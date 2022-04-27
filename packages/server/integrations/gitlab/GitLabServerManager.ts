@@ -5,6 +5,7 @@ import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
+import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
 import {RootSchema} from '../../graphql/public/rootSchema'
@@ -12,6 +13,7 @@ import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/g
 import {
   CreateIssueMutation,
   CreateNoteMutation,
+  GetIssueQuery,
   GetProfileQuery,
   GetProjectsQuery
 } from '../../types/gitlabTypes'
@@ -128,6 +130,14 @@ class GitLabServerManager implements TaskIntegrationManager {
       teamId
     })
     return [projectsData, projectsError] as const
+  }
+
+  async getIssue({gid}: {gid: string}) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [issueData, issueError] = await gitlabRequest<GetIssueQuery>(getIssue, {
+      gid
+    })
+    return [issueData, issueError] as const
   }
 
   async isTokenValid(

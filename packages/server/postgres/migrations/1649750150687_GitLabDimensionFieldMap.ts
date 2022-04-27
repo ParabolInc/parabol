@@ -6,12 +6,13 @@ export async function up() {
   await client.connect()
   await client.query(`
   CREATE TABLE IF NOT EXISTS "GitLabDimensionFieldMap" (
-    "id" SERIAL,
-    "teamId" VARCHAR(120) NOT NULL,
+    "id" SERIAL UNIQUE,
+    "teamId" VARCHAR(100) NOT NULL,
     "dimensionName" VARCHAR(120) NOT NULL,
-    "gid" VARCHAR(140) NOT NULL,
+    "projectId" INT NOT NULL,
+    "providerId" INT NOT NULL,
     "labelTemplate" VARCHAR(100) NOT NULL,
-    PRIMARY KEY ("teamId", "dimensionName", "gid")
+    PRIMARY KEY ("teamId", "dimensionName", "projectId", "providerId")
   );
   `)
   await client.end()

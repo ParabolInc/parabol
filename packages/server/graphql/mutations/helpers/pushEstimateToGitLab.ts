@@ -27,18 +27,25 @@ const pushEstimateToGitLab = async (
   >
   const {teamId} = task
   const {accessUserId, gid} = gitlabIntegration
-  const [auth, fieldMap] = await Promise.all([
-    dataLoader
-      .get('teamMemberIntegrationAuths')
-      .load({service: 'gitlab', teamId, userId: accessUserId}),
-    dataLoader.get('gitlabDimensionFieldMaps').load({teamId, dimensionName, gid})
-  ])
+  const auth = await dataLoader.get('teamMemberIntegrationAuths').load({
+    service: 'gitlab',
+    teamId,
+    userId: accessUserId
+  })
   if (!auth) return new Error('User no longer has access to GitLab')
-
-  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
-  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
   const {providerId} = auth
   const provider = await dataLoader.get('integrationProviders').load(providerId)
+  if (!provider?.serverBaseUrl) return new Error('Integration provider not found')
+  const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
+  const [issueData] = await manager.getIssue({gid})
+  const {issue} = issueData
+  if (!issue) return new Error(`Unable to get GitLab issue with id ${gid}`)
+  const {projectId} = issue
+  const fieldMap = await dataLoader
+    .get('gitlabDimensionFieldMaps')
+    .load({teamId, dimensionName, projectId, providerId})
+  const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+  if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_NULL) return undefined
   if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
     const {name: meetingName, phases} = meeting
     const estimatePhase = getPhase(phases, 'ESTIMATE')

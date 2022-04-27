@@ -7,7 +7,10 @@ import {GitLabFieldMenu_stage} from '../__generated__/GitLabFieldMenu_stage.grap
 import {UpdateGitLabDimensionFieldMutation as TUpdateGitLabDimensionFieldMutation} from '../__generated__/UpdateGitLabDimensionFieldMutation.graphql'
 
 graphql`
-  fragment UpdateGitLabDimensionFieldMutation_team on UpdateGitLabDimensionFieldSuccess {
+  fragment UpdateGitLabDimensionFieldMutation_team on UpdateGitLabDimensionFieldPayload {
+    error {
+      message
+    }
     meeting {
       phases {
         ... on EstimatePhase {
@@ -27,20 +30,15 @@ const mutation = graphql`
   mutation UpdateGitLabDimensionFieldMutation(
     $dimensionName: String!
     $labelTemplate: String!
-    $gid: ID!
+    $projectId: Int!
     $meetingId: ID!
   ) {
     updateGitLabDimensionField(
       dimensionName: $dimensionName
       labelTemplate: $labelTemplate
-      gid: $gid
+      projectId: $projectId
       meetingId: $meetingId
     ) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UpdateGitLabDimensionFieldMutation_team @relay(mask: false)
     }
   }
@@ -55,7 +53,7 @@ const UpdateGitLabDimensionFieldMutation: StandardMutation<TUpdateGitLabDimensio
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {dimensionName, labelTemplate, gid, meetingId} = variables
+      const {dimensionName, labelTemplate, projectId, meetingId} = variables
       const meeting = store.get(meetingId)
       if (!meeting) return
       const phases = meeting.getLinkedRecords('phases')
@@ -71,7 +69,7 @@ const UpdateGitLabDimensionFieldMutation: StandardMutation<TUpdateGitLabDimensio
         const _integration = task.getLinkedRecord('integration')
         if (_integration.getType() !== '_xGitLabIssue') return
         const integration = _integration as DiscriminateProxy<typeof _integration, '_xGitLabIssue'>
-        if (integration.getValue('id') !== gid) return
+        if (integration.getValue('projectId') !== projectId) return
         const nextServiceField = createProxyRecord(store, 'ServiceField', {
           name: labelTemplate,
           type: 'string'

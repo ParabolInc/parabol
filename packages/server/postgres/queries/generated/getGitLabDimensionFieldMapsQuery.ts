@@ -5,7 +5,8 @@ import { PreparedQuery } from '@pgtyped/query';
 export interface IGetGitLabDimensionFieldMapsQueryParams {
   teamId: string | null | void;
   dimensionName: string | null | void;
-  gid: string | null | void;
+  projectId: number | null | void;
+  providerId: number | null | void;
 }
 
 /** 'GetGitLabDimensionFieldMapsQuery' return type */
@@ -13,7 +14,8 @@ export interface IGetGitLabDimensionFieldMapsQueryResult {
   id: number;
   teamId: string;
   dimensionName: string;
-  gid: string;
+  projectId: number;
+  providerId: number;
   labelTemplate: string;
 }
 
@@ -23,13 +25,13 @@ export interface IGetGitLabDimensionFieldMapsQueryQuery {
   result: IGetGitLabDimensionFieldMapsQueryResult;
 }
 
-const getGitLabDimensionFieldMapsQueryIR: any = {"name":"getGitLabDimensionFieldMapsQuery","params":[{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":105,"b":110,"line":5,"col":18}]}},{"name":"dimensionName","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":135,"b":147,"line":5,"col":48}]}},{"name":"gid","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":162,"b":164,"line":5,"col":75}]}}],"usedParamSet":{"teamId":true,"dimensionName":true,"gid":true},"statement":{"body":"SELECT * from \"GitLabDimensionFieldMap\"\nWHERE \"teamId\" = :teamId AND \"dimensionName\" = :dimensionName AND \"gid\" = :gid","loc":{"a":47,"b":164,"line":4,"col":0}}};
+const getGitLabDimensionFieldMapsQueryIR: any = {"name":"getGitLabDimensionFieldMapsQuery","params":[{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":105,"b":110,"line":5,"col":18}]}},{"name":"dimensionName","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":135,"b":147,"line":5,"col":48}]}},{"name":"projectId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":168,"b":176,"line":5,"col":81}]}},{"name":"providerId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":198,"b":207,"line":5,"col":111}]}}],"usedParamSet":{"teamId":true,"dimensionName":true,"projectId":true,"providerId":true},"statement":{"body":"SELECT * from \"GitLabDimensionFieldMap\"\nWHERE \"teamId\" = :teamId AND \"dimensionName\" = :dimensionName AND \"projectId\" = :projectId AND \"providerId\" = :providerId","loc":{"a":47,"b":207,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT * from "GitLabDimensionFieldMap"
- * WHERE "teamId" = :teamId AND "dimensionName" = :dimensionName AND "gid" = :gid
+ * WHERE "teamId" = :teamId AND "dimensionName" = :dimensionName AND "projectId" = :projectId AND "providerId" = :providerId
  * ```
  */
 export const getGitLabDimensionFieldMapsQuery = new PreparedQuery<IGetGitLabDimensionFieldMapsQueryParams,IGetGitLabDimensionFieldMapsQueryResult>(getGitLabDimensionFieldMapsQueryIR);
