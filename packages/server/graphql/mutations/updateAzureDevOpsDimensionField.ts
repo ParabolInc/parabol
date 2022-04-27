@@ -54,7 +54,6 @@ const updateAzureDevOpsDimensionField = {
 
     // VALIDATION
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    console.log(`meeting:${meeting}`)
     if (!meeting) {
       return {error: {message: 'Invalid meetingId'}}
     }
