@@ -1,11 +1,11 @@
-import {JSONContent} from '@tiptap/core'
+import {generateText, JSONContent} from '@tiptap/core'
+import {createEditorExtensions} from 'parabol-client/components/promptResponse/PromptResponseEditor'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import extractTextFromTipTapJSONContent from '../../mutations/helpers/tiptap/extractTextFromTipTapJSONContent'
 import {MutationResolvers} from '../resolverTypes'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
@@ -51,7 +51,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     return standardError(new Error('Invalid stringified JSON'), {userId: viewerId})
   }
 
-  const plaintextContent = extractTextFromTipTapJSONContent(contentJSON)
+  const plaintextContent = generateText(contentJSON, createEditorExtensions())
   const teamPromptResponseId = await upsertTeamPromptResponseQuery({
     meetingId,
     userId: viewerId,
