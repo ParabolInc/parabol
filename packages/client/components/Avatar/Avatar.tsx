@@ -11,9 +11,7 @@ type ImageBlockProps = Pick<
 const ImageBlock = styled('div')<ImageBlockProps>(
   ({isConnected, sansRadius, sansShadow, picture, size, onClick}) => ({
     backgroundImage: `${
-      isConnected || isConnected === undefined
-        ? ''
-        : 'linear-gradient(rgba(255,255,255,.65), rgba(255,255,255,.65)),'
+      isConnected === false ? 'linear-gradient(rgba(255,255,255,.65), rgba(255,255,255,.65)),' : ''
     } url(${picture}), url(${defaultUserAvatar})`,
     ':hover': {
       backgroundImage: `linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)),

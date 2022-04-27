@@ -55,7 +55,7 @@ const StyledButton = styled(PlainButton)({
   '&:hover': {
     cursor: 'pointer'
   },
-  marginTop: sizeToHeightBump[ElementWidth.DASHBOARD_AVATAR] * -1 // coupling with AvatarList styles
+  marginTop: -sizeToHeightBump[ElementWidth.DASHBOARD_AVATAR] // coupling with AvatarList styles
 })
 
 interface Props {
@@ -101,7 +101,7 @@ const DashboardAvatars = (props: Props) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
       if (!teamMember) return
-      const memberInFocus = teamMembers.find((x) => x.user.id === userId)
+      const memberInFocus = teamMembers.find((teamMember) => teamMember.user.id === userId)
       if (!memberInFocus) return
       const {id: teamMemberId} = memberInFocus
       teamMember.setValue(teamMemberId, 'manageTeamMemberId')

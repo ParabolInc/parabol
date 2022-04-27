@@ -51,12 +51,21 @@ interface Props {
 }
 
 const AvatarList = (props: Props) => {
-  const {users, onUserClick, onOverflowClick, size, emptyEl, isAnimated, borderColor} = props
+  const {
+    users,
+    onUserClick,
+    onOverflowClick,
+    size,
+    emptyEl,
+    isAnimated,
+    borderColor,
+    containerRef
+  } = props
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
   const transitionChildren = useOverflowAvatars(
-    props.containerRef ? props.containerRef : rowRef,
+    containerRef ? containerRef : rowRef,
     users,
     size,
     overlap
@@ -66,8 +75,7 @@ const AvatarList = (props: Props) => {
     (child) => child.status !== TransitionStatus.EXITING
   )
   const minHeight = activeTChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
-  const minWidth =
-    activeTChildren.length === 0 ? 0 : (activeTChildren.length - 1) * offsetSize + size
+  const minWidth = activeTChildren.length === 0 ? 0 : activeTChildren.length * offsetSize + overlap
   return (
     <Wrapper ref={rowRef} minHeight={minHeight} size={size} minWidth={minWidth}>
       {transitionChildren.length === 0 && emptyEl}
