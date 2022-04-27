@@ -248,7 +248,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuRootQuery: (_teamId: unknown, userId: string) => {
+    TaskFooterIntegrateMenuQuery: (_teamId: unknown, userId: string) => {
       const user = this.db.users[0]
       return {
         viewer: {
@@ -263,7 +263,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    NewMeetingSummaryRootQuery: () => {
+    NewMeetingSummaryQuery: () => {
       return {
         viewer: {
           ...this.db.users[0],
