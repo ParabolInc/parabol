@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -9,18 +8,46 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
-import {UnpaidTeamModal_viewer} from '../../../../__generated__/UnpaidTeamModal_viewer.graphql'
+import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
+import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
 interface Props {
-  viewer: UnpaidTeamModal_viewer
+  queryRef: PreloadedQuery<UnpaidTeamModalQuery>
 }
 
+const query = graphql`
+  query UnpaidTeamModalQuery($teamId: ID!) {
+    viewer {
+      team(teamId: $teamId) {
+        lockMessageHTML
+        organization {
+          id
+          billingLeaders {
+            id
+            preferredName
+            email
+          }
+          creditCard {
+            brand
+          }
+          name
+        }
+        name
+      }
+    }
+  }
+`
+
 const UnpaidTeamModal = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<UnpaidTeamModalQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {viewerId} = atmosphere
@@ -62,25 +89,4 @@ const UnpaidTeamModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(UnpaidTeamModal, {
-  viewer: graphql`
-    fragment UnpaidTeamModal_viewer on User {
-      team(teamId: $teamId) {
-        lockMessageHTML
-        organization {
-          id
-          billingLeaders {
-            id
-            preferredName
-            email
-          }
-          creditCard {
-            brand
-          }
-          name
-        }
-        name
-      }
-    }
-  `
-})
+export default UnpaidTeamModal

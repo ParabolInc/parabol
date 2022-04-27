@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import PROD from '../../../PROD'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
@@ -32,6 +33,8 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
     (socket) => (JSON.parse(socket) as UserPresence).socketId === socketId
   )
   if (!disconnectingSocket) {
+    // this happens a lot on server restart in dev mode
+    if (!PROD) return {user}
     throw new Error('Called disconnect without a valid socket')
   }
   await redis.lrem(`presence:${userId}`, 0, disconnectingSocket)

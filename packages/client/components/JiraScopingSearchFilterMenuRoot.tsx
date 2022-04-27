@@ -1,17 +1,12 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
 import {MenuProps} from '../hooks/useMenu'
 import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
-
-const query = graphql`
-  query JiraScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
-    viewer {
-      ...JiraScopingSearchFilterMenu_viewer
-    }
-  }
-`
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import jiraScopingSearchFilterMenuQuery, {
+  JiraScopingSearchFilterMenuQuery
+} from '../__generated__/JiraScopingSearchFilterMenuQuery.graphql'
+import ErrorBoundary from './ErrorBoundary'
+import MockFieldList from './MockFieldList'
 
 interface Props {
   menuProps: MenuProps
@@ -21,18 +16,16 @@ interface Props {
 
 const JiraScopingSearchFilterMenuRoot = (props: Props) => {
   const {menuProps, teamId, meetingId} = props
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<JiraScopingSearchFilterMenuQuery>(
+    jiraScopingSearchFilterMenuQuery,
+    {teamId, meetingId}
+  )
   return (
-    <QueryRenderer
-      variables={{teamId, meetingId}}
-      environment={atmosphere}
-      query={query}
-      fetchPolicy={'store-or-network' as any}
-      render={({props, error}) => {
-        const viewer = (props as any)?.viewer ?? null
-        return <JiraScopingSearchFilterMenu viewer={viewer} error={error} menuProps={menuProps} />
-      }}
-    />
+    <ErrorBoundary>
+      <Suspense fallback={<MockFieldList />}>
+        {queryRef && <JiraScopingSearchFilterMenu queryRef={queryRef} menuProps={menuProps} />}
+      </Suspense>
+    </ErrorBoundary>
   )
 }
 

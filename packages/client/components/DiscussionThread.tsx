@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useRef} from 'react'
+import React, {ReactNode, RefObject, useMemo, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
@@ -33,10 +33,12 @@ interface Props {
   allowedThreadables: DiscussionThreadables[]
   width?: string
   queryRef: PreloadedQuery<DiscussionThreadQuery>
+  header?: ReactNode
+  emptyState?: ReactNode
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, queryRef} = props
+  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState} = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
@@ -114,6 +116,8 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
         viewer={viewer}
+        header={header}
+        emptyState={emptyState}
       />
       <DiscussionThreadInput
         allowedThreadables={allowedThreadables}

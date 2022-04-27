@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import {PokerTemplateListPublic_viewer} from '../../../__generated__/PokerTemplateListPublic_viewer.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
+import {PokerTemplateListPublicQuery} from '../../../__generated__/PokerTemplateListPublicQuery.graphql'
 
 const TemplateList = styled('ul')({
   listStyle: 'none',
@@ -13,11 +13,40 @@ const TemplateList = styled('ul')({
 })
 
 interface Props {
-  viewer: PokerTemplateListPublic_viewer
+  queryRef: PreloadedQuery<PokerTemplateListPublicQuery>
 }
+const query = graphql`
+  query PokerTemplateListPublicQuery($teamId: ID!) {
+    viewer {
+      id
+      team(teamId: $teamId) {
+        id
+        meetingSettings(meetingType: poker) {
+          ... on PokerMeetingSettings {
+            publicTemplates(first: 20) @connection(key: "PokerTemplateListPublic_publicTemplates") {
+              edges {
+                node {
+                  ...PokerTemplateItem_template
+                  id
+                }
+              }
+            }
+            activeTemplate {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 const PokerTemplateListPublic = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<PokerTemplateListPublicQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const publicTemplates = meetingSettings.publicTemplates!
@@ -41,28 +70,4 @@ const PokerTemplateListPublic = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerTemplateListPublic, {
-  viewer: graphql`
-    fragment PokerTemplateListPublic_viewer on User {
-      id
-      team(teamId: $teamId) {
-        id
-        meetingSettings(meetingType: poker) {
-          ... on PokerMeetingSettings {
-            publicTemplates(first: 20) @connection(key: "PokerTemplateListPublic_publicTemplates") {
-              edges {
-                node {
-                  ...PokerTemplateItem_template
-                  id
-                }
-              }
-            }
-            activeTemplate {
-              id
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default PokerTemplateListPublic

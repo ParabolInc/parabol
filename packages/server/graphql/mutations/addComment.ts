@@ -1,13 +1,13 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
+import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -67,14 +67,16 @@ const addComment = {
 
     const dbComment = new Comment({...comment, content, createdBy: viewerId})
     const {id: commentId, isAnonymous, threadParentId} = dbComment
-    await r
-      .table('Comment')
-      .insert(dbComment)
-      .run()
+    await r.table('Comment').insert(dbComment).run()
 
     const data = {commentId, meetingId}
     const {phases, teamId} = meeting!
-    const threadablePhases = ['discuss', 'agendaitems', 'ESTIMATE'] as NewMeetingPhaseTypeEnum[]
+    const threadablePhases = [
+      'discuss',
+      'agendaitems',
+      'ESTIMATE',
+      'RESPONSES'
+    ] as NewMeetingPhaseTypeEnum[]
     const containsThreadablePhase = phases.find(({phaseType}: GenericMeetingPhase) =>
       threadablePhases.includes(phaseType)
     )!

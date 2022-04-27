@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import {ReflectTemplateListPublic_viewer} from '../../../__generated__/ReflectTemplateListPublic_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
+import {ReflectTemplateListPublicQuery} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 
 const TemplateList = styled('ul')({
   listStyle: 'none',
@@ -13,11 +13,42 @@ const TemplateList = styled('ul')({
 })
 
 interface Props {
-  viewer: ReflectTemplateListPublic_viewer
+  queryRef: PreloadedQuery<ReflectTemplateListPublicQuery>
 }
 
+const query = graphql`
+  query ReflectTemplateListPublicQuery($teamId: ID!) {
+    viewer {
+      id
+      team(teamId: $teamId) {
+        id
+        meetingSettings(meetingType: retrospective) {
+          ... on RetrospectiveMeetingSettings {
+            publicTemplates(first: 50)
+              @connection(key: "ReflectTemplateListPublic_publicTemplates") {
+              edges {
+                node {
+                  ...ReflectTemplateItem_template
+                  id
+                }
+              }
+            }
+            activeTemplate {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const ReflectTemplateListPublic = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<ReflectTemplateListPublicQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const publicTemplates = meetingSettings.publicTemplates!
@@ -41,29 +72,4 @@ const ReflectTemplateListPublic = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateListPublic, {
-  viewer: graphql`
-    fragment ReflectTemplateListPublic_viewer on User {
-      id
-      team(teamId: $teamId) {
-        id
-        meetingSettings(meetingType: retrospective) {
-          ... on RetrospectiveMeetingSettings {
-            publicTemplates(first: 50)
-              @connection(key: "ReflectTemplateListPublic_publicTemplates") {
-              edges {
-                node {
-                  ...ReflectTemplateItem_template
-                  id
-                }
-              }
-            }
-            activeTemplate {
-              id
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default ReflectTemplateListPublic

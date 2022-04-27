@@ -1,5 +1,5 @@
 import {commitLocalUpdate} from 'react-relay'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import Atmosphere from '../../Atmosphere'
 import {RecordSourceProxy} from 'relay-runtime'
 

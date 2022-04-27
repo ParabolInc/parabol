@@ -76,8 +76,8 @@ const GitHubScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitHubScopingSearchResults_query on Query
-        @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
-        @refetchable(queryName: "GitHubScopingSearchResultsPaginationQuery") {
+      @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
+      @refetchable(queryName: "GitHubScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
@@ -188,13 +188,11 @@ const GitHubScopingSearchResults = (props: Props) => {
   }
   return (
     <>
-      {
-        <GitHubScopingSelectAllIssues
-          usedServiceTaskIds={usedServiceTaskIds}
-          issuesRef={issues}
-          meetingId={meetingId}
-        />
-      }
+      <GitHubScopingSelectAllIssues
+        usedServiceTaskIds={usedServiceTaskIds}
+        issuesRef={issues}
+        meetingId={meetingId}
+      />
       <ResultScroller>
         {query && (
           <NewGitHubIssueInput

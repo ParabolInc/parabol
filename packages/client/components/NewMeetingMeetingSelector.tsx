@@ -4,7 +4,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, NewMeeting} from '../types/constEnums'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
