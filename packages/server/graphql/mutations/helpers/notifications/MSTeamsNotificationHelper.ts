@@ -80,9 +80,10 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingLinkTextBlock.wrap = true
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
     const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
-    joinMeetingAction.title = 'Join Meeting'
+    joinMeetingAction.title = 'Join meeting'
     joinMeetingAction.url = meetingUrl
     joinMeetingAction.id = 'joinMeeting'
+    joinMeetingActionSet.spacing = AdaptiveCards.Spacing.ExtraLarge
 
     joinMeetingActionSet.addAction(joinMeetingAction)
 
@@ -223,7 +224,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingLinkTextBlock.wrap = true
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
     const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
-    joinMeetingAction.title = 'Open Meeting'
+    joinMeetingAction.title = 'Open meeting'
     joinMeetingAction.url = meetingUrl
     joinMeetingAction.id = 'openMeeting'
 
@@ -275,7 +276,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingLinkTextBlock.wrap = true
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
     const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
-    joinMeetingAction.title = 'Advance Meeting'
+    joinMeetingAction.title = 'Advance meeting'
     joinMeetingAction.url = meetingUrl
     joinMeetingAction.id = 'advanceMeeting'
 
