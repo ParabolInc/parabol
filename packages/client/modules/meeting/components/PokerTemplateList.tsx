@@ -9,10 +9,10 @@ import Tabs from '../../../components/Tabs/Tabs'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {PokerTemplateList_settings} from '../../../__generated__/PokerTemplateList_settings.graphql'
+import AddNewPokerTemplate from './AddNewPokerTemplate'
 import PokerTemplateListOrgRoot from './PokerTemplateListOrgRoot'
 import PokerTemplateListPublicRoot from './PokerTemplateListPublicRoot'
 import PokerTemplateListTeam from './PokerTemplateListTeam'
-import AddNewPokerTemplate from './AddNewPokerTemplate'
 
 const WIDTH = 360
 const TemplateSidebar = styled('div')({
@@ -75,7 +75,7 @@ const PokerTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
   const {team, teamTemplates} = settings
   const {id: teamId} = team
-  const activeTemplateId = settings.activeTemplate?.id ?? "-tmp"
+  const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
 
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
@@ -118,7 +118,11 @@ const PokerTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
-      <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
+      <AddNewPokerTemplate
+        teamId={teamId}
+        pokerTemplates={teamTemplates}
+        gotoTeamTemplates={gotoTeamTemplates}
+      />
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
@@ -135,11 +139,9 @@ const PokerTemplateList = (props: Props) => {
             isActive={activeIdx === 0}
           />
         </TabContents>
+        <TabContents>{activeIdx === 1 && <PokerTemplateListOrgRoot teamId={teamId} />}</TabContents>
         <TabContents>
-          <PokerTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
-        </TabContents>
-        <TabContents>
-          <PokerTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
+          {activeIdx === 2 && <PokerTemplateListPublicRoot teamId={teamId} />}
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}

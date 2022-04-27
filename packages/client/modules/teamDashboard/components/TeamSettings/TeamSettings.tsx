@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
@@ -9,7 +9,7 @@ import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
-import {TeamSettings_viewer} from '../../../../__generated__/TeamSettings_viewer.graphql'
+import {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 
 const TeamSettingsLayout = styled('div')({
@@ -35,11 +35,37 @@ const StyledRow = styled(Row)({
 })
 
 interface Props {
-  viewer: TeamSettings_viewer
+  queryRef: PreloadedQuery<TeamSettingsQuery>
 }
 
+const query = graphql`
+  query TeamSettingsQuery($teamId: ID!) {
+    viewer {
+      team(teamId: $teamId) {
+        ...ArchiveTeam_team
+        isLead
+        id
+        name
+        tier
+        orgId
+        teamMembers(sortBy: "preferredName") {
+          teamMemberId: id
+          userId
+          isLead
+          isSelf
+          preferredName
+        }
+      }
+    }
+  }
+`
+
 const TeamSettings = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {history} = useRouter()
   const {team} = viewer
   const {name: teamName, orgId, teamMembers, tier} = team!
@@ -73,24 +99,4 @@ const TeamSettings = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamSettings, {
-  viewer: graphql`
-    fragment TeamSettings_viewer on User {
-      team(teamId: $teamId) {
-        ...ArchiveTeam_team
-        isLead
-        id
-        name
-        tier
-        orgId
-        teamMembers(sortBy: "preferredName") {
-          teamMemberId: id
-          userId
-          isLead
-          isSelf
-          preferredName
-        }
-      }
-    }
-  `
-})
+export default TeamSettings

@@ -98,6 +98,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   )
 }
 
+// TODO: migrate Pagination Container → usePaginationFragment
 export default createPaginationContainer(
   ParabolScopingSearchResults,
   {
@@ -141,8 +142,8 @@ export default createPaginationContainer(
   },
   {
     direction: 'forward',
-    getConnectionFromProps(props) {
-      return props.viewer && props.viewer.tasks
+    getConnectionFromProps({viewer}) {
+      return viewer?.tasks
     },
     getFragmentVariables(prevVars, totalCount) {
       return {

@@ -1,20 +1,12 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
+import taskFooterTeamAssigneeMenuQuery, {
+  TaskFooterTeamAssigneeMenuQuery
+} from '~/__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import {MenuProps} from '../../../hooks/useMenu'
-import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
-import renderQuery from '../../../utils/relay/renderQuery'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
-import {TaskFooterTeamAssigneeMenuRootQuery} from '~/__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
-
-const query = graphql`
-  query TaskFooterTeamAssigneeMenuRootQuery {
-    viewer {
-      ...TaskFooterTeamAssigneeMenu_viewer
-    }
-  }
-`
+import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
+import MockFieldList from '../../../components/MockFieldList'
 
 interface Props {
   menuProps: MenuProps
@@ -24,16 +16,17 @@ interface Props {
 
 const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
   const {menuProps, task, useTaskChild} = props
-  const atmosphere = useAtmosphere()
   useTaskChild('teamAssignee')
+  const queryRef = useQueryLoaderNow<TaskFooterTeamAssigneeMenuQuery>(
+    taskFooterTeamAssigneeMenuQuery,
+    {}
+  )
   return (
-    <QueryRenderer<TaskFooterTeamAssigneeMenuRootQuery>
-      environment={atmosphere}
-      query={query}
-      variables={{}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(TaskFooterTeamAssigneeMenu, {props: {menuProps, task}})}
-    />
+    <Suspense fallback={MockFieldList}>
+      {queryRef && (
+        <TaskFooterTeamAssigneeMenu queryRef={queryRef} menuProps={menuProps} task={task} />
+      )}
+    </Suspense>
   )
 }
 
