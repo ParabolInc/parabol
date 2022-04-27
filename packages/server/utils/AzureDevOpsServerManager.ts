@@ -527,23 +527,13 @@ class AzureDevOpsServerManager {
 
   async addScoreField(
     instanceId: string,
-    // dimensionName: string,
     fieldId: string,
     finalScore: string | number,
-    // meetingName: string,
-    // discussionURL: string,
     remoteIssueId: string,
     projectKey: string
   ) {
-    console.log(`https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1-preview.3`)
-    console.log({
-      "op": "add",
-      "path": fieldId,
-      "value": finalScore
-    })
     return await this.patch<WorkItemAddFieldResponse>(
       `https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1-preview.3`,
-      // `[{"op":"add","path":${fieldId},"value":${finalScore}}]`
       [
         {
           "op": "add",
