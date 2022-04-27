@@ -44,9 +44,13 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, userStories, providerId} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = userStories.map((userStory) =>
-    AzureDevOpsIssueId.join(providerId, userStory.id)
-  )
+  const serviceTaskIds = userStories.map((userStory) => {
+    console.log(
+      `Inside AzureDevOpsScopingSelectAllIssues.map with a value of - providerId:${providerId} | userStory.id: ${userStory.id}`
+    )
+    return AzureDevOpsIssueId.join(providerId, userStory.id)
+  })
+  console.log(`serviceTaskIds: ${JSON.stringify(serviceTaskIds)}`)
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -97,6 +101,11 @@ export default createFragmentContainer(AzureDevOpsScopingSelectAllIssues, {
     @relay(plural: true) {
       node {
         id
+        title
+        teamProject
+        url
+        state
+        type
       }
     }
   `

@@ -321,12 +321,6 @@ export const azureDevOpsDimensionFieldMap = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, dimensionName, instanceId, projectKey}) => {
-          console.log(
-            `calling getAzureDevOpsDimensionFieldMaps in azureDevOpsDimensionFieldMap with the following values:`
-          )
-          console.log(
-            `teamId:${teamId} | dimensionName:${dimensionName} | instanceId:${instanceId} | projectKey: ${projectKey}`
-          )
           return getAzureDevOpsDimensionFieldMaps(teamId, dimensionName, instanceId, projectKey)
         })
       )
