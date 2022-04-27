@@ -188,28 +188,25 @@ const setTaskEstimate = {
       githubLabelName = githubPushRes
     } else if (service === 'azureDevOps') {
       const {accessUserId, instanceId, issueKey, projectKey} = integration!
-      // const projectKey = JiraProjectKeyId.join(issueKey)
-      // const [auth, team] = await Promise.all([
-      //   dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
-      //   dataLoader.get('teams').load(teamId)
-      // ])
-      const [auth] = await Promise.all([
+      const [auth, azureDevOpsDimensionFieldMapEntry] = await Promise.all([
         dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
+        dataLoader.get('azureDevOpsDimensionFieldMap').load({teamId, dimensionName, instanceId, projectKey })
       ])
+
       if (!auth) {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
 
+      if (!azureDevOpsDimensionFieldMapEntry) {
+        return {error: {message: 'Cannot find the correct field to push changes to.'}}
+      }
+
+      const fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
+      const fieldType = azureDevOpsDimensionFieldMapEntry.fieldType
+
       const manager = new AzureDevOpsServerManager(auth, null)
-      // const azureDevOpsDimensionFields = team?.azureDevOpsDimensionFields || []
-      // const dimensionField = azureDevOpsDimensionFields.find(
-      //   (dimensionField) =>
-      //     dimensionField.dimensionName === dimensionName &&
-      //     dimensionField.instanceId === instanceId &&
-      //     dimensionField.projectKey === projectKey
-      // )
-      // const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
-      if (true) { // (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         const res = await manager.addScoreComment(
           instanceId,
           dimensionName,
@@ -222,18 +219,17 @@ const setTaskEstimate = {
         if ('message' in res) {
           return {error: {message:res.message}}
         }
-      } // else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-      //   const {fieldId, fieldType} = dimensionField!
-      //   jiraFieldId = fieldId
-      //   try {
-      //     const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
-
-      //     await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
-      //   } catch (e) {
-      //     const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
-      //     return {error: {message}}
-      //   }
-      // }
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+        const fieldId = '/fields/Microsoft.VSTS.Scheduling.StoryPoints'
+        try {
+          const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
+          await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
+        } catch (e) {
+          console.log('ERROR')
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
+        }
+      }
     }
 
     await insertTaskEstimate({

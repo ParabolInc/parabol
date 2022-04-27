@@ -156,6 +156,14 @@ interface WorkItemAddCommentResponse {
   url: string
 }
 
+interface WorkItemAddFieldResponse {
+  id: number
+  rev: number
+  fields: object
+  _links: object
+  url: string
+}
+
 const MAX_REQUEST_TIME = 5000
 
 class AzureDevOpsServerManager {
@@ -164,7 +172,7 @@ class AzureDevOpsServerManager {
   private headers = {
     Authorization: '',
     Accept: 'application/json' as const,
-    'Content-Type': 'application/json' as const
+    'Content-Type': 'application/json'
   }
 
   async init(code: string, codeVerifier: string | null) {
@@ -235,6 +243,24 @@ class AzureDevOpsServerManager {
     const res = await this.fetchWithTimeout(url, {
       method: 'POST',
       headers: this.headers,
+      body: JSON.stringify(payload)
+    })
+    if (res instanceof Error) {
+      return res
+    }
+    const json = (await res.json()) as AzureDevOpsError | T
+    if ('message' in json) {
+      return new Error(json.message)
+    }
+    return json
+  }
+
+  private readonly patch = async <T>(url: string, payload: any) => {
+    const patchHeaders = this.headers
+    patchHeaders['Content-Type'] = "application/json-patch+json"
+    const res = await this.fetchWithTimeout(url, {
+      method: 'PATCH',
+      headers: patchHeaders,
       body: JSON.stringify(payload)
     })
     if (res instanceof Error) {
@@ -497,6 +523,35 @@ class AzureDevOpsServerManager {
     }
 
     return res
+  }
+
+  async addScoreField(
+    instanceId: string,
+    // dimensionName: string,
+    fieldId: string,
+    finalScore: string | number,
+    // meetingName: string,
+    // discussionURL: string,
+    remoteIssueId: string,
+    projectKey: string
+  ) {
+    console.log(`https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1-preview.3`)
+    console.log({
+      "op": "add",
+      "path": fieldId,
+      "value": finalScore
+    })
+    return await this.patch<WorkItemAddFieldResponse>(
+      `https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1-preview.3`,
+      // `[{"op":"add","path":${fieldId},"value":${finalScore}}]`
+      [
+        {
+          "op": "add",
+          "path": fieldId,
+          "value": finalScore
+        }
+      ]
+    )
   }
 
 }
