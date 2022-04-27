@@ -51,7 +51,13 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     return standardError(new Error('Invalid stringified JSON'), {userId: viewerId})
   }
 
-  const plaintextContent = generateText(contentJSON, createEditorExtensions())
+  let plaintextContent: string
+  try {
+    plaintextContent = generateText(contentJSON, createEditorExtensions())
+  } catch (e) {
+    return standardError(new Error('Invalid editor format'), {userId: viewerId})
+  }
+
   const teamPromptResponseId = await upsertTeamPromptResponseQuery({
     meetingId,
     userId: viewerId,
