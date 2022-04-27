@@ -82,9 +82,6 @@ const TeamPromptMeeting = (props: Props) => {
             stages {
               id
               ...TeamPromptResponseCard_stage
-              ... on TeamPromptResponseStage {
-                discussionId
-              }
             }
           }
         }
