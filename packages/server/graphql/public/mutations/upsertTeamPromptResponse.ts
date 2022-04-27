@@ -10,13 +10,12 @@ import {MutationResolvers} from '../resolverTypes'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
-  {teamPromptResponse},
+  {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content} = teamPromptResponse
 
   // VALIDATION
   if (inputTeamPromptResponseId) {
