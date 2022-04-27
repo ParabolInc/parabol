@@ -43,6 +43,7 @@ const validateDomains = async (domains: string[] | null | undefined, slugName: s
     .filter((row) => row('id').ne(slugName))
     .limit(1)
     .nth(0)
+    .default(null)
     .run()
   if (domainOwner) return new Error(`Domain is already owned by ${domainOwner.id}`)
   return normalizedDomains
