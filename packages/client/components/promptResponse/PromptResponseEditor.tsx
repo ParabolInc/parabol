@@ -18,7 +18,7 @@ const StyledEditor = styled('div')`
   }
 `
 /**
- * Returns tip tap extensions configuration shared by the client and the server (nn the server, after submitting the response to the prompt, the editor is rehydrated with the JSON content and the plain text content)
+ * Returns tip tap extensions configuration shared by the client and the server
  * @param placeholder
  * @returns an array of extensions to be used by the tip tap editor
  */
