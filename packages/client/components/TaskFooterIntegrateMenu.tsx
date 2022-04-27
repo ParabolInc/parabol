@@ -3,11 +3,11 @@ import React from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import {
   TaskFooterIntegrateMenuQuery,
   TaskFooterIntegrateMenuQueryResponse
 } from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -33,7 +33,7 @@ const isIntegrated = (integrations: Integrations) => {
   const {atlassian, github, jiraServer} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
-  const hasJiraServer = jiraServer.auth?.isActive ?? false
+  const hasJiraServer = jiraServer?.auth?.isActive ?? false
   return hasAtlassian || hasGitHub || hasJiraServer
     ? {
         hasAtlassian,
