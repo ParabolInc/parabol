@@ -12,7 +12,14 @@ const toPayloadName = (str: string) => `${toPascal(str)}Payload`
 const toSuccessName = (str: string) => `${toPascal(str)}Success`
 
 const createServerMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
-  const MUTATIONS_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'mutations')
+  const MUTATIONS_ROOT = path.join(
+    PROJECT_ROOT,
+    'packages',
+    'server',
+    'graphql',
+    'public',
+    'mutations'
+  )
   const mutationPath = path.join(MUTATIONS_ROOT, `${camelMutationName}.ts`)
   if (fs.existsSync(mutationPath)) {
     console.log('mutation already exists! aborting...')
@@ -23,26 +30,16 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
     path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutation.ts'),
     'utf-8'
   )
-  const ast = j(baseMutation, {parser: tsParser()})
-  // rename mutation
-  ast.findVariableDeclarators('MUTATION_NAME').renameTo(camelMutationName)
-  // rename export
-  ast.find(j.ExportDefaultDeclaration).forEach((path) => {
-    ; (path.value.declaration as any).name = camelMutationName
-  })
 
-  // add payload import statement
-  const payloadName = toPayloadName(camelMutationName)
-  ast
-    .find(j.ImportDeclaration)
-    .at(-1)
-    .insertBefore(`import ${payloadName} from '../types/${payloadName}'`)
-    .insertBefore(`import {SubscriptionChannel} from 'parabol-client/types/constEnums'`)
+  const nextMutation = baseMutation.replace(/MUTATION_NAME/g, camelMutationName)
+  const ast = j(nextMutation, {parser: tsParser()})
 
-  // add payload as type
-  ast.find(j.StringLiteral, {value: 'TYPE'}).replaceWith(`GraphQLNonNull(${payloadName})`)
   // add the publisher
   if (subscription) {
+    ast
+      .find(j.ImportDeclaration)
+      .at(-1)
+      .insertBefore(`import {SubscriptionChannel} from 'parabol-client/types/constEnums'`)
     const channel = `SubscriptionChannel.${subscription.toUpperCase()}`
     const variable = subscription + 'Id'
     const success = toSuccessName(camelMutationName)
@@ -61,105 +58,37 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
   fs.writeFileSync(mutationPath, res)
 }
 
-const createServerMutationPayload = (camelMutationName: string) => {
+const getSubscriptionExtension = (lcaseSubscription: string, successName: string) => {
+  if (!lcaseSubscription) return ''
+  const pascalSubscription = toPascal(lcaseSubscription)
+  const subscriptionPayload = `${pascalSubscription}SubscriptionPayload`
+  return '\n' + `extend union ${subscriptionPayload} = ${successName}`
+}
+
+const createServerTypeDef = (camelMutationName: string, lcaseSubscription: string) => {
   const payloadName = toPayloadName(camelMutationName)
   const successName = toSuccessName(camelMutationName)
   // simple string replacement
   const basePayload = fs.readFileSync(
-    path.join(PROJECT_ROOT, 'scripts/codeshift', 'basePayload.ts'),
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'basePayload.graphql'),
     'utf-8'
   )
   const nextPayload = basePayload
     .replace(/MUTATION_PAYLOAD/g, payloadName)
     .replace(/SUCCESS_PAYLOAD/g, successName)
-  const TYPES_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'types')
-  const payloadPath = path.join(TYPES_ROOT, `${payloadName}.ts`)
-  fs.writeFileSync(payloadPath, nextPayload)
-}
+    .replace(/MUTATION_NAME/g, camelMutationName)
+    .concat(getSubscriptionExtension(lcaseSubscription, successName))
 
-const addToRootMutation = (camelMutationName: string) => {
-  const rootMutationPath = path.join(
+  const TYPEDEF_ROOT = path.join(
     PROJECT_ROOT,
     'packages',
     'server',
     'graphql',
-    'rootMutation.ts'
+    'public',
+    'typeDefs'
   )
-  const rootMutation = fs.readFileSync(rootMutationPath, 'utf-8')
-  const ast = j(rootMutation, {parser: tsParser()})
-  const alreadyImported =
-    ast.find(j.ImportDeclaration, {
-      specifiers: [
-        {
-          local: {
-            name: camelMutationName
-          }
-        }
-      ]
-    }).length > 0
-  if (alreadyImported) {
-    console.log('Already imported into rootMutation')
-    return
-  }
-
-  ast
-    .find(j.ImportDeclaration)
-    .at(-1)
-    .insertBefore(`import ${camelMutationName} from './mutations/${camelMutationName}'`)
-
-  const objectPath = ast
-    .find(j.ObjectExpression)
-    .at(1)
-    .get()
-  const entry = j.objectProperty.from({
-    key: j.identifier(camelMutationName),
-    value: j.identifier(camelMutationName),
-    shorthand: true
-  })
-  objectPath.value.properties.push(entry)
-
-  const res = ast.toSource({
-    objectCurlySpacing: false,
-    quote: 'single'
-  })
-  fs.writeFileSync(rootMutationPath, res)
-}
-
-const addToRootSubscription = (camelMutationName: string, subscription?: Lowercase<string>) => {
-  if (!subscription) return
-  const fileName = toPascal(subscription) + 'SubscriptionPayload.ts'
-  const subPath = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'types', fileName)
-  const sub = fs.readFileSync(subPath, 'utf-8')
-  const payloadName = toPayloadName(camelMutationName)
-  const successName = toSuccessName(camelMutationName)
-  const ast = j(sub, {parser: tsParser()})
-  const alreadyImported =
-    ast.find(j.ImportDeclaration, {
-      specifiers: [
-        {
-          local: {
-            name: successName
-          }
-        }
-      ]
-    }).length > 0
-  if (alreadyImported) {
-    console.log('Already imported into rootMutation')
-    return
-  }
-  // add import
-  ast
-    .find(j.ImportDeclaration)
-    .at(-1)
-    .insertBefore(`import {${successName}} from './${payloadName}'`)
-
-  const payloadArr = ast.find(j.ArrayExpression).get()
-  payloadArr.value.elements.push(j.identifier(successName))
-  const res = ast.toSource({
-    objectCurlySpacing: false,
-    quote: 'single'
-  })
-  fs.writeFileSync(subPath, res)
+  const payloadPath = path.join(TYPEDEF_ROOT, `${camelMutationName}.graphql`)
+  fs.writeFileSync(payloadPath, nextPayload)
 }
 
 const createClientMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
@@ -188,6 +117,7 @@ const addToClientSubscription = (camelMutationName: string, subscription?: Lower
   const nextStr = subStr.replace(typename, typename + '\n' + fragment)
   fs.writeFileSync(subPath, nextStr)
 }
+
 const newMutation = () => {
   const argv = parseArgs(process.argv.slice(2), {
     alias: {
@@ -205,10 +135,7 @@ const newMutation = () => {
   const lcaseSubscription =
     typeof argv.subscription === 'string' ? argv.subscription.toLowerCase().trim() : null
   createServerMutation(camelMutationName, lcaseSubscription)
-  createServerMutationPayload(camelMutationName)
-
-  addToRootSubscription(camelMutationName, lcaseSubscription)
-  addToRootMutation(camelMutationName)
+  createServerTypeDef(camelMutationName, lcaseSubscription)
 
   createClientMutation(camelMutationName, lcaseSubscription)
   addToClientSubscription(camelMutationName, lcaseSubscription)
