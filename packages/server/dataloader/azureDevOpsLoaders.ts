@@ -87,6 +87,7 @@ export interface AzureDevOpsWorkItem {
   url: string
   state: string
   type: string
+  descriptionHTML: string
   service: 'azureDevOps'
 }
 
@@ -374,6 +375,7 @@ export const azureDevOpsUserStory = (
               url: returnedWorkItem.url,
               state: returnedWorkItem.fields['System.State'],
               type: returnedWorkItem.fields['System.WorkItemType'],
+              descriptionHTML: returnedWorkItem.fields['System.Description'],
               service: 'azureDevOps'
             }
             return azureDevOpsWorkItem
@@ -423,6 +425,7 @@ export const azureDevOpsWorkItem = (
             url: returnedWorkItem.url,
             state: returnedWorkItem.fields['System.State'],
             type: returnedWorkItem.fields['System.WorkItemType'],
+            descriptionHTML: returnedWorkItem.fields['System.Description'],
             service: 'azureDevOps'
           } as AzureDevOpsWorkItem
 
@@ -502,6 +505,7 @@ export const azureDevOpsUserStories = (
               url: returnedWorkItem.url,
               state: returnedWorkItem.fields['System.State'],
               type: returnedWorkItem.fields['System.WorkItemType'],
+              descriptionHTML: returnedWorkItem.fields['System.Description'],
               service: 'azureDevOps'
             })
           )
