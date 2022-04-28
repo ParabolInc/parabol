@@ -28,7 +28,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
   const discussion = useFragment(
     graphql`
       fragment TeamPromptRepliesAvatarList_discussion on Discussion {
-        thread(first: 1000) @connection(key: "TeamPromptResponseCard_thread") {
+        thread(first: 1000) @connection(key: "DiscussionThread_thread") {
           edges {
             node {
               createdByUser {
