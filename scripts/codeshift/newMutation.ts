@@ -117,7 +117,6 @@ const addSuccessSourceToCodegen = (camelMutationName: string) => {
   mappers[successName] = `./types/${successName}#${successName}Source`
   // stable stringify first to sort
   const nextCodegen = JSON.stringify(JSON.parse(stringify(codegenJSON)), null, 2)
-  // config.mappers = Object.fromEntries(Object.entries(mappers).sort())
   const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
   fs.writeFileSync(codegenPath, nextCodegen)
 }
@@ -180,14 +179,61 @@ const addDummyPermission = (camelMutationName: string) => {
     docWithBadSpacing.slice(end)
   fs.writeFileSync(permissionPath, docWithGoodSpacing)
 }
+
+const createPostgresSQL = (camelMutationName: string) => {
+  const baseSQL = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutationSQL.sql'),
+    'utf-8'
+  )
+  const nextSQL = baseSQL.replace(/MUTATION_NAME/g, camelMutationName)
+  const queryName = `${camelMutationName}Query`
+  fs.writeFileSync(
+    path.join(PROJECT_ROOT, 'packages', 'server', 'postgres', 'queries', 'src', `${queryName}.sql`),
+    nextSQL
+  )
+}
+
+const createPostgresQuery = (camelMutationName: string) => {
+  const baseQuery = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutationQuery.ts'),
+    'utf-8'
+  )
+  const nextQuery = baseQuery.replace(/MUTATION_NAME/g, camelMutationName)
+  const queryName = `${camelMutationName}ToPG`
+  fs.writeFileSync(
+    path.join(PROJECT_ROOT, 'packages', 'server', 'postgres', 'queries', `${queryName}.ts`),
+    nextQuery
+  )
+}
+
 const newMutation = () => {
   const argv = parseArgs(process.argv.slice(2), {
     alias: {
       s: 'subscription',
-      f: 'field'
+      h: 'help',
+      p: 'postgres'
     }
   })
 
+  if (argv.help) {
+    console.log(`
+NAME
+    newMutation - Create boilerplate for a new mutation
+
+SYNOPSIS
+    yarn newMutation <mutationName>
+
+OPTIONS
+    -s, --subscription <subscriptionChannel>
+      If this mutation should be published to a subscription, this will wire it up
+
+    -p, --postgres
+      If this mutation will affect postgres, this will create the SQL and query files
+
+EXAMPLES
+    yarn newMutation startFun -s meeting -p`)
+    return
+  }
   const rawMutationName = argv._[0]
   if (!rawMutationName) {
     console.log('Please provide a mutation name as the first argument')
@@ -196,6 +242,10 @@ const newMutation = () => {
   const camelMutationName = rawMutationName[0].toLowerCase() + rawMutationName.slice(1)
   const lcaseSubscription =
     typeof argv.subscription === 'string' ? argv.subscription.toLowerCase().trim() : null
+  if (argv.postgres) {
+    createPostgresSQL(camelMutationName)
+    createPostgresQuery(camelMutationName)
+  }
   createServerMutation(camelMutationName, lcaseSubscription)
   createServerTypeDef(camelMutationName, lcaseSubscription)
   createServerSuccessPayload(camelMutationName)
