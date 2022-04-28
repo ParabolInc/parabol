@@ -119,7 +119,6 @@ export const freshAzureDevOpsAuth = (
           const {
             accessToken: existingAccessToken,
             refreshToken,
-            accessTokenSecret,
             providerId
           } = azureDevOpsAuthToRefresh
           if (!refreshToken) {
@@ -129,9 +128,6 @@ export const freshAzureDevOpsAuth = (
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            if (!refreshToken || !accessTokenSecret) {
-              return null
-            }
             const provider = await parent.get('integrationProviders').loadNonNull(providerId)
             const manager = new AzureDevOpsServerManager(
               azureDevOpsAuthToRefresh,
