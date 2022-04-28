@@ -149,6 +149,37 @@ const addToClientSubscription = (camelMutationName: string, subscription?: Lower
   fs.writeFileSync(subPath, nextStr)
 }
 
+const addDummyPermission = (camelMutationName: string) => {
+  const permissionPath = path.join(
+    PROJECT_ROOT,
+    'packages',
+    'server',
+    'graphql',
+    'public',
+    'permissions.ts'
+  )
+  const permissionText = fs.readFileSync(permissionPath, 'utf-8')
+  const root = j(permissionText, {parser: tsParser()})
+  const mutationObject = root.find(j.ObjectProperty, {key: {name: 'Mutation'}}).get()
+  const {properties, start, end} = mutationObject.node.value
+  properties.push(
+    j.objectProperty.from({
+      key: j.identifier(camelMutationName),
+      value: j.identifier('isFIXME')
+    })
+  )
+  const docWithBadSpacing = root.toSource({
+    objectCurlySpacing: false,
+    quote: 'single'
+  })
+  const docWithGoodSpacing =
+    docWithBadSpacing.slice(0, start) +
+    // recast prints extra lines that prettier won't fix
+    // https://github.com/benjamn/recast/issues/242
+    docWithBadSpacing.slice(start, end).replace(/\n\n/g, '\n') +
+    docWithBadSpacing.slice(end)
+  fs.writeFileSync(permissionPath, docWithGoodSpacing)
+}
 const newMutation = () => {
   const argv = parseArgs(process.argv.slice(2), {
     alias: {
@@ -169,6 +200,7 @@ const newMutation = () => {
   createServerTypeDef(camelMutationName, lcaseSubscription)
   createServerSuccessPayload(camelMutationName)
   addSuccessSourceToCodegen(camelMutationName)
+  addDummyPermission(camelMutationName)
   createClientMutation(camelMutationName, lcaseSubscription)
   addToClientSubscription(camelMutationName, lcaseSubscription)
 }

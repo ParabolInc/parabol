@@ -21,13 +21,14 @@ If you don't need to publish to a subscription channel, leave off the -s flag.
 - Adding a new mutation payload, which is the return type of your mutation. _Try to make sure each field is non-null!_.
   - Non-null fields mean the client doesn't have to write fallbacks in case the field comes up null.
   - If 2 nullable fields are mutually exclusive, consider breaking it into 2+ types and returning the union
-- For nullable fields, e.g. if the mutation can return an error, make sure the payload is a union type. e.g. `type StartFunPayload = StandardError | StartFunSuccess`
+- For nullable fields, e.g. if the mutation can return an error, make sure the payload is a union type. e.g. `type StartFunPayload = ErrorPayload | StartFunSuccess`
 
 2. Write the mutation resolver
    If you need to write to the DB, add a DB query in [postgres/queries](../../postgres/queries)
    If you need to call a service, use the service Manager (e.g. [AtlassianManager](../../utils/AtlassianServerManager.ts))
    Publish the event to a subscription channel to alert others users who are interested in the event
-   Return the smallest possible object you can. For example, instead of returning an entire meeting object, return `{meetingId}`.
+   Return the smallest possible object you can.
+   For example, instead of returning an entire meeting object, return `{meetingId}`.
    This return value is called the `source`.
 
 3. Write the mutation payload resolver
