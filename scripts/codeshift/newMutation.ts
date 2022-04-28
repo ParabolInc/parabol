@@ -1,3 +1,4 @@
+import stringify from 'fast-json-stable-stringify'
 import j from 'jscodeshift/src/core'
 
 const parseArgs = require('minimist')
@@ -69,11 +70,11 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
   const payloadName = toPayloadName(camelMutationName)
   const successName = toSuccessName(camelMutationName)
   // simple string replacement
-  const basePayload = fs.readFileSync(
-    path.join(PROJECT_ROOT, 'scripts/codeshift', 'basePayload.graphql'),
+  const baseTypeDef = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseTypeDef.graphql'),
     'utf-8'
   )
-  const nextPayload = basePayload
+  const nextTypeDef = baseTypeDef
     .replace(/MUTATION_PAYLOAD/g, payloadName)
     .replace(/SUCCESS_PAYLOAD/g, successName)
     .replace(/MUTATION_NAME/g, camelMutationName)
@@ -88,7 +89,37 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
     'typeDefs'
   )
   const payloadPath = path.join(TYPEDEF_ROOT, `${camelMutationName}.graphql`)
-  fs.writeFileSync(payloadPath, nextPayload)
+  fs.writeFileSync(payloadPath, nextTypeDef)
+}
+
+const createServerSuccessPayload = (camelMutationName: string) => {
+  const successName = toSuccessName(camelMutationName)
+  // simple string replacement
+  const baseSuccessPayload = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseSuccessPayload.ts'),
+    'utf-8'
+  )
+  const nextTypeDef = baseSuccessPayload.replace(/SUCCESS_PAYLOAD/g, successName)
+
+  const TYPE_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'public', 'types')
+  const payloadPath = path.join(TYPE_ROOT, `${successName}.ts`)
+  fs.writeFileSync(payloadPath, nextTypeDef)
+}
+
+const addSuccessSourceToCodegen = (camelMutationName: string) => {
+  const successName = toSuccessName(camelMutationName)
+  const codegenJSON = require('../../codegen.json')
+  const {generates} = codegenJSON
+  const publicKey = Object.keys(generates).find((key) => key.includes('public/'))
+  const publicConfig = generates[publicKey]
+  const {config} = publicConfig
+  const {mappers} = config
+  mappers[successName] = `./types/${successName}#${successName}Source`
+  // stable stringify first to sort
+  const nextCodegen = JSON.stringify(JSON.parse(stringify(codegenJSON)), null, 2)
+  // config.mappers = Object.fromEntries(Object.entries(mappers).sort())
+  const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
+  fs.writeFileSync(codegenPath, nextCodegen)
 }
 
 const createClientMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
@@ -136,7 +167,8 @@ const newMutation = () => {
     typeof argv.subscription === 'string' ? argv.subscription.toLowerCase().trim() : null
   createServerMutation(camelMutationName, lcaseSubscription)
   createServerTypeDef(camelMutationName, lcaseSubscription)
-
+  createServerSuccessPayload(camelMutationName)
+  addSuccessSourceToCodegen(camelMutationName)
   createClientMutation(camelMutationName, lcaseSubscription)
   addToClientSubscription(camelMutationName, lcaseSubscription)
 }
