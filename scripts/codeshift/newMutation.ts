@@ -1,3 +1,4 @@
+import stringify from 'fast-json-stable-stringify'
 import j from 'jscodeshift/src/core'
 
 const parseArgs = require('minimist')
@@ -69,11 +70,11 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
   const payloadName = toPayloadName(camelMutationName)
   const successName = toSuccessName(camelMutationName)
   // simple string replacement
-  const basePayload = fs.readFileSync(
-    path.join(PROJECT_ROOT, 'scripts/codeshift', 'basePayload.graphql'),
+  const baseTypeDef = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseTypeDef.graphql'),
     'utf-8'
   )
-  const nextPayload = basePayload
+  const nextTypeDef = baseTypeDef
     .replace(/MUTATION_PAYLOAD/g, payloadName)
     .replace(/SUCCESS_PAYLOAD/g, successName)
     .replace(/MUTATION_NAME/g, camelMutationName)
@@ -88,7 +89,36 @@ const createServerTypeDef = (camelMutationName: string, lcaseSubscription: strin
     'typeDefs'
   )
   const payloadPath = path.join(TYPEDEF_ROOT, `${camelMutationName}.graphql`)
-  fs.writeFileSync(payloadPath, nextPayload)
+  fs.writeFileSync(payloadPath, nextTypeDef)
+}
+
+const createServerSuccessPayload = (camelMutationName: string) => {
+  const successName = toSuccessName(camelMutationName)
+  // simple string replacement
+  const baseSuccessPayload = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseSuccessPayload.ts'),
+    'utf-8'
+  )
+  const nextTypeDef = baseSuccessPayload.replace(/SUCCESS_PAYLOAD/g, successName)
+
+  const TYPE_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'public', 'types')
+  const payloadPath = path.join(TYPE_ROOT, `${successName}.ts`)
+  fs.writeFileSync(payloadPath, nextTypeDef)
+}
+
+const addSuccessSourceToCodegen = (camelMutationName: string) => {
+  const successName = toSuccessName(camelMutationName)
+  const codegenJSON = require('../../codegen.json')
+  const {generates} = codegenJSON
+  const publicKey = Object.keys(generates).find((key) => key.includes('public/'))
+  const publicConfig = generates[publicKey]
+  const {config} = publicConfig
+  const {mappers} = config
+  mappers[successName] = `./types/${successName}#${successName}Source`
+  // stable stringify first to sort
+  const nextCodegen = JSON.stringify(JSON.parse(stringify(codegenJSON)), null, 2)
+  const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
+  fs.writeFileSync(codegenPath, nextCodegen)
 }
 
 const createClientMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
@@ -118,14 +148,92 @@ const addToClientSubscription = (camelMutationName: string, subscription?: Lower
   fs.writeFileSync(subPath, nextStr)
 }
 
+const addDummyPermission = (camelMutationName: string) => {
+  const permissionPath = path.join(
+    PROJECT_ROOT,
+    'packages',
+    'server',
+    'graphql',
+    'public',
+    'permissions.ts'
+  )
+  const permissionText = fs.readFileSync(permissionPath, 'utf-8')
+  const root = j(permissionText, {parser: tsParser()})
+  const mutationObject = root.find(j.ObjectProperty, {key: {name: 'Mutation'}}).get()
+  const {properties, start, end} = mutationObject.node.value
+  properties.push(
+    j.objectProperty.from({
+      key: j.identifier(camelMutationName),
+      value: j.identifier('isFIXME')
+    })
+  )
+  const docWithBadSpacing = root.toSource({
+    objectCurlySpacing: false,
+    quote: 'single'
+  })
+  const docWithGoodSpacing =
+    docWithBadSpacing.slice(0, start) +
+    // recast prints extra lines that prettier won't fix
+    // https://github.com/benjamn/recast/issues/242
+    docWithBadSpacing.slice(start, end).replace(/\n\n/g, '\n') +
+    docWithBadSpacing.slice(end)
+  fs.writeFileSync(permissionPath, docWithGoodSpacing)
+}
+
+const createPostgresSQL = (camelMutationName: string) => {
+  const baseSQL = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutationSQL.sql'),
+    'utf-8'
+  )
+  const nextSQL = baseSQL.replace(/MUTATION_NAME/g, camelMutationName)
+  const queryName = `${camelMutationName}Query`
+  fs.writeFileSync(
+    path.join(PROJECT_ROOT, 'packages', 'server', 'postgres', 'queries', 'src', `${queryName}.sql`),
+    nextSQL
+  )
+}
+
+const createPostgresQuery = (camelMutationName: string) => {
+  const baseQuery = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutationQuery.ts'),
+    'utf-8'
+  )
+  const nextQuery = baseQuery.replace(/MUTATION_NAME/g, camelMutationName)
+  const queryName = `${camelMutationName}ToPG`
+  fs.writeFileSync(
+    path.join(PROJECT_ROOT, 'packages', 'server', 'postgres', 'queries', `${queryName}.ts`),
+    nextQuery
+  )
+}
+
 const newMutation = () => {
   const argv = parseArgs(process.argv.slice(2), {
     alias: {
       s: 'subscription',
-      f: 'field'
+      h: 'help',
+      p: 'postgres'
     }
   })
 
+  if (argv.help) {
+    console.log(`
+NAME
+    newMutation - Create boilerplate for a new mutation
+
+SYNOPSIS
+    yarn newMutation <mutationName>
+
+OPTIONS
+    -s, --subscription <subscriptionChannel>
+      If this mutation should be published to a subscription, this will wire it up
+
+    -p, --postgres
+      If this mutation will affect postgres, this will create the SQL and query files
+
+EXAMPLES
+    yarn newMutation startFun -s meeting -p`)
+    return
+  }
   const rawMutationName = argv._[0]
   if (!rawMutationName) {
     console.log('Please provide a mutation name as the first argument')
@@ -134,9 +242,15 @@ const newMutation = () => {
   const camelMutationName = rawMutationName[0].toLowerCase() + rawMutationName.slice(1)
   const lcaseSubscription =
     typeof argv.subscription === 'string' ? argv.subscription.toLowerCase().trim() : null
+  if (argv.postgres) {
+    createPostgresSQL(camelMutationName)
+    createPostgresQuery(camelMutationName)
+  }
   createServerMutation(camelMutationName, lcaseSubscription)
   createServerTypeDef(camelMutationName, lcaseSubscription)
-
+  createServerSuccessPayload(camelMutationName)
+  addSuccessSourceToCodegen(camelMutationName)
+  addDummyPermission(camelMutationName)
   createClientMutation(camelMutationName, lcaseSubscription)
   addToClientSubscription(camelMutationName, lcaseSubscription)
 }

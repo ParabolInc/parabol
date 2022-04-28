@@ -11,7 +11,7 @@ extend type Mutation {
 }
 
 """
-Return object for MUTATION_PAYLOAD
+Return value for MUTATION_NAME, which could be an error
 """
 union MUTATION_PAYLOAD = ErrorPayload | SUCCESS_PAYLOAD
 
