@@ -77,6 +77,7 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         r
           .table('Comment')
           .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .filter({isActive: true})
           .group('discussionId') as any
       )
         .count()
