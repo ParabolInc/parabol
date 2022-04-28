@@ -60,7 +60,6 @@ const defaultExecutor: Executor<{
     }
   }
 }
-
 type NestParams = NestGraphQLEndpointParams<{
   accessToken: string
   baseUri: string
