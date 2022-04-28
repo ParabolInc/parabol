@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -14,8 +14,8 @@ import {GQLContext} from '../graphql'
 import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -117,7 +117,7 @@ export default {
       updateTeamByTeamId(updates, teamId)
     ])
 
-    NotificationHelper.startMeeting(dataLoader, meetingId, teamId)
+    IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)

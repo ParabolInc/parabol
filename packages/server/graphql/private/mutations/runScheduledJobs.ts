@@ -5,7 +5,7 @@ import NotificationMeetingStageTimeLimitEnd from '../../../database/types/Notifi
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
-import {NotificationHelper} from '../../mutations/helpers/notifications/NotificationHelper'
+import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
 
 const processMeetingStageTimeLimits = async (
@@ -22,7 +22,7 @@ const processMeetingStageTimeLimits = async (
   const {meetingId} = job
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {teamId, facilitatorUserId} = meeting
-  NotificationHelper.endTimeLimit(dataLoader, meetingId, teamId)
+  IntegrationNotifier.endTimeLimit(dataLoader, meetingId, teamId)
 
   const notification = new NotificationMeetingStageTimeLimitEnd({
     meetingId,

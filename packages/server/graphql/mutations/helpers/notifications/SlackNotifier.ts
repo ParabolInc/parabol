@@ -6,15 +6,17 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import getRethink from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
+import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
+import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper, NotifyResponse} from './NotificationIntegrationHelper'
-import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
+import {Notifier} from './Notifier'
 
 const notifySlack = async (
   notificationChannel: SlackNotificationAuth,
@@ -98,7 +100,7 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
-export const SlackNotificationHelper: NotificationIntegrationHelper<SlackNotificationAuth> = (
+export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
   notificationChannel
 ) => ({
   async startMeeting(meeting, team) {
@@ -174,5 +176,71 @@ export const SlackNotificationHelper: NotificationIntegrationHelper<SlackNotific
     // TODO now is a good time to make the message nice with the `meetingName`
     const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
     return notifySlack(notificationChannel, 'MEETING_STAGE_TIME_LIMIT_END', team.id, slackText)
+  },
+
+  async integrationUpdated() {
+    // Slack sends a system message on its own
+    return 'success'
   }
 })
+
+async function getSlack(
+  dataLoader: DataLoaderWorker,
+  event: SlackNotificationEvent,
+  teamId: string
+) {
+  const notifications = await dataLoader
+    .get('slackNotificationsByTeamIdAndEvent')
+    .load({event, teamId})
+  return notifications.map(SlackSingleChannelNotifier)
+}
+
+async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
+  return {
+    meeting,
+    team
+  }
+}
+
+export const SlackNotifier: Notifier = {
+  async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
+    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team) return
+    const notifiers = await getSlack(dataLoader, 'meetingStart', team.id)
+    notifiers.forEach((notifier) => notifier.startMeeting(meeting, team))
+  },
+
+  async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
+    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team) return
+    const notifiers = await getSlack(dataLoader, 'meetingEnd', team.id)
+    notifiers.forEach((notifier) => notifier.endMeeting(meeting, team))
+  },
+
+  async startTimeLimit(
+    dataLoader: DataLoaderWorker,
+    scheduledEndTime: Date,
+    meetingId: string,
+    teamId: string
+  ) {
+    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team) return
+    const notifiers = await getSlack(dataLoader, 'MEETING_STAGE_TIME_LIMIT_START', team.id)
+    notifiers.forEach((notifier) => notifier.startTimeLimit(scheduledEndTime, meeting, team))
+  },
+
+  async endTimeLimit(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
+    const {meeting, team} = await loadMeetingTeam(dataLoader, meetingId, teamId)
+    if (!meeting || !team) return
+    const notifiers = await getSlack(dataLoader, 'MEETING_STAGE_TIME_LIMIT_END', team.id)
+    notifiers.forEach((notifier) => notifier.endTimeLimit(meeting, team))
+  },
+
+  async integrationUpdated() {
+    // Slack sends a system message on its own
+  }
+}

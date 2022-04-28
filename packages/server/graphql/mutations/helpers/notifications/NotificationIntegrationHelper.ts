@@ -1,5 +1,5 @@
-import {Team} from '../../../../postgres/queries/getTeamsByIds'
 import Meeting from '../../../../database/types/Meeting'
+import {Team} from '../../../../postgres/queries/getTeamsByIds'
 
 export type NotifyResponse =
   | 'success'
@@ -9,13 +9,14 @@ export type NotifyResponse =
       retry?: boolean
     }
 
-export type Notifier = {
+export type NotificationIntegration = {
   startMeeting(meeting: Meeting, team: Team): Promise<NotifyResponse>
   endMeeting(meeting: Meeting, team: Team): Promise<NotifyResponse>
   startTimeLimit(scheduledEndTime: Date, meeting: Meeting, team: Team): Promise<NotifyResponse>
   endTimeLimit(meeting: Meeting, team: Team): Promise<NotifyResponse>
+  integrationUpdated(): Promise<NotifyResponse>
 }
 
 export type NotificationIntegrationHelper<NotificationChannel> = (
   notification: NotificationChannel
-) => Notifier
+) => NotificationIntegration

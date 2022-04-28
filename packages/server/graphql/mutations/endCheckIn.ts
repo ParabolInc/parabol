@@ -20,8 +20,8 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -221,7 +221,7 @@ export default {
     ])
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
-    NotificationHelper.endMeeting(dataLoader, meetingId, teamId)
+    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
