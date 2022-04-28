@@ -5,7 +5,7 @@ export type SUCCESS_PAYLOADSource = {
 }
 
 const SUCCESS_PAYLOAD: SUCCESS_PAYLOADResolvers = {
-  field: async ({id}, _args, {dataLoader}) => {
+  successField: async ({id}, _args, {dataLoader}) => {
     return dataLoader.get('').load(id)
   }
 }
