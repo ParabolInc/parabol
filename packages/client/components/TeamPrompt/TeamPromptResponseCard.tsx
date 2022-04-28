@@ -86,12 +86,21 @@ const TeamPromptResponseCard = (props: Props) => {
   )
 
   const onSelectDiscussion = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meetingProxy = store.get(responseStage.meetingId)
-      if (!meetingProxy) return
-      meetingProxy.setValue(responseStage.id, 'localStageId')
-      meetingProxy.setValue(true, 'isRightDrawerOpen')
-    })
+    if (meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id) {
+      // If we're selecting a discussion that's already open, just close the drawer.
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(responseStage.meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(false, 'isRightDrawerOpen')
+      })
+    } else {
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(responseStage.meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(responseStage.id, 'localStageId')
+        meetingProxy.setValue(true, 'isRightDrawerOpen')
+      })
+    }
   }
 
   const atmosphere = useAtmosphere()
