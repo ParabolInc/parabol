@@ -10,7 +10,7 @@ export interface TeamPromptResponse
   content: JSONContent
 }
 
-const mapToTeamPromptResponse = (
+export const mapToTeamPromptResponse = (
   results: IGetTeamPromptResponsesByIdsQueryResult[]
 ): TeamPromptResponse[] => {
   return results.map((teamPromptResponse: any) => {

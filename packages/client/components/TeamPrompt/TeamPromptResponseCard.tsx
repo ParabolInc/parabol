@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Editor as EditorState, JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -7,6 +8,8 @@ import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
 import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
+import useMutationProps from '../../hooks/useMutationProps'
+import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
 import Avatar from '../Avatar/Avatar'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 
@@ -44,10 +47,16 @@ const TeamPromptResponseCard = (props: Props) => {
   const responseStage = useFragment(
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
+        meetingId
         teamMember {
           userId
           picture
           preferredName
+        }
+        response {
+          id
+          content
+          plaintextContent
         }
       }
     `,
@@ -57,11 +66,27 @@ const TeamPromptResponseCard = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const {teamMember} = responseStage
+  const {teamMember, meetingId, response} = responseStage
   const {picture, preferredName, userId} = teamMember
 
+  const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
+  const plaintextContent = response?.plaintextContent ?? ''
   const isCurrentViewer = userId === viewerId
-  const isEmptyResponse = !isCurrentViewer // :TODO: (jmtaber129): Determine based on actual response, too
+  const isEmptyResponse = !isCurrentViewer && !plaintextContent // :TODO: (jmtaber129): Determine based on actual response, too
+
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const handleSubmit = (editorState: EditorState) => {
+    if (submitting) return
+    submitMutation()
+
+    const content = JSON.stringify(editorState.getJSON())
+
+    UpsertTeamPromptResponseMutation(
+      atmosphere,
+      {teamPromptResponseId: response?.id, meetingId, content},
+      {onError, onCompleted}
+    )
+  }
 
   return (
     <>
@@ -76,10 +101,8 @@ const TeamPromptResponseCard = (props: Props) => {
         ) : (
           <PromptResponseEditor
             autoFocus={true}
-            handleSubmit={(editorState) => {
-              console.log('submitting response', editorState.getJSON())
-            }}
-            content={null}
+            handleSubmit={handleSubmit}
+            content={contentJSON}
             readOnly={!isCurrentViewer}
             placeholder={'Share your response...'}
           />

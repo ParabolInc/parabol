@@ -6,12 +6,12 @@ extend type Mutation {
     """
     The id of the team prompt response to upsert
     """
-    teamPromptResponseId: Int
+    teamPromptResponseId: ID
 
     """
     The id of the team prompt meeting
     """
-    meetingId: String!
+    meetingId: ID!
 
     """
     The stringified content of the team prompt response
@@ -21,7 +21,7 @@ extend type Mutation {
 }
 
 type UpsertTeamPromptResponseSuccess {
-  teamPromptResponseId: Int!
+  teamPromptResponseId: ID!
   meetingId: ID!
 
   """
