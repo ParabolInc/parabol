@@ -1,14 +1,14 @@
 import fetch from 'node-fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {isError} from 'util'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds';
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery';
-import {isError} from 'util';
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -172,7 +172,6 @@ class AzureDevOpsServerManager {
 
   private readonly provider: IntegrationProviderAzureDevOps
 
-
   constructor(
     auth: IGetTeamMemberIntegrationAuthQueryResult | null,
     provider: IntegrationProviderAzureDevOps
@@ -288,20 +287,16 @@ class AzureDevOpsServerManager {
     projectKeyFilters: string[] | null,
     isWIQL: boolean
   ) {
-    let customQueryString = ''
-
     let projectFilter = ''
     if (projectKeyFilters && projectKeyFilters.length > 0) {
-      let firstLoop = true
-      for (const projectKey of projectKeyFilters) {
-        if (firstLoop) {
-          firstLoop = false
-          projectFilter = `AND ( [System.TeamProject] = '${projectKey}'`
-        } else projectFilter += ` OR [System.TeamProject] = '${projectKey}'`
-      }
+      projectKeyFilters.forEach((projectKey, idx) => {
+        if (idx === 0) projectFilter = `AND ( [System.TeamProject] = '${projectKey}'`
+        else projectFilter += ` OR [System.TeamProject] = '${projectKey}'`
+      })
       projectFilter += ` )`
     }
 
+    let customQueryString = ''
     if (isWIQL)
       customQueryString = queryString
         ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString} ${projectFilter}`
@@ -449,7 +444,6 @@ class AzureDevOpsServerManager {
     return {error: firstError, accessibleOrgs: accessibleOrgs}
   }
 
-
   async refresh(refreshToken: string) {
     return this.fetchToken({
       grant_type: 'refresh_token',
@@ -468,8 +462,7 @@ class AzureDevOpsServerManager {
     }
 
     const additonalHeaders = {
-      // eslint-disable-next-line prettier/prettier
-      'Origin': 'http://localhost:8081'
+      Origin: 'http://localhost:8081'
     }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
@@ -480,7 +473,6 @@ class AzureDevOpsServerManager {
     }
     return oAuthRes
   }
-
 }
 
 export default AzureDevOpsServerManager

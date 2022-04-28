@@ -42,7 +42,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   const {portalStatus, isDropdown} = menuProps
   const {viewerMeetingMember, azureDevOpsSearchQuery, id: meetingId} = meeting
   const {isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
-  const projects = viewerMeetingMember?.teamMember?.integrations.azureDevOps?.projects ?? []
+  const projects = viewerMeetingMember?.teamMember.integrations.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()
   const toggleWIQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -75,7 +75,6 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
 
       {projects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {projects.map((project) => {
-        // ProjectKeyFilters is actually all the projects from the user
         const {id: globalProjectKey, name} = project
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {

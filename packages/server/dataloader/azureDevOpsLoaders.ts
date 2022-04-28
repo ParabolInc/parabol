@@ -1,13 +1,13 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import AzureDevOpsServerManager, {
   Resource,
   TeamProjectReference,
   WorkItem
 } from '../utils/AzureDevOpsServerManager'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -272,9 +272,11 @@ export const allAzureDevOpsProjects = (
             provider as IntegrationProviderAzureDevOps
           )
           const {error, projects} = await manager.getAllUserProjects()
-          if (!error) console.log(error)
+          if (error !== undefined) {
+            console.log(error)
+            return []
+          }
           if (projects !== null) resultReferences.push(...projects)
-          // return resultReferences
           return resultReferences.map((project) => ({
             ...project,
             userId,

@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
 
@@ -26,15 +27,14 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
       description: 'The parabol userId this issue was fetched for'
     },
     lastUpdateTime: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     self: {
       type: new GraphQLNonNull(GraphQLID)
     },
     instanceId: {
       type: new GraphQLNonNull(GraphQLID),
-      description:
-        'The instance ID that the project lives on'
+      description: 'The instance ID that the project lives on'
     },
     key: {
       type: new GraphQLNonNull(GraphQLString)
