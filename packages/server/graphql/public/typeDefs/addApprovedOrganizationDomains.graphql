@@ -1,0 +1,35 @@
+extend type Mutation {
+  """
+  Restrict accepting team invites to a list of approved domains
+  """
+  addApprovedOrganizationDomains(
+    """
+    The organization ID
+    """
+    orgId: ID!
+
+    """
+    A list of domains or email addressed allowed to join the organization
+    """
+    domains: [String!]!
+  ): AddApprovedOrganizationDomainsPayload!
+}
+
+union AddApprovedOrganizationDomainsPayload = ErrorPayload | AddApprovedOrganizationDomainsSuccess
+
+type AddApprovedOrganizationDomainsSuccess {
+  orgId: ID!
+
+  """
+  Organization with the updated approvals
+  """
+  organization: Organization!
+}
+
+extend type Organization {
+  """
+  A list of domains approved by the organization to join.
+  Empty if all domains are allowed
+  """
+  approvedDomains: [String!]!
+}

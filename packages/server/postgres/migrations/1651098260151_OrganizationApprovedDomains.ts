@@ -12,10 +12,6 @@ export async function up() {
         "domain" VARCHAR(255) CHECK (lower(domain) = domain),
         "orgId" VARCHAR(100) NOT NULL,
         "addedByUserId" VARCHAR(100) NOT NULL,
-        "sortOrder" INT NOT NULL,
-        "content" JSONB NOT NULL,
-        "plaintextContent" TEXT NOT NULL,
-        "reactjis" "Reactji"[] NOT NULL DEFAULT array[]::"Reactji"[],
         UNIQUE("orgId", "domain", "removedAt"),
         CONSTRAINT "fk_addedByUserId"
           FOREIGN KEY("addedByUserId")
