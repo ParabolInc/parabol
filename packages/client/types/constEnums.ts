@@ -172,6 +172,7 @@ export const enum Layout {
 }
 
 export const enum LoaderSize {
+  MENU = 24,
   MAIN = 40,
   WHOLE_PAGE = 400,
   PANEL = 200
@@ -267,7 +268,7 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Use GitHub Issues from within Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
-  GITLAB_SCOPE = 'read_api',
+  GITLAB_SCOPE = 'api',
   MATTERMOST_NAME = 'Mattermost',
   MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
@@ -307,7 +308,6 @@ export const enum Security {
 }
 
 export const enum ServerChannel {
-  GQL_EXECUTOR_RESPONSE = 'gqlExRes',
   GQL_EXECUTOR_STREAM = 'gqlStream',
   GQL_EXECUTOR_CONSUMER_GROUP = 'gqlConsumerGroup'
 }

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -12,9 +12,11 @@ import Icon from './Icon'
 const SearchInput = styled('input')({
   appearance: 'none',
   border: 'none',
+  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
+  padding: 12,
   outline: 0,
   backgroundColor: 'transparent',
   width: '100%'
@@ -86,6 +88,7 @@ const GitHubScopingSearchInput = (props: Props) => {
   const {queryString} = githubSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const inputRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     setSearch(atmosphere, meetingId, defaultInput)
   }, [])
@@ -96,6 +99,7 @@ const GitHubScopingSearchInput = (props: Props) => {
   }
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
+    inputRef.current?.focus()
   }
 
   return (
@@ -105,6 +109,7 @@ const GitHubScopingSearchInput = (props: Props) => {
         value={queryString}
         onChange={onChange}
         placeholder={'Search GitHub issues...'}
+        ref={inputRef}
       />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close

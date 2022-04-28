@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import stringScore from 'string-score'
-import {SuggestMentionableUsers_viewer} from '~/__generated__/SuggestMentionableUsers_viewer.graphql'
 import {BBox} from '../types/animations'
+import {SuggestMentionableUsersQuery} from '../__generated__/SuggestMentionableUsersQuery.graphql'
 import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
 import {DraftSuggestion} from './TaskEditor/useSuggestions'
 
@@ -34,19 +34,30 @@ interface Props {
   setSuggestions: (suggestions: DraftSuggestion[]) => void
   originCoords: BBox
   triggerWord: string
-  viewer: SuggestMentionableUsers_viewer
+  queryRef: PreloadedQuery<SuggestMentionableUsersQuery>
 }
 
+const query = graphql`
+  query SuggestMentionableUsersQuery($teamId: ID!) {
+    viewer {
+      team(teamId: $teamId) {
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
+      }
+    }
+  }
+`
+
 const SuggestMentionableUsers = (props: Props) => {
-  const {
-    active,
-    handleSelect,
-    originCoords,
-    suggestions,
-    setSuggestions,
-    triggerWord,
-    viewer
-  } = props
+  const {active, handleSelect, originCoords, suggestions, setSuggestions, triggerWord, queryRef} =
+    props
+  const data = usePreloadedQuery<SuggestMentionableUsersQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {team} = viewer
   const teamMembers = team ? team.teamMembers : null
   useEffect(() => {
@@ -64,16 +75,4 @@ const SuggestMentionableUsers = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SuggestMentionableUsers, {
-  viewer: graphql`
-    fragment SuggestMentionableUsers_viewer on User {
-      team(teamId: $teamId) {
-        teamMembers(sortBy: "preferredName") {
-          id
-          picture
-          preferredName
-        }
-      }
-    }
-  `
-})
+export default SuggestMentionableUsers

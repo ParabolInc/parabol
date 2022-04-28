@@ -2,6 +2,7 @@ import {TaskIntegration, TaskServiceEnum} from '../../../server/database/types/T
 import GitHubIssueId from './GitHubIssueId'
 import GitLabIssueId from './GitLabIssueId'
 import JiraIssueId from './JiraIssueId'
+import JiraServerIssueId from './JiraServerIssueId'
 
 const IntegrationHash = {
   join: (integration: TaskIntegration) => {
@@ -10,6 +11,12 @@ const IntegrationHash = {
         return GitHubIssueId.join(integration.nameWithOwner, integration.issueNumber)
       case 'jira':
         return JiraIssueId.join(integration.cloudId, integration.issueKey)
+      case 'jiraServer':
+        return JiraServerIssueId.join(
+          integration.providerId,
+          integration.repositoryId,
+          integration.issueId
+        )
       case 'gitlab':
         return GitLabIssueId.join(integration.providerId, integration.gid)
       default:
@@ -32,6 +39,15 @@ const IntegrationHash = {
         cloudId,
         issueKey,
         projectKey
+      }
+    }
+    if (service === 'jiraServer') {
+      const {providerId, issueId, repositoryId} = JiraServerIssueId.split(integrationHash)
+      return {
+        service,
+        providerId,
+        issueId,
+        repositoryId
       }
     }
     if (service === 'gitlab') {

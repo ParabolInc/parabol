@@ -1,17 +1,30 @@
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {TeamInvitation_verifiedInvitation} from '../__generated__/TeamInvitation_verifiedInvitation.graphql'
+import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {TeamInvitationQuery} from '../__generated__/TeamInvitationQuery.graphql'
 import TeamInvitationDialog from './TeamInvitationDialog'
-import TeamInvitationWrapper from './TeamInvitationWrapper'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
+import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props {
-  verifiedInvitation: TeamInvitation_verifiedInvitation
+  queryRef: PreloadedQuery<TeamInvitationQuery>
 }
 
+const query = graphql`
+  query TeamInvitationQuery($token: ID!) {
+    verifiedInvitation(token: $token) {
+      ...TeamInvitationDialog_verifiedInvitation
+      meetingType
+    }
+  }
+`
 function TeamInvitation(props: Props) {
-  const {verifiedInvitation} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<TeamInvitationQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+
+  const {verifiedInvitation} = data
   const {meetingType} = verifiedInvitation
   const Wrapper = meetingType ? TeamInvitationMeetingAbstract : TeamInvitationWrapper
   return (
@@ -21,11 +34,4 @@ function TeamInvitation(props: Props) {
   )
 }
 
-export default createFragmentContainer(TeamInvitation, {
-  verifiedInvitation: graphql`
-    fragment TeamInvitation_verifiedInvitation on VerifiedInvitationPayload {
-      ...TeamInvitationDialog_verifiedInvitation
-      meetingType
-    }
-  `
-})
+export default TeamInvitation

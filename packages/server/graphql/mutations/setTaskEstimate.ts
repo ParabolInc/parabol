@@ -4,6 +4,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -38,8 +40,11 @@ const setTaskEstimate = {
     //AUTH
     const [task, meeting] = await Promise.all([
       dataLoader.get('tasks').load(taskId),
-      meetingId ? dataLoader.get('newMeetings').load(meetingId) : undefined
+      dataLoader.get('newMeetings').load(meetingId)
     ])
+    if (!meeting) {
+      return {error: {message: 'Meeting not found'}}
+    }
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
@@ -52,44 +57,40 @@ const setTaskEstimate = {
     if (value.length > 4) {
       return {error: {message: 'Estimate score is too long'}}
     }
-    if (meetingId && !meeting) {
-      return {error: {message: 'Meeting not found'}}
-    }
     if (dimensionName.length === 0 || dimensionName.length > Threshold.MAX_POKER_DIMENSION_NAME) {
       return {error: {message: 'Invalid dimension name'}}
     }
 
-    let stageId: string | undefined = undefined
-    let discussionId: string | undefined = undefined
-    if (meeting) {
-      const {phases, meetingType, templateRefId} = meeting as MeetingPoker
-      if (meetingType !== 'poker') {
-        return {error: {message: 'Invalid poker meeting'}}
-      }
-      const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-      const {dimensions} = templateRef
-      const dimensionRefIdx = dimensions.findIndex((dimension) => dimension.name === dimensionName)
-      if (dimensionRefIdx === -1) {
-        return {error: {message: 'Invalid dimensionName for meeting'}}
-      }
-
-      const estimatePhase = getPhase(phases, 'ESTIMATE')
-      const {stages} = estimatePhase
-      const stage = stages.find(
-        (stage) => stage.taskId === taskId && stage.dimensionRefIdx === dimensionRefIdx
-      )
-      if (!stage) {
-        return {error: {message: 'Stage not found for meetingId'}}
-      }
-      discussionId = stage.discussionId
-      stageId = stage.id
+    const {phases, meetingType, templateRefId, name: meetingName} = meeting as MeetingPoker
+    if (meetingType !== 'poker') {
+      return {error: {message: 'Invalid poker meeting'}}
     }
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
+    const {dimensions} = templateRef
+    const dimensionRefIdx = dimensions.findIndex((dimension) => dimension.name === dimensionName)
+    if (dimensionRefIdx === -1) {
+      return {error: {message: 'Invalid dimensionName for meeting'}}
+    }
+
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
+    const {stages} = estimatePhase
+    const stage = stages.find(
+      (stage) => stage.taskId === taskId && stage.dimensionRefIdx === dimensionRefIdx
+    )
+    if (!stage) {
+      return {error: {message: 'Stage not found for meetingId'}}
+    }
+    const discussionId = stage.discussionId
+    const stageId = stage.id
 
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
     let githubLabelName: string | undefined = undefined
     const {integration} = task
     const service = integration?.service
+    const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+    const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
+
     if (service === 'jira') {
       const {accessUserId, cloudId, issueKey} = integration!
       const projectKey = JiraProjectKeyId.join(issueKey)
@@ -111,14 +112,6 @@ const setTaskEstimate = {
       )
       const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
       if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
-        if (!stageId || !meeting) {
-          return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
-        }
-        const {name: meetingName, phases} = meeting
-        const estimatePhase = getPhase(phases, 'ESTIMATE')
-        const {stages} = estimatePhase
-        const stageIdx = stages.findIndex((stage) => stage.id === stageId)
-        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
           cloudId,
           issueKey,
@@ -137,6 +130,52 @@ const setTaskEstimate = {
         } catch (e) {
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
           return {error: {message}}
+        }
+      }
+    } else if (service === 'jiraServer') {
+      const {accessUserId, issueId} = integration!
+
+      const [auth /*, team*/] = await Promise.all([
+        dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId: accessUserId}),
+        dataLoader.get('teams').load(teamId)
+      ])
+
+      if (!auth) {
+        return {error: {message: 'User no longer has access to Jira Server'}}
+      }
+
+      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+      if (!provider) {
+        return null
+      }
+
+      const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
+
+      // TODO: only comment field implemented for now
+      // const jiraDimensionFields = team?.jiraServerDimensionFields || []
+      // const dimensionField = jiraServerDimensionFields.find(
+      //   (dimensionField) =>
+      //     dimensionField.dimensionName === dimensionName &&
+      //     dimensionField.cloudId === cloudId &&
+      //     dimensionField.projectKey === projectKey
+      // )
+      // const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+      const fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT
+
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+        const res = await manager.addScoreComment(
+          dimensionName,
+          value || '<None>',
+          meetingName,
+          discussionURL,
+          issueId
+        )
+
+        if (res instanceof Error) {
+          return {error: {message: res.message}}
         }
       }
     } else if (service === 'github') {
@@ -162,9 +201,7 @@ const setTaskEstimate = {
     })
 
     const data = {meetingId, stageId, taskId}
-    if (meetingId) {
-      publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
-    }
+    publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
     return data
   }
 }

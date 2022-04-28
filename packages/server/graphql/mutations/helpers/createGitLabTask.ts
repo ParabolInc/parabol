@@ -1,0 +1,49 @@
+import {stateToMarkdown} from 'draft-js-export-markdown'
+import {GraphQLResolveInfo} from 'graphql'
+import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
+import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {CreateIssueMutation} from '../../../types/gitlabTypes'
+import {DataLoaderWorker, GQLContext} from '../../graphql'
+import createIssueMutation from '../../nestedSchema/GitLab/mutations/createIssue.graphql'
+
+const createGitLabTask = async (
+  rawContent: string,
+  fullPath: string,
+  gitlabAuth: IGetTeamMemberIntegrationAuthQueryResult,
+  context: GQLContext,
+  info: GraphQLResolveInfo,
+  dataLoader: DataLoaderWorker
+) => {
+  const {accessToken, providerId} = gitlabAuth
+  if (!accessToken) return {error: new Error('Invalid GitLab auth')}
+  const {title, contentState} = splitDraftContent(rawContent)
+  const body = stateToMarkdown(contentState)
+  const provider = await dataLoader.get('integrationProviders').load(providerId)
+  const manager = new GitLabServerManager(accessToken, provider!.serverBaseUrl!)
+  const gitlabRequest = manager.getGitLabRequest(info, context)
+  const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
+    createIssueMutation,
+    {
+      input: {
+        title,
+        description: body,
+        projectPath: fullPath
+      }
+    }
+  )
+  if (createIssueError) {
+    return {error: createIssueError}
+  }
+  const {createIssue} = createIssueData
+  if (!createIssue) {
+    return {error: new Error('GitLab create issue failed')}
+  }
+  const {issue} = createIssue
+  if (!issue) {
+    return {error: new Error('GitLab create issue failed')}
+  }
+  return {gid: issue.id, providerId}
+}
+
+export default createGitLabTask

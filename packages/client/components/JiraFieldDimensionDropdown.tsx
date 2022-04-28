@@ -1,21 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
-import {JiraFieldDimensionDropdown_stage} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
+import {JiraFieldDimensionDropdown_stage$key} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
 import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
 import JiraFieldMenu from './JiraFieldMenu'
+import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
   clearError: () => void
   isFacilitator: boolean
-  stage: JiraFieldDimensionDropdown_stage
+  stageRef: JiraFieldDimensionDropdown_stage$key
   submitScore(): void
 }
 
@@ -45,7 +45,27 @@ const labelLookup = {
 }
 
 const JiraFieldDimensionDropdown = (props: Props) => {
-  const {clearError, stage, isFacilitator, submitScore} = props
+  const {clearError, stageRef, isFacilitator, submitScore} = props
+
+  const stage = useFragment(
+    graphql`
+      fragment JiraFieldDimensionDropdown_stage on EstimateStage {
+        ...JiraFieldMenu_stage
+        serviceField {
+          name
+        }
+        task {
+          integration {
+            ... on JiraIssue {
+              possibleEstimationFieldNames
+            }
+          }
+        }
+      }
+    `,
+    stageRef
+  )
+
   const {serviceField, task} = stage
   const possibleEstimationFieldNames = task?.integration?.possibleEstimationFieldNames ?? []
   const {name: serviceFieldName} = serviceField
@@ -76,20 +96,4 @@ const JiraFieldDimensionDropdown = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraFieldDimensionDropdown, {
-  stage: graphql`
-    fragment JiraFieldDimensionDropdown_stage on EstimateStage {
-      ...JiraFieldMenu_stage
-      serviceField {
-        name
-      }
-      task {
-        integration {
-          ... on JiraIssue {
-            possibleEstimationFieldNames
-          }
-        }
-      }
-    }
-  `
-})
+export default JiraFieldDimensionDropdown

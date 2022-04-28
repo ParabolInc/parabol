@@ -5,6 +5,60 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.55.0 2022-April-20
+
+### Added
+
+- feat(jira-server): sprint poker vote to comment (#6341)
+- feat(sprint-poker): Add GitLab issue (#6267)
+- feat(sprint-poker): Search GitLab issues (#6290)
+- feat(sprint-poker): New Poker Scope UI (#6344)
+- feat(standups): Options menu - end meeting (#6342)
+- feat: Display a message when there are no more items to paginate (#6338)
+- chore: Track integrations in createTask (#6332)
+- chore(dx): Don't truncate TypeScript types (#6387)
+
+### Changed
+
+- build: update sharp library (#6383)
+
+## 6.54.0 2022-April-13
+
+### Fixed
+
+- fix(standups): Include TeamPromptMeetingMember in MeetingMember type resolution
+
+### Added
+
+- feat(gitlab): bump nest-graphql-endpoint (#6363)
+- feat(scale): give a pubsub channel to each socket server (#6317)
+- feat(standups): Top Bar Back Button (#6318)
+- feat(standups): Top Bar Component Stub (#6307)
+
+### Changed
+
+- refactor(requireSU): Remove requireSU (#6330)
+
+## 6.53.0 2022-April-06
+
+### Fixed
+
+- fix(lint): faster, deterministic linting (#6313)
+
+### Added
+
+- feat(standups): Added end team prompt mutation (#6250)
+- feat(sdl): Add SDL to public schema (#6263)
+- feat(standups): Integrate TipTap (#6255)
+- feat(jira-server): add issue to poker scope (#6214)
+- feat(impersonate): keep impersonate token until last tab closes (#6300)
+- feat(integrations): save favorite integration to local storage (#6331)
+
+### Changed
+
+- gitignore github/gitlabTypes
+- refactor(lint): Lint server (#6329)
+
 ## 6.52.0 2022-March-31
 
 ### Fixed

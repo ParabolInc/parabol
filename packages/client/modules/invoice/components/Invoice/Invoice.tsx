@@ -1,23 +1,23 @@
-import React from 'react'
-import InvoiceHeader from '../InvoiceHeader/InvoiceHeader'
-import InvoiceFooter from '../InvoiceFooter/InvoiceFooter'
-import makeMonthString from '../../../../utils/makeMonthString'
-import makeDateString from '../../../../utils/makeDateString'
-import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
-import InvoiceLineItemContent from '../InvoiceLineItem/InvoiceLineItemContent'
-import invoiceLineFormat from '../../helpers/invoiceLineFormat'
-import {Elevation} from '../../../../styles/elevation'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {InvoiceStatusEnum, Invoice_viewer} from '~/__generated__/Invoice_viewer.graphql'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import EmphasisTag from '../../../../components/Tag/EmphasisTag'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
+import makeDateString from '../../../../utils/makeDateString'
+import makeMonthString from '../../../../utils/makeMonthString'
+import {InvoiceQuery, InvoiceStatusEnum} from '../../../../__generated__/InvoiceQuery.graphql'
+import invoiceLineFormat from '../../helpers/invoiceLineFormat'
+import InvoiceFooter from '../InvoiceFooter/InvoiceFooter'
+import InvoiceHeader from '../InvoiceHeader/InvoiceHeader'
+import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
+import InvoiceLineItemContent from '../InvoiceLineItem/InvoiceLineItemContent'
+import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
 import InvoiceFailedStamp from './InvoiceFailedStamp'
 import InvoiceTag from './InvoiceTag'
-import EmphasisTag from '../../../../components/Tag/EmphasisTag'
-import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
-import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const chargeStatus = {
   PAID: 'Charged',
@@ -147,12 +147,53 @@ const CouponEmphasis = styled('span')({
 })
 
 interface Props {
-  viewer: Invoice_viewer
+  queryRef: PreloadedQuery<InvoiceQuery>
 }
 
-const Invoice = (props: Props) => {
-  const {viewer} = props
+const query = graphql`
+  query InvoiceQuery($invoiceId: ID!) {
+    viewer {
+      invoiceDetails(invoiceId: $invoiceId) {
+        ...InvoiceHeader_invoice
+        id
+        amountDue
+        creditCard {
+          brand
+          last4
+        }
+        coupon {
+          amountOff
+          name
+          percentOff
+        }
+        endAt
+        lines {
+          ...InvoiceLineItem_item
+          id
+        }
+        nextPeriodCharges {
+          ...NextPeriodChargesLineItem_item
+          nextPeriodEnd
+          interval
+          amount
+        }
+        payUrl
+        startingBalance
+        startAt
+        status
+        tier
+        total
+      }
+    }
+  }
+`
 
+const Invoice = (props: Props) => {
+  const {queryRef} = props
+  const data = usePreloadedQuery<InvoiceQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {invoiceDetails} = viewer
   const endAt = invoiceDetails && invoiceDetails.endAt
   const subject = makeMonthString(endAt)
@@ -259,40 +300,4 @@ const Invoice = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(Invoice, {
-  viewer: graphql`
-    fragment Invoice_viewer on User {
-      invoiceDetails(invoiceId: $invoiceId) {
-        ...InvoiceHeader_invoice
-        id
-        amountDue
-        creditCard {
-          brand
-          last4
-        }
-        coupon {
-          amountOff
-          name
-          percentOff
-        }
-        endAt
-        lines {
-          ...InvoiceLineItem_item
-          id
-        }
-        nextPeriodCharges {
-          ...NextPeriodChargesLineItem_item
-          nextPeriodEnd
-          interval
-          amount
-        }
-        payUrl
-        startingBalance
-        startAt
-        status
-        tier
-        total
-      }
-    }
-  `
-})
+export default Invoice

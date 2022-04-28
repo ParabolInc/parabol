@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {isNotNull} from '../utils/predicates'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
+import {isNotNull} from '../utils/predicates'
 import {
   GitHubScopingSearchFilterMenuQuery,
   GitHubScopingSearchFilterMenuQueryResponse
@@ -25,6 +25,10 @@ const StyledCheckBox = styled(Checkbox)({
   marginRight: 8
 })
 const StyledMenuItemLabel = styled(MenuItemLabel)({})
+
+const StyledMenu = styled(Menu)({
+  maxWidth: '100%'
+})
 
 interface Props {
   menuProps: MenuProps
@@ -126,9 +130,9 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
 
   const {portalStatus, isDropdown} = menuProps
   return (
-    <Menu
+    <StyledMenu
       keepParentFocus
-      ariaLabel={'Define the GitHub search query'}
+      ariaLabel='Define the GitHub search query'
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
@@ -172,7 +176,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </StyledMenu>
   )
 }
 
