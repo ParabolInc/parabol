@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import NewMeetingHowToSteps from './NewMeetingHowToSteps'
 import styled from '@emotion/styled'
 import useBreakpoint from '../hooks/useBreakpoint'

@@ -1,13 +1,13 @@
-import {ActionMeetingUpdatesPrompt_meeting} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import PhaseHeaderDescription from './PhaseHeaderDescription'
-import PhaseHeaderTitle from './PhaseHeaderTitle'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import ActionMeetingUpdatesPromptTeamHelpText from '../modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
+import {ActionMeetingUpdatesPrompt_meeting} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
 import Avatar from './Avatar/Avatar'
+import PhaseHeaderDescription from './PhaseHeaderDescription'
+import PhaseHeaderTitle from './PhaseHeaderTitle'
 
 interface Props {
   meeting: ActionMeetingUpdatesPrompt_meeting
@@ -60,7 +60,9 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
         </StyledHeader>
         <PhaseHeaderDescription>
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
-          {isViewerMeetingSection && taskCount > 0 && 'Your turn to share! Quick updates only, please.'}
+          {isViewerMeetingSection &&
+            taskCount > 0 &&
+            'Your turn to share! Quick updates only, please.'}
           {!isViewerMeetingSection && (
             <ActionMeetingUpdatesPromptTeamHelpText currentMeetingMember={currentMeetingMember} />
           )}

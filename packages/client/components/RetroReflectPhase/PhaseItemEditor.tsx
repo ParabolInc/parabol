@@ -7,7 +7,7 @@ import usePortal from '../../hooks/usePortal'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve,  ZIndex} from '../../types/constEnums'
+import {BezierCurve, ZIndex} from '../../types/constEnums'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
@@ -15,14 +15,16 @@ import getBBox from './getBBox'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 
 const FLIGHT_TIME = 500
-const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string, isStart: boolean}>(({isStart, transform}) => ({
-  boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
-  position: 'absolute',
-  top: 0,
-  transform,
-  transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
-}))
+const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
+  ({isStart, transform}) => ({
+    boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
+    position: 'absolute',
+    top: 0,
+    transform,
+    transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
+    zIndex: ZIndex.REFLECTION_IN_FLIGHT
+  })
+)
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -77,16 +79,13 @@ const PhaseItemEditor = (props: Props) => {
       isStart: true
     }
     openPortal()
-    cardsInFlightRef.current = [
-      ...cardsInFlightRef.current,
-      cardInFlight
-    ]
+    cardsInFlightRef.current = [...cardsInFlightRef.current, cardInFlight]
     forceUpdateColumn()
     requestAnimationFrame(() => {
       const stackBBox = getBBox(stackTopRef.current)
       if (!stackBBox) return
       const {left, top} = stackBBox
-      const idx = cardsInFlightRef.current.findIndex((card) => card.key == content)
+      const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
       cardsInFlightRef.current = [
         ...cardsInFlightRef.current.slice(0, idx),
         {

@@ -3,7 +3,7 @@ import useRouter from './useRouter'
 import handleHotkey from '../utils/meetings/handleHotkey'
 import useHotkey from './useHotkey'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '~/mutations/EndSprintPokerMutation'
 

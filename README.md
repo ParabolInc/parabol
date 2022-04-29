@@ -96,9 +96,14 @@ For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
 ## Parabol Core Team
 
-- [jordanh](https://github.com/jordanh)
-- [ackernaut](https://github.com/ackernaut)
-- [mattkrick](https://github.com/mattkrick)
+- [Jordan Husney](https://github.com/jordanh)
+- [Terry Acker](https://github.com/ackernaut)
+- [Matt Krick](https://github.com/mattkrick)
+
+## Parabol Maintainers
+
+- [Matt Krick](https://github.com/mattkrick)
+- [Georg Bremer](https://github.com/Dschoordsch)
 
 ## License
 

@@ -1,9 +1,7 @@
 const webpack = require('webpack')
-const toolboxConfig = require('./webpack/toolbox.config')
 const makeServersConfig = require('./webpack/prod.servers.config')
 const makeClientConfig = require('./webpack/prod.client.config')
-const {generate} = require('@graphql-codegen/cli')
-const codegenSchema = require('../codegen.json')
+const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
 
 const compile = (config, isSilent) => {
   return new Promise((resolve) => {
@@ -24,10 +22,7 @@ const compile = (config, isSilent) => {
 
 const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await compile(toolboxConfig, true)
-  await require('./toolbox/updateSchema.js').default()
-  await generate(codegenSchema)
-  await require('./compileRelay')()
+  await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
   await Promise.all([compile(serversConfig), compile(clientConfig)])

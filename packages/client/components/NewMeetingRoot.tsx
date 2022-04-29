@@ -1,26 +1,16 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
 import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import renderQuery from '../utils/relay/renderQuery'
 import NewMeeting from './NewMeeting'
-
-const query = graphql`
-  query NewMeetingRootQuery {
-    viewer {
-      ...NewMeeting_viewer
-    }
-  }
-`
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import newMeetingQuery, {NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
+import {renderLoader} from '../utils/relay/renderLoader'
 
 const NewMeetingRoot = () => {
-  const atmosphere = useAtmosphere()
   const {match} = useRouter<{teamId: string}>()
   const {params} = match
   const {teamId} = params
@@ -28,14 +18,11 @@ const NewMeetingRoot = () => {
   useSubscription('NewMeetingRoot', OrganizationSubscription)
   useSubscription('NewMeetingRoot', TaskSubscription)
   useSubscription('NewMeetingRoot', TeamSubscription)
+  const queryRef = useQueryLoaderNow<NewMeetingQuery>(newMeetingQuery, {teamId})
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(NewMeeting, {props: {teamId}})}
-    />
+    <Suspense fallback={renderLoader()}>
+      {queryRef && <NewMeeting teamId={teamId} queryRef={queryRef} />}
+    </Suspense>
   )
 }
 

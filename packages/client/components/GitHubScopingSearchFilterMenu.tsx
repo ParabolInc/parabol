@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {isNotNull} from '../utils/predicates'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
+import {isNotNull} from '../utils/predicates'
 import {
   GitHubScopingSearchFilterMenuQuery,
   GitHubScopingSearchFilterMenuQueryResponse

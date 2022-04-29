@@ -1,26 +1,44 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV3'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
 import makeHref from '../../../utils/makeHref'
-import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
 import {demoTeamId} from '../../demo/initDB'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 
 interface Props {
-  viewer: NewMeetingSummary_viewer
+  queryRef: PreloadedQuery<NewMeetingSummaryQuery>
   urlAction?: 'csv' | undefined
 }
 
+const query = graphql`
+  query NewMeetingSummaryQuery($meetingId: ID!) {
+    viewer {
+      newMeeting(meetingId: $meetingId) {
+        ...MeetingSummaryEmail_meeting
+        id
+        team {
+          id
+          name
+        }
+        name
+      }
+    }
+  }
+`
+
 const NewMeetingSummary = (props: Props) => {
-  const {
-    urlAction,
-    viewer: {newMeeting}
-  } = props
+  const {urlAction, queryRef} = props
+  const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
+  const {newMeeting} = viewer
   const {history} = useRouter()
   useEffect(() => {
     if (!newMeeting) {
@@ -56,18 +74,4 @@ const NewMeetingSummary = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingSummary, {
-  viewer: graphql`
-    fragment NewMeetingSummary_viewer on User {
-      newMeeting(meetingId: $meetingId) {
-        ...MeetingSummaryEmail_meeting
-        id
-        team {
-          id
-          name
-        }
-        name
-      }
-    }
-  `
-})
+export default NewMeetingSummary
