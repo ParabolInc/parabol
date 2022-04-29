@@ -75,7 +75,7 @@
     "eventemitter3": "^4.0.0",
     "fbjs": "^1.0.0",
     "flatted": "^2.0.1",
-    "graphiql": "1.5.1",
+    "graphiql": "1.8.8",
     "graphql-typed": "^0.6.1",
     "hoist-non-react-statics": "^3.3.0",
     "immutable": "3.8.2",

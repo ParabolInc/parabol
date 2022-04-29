@@ -9,5 +9,5 @@ INSERT INTO "OrganizationApprovedDomain" (
   "addedByUserId"
 )
 VALUES :approvals
-ON CONFLICT ("domain", "orgId", "removedAt")
+ON CONFLICT
 DO NOTHING;

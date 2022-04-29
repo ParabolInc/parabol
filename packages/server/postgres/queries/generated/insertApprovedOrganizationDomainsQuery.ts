@@ -19,7 +19,7 @@ export interface IInsertApprovedOrganizationDomainsQueryQuery {
   result: IInsertApprovedOrganizationDomainsQueryResult;
 }
 
-const insertApprovedOrganizationDomainsQueryIR: any = {"name":"insertApprovedOrganizationDomainsQuery","params":[{"name":"approvals","codeRefs":{"defined":{"a":59,"b":67,"line":3,"col":9},"used":[{"a":205,"b":213,"line":11,"col":8}]},"transform":{"type":"pick_array_spread","keys":["domain","orgId","addedByUserId"]}}],"usedParamSet":{"approvals":true},"statement":{"body":"INSERT INTO \"OrganizationApprovedDomain\" (\n  \"domain\",\n  \"orgId\",\n  \"addedByUserId\"\n)\nVALUES :approvals\nON CONFLICT (\"domain\", \"orgId\", \"removedAt\")\nDO NOTHING","loc":{"a":111,"b":269,"line":6,"col":0}}};
+const insertApprovedOrganizationDomainsQueryIR: any = {"name":"insertApprovedOrganizationDomainsQuery","params":[{"name":"approvals","codeRefs":{"defined":{"a":59,"b":67,"line":3,"col":9},"used":[{"a":205,"b":213,"line":11,"col":8}]},"transform":{"type":"pick_array_spread","keys":["domain","orgId","addedByUserId"]}}],"usedParamSet":{"approvals":true},"statement":{"body":"INSERT INTO \"OrganizationApprovedDomain\" (\n  \"domain\",\n  \"orgId\",\n  \"addedByUserId\"\n)\nVALUES :approvals\nON CONFLICT\nDO NOTHING","loc":{"a":111,"b":236,"line":6,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -30,7 +30,7 @@ const insertApprovedOrganizationDomainsQueryIR: any = {"name":"insertApprovedOrg
  *   "addedByUserId"
  * )
  * VALUES :approvals
- * ON CONFLICT ("domain", "orgId", "removedAt")
+ * ON CONFLICT
  * DO NOTHING
  * ```
  */

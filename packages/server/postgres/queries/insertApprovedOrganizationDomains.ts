@@ -12,7 +12,7 @@ const insertApprovedOrganizationDomains = async (
     orgId,
     domain
   }))
-  insertApprovedOrganizationDomainsQuery.run({approvals}, getPg())
+  return insertApprovedOrganizationDomainsQuery.run({approvals}, getPg())
 }
 
 export default insertApprovedOrganizationDomains

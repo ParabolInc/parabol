@@ -11,7 +11,7 @@ extend type Mutation {
     """
     A list of domains or email addressed allowed to join the organization
     """
-    domains: [String!]!
+    emailDomains: [String!]!
   ): AddApprovedOrganizationDomainsPayload!
 }
 
