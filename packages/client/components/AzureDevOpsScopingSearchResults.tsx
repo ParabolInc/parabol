@@ -35,8 +35,8 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
-                userStories(first: $first, queryString: $queryString, isWIQL: $isWIQL)
-                  @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
+                workItems(first: $first, queryString: $queryString, isWIQL: $isWIQL)
+                  @connection(key: "AzureDevOpsScopingSearchResults_workItems") {
                   error {
                     message
                   }
@@ -77,9 +77,9 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
 
   const viewer = query.viewer
   const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
-  const userStories = azureDevOps?.userStories ?? null
-  const edges = userStories?.edges ?? null
-  const error = userStories?.error ?? null
+  const workItems = azureDevOps?.workItems ?? null
+  const edges = workItems?.edges ?? null
+  const error = workItems?.error ?? null
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
@@ -120,7 +120,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
-            // serviceTaskId={'dev.azure.com/wdfox3:3143c869-ae4a-48d2-93e6-5503b338c6bc:' + node.id}
             serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
             meetingId={meetingId}
             persistQuery={() => {

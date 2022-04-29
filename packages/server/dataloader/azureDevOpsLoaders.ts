@@ -472,7 +472,7 @@ export const azureDevOpsWorkItem = (
   )
 }
 
-export const azureDevOpsUserStories = (
+export const azureDevOpsWorkItems = (
   parent: RootDataLoader
 ): DataLoader<AzureDevOpsWorkItemsKey, AzureDevOpsWorkItem[], string> => {
   return new DataLoader<AzureDevOpsWorkItemsKey, AzureDevOpsWorkItem[], string>(
@@ -488,7 +488,7 @@ export const azureDevOpsUserStories = (
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-          const result = await manager.getUserStories(instanceId, null, false)
+          const result = await manager.getWorkItems(instanceId, null, false)
           const {error, workItems} = result
           const workItemIds = workItems.map((workItem) => workItem.id)
           const workItemData = await manager.getWorkItemData(instanceId, workItemIds)

@@ -97,7 +97,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     closePortal()
   }
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
-    if (workItemType === 'User Story') {
+    if (workItemType === 'User Story' || workItemType === 'Bug') {
       return [
         {
           label: SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD_LABEL,
@@ -113,6 +113,17 @@ const AzureDevOpsFieldMenu = (props: Props) => {
         {
           label: SprintPokerDefaults.AZUREDEVOPS_TAKS_FIELD_LABEL,
           fieldValue: SprintPokerDefaults.AZUREDEVOPS_TASK_FIELD
+        },
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    } else if (workItemType === 'Epic' || workItemType === 'Feature') {
+      return [
+        {
+          label: SprintPokerDefaults.AZUREDEVOPS_EFFORT_LABEL,
+          fieldValue: SprintPokerDefaults.AZUREDEVOPS_EFFORT_FIELD
         },
         {
           label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,

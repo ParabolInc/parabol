@@ -321,7 +321,7 @@ class AzureDevOpsServerManager {
     return {error: firstError, workItems: workItemReferences}
   }
 
-  async getUserStories(instanceId: string, queryString: string | null, isWIQL: boolean) {
+  async getWorkItems(instanceId: string, queryString: string | null, isWIQL: boolean) {
     if (isWIQL) {
       const customQueryString = queryString
         ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString}`
@@ -330,7 +330,14 @@ class AzureDevOpsServerManager {
       return await this.executeWiqlQuery(instanceId, customQueryString)
     }
     const textFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
-    const customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    const customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems
+                              Where
+                                (
+                                  [System.WorkItemType] = 'User Story' OR [System.WorkItemType] = 'Task'
+                                    OR [System.WorkItemType] = 'Issue' OR [System.WorkItemType] = 'Bug'
+                                    OR [System.WorkItemType] = 'Feature' OR [System.WorkItemType] = 'Epic'
+                                )
+                              AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
     return await this.executeWiqlQuery(instanceId, customQueryString)
   }
 
@@ -350,7 +357,7 @@ class AzureDevOpsServerManager {
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
-      const {error: workItemsError, workItems} = await this.getUserStories(
+      const {error: workItemsError, workItems} = await this.getWorkItems(
         instanceId,
         queryString,
         isWIQL
