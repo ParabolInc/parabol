@@ -17,6 +17,10 @@ const IntegrationProviderOAuth2 = new GraphQLObjectType<any, GQLContext>({
     clientId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The OAuth2 client id'
+    },
+    tenantId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The OAuth2 tenant id'
     }
   })
 })

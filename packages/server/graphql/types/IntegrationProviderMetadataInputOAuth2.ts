@@ -5,6 +5,7 @@ export interface IIntegrationProviderMetadataInputOAuth2 {
   serverBaseUrl: string
   clientId: string
   clientSecret: string
+  tenantId: string
 }
 export const IntegrationProviderMetadataInputOAuth2 = new GraphQLInputObjectType({
   name: 'IntegrationProviderMetadataInputOAuth2',
@@ -20,7 +21,11 @@ export const IntegrationProviderMetadataInputOAuth2 = new GraphQLInputObjectType
     },
     clientSecret: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The client id to give to the provider'
+      description: 'The client secret to give to the provider'
+    },
+    tenantId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The client secret to give to the provider'
     }
   })
 })
