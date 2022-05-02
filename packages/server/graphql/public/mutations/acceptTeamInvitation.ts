@@ -10,6 +10,7 @@ import segmentIo from '../../../utils/segmentIo'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
+import getIsApprovedByOrg from './helpers/getIsApprovedByOrg'
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   _source,
@@ -36,7 +37,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   }
 
   const {invitation} = invitationRes
-  const {meetingId, teamId, email: inviteeEmail} = invitation
+  const {meetingId, teamId} = invitation
   const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
   const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
   const team = await dataLoader.get('teams').loadNonNull(teamId)
@@ -51,30 +52,10 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
     }
   }
-
-  const organizationUser = await dataLoader
-    .get('organizationUsersByUserIdOrgId')
-    .load({userId: viewerId, orgId})
-  if (!organizationUser) {
-    // make sure the email is allowed on the org
-    const approvedDomains = await dataLoader.get('organizationApprovedDomains').load(orgId)
-    if (approvedDomains.length > 0) {
-      const viewer = await dataLoader.get('users').load(viewerId)
-      const {email, identities} = viewer
-      const isApproved = approvedDomains.some((domain) => email.endsWith(domain))
-      if (!isApproved) {
-        const isSingular = approvedDomains.length === 1
-        const message = `Your email must end with ${
-          isSingular ? 'one of ' : ''
-        }the following : ${approvedDomains.join(', ')}}`
-        return {error: {message}}
-      }
-      const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)
-      if (isEmailUnverified) {
-        return {error: {message: 'You must verify your email to join. Check your email'}}
-      }
-      // make sure their email is verified
-    }
+  const approvalError = await getIsApprovedByOrg({userId: viewerId, orgId, dataLoader})
+  if (approvalError instanceof Error) {
+    await redisLock.unlock()
+    return {error: {message: approvalError.message}}
   }
 
   // RESOLUTION

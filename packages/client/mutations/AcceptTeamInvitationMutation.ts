@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {InvitationTokenError} from '~/types/constEnums'
 import {AcceptTeamInvitationMutation_notification} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
+import Atmosphere from '../Atmosphere'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -135,6 +136,22 @@ interface LocalHandler extends HistoryMaybeLocalHandler {
   meetingId?: string | null
 }
 
+export const handleAcceptTeamInvitation = (
+  atmosphere: Atmosphere,
+  acceptTeamInvitation: null | undefined | {error?: {message: string} | null}
+) => {
+  if (acceptTeamInvitation?.error) {
+    const {message} = acceptTeamInvitation.error
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      autoDismiss: 0,
+      key: `acceptTeamInvitation:${message}`,
+      message
+    })
+    return false
+  }
+  return true
+}
+
 const AcceptTeamInvitationMutation: StandardMutation<
   TAcceptTeamInvitationMutation,
   LocalHandler
@@ -156,10 +173,13 @@ const AcceptTeamInvitationMutation: StandardMutation<
       if (onCompleted) {
         onCompleted(data, errors)
       }
+      const {acceptTeamInvitation} = data
+      const isOK = handleAcceptTeamInvitation(atmosphere, acceptTeamInvitation)
+      if (!isOK) return
+      const {authToken, team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
         if (serverError.message === InvitationTokenError.ALREADY_ACCEPTED) {
-          const {acceptTeamInvitation} = data
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
             history,
@@ -168,8 +188,6 @@ const AcceptTeamInvitationMutation: StandardMutation<
         }
         return
       }
-      const {acceptTeamInvitation} = data
-      const {authToken, team} = acceptTeamInvitation
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team

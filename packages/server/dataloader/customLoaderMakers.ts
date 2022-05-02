@@ -6,6 +6,7 @@ import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import getApprovedOrganizationDomainsByDomainFromPG from '../postgres/queries/getApprovedOrganizationDomainsByDomainFromPG'
 import getApprovedOrganizationDomainsFromPG from '../postgres/queries/getApprovedOrganizationDomainsFromPG'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -21,7 +22,6 @@ import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
-
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -310,6 +310,20 @@ export const organizationApprovedDomains = (parent: RootDataLoader) => {
         return currentApprovals
           .filter((approval) => approval.orgId === orgId)
           .map((approval) => approval.domain)
+      })
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const restrictedEmailDomains = (parent: RootDataLoader) => {
+  return new DataLoader<string, boolean, string>(
+    async (domains) => {
+      const currentApprovals = await getApprovedOrganizationDomainsByDomainFromPG(domains)
+      return domains.map((domain) => {
+        return !!currentApprovals.find((approval) => approval.domain === domain)
       })
     },
     {
