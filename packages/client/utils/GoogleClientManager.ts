@@ -1,12 +1,12 @@
+import {RouterProps} from 'react-router'
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import makeHref from './makeHref'
-import getAnonymousId from './getAnonymousId'
-import {LocalStorageKey} from '../types/constEnums'
-import GoogleManager from './GoogleManager'
 import LoginWithGoogleMutation from '../mutations/LoginWithGoogleMutation'
-import {RouterProps} from 'react-router'
+import {LocalStorageKey} from '../types/constEnums'
+import getAnonymousId from './getAnonymousId'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import GoogleManager from './GoogleManager'
+import makeHref from './makeHref'
 
 class GoogleClientManager extends GoogleManager {
   fetch = window.fetch.bind(window)
@@ -18,9 +18,7 @@ class GoogleClientManager extends GoogleManager {
     loginHint?: string
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
     const params = new URLSearchParams({
       client_id: window.__ACTION__.google,
       scope: GoogleClientManager.SCOPE,
@@ -59,7 +57,7 @@ class GoogleClientManager extends GoogleManager {
       }
       LoginWithGoogleMutation(
         atmosphere,
-        {code, segmentId, invitationToken},
+        {code, segmentId, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
         {onError, onCompleted: handleComplete, history}
       )
       window.removeEventListener('message', handler)

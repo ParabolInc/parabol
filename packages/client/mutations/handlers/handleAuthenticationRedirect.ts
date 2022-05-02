@@ -8,20 +8,20 @@ interface OnNextMeetingId extends OnNextHistoryContext {
 }
 
 const handleAuthenticationRedirect: OnNextHandler<
-  AcceptTeamInvitationMutationReply,
+  AcceptTeamInvitationMutationReply | undefined,
   OnNextMeetingId
 > = (acceptTeamInvitation, {meetingId: locallyRequestedMeetingId, history, atmosphere}) => {
   SendClientSegmentEventMutation(atmosphere, 'User Login')
-  const {meetingId: invitedMeetingId, team} = acceptTeamInvitation
   const redirectTo = getValidRedirectParam()
   if (redirectTo) {
     history.push(redirectTo)
     return
   }
-  if (!team) {
+  if (!acceptTeamInvitation?.team) {
     history.push('/meetings')
     return
   }
+  const {meetingId: invitedMeetingId, team} = acceptTeamInvitation
   const {id: teamId, activeMeetings} = team
   const meetingId = locallyRequestedMeetingId || invitedMeetingId
   const activeMeeting =

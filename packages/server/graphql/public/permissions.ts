@@ -24,6 +24,7 @@ export type PermissionMap<T> = {
 const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isAuthenticated,
+    acceptTeamInvitation: and(isAuthenticated, rateLimit({perMinute: 50, perHour: 100})),
     createImposterToken: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),

@@ -6991,15 +6991,6 @@ type MassInvitationPayload {
   teamName: String
 }
 
-"""
-The reason the invitation failed
-"""
-enum TeamInvitationErrorEnum {
-  accepted
-  expired
-  notFound
-}
-
 type VerifiedInvitationPayload {
   errorType: TeamInvitationErrorEnum
 
@@ -7048,21 +7039,6 @@ type VerifiedInvitationPayload {
 }
 
 type Mutation {
-  """
-  Redeem an invitation token for a logged in user
-  """
-  acceptTeamInvitation(
-    """
-    The 48-byte hex encoded invitation token or the 2-part JWT for mass invitation tokens
-    """
-    invitationToken: ID
-
-    """
-    the notification clicked to accept, if any
-    """
-    notificationId: ID
-  ): AcceptTeamInvitationPayload!
-
   """
   Create a new agenda item
   """
@@ -8531,36 +8507,6 @@ type Mutation {
     """
     teamId: ID!
   ): RemoveTeamMemberIntegrationAuthPayload!
-}
-
-type AcceptTeamInvitationPayload {
-  error: StandardMutationError
-
-  """
-  The new auth token sent to the mutator
-  """
-  authToken: ID
-
-  """
-  the meetingId to redirect to
-  """
-  meetingId: ID
-
-  """
-  The team that the invitee will be joining
-  """
-  team: Team
-
-  """
-  The new team member on the team
-  """
-  teamMember: TeamMember
-  notifications: NotificationTeamInvitation
-
-  """
-  For payloads going to the team leader that got new suggested actions
-  """
-  teamLead: User
 }
 
 type AddAgendaItemPayload {
@@ -11175,8 +11121,7 @@ type UpdateDragLocationPayload {
 }
 
 union NotificationSubscriptionPayload =
-    AcceptTeamInvitationPayload
-  | AddFeatureFlagPayload
+    AddFeatureFlagPayload
   | AddNewFeaturePayload
   | AddOrgPayload
   | AddTeamPayload
@@ -11374,8 +11319,7 @@ union TaskSubscriptionPayload =
   | UpdateTaskDueDatePayload
 
 union TeamSubscriptionPayload =
-    AcceptTeamInvitationPayload
-  | AddAgendaItemPayload
+    AddAgendaItemPayload
   | AddAtlassianAuthPayload
   | AddGitHubAuthPayload
   | AddIntegrationProviderSuccess

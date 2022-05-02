@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
-import acceptTeamInvitation from './mutations/acceptTeamInvitation'
 import addAgendaItem from './mutations/addAgendaItem'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
@@ -145,7 +144,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
   fields: () =>
     ({
-      acceptTeamInvitation,
       addAgendaItem,
       addAtlassianAuth,
       addComment,

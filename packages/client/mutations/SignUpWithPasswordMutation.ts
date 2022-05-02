@@ -9,8 +9,9 @@ const mutation = graphql`
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID
+    $invitationToken: ID! = ""
     $segmentId: ID
+    $isInvitation: Boolean!
   ) {
     signUpWithPassword(
       email: $email
@@ -27,7 +28,7 @@ const mutation = graphql`
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
-    acceptTeamInvitation(invitationToken: $invitationToken) {
+    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
@@ -38,7 +39,7 @@ const SignUpWithPasswordMutation: StandardMutation<
 > = (atmosphere, variables, {onError, onCompleted, history}) => {
   return commitMutation<TSignUpWithPasswordMutation>(atmosphere, {
     mutation,
-    variables,
+    variables: {...variables, isInvitation: !!variables.invitationToken},
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, signUpWithPassword} = res
@@ -46,7 +47,7 @@ const SignUpWithPasswordMutation: StandardMutation<
       onCompleted({signUpWithPassword}, errors)
       if (!uiError && !errors) {
         handleSuccessfulLogin(signUpWithPassword)
-        const authToken = acceptTeamInvitation.authToken || signUpWithPassword.authToken
+        const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
       }

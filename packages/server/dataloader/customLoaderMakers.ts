@@ -6,6 +6,7 @@ import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import getApprovedOrganizationDomainsFromPG from '../postgres/queries/getApprovedOrganizationDomainsFromPG'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -297,6 +298,22 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const organizationApprovedDomains = (parent: RootDataLoader) => {
+  return new DataLoader<string, string[], string>(
+    async (orgIds) => {
+      const currentApprovals = await getApprovedOrganizationDomainsFromPG(orgIds)
+      return orgIds.map((orgId) => {
+        return currentApprovals
+          .filter((approval) => approval.orgId === orgId)
+          .map((approval) => approval.domain)
+      })
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

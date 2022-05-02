@@ -85,10 +85,9 @@ const mutation = graphql`
   }
 `
 
-export const acceptTeamInvitationNotificationUpdater: SharedUpdater<AcceptTeamInvitationMutation_notification> = (
-  payload,
-  {store}
-) => {
+export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
+  AcceptTeamInvitationMutation_notification
+> = (payload, {store}) => {
   const team = payload.getLinkedRecord('team')
   if (!team) return
   handleAddTeams(team, store)
@@ -144,48 +143,48 @@ const AcceptTeamInvitationMutation: StandardMutation<
   variables,
   {history, onCompleted, onError, meetingId: locallyRequestedMeetingId}
 ) => {
-    return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
-      mutation,
-      variables,
-      updater: (store) => {
-        const payload = store.getRootField('acceptTeamInvitation')
-        if (!payload) return
-        acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
-      },
-      onError,
-      onCompleted: (data, errors) => {
-        if (onCompleted) {
-          onCompleted(data, errors)
-        }
-        const serverError = getGraphQLError(data, errors)
-        if (serverError) {
-          if (serverError.message === InvitationTokenError.ALREADY_ACCEPTED) {
-            const {acceptTeamInvitation} = data
-            handleAuthenticationRedirect(acceptTeamInvitation, {
-              atmosphere,
-              history,
-              meetingId: locallyRequestedMeetingId
-            })
-          }
-          return
-        }
-        const {acceptTeamInvitation} = data
-        const {authToken, team} = acceptTeamInvitation
-        atmosphere.setAuthToken(authToken)
-        if (!team) return
-        const {id: teamId, name: teamName} = team
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          key: `addedToTeam:${teamId}`,
-          autoDismiss: 5,
-          message: `Congratulations! You’ve been added to team ${teamName}`
-        })
-        handleAuthenticationRedirect(acceptTeamInvitation, {
-          atmosphere,
-          history,
-          meetingId: locallyRequestedMeetingId
-        })
+  return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
+    mutation,
+    variables,
+    updater: (store) => {
+      const payload = store.getRootField('acceptTeamInvitation')
+      if (!payload) return
+      acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
+    },
+    onError,
+    onCompleted: (data, errors) => {
+      if (onCompleted) {
+        onCompleted(data, errors)
       }
-    })
-  }
+      const serverError = getGraphQLError(data, errors)
+      if (serverError) {
+        if (serverError.message === InvitationTokenError.ALREADY_ACCEPTED) {
+          const {acceptTeamInvitation} = data
+          handleAuthenticationRedirect(acceptTeamInvitation, {
+            atmosphere,
+            history,
+            meetingId: locallyRequestedMeetingId
+          })
+        }
+        return
+      }
+      const {acceptTeamInvitation} = data
+      const {authToken, team} = acceptTeamInvitation
+      atmosphere.setAuthToken(authToken)
+      if (!team) return
+      const {id: teamId, name: teamName} = team
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: `addedToTeam:${teamId}`,
+        autoDismiss: 5,
+        message: `Congratulations! You’ve been added to team ${teamName}`
+      })
+      handleAuthenticationRedirect(acceptTeamInvitation, {
+        atmosphere,
+        history,
+        meetingId: locallyRequestedMeetingId
+      })
+    }
+  })
+}
 
 export default AcceptTeamInvitationMutation

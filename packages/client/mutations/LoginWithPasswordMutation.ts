@@ -6,7 +6,12 @@ import {LoginWithPasswordMutation as TLoginWithPasswordMutation} from '../__gene
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
-  mutation LoginWithPasswordMutation($email: ID!, $password: String!, $invitationToken: ID) {
+  mutation LoginWithPasswordMutation(
+    $email: ID!
+    $password: String!
+    $invitationToken: ID! = ""
+    $isInvitation: Boolean!
+  ) {
     loginWithPassword(email: $email, password: $password) {
       error {
         message
@@ -17,7 +22,7 @@ const mutation = graphql`
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
-    acceptTeamInvitation(invitationToken: $invitationToken) {
+    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
@@ -37,7 +42,7 @@ const LoginWithPasswordMutation: StandardMutation<
       onCompleted({loginWithPassword}, errors)
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithPassword)
-        const authToken = acceptTeamInvitation.authToken || loginWithPassword.authToken
+        const authToken = acceptTeamInvitation?.authToken ?? loginWithPassword.authToken
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
       }

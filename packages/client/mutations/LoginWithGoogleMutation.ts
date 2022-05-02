@@ -6,7 +6,12 @@ import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generate
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
-  mutation LoginWithGoogleMutation($code: ID!, $invitationToken: ID, $segmentId: ID) {
+  mutation LoginWithGoogleMutation(
+    $code: ID!
+    $invitationToken: ID! = ""
+    $segmentId: ID
+    $isInvitation: Boolean!
+  ) {
     loginWithGoogle(code: $code, segmentId: $segmentId, invitationToken: $invitationToken) {
       error {
         message
@@ -17,7 +22,7 @@ const mutation = graphql`
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
-    acceptTeamInvitation(invitationToken: $invitationToken) {
+    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
@@ -29,7 +34,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
 ) => {
   return commitMutation<TLoginWithGoogleMutation>(atmosphere, {
     mutation,
-    variables,
+    variables: {...variables, isInvitation: !!variables.invitationToken},
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
@@ -37,7 +42,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
       const {error: uiError} = loginWithGoogle
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithGoogle)
-        const authToken = acceptTeamInvitation.authToken || loginWithGoogle.authToken
+        const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
       }
