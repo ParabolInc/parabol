@@ -1,4 +1,3 @@
-import plural from 'parabol-client/utils/plural'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {InvitationTokenError, SubscriptionChannel} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
@@ -64,10 +63,10 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       const {email, identities} = viewer
       const isApproved = approvedDomains.some((domain) => email.endsWith(domain))
       if (!isApproved) {
-        const message = `Must sign in from the following ${plural(
-          approvedDomains.length,
-          'domain'
-        )}: ${approvedDomains.join(', ')}}`
+        const isSingular = approvedDomains.length === 1
+        const message = `Your email must end with ${
+          isSingular ? 'one of ' : ''
+        }the following : ${approvedDomains.join(', ')}}`
         return {error: {message}}
       }
       const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)

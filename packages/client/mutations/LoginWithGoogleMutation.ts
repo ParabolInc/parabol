@@ -22,6 +22,8 @@ const mutation = graphql`
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
+    # Validation occurs statically https://github.com/graphql/graphql-js/issues/1334
+    # A default value is necessary even in the case of @include(if: false)
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
