@@ -82,10 +82,9 @@ const ScopePhaseArea = (props: Props) => {
   )
 
   const allowAzureDevOps =
-    !!azureDevOpsIntegration.sharedProviders.length && featureFlags.azureDevOps
+    !!azureDevOpsIntegration?.sharedProviders.length && featureFlags?.azureDevOps
   const allowGitLab = !!(isGitLabProviderAvailable && featureFlags?.gitlab)
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
-
 
   const baseTabs = [
     {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},
