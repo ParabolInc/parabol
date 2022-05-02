@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.56.0 2022-April-27
+
+### Added
+
+- feat(sprint-poker): Track GitLab events (#6367)
+- feat(standups): Responses grid with static prompt (#6353)
+- feat(standups): Response Cards (#6392)
+- feat(standups): Discussion Drawer (#6370)
+- feat(CI): use prod build for integration tests (#6379)
+- feat(lint): Lint client (#6335)
+- feat(DX): Fast dev mode (#6337)
+- feat: Update illustration of empty discussion threads (#6423)
+
+### Changed
+
+- docs: Update CONTRIBUTING (#6432)
+- chore(deps): bump nconf from 0.11.3 to 0.11.4 (#6438)
+- refactor: update renderQuery to Suspense + Relay Hooks #5297 (#6251)
+
+### Fixed
+
+- fix: viewerMeetingMember can be undefined (#6441)
+- fix: ignore comparison order for equality (#6411)
+
 ## 6.55.0 2022-April-20
 
 ### Added

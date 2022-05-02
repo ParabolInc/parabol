@@ -12,15 +12,15 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
-  providerId: string
+  provider: any
 }
 
 const AzureDevOpsConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, providerId} = props
+  const {menuProps, mutationProps, teamId, provider} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
-    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, providerId, mutationProps)
+    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
 
   const removeAzureDevOps = () => {
@@ -28,7 +28,11 @@ const AzureDevOpsConfigMenu = (props: Props) => {
     submitMutation()
     // wait for the portal to animate closed before removing, otherwise it'll stick around forever
     setTimeout(() => {
-      RemoveTeamMemberIntegrationAuthMutation(atmosphere, {teamId, service: 'azureDevOps'}, {onCompleted, onError})
+      RemoveTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {teamId, service: 'azureDevOps'},
+        {onCompleted, onError}
+      )
     }, Duration.PORTAL_CLOSE)
   }
   return (

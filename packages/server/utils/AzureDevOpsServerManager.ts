@@ -1,4 +1,5 @@
-import fetch from 'node-fetch'
+import fetch, {RequestInit} from 'node-fetch'
+import AbortController from 'abort-controller'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
@@ -167,7 +168,6 @@ interface WorkItemAddFieldResponse {
 const MAX_REQUEST_TIME = 5000
 
 class AzureDevOpsServerManager {
-  fetch = fetch as any
   accessToken = ''
   private headers = {
     Authorization: '',
@@ -215,7 +215,7 @@ class AzureDevOpsServerManager {
       controller.abort()
     }, MAX_REQUEST_TIME)
     try {
-      const res = await this.fetch(url, {...options, signal})
+      const res = await fetch(url, {...options, signal})
       clearTimeout(timeout)
       return res
     } catch (e) {

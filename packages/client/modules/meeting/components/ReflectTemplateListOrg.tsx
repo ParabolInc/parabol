@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
+import {ReflectTemplateListOrgQuery} from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
+
 const TemplateList = styled('ul')({
   listStyle: 'none',
   paddingLeft: 0,
@@ -23,11 +24,42 @@ const Message = styled('div')({
   padding: '8px 16px'
 })
 interface Props {
-  viewer: ReflectTemplateListOrg_viewer
+  queryRef: PreloadedQuery<ReflectTemplateListOrgQuery>
 }
 
+const query = graphql`
+  query ReflectTemplateListOrgQuery($teamId: ID!) {
+    viewer {
+      id
+      team(teamId: $teamId) {
+        id
+        meetingSettings(meetingType: retrospective) {
+          ... on RetrospectiveMeetingSettings {
+            organizationTemplates(first: 20)
+              @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
+              edges {
+                node {
+                  ...ReflectTemplateItem_template
+                  id
+                }
+              }
+            }
+            activeTemplate {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const ReflectTemplateListOrg = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<ReflectTemplateListOrgQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
@@ -55,29 +87,4 @@ const ReflectTemplateListOrg = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateListOrg, {
-  viewer: graphql`
-    fragment ReflectTemplateListOrg_viewer on User {
-      id
-      team(teamId: $teamId) {
-        id
-        meetingSettings(meetingType: retrospective) {
-          ... on RetrospectiveMeetingSettings {
-            organizationTemplates(first: 20)
-              @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
-              edges {
-                node {
-                  ...ReflectTemplateItem_template
-                  id
-                }
-              }
-            }
-            activeTemplate {
-              id
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default ReflectTemplateListOrg

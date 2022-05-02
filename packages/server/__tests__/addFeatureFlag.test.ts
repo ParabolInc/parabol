@@ -1,9 +1,9 @@
-import {sendPublic, signUp} from './common'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
+import {sendPublic, signUp} from './common'
 
 const ADD_FEATURE_FLAG = `
-  mutation AddFeatureFlag($emails: [String!], $domain: String, $flag: String!) {
+  mutation AddFeatureFlag($emails: [String!], $domain: String, $flag: UserFlagEnum!) {
     addFeatureFlag(emails: $emails, domain: $domain, flag: $flag) {
       error {
         title

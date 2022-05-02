@@ -82,6 +82,8 @@ graphql`
         }
         sharedProviders {
           id
+          tenantId
+          clientId
         }
       }
     }
@@ -112,7 +114,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
   if (!provider) return null
 
   const openOAuth = async () => {
-    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider.id, mutationProps)
+    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
@@ -144,7 +146,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
               menuProps={menuProps}
               mutationProps={mutationProps}
               teamId={teamId}
-              providerId={provider.id}
+              provider={provider}
             />
           )}
         </ListAndMenu>

@@ -1,8 +1,6 @@
-import {CreateAzureDevOpsAuthorizeUrlMutationResponse} from '~/__generated__/CreateAzureDevOpsAuthorizeUrlMutation.graphql'
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import CreateAzureDevOpsAuthorizeUrlMutation from '../mutations/CreateAzureDevOpsAuthorizeUrlMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
@@ -29,7 +27,7 @@ class AzureDevOpsClientManager {
   static async openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
-    providerId: string,
+    provider: any,
     mutationProps: MenuMutationProps
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
@@ -37,6 +35,8 @@ class AzureDevOpsClientManager {
     const verifier = AzureDevOpsClientManager.generateVerifier()
     const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
     const redirect = makeHref('/auth/ado')
+    const scope = '499b84ac-1321-427f-aa17-267ca6975798/.default'
+    const url = `https://login.microsoftonline.com/${provider.tenantId}/oauth2/v2.0/authorize?client_id=${provider.clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=${scope}&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
 
     // Open synchronously because of Safari
     const popup = window.open(
@@ -45,22 +45,9 @@ class AzureDevOpsClientManager {
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
 
-    const onUrlCompleted = (result: CreateAzureDevOpsAuthorizeUrlMutationResponse) => {
-      if (popup) {
-        if (!result.createAzureDevOpsAuthorizeUrl?.url) {
-          onError(result.createAzureDevOpsAuthorizeUrl?.error)
-          popup.close()
-          return
-        }
-        popup.location.href = result.createAzureDevOpsAuthorizeUrl.url
-      }
+    if (popup) {
+      popup.location.href = url
     }
-
-    CreateAzureDevOpsAuthorizeUrlMutation(
-      atmosphere,
-      {providerId, teamId, providerState, redirect, code},
-      {onCompleted: onUrlCompleted}
-    )
 
     const handler = (event) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
@@ -73,7 +60,7 @@ class AzureDevOpsClientManager {
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
         {
-          providerId: providerId,
+          providerId: provider.id,
           oauthCodeOrPat: code,
           oauthVerifier: verifier,
           redirectUri: redirect,

@@ -52,6 +52,8 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
               azureDevOps {
                 sharedProviders {
                   id
+                  tenantId
+                  clientId
                 }
               }
             }
@@ -67,7 +69,7 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
     return null
   }
   const authAzureDevOps = () => {
-    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider.id, mutationProps)
+    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
   return (
     <AddAzureDevOpsArea>

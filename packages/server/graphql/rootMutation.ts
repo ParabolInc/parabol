@@ -24,7 +24,6 @@ import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import createAzureDevOpsAuthorizeUrl from './mutations/createAzureDevOpsAuthorizeUrl'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
@@ -287,7 +286,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
       endTeamPrompt,
-      createAzureDevOpsAuthorizeUrl,
       updateAzureDevOpsDimensionField
     } as any)
 })

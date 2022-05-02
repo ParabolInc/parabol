@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
-import {ProviderList_viewer} from '../../../../__generated__/ProviderList_viewer.graphql'
+import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
@@ -13,7 +13,7 @@ import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 
 interface Props {
-  viewer: ProviderList_viewer
+  queryRef: PreloadedQuery<ProviderListQuery>
   teamId: string
   retry: () => void
 }
@@ -22,8 +22,31 @@ const StyledWrapper = styled(SettingsWrapper)({
   display: 'block'
 })
 
+const query = graphql`
+  query ProviderListQuery($teamId: ID!) {
+    viewer {
+      ...AtlassianProviderRow_viewer
+      ...JiraServerProviderRow_viewer
+      ...GitHubProviderRow_viewer
+      ...GitLabProviderRow_viewer
+      ...MattermostProviderRow_viewer
+      ...SlackProviderRow_viewer
+      ...AzureDevOpsProviderRow_viewer
+
+      featureFlags {
+        gitlab
+        azureDevOps
+      }
+    }
+  }
+`
+
 const ProviderList = (props: Props) => {
-  const {viewer, retry, teamId} = props
+  const {queryRef, retry, teamId} = props
+  const data = usePreloadedQuery<ProviderListQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {
     featureFlags: {gitlab: allowGitlab, azureDevOps: allowAzureDevOps}
   } = viewer
@@ -40,21 +63,4 @@ const ProviderList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ProviderList, {
-  viewer: graphql`
-    fragment ProviderList_viewer on User {
-      ...AtlassianProviderRow_viewer
-      ...JiraServerProviderRow_viewer
-      ...GitHubProviderRow_viewer
-      ...GitLabProviderRow_viewer
-      ...MattermostProviderRow_viewer
-      ...SlackProviderRow_viewer
-      ...AzureDevOpsProviderRow_viewer
-
-      featureFlags {
-        gitlab
-        azureDevOps
-      }
-    }
-  `
-})
+export default ProviderList
