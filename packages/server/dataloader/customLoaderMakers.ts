@@ -302,7 +302,7 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
   )
 }
 
-export const organizationApprovedDomains = (parent: RootDataLoader) => {
+export const organizationApprovedDomainsByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, string[], string>(
     async (orgIds) => {
       const currentApprovals = await getApprovedOrganizationDomainsFromPG(orgIds)
@@ -318,7 +318,7 @@ export const organizationApprovedDomains = (parent: RootDataLoader) => {
   )
 }
 
-export const restrictedEmailDomains = (parent: RootDataLoader) => {
+export const organizationApprovedDomains = (parent: RootDataLoader) => {
   return new DataLoader<string, boolean, string>(
     async (domains) => {
       const currentApprovals = await getApprovedOrganizationDomainsByDomainFromPG(domains)
