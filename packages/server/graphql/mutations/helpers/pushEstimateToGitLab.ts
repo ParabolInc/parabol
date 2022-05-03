@@ -37,8 +37,7 @@ const pushEstimateToGitLab = async (
   })
   if (!auth) return new Error('User no longer has access to GitLab')
   const {accessToken, providerId} = auth
-  const provider = await dataLoader.get('integrationProviders').load(providerId)
-  if (!provider) return new Error('Integration provider not found')
+  const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
   const manager = new GitLabServerManager(accessToken!, provider.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
 
