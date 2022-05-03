@@ -137,7 +137,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
-      gitlabRef={viewerIntegrations.gitlab}
+      integrationsRef={viewerIntegrations}
       featureFlags={featureFlags}
     />
   )
@@ -181,6 +181,7 @@ graphql`
 graphql`
   fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {
     integrations {
+      ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
       jiraServer {
         ...TaskFooterIntegrateMenuViewerJiraServerIntegration @relay(mask: false)
       }
@@ -191,7 +192,6 @@ graphql`
         ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
       }
       gitlab {
-        ...TaskFooterIntegrateMenuSignup_GitLabIntegration
         ...TaskFooterIntegrateMenuViewerGitLabIntegration @relay(mask: false)
       }
     }
