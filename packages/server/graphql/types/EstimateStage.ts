@@ -13,7 +13,6 @@ import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
-import {getUserId} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
@@ -56,8 +55,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         context,
         info
       ) => {
-        const {authToken, dataLoader} = context
-        const viewerId = getUserId(authToken)
+        const {dataLoader} = context
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -97,6 +95,10 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
+        if (service === 'azureDevOps') {
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
+
         if (service === 'github') {
           const {nameWithOwner} = integration
           const dimensionName = await getDimensionName(meetingId)
@@ -115,18 +117,22 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           }
         }
         if (service === 'gitlab') {
-          const {gid} = integration
+          const {gid, accessUserId} = integration
           const gitlabAuth = await dataLoader
             .get('teamMemberIntegrationAuths')
-            .load({service: 'gitlab', teamId, userId: viewerId})
-          if (!gitlabAuth?.accessToken) return null
+            .load({service: 'gitlab', teamId, userId: accessUserId})
+          if (!gitlabAuth?.accessToken) return NULL_FIELD
           const {providerId} = gitlabAuth
-          const provider = await dataLoader.get('integrationProviders').load(providerId)
-          if (!provider?.serverBaseUrl) return null
-          const manager = new GitLabServerManager(gitlabAuth, context, info, provider.serverBaseUrl)
+          const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
+          const manager = new GitLabServerManager(
+            gitlabAuth,
+            context,
+            info,
+            provider.serverBaseUrl!
+          )
           const [issueData] = await manager.getIssue({gid})
           const {issue} = issueData
-          if (!issue) return null
+          if (!issue) return NULL_FIELD
           const {projectId} = issue
           const dimensionName = await getDimensionName(meetingId)
           const gitlabFieldMap = await dataLoader

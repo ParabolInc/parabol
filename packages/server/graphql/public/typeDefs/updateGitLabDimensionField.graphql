@@ -22,8 +22,9 @@ extend type Mutation {
   ): UpdateGitLabDimensionFieldPayload!
 }
 
-type UpdateGitLabDimensionFieldPayload {
-  error: StandardMutationError
+union UpdateGitLabDimensionFieldPayload = ErrorPayload | UpdateGitLabDimensionFieldSuccess
+
+type UpdateGitLabDimensionFieldSuccess {
   teamId: ID
   meetingId: ID
   team: Team

@@ -26,6 +26,7 @@ extend type PokerMeeting {
   gitlabSearchQuery: GitLabSearchQuery!
   jiraSearchQuery: JiraSearchQuery!
   parabolSearchQuery: ParabolSearchQuery!
+  azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
 }
 
 extend type RetrospectiveMeeting {
@@ -36,6 +37,11 @@ extend type RetrospectiveMeeting {
   spotlightGroup: RetroReflectionGroup
   spotlightReflectionId: String
   spotlightSearchQuery: String
+}
+
+extend type TeamPromptMeeting {
+  localDiscussionId: String
+  isRightDrawerOpen: Boolean!
 }
 
 extend type Team {

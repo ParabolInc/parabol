@@ -21,7 +21,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
-import normalizeRethinkDbResults from './normalizeRethinkDbResults'
+import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
 
 export interface MeetingSettingsKey {
@@ -135,7 +135,7 @@ export const reactables = (parent: RootDataLoader) => {
       )) as Reactable[][]
       const reactables = reactableResults.flat()
       const keyIds = keys.map(({id}) => id)
-      const ret = normalizeRethinkDbResults(keyIds, reactables)
+      const ret = normalizeResults(keyIds, reactables)
       return ret
     },
     {

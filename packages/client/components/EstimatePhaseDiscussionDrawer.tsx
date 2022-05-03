@@ -7,11 +7,12 @@ import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
+import {DiscussionThreadables} from './DiscussionThreadList'
+import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
-import {DiscussionThreadables} from './DiscussionThreadList'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -98,6 +99,12 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
           allowedThreadables={allowedThreadables}
           discussionId={discussionId!}
           width={'calc(100% - 16px)'}
+          emptyState={
+            <DiscussionThreadListEmptyState
+              allowTasks={false}
+              isReadOnly={allowedThreadables.length === 0}
+            />
+          }
         />
       </ThreadColumn>
     </Drawer>

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, RefObject} from 'react'
+import React, {forwardRef, ReactNode, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
 import {DiscussionThreadList_discussion} from '~/__generated__/DiscussionThreadList_discussion.graphql'
@@ -8,7 +8,6 @@ import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThread
 import {DiscussionThreadList_viewer} from '~/__generated__/DiscussionThreadList_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
-import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
 
@@ -35,7 +34,7 @@ const PusherDowner = styled('div')({
   margin: '0 0 auto'
 })
 
-const Header = styled(LabelHeading)({
+export const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   margin: '0 0 8px',
   padding: '6px 12px 12px',
@@ -58,6 +57,8 @@ interface Props {
   threadables: DiscussionThreadList_threadables
   viewer: DiscussionThreadList_viewer
   dataCy: string
+  header?: ReactNode
+  emptyState?: ReactNode
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
@@ -68,19 +69,17 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     threadables,
     dataCy,
     preferredNames,
-    viewer
+    viewer,
+    header,
+    emptyState
   } = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
-  const allowTasks = allowedThreadables.includes('task')
-  if (isEmpty) {
+  if (isEmpty && emptyState) {
     return (
       <EmptyWrapper>
-        {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
-        <DiscussionThreadListEmptyState
-          allowTasks={allowTasks}
-          isReadOnly={allowedThreadables.length === 0}
-        />
+        {header}
+        {emptyState}
         <CommentingStatusBlock>
           <CommentingStatusText preferredNames={preferredNames} />
         </CommentingStatusBlock>
@@ -90,7 +89,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 
   return (
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
-      {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
+      {header}
       <PusherDowner />
       {threadables.map((threadable) => {
         const {id} = threadable

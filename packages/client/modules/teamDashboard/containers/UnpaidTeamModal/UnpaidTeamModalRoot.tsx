@@ -1,36 +1,23 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {QueryRenderer} from 'react-relay'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import React, {Suspense} from 'react'
+import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
+import unpaidTeamModalQuery, {
+  UnpaidTeamModalQuery
+} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 import UnpaidTeamModal from '../../components/UnpaidTeamModal/UnpaidTeamModal'
-import renderQuery from '../../../../utils/relay/renderQuery'
 
-const query = graphql`
-  query UnpaidTeamModalRootQuery($teamId: ID!) {
-    viewer {
-      ...UnpaidTeamModal_viewer
-    }
-  }
-`
-
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props {
   teamId: string
 }
 
 const UnpaidTeamModalRoot = (props: Props) => {
-  const {atmosphere, teamId} = props
+  const {teamId} = props
+  const queryRef = useQueryLoaderNow<UnpaidTeamModalQuery>(unpaidTeamModalQuery, {teamId})
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{teamId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(UnpaidTeamModal)}
-    />
+    <Suspense fallback={renderLoader()}>
+      {queryRef && <UnpaidTeamModal queryRef={queryRef} />}
+    </Suspense>
   )
 }
 
-export default withAtmosphere(withRouter(UnpaidTeamModalRoot))
+export default UnpaidTeamModalRoot

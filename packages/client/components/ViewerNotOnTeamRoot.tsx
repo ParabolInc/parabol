@@ -1,35 +1,27 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
-import {LoaderSize} from '../types/constEnums'
-import renderQuery from '../utils/relay/renderQuery'
 import ViewerNotOnTeam from './ViewerNotOnTeam'
-
-const query = graphql`
-  query ViewerNotOnTeamRootQuery($teamId: ID, $meetingId: ID) {
-    viewer {
-      ...ViewerNotOnTeam_viewer
-    }
-  }
-`
+import viewerNotOnTeamQuery, {
+  ViewerNotOnTeamQuery
+} from '../__generated__/ViewerNotOnTeamQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {LoaderSize} from '../types/constEnums'
+import {renderLoader} from '../utils/relay/renderLoader'
 
 const ViewerNotOnTeamRoot = () => {
   const searchParams = new URLSearchParams(location.search)
   const teamId = searchParams.get('teamId')
   const meetingId = searchParams.get('meetingId')
-  const atmosphere = useAtmosphere()
   useSubscription('ViewerNotOnTeamRoot', NotificationSubscription)
+  const queryRef = useQueryLoaderNow<ViewerNotOnTeamQuery>(viewerNotOnTeamQuery, {
+    teamId,
+    meetingId
+  })
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{teamId, meetingId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(ViewerNotOnTeam, {size: LoaderSize.WHOLE_PAGE})}
-    />
+    <Suspense fallback={renderLoader({size: LoaderSize.WHOLE_PAGE})}>
+      {queryRef && <ViewerNotOnTeam queryRef={queryRef} />}
+    </Suspense>
   )
 }
 

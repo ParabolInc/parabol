@@ -8,12 +8,14 @@ import {Breakpoint} from '~/types/constEnums'
 import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
+import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import Icon from './Icon'
 import JiraServerSVG from './JiraServerSVG'
 import JiraSVG from './JiraSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
+import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
@@ -70,15 +72,19 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  const {user, teamMember} = viewerMeetingMember!
-  const {featureFlags} = user
-  const gitlabIntegration = teamMember.integrations.gitlab
-  const jiraServerIntegration = teamMember.integrations.jiraServer
+  const featureFlags = viewerMeetingMember?.user.featureFlags
+  const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
+  const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
+  const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
+
   const isGitLabProviderAvailable = !!(
-    gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
+    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
-  const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
-  const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
+
+  const allowAzureDevOps =
+    !!azureDevOpsIntegration?.sharedProviders.length && featureFlags?.azureDevOps
+  const allowGitLab = !!(isGitLabProviderAvailable && featureFlags?.gitlab)
+  const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
 
   const baseTabs = [
     {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},
@@ -95,7 +101,13 @@ const ScopePhaseArea = (props: Props) => {
       allow: allowJiraServer,
       Component: ScopePhaseAreaJiraServer
     },
-    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab, Component: ScopePhaseAreaGitLab}
+    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab, Component: ScopePhaseAreaGitLab},
+    {
+      icon: <AzureDevOpsSVG />,
+      label: 'Azure DevOps',
+      allow: allowAzureDevOps,
+      Component: ScopePhaseAreaAzureDevOps
+    }
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
@@ -104,6 +116,7 @@ const ScopePhaseArea = (props: Props) => {
     const idx = tabs.findIndex((tab) => tab.label === favoriteService)
     return idx === -1 ? 1 : idx
   })
+
   const isTabActive = (label: typeof baseTabs[number]['label']) => {
     return activeIdx === tabs.findIndex((tab) => tab.label === label)
   }
@@ -179,6 +192,7 @@ export default createFragmentContainer(ScopePhaseArea, {
       ...ScopePhaseAreaJira_meeting
       ...ScopePhaseAreaJiraServer_meeting
       ...ScopePhaseAreaParabolScoping_meeting
+      ...ScopePhaseAreaAzureDevOps_meeting
       endedAt
       localPhase {
         ...ScopePhaseArea_phase @relay(mask: false)
@@ -206,11 +220,17 @@ export default createFragmentContainer(ScopePhaseArea, {
                 id
               }
             }
+            azureDevOps {
+              sharedProviders {
+                id
+              }
+            }
           }
         }
         user {
           featureFlags {
             gitlab
+            azureDevOps
           }
         }
       }

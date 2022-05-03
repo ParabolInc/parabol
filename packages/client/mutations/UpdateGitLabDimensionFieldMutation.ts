@@ -7,10 +7,7 @@ import {GitLabFieldMenu_stage} from '../__generated__/GitLabFieldMenu_stage.grap
 import {UpdateGitLabDimensionFieldMutation as TUpdateGitLabDimensionFieldMutation} from '../__generated__/UpdateGitLabDimensionFieldMutation.graphql'
 
 graphql`
-  fragment UpdateGitLabDimensionFieldMutation_team on UpdateGitLabDimensionFieldPayload {
-    error {
-      message
-    }
+  fragment UpdateGitLabDimensionFieldMutation_team on UpdateGitLabDimensionFieldSuccess {
     meeting {
       phases {
         ... on EstimatePhase {
@@ -39,6 +36,11 @@ const mutation = graphql`
       projectId: $projectId
       meetingId: $meetingId
     ) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...UpdateGitLabDimensionFieldMutation_team @relay(mask: false)
     }
   }

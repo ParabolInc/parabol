@@ -5,6 +5,7 @@ import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
 import JiraServerIntegration from './JiraServerIntegration'
 import GitHubIntegration from './GitHubIntegration'
+import AzureDevOpsIntegration from './AzureDevOpsIntegration'
 import GitLabIntegration from './GitLabIntegration'
 import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
@@ -57,6 +58,11 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
         const auths = await dataLoader.get('slackAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)
       }
+    },
+    azureDevOps: {
+      type: new GraphQLNonNull(AzureDevOpsIntegration),
+      description: 'All things associated with a A integration for a team member',
+      resolve: (source) => source
     }
   })
 })

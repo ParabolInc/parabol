@@ -99,7 +99,8 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     _xGitHubIssue: 'GitHub',
     JiraIssue: 'Jira',
     JiraServerIssue: 'Jira Server',
-    _xGitLabIssue: 'GitLab'
+    _xGitLabIssue: 'GitLab',
+    AzureDevOpsWorkItem: 'Azure DevOps'
   }
   const title = titleByType[integrationType]
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -126,7 +127,9 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
+          {(integrationType === 'JiraIssue' ||
+            integrationType === 'JiraServerIssue' ||
+            integrationType === 'AzureDevOpsWorkItem') && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}

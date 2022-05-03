@@ -1,5 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import {JSONContent} from '@tiptap/core'
 import Reactable, {reactableFields} from './Reactable'
 import Team from './Team'
 
@@ -22,7 +23,10 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'the content of the response'
+      description: 'the content of the response',
+      resolve: ({content}: {content: JSONContent}) => {
+        return JSON.stringify(content)
+      }
     },
     plaintextContent: {
       type: new GraphQLNonNull(GraphQLString),

@@ -176,6 +176,16 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             issueId,
             providerId: integration.providerId
           })
+        } else if (integration.service === 'azureDevOps') {
+          const {instanceId, projectKey, issueKey} = integration
+          return dataLoader.get('azureDevOpsUserStory').load({
+            teamId,
+            userId: accessUserId,
+            instanceId,
+            projectId: projectKey,
+            viewerId,
+            workItemId: issueKey
+          })
         } else if (integration.service === 'github') {
           const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
           if (!githubAuth) return null
@@ -197,9 +207,10 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           }
           return data
         } else if (integration.service === 'gitlab') {
+          const {accessUserId} = integration
           const gitlabAuth = await dataLoader
             .get('teamMemberIntegrationAuths')
-            .load({service: 'gitlab', teamId, userId: viewerId})
+            .load({service: 'gitlab', teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return null
           const {providerId} = gitlabAuth
           const provider = await dataLoader.get('integrationProviders').load(providerId)

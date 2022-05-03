@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import {
-  TaskFooterIntegrateMenu_viewer,
-  TaskFooterIntegrateMenu_viewer$key
-} from '../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
+  TaskFooterIntegrateMenuQuery,
+  TaskFooterIntegrateMenuQueryResponse
+} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -15,7 +15,7 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenu_task$key
-  viewer: TaskFooterIntegrateMenu_viewer$key
+  queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
 }
 
 type IntegrationLookup = {
@@ -23,38 +23,65 @@ type IntegrationLookup = {
   hasAtlassian: boolean
   hasGitLab: boolean
   hasJiraServer: boolean
+  hasAzureDevOps: boolean
 }
 
 const makePlaceholder = (integrationLookup: IntegrationLookup) => {
-  const {hasGitHub, hasAtlassian, hasGitLab} = integrationLookup
+  const {hasGitHub, hasAtlassian, hasGitLab, hasAzureDevOps} = integrationLookup
   const names = [] as string[]
   if (hasGitHub) names.push('GitHub')
   if (hasAtlassian) names.push('Jira')
   if (hasGitLab) names.push('GitLab')
+  if (hasAzureDevOps) names.push('Azure DevOps')
   return `Search ${names.join(' & ')}`
 }
 
-type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['viewerTeamMember']>['integrations']
+type Integrations = NonNullable<
+  TaskFooterIntegrateMenuQueryResponse['viewer']['viewerTeamMember']
+>['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
-  const {atlassian, github, jiraServer, gitlab} = integrations
+  const {atlassian, github, jiraServer, gitlab, azureDevOps} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
   const hasGitLab = gitlab?.auth?.isActive ?? false
   const hasJiraServer = jiraServer.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab
+  const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
+  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps
     ? {
         hasAtlassian,
         hasGitHub,
         hasJiraServer,
-        hasGitLab
+        hasGitLab,
+        hasAzureDevOps
       }
     : null
 }
 
-const TaskFooterIntegrateMenu = (props: Props) => {
-  const {menuProps, mutationProps, task: taskRef, viewer: viewerRef} = props
+const query = graphql`
+  query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) {
+    viewer {
+      id
+      featureFlags {
+        gitlab
+      }
+      assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
+        preferredName
+        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
+      }
+      viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
+        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
+      }
+    }
+  }
+`
 
+const TaskFooterIntegrateMenu = (props: Props) => {
+  const {menuProps, mutationProps, task: taskRef, queryRef} = props
+  const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenu_task on Task {
@@ -64,24 +91,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       }
     `,
     taskRef
-  )
-  const viewer = useFragment(
-    graphql`
-      fragment TaskFooterIntegrateMenu_viewer on User {
-        id
-        featureFlags {
-          gitlab
-        }
-        assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
-          preferredName
-          ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
-        }
-        viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
-          ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
-        }
-      }
-    `,
-    viewerRef
   )
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember, featureFlags} = viewer
@@ -155,13 +164,11 @@ graphql`
     isActive
   }
 `
-
 graphql`
   fragment TaskFooterIntegrateMenuViewerGitHubIntegration on GitHubIntegration {
     isActive
   }
 `
-
 graphql`
   fragment TaskFooterIntegrateMenuViewerGitLabIntegration on GitLabIntegration {
     auth {
@@ -169,7 +176,13 @@ graphql`
     }
   }
 `
-
+graphql`
+  fragment TaskFooterIntegrateMenuViewerAzureDevOpsIntegration on AzureDevOpsIntegration {
+    auth {
+      isActive
+    }
+  }
+`
 graphql`
   fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
     repoIntegrations {
@@ -193,6 +206,9 @@ graphql`
       }
       gitlab {
         ...TaskFooterIntegrateMenuViewerGitLabIntegration @relay(mask: false)
+      }
+      azureDevOps {
+        ...TaskFooterIntegrateMenuViewerAzureDevOpsIntegration @relay(mask: false)
       }
     }
     ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)

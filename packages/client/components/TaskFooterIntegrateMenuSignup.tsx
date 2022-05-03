@@ -3,8 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
+import {TaskFooterIntegrateMenuQuery} from '~/__generated__/TaskFooterIntegrateMenuQuery.graphql'
 import {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
-import {TaskFooterIntegrateMenu_viewer} from '~/__generated__/TaskFooterIntegrateMenu_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddToGitHubMenuItem from './AddToGitHubMenuItem'
@@ -20,7 +20,7 @@ interface Props {
   teamId: string
   label?: string
   integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
-  featureFlags: TaskFooterIntegrateMenu_viewer['featureFlags']
+  featureFlags: TaskFooterIntegrateMenuQuery['response']['viewer']['featureFlags']
 }
 
 const NarrowMenu = styled(Menu)({

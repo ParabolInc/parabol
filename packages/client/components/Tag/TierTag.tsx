@@ -1,6 +1,6 @@
 import React from 'react'
 import {TierLabel} from '../../types/constEnums'
-import {TierEnum} from '../../__generated__/NewMeeting_viewer.graphql'
+import {TierEnum} from '../../__generated__/NewMeetingQuery.graphql'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
 import BaseTag from './BaseTag'
