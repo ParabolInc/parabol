@@ -17,6 +17,7 @@ import {
   GetProfileQuery,
   GetProjectsQuery
 } from '../../types/gitlabTypes'
+import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
 import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 class GitLabServerManager implements TaskIntegrationManager {
@@ -38,10 +39,6 @@ class GitLabServerManager implements TaskIntegrationManager {
     this.info = info
   }
 
-  addCreatedBySomeoneElseComment(): Promise<string | Error> {
-    throw new Error('Method not implemented yet.')
-  }
-
   getGitLabRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
     const {schema} = info
     const composedRequest = (schema as RootSchema).gitlabRequest
@@ -60,6 +57,26 @@ class GitLabServerManager implements TaskIntegrationManager {
       const error = errors ? new Error(errors[0]?.message) : null
       return [data, error] as [TData, typeof error]
     }
+  }
+
+  async addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string
+  ): Promise<string | Error> {
+    const comment = makeCreateGitLabTaskComment(
+      viewerName,
+      assigneeName,
+      teamName,
+      teamDashboardUrl
+    )
+    const [noteData, noteError] = await this.createNote({body: comment, noteableId: issueId})
+    if (noteError) return noteError
+    const noteId = noteData.createNote?.note?.id
+    if (!noteId) return new Error('Unable to create GitLab comment')
+    return noteId
   }
 
   async createTask({
