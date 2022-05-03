@@ -127,9 +127,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
             />
           )}
 
-          {(integrationType === 'JiraIssue' ||
-            integrationType === 'JiraServerIssue' ||
-            integrationType === 'AzureDevOpsWorkItem') && (
+          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
