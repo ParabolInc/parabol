@@ -6,7 +6,7 @@ import useOverflowAvatars from '~/hooks/useOverflowAvatars'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {TeamPromptRepliesAvatarList_discussion$key} from '~/__generated__/TeamPromptRepliesAvatarList_discussion.graphql'
 import AvatarListUser from '../AvatarListUser'
-import OverflowAvatar from '../OverflowAvatar'
+import TeamPromptOverflowAvatar from './TeamPromptOverflowAvatar'
 
 const Wrapper = styled('div')<{minHeight: number; width: number}>(({minHeight, width}) => ({
   position: 'relative',
@@ -21,7 +21,7 @@ interface Props {
 
 const SIZE = 24
 const OVERLAP = 4
-const MAX_AVATARS = 2
+const MAX_AVATARS = 3
 
 const TeamPromptRepliesAvatarList = (props: Props) => {
   const {discussionRef} = props
@@ -68,21 +68,32 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
         if ('overflowCount' in child) {
           const {overflowCount} = child
           return (
-            <OverflowAvatar
-              key={userId}
-              isAnimated={false}
-              onTransitionEnd={onTransitionEnd}
-              status={status}
-              offset={offsetSize * displayIdx}
-              overflowCount={overflowCount}
-              width={SIZE}
-            />
+            <>
+              <AvatarListUser
+                key={userId}
+                isAnimated={true}
+                user={child.overflowChild}
+                onTransitionEnd={onTransitionEnd}
+                status={status}
+                offset={offsetSize * displayIdx}
+                width={SIZE}
+              />
+              <TeamPromptOverflowAvatar
+                key={`${userId}:overflow`}
+                isAnimated={true}
+                onTransitionEnd={onTransitionEnd}
+                status={status}
+                offset={offsetSize * displayIdx}
+                overflowCount={overflowCount}
+                width={SIZE}
+              />
+            </>
           )
         }
         return (
           <AvatarListUser
             key={userId}
-            isAnimated={false}
+            isAnimated={true}
             user={child}
             onTransitionEnd={onTransitionEnd}
             status={status}
