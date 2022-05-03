@@ -141,6 +141,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
+  // :TODO: (jmtaber129): Use content from 'stage.stage'.
   const content = {
     type: 'doc',
     content: [

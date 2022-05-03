@@ -77,8 +77,11 @@ const TeamPromptResponseCard = (props: Props) => {
           preferredName
         }
         discussion {
-          commentCount
-          ...TeamPromptRepliesAvatarList_discussion
+          thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+            edges {
+              ...TeamPromptRepliesAvatarList_edges
+            }
+          }
         }
       }
     `,
@@ -106,8 +109,11 @@ const TeamPromptResponseCard = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const {teamMember, meeting} = responseStage
+  const {teamMember, meeting, discussion} = responseStage
   const {picture, preferredName, userId} = teamMember
+
+  const discussionEdges = discussion.thread.edges
+  const replyCount = discussionEdges.length
 
   const isCurrentViewer = userId === viewerId
   const isEmptyResponse = false // :TODO: (jmtaber129): Determine based on actual response, too
@@ -137,10 +143,10 @@ const TeamPromptResponseCard = (props: Props) => {
               placeholder={'Share your response...'}
             />
             <ReplyButton onClick={() => onSelectDiscussion()}>
-              {responseStage.discussion.commentCount > 0 ? (
+              {replyCount > 0 ? (
                 <>
-                  <TeamPromptRepliesAvatarList discussionRef={responseStage.discussion} />
-                  {`${responseStage.discussion.commentCount} replies`}
+                  <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
+                  {`${replyCount} ${replyCount > 1 ? 'replies' : 'reply'}`}
                 </>
               ) : (
                 'Reply'

@@ -4,7 +4,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import useOverflowAvatars from '~/hooks/useOverflowAvatars'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {TeamPromptRepliesAvatarList_discussion$key} from '~/__generated__/TeamPromptRepliesAvatarList_discussion.graphql'
+import {TeamPromptRepliesAvatarList_edges$key} from '~/__generated__/TeamPromptRepliesAvatarList_edges.graphql'
 import AvatarListUser from '../AvatarListUser'
 import TeamPromptOverflowAvatar from './TeamPromptOverflowAvatar'
 
@@ -16,7 +16,7 @@ const Wrapper = styled('div')<{minHeight: number; width: number}>(({minHeight, w
 }))
 
 interface Props {
-  discussionRef: TeamPromptRepliesAvatarList_discussion$key
+  edgesRef: TeamPromptRepliesAvatarList_edges$key
 }
 
 const SIZE = 24
@@ -24,28 +24,22 @@ const OVERLAP = 4
 const MAX_AVATARS = 3
 
 const TeamPromptRepliesAvatarList = (props: Props) => {
-  const {discussionRef} = props
-  const discussion = useFragment(
+  const {edgesRef} = props
+  const edges = useFragment(
     graphql`
-      fragment TeamPromptRepliesAvatarList_discussion on Discussion {
-        thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-          edges {
-            node {
-              createdByUser {
-                id
-                ...AvatarListUser_user
-              }
-            }
+      fragment TeamPromptRepliesAvatarList_edges on ThreadableEdge @relay(plural: true) {
+        node {
+          createdByUser {
+            id
+            ...AvatarListUser_user
           }
         }
       }
     `,
-    discussionRef
+    edgesRef
   )
 
-  const discussionUsers = discussion.thread.edges
-    .map((node) => node.node.createdByUser)
-    .filter((user) => !!user)
+  const discussionUsers = edges.map((edge) => edge.node.createdByUser).filter((user) => !!user)
 
   const distinctDiscussionUsers = Object.values(
     Object.fromEntries(discussionUsers.map((user) => [user!.id, user!]))
@@ -79,7 +73,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
                 width={SIZE}
               />
               <TeamPromptOverflowAvatar
-                key={`${userId}:overflow`}
+                key={`${userId}:overflowCount`}
                 isAnimated={true}
                 onTransitionEnd={onTransitionEnd}
                 status={status}
