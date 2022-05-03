@@ -7,9 +7,9 @@ import Panel from '../../../components/Panel/Panel'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Layout} from '../../../types/constEnums'
-import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 import {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
+import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -22,7 +22,6 @@ const PanelRow = styled('div')({
 })
 
 interface Props {
-  teamId: string
   queryRef: PreloadedQuery<UserProfileQuery>
 }
 

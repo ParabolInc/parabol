@@ -1,29 +1,22 @@
 import React, {Suspense} from 'react'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import {PreloadedQuery} from 'react-relay'
 import useSubscription from '../../../hooks/useSubscription'
 import NotificationSubscription from '../../../subscriptions/NotificationSubscription'
+import {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import UserProfile from './UserProfile'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import userProfileQuery, {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {}
+interface Props {
+  prepared: {
+    queryRef: PreloadedQuery<UserProfileQuery>
+  }
+}
 
 const UserProfileRoot = (props: Props) => {
   const {
-    match: {
-      params: {teamId}
-    }
+    prepared: {queryRef}
   } = props
   useSubscription('UserProfileRoot', NotificationSubscription)
-  const queryRef = useQueryLoaderNow<UserProfileQuery>(userProfileQuery, {teamId})
-  return (
-    <Suspense fallback={''}>
-      {queryRef && <UserProfile queryRef={queryRef} teamId={teamId} />}
-    </Suspense>
-  )
+  return <Suspense fallback={''}>{queryRef && <UserProfile queryRef={queryRef} />}</Suspense>
 }
 
-export default withRouter(withAtmosphere(UserProfileRoot))
+export default UserProfileRoot

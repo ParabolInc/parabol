@@ -1,6 +1,7 @@
 import React from 'react'
 import {useQueryLoader} from 'react-relay'
 import {withRouter} from 'react-router-dom'
+import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
 import {useTasksRoute} from '../hooks/useTasksRoute'
 import {useTimelineRoute} from '../hooks/useTimelineRoute'
@@ -11,6 +12,8 @@ import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import {LoaderSize} from '../types/constEnums'
 import dashboardQuery, {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
+import teamContainerQuery, {TeamContainerQuery} from '../__generated__/TeamContainerQuery.graphql'
+import userProfileQuery, {UserProfileQuery} from '../__generated__/UserProfileQuery.graphql'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 
 const DashboardRoot = () => {
@@ -21,9 +24,16 @@ const DashboardRoot = () => {
 
   // todo: migrate to EntryPoint pattern: https://relay.dev/docs/glossary/#entrypoint
   const timelineRoute = useTimelineRoute('/me')
-  const tasksRoute = useTasksRoute(`/me/tasks`)
+  const tasksRoute = useTasksRoute('/me/tasks')
 
   const [dashboardQueryRef, loadDashboardQuery] = useQueryLoader<DashboardQuery>(dashboardQuery)
+  const [userProfileQueryRef, loadUserProfileQuery] =
+    useQueryLoader<UserProfileQuery>(userProfileQuery)
+  const [teamQueryRef, loadTeamQueryRef] = useQueryLoader<TeamContainerQuery>(teamContainerQuery)
+
+  const {match} = useRouter()
+  const {teamId} = match.params
+
   const router = useCreateRouter([
     {
       component: JSResource('Dashboard', () => import('./Dashboard')),
@@ -59,18 +69,24 @@ const DashboardRoot = () => {
         },
         // TODO: add more children routes
         /*
-          <Route path={`${match.url}/profile`} component={UserProfile} />
-          <Route exact path={`${match.url}/organizations`} component={Organizations} />
-          <Route path={`${match.url}/organizations/:orgId`} component={Organization} />
+          <Route path={`${match.url}/profile`} component={UserProfileRoot} />
+          <Route exact path={`${match.url}/organizations`} component={OrganizationsRoot} />
+          <Route path={`${match.url}/organizations/:orgId`} component={OrganizationRoot} />
         * */
         {
           path: '/me/profile',
           exact: true,
           component: JSResource(
-            'UserProfile',
-            () => import('../modules/userDashboard/components/UserProfile')
+            'UserProfileRoot',
+            () => import('../modules/userDashboard/components/UserProfileRoot')
           ),
-          prepare: () => ({})
+          prepare: () => {
+            if (!userProfileQueryRef) {
+              loadUserProfileQuery({teamId})
+            }
+
+            return {queryRef: userProfileQueryRef}
+          }
         },
         {
           path: '/team/:teamId',
@@ -79,8 +95,16 @@ const DashboardRoot = () => {
             'TeamRoot',
             () => import('../modules/teamDashboard/components/TeamRoot')
           ),
-          prepare: () => ({}),
-          routes: [timelineRoute, tasksRoute]
+          prepare: (params) => {
+            const teamId = params.teamId!
+            console.log('========teamId========', {teamId, teamQueryRef})
+            if (!teamQueryRef) {
+              loadTeamQueryRef({teamId})
+            }
+
+            return {queryRef: teamQueryRef}
+          },
+          routes: []
         },
         {
           path: '/newteam/:defaultOrgId?',
@@ -90,7 +114,7 @@ const DashboardRoot = () => {
             () => import('../modules/newTeam/containers/NewTeamForm/NewTeamRoot')
           ),
           prepare: () => ({}),
-          routes: [timelineRoute, tasksRoute]
+          routes: []
         }
       ]
     }

@@ -120,7 +120,9 @@ const Dashboard = (props: Props) => {
           </SwipeableDashSidebar>
         )}
         <DashMain id='main' ref={meetingsDashRef}>
-          {children}
+          {/*todo: update to use Context or fix the Type here, ref: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/18051*/}
+          {children &&
+            React.cloneElement(children as React.ReactElement, {viewer, meetingsDashRef})}
         </DashMain>
       </DashPanel>
     </DashLayout>
