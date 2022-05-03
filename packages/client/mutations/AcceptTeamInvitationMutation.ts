@@ -134,9 +134,10 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
 
 interface LocalHandler extends HistoryMaybeLocalHandler {
   meetingId?: string | null
+  ignoreApproval?: boolean
 }
 
-export const handleAcceptTeamInvitation = (
+export const handleAcceptTeamInvitationErrors = (
   atmosphere: Atmosphere,
   acceptTeamInvitation: null | undefined | {error?: {message: string} | null}
 ) => {
@@ -158,7 +159,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
 > = (
   atmosphere,
   variables,
-  {history, onCompleted, onError, meetingId: locallyRequestedMeetingId}
+  {history, onCompleted, onError, meetingId: locallyRequestedMeetingId, ignoreApproval}
 ) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
@@ -174,7 +175,9 @@ const AcceptTeamInvitationMutation: StandardMutation<
         onCompleted(data, errors)
       }
       const {acceptTeamInvitation} = data
-      const isOK = handleAcceptTeamInvitation(atmosphere, acceptTeamInvitation)
+      const isOK = ignoreApproval
+        ? true
+        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!isOK) return
       const {authToken, team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)

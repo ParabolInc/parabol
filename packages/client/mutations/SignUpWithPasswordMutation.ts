@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {SignUpWithPasswordMutation as TSignUpWithPasswordMutation} from '../__generated__/SignUpWithPasswordMutation.graphql'
+import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
@@ -45,6 +46,7 @@ const SignUpWithPasswordMutation: StandardMutation<
       const {acceptTeamInvitation, signUpWithPassword} = res
       const {error: uiError} = signUpWithPassword
       onCompleted({signUpWithPassword}, errors)
+      handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken

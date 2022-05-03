@@ -180,7 +180,11 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     atmosphere.setAuthToken(token)
     if (invitationToken) {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
-      AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
+      AcceptTeamInvitationMutation(
+        atmosphere,
+        {invitationToken},
+        {history, onCompleted, onError, ignoreApproval: true}
+      )
     } else {
       const nextUrl = getValidRedirectParam() || '/meetings'
       history.push(nextUrl)

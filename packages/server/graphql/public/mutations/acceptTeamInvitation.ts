@@ -10,7 +10,7 @@ import segmentIo from '../../../utils/segmentIo'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
-import getIsApprovedByOrg from './helpers/getIsApprovedByOrg'
+import getIsInvitationApprovedByOrg from './helpers/getIsInvitationApprovedByOrg'
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   _source,
@@ -52,7 +52,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
     }
   }
-  const approvalError = await getIsApprovedByOrg({userId: viewerId, orgId, dataLoader})
+  const approvalError = await getIsInvitationApprovedByOrg({userId: viewerId, orgId, dataLoader})
   if (approvalError instanceof Error) {
     await redisLock.unlock()
     return {error: {message: approvalError.message}}

@@ -8,7 +8,7 @@ interface BaseParams {
 // only pass in email if a user has not been created yet
 type GetIsApprovedParams = BaseParams & ({email: string} | {userId: string})
 
-const getIsApprovedByOrg = async (params: GetIsApprovedParams) => {
+const getIsInvitationApprovedByOrg = async (params: GetIsApprovedParams) => {
   const {dataLoader, orgId} = params
   const approvedDomains = await dataLoader.get('organizationApprovedDomains').load(orgId)
   if (approvedDomains.length === 0) return undefined
@@ -23,10 +23,8 @@ const getIsApprovedByOrg = async (params: GetIsApprovedParams) => {
     const {email, identities} = user
     const isApproved = approvedDomains.some((domain) => email.endsWith(domain))
     if (!isApproved) {
-      const isSingular = approvedDomains.length === 1
-      const message = `Your email must end with ${
-        isSingular ? '' : 'one of '
-      }the following : ${approvedDomains.join(', ')}`
+      const domainList = approvedDomains.join(', ')
+      const message = `Cannot accept invitation. Your email must end with ${domainList}`
       return new Error(message)
     }
     const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)
@@ -47,4 +45,4 @@ const getIsApprovedByOrg = async (params: GetIsApprovedParams) => {
   return undefined
 }
 
-export default getIsApprovedByOrg
+export default getIsInvitationApprovedByOrg
