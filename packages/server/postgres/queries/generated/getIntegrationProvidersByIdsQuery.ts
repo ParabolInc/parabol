@@ -29,6 +29,7 @@ export interface IGetIntegrationProvidersByIdsQueryResult {
   webhookUrl: string | null;
   consumerKey: string | null;
   consumerSecret: string | null;
+  tenantId: string | null;
 }
 
 /** 'GetIntegrationProvidersByIdsQuery' query type */

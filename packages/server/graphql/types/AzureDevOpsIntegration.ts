@@ -1,21 +1,31 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
 import AzureDevOpsSearchQuery from './AzureDevOpsSearchQuery'
 import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds';
 
 type WorkItemArgs = {
   first: number
   after?: string
   queryString: string | null
+  projectKeyFilters: string[] | null
   isWIQL: boolean
 }
 
@@ -82,9 +92,13 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLString,
           description: 'A string of text to search for, or WIQL if isWIQL is true'
         },
+        projectKeyFilters: {
+          type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+          description: 'A list of projects to restrict the search to, if null will search all'
+        },
         isWIQL: {
           type: new GraphQLNonNull(GraphQLBoolean),
-          description: 'true if the queryString is isWIQL, else false'
+          description: 'true if the queryString is WIQL, else false'
         }
       },
       resolve: async (
@@ -92,7 +106,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         args: any,
         {authToken, dataLoader}: GQLContext
       ) => {
-        const {first, queryString, isWIQL} = args as WorkItemArgs
+        const {first, queryString, projectKeyFilters, isWIQL} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
           const err = new Error('Cannot access another team members user stories')
@@ -132,7 +146,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           return null
         }
         // const manager = new AzureDevOpsServerManager(accessToken)
-        const restResult = await manager.getAllUserWorkItems(queryString, isWIQL)
+        const restResult = await manager.getAllUserWorkItems(queryString, projectKeyFilters, isWIQL)
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {
           console.log(error)
@@ -158,6 +172,17 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           )
           return connectionFromTasks(userStories, first, undefined)
         }
+      }
+    },
+    projects: {
+      // Create a new object for ADO Projects (new schema object)
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsRemoteProject))),
+      description:
+        'A list of projects coming straight from the azure dev ops integration for a specific team member',
+      resolve: ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return []
+        return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
       }
     },
     sharedProviders: {

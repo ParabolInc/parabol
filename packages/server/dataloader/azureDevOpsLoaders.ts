@@ -1,13 +1,13 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import AzureDevOpsServerManager, {
   Resource,
   TeamProjectReference,
   WorkItem
 } from '../utils/AzureDevOpsServerManager'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -120,7 +120,7 @@ export const freshAzureDevOpsAuth = (
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
-            const updatedRefreshToken =  newRefreshToken || refreshToken
+            const updatedRefreshToken = newRefreshToken || refreshToken
             const newAzureDevOpsAuth = {
               ...azureDevOpsAuthToRefresh,
               accessToken,
@@ -158,7 +158,8 @@ export const azureDevOpsAllWorkItems = (
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-          const restResult = await manager.getAllUserWorkItems(null, false)
+
+          const restResult = await manager.getAllUserWorkItems(null, null, false)
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
             console.log(error)
@@ -271,9 +272,17 @@ export const allAzureDevOpsProjects = (
             provider as IntegrationProviderAzureDevOps
           )
           const {error, projects} = await manager.getAllUserProjects()
-          if (!error) console.log(error)
+          if (error !== undefined) {
+            console.log(error)
+            return []
+          }
           if (projects !== null) resultReferences.push(...projects)
-          return resultReferences
+          return resultReferences.map((project) => ({
+            ...project,
+            userId,
+            teamId,
+            service: 'azureDevOps' as const
+          }))
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
@@ -351,7 +360,8 @@ export const azureDevOpsUserStories = (
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-          const result = await manager.getUserStories(instanceId, null, false)
+
+          const result = await manager.getUserStories(instanceId, null, null, false)
           const {error, workItems} = result
           const workItemIds = workItems.map((workItem) => workItem.id)
           const workItemData = await manager.getWorkItemData(instanceId, workItemIds)
