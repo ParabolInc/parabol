@@ -1,5 +1,5 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import WebcamDeniedPermissions from './WebcamDeniedPermissions'
 import WebcamPromptPermissions from './WebcamPromptPermissions'
 
@@ -14,7 +14,7 @@ const ModalBoundary = styled('div')({
 })
 
 interface Props {
-  status: PushPermissionState
+  status: string
 }
 
 const WebcamPermissionsModal = (props: Props) => {

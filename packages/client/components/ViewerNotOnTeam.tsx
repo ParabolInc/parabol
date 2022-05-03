@@ -1,6 +1,5 @@
-import {ViewerNotOnTeam_viewer} from '../__generated__/ViewerNotOnTeam_viewer.graphql'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Ellipsis from './Ellipsis/Ellipsis'
 import PrimaryButton from './PrimaryButton'
@@ -15,13 +14,32 @@ import TeamInvitationWrapper from './TeamInvitationWrapper'
 import useRouter from '../hooks/useRouter'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 
 interface Props {
-  viewer: ViewerNotOnTeam_viewer
+  queryRef: PreloadedQuery<ViewerNotOnTeamQuery>
 }
 
+const query = graphql`
+  query ViewerNotOnTeamQuery($teamId: ID, $meetingId: ID) {
+    viewer {
+      teamInvitation(teamId: $teamId, meetingId: $meetingId) {
+        teamInvitation {
+          token
+        }
+        teamId
+        meetingId
+      }
+    }
+  }
+`
+
 const ViewerNotOnTeam = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {
     teamInvitation: {teamInvitation, meetingId, teamId}
   } = viewer
@@ -67,16 +85,4 @@ const ViewerNotOnTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ViewerNotOnTeam, {
-  viewer: graphql`
-    fragment ViewerNotOnTeam_viewer on User {
-      teamInvitation(teamId: $teamId, meetingId: $meetingId) {
-        teamInvitation {
-          token
-        }
-        teamId
-        meetingId
-      }
-    }
-  `
-})
+export default ViewerNotOnTeam

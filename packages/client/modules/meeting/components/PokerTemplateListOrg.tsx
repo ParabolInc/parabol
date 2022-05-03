@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import {PokerTemplateListOrg_viewer} from '../../../__generated__/PokerTemplateListOrg_viewer.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
+import {PokerTemplateListOrgQuery} from '../../../__generated__/PokerTemplateListOrgQuery.graphql'
+
 const TemplateList = styled('ul')({
   listStyle: 'none',
   paddingLeft: 0,
@@ -23,11 +24,42 @@ const Message = styled('div')({
   padding: '8px 16px'
 })
 interface Props {
-  viewer: PokerTemplateListOrg_viewer
+  queryRef: PreloadedQuery<PokerTemplateListOrgQuery>
 }
 
+
+const query = graphql`
+  query PokerTemplateListOrgQuery($teamId: ID!) {
+    viewer {
+      id
+      team(teamId: $teamId) {
+        id
+        meetingSettings(meetingType: poker) {
+          ... on PokerMeetingSettings {
+            organizationTemplates(first: 20)
+            @connection(key: "PokerTemplateListOrg_organizationTemplates") {
+              edges {
+                node {
+                  ...PokerTemplateItem_template
+                  id
+                }
+              }
+            }
+            activeTemplate {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
 const PokerTemplateListOrg = (props: Props) => {
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<PokerTemplateListOrgQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
@@ -55,29 +87,4 @@ const PokerTemplateListOrg = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerTemplateListOrg, {
-  viewer: graphql`
-    fragment PokerTemplateListOrg_viewer on User {
-      id
-      team(teamId: $teamId) {
-        id
-        meetingSettings(meetingType: poker) {
-          ... on PokerMeetingSettings {
-            organizationTemplates(first: 20)
-              @connection(key: "PokerTemplateListOrg_organizationTemplates") {
-              edges {
-                node {
-                  ...PokerTemplateItem_template
-                  id
-                }
-              }
-            }
-            activeTemplate {
-              id
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default PokerTemplateListOrg

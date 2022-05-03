@@ -1,30 +1,76 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
-import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import NewJiraIssueInput from './NewJiraIssueInput'
+import {JiraScopingSearchResultsQuery} from '../__generated__/JiraScopingSearchResultsQuery.graphql'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
 interface Props {
-  viewer: JiraScopingSearchResults_viewer | null
+  queryRef: PreloadedQuery<JiraScopingSearchResultsQuery>
   meeting: JiraScopingSearchResults_meeting
 }
 
+const query = graphql`
+  query JiraScopingSearchResultsQuery(
+    $teamId: ID!
+    $queryString: String
+    $isJQL: Boolean!
+    $projectKeyFilters: [ID!]
+    $first: Int
+  ) {
+    viewer {
+      ...NewJiraIssueInput_viewer
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            jiraSearchQueries {
+              isJQL
+              queryString
+              projectKeyFilters
+            }
+            issues(
+              first: $first
+              queryString: $queryString
+              isJQL: $isJQL
+              projectKeyFilters: $projectKeyFilters
+            ) @connection(key: "JiraScopingSearchResults_issues") {
+              error {
+                message
+              }
+              edges {
+                ...JiraScopingSelectAllIssues_issues
+                node {
+                  ...JiraScopingSearchResultItem_issue
+                  id
+                  summary
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const JiraScopingSearchResults = (props: Props) => {
-  const {viewer, meeting} = props
+  const {queryRef, meeting} = props
+  const data = usePreloadedQuery<JiraScopingSearchResultsQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const atlassian = viewer?.teamMember!.integrations.atlassian ?? null
   const issues = atlassian?.issues ?? null
   const edges = issues?.edges ?? null
@@ -36,10 +82,8 @@ const JiraScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
   if (!edges) {
-    return <MockScopingList />
+    return null
   }
   if (edges.length === 0 && !isEditing) {
     return (
@@ -118,40 +162,6 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       phases {
         ...useGetUsedServiceTaskIds_phase
         phaseType
-      }
-    }
-  `,
-  viewer: graphql`
-    fragment JiraScopingSearchResults_viewer on User {
-      ...NewJiraIssueInput_viewer
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            jiraSearchQueries {
-              isJQL
-              queryString
-              projectKeyFilters
-            }
-            issues(
-              first: $first
-              queryString: $queryString
-              isJQL: $isJQL
-              projectKeyFilters: $projectKeyFilters
-            ) @connection(key: "JiraScopingSearchResults_issues") {
-              error {
-                message
-              }
-              edges {
-                ...JiraScopingSelectAllIssues_issues
-                node {
-                  ...JiraScopingSearchResultItem_issue
-                  id
-                  summary
-                }
-              }
-            }
-          }
-        }
       }
     }
   `

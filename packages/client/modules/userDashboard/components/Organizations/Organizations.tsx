@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {Organizations_viewer} from '~/__generated__/Organizations_viewer.graphql'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import LinkButton from '../../../../components/LinkButton'
 import Panel from '../../../../components/Panel/Panel'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
@@ -10,13 +9,37 @@ import useRouter from '../../../../hooks/useRouter'
 import EmptyOrgsCallOut from '../EmptyOrgsCallOut/EmptyOrgsCallOut'
 import OrganizationRow from '../OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
+import {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 
 interface Props {
-  viewer: Organizations_viewer
+  queryRef: PreloadedQuery<OrganizationsQuery>
 }
+const query = graphql`
+  query OrganizationsQuery {
+    viewer {
+      organizations {
+        ...OrganizationRow_organization
+        id
+        isBillingLeader
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
+        name
+        picture
+        tier
+      }
+    }
+  }
+`
+
 const Organizations = (props: Props) => {
   const {history} = useRouter()
-  const {viewer} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<OrganizationsQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {organizations} = viewer
   const gotoNewTeam = () => {
     history.push('/newteam')
@@ -44,21 +67,4 @@ const Organizations = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(Organizations, {
-  viewer: graphql`
-    fragment Organizations_viewer on User {
-      organizations {
-        ...OrganizationRow_organization
-        id
-        isBillingLeader
-        orgUserCount {
-          activeUserCount
-          inactiveUserCount
-        }
-        name
-        picture
-        tier
-      }
-    }
-  `
-})
+export default Organizations

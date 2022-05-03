@@ -70,15 +70,14 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  const {user, teamMember} = viewerMeetingMember!
-  const {featureFlags} = user
-  const gitlabIntegration = teamMember.integrations.gitlab
-  const jiraServerIntegration = teamMember.integrations.jiraServer
+  const featureFlags = viewerMeetingMember?.user.featureFlags
+  const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
+  const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const isGitLabProviderAvailable = !!(
-    gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
+    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
-  const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
-  const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
+  const allowGitLab = !!(isGitLabProviderAvailable && featureFlags?.gitlab)
+  const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
 
   const baseTabs = [
     {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},
@@ -104,6 +103,7 @@ const ScopePhaseArea = (props: Props) => {
     const idx = tabs.findIndex((tab) => tab.label === favoriteService)
     return idx === -1 ? 1 : idx
   })
+
   const isTabActive = (label: typeof baseTabs[number]['label']) => {
     return activeIdx === tabs.findIndex((tab) => tab.label === label)
   }

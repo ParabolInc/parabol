@@ -1,38 +1,72 @@
 module.exports = {
   apps: [
     {
-      name: 'GQL/Socket Server',
-      script: 'scripts/gqlServers.js',
-      instances: 1,
-      autorestart: true,
-      watch: ['packages/server', 'packages/gql-executor'],
-      ignore_watch: ['**/__tests__', '**/rootSchema.graphql'],
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      name: 'Webpack Servers',
+      script: 'scripts/buildServers.js'
     },
     {
-      name: 'Web Server',
-      script: 'scripts/hmrServer.js',
+      name: 'GraphQL Executor',
+      script: 'scripts/runExecutor.js',
+      // increase this to test scaling
       instances: 1,
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      increment_var: 'SERVER_ID',
+      env: {
+        SERVER_ID: 3
+      },
+      watch: ['dev/gqlExecutor.js'],
+      // if the watched file doeesn't exist, wait for it instead of restarting
+      autorestart: false
+    },
+    {
+      name: 'Socket Server',
+      script: 'scripts/runSocketServer.js',
+      // increase this to test scaling
+      instances: 1,
+      increment_var: 'SERVER_ID',
+      env: {
+        SERVER_ID: 0
+      },
+      watch: ['dev/web.js'],
+      // if the watched file doeesn't exist, wait for it instead of restarting
+      autorestart: false
+    },
+    {
+      name: 'Dev Server',
+      script: 'scripts/hmrServer.js'
+    },
+    {
+      name: 'DB Migrations',
+      script: 'scripts/runMigrations.js',
+      // once this completes, it will exit
+      autorestart: false
+    },
+    {
+      name: 'GraphQL Schema Updater',
+      script: 'scripts/runSchemaUpdater.js',
+      watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
     },
     {
       name: 'Relay Compiler',
-      script: 'scripts/relayCompiler.js',
-      instances: 1,
-      autorestart: true,
-      watch: ['packages/server/graphql/public/schema.graphql'],
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      script: 'scripts/compileRelay.js',
+      args: '--watch',
+      watch: [
+        'packages/server/graphql/public/schema.graphql',
+        'packages/client/clientSchema.graphql'
+      ]
+    },
+    {
+      name: 'GraphQL Codegen',
+      script: 'scripts/codegenGraphQL.js',
+      args: '--watch',
+      autorestart: false,
+      // SIGINT won't kill this process in fork mode >:-(
+      // instances: 1 forces cluster mode
+      instances: 1
     }
-  ]
+  ].map((app) => ({
+    env_production: {
+      NODE_ENV: 'development'
+    },
+    ...app
+  }))
 }

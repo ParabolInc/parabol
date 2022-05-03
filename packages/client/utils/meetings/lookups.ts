@@ -1,5 +1,5 @@
-import CardsSVG from '../../components/CardsSVG'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeetingSidebar_meeting.graphql'
+import CardsSVG from '../../components/CardsSVG'
 import {ACTION, RETROSPECTIVE} from '../constants'
 
 /* Used by the server! cannot convert to enums yet */
@@ -55,5 +55,6 @@ export const phaseTypeToSlug = {
   lastcall: 'lastcall',
   SUMMARY: 'summary',
   SCOPE: 'scope',
-  ESTIMATE: 'estimate'
+  ESTIMATE: 'estimate',
+  RESPONSES: 'responses'
 } as Record<NewMeetingPhaseTypeEnum, string>

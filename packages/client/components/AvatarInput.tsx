@@ -11,7 +11,7 @@ const Control = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   overflow: 'hidden',
-  padding: '.5rem',
+  padding: '.5rem 1rem 1rem',
   position: 'relative'
 })
 

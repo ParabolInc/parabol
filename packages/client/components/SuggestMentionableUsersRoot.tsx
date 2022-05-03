@@ -1,19 +1,11 @@
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import renderQuery from '../utils/relay/renderQuery'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
 import SuggestMentionableUsers from './SuggestMentionableUsers'
 import {DraftSuggestion} from './TaskEditor/useSuggestions'
 import {BBox} from '../types/animations'
-
-const query = graphql`
-  query SuggestMentionableUsersRootQuery($teamId: ID!) {
-    viewer {
-      ...SuggestMentionableUsers_viewer
-    }
-  }
-`
+import suggestMentionableUsersQuery, {
+  SuggestMentionableUsersQuery
+} from '../__generated__/SuggestMentionableUsersQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 
 interface Props {
   active: number
@@ -26,27 +18,25 @@ interface Props {
 }
 
 const SuggestMentionableUsersRoot = (props: Props) => {
-  const {
-    active,
-    handleSelect,
-    originCoords,
-    setSuggestions,
-    suggestions,
-    triggerWord,
+  const {active, handleSelect, originCoords, setSuggestions, suggestions, triggerWord, teamId} =
+    props
+  const queryRef = useQueryLoaderNow<SuggestMentionableUsersQuery>(suggestMentionableUsersQuery, {
     teamId
-  } = props
-  const atmosphere = useAtmosphere()
-
+  })
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      variables={{teamId}}
-      query={query}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(SuggestMentionableUsers, {
-        props: {active, handleSelect, originCoords, setSuggestions, suggestions, triggerWord}
-      })}
-    />
+    <Suspense fallback={''}>
+      {queryRef && (
+        <SuggestMentionableUsers
+          queryRef={queryRef}
+          active={active}
+          handleSelect={handleSelect}
+          originCoords={originCoords}
+          setSuggestions={setSuggestions}
+          suggestions={suggestions}
+          triggerWord={triggerWord}
+        />
+      )}
+    </Suspense>
   )
 }
 
