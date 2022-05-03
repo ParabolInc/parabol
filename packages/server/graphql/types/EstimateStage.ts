@@ -97,6 +97,10 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
+        if (service === 'azureDevOps') {
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
+
         if (service === 'github') {
           const {nameWithOwner} = integration
           const dimensionName = await getDimensionName(meetingId)
