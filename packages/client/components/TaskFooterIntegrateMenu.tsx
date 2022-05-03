@@ -18,10 +18,11 @@ interface Props {
   queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
 }
 
-const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
+const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean, hasAzureDevOps: boolean) => {
   const names = [] as string[]
   if (hasGitHub) names.push('GitHub')
   if (hasAtlassian) names.push('Jira')
+  if (hasAzureDevOps) names.push('Azure DevOps')
   return `Search ${names.join(' & ')}`
 }
 
@@ -30,15 +31,17 @@ type Integrations = NonNullable<
 >['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
-  const {atlassian, github, jiraServer} = integrations
+  const {atlassian, github, jiraServer, azureDevOps} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
+  const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
   const hasJiraServer = jiraServer.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer
+  return hasAtlassian || hasGitHub || hasJiraServer || hasAzureDevOps
     ? {
         hasAtlassian,
         hasGitHub,
-        hasJiraServer
+        hasJiraServer,
+        hasAzureDevOps
       }
     : null
 }
@@ -92,7 +95,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(
       isViewerIntegrated.hasGitHub,
-      isViewerIntegrated.hasAtlassian
+      isViewerIntegrated.hasAtlassian,
+      isViewerIntegrated.hasAzureDevOps
     )
     const label = 'Push with your credentials'
     return (
@@ -110,7 +114,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   if (isAssigneeIntegrated) {
     const placeholder = makePlaceholder(
       isAssigneeIntegrated.hasGitHub,
-      isAssigneeIntegrated.hasAtlassian
+      isAssigneeIntegrated.hasAtlassian,
+      isAssigneeIntegrated.hasAzureDevOps
     )
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
@@ -158,6 +163,14 @@ graphql`
 `
 
 graphql`
+  fragment TaskFooterIntegrateMenuViewerAzureDevOpsIntegration on AzureDevOpsIntegration {
+    auth {
+      isActive
+    }
+  }
+`
+
+graphql`
   fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
     repoIntegrations {
       ...TaskFooterIntegrateMenuList_repoIntegrations
@@ -176,6 +189,9 @@ graphql`
       }
       github {
         ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
+      }
+      azureDevOps {
+        ...TaskFooterIntegrateMenuViewerAzureDevOpsIntegration @relay(mask: false)
       }
     }
     ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)

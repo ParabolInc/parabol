@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
+//import AzureDevOpsIssueId from '~/shared/gqlIds/AzureDevOpsIssueId'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
@@ -196,7 +197,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             .setLinkedRecords([], 'estimates')
             .setLinkedRecords([], 'editors')
             .setLinkedRecord(team!, 'team')
-
           if (service === 'jira') {
             const descriptionHTML = stateToHTML(contentState)
             const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
@@ -212,6 +212,18 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               summary: plaintextContent,
               description: '',
               descriptionHTML
+            })
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+          } else if (service === 'azureDevOps') {
+            //const descriptionHTML = stateToHTML(contentState)
+            //const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
+            const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
+              teamId,
+              meetingId,
+              userId: viewerId,
+              url: '',
+              state: '',
+              type: ''
             })
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {

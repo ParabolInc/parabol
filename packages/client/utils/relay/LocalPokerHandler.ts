@@ -43,6 +43,15 @@ const defaults = [
     }
   },
   {
+    service: 'azureDevOps',
+    meetingPropName: 'azureDevOpsSearchQuery',
+    type: 'AzureDevOpsSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      isWIQL: false
+    }
+  },
+  {
     service: 'gitlab',
     meetingPropName: 'gitlabSearchQuery',
     type: 'GitLabSearchQuery',
