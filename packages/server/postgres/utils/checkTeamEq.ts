@@ -1,7 +1,7 @@
-import Team from '../../database/types/Team'
 import getRethink from '../../database/rethinkDriver'
-import {checkTableEq} from './checkEqBase'
+import Team from '../../database/types/Team'
 import getTeamsByIds from '../queries/getTeamsByIds'
+import {checkTableEq} from './checkEqBase'
 
 const alwaysDefinedFields: (keyof Partial<Team>)[] = [
   'name',
@@ -9,8 +9,7 @@ const alwaysDefinedFields: (keyof Partial<Team>)[] = [
   'isArchived',
   'isPaid',
   'tier',
-  'orgId',
-  'updatedAt'
+  'orgId'
 ]
 
 const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: any} = {
