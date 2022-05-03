@@ -1,13 +1,15 @@
 import useTransition from './useTransition'
 
-class OverflowAvatar {
+class OverflowAvatar<T> {
   id = 'overflow'
   key = 'overflow'
   overflowCount: number
   displayIdx: number
-  constructor(overflowCount: number, displayIdx: number) {
+  overflowChild: T
+  constructor(overflowCount: number, displayIdx: number, overflowChild: T) {
     this.overflowCount = overflowCount
     this.displayIdx = displayIdx
+    this.overflowChild = overflowChild
   }
 }
 
@@ -20,10 +22,12 @@ const useOverflowAvatars = <T extends {id: string}>(items: readonly T[], maxAvat
     key: user.id,
     // we are setting the avatars using a transform & we want the new ones to appear where they eventually will be
     displayIdx
-  })) as ((T & {key: string; displayIdx: number}) | OverflowAvatar)[]
+  })) as ((T & {key: string; displayIdx: number}) | OverflowAvatar<T>)[]
 
   if (overflowCount > 0) {
-    visibleAvatars.push(new OverflowAvatar(overflowCount, visibleAvatars.length))
+    visibleAvatars.push(
+      new OverflowAvatar<T>(overflowCount, visibleAvatars.length, items[maxAvatars]!)
+    )
   }
 
   const transitioningAvatars = useTransition(visibleAvatars)
