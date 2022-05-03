@@ -80,6 +80,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const workItems = azureDevOps?.workItems ?? null
   const edges = workItems?.edges ?? null
   const error = workItems?.error ?? null
+
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!

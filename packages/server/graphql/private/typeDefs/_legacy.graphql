@@ -2838,8 +2838,6 @@ type AzureDevOpsIntegration {
   userId: ID!
 
 
-
-
   """
   The cloud provider the team member may choose to integrate with. Nullable based on env vars
   """

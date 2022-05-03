@@ -1,6 +1,6 @@
+
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-//import {isConstructorDeclaration} from 'typescript'
 import {DiscriminateProxy} from '../types/generics'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
@@ -139,3 +139,4 @@ const UpdateAzureDevOpsDimensionFieldMutation: StandardMutation<
 }
 
 export default UpdateAzureDevOpsDimensionFieldMutation
+

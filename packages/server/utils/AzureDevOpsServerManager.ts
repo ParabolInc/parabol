@@ -12,6 +12,7 @@ import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/gene
 import {isError} from 'util';
 import {ExternalLinks} from '~/types/constEnums';
 
+
 export interface AzureDevOpsUser {
   // self: string
   displayName: string
@@ -145,6 +146,7 @@ export interface AzureDevOpsError {
   message: string
 }
 
+
 interface WorkItemAddCommentResponse {
   workItemId: number
   id: number
@@ -164,6 +166,7 @@ interface WorkItemAddFieldResponse {
   _links: object
   url: string
 }
+
 
 const MAX_REQUEST_TIME = 5000
 
@@ -321,6 +324,7 @@ class AzureDevOpsServerManager {
     return {error: firstError, workItems: workItemReferences}
   }
 
+
   async getWorkItems(instanceId: string, queryString: string | null, isWIQL: boolean) {
     if (isWIQL) {
       const customQueryString = queryString
@@ -338,6 +342,7 @@ class AzureDevOpsServerManager {
                                     OR [System.WorkItemType] = 'Feature' OR [System.WorkItemType] = 'Epic'
                                 )
                               AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+
     return await this.executeWiqlQuery(instanceId, customQueryString)
   }
 
@@ -358,6 +363,7 @@ class AzureDevOpsServerManager {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
       const {error: workItemsError, workItems} = await this.getWorkItems(
+
         instanceId,
         queryString,
         isWIQL
@@ -550,7 +556,6 @@ class AzureDevOpsServerManager {
       ]
     )
   }
-
 }
 
 export default AzureDevOpsServerManager

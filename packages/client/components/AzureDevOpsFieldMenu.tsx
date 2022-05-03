@@ -37,6 +37,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           integration {
             ... on AzureDevOpsWorkItem {
               __typename
+
               id
               title
               teamProject
@@ -91,11 +92,13 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           }
         }
       )
+
     } else {
       submitScore()
     }
     closePortal()
   }
+
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
     if (workItemType === 'User Story' || workItemType === 'Bug') {
       return [
@@ -141,6 +144,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   }
   const menuValues = getDefaultMenuValues(workItemType)
 
+
   return (
     <>
       <Menu
@@ -153,6 +157,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           return <MenuItem key={fieldValue} label={label} onClick={handleClick(fieldValue)} />
         })}
         <MenuItemHR />
+
         <MenuItem
           label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
           onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}

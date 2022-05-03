@@ -139,7 +139,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         if (!manager) {
           return null
         }
-
+        
         const restResult = await manager.getAllUserWorkItems(queryString, isWIQL)
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {

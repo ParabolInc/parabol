@@ -508,6 +508,7 @@ export const azureDevOpsWorkItems = (
               descriptionHTML: returnedWorkItem.fields['System.Description']
                 ? returnedWorkItem.fields['System.Description']
                 : '',
+
               service: 'azureDevOps'
             })
           )

@@ -11,6 +11,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {AzureDevOpsScopingSelectAllIssues_workItems} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
+
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -47,6 +48,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   const serviceTaskIds = workItems.map((userStory) => {
     return AzureDevOpsIssueId.join(providerId, userStory.id)
   })
+
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -77,6 +79,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   }
   if (workItems.length < 2) return null
   const title = getSelectAllTitle(workItems.length, usedServiceTaskIds.size, 'workItem')
+
 
   return (
     <>
