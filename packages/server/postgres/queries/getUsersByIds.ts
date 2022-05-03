@@ -5,7 +5,7 @@ import {getUsersByIdsQuery} from './generated/getUsersByIdsQuery'
 
 export const getUsersByIds = async (userIds: MaybeReadonly<string[]>): Promise<IUser[]> => {
   const users = await getUsersByIdsQuery.run({ids: userIds}, getPg())
-  return users as IUser[]
+  return users as unknown as IUser[]
 }
 
 export const getUserById = async (id: string): Promise<IUser | null> => {

@@ -1,5 +1,5 @@
-import AuthIdentity from './AuthIdentity'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
+import AuthIdentity from './AuthIdentity'
 
 interface Input {
   isEmailVerified?: boolean
@@ -7,6 +7,7 @@ interface Input {
 }
 
 export default class AuthIdentityGoogle extends AuthIdentity {
+  type!: 'GOOGLE'
   constructor(input: Input) {
     super({...input, type: AuthIdentityTypeEnum.GOOGLE})
   }

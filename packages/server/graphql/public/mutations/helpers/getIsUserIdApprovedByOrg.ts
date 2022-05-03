@@ -1,9 +1,10 @@
+import createEmailVerficationForExistingUser from '../../../../email/createEmailVerficationForExistingUser'
 import {DataLoaderWorker} from '../../../graphql'
-
 const getIsUserIdApprovedByOrg = async (
   userId: string,
   orgId: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  invitationToken?: string
 ) => {
   const approvedDomains = await dataLoader.get('organizationApprovedDomainsByOrgId').load(orgId)
   if (approvedDomains.length === 0) return undefined
@@ -22,7 +23,13 @@ const getIsUserIdApprovedByOrg = async (
   }
   const isEmailUnverified = identities.some((identity) => !identity.isEmailVerified)
   if (isEmailUnverified) {
-    return new Error('You must verify your email to join. Check your email')
+    if (!invitationToken) return new Error('Email not verified')
+    const emailError = await createEmailVerficationForExistingUser(
+      userId,
+      invitationToken,
+      dataLoader
+    )
+    return emailError || new Error('You must verify your email to join. Check your email')
   }
   return undefined
 }

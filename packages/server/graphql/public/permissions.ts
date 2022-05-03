@@ -24,7 +24,9 @@ export type PermissionMap<T> = {
 const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isAuthenticated,
-    acceptTeamInvitation: and(isAuthenticated, rateLimit({perMinute: 50, perHour: 100})),
+    // Bug in graphql-jit means it will always get called
+    // https://github.com/zalando-incubator/graphql-jit/issues/171
+    acceptTeamInvitation: and(/* isAuthenticated, */ rateLimit({perMinute: 50, perHour: 100})),
     createImposterToken: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),

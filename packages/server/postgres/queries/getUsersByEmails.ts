@@ -1,10 +1,10 @@
-import {getUsersByEmailsQuery} from './generated/getUsersByEmailsQuery'
 import getPg from '../getPg'
 import IUser from '../types/IUser'
+import {getUsersByEmailsQuery} from './generated/getUsersByEmailsQuery'
 
 export const getUsersByEmails = async (emails: string[]): Promise<IUser[]> => {
   const users = await getUsersByEmailsQuery.run({emails}, getPg())
-  return users as IUser[]
+  return users as unknown as IUser[]
 }
 
 export const getUserByEmail = async (email: string): Promise<IUser | null> => {

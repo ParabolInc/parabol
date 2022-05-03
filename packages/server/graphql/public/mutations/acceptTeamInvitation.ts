@@ -2,7 +2,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {InvitationTokenError, SubscriptionChannel} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
@@ -17,6 +17,11 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   {invitationToken, notificationId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  // AUTH WORKAROUND
+  if (!isAuthenticated(authToken) || !invitationToken) {
+    // Workaround for https://github.com/zalando-incubator/graphql-jit/issues/171
+    return {}
+  }
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -52,7 +57,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
     }
   }
-  const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader)
+  const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken)
   if (approvalError instanceof Error) {
     await redisLock.unlock()
     return {error: {message: approvalError.message}}
