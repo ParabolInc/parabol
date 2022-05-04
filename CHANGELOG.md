@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.57.0 2022-May-4
+
+### Added
+ - feat(standups): upsertTeamPromptResponse (#6333)
+ - feat(ado): Initial Azure DevOps integration (#6260)
+ - feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
+ - feat(sprint-poker): Can vote on GitLab issue (#6398)
+ - feat(sprint-poker): Push task to GitLab (#6427)
+
+### Changed
+ - chore: Create manualTestingGuide.md (#6426)
+ - chore: removed unused video related components (#6497)
+
+### Fixed
+ - fix(rethinkdb): attempt to fix the table rename (#6480)
+
 ## 6.56.0 2022-April-27
 
 ### Added
