@@ -1,22 +1,24 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
+import {
+  JiraScopingSearchFilterMenuQuery,
+  JiraScopingSearchFilterMenuQueryResponse
+} from '../__generated__/JiraScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
-import MockFieldList from './MockFieldList'
-import TypeAheadLabel from './TypeAheadLabel'
-import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
-import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import TypeAheadLabel from './TypeAheadLabel'
 
 const StyledMenu = styled(Menu)({
   width: 250
@@ -47,21 +49,50 @@ const FilterLabel = styled(DropdownMenuLabel)({
 
 interface Props {
   menuProps: MenuProps
-  viewer: JiraScopingSearchFilterMenu_viewer | null
-  error: Error | null
+  queryRef: PreloadedQuery<JiraScopingSearchFilterMenuQuery>
 }
 
 type JiraSearchQuery = NonNullable<
-  NonNullable<JiraScopingSearchFilterMenu_viewer['meeting']>['jiraSearchQuery']
+  NonNullable<JiraScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['jiraSearchQuery']
 >
 
 const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 
+const gqlQuery = graphql`
+  query JiraScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) {
+        id
+        ... on PokerMeeting {
+          jiraSearchQuery {
+            projectKeyFilters
+            isJQL
+          }
+        }
+      }
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            projects {
+              id
+              name
+              avatar
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const JiraScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, viewer} = props
-  const isLoading = viewer === null
+  const {menuProps, queryRef} = props
+  const data = usePreloadedQuery<JiraScopingSearchFilterMenuQuery>(gqlQuery, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const projects = viewer?.teamMember?.integrations.atlassian?.projects ?? []
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
@@ -117,12 +148,11 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
-      {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
-      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
+      {(query && selectedAndFilteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No Jira Projects found!
         </EmptyDropdownMenuItemLabel>
@@ -166,29 +196,4 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchFilterMenu, {
-  viewer: graphql`
-    fragment JiraScopingSearchFilterMenu_viewer on User {
-      meeting(meetingId: $meetingId) {
-        id
-        ... on PokerMeeting {
-          jiraSearchQuery {
-            projectKeyFilters
-            isJQL
-          }
-        }
-      }
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            projects {
-              id
-              name
-              avatar
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default JiraScopingSearchFilterMenu

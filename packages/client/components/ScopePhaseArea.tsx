@@ -72,18 +72,19 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  const {user, teamMember} = viewerMeetingMember!
-  const {featureFlags} = user
-  const gitlabIntegration = teamMember.integrations.gitlab
-  const jiraServerIntegration = teamMember.integrations.jiraServer
-  const azureDevOpsIntegration = teamMember.integrations.azureDevOps
+  const featureFlags = viewerMeetingMember?.user.featureFlags
+  const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
+  const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
+  const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
+
   const isGitLabProviderAvailable = !!(
-    gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
+    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
-  const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
-  const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
+
   const allowAzureDevOps =
-    !!azureDevOpsIntegration.sharedProviders.length && featureFlags.azureDevOps
+    !!azureDevOpsIntegration?.sharedProviders.length && featureFlags?.azureDevOps
+  const allowGitLab = !!(isGitLabProviderAvailable && featureFlags?.gitlab)
+  const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
 
   const baseTabs = [
     {icon: <GitHubSVG />, label: 'GitHub', allow: true, Component: ScopePhaseAreaGitHub},

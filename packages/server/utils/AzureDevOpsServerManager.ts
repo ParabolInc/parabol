@@ -1,4 +1,5 @@
-import fetch from 'node-fetch'
+import AbortController from 'abort-controller'
+import fetch, {RequestInit} from 'node-fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'
 import appOrigin from '../appOrigin'
@@ -148,7 +149,6 @@ export interface AzureDevOpsError {
 const MAX_REQUEST_TIME = 5000
 
 class AzureDevOpsServerManager {
-  fetch = fetch as any
   accessToken = ''
   private headers = {
     Authorization: '',
@@ -193,7 +193,7 @@ class AzureDevOpsServerManager {
       controller.abort()
     }, MAX_REQUEST_TIME)
     try {
-      const res = await this.fetch(url, {...options, signal})
+      const res = await fetch(url, {...options, signal})
       clearTimeout(timeout)
       return res
     } catch (e) {

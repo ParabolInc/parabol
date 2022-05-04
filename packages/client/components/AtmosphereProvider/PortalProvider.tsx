@@ -3,7 +3,9 @@ import {createPortal} from 'react-dom'
 import useForceUpdate from '../../hooks/useForceUpdate'
 
 export type SetPortal = (id: string, portal: ReactNode) => void
-export const PortalContext = React.createContext((() => {}) as SetPortal)
+export const PortalContext = React.createContext((() => {
+  /* noop */
+}) as SetPortal)
 
 interface Props {
   children: ReactNode

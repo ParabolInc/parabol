@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import {
-  TaskFooterIntegrateMenu_viewer,
-  TaskFooterIntegrateMenu_viewer$key
-} from '../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
+  TaskFooterIntegrateMenuQuery,
+  TaskFooterIntegrateMenuQueryResponse
+} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -15,7 +15,7 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenu_task$key
-  viewer: TaskFooterIntegrateMenu_viewer$key
+  queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
 }
 
 const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean, hasAzureDevOps: boolean) => {
@@ -26,7 +26,9 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean, hasAzureDevO
   return `Search ${names.join(' & ')}`
 }
 
-type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['viewerTeamMember']>['integrations']
+type Integrations = NonNullable<
+  TaskFooterIntegrateMenuQueryResponse['viewer']['viewerTeamMember']
+>['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
   const {atlassian, github, jiraServer, azureDevOps} = integrations
@@ -44,9 +46,27 @@ const isIntegrated = (integrations: Integrations) => {
     : null
 }
 
-const TaskFooterIntegrateMenu = (props: Props) => {
-  const {menuProps, mutationProps, task: taskRef, viewer: viewerRef} = props
+const query = graphql`
+  query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) {
+    viewer {
+      id
+      assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
+        preferredName
+        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
+      }
+      viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
+        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
+      }
+    }
+  }
+`
 
+const TaskFooterIntegrateMenu = (props: Props) => {
+  const {menuProps, mutationProps, task: taskRef, queryRef} = props
+  const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenu_task on Task {
@@ -56,21 +76,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       }
     `,
     taskRef
-  )
-  const viewer = useFragment(
-    graphql`
-      fragment TaskFooterIntegrateMenu_viewer on User {
-        id
-        assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
-          preferredName
-          ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
-        }
-        viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
-          ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
-        }
-      }
-    `,
-    viewerRef
   )
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer

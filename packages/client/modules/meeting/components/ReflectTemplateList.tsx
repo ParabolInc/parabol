@@ -154,10 +154,10 @@ const ReflectTemplateList = (props: Props) => {
           />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
+          {activeIdx === 1 && <ReflectTemplateListOrgRoot teamId={teamId} />}
         </TabContents>
         <TabContents>
-          <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
+          {activeIdx === 2 && <ReflectTemplateListPublicRoot teamId={teamId} />}
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
