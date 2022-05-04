@@ -5,10 +5,9 @@ All new schema additions should be added in this directory.
 
 ### How to add a new mutation (preferred)
 
-1. `yarn newMutation <mutationName> -s <subscriptionChannel> -p`
+1. `yarn newMutation <mutationName> -s <subscriptionChannel>`
    This will create all the boilerplate you need.
    If you don't need to publish to a subscription channel, leave off the -s flag.
-   If you don't need postgres files, leave off the -p flag.
    To learn more, type `yarn newMutation --help`
 
 ### How to manually add a new mutation
