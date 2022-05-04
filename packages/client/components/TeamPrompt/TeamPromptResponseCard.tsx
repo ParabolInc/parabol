@@ -72,7 +72,7 @@ const TeamPromptResponseCard = (props: Props) => {
   const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
   const plaintextContent = response?.plaintextContent ?? ''
   const isCurrentViewer = userId === viewerId
-  const isEmptyResponse = !isCurrentViewer && !plaintextContent // :TODO: (jmtaber129): Determine based on actual response, too
+  const isEmptyResponse = !isCurrentViewer && !plaintextContent
 
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const handleSubmit = (editorState: EditorState) => {
