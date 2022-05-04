@@ -7,6 +7,7 @@ import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
+import GitLabFieldDimensionDropdown from './GitLabFieldDimensionDropdown'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
 import LinkButton from './LinkButton'
 import StyledError from './StyledError'
@@ -81,6 +82,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
         ...GitHubFieldDimensionDropdown_stage
         ...JiraFieldDimensionDropdown_stage
+        ...GitLabFieldDimensionDropdown_stage
         task {
           integration {
             __typename
@@ -97,6 +99,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     _xGitHubIssue: 'GitHub',
     JiraIssue: 'Jira',
     JiraServerIssue: 'Jira Server',
+    _xGitLabIssue: 'GitLab',
     AzureDevOpsWorkItem: 'Azure DevOps'
   }
   const title = titleByType[integrationType]
@@ -124,11 +127,18 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-
           {(integrationType === 'JiraIssue' ||
             integrationType === 'JiraServerIssue' ||
             integrationType === 'AzureDevOpsWorkItem') && (
             <JiraFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+          {integrationType === '_xGitLabIssue' && (
+            <GitLabFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
               isFacilitator={isFacilitator}

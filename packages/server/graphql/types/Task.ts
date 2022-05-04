@@ -207,9 +207,10 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           }
           return data
         } else if (integration.service === 'gitlab') {
+          const {accessUserId} = integration
           const gitlabAuth = await dataLoader
             .get('teamMemberIntegrationAuths')
-            .load({service: 'gitlab', teamId, userId: viewerId})
+            .load({service: 'gitlab', teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return null
           const {providerId, accessToken} = gitlabAuth
           const provider = await dataLoader.get('integrationProviders').load(providerId)
