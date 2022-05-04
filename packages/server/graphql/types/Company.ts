@@ -4,12 +4,13 @@ import {RValue} from '../../database/stricterR'
 import {TierEnum as ETierEnum} from '../../database/types/Invoice'
 import OrganizationType from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
-import {Team} from '../../postgres/queries/getTeamsByIds'
 import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import TierEnum from './TierEnum'
+
+const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
 
 const Company = new GraphQLObjectType<any, GQLContext>({
   name: 'Company',
@@ -28,10 +29,10 @@ const Company = new GraphQLObjectType<any, GQLContext>({
         const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
           errorFilter
         )
-        const teams = teamsByOrgId.flat().filter(({isArchived}: Team) => !isArchived)
-        const teamIds = teams.map(({id}: Team) => id)
+        const teams = teamsByOrgId.flat().filter(({isArchived}) => !isArchived)
+        const teamIds = teams.map(({id}) => id)
 
-        const AreTeamsActive = await Promise.all(
+        const areTeamsActive = await Promise.all(
           teamIds.map(async (teamId) => {
             const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
             if (activeMeetings.length > 0) {
@@ -41,13 +42,13 @@ const Company = new GraphQLObjectType<any, GQLContext>({
                 .get('completedMeetingsByTeamId')
                 .load(teamId)
               const completedMeetingsLast30Days = completedMeetings.filter(
-                ({endedAt}) => new Date().getTime() - endedAt!.getTime() < 30 * 24 * 60 * 60 * 1000
+                ({endedAt}) => new Date().getTime() - endedAt!.getTime() < THIRTY_DAYS
               )
               return completedMeetingsLast30Days.length > 0
             }
           })
         )
-        return AreTeamsActive.filter(Boolean).length
+        return areTeamsActive.filter(Boolean).length
       }
     },
     activeUserCount: {
