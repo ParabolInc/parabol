@@ -13,7 +13,7 @@ class OverflowAvatar<T> {
   }
 }
 
-const useOverflowAvatars = <T extends {id: string}>(items: readonly T[], maxAvatars = 0) => {
+const useOverflowAvatars = <T extends {id: string}>(items: readonly T[], maxAvatars) => {
   const totalItems = items.length
   const overflowCount = maxAvatars > 0 && totalItems > maxAvatars ? totalItems - maxAvatars + 1 : 0
   const visibleUsers = overflowCount === 0 ? items : items.slice(0, maxAvatars - 1)
