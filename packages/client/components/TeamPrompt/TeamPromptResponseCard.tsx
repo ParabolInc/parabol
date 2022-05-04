@@ -152,7 +152,7 @@ const TeamPromptResponseCard = (props: Props) => {
                 'Reply'
               )}
             </ReplyButton>
-            {/* :TODO: (jmtaber129): Add reactjis + response button */}
+            {/* :TODO: (jmtaber129): Add reactjis */}
           </>
         )}
       </ResponseCard>
