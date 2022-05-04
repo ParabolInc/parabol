@@ -16,8 +16,6 @@ import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
-import getIssue from '../nestedSchema/GitLab/queries/getIssue.graphql'
-import {GetIssueQuery} from './../../types/gitlabTypes'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -124,12 +122,16 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             .get('teamMemberIntegrationAuths')
             .load({service: 'gitlab', teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return NULL_FIELD
-          const {providerId, accessToken} = gitlabAuth
+          const {providerId} = gitlabAuth
           const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
-          const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl!)
-          const gitlabRequest = manager.getGitLabRequest(info, context)
-          const [data] = await gitlabRequest<GetIssueQuery>(getIssue, {gid})
-          const {issue} = data
+          const manager = new GitLabServerManager(
+            gitlabAuth,
+            context,
+            info,
+            provider.serverBaseUrl!
+          )
+          const [issueData] = await manager.getIssue({gid})
+          const {issue} = issueData
           if (!issue) return NULL_FIELD
           const {projectId} = issue
           const dimensionName = await getDimensionName(meetingId)

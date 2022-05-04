@@ -212,7 +212,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             .get('teamMemberIntegrationAuths')
             .load({service: 'gitlab', teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return null
-          const {providerId, accessToken} = gitlabAuth
+          const {providerId} = gitlabAuth
           const provider = await dataLoader.get('integrationProviders').load(providerId)
           if (!provider?.serverBaseUrl) return null
           const {gid} = integration
@@ -223,7 +223,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
               }
             }
           `
-          const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+          const manager = new GitLabServerManager(gitlabAuth, context, info, provider.serverBaseUrl)
           const gitlabRequest = manager.getGitLabRequest(info, context)
           const [data, error] = await gitlabRequest(query, {})
           if (error) {

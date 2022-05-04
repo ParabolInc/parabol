@@ -26,7 +26,13 @@ export type RepoIntegration = {
 }
 
 const IntegrationRepoId = {
-  join: (integration: GitHubRepoIntegration | JiraRepoIntegration | RepoIntegration | JiraServerRepoIntegration) => {
+  join: (
+    integration:
+      | GitHubRepoIntegration
+      | JiraRepoIntegration
+      | RepoIntegration
+      | JiraServerRepoIntegration
+  ) => {
     const {service} = integration
     switch (service) {
       case 'github':
@@ -45,7 +51,12 @@ const IntegrationRepoId = {
     const service = parts[0]!
 
     if (service === 'jiraServer') {
-      return {service, providerId: parseInt(parts[1]!, 10), repositoryId: parts[2]!, projectKey: parts[3]!}
+      return {
+        service,
+        providerId: parseInt(parts[1]!, 10),
+        repositoryId: parts[2]!,
+        projectKey: parts[3]!
+      }
     }
 
     return {service, providerId: parseInt(parts[1]!, 10), repositoryId: parts[2]!}

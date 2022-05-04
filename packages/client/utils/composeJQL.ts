@@ -1,7 +1,4 @@
-const buildIssueKeyJQL = (
-  queryString: string | null,
-  filteredProjectKeys: string[]
-) => {
+const buildIssueKeyJQL = (queryString: string | null, filteredProjectKeys: string[]) => {
   if (!queryString) return ''
   const maybeIssueKeys = queryString.split(/[\s,]+/)
   if (maybeIssueKeys.length === 0) return ''
@@ -54,4 +51,4 @@ const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: str
   return `${projectFilter}${and}${textFilter} ${orderBy}`
 }
 
-export default composeJQL;
+export default composeJQL
