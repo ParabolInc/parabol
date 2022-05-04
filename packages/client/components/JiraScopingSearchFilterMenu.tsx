@@ -1,15 +1,10 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {commitLocalUpdate} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {
-  JiraScopingSearchFilterMenuQuery,
-  JiraScopingSearchFilterMenuQueryResponse
-} from '../__generated__/JiraScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -17,6 +12,7 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
+import MockFieldList from './MockFieldList'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
 
@@ -47,56 +43,33 @@ const FilterLabel = styled(DropdownMenuLabel)({
   borderBottom: 0
 })
 
-interface Props {
-  menuProps: MenuProps
-  queryRef: PreloadedQuery<JiraScopingSearchFilterMenuQuery>
+type JiraSearchQuery = {
+  readonly isJQL: boolean
+  readonly projectKeyFilters: readonly string[]
 }
 
-type JiraSearchQuery = NonNullable<
-  NonNullable<JiraScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['jiraSearchQuery']
->
+type Project = {
+  id: string
+  name: string
+  avatar: string
+}
+
+interface Props {
+  menuProps: MenuProps
+  meetingId: string
+  projects: readonly Project[]
+  jiraSearchQuery: JiraSearchQuery | null
+  service: 'jira' | 'jiraServer'
+}
 
 const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 
-const gqlQuery = graphql`
-  query JiraScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
-    viewer {
-      meeting(meetingId: $meetingId) {
-        id
-        ... on PokerMeeting {
-          jiraSearchQuery {
-            projectKeyFilters
-            isJQL
-          }
-        }
-      }
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            projects {
-              id
-              name
-              avatar
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
+// Reusable for both Jira and Jira Server.
 const JiraScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, queryRef} = props
-  const data = usePreloadedQuery<JiraScopingSearchFilterMenuQuery>(gqlQuery, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
-  const {viewer} = data
-  const projects = viewer?.teamMember?.integrations.atlassian?.projects ?? []
-  const meeting = viewer?.meeting ?? null
-  const meetingId = meeting?.id ?? ''
-  const jiraSearchQuery = meeting?.jiraSearchQuery ?? null
+  const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
+  const isLoading = meetingId === null
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
 
@@ -121,7 +94,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const {portalStatus, isDropdown} = menuProps
   const toggleJQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      const searchQueryId = SearchQueryId.join('jira', meetingId)
+      const searchQueryId = SearchQueryId.join(service, meetingId)
       const jiraSearchQuery = store.get(searchQueryId)
       // this might bork if the checkbox is ticked before the full query loads
       if (!jiraSearchQuery) return
@@ -148,11 +121,12 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
+      {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
-      {(query && selectedAndFilteredProjects.length === 0 && (
+      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No Jira Projects found!
         </EmptyDropdownMenuItemLabel>
@@ -162,7 +136,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         const {id: globalProjectKey, avatar, name} = project
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = SearchQueryId.join('jira', meetingId)
+            const searchQueryId = SearchQueryId.join(service, meetingId)
             const jiraSearchQuery = store.get<JiraSearchQuery>(searchQueryId)!
             const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
             const keyIdx = projectKeyFiltersProxy.indexOf(globalProjectKey)

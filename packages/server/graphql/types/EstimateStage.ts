@@ -12,6 +12,7 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
@@ -51,8 +52,10 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       resolve: async (
         {dimensionRefIdx, meetingId, teamId, taskId},
         _args: unknown,
-        {dataLoader}
+        context,
+        info
       ) => {
+        const {dataLoader} = context
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -116,6 +119,39 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           if (githubFieldMap) {
             return {
               name: githubFieldMap.labelTemplate,
+              type: 'string'
+            }
+          }
+          return {
+            name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            type: 'string'
+          }
+        }
+        if (service === 'gitlab') {
+          const {gid, accessUserId} = integration
+          const gitlabAuth = await dataLoader
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'gitlab', teamId, userId: accessUserId})
+          if (!gitlabAuth?.accessToken) return NULL_FIELD
+          const {providerId} = gitlabAuth
+          const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
+          const manager = new GitLabServerManager(
+            gitlabAuth,
+            context,
+            info,
+            provider.serverBaseUrl!
+          )
+          const [issueData] = await manager.getIssue({gid})
+          const {issue} = issueData
+          if (!issue) return NULL_FIELD
+          const {projectId} = issue
+          const dimensionName = await getDimensionName(meetingId)
+          const gitlabFieldMap = await dataLoader
+            .get('gitlabDimensionFieldMaps')
+            .load({teamId, dimensionName, projectId, providerId})
+          if (gitlabFieldMap) {
+            return {
+              name: gitlabFieldMap.labelTemplate,
               type: 'string'
             }
           }

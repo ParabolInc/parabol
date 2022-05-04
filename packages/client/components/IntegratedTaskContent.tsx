@@ -48,6 +48,14 @@ const IntegratedTaskContent = (props: Props) => {
         <div dangerouslySetInnerHTML={{__html: bodyHTML}} />
       </Content>
     )
+  } else if (integration.__typename === '_xGitLabIssue') {
+    const {descriptionHtml, title} = integration
+    return (
+      <Content>
+        <Summary>{title}</Summary>
+        {descriptionHtml && <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />}
+      </Content>
+    )
   }
   return null
 }
@@ -68,6 +76,10 @@ export default createFragmentContainer(IntegratedTaskContent, {
         ... on JiraServerIssue {
           descriptionHTML
           summary
+        }
+        ... on _xGitLabIssue {
+          descriptionHtml
+          title
         }
       }
     }

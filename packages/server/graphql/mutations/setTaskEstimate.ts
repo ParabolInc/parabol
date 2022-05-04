@@ -18,6 +18,7 @@ import {GQLContext} from '../graphql'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
+import pushEstimateToGitLab from './helpers/pushEstimateToGitLab'
 
 const setTaskEstimate = {
   type: new GraphQLNonNull(SetTaskEstimatePayload),
@@ -203,7 +204,7 @@ const setTaskEstimate = {
           workItemId: issueKey
         })
       ])
-      // console.log(azureDevOpsWorkItem)
+
       if (!auth) {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
@@ -244,6 +245,12 @@ const setTaskEstimate = {
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
           return {error: {message}}
         }
+      }
+    } else if (service === 'gitlab') {
+      const gitlabPushRes = await pushEstimateToGitLab(taskEstimate, context, info, stageId)
+      if (gitlabPushRes instanceof Error) {
+        const {message} = gitlabPushRes
+        return {error: {message}}
       }
     }
 

@@ -29,6 +29,9 @@ const gqlQuery = graphql`
           ... on _xGitHubRepository {
             nameWithOwner
           }
+          ... on _xGitLabProject {
+            fullPath
+          }
           ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }
@@ -43,6 +46,8 @@ const getValue = (item: FetchedItems[0]) => {
     return item.key?.toLowerCase() ?? ''
   } else if (item.__typename === '_xGitHubRepository') {
     return item.nameWithOwner?.toLowerCase() ?? ''
+  } else if (item.__typename === '_xGitLabProject') {
+    return item.fullPath?.toLowerCase() ?? ''
   }
   return ''
 }

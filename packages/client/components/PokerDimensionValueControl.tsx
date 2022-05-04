@@ -161,7 +161,6 @@ const PokerDimensionValueControl = (props: Props) => {
           />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
-
         <PokerDimensionFinalScorePicker
           canUpdate={isStale}
           stageRef={stage}
