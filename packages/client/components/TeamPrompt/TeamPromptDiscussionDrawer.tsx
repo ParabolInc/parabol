@@ -32,7 +32,8 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   right: isDesktop ? 0 : undefined,
   transition: `all 200ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
-  width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
+  transform: `translateX(${isOpen ? 0 : DiscussionThreadEnum.WIDTH}px)`,
+  width: DiscussionThreadEnum.WIDTH,
   zIndex: ZIndex.SIDEBAR
 }))
 
