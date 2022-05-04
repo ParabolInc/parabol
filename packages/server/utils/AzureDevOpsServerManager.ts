@@ -329,7 +329,7 @@ class AzureDevOpsServerManager {
     if (isWIQL) {
       const customQueryString = queryString
         ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString}`
-        : "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+        : `Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] = 'User Story' OR [System.WorkItemType] = 'Task' [System.WorkItemType] = 'Issue' OR [System.WorkItemType] = 'Bug' OR [System.WorkItemType] = 'Feature' OR [System.WorkItemType] = 'Epic') AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
 
       return await this.executeWiqlQuery(instanceId, customQueryString)
     }
