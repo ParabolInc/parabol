@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
-import TeamSettings from './TeamSettings/TeamSettings'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import {LoaderSize} from '../../../types/constEnums'
+import {renderLoader} from '../../../utils/relay/renderLoader'
 import teamSettingsQuery, {
   TeamSettingsQuery
 } from '../../../__generated__/TeamSettingsQuery.graphql'
-import {renderLoader} from '../../../utils/relay/renderLoader'
-import {LoaderSize} from '../../../types/constEnums'
+import TeamSettings from './TeamSettings/TeamSettings'
 
 interface Props {
   teamId: string

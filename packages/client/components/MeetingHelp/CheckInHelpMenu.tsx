@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {ExternalLinks} from '../../types/constEnums'
-import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
 import HelpMenuCopy from './HelpMenuCopy'

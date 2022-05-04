@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
-import SuggestMentionableUsers from './SuggestMentionableUsers'
-import {DraftSuggestion} from './TaskEditor/useSuggestions'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {BBox} from '../types/animations'
 import suggestMentionableUsersQuery, {
   SuggestMentionableUsersQuery
 } from '../__generated__/SuggestMentionableUsersQuery.graphql'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import SuggestMentionableUsers from './SuggestMentionableUsers'
+import {DraftSuggestion} from './TaskEditor/useSuggestions'
 
 interface Props {
   active: number

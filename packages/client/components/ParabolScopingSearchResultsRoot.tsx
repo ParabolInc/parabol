@@ -1,19 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
-import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
-import ParabolScopingSearchResults from './ParabolScopingSearchResults'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {ParabolSearchQuery} from '~/types/clientSchema'
+import {taskScopingStatusFilters} from '~/utils/constants'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import MockScopingList from '../modules/meeting/components/MockScopingList'
+import parabolScopingSearchResultsRootQuery, {
+  ParabolScopingSearchResultsRootQuery
+} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
 import {
   ParabolScopingSearchResultsRoot_meeting,
   ParabolScopingSearchResultsRoot_meeting$key
 } from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
-import parabolScopingSearchResultsRootQuery, {
-  ParabolScopingSearchResultsRootQuery
-} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
-import {ParabolSearchQuery} from '~/types/clientSchema'
-import {taskScopingStatusFilters} from '~/utils/constants'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import ErrorBoundary from './ErrorBoundary'
-import MockScopingList from '../modules/meeting/components/MockScopingList'
+import ParabolScopingSearchResults from './ParabolScopingSearchResults'
 
 const query = graphql`
   query ParabolScopingSearchResultsRootQuery(

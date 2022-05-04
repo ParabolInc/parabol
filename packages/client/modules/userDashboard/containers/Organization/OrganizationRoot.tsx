@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
-import Organization from '../../components/Organization/Organization'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 import organizationQuery, {
   OrganizationQuery
 } from '../../../../__generated__/OrganizationQuery.graphql'
-import {renderLoader} from '../../../../utils/relay/renderLoader'
+import Organization from '../../components/Organization/Organization'
 
 interface Props extends RouteComponentProps<{orgId: string}> {}
 

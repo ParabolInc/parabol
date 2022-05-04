@@ -2,11 +2,11 @@ import React, {Suspense} from 'react'
 import taskFooterTeamAssigneeMenuQuery, {
   TaskFooterTeamAssigneeMenuQuery
 } from '~/__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
+import MockFieldList from '../../../components/MockFieldList'
 import {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
-import MockFieldList from '../../../components/MockFieldList'
 
 interface Props {
   menuProps: MenuProps

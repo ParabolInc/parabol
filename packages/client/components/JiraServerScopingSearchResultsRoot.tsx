@@ -20,17 +20,26 @@ const JiraServerScopingSearchResultsRoot = (props: Props) => {
       fragment JiraServerScopingSearchResultsRoot_meeting on PokerMeeting {
         ...JiraServerScopingSearchResults_meeting
         teamId
+        jiraServerSearchQuery {
+          projectKeyFilters
+          queryString
+          isJQL
+        }
       }
     `,
     meetingRef
   )
 
-  const {teamId} = meeting
+  const {teamId, jiraServerSearchQuery} = meeting
+  const {queryString, projectKeyFilters, isJQL} = jiraServerSearchQuery
+  const normalizedQueryString = queryString.trim()
   const queryRef = useQueryLoaderNow<JiraServerScopingSearchResultsQuery>(
     jiraServerScopingSearchResultsQuery,
     {
       teamId,
-      isJQL: false,
+      queryString: normalizedQueryString,
+      isJQL,
+      projectKeyFilters: projectKeyFilters as string[],
       first: 25
     }
   )

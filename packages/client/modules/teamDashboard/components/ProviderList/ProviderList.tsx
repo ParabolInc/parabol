@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
@@ -10,7 +11,6 @@ import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
-import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 
 interface Props {
   queryRef: PreloadedQuery<ProviderListQuery>

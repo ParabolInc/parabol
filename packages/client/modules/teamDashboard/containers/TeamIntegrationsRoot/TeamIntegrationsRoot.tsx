@@ -1,9 +1,9 @@
 import React, {Suspense} from 'react'
-import ProviderList from '../../components/ProviderList/ProviderList'
 import {useQueryLoaderNowWithRetry} from '../../../../hooks/useQueryLoaderNow'
 import providerListQuery, {
   ProviderListQuery
 } from '../../../../__generated__/ProviderListQuery.graphql'
+import ProviderList from '../../components/ProviderList/ProviderList'
 
 interface Props {
   teamId: string
