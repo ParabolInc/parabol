@@ -1,15 +1,15 @@
-import React, {Suspense} from 'react'
-import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import OrgBilling from '../../components/OrgBilling/OrgBilling'
+import React, {Suspense} from 'react'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import orgBillingRootQuery, {
+  OrgBillingRootQuery
+} from '../../../../__generated__/OrgBillingRootQuery.graphql'
 import {
   OrgBillingRoot_organization,
   OrgBillingRoot_organization$key
 } from '../../../../__generated__/OrgBillingRoot_organization.graphql'
-import orgBillingRootQuery, {
-  OrgBillingRootQuery
-} from '../../../../__generated__/OrgBillingRootQuery.graphql'
-import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import OrgBilling from '../../components/OrgBilling/OrgBilling'
 
 const query = graphql`
   query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {

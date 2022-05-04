@@ -4,30 +4,32 @@ import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import lazyPreload from '../utils/lazyPreload'
-import {JiraScopingSearchFilterToggle_meeting$key} from '../__generated__/JiraScopingSearchFilterToggle_meeting.graphql'
+import {JiraServerScopingSearchFilterToggle_meeting$key} from '../__generated__/JiraServerScopingSearchFilterToggle_meeting.graphql'
 import FilterButton from './FilterButton'
 
-const JiraScopingSearchFilterMenuRoot = lazyPreload(
+const JiraServerScopingSearchFilterMenuRoot = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'JiraScopingSearchFilterMenuRoot' */ './JiraScopingSearchFilterMenuRoot'
+      /* webpackChunkName: 'JiraServerScopingSearchFilterMenuRoot' */ './JiraServerScopingSearchFilterMenuRoot'
     )
 )
 interface Props {
-  meetingRef: JiraScopingSearchFilterToggle_meeting$key
+  meetingRef: JiraServerScopingSearchFilterToggle_meeting$key
 }
 
-const JiraScopingSearchFilterToggle = (props: Props) => {
+const JiraServerScopingSearchFilterToggle = (props: Props) => {
   const {meetingRef} = props
+
   const meeting = useFragment(
     graphql`
-      fragment JiraScopingSearchFilterToggle_meeting on PokerMeeting {
+      fragment JiraServerScopingSearchFilterToggle_meeting on PokerMeeting {
         id
         teamId
       }
     `,
     meetingRef
   )
+
   const {id: meetingId, teamId} = meeting
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     loadingWidth: 200,
@@ -37,7 +39,7 @@ const JiraScopingSearchFilterToggle = (props: Props) => {
     <>
       <FilterButton onClick={togglePortal} ref={originRef} />
       {menuPortal(
-        <JiraScopingSearchFilterMenuRoot
+        <JiraServerScopingSearchFilterMenuRoot
           teamId={teamId}
           meetingId={meetingId}
           menuProps={menuProps}
@@ -47,4 +49,4 @@ const JiraScopingSearchFilterToggle = (props: Props) => {
   )
 }
 
-export default JiraScopingSearchFilterToggle
+export default JiraServerScopingSearchFilterToggle

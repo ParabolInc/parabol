@@ -1,17 +1,17 @@
-import {TaskFooterIntegrateMenuRoot_task} from '../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import TaskFooterIntegrateMenu from './TaskFooterIntegrateMenu'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import {UseTaskChild} from '../hooks/useTaskChildFocus'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {UseTaskChild} from '../hooks/useTaskChildFocus'
+import {LoaderSize} from '../types/constEnums'
 import taskFooterIntegrateMenuQuery, {
   TaskFooterIntegrateMenuQuery
 } from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {TaskFooterIntegrateMenuRoot_task} from '../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
-import {LoaderSize} from '../types/constEnums'
+import TaskFooterIntegrateMenu from './TaskFooterIntegrateMenu'
 
 interface Props {
   menuProps: MenuProps

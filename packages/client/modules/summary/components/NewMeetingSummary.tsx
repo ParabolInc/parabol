@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV3'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
 import makeHref from '../../../utils/makeHref'
+import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import {demoTeamId} from '../../demo/initDB'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
-import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 
 interface Props {
   queryRef: PreloadedQuery<NewMeetingSummaryQuery>
