@@ -1,10 +1,11 @@
 import {GraphQLResolveInfo} from 'graphql'
-import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
-import JiraIntegrationManager from './jira/JiraIntegrationManager'
-import GitHubServerManager from './github/GitHubServerManager'
-import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
-import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import {TaskIntegration} from '../database/types/Task'
+import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
+import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
+import GitHubServerManager from './github/GitHubServerManager'
+import GitLabServerManager from './gitlab/GitLabServerManager'
+import JiraIntegrationManager from './jira/JiraIntegrationManager'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 
 export type CreateTaskResponse =
@@ -43,7 +44,13 @@ export default class TaskIntegrationManagerFactory {
     {teamId, userId}: {teamId: string; userId: string},
     context: GQLContext,
     info: GraphQLResolveInfo
-  ): Promise<JiraIntegrationManager | GitHubServerManager | JiraServerRestManager | null> {
+  ): Promise<
+    | JiraIntegrationManager
+    | GitHubServerManager
+    | JiraServerRestManager
+    | GitLabServerManager
+    | null
+  > {
     if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       return auth && new JiraIntegrationManager(auth)
@@ -52,6 +59,17 @@ export default class TaskIntegrationManagerFactory {
     if (service === 'github') {
       const auth = await dataLoader.get('githubAuth').load({teamId, userId})
       return auth && new GitHubServerManager(auth, context, info)
+    }
+
+    if (service === 'gitlab') {
+      const auth = await dataLoader
+        .get('teamMemberIntegrationAuths')
+        .load({service: 'gitlab', teamId, userId})
+      if (!auth) return null
+      const {providerId} = auth
+      const provider = await dataLoader.get('integrationProviders').load(providerId)
+      if (!provider?.serverBaseUrl) return null
+      return new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
     }
 
     if (service === 'jiraServer') {

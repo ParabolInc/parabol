@@ -1,8 +1,8 @@
+import styled from '@emotion/styled'
 import React from 'react'
+import {PALETTE} from '../../styles/paletteV3'
 import {TierLabel} from '../../types/constEnums'
 import {TierEnum} from '../../__generated__/NewMeetingQuery.graphql'
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
 import BaseTag from './BaseTag'
 
 interface Props {

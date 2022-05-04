@@ -3,9 +3,9 @@ import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import stringScore from 'string-score'
 import {BBox} from '../types/animations'
+import {SuggestMentionableUsersQuery} from '../__generated__/SuggestMentionableUsersQuery.graphql'
 import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
 import {DraftSuggestion} from './TaskEditor/useSuggestions'
-import {SuggestMentionableUsersQuery} from '../__generated__/SuggestMentionableUsersQuery.graphql'
 
 const makeSuggestions = (triggerWord, teamMembers) => {
   if (!triggerWord) {

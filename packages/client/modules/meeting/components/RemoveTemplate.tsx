@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
-import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
-import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
-import {SprintPokerDefaults} from '../../../types/constEnums'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
+import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import {SprintPokerDefaults} from '../../../types/constEnums'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
+import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
 
 interface Props {
   gotoPublicTemplates: () => void

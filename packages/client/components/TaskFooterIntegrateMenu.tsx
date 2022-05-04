@@ -3,11 +3,11 @@ import React from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import {
   TaskFooterIntegrateMenuQuery,
   TaskFooterIntegrateMenuQueryResponse
 } from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
@@ -18,10 +18,21 @@ interface Props {
   queryRef: PreloadedQuery<TaskFooterIntegrateMenuQuery>
 }
 
-const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
+type IntegrationLookup = {
+  hasGitHub: boolean
+  hasAtlassian: boolean
+  hasGitLab: boolean
+  hasJiraServer: boolean
+  hasAzureDevOps: boolean
+}
+
+const makePlaceholder = (integrationLookup: IntegrationLookup) => {
+  const {hasGitHub, hasAtlassian, hasGitLab, hasAzureDevOps} = integrationLookup
   const names = [] as string[]
   if (hasGitHub) names.push('GitHub')
   if (hasAtlassian) names.push('Jira')
+  if (hasGitLab) names.push('GitLab')
+  if (hasAzureDevOps) names.push('Azure DevOps')
   return `Search ${names.join(' & ')}`
 }
 
@@ -30,15 +41,19 @@ type Integrations = NonNullable<
 >['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
-  const {atlassian, github, jiraServer} = integrations
+  const {atlassian, github, jiraServer, gitlab, azureDevOps} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
+  const hasGitLab = gitlab?.auth?.isActive ?? false
   const hasJiraServer = jiraServer.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer
+  const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
+  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps
     ? {
         hasAtlassian,
         hasGitHub,
-        hasJiraServer
+        hasJiraServer,
+        hasGitLab,
+        hasAzureDevOps
       }
     : null
 }
@@ -47,6 +62,9 @@ const query = graphql`
   query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) {
     viewer {
       id
+      featureFlags {
+        gitlab
+      }
       assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
         preferredName
         ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
@@ -75,7 +93,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     taskRef
   )
 
-  const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
+  const {id: viewerId, viewerTeamMember, assigneeTeamMember, featureFlags} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {integrations: viewerIntegrations, repoIntegrations: viewerRepoIntegrations} =
     viewerTeamMember
@@ -90,10 +108,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
 
   if (isViewerIntegrated) {
-    const placeholder = makePlaceholder(
-      isViewerIntegrated.hasGitHub,
-      isViewerIntegrated.hasAtlassian
-    )
+    const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
@@ -108,10 +123,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   }
 
   if (isAssigneeIntegrated) {
-    const placeholder = makePlaceholder(
-      isAssigneeIntegrated.hasGitHub,
-      isAssigneeIntegrated.hasAtlassian
-    )
+    const placeholder = makePlaceholder(isAssigneeIntegrated)
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
       <TaskFooterIntegrateMenuList
@@ -134,6 +146,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       teamId={teamId}
       label={label}
+      integrationsRef={viewerIntegrations}
+      featureFlags={featureFlags}
     />
   )
 }
@@ -150,13 +164,25 @@ graphql`
     isActive
   }
 `
-
 graphql`
   fragment TaskFooterIntegrateMenuViewerGitHubIntegration on GitHubIntegration {
     isActive
   }
 `
-
+graphql`
+  fragment TaskFooterIntegrateMenuViewerGitLabIntegration on GitLabIntegration {
+    auth {
+      isActive
+    }
+  }
+`
+graphql`
+  fragment TaskFooterIntegrateMenuViewerAzureDevOpsIntegration on AzureDevOpsIntegration {
+    auth {
+      isActive
+    }
+  }
+`
 graphql`
   fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
     repoIntegrations {
@@ -168,6 +194,7 @@ graphql`
 graphql`
   fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {
     integrations {
+      ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
       jiraServer {
         ...TaskFooterIntegrateMenuViewerJiraServerIntegration @relay(mask: false)
       }
@@ -176,6 +203,12 @@ graphql`
       }
       github {
         ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
+      }
+      gitlab {
+        ...TaskFooterIntegrateMenuViewerGitLabIntegration @relay(mask: false)
+      }
+      azureDevOps {
+        ...TaskFooterIntegrateMenuViewerAzureDevOpsIntegration @relay(mask: false)
       }
     }
     ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)

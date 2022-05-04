@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import { useFragment } from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
-import {PALETTE} from '../styles/paletteV3'
-import {Threshold} from '../types/constEnums'
+import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
+import { PALETTE } from '../styles/paletteV3'
+import { Threshold } from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
-import {GitHubScopingSearchResultItem_issue} from '../__generated__/GitHubScopingSearchResultItem_issue.graphql'
-import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import { AzureDevOpsScopingSearchResultItem_issue } from '../__generated__/AzureDevOpsScopingSearchResultItem_issue.graphql'
+import { UpdatePokerScopeMutationVariables } from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
 import Ellipsis from './Ellipsis/Ellipsis'
 
@@ -42,23 +42,34 @@ const StyledLink = styled('a')({
 })
 
 interface Props {
-  meetingId: string
   usedServiceTaskIds: Set<string>
-  issue: GitHubScopingSearchResultItem_issue
-  persistQuery: () => void
+  issueRef: AzureDevOpsScopingSearchResultItem_issue
+  meetingId: string
+  providerId: string
+  // persistQuery: () => void
 }
 
-const GitHubScopingSearchResultItem = (props: Props) => {
-  const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {number: issueNumber, repository, title} = issue
-  const url = issue.url as string
-  const {nameWithOwner} = repository
-  const serviceTaskId = GitHubIssueId.join(nameWithOwner, issueNumber)
+const AzureDevOpsScopingSearchResultItem = (props: Props) => {
+  const {issueRef, meetingId, usedServiceTaskIds, providerId} = props
+  const issue = useFragment(
+    graphql`
+      fragment AzureDevOpsScopingSearchResultItem_issue on AzureDevOpsWorkItem {
+        id
+        url
+        state
+        type
+      }
+    `,
+    issueRef
+  )
+  const {id: gid, url, state, type} = issue
+  const serviceTaskId = AzureDevOpsIssueId.join(providerId, gid)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const isTemp = isTempId(serviceTaskId)
+
   const onClick = () => {
     if (submitting || disabled || isTemp) return
     submitMutation()
@@ -66,42 +77,35 @@ const GitHubScopingSearchResultItem = (props: Props) => {
       meetingId,
       updates: [
         {
-          service: 'github',
+          service: 'azureDevOps',
           serviceTaskId,
           action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [title]})
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [gid]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
-      persistQuery()
+      // persistQuery()
     }
   }
+
   return (
     <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
-        <Title>{title}</Title>
-        <StyledLink href={url} rel='noopener noreferrer' target='_blank'>
-          {`#${issueNumber} ${nameWithOwner}`}
+        <Title>{type + state}</Title>
+        <StyledLink
+          href={url}
+          rel='noopener noreferrer'
+          target='_blank'
+          title={`Azure DevOps Work Item #${gid}`}
+        >
+          {gid}
           {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
     </Item>
   )
 }
-
-export default createFragmentContainer(GitHubScopingSearchResultItem, {
-  issue: graphql`
-    fragment GitHubScopingSearchResultItem_issue on _xGitHubIssue {
-      id
-      number
-      title
-      repository {
-        nameWithOwner
-      }
-      url
-    }
-  `
-})
+export default AzureDevOpsScopingSearchResultItem

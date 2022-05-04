@@ -272,7 +272,9 @@ export const enum Providers {
   MATTERMOST_NAME = 'Mattermost',
   MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
-  SLACK_DESC = 'Push notifications to Slack'
+  SLACK_DESC = 'Push notifications to Slack',
+  AZUREDEVOPS_NAME = 'Azure DevOps',
+  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
