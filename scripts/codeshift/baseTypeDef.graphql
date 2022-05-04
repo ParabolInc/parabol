@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  MUTATION_NAME(
+    """
+    Describe the first arg here
+    """
+    arg1: ID!
+  ): MUTATION_PAYLOAD!
+}
+
+"""
+Return value for MUTATION_NAME, which could be an error
+"""
+union MUTATION_PAYLOAD = ErrorPayload | SUCCESS_PAYLOAD
+
+type SUCCESS_PAYLOAD {
+  """
+  Describe the first return field here
+  """
+  successField: ID!
+}
