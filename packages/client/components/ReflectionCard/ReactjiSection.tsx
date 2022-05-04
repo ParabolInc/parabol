@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useInitialRender from '~/hooks/useInitialRender'
+import useTransition, {TransitionStatus} from '~/hooks/useTransition'
+import {Threshold} from '~/types/constEnums'
 import {ReactjiSection_reactjis} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import AddReactjiButton from './AddReactjiButton'
 import ReactjiCount from './ReactjiCount'
-import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import useInitialRender from '~/hooks/useInitialRender'
-import {Threshold} from '~/types/constEnums'
 
 const Wrapper = styled('div')({
   alignItems: 'flex-start',

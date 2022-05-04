@@ -106,10 +106,10 @@ const TeamPromptResponseCard = (props: Props) => {
   const onToggleReactji = (emojiId: string) => {
     if (submitting || !reactjis) return
     const isRemove = !!reactjis.find((reactji) => {
-      return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
+      const splitIndex = reactji.id.lastIndexOf(':')
+      return reactji.isViewerReactji && reactji.id.slice(splitIndex + 1) === emojiId
     })
     submitMutation()
-    console.log(response.id)
     AddReactjiToReactableMutation(
       atmosphere,
       {

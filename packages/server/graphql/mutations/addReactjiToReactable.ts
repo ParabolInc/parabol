@@ -1,4 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
@@ -61,7 +62,7 @@ const addReactjiToReactable = {
       isRemove,
       meetingId
     }: {
-      reactableId: string | number
+      reactableId: string
       reactableType: ReactableEnumType
       reactji: string
       isRemove?: boolean | null
@@ -81,7 +82,7 @@ const addReactjiToReactable = {
     const rethinkDbTable = rethinkTableLookup[reactableType]
     if (isPgTable) {
       const loaderName = pgDataloaderLookup[reactableType]
-      reactable = (await dataLoader.get(loaderName).load(reactableId as number)) as Reactable
+      reactable = (await dataLoader.get(loaderName).load(reactableId)) as Reactable
     } else {
       reactable = (await r.table(rethinkDbTable).get(reactableId).run()) as Reactable
     }
@@ -118,8 +119,9 @@ const addReactjiToReactable = {
     const subDoc = {id: reactji, userId: viewerId}
     if (isRemove) {
       if (isPgTable) {
+        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await removeTeamResponseReactji.run(
-          {id: reactableId as number, reactji: {shortname: reactji, userid: viewerId}},
+          {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {
@@ -134,8 +136,9 @@ const addReactjiToReactable = {
       }
     } else {
       if (isPgTable) {
+        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await appendTeamResponseReactji.run(
-          {id: reactableId as number, reactji: {shortname: reactji, userid: viewerId}},
+          {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {
@@ -153,6 +156,11 @@ const addReactjiToReactable = {
           }))
           .run()
       }
+    }
+
+    if (isPgTable) {
+      const loaderName = pgDataloaderLookup[reactableType]
+      dataLoader.get(loaderName).clear(reactableId)
     }
 
     const data = {reactableId, reactableType}

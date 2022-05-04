@@ -62,7 +62,8 @@ const ReactjiCount = (props: Props) => {
   const {onToggle, reactji, status, onTransitionEnd} = props
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
-  const [, name = ''] = id.split(':')
+  const splitIndex = id.lastIndexOf(':')
+  const name = splitIndex !== -1 ? id.slice(splitIndex + 1) : ''
   const unified = data.emojis[name]?.unified ?? ''
   const unicode = unifiedToNative(unified) || ''
   const onClick = () => {
