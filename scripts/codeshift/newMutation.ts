@@ -245,6 +245,8 @@ OPTIONS
 
     -p, --postgres
       If this mutation will affect postgres, this will create the SQL and query files
+      Once generated, you'll need to write the SQL and call 'yarn pg:build'.
+      You may also need to rename the files depending on the mutation (upsert, remove, etc.)
 
 EXAMPLES
     yarn newMutation startFun -s meeting`)
