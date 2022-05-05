@@ -189,7 +189,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           })
         } else if (integration.service === 'azureDevOps') {
           const {instanceId, projectKey, issueKey} = integration
-          return dataLoader.get('azureDevOpsUserStory').load({
+          return dataLoader.get('azureDevOpsWorkItem').load({
             teamId,
             userId: accessUserId,
             instanceId,

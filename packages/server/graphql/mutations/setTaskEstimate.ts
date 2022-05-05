@@ -195,7 +195,7 @@ const setTaskEstimate = {
         dataLoader
           .get('azureDevOpsDimensionFieldMap')
           .load({teamId, dimensionName, instanceId, projectKey}),
-        dataLoader.get('azureDevOpsUserStory').load({
+        dataLoader.get('azureDevOpsWorkItem').load({
           teamId,
           userId: accessUserId,
           instanceId,
