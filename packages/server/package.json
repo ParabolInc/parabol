@@ -21,11 +21,11 @@
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose",
     "postversion": "git push --follow-tags",
-    "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' ",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
+    "@pgtyped/cli": "^0.11.0",
     "@types/analytics-node": "^3.1.3",
     "@types/bcrypt": "^5.0.0",
     "@types/cheerio": "^0.22.30",
@@ -45,7 +45,6 @@
     "@types/string-similarity": "^3.0.0",
     "@types/stripe": "^6.32.0",
     "@types/uuid": "^8.3.3",
-    "@pgtyped/cli": "^0.11.0",
     "babel-plugin-relay": "^12.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "7.0.0",
@@ -55,7 +54,6 @@
     "faker": "^5.5.3",
     "file-loader": "6.2.0",
     "graphql-typed": "^0.4.1",
-    "graphql-typescript-definitions": "^0.21.0",
     "ignore-loader": "^0.1.2",
     "jest": "^27.0.6",
     "jest-extended": "^1.2.0",
