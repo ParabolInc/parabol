@@ -3,14 +3,17 @@ import Team from '../../database/types/Team'
 import getTeamsByIds from '../queries/getTeamsByIds'
 import {checkTableEq} from './checkEqBase'
 
-const alwaysDefinedFields: (keyof Partial<Team>)[] = [
+const alwaysDefinedFields: (keyof Team)[] = [
   'name',
   'createdAt',
   'isArchived',
   'isPaid',
   'tier',
-  'orgId'
+  'orgId',
+  'createdBy',
+  'isOnboardTeam'
 ]
+const ignoredFields: (keyof Team)[] = ['updatedAt']
 
 const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: any} = {
   jiraDimensionFields: [],
@@ -24,7 +27,7 @@ const checkTeamEq = async (maxErrors = 10) => {
     'Team',
     rethinkQuery,
     getTeamsByIds,
-    alwaysDefinedFields,
+    alwaysDefinedFields.filter((field) => !ignoredFields.includes(field)),
     maybeUndefinedFieldsDefaultValues,
     {},
     maxErrors
