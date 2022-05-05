@@ -14,6 +14,9 @@ import getGitHubAuthByUserIdTeamId, {
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
+import getGitLabDimensionFieldMaps, {
+  GitLabDimensionFieldMap
+} from '../postgres/queries/getGitLabDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
@@ -237,6 +240,29 @@ export const githubAuth = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {teamId: string; dimensionName: string; projectId: number; providerId: number},
+    GitLabDimensionFieldMap | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, projectId, providerId}) =>
+          getGitLabDimensionFieldMaps(teamId, dimensionName, projectId, providerId)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, dimensionName, projectId, providerId}) =>
+        `${teamId}:${dimensionName}:${projectId}:${providerId}`
     }
   )
 }

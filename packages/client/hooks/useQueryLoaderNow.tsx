@@ -6,8 +6,7 @@ import {
   PreloadFetchPolicy,
   useQueryLoader
 } from 'react-relay'
-import {Environment} from 'relay-runtime'
-import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
+import {Environment, GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
 type QueryLoaderOptions = {

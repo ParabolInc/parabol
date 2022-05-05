@@ -6,10 +6,10 @@ import Panel from '../../../../components/Panel/Panel'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import useRouter from '../../../../hooks/useRouter'
+import {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 import EmptyOrgsCallOut from '../EmptyOrgsCallOut/EmptyOrgsCallOut'
 import OrganizationRow from '../OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
-import {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 
 interface Props {
   queryRef: PreloadedQuery<OrganizationsQuery>

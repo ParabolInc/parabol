@@ -8,6 +8,27 @@ interface AuthorizeOAuth2Params {
   searchParams?: Record<string, string>
   body?: Record<string, string>
   additonalHeaders?: Record<string, string>
+  contentType?: string
+}
+
+const transformBody = (contentType: string, body?: Record<string, string>): string => {
+  if (body === undefined) {
+    return ''
+  }
+
+  if (contentType.toLowerCase().startsWith('application/json')) {
+    return JSON.stringify(body)
+  }
+
+  if (contentType.toLowerCase().startsWith('application/x-www-form-urlencoded')) {
+    const params = new URLSearchParams()
+    Object.entries(body).forEach((entry) => {
+      params.append(entry[0], entry[1])
+    })
+    return params.toString()
+  }
+
+  return ''
 }
 
 export const authorizeOAuth2 = async <
@@ -16,12 +37,17 @@ export const authorizeOAuth2 = async <
   authUrl,
   searchParams,
   body,
-  additonalHeaders
+  additonalHeaders,
+  contentType
 }: AuthorizeOAuth2Params) => {
   const headers = {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
     ...additonalHeaders
+  }
+  if (typeof contentType !== 'undefined') {
+    headers['Content-Type'] = contentType
+  } else {
+    headers['Content-Type'] = 'application/json'
   }
   const url = new URL(authUrl)
   if (searchParams) {
@@ -33,15 +59,16 @@ export const authorizeOAuth2 = async <
   const oauth2Response = await fetch(url, {
     method: 'POST',
     headers,
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? transformBody(headers['Content-Type'], body) : undefined
   })
   const contentTypeHeader = oauth2Response.headers.get('content-type') || ''
   if (!contentTypeHeader.toLowerCase().startsWith('application/json')) {
     return new Error('Received non-JSON OAuth2 Response')
   }
-
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
-  if ('error' in tokenJson) return new Error(tokenJson.error)
+  if ('error' in tokenJson) {
+    return new Error(tokenJson.error)
+  }
   const {access_token: accessToken, refresh_token: oauthRefreshToken, scope} = tokenJson
   return {
     accessToken,

@@ -240,6 +240,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       startRetrospective,
       startSprintPoker,
       setTaskHighlight,
+      startTeamPrompt,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,
@@ -281,7 +282,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
-      startTeamPrompt,
       endTeamPrompt
     } as any)
 })

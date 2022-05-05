@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
-import Invoice from '../components/Invoice/Invoice'
-import invoiceQuery, {InvoiceQuery} from '../../../__generated__/InvoiceQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import invoiceQuery, {InvoiceQuery} from '../../../__generated__/InvoiceQuery.graphql'
+import Invoice from '../components/Invoice/Invoice'
 
 interface Props extends RouteComponentProps<{invoiceId: string}> {}
 

@@ -1,9 +1,9 @@
 import React, {Suspense} from 'react'
-import MassInvitationTokenLink from './MassInvitationTokenLink'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import massInvitationTokenLinkQuery, {
   MassInvitationTokenLinkQuery
 } from '../__generated__/MassInvitationTokenLinkQuery.graphql'
+import MassInvitationTokenLink from './MassInvitationTokenLink'
 
 interface Props {
   meetingId: string | undefined

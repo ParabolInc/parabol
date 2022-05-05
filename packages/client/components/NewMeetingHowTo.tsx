@@ -1,10 +1,10 @@
+import styled from '@emotion/styled'
 import React, {useRef, useState} from 'react'
 import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
-import NewMeetingHowToSteps from './NewMeetingHowToSteps'
-import styled from '@emotion/styled'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {BezierCurve, Breakpoint, NewMeeting} from '../types/constEnums'
 import ExpansionPanelSummary from './ExpansionPanelSummary'
+import NewMeetingHowToSteps from './NewMeetingHowToSteps'
 
 interface Props {
   meetingType: MeetingTypeEnum

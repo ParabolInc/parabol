@@ -1,11 +1,11 @@
-import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
-import handleHotkey from '../utils/meetings/handleHotkey'
-import useHotkey from './useHotkey'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
-import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '~/mutations/EndSprintPokerMutation'
+import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
+import handleHotkey from '../utils/meetings/handleHotkey'
+import useAtmosphere from './useAtmosphere'
+import useHotkey from './useHotkey'
+import useRouter from './useRouter'
 
 const useEndMeetingHotkey = (meetingId: string, meetingType: MeetingTypeEnum) => {
   const atmosphere = useAtmosphere()

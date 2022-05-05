@@ -3,9 +3,7 @@ import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {CreateIssueMutation} from '../../../types/gitlabTypes'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
-import createIssueMutation from '../../nestedSchema/GitLab/mutations/createIssue.graphql'
 
 const createGitLabTask = async (
   rawContent: string,
@@ -20,18 +18,13 @@ const createGitLabTask = async (
   const {title, contentState} = splitDraftContent(rawContent)
   const body = stateToMarkdown(contentState)
   const provider = await dataLoader.get('integrationProviders').load(providerId)
-  const manager = new GitLabServerManager(accessToken, provider!.serverBaseUrl!)
-  const gitlabRequest = manager.getGitLabRequest(info, context)
-  const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
-    createIssueMutation,
-    {
-      input: {
-        title,
-        description: body,
-        projectPath: fullPath
-      }
-    }
-  )
+  const manager = new GitLabServerManager(gitlabAuth, context, info, provider!.serverBaseUrl!)
+  const [createIssueData, createIssueError] = await manager.createIssue({
+    title,
+    description: body,
+    projectPath: fullPath
+  })
+
   if (createIssueError) {
     return {error: createIssueError}
   }

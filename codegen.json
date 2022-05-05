@@ -35,6 +35,7 @@
           "Organization": "../../database/types/Organization#default as Organization",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
+          "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
@@ -43,17 +44,13 @@
       "schema": "packages/server/graphql/public/schema.graphql"
     },
     "packages/server/types/githubTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": "packages/server/utils/githubQueries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/utils/githubSchema.graphql"
     },
     "packages/server/types/gitlabTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": [
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"

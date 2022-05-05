@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
@@ -16,11 +17,11 @@ import {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopingSea
 import {GitHubScopingSearchResults_meeting$key} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
 import {GitHubScopingSearchResults_query$key} from '../__generated__/GitHubScopingSearchResults_query.graphql'
 import Ellipsis from './Ellipsis/Ellipsis'
-import GitHubScopingSearchResultItem from './GitHubScopingSearchResultItem'
 import GitHubScopingSelectAllIssues from './GitHubScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitHubIssueInput from './NewGitHubIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import ScopingSearchResultItem from './ScopingSearchResultItem'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -99,9 +100,13 @@ const GitHubScopingSearchResults = (props: Props) => {
                           __typename
                           ... on _xGitHubIssue {
                             ...GitHubScopingSelectAllIssues_issues
-                            ...GitHubScopingSearchResultItem_issue
                             id
                             title
+                            number
+                            repository {
+                              nameWithOwner
+                            }
+                            url
                           }
                         }
                       }
@@ -203,13 +208,21 @@ const GitHubScopingSearchResults = (props: Props) => {
           />
         )}
         {issues.map((node) => {
+          const {repository, number, title, url} = node
+          const {nameWithOwner} = repository
+          const linkText = `#${number} ${nameWithOwner}`
           return (
-            <GitHubScopingSearchResultItem
+            <ScopingSearchResultItem
               key={node.id}
-              issue={node}
+              service={'github'}
               usedServiceTaskIds={usedServiceTaskIds}
+              serviceTaskId={GitHubIssueId.join(nameWithOwner, number)}
               meetingId={meetingId}
               persistQuery={persistQuery}
+              summary={title}
+              url={url}
+              linkText={linkText}
+              linkTitle={linkText}
             />
           )
         })}
