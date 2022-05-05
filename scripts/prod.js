@@ -24,11 +24,11 @@ const compile = (config, isSilent) => {
 
 const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
+  const exec = promisify(cp.exec)
   await exec('yarn pg:build')
   await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
-  const exec = promisify(cp.exec)
   await Promise.all([compile(serversConfig), compile(clientConfig)])
   if (!isDeploy) {
     require('./toolbox/postDeploy.js')
