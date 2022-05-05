@@ -5,13 +5,13 @@ import {PASCAL_MUTATIONMutation as TPASCAL_MUTATIONMutation} from '../__generate
 
 graphql`
   fragment PASCAL_MUTATIONMutation_LCASE_SUB on PASCAL_MUTATIONSuccess {
-
+    successField
   }
 `
 
 const mutation = graphql`
-  mutation PASCAL_MUTATIONMutation() {
-    MUTATION_NAME() {
+  mutation PASCAL_MUTATIONMutation($arg1: ID!) {
+    MUTATION_NAME(arg1: $arg1) {
       ... on ErrorPayload {
         error {
           message
@@ -31,8 +31,7 @@ const PASCAL_MUTATIONMutation: StandardMutation<TPASCAL_MUTATIONMutation> = (
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const { } = variables
-
+      const {} = variables
     },
     onCompleted,
     onError
