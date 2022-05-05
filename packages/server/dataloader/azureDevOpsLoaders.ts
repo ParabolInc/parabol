@@ -364,7 +364,7 @@ export const azureDevOpsUserStory = (
             return null
           } else {
             const returnedWorkItem: WorkItem = workItems[0]
-            const azureDevOpsWorkItem: AzureDevOpsWorkItem = {
+            const azureDevOpsWorkItem = {
               id: returnedWorkItem.id.toString(),
               title: returnedWorkItem.fields['System.Title'],
               teamProject: getProjectId(new URL(returnedWorkItem.url)),
@@ -375,7 +375,7 @@ export const azureDevOpsUserStory = (
                 ? returnedWorkItem.fields['System.Description']
                 : '',
               service: 'azureDevOps'
-            }
+            } as AzureDevOpsWorkItem
             return azureDevOpsWorkItem
           }
         })
