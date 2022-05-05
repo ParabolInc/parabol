@@ -42,9 +42,9 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
 const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
-  [SprintPokerDefaults.AZUREDEVOPS_TASK_FIELD]: SprintPokerDefaults.AZUREDEVOPS_TAKS_FIELD_LABEL,
-  [SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD]: SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD_LABEL
-
+  [SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD]: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
+  [SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD]:
+    SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL
 }
 
 const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
@@ -68,7 +68,6 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     `,
     stageRef
   )
-
 
   const {serviceField} = stage
   const {name: serviceFieldName} = serviceField

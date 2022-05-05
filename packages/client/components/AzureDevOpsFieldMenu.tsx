@@ -92,7 +92,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           }
         }
       )
-
     } else {
       submitScore()
     }
@@ -103,8 +102,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     if (workItemType === 'User Story' || workItemType === 'Bug') {
       return [
         {
-          label: SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD_LABEL,
-          fieldValue: SprintPokerDefaults.AZUREDEVOPS_USERSTORY_FIELD
+          label: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD
         },
         {
           label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
@@ -114,8 +113,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     } else if (workItemType === 'Task') {
       return [
         {
-          label: SprintPokerDefaults.AZUREDEVOPS_TAKS_FIELD_LABEL,
-          fieldValue: SprintPokerDefaults.AZUREDEVOPS_TASK_FIELD
+          label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD
         },
         {
           label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
@@ -125,8 +124,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     } else if (workItemType === 'Epic' || workItemType === 'Feature') {
       return [
         {
-          label: SprintPokerDefaults.AZUREDEVOPS_EFFORT_LABEL,
-          fieldValue: SprintPokerDefaults.AZUREDEVOPS_EFFORT_FIELD
+          label: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD
         },
         {
           label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
@@ -143,7 +142,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     }
   }
   const menuValues = getDefaultMenuValues(workItemType)
-
 
   return (
     <>
