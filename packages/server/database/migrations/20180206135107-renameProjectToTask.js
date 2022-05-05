@@ -1,16 +1,9 @@
 exports.up = async (r) => {
   // rename the Project/ProjectHistory tables
+  await r.table('Project').wait().run()
   await r.table('Project').config().update({name: 'Task'}).run()
+  await r.table('Task').wait().run()
   await r.table('ProjectHistory').config().update({name: 'TaskHistory'}).run()
-  while (true) {
-    try {
-      await r.table('Task').count().run()
-      break
-    } catch {
-      // table is not ready yet
-    }
-  }
-
   await r.table('TaskHistory').indexDrop('projectIdUpdatedAt').run()
   await r
     .table('TaskHistory')

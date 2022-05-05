@@ -1,13 +1,15 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import GitHubSVG from './GitHubSVG'
-import JiraSVG from './JiraSVG'
+import GitLabSVG from './GitLabSVG'
 import JiraServerSVG from './JiraServerSVG'
+import JiraSVG from './JiraSVG'
 
 const iconLookup = {
   _xGitHubIssue: GitHubSVG,
   JiraIssue: JiraSVG,
-  JiraServerIssue: JiraServerSVG
+  JiraServerIssue: JiraServerSVG,
+  _xGitLabIssue: GitLabSVG
 }
 
 const WatermarkBlock = styled('div')({

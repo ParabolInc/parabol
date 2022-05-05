@@ -85,7 +85,6 @@ const updatePokerScope = {
       const {action, serviceTaskId} = update
       return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
     })
-
     subtractiveUpdates.forEach((update) => {
       const {serviceTaskId} = update
       const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)

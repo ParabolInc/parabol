@@ -19,6 +19,11 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if gitlab is allowed',
       resolve: ({gitlab}) => !!gitlab
+    },
+    azureDevOps: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if azureDevOps is allowed',
+      resolve: ({azureDevOps}) => !!azureDevOps
     }
   })
 })

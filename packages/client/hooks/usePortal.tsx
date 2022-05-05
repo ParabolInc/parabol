@@ -20,6 +20,8 @@ export type PortalId =
   | 'snackbar'
   | 'githubFieldMenu'
   | 'editGitHubLabel'
+  | 'azureDevOpsFieldMenu'
+  | 'editAzureDevOpsLabel'
   | 'templateModal'
   | 'scaleDropdown'
   | 'sharingScopeDropdown'
