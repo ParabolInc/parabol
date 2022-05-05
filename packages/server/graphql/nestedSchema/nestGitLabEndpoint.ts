@@ -1,6 +1,4 @@
-import {schema} from '@octokit/graphql-schema'
 import {GraphQLObjectType, GraphQLResolveInfo, OperationDefinitionNode, parse, print} from 'graphql'
-import fetch from 'node-fetch'
 import nestGraphQLEndpoint from 'nest-graphql-endpoint/lib/nestGraphQLEndpoint'
 import {
   EndpointExecutionResult,
@@ -8,6 +6,7 @@ import {
   NestedSource,
   NestGraphQLEndpointParams
 } from 'nest-graphql-endpoint/lib/types'
+import fetch from 'node-fetch'
 
 const defaultExecutor: Executor<{
   accessToken: string
@@ -61,7 +60,6 @@ const defaultExecutor: Executor<{
     }
   }
 }
-
 type NestParams = NestGraphQLEndpointParams<{
   accessToken: string
   baseUri: string
@@ -69,7 +67,7 @@ type NestParams = NestGraphQLEndpointParams<{
 }>
 type RequiredParams = Pick<
   NestParams,
-  'parentSchema' | 'parentType' | 'fieldName' | 'resolveEndpointContext'
+  'parentSchema' | 'parentType' | 'fieldName' | 'resolveEndpointContext' | 'schemaIDL'
 >
 
 type OptionalParams = Omit<Partial<NestParams>, keyof RequiredParams>
@@ -90,7 +88,7 @@ const nestGitLabEndpoint = (params: NestGitLabParams) => {
   const prefix = params.prefix || '_extGitLab'
   const batchKey = params.batchKey || 'accessToken'
   const endpointTimeout = params.endpointTimeout || 8000
-  const schemaIDL = params.schemaIDL || schema.idl
+  const schemaIDL = params.schemaIDL
   const gitlabRequest = async <TData = any, TVars = any>(input: Input<TVars>) => {
     const {query, endpointContext, variables, batchRef, info} = input
     const {schema} = info

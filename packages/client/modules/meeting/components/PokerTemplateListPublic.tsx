@@ -3,8 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import PokerTemplateItem from './PokerTemplateItem'
 import {PokerTemplateListPublicQuery} from '../../../__generated__/PokerTemplateListPublicQuery.graphql'
+import PokerTemplateItem from './PokerTemplateItem'
 
 const TemplateList = styled('ul')({
   listStyle: 'none',

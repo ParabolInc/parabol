@@ -16,6 +16,7 @@ import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
+import RepoIntegrationGitLabMenuItem from './RepoIntegrationGitLabMenuItem'
 import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
 import RepoIntegrationJiraServerMenuItem from './RepoIntegrationJiraServerMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
@@ -143,6 +144,26 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
+        if (__typename === '_xGitLabProject') {
+          const {fullPath} = repoIntegration
+          const onClick = () => {
+            const variables = {
+              integrationRepoId: fullPath,
+              taskId,
+              integrationProviderService: 'gitlab' as const
+            }
+            submitMutation()
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+          }
+          return (
+            <RepoIntegrationGitLabMenuItem
+              key={id}
+              query={query}
+              fullPath={fullPath}
+              onClick={onClick}
+            />
+          )
+        }
         return null
       })}
       {status === 'loading' && (
@@ -164,6 +185,9 @@ graphql`
     }
     ... on _xGitHubRepository {
       nameWithOwner
+    }
+    ... on _xGitLabProject {
+      fullPath
     }
     ...RepoIntegrationJiraMenuItem_repoIntegration
     ...RepoIntegrationJiraServerMenuItem_repoIntegration

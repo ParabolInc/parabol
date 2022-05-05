@@ -10,7 +10,6 @@
     "hooks",
     "polyfills.ts",
     "components/promptResponse/PromptResponseEditor.tsx",
-    "components/WebcamPermissionsModal.tsx",
     "components/EstimatePhaseEmptyState.tsx"
   ]
 }

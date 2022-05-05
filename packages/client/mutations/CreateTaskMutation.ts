@@ -41,7 +41,6 @@ graphql`
       integrationHash
       integration {
         ... on JiraIssue {
-          ...JiraScopingSearchResultItem_issue
           cloudId
           cloudName
           url

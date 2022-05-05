@@ -1,13 +1,13 @@
 import React, {Suspense} from 'react'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
-import ViewerNotOnTeam from './ViewerNotOnTeam'
+import {LoaderSize} from '../types/constEnums'
+import {renderLoader} from '../utils/relay/renderLoader'
 import viewerNotOnTeamQuery, {
   ViewerNotOnTeamQuery
 } from '../__generated__/ViewerNotOnTeamQuery.graphql'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import {LoaderSize} from '../types/constEnums'
-import {renderLoader} from '../utils/relay/renderLoader'
+import ViewerNotOnTeam from './ViewerNotOnTeam'
 
 const ViewerNotOnTeamRoot = () => {
   const searchParams = new URLSearchParams(location.search)

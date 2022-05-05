@@ -1,13 +1,13 @@
-import React, {Suspense} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
-import OrgMembers from '../../components/OrgMembers/OrgMembers'
+import React, {Suspense} from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import {LoaderSize} from '../../../../types/constEnums'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 import orgMembersRootQuery, {
   OrgMembersRootQuery
 } from '../../../../__generated__/OrgMembersRootQuery.graphql'
-import {LoaderSize} from '../../../../types/constEnums'
-import {renderLoader} from '../../../../utils/relay/renderLoader'
+import OrgMembers from '../../components/OrgMembers/OrgMembers'
 
 const query = graphql`
   query OrgMembersRootQuery($orgId: ID!, $first: Int!, $after: String) {

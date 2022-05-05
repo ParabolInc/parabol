@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useRef, useState, useEffect} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useForceUpdate from '../hooks/useForceUpdate'
+import useModal from '../hooks/useModal'
 import {PokerCards} from '../types/constEnums'
 import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
+import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 import useSetTaskEstimate from './useSetTaskEstimate'
-import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
-import useModal from '../hooks/useModal'
-import useForceUpdate from '../hooks/useForceUpdate'
 
 const GroupedVotes = styled('div')({
   display: 'flex',

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import PokerTemplateItem from './PokerTemplateItem'
 import {PokerTemplateListOrgQuery} from '../../../__generated__/PokerTemplateListOrgQuery.graphql'
+import PokerTemplateItem from './PokerTemplateItem'
 
 const TemplateList = styled('ul')({
   listStyle: 'none',
@@ -27,7 +27,6 @@ interface Props {
   queryRef: PreloadedQuery<PokerTemplateListOrgQuery>
 }
 
-
 const query = graphql`
   query PokerTemplateListOrgQuery($teamId: ID!) {
     viewer {
@@ -37,7 +36,7 @@ const query = graphql`
         meetingSettings(meetingType: poker) {
           ... on PokerMeetingSettings {
             organizationTemplates(first: 20)
-            @connection(key: "PokerTemplateListOrg_organizationTemplates") {
+              @connection(key: "PokerTemplateListOrg_organizationTemplates") {
               edges {
                 node {
                   ...PokerTemplateItem_template

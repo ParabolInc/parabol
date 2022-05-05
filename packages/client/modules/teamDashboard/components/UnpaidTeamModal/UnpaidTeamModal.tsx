@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -8,7 +9,6 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
 const StyledButton = styled(PrimaryButton)({
