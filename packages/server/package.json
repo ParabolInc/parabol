@@ -90,7 +90,7 @@
     "webpack-hot-middleware": "^2.22.2",
     "webpack-node-externals": "2.5.2",
     "webpack-s3-plugin": "^1.0.0-rc.0",
-    "wrkbx": "^4.3.1-1"
+    "workbox-webpack-plugin": "^6.5.3"
   },
   "dependencies": {
     "@authenio/samlify-node-xmllint": "^1.0.1",
