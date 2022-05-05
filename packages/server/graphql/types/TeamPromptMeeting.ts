@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {getTeamPromptResponsesByMeetingId} from '../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {getUserId} from '../../utils/authorization'
@@ -27,6 +27,21 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
       resolve: ({id: meetingId}: {id: string}, _args: unknown, {}) => {
         return getTeamPromptResponsesByMeetingId(meetingId)
       }
+    },
+    commentCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of comments generated in the meeting',
+      resolve: ({commentCount}) => commentCount || 0
+    },
+    taskCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of tasks generated in the meeting',
+      resolve: ({taskCount}) => taskCount || 0
+    },
+    responseCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of responses generated in the meeting',
+      resolve: ({responseCount}) => responseCount || 0
     },
     viewerMeetingMember: {
       type: TeamPromptMeetingMember,

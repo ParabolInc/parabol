@@ -1,0 +1,74 @@
+"""
+An event for a completed team prompt meeting
+"""
+type TimelineEventTeamPromptComplete implements TimelineEvent {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  * The timestamp the event was created at
+  """
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """
+  true if the timeline event is active, false if archived
+  """
+  isActive: Boolean!
+
+  """
+  The orgId this event is associated with
+  """
+  orgId: ID!
+
+  """
+  The organization this event is associated with
+  """
+  organization: Organization
+
+  """
+  the number of times the user has seen this event
+  """
+  seenCount: Int!
+
+  """
+  The teamId this event is associated with
+  """
+  teamId: ID!
+
+  """
+  The team that can see this event
+  """
+  team: Team!
+
+  """
+  The specific type of event
+  """
+  type: TimelineEventEnum!
+
+  """
+  * The userId that can see this event
+  """
+  userId: ID!
+
+  """
+  The user than can see this event
+  """
+  user: User!
+
+  """
+  The meeting that was completed
+  """
+  meeting: TeamPromptMeeting!
+
+  """
+  The meetingId that was completed
+  """
+  meetingId: ID!
+}

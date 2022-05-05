@@ -1,6 +1,6 @@
-import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
-import Meeting from './Meeting'
 import GenericMeetingPhase from './GenericMeetingPhase'
+import Meeting from './Meeting'
+import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 
 type TeamPromptPhase = TeamPromptResponsesPhase | GenericMeetingPhase
 
@@ -15,6 +15,9 @@ interface Input {
 
 export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
+  commentCount?: number
+  taskCount?: number
+  responseCount?: number
 
   constructor(input: Input) {
     const {id, teamId, meetingCount, name, phases, facilitatorUserId} = input

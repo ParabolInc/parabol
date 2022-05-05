@@ -1,9 +1,6 @@
 import ActionMeeting from './types/ActionMeeting'
 import ActionMeetingMember from './types/ActionMeetingMember'
 import ActionMeetingSettings from './types/ActionMeetingSettings'
-import TeamPromptMeeting from './types/TeamPromptMeeting'
-import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
-import TeamPromptMeetingSettings from './types/TeamPromptMeetingSettings'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
@@ -29,13 +26,17 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
 import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
+import TeamPromptMeeting from './types/TeamPromptMeeting'
+import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
+import TeamPromptMeetingSettings from './types/TeamPromptMeetingSettings'
+import TeamPromptResponsesPhase from './types/TeamPromptResponsesPhase'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
+import TimelineEventTeamPromptComplete from './types/TimelineEventTeamPromptComplete'
 import UpdatesPhase from './types/UpdatesPhase'
-import TeamPromptResponsesPhase from './types/TeamPromptResponsesPhase'
 
 const rootTypes = [
   IntegrationProviderOAuth1,
@@ -72,6 +73,7 @@ const rootTypes = [
   TimelineEventCompletedRetroMeeting,
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
+  TimelineEventTeamPromptComplete,
   ActionMeetingSettings,
   TeamPromptMeeting,
   TeamPromptMeetingMember,
