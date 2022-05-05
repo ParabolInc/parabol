@@ -101,11 +101,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'true if the queryString is WIQL, else false'
         }
       },
-      resolve: async (
-        {teamId, userId},
-        args: any,
-        {authToken, dataLoader}: GQLContext
-      ) => {
+      resolve: async ({teamId, userId}, args: any, {authToken, dataLoader}: GQLContext) => {
         const {first, queryString, projectKeyFilters, isWIQL} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
@@ -145,7 +141,6 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         if (!manager) {
           return null
         }
-        // const manager = new AzureDevOpsServerManager(accessToken)
         const restResult = await manager.getAllUserWorkItems(queryString, projectKeyFilters, isWIQL)
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {

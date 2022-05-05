@@ -24,7 +24,7 @@ const AzureDevOpsSearchQuery = new GraphQLObjectType<any, GQLContext>({
     },
     projectKeyFilters: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-      description: 'A list of projects to restrict the search to, if null will search all'
+      description: 'A list of projects to restrict the search to'
     },
     isWIQL: {
       type: new GraphQLNonNull(GraphQLBoolean),
