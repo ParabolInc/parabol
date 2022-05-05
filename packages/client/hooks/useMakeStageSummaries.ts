@@ -105,7 +105,7 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
         } else if (integration.__typename === 'AzureDevOpsWorkItem') {
           return {
             title: integration.title,
-            subtitle: integration.id
+            subtitle: `#${integration.id}`
           }
         } else if (integration.__typename === '_xGitHubIssue') {
           return {
