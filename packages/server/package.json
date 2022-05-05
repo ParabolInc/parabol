@@ -73,7 +73,7 @@
     "lint-staged": "^10.1.7",
     "mocha": "^9.0.3",
     "prettier": "^2.6.1",
-    "rethinkdb-ts-migrate": "^0.3.2",
+    "rethinkdb-ts-migrate": "^0.3.3",
     "script-ext-html-webpack-plugin": "2.1.5",
     "style-loader": "2.0.0",
     "sucrase": "^3.16.0",

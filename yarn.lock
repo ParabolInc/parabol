@@ -5597,17 +5597,17 @@ async-listener@^0.6.0:
     semver "^5.3.0"
     shimmer "^1.1.0"
 
-async@^1.4.0:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
-  integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
-
 async@^2.6.2, async@^2.6.3, async@~2.6.1:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
   integrity sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
   dependencies:
     lodash "^4.17.14"
+
+async@^3.0.0:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/async/-/async-3.2.3.tgz#ac53dafd3f4720ee9e8a160628f18ea91df196c9"
+  integrity sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g==
 
 async@^3.2.0, async@~3.2.0:
   version "3.2.2"
@@ -7852,7 +7852,6 @@ draft-js-utils@^1.4.0:
 
 "draft-js@https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6":
   version "0.10.5"
-  uid "025fddba56f21aaf3383aee778e0b17025c9a7bc"
   resolved "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6#025fddba56f21aaf3383aee778e0b17025c9a7bc"
   dependencies:
     fbjs "^0.8.15"
@@ -12712,10 +12711,15 @@ moment-timezone@^0.5.x:
   dependencies:
     moment ">= 2.9.0"
 
-moment@2.29.1, "moment@>= 2.9.0", moment@^2.13.0:
+moment@2.29.1, "moment@>= 2.9.0":
   version "2.29.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
+moment@^2.29.3:
+  version "2.29.3"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.3.tgz#edd47411c322413999f7a5940d526de183c031f3"
+  integrity sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==
 
 mongodb-uri@^0.9.7:
   version "0.9.7"
@@ -12836,12 +12840,12 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-nconf@^0.11.3:
-  version "0.11.4"
-  resolved "https://registry.yarnpkg.com/nconf/-/nconf-0.11.4.tgz#7f925d27569738a2a10c3ba4b56310c8821b308b"
-  integrity sha512-YaDR846q11JnG1vTrhJ0QIlhiGY6+W1bgWtReG9SS3vkTl3AoNwFvUItdhG6/ZjGCfWpUVuRTNEBTDAQ3nWhGw==
+nconf@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/nconf/-/nconf-0.12.0.tgz#9cf70757aae4d440d43ed53c42f87da18471b8bf"
+  integrity sha512-T3fZPw3c7Dfrz8JBQEbEcZJ2s8f7cUMpKuyBtsGQe0b71pcXx6gNh4oti2xh5dxB+gO9ufNfISBlGvvWtfyMcA==
   dependencies:
-    async "^1.4.0"
+    async "^3.0.0"
     ini "^2.0.0"
     secure-keys "^1.0.0"
     yargs "^16.1.1"
@@ -15478,18 +15482,18 @@ ret@~0.1.10:
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
 
-rethinkdb-ts-migrate@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/rethinkdb-ts-migrate/-/rethinkdb-ts-migrate-0.3.2.tgz#838bdcc50271e8590c2c8795c01b953a9c298b78"
-  integrity sha512-zWg/IA3mDT62hiIlmYno7p2slpCjRO+asAu/T0rqahMxTPwIU6NO0jbmXU6xEZKxofL8Pv7CZPjz1v0BFuevyQ==
+rethinkdb-ts-migrate@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/rethinkdb-ts-migrate/-/rethinkdb-ts-migrate-0.3.3.tgz#12dae27f67920ae6b43ba0220d3f1e51e149735d"
+  integrity sha512-cKcexfzMIcL3Ywgq2dCsn400x5iMycNPdIQV5CDEev/gCMdfZsdgpvlUEnv2O50ZMjvACdJXwnIiVn26ZU8JUw==
   dependencies:
-    chalk "^1.1.3"
+    chalk "^4.1.0"
     meow "^10.1.2"
-    moment "^2.13.0"
-    nconf "^0.11.3"
+    moment "^2.29.3"
+    nconf "^0.12.0"
     rethinkdb-ts "^2.4.5"
-    sucrase "^3.10.1"
-    tslib "^1.10.0"
+    sucrase "^3.21.0"
+    tslib "^2.4.0"
 
 rethinkdb-ts@2.4.5:
   version "2.4.5"
@@ -16586,10 +16590,22 @@ subscriptions-transport-ws@^0.11.0:
     symbol-observable "^1.0.4"
     ws "^5.2.0 || ^6.0.0 || ^7.0.0"
 
-sucrase@^3.10.1, sucrase@^3.16.0:
+sucrase@^3.16.0:
   version "3.20.3"
   resolved "https://registry.yarnpkg.com/sucrase/-/sucrase-3.20.3.tgz#424f1e75b77f955724b06060f1ae708f5f0935cf"
   integrity sha512-azqwq0/Bs6RzLAdb4dXxsCgMtAaD2hzmUr4UhSfsxO46JFPAwMnnb441B/qsudZiS6Ylea3JXZe3Q497lsgXzQ==
+  dependencies:
+    commander "^4.0.0"
+    glob "7.1.6"
+    lines-and-columns "^1.1.6"
+    mz "^2.7.0"
+    pirates "^4.0.1"
+    ts-interface-checker "^0.1.9"
+
+sucrase@^3.21.0:
+  version "3.21.0"
+  resolved "https://registry.yarnpkg.com/sucrase/-/sucrase-3.21.0.tgz#6a5affdbe716b22e4dc99c57d366ad0d216444b9"
+  integrity sha512-FjAhMJjDcifARI7bZej0Bi1yekjWQHoEvWIXhLPwDhC6O4iZ5PtGb86WV56riW87hzpgB13wwBKO9vKAiWu5VQ==
   dependencies:
     commander "^4.0.0"
     glob "7.1.6"
@@ -17123,6 +17139,11 @@ tslib@^2, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.2.0, tslib@^2.3.0, 
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+
+tslib@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
+  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
 tslib@~2.2.0:
   version "2.2.0"
