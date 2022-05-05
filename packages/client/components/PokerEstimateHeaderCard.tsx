@@ -45,11 +45,11 @@ const getHeaderFields = (
         title: azureDevOpsTitle,
         url: azureDevOpsUrl,
         id: workItemId,
-        descriptionHTML: azureDevOpsDescription
+        descriptionHTML: azureDevOpsDescriptionHTML
       } = integration
       return {
         cardTitle: azureDevOpsTitle,
-        descriptionHTML: azureDevOpsDescription,
+        descriptionHTML: azureDevOpsDescriptionHTML,
         url: azureDevOpsUrl,
         linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
         linkText: `#${workItemId}`
