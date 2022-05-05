@@ -84,11 +84,8 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  // get this from the defaul field name for the type
-  const lookupServiceFieldName = serviceFieldName
+  const label = labelLookup[serviceFieldName] || SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
 
-  const label =
-    labelLookup[lookupServiceFieldName] || SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
   return (
     <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
       <CurrentValue>{label}</CurrentValue>
