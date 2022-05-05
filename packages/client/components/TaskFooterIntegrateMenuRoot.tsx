@@ -1,21 +1,17 @@
-import {TaskFooterIntegrateMenuRoot_task} from '../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
-import React from 'react'
-import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import TaskFooterIntegrateMenu from './TaskFooterIntegrateMenu'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import renderQuery from '../utils/relay/renderQuery'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
-
-const query = graphql`
-  query TaskFooterIntegrateMenuRootQuery($teamId: ID!, $userId: ID!) {
-    viewer {
-      ...TaskFooterIntegrateMenu_viewer
-    }
-  }
-`
+import {LoaderSize} from '../types/constEnums'
+import taskFooterIntegrateMenuQuery, {
+  TaskFooterIntegrateMenuQuery
+} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
+import {TaskFooterIntegrateMenuRoot_task} from '../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
+import LoadingComponent from './LoadingComponent/LoadingComponent'
+import TaskFooterIntegrateMenu from './TaskFooterIntegrateMenu'
 
 interface Props {
   menuProps: MenuProps
@@ -35,20 +31,32 @@ const TaskFooterIntegrateMenuRoot = ({
   useTaskChild
 }: Props) => {
   const {teamId, userId} = task
-  const atmosphere = useAtmosphere()
   useTaskChild('integrate')
+  const queryRef = useQueryLoaderNow<TaskFooterIntegrateMenuQuery>(taskFooterIntegrateMenuQuery, {
+    teamId,
+    userId: userId || ''
+  })
   return (
-    <QueryRenderer
-      variables={{teamId, userId}}
-      environment={atmosphere}
-      query={query}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(TaskFooterIntegrateMenu, {
-        loadingDelay,
-        menuLoadingWidth: loadingWidth,
-        props: {menuProps, mutationProps, task}
-      })}
-    />
+    <Suspense
+      fallback={
+        <LoadingComponent
+          delay={loadingDelay}
+          spinnerSize={LoaderSize.MENU}
+          height={loadingWidth ? LoaderSize.MENU : undefined}
+          width={loadingWidth}
+          showAfter={loadingWidth ? 0 : undefined}
+        />
+      }
+    >
+      {queryRef && (
+        <TaskFooterIntegrateMenu
+          queryRef={queryRef}
+          menuProps={menuProps}
+          mutationProps={mutationProps}
+          task={task}
+        />
+      )}
+    </Suspense>
   )
 }
 

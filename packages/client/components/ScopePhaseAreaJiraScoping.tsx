@@ -1,28 +1,32 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ScopePhaseAreaJiraScoping_meeting} from '../__generated__/ScopePhaseAreaJiraScoping_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {ScopePhaseAreaJiraScoping_meeting$key} from '../__generated__/ScopePhaseAreaJiraScoping_meeting.graphql'
 import JiraScopingSearchBar from './JiraScopingSearchBar'
 import JiraScopingSearchResultsRoot from './JiraScopingSearchResultsRoot'
 interface Props {
-  meeting: ScopePhaseAreaJiraScoping_meeting
+  meetingRef: ScopePhaseAreaJiraScoping_meeting$key
 }
 
 const ScopePhaseAreaJiraScoping = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment ScopePhaseAreaJiraScoping_meeting on PokerMeeting {
+        ...JiraScopingSearchBar_meeting
+        ...JiraScopingSearchResultsRoot_meeting
+      }
+    `,
+    meetingRef
+  )
+
   return (
     <>
-      <JiraScopingSearchBar meeting={meeting} />
+      <JiraScopingSearchBar meetingRef={meeting} />
       <JiraScopingSearchResultsRoot meeting={meeting} />
     </>
   )
 }
 
-export default createFragmentContainer(ScopePhaseAreaJiraScoping, {
-  meeting: graphql`
-    fragment ScopePhaseAreaJiraScoping_meeting on PokerMeeting {
-      ...JiraScopingSearchBar_meeting
-      ...JiraScopingSearchResultsRoot_meeting
-    }
-  `
-})
+export default ScopePhaseAreaJiraScoping

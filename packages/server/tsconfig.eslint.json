@@ -14,7 +14,7 @@
     "integrations",
     "email/**/*",
     "segmentFns/*",
-    "utils/*",
+    "utils/**/*",
     "server.dev.ts",
     "**/__tests__/*"
   ]

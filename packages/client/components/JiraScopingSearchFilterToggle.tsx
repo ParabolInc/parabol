@@ -1,45 +1,41 @@
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {JiraScopingSearchFilterToggle_meeting} from '../__generated__/JiraScopingSearchFilterToggle_meeting.graphql'
 import React from 'react'
-import styled from '@emotion/styled'
-import Icon from './Icon'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import PlainButton from './PlainButton/PlainButton'
-import useMenu from '../hooks/useMenu'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
+import useMenu from '../hooks/useMenu'
 import lazyPreload from '../utils/lazyPreload'
+import {JiraScopingSearchFilterToggle_meeting$key} from '../__generated__/JiraScopingSearchFilterToggle_meeting.graphql'
+import FilterButton from './FilterButton'
 
-const FilterIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
-})
-
-const JiraScopingSearchFilterMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'JiraScopingSearchFilterMenuRoot' */ './JiraScopingSearchFilterMenuRoot'
-  )
+const JiraScopingSearchFilterMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'JiraScopingSearchFilterMenuRoot' */ './JiraScopingSearchFilterMenuRoot'
+    )
 )
 interface Props {
-  meeting: JiraScopingSearchFilterToggle_meeting
+  meetingRef: JiraScopingSearchFilterToggle_meeting$key
 }
 
 const JiraScopingSearchFilterToggle = (props: Props) => {
-  const {meeting} = props
-  const {id: meetingId, teamId} = meeting
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {
-      loadingWidth: 200,
-      noClose: true
-    }
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment JiraScopingSearchFilterToggle_meeting on PokerMeeting {
+        id
+        teamId
+      }
+    `,
+    meetingRef
   )
+  const {id: meetingId, teamId} = meeting
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+    loadingWidth: 200,
+    noClose: true
+  })
   return (
     <>
-      <PlainButton onClick={togglePortal} ref={originRef}>
-        <FilterIcon>filter_list</FilterIcon>
-      </PlainButton>
+      <FilterButton onClick={togglePortal} ref={originRef} />
       {menuPortal(
         <JiraScopingSearchFilterMenuRoot
           teamId={teamId}
@@ -51,11 +47,4 @@ const JiraScopingSearchFilterToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchFilterToggle, {
-  meeting: graphql`
-    fragment JiraScopingSearchFilterToggle_meeting on PokerMeeting {
-      id
-      teamId
-    }
-  `
-})
+export default JiraScopingSearchFilterToggle

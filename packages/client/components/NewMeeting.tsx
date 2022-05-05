@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {mod} from 'react-swipeable-views-core'
 import WaveSVG from 'static/images/wave.svg'
-import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
-import {MeetingTypeEnum, NewMeeting_viewer} from '~/__generated__/NewMeeting_viewer.graphql'
+import {NonEmptyArray} from '~/types/generics'
+import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
+import {Elevation} from '../styles/elevation'
 import {Breakpoint} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import NewMeetingActions from './NewMeetingActions'
@@ -17,13 +18,10 @@ import NewMeetingIllustration from './NewMeetingIllustration'
 import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
-import {Elevation} from '../styles/elevation'
-import {NonEmptyArray} from '~/types/generics'
 
 interface Props {
-  retry(): void
   teamId?: string | null
-  viewer: NewMeeting_viewer
+  queryRef: PreloadedQuery<NewMeetingQuery>
 }
 
 const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
@@ -118,12 +116,36 @@ const createMeetingOrder = ({standups}: {standups: boolean}) => {
   return meetingOrder
 }
 
+const query = graphql`
+  query NewMeetingQuery {
+    viewer {
+      featureFlags {
+        standups
+      }
+      teams {
+        ...NewMeetingTeamPicker_selectedTeam
+        ...NewMeetingSettings_selectedTeam
+        ...NewMeetingTeamPicker_teams
+        ...NewMeetingActions_team
+        id
+        lastMeetingType
+        name
+        tier
+      }
+    }
+  }
+`
+
 const NewMeeting = (props: Props) => {
-  const {teamId, viewer, retry} = props
+  const {teamId} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<NewMeetingQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {teams, featureFlags} = viewer
   const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
 
-  useStoreQueryRetry(retry)
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
@@ -167,23 +189,4 @@ const NewMeeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeeting, {
-  viewer: graphql`
-    fragment NewMeeting_viewer on User {
-      ...NewMeetingExistingMeetings_viewer
-      featureFlags {
-        standups
-      }
-      teams {
-        ...NewMeetingTeamPicker_selectedTeam
-        ...NewMeetingSettings_selectedTeam
-        ...NewMeetingTeamPicker_teams
-        ...NewMeetingActions_team
-        id
-        lastMeetingType
-        name
-        tier
-      }
-    }
-  `
-})
+export default NewMeeting

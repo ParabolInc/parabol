@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
+import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import createProxyRecord from '../utils/relay/createProxyRecord'
@@ -36,9 +37,17 @@ graphql`
           descriptionHTML
           summary
         }
+        ... on _xGitLabIssue {
+          descriptionHtml
+          title
+          iid
+          webPath
+          webUrl
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
         ...TaskIntegrationLinkIntegrationJiraServer
+        ...TaskIntegrationLinkIntegrationGitLab
       }
       updatedAt
       teamId
@@ -67,7 +76,8 @@ const mutation = graphql`
 `
 
 const jiraTaskIntegrationOptimisticUpdater = (store, variables) => {
-  const {cloudId, projectKey, taskId} = variables
+  const {integrationRepoId, taskId} = variables
+  const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
   const now = new Date()
   const task = store.get(taskId)
   if (!task) return
@@ -89,12 +99,12 @@ const jiraTaskIntegrationOptimisticUpdater = (store, variables) => {
 }
 
 const githubTaskIntegrationOptimisitcUpdater = (store, variables) => {
-  const {nameWithOwner, taskId} = variables
+  const {integrationRepoId, taskId} = variables
   const now = new Date()
   const task = store.get(taskId)
   if (!task) return
   const integrationRepository = createProxyRecord(store, '_xGitHubRepository', {
-    nameWithOwner
+    nameWithOwner: integrationRepoId
   })
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
@@ -107,6 +117,32 @@ const githubTaskIntegrationOptimisitcUpdater = (store, variables) => {
     updatedAt: now.toJSON()
   } as const
   const integration = createProxyRecord(store, '_xGitHubIssue', optimisticIntegration)
+  integration.setLinkedRecord(integrationRepository, 'repository')
+  task.setLinkedRecord(integration, 'integration')
+}
+
+const gitlabTaskIntegrationOptimisitcUpdater = (store, variables) => {
+  const {integrationRepoId: fullPath, taskId} = variables
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const integrationRepository = createProxyRecord(store, '_xGitLabProject', {
+    fullPath
+  })
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const {title, contentState} = splitDraftContent(contentStr)
+  const descriptionHtml = stateToHTML(contentState)
+  const webPath = `${fullPath}/-/issues/0`
+  const optimisticIntegration = {
+    title,
+    descriptionHtml,
+    iid: 0,
+    webPath,
+    webUrl: `https://gitlab.com/${webPath}`,
+    updatedAt: now.toJSON()
+  } as const
+  const integration = createProxyRecord(store, '_xGitLabIssue', optimisticIntegration)
   integration.setLinkedRecord(integrationRepository, 'repository')
   task.setLinkedRecord(integration, 'integration')
 }
@@ -147,6 +183,8 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         githubTaskIntegrationOptimisitcUpdater(store, variables)
       } else if (integrationProviderService === 'jiraServer') {
         jiraServerTaskIntegrationOptimisticUpdater(store, variables)
+      } else if (integrationProviderService === 'gitlab') {
+        gitlabTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
     onCompleted,

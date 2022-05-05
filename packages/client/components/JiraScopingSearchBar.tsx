@@ -1,38 +1,65 @@
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {JiraScopingSearchBar_meeting} from '../__generated__/JiraScopingSearchBar_meeting.graphql'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {JiraScopingSearchBar_meeting$key} from '../__generated__/JiraScopingSearchBar_meeting.graphql'
+import JiraScopingSearchFilterToggle from './JiraScopingSearchFilterToggle'
 import JiraScopingSearchHistoryToggle from './JiraScopingSearchHistoryToggle'
 import JiraScopingSearchInput from './JiraScopingSearchInput'
-import JiraScopingSearchFilterToggle from './JiraScopingSearchFilterToggle'
-import React from 'react'
-import styled from '@emotion/styled'
+import ScopingSearchBar from './ScopingSearchBar'
 
-const SearchBar = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: 16
-})
 interface Props {
-  meeting: JiraScopingSearchBar_meeting
+  meetingRef: JiraScopingSearchBar_meeting$key
 }
 
 const JiraScopingSearchBar = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment JiraScopingSearchBar_meeting on PokerMeeting {
+        ...JiraScopingSearchFilterToggle_meeting
+        ...JiraScopingSearchHistoryToggle_meeting
+        ...JiraScopingSearchInput_meeting
+        id
+        teamId
+        jiraSearchQuery {
+          projectKeyFilters
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              atlassian {
+                projects {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+
+  const {jiraSearchQuery, viewerMeetingMember} = meeting
+  const {projectKeyFilters} = jiraSearchQuery
+  const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
+
+  const selectedProjectsPaths = [] as string[]
+  projectKeyFilters?.forEach((projectId) => {
+    const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
+    if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
+  })
+  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+
   return (
-    <SearchBar>
-      <JiraScopingSearchHistoryToggle meeting={meeting} />
-      <JiraScopingSearchInput meeting={meeting} />
-      <JiraScopingSearchFilterToggle meeting={meeting} />
-    </SearchBar>
+    <ScopingSearchBar currentFilters={currentFilters}>
+      <JiraScopingSearchHistoryToggle meetingRef={meeting} />
+      <JiraScopingSearchInput meetingRef={meeting} />
+      <JiraScopingSearchFilterToggle meetingRef={meeting} />
+    </ScopingSearchBar>
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchBar, {
-  meeting: graphql`
-    fragment JiraScopingSearchBar_meeting on PokerMeeting {
-      ...JiraScopingSearchHistoryToggle_meeting
-      ...JiraScopingSearchInput_meeting
-      ...JiraScopingSearchFilterToggle_meeting
-    }
-  `
-})
+export default JiraScopingSearchBar

@@ -1,8 +1,10 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {GQLContext} from '../graphql'
+import {resolveTeamMember} from '../resolvers'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
+import TeamMember from './TeamMember'
 import TeamPromptResponse from './TeamPromptResponse'
 
 const TeamPromptResponseStage = new GraphQLObjectType<any, GQLContext>({
@@ -13,6 +15,11 @@ const TeamPromptResponseStage = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
+    teamMember: {
+      type: new GraphQLNonNull(TeamMember),
+      description: 'The team member this stage belongs to',
+      resolve: resolveTeamMember
+    },
     response: {
       type: new GraphQLNonNull(TeamPromptResponse),
       description: 'The response to the prompt',

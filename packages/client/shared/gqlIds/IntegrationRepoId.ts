@@ -1,5 +1,5 @@
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import {IntegrationProviderServiceEnum} from 'parabol-client/types/graphql'
+import {IntegrationProviderServiceEnum} from 'parabol-client/__generated__/CreateTaskIntegrationMutation.graphql'
 
 type GitHubRepoIntegration = {
   nameWithOwner: string
@@ -12,20 +12,35 @@ type JiraRepoIntegration = {
   service: 'jira'
 }
 
+type JiraServerRepoIntegration = {
+  id: string
+  providerId: string
+  key: string
+  service: 'jiraServer'
+}
+
 export type RepoIntegration = {
   id: string
   providerId: string
-  service: Exclude<IntegrationProviderServiceEnum, 'jira' | 'github'>
+  service: Exclude<IntegrationProviderServiceEnum, 'jira' | 'jiraServer' | 'github'>
 }
 
 const IntegrationRepoId = {
-  join: (integration: GitHubRepoIntegration | JiraRepoIntegration | RepoIntegration) => {
+  join: (
+    integration:
+      | GitHubRepoIntegration
+      | JiraRepoIntegration
+      | RepoIntegration
+      | JiraServerRepoIntegration
+  ) => {
     const {service} = integration
     switch (service) {
       case 'github':
         return integration.nameWithOwner
       case 'jira':
         return JiraProjectId.join(integration.cloudId, integration.projectKey)
+      case 'jiraServer':
+        return `${integration.service}:${integration.providerId}:${integration.id}:${integration.key}`
       default:
         return `${integration.service}:${integration.providerId}:${integration.id}`
     }
@@ -33,7 +48,18 @@ const IntegrationRepoId = {
   split: (id: string) => {
     const parts = id.split(':')
     // Assume the input is valid
-    return {service: parts[0]!, providerId: parseInt(parts[1]!, 10), repositoryId: parts[2]!}
+    const service = parts[0]!
+
+    if (service === 'jiraServer') {
+      return {
+        service,
+        providerId: parseInt(parts[1]!, 10),
+        repositoryId: parts[2]!,
+        projectKey: parts[3]!
+      }
+    }
+
+    return {service, providerId: parseInt(parts[1]!, 10), repositoryId: parts[2]!}
   }
 }
 
