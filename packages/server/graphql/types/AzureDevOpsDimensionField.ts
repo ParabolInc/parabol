@@ -29,7 +29,7 @@ const AzureDevOpsDimensionField = new GraphQLObjectType<any, GQLContext>({
     },
     fieldName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The field name in jira that the estimate is pushed to'
+      description: 'The field name in Azure DevOps that the estimate is pushed to'
     },
     fieldType: {
       type: new GraphQLNonNull(GraphQLString),
