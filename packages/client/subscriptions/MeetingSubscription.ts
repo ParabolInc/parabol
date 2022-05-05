@@ -59,6 +59,7 @@ const subscription = graphql`
       ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
       ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
+      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
     }
   }
 `
