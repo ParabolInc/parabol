@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {ScopePhaseAreaJiraServer_meeting$key} from '../__generated__/ScopePhaseAreaJiraServer_meeting.graphql'
+import JiraServerScopingSearchBar from './JiraServerScopingSearchBar'
 import JiraServerScopingSearchResultsRoot from './JiraServerScopingSearchResultsRoot'
 import ScopePhaseAreaAddJiraServer from './ScopePhaseAreaAddJiraServer'
 
@@ -28,6 +29,7 @@ const ScopePhaseAreaJiraServer = (props: Props) => {
     graphql`
       fragment ScopePhaseAreaJiraServer_meeting on PokerMeeting {
         ...ScopePhaseAreaAddJiraServer_meeting
+        ...JiraServerScopingSearchBar_meeting
         ...JiraServerScopingSearchResultsRoot_meeting
         viewerMeetingMember {
           teamMember {
@@ -47,7 +49,7 @@ const ScopePhaseAreaJiraServer = (props: Props) => {
     return <ScopePhaseAreaAddJiraServer gotoParabol={gotoParabol} meetingRef={meeting} />
   return (
     <>
-      {/*<JiraServerScopingSearchBar meeting={meeting} /> */}
+      <JiraServerScopingSearchBar meetingRef={meeting} />
       <JiraServerScopingSearchResultsRoot meetingRef={meeting} />
     </>
   )

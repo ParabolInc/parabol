@@ -1,5 +1,6 @@
 import stringify from 'fast-json-stable-stringify'
 import j from 'jscodeshift/src/core'
+import prettier from 'prettier'
 
 const parseArgs = require('minimist')
 const fs = require('fs')
@@ -30,9 +31,19 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
   const baseMutation = fs.readFileSync(
     path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutation.ts'),
     'utf-8'
-  )
+  ) as string
 
-  const nextMutation = baseMutation.replace(/MUTATION_NAME/g, camelMutationName)
+  let nextMutation = baseMutation.replace(/MUTATION_NAME/g, camelMutationName)
+  if (subscription) {
+    const idx = nextMutation.indexOf('  // VALIDATION')
+    nextMutation =
+      nextMutation.slice(0, idx - 1) +
+      `const operationId = dataLoader.share()
+const subOptions = {mutatorId, operationId}
+
+` +
+      nextMutation.slice(idx + 1)
+  }
   const ast = j(nextMutation, {parser: tsParser()})
 
   // add the publisher
@@ -40,7 +51,10 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
     ast
       .find(j.ImportDeclaration)
       .at(-1)
-      .insertBefore(`import {SubscriptionChannel} from 'parabol-client/types/constEnums'`)
+      .insertBefore(
+        `import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import publish from '../../../utils/publish'`
+      )
     const channel = `SubscriptionChannel.${subscription.toUpperCase()}`
     const variable = subscription + 'Id'
     const success = toSuccessName(camelMutationName)
@@ -106,9 +120,10 @@ const createServerSuccessPayload = (camelMutationName: string) => {
   fs.writeFileSync(payloadPath, nextTypeDef)
 }
 
-const addSuccessSourceToCodegen = (camelMutationName: string) => {
+const addSuccessSourceToCodegen = async (camelMutationName: string) => {
   const successName = toSuccessName(camelMutationName)
   const codegenJSON = require('../../codegen.json')
+  const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
   const {generates} = codegenJSON
   const publicKey = Object.keys(generates).find((key) => key.includes('public/'))
   const publicConfig = generates[publicKey]
@@ -116,9 +131,10 @@ const addSuccessSourceToCodegen = (camelMutationName: string) => {
   const {mappers} = config
   mappers[successName] = `./types/${successName}#${successName}Source`
   // stable stringify first to sort
-  const nextCodegen = JSON.stringify(JSON.parse(stringify(codegenJSON)), null, 2)
-  const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
-  fs.writeFileSync(codegenPath, nextCodegen)
+  const stableString = stringify(codegenJSON)
+  const options = await prettier.resolveConfig(codegenPath)
+  const prettyStableString = prettier.format(stableString, {...options, parser: 'json'})
+  fs.writeFileSync(codegenPath, prettyStableString)
 }
 
 const createClientMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
@@ -229,9 +245,11 @@ OPTIONS
 
     -p, --postgres
       If this mutation will affect postgres, this will create the SQL and query files
+      Once generated, you'll need to write the SQL and call 'yarn pg:build'.
+      You may also need to rename the files depending on the mutation (upsert, remove, etc.)
 
 EXAMPLES
-    yarn newMutation startFun -s meeting -p`)
+    yarn newMutation startFun -s meeting`)
     return
   }
   const rawMutationName = argv._[0]

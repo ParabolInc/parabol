@@ -1,10 +1,10 @@
 import React, {Suspense} from 'react'
 import {MenuProps} from '../hooks/useMenu'
-import MeetingCardOptionsMenu from './MeetingCardOptionsMenu'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import meetingCardOptionsMenuQuery, {
   MeetingCardOptionsMenuQuery
 } from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import MeetingCardOptionsMenu from './MeetingCardOptionsMenu'
 
 interface Props {
   meetingId: string

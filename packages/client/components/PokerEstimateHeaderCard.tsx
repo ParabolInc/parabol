@@ -40,6 +40,20 @@ const getHeaderFields = (
         linkTitle: `GitHub Issue #${number}`,
         linkText: `#${number}`
       }
+    case 'AzureDevOpsWorkItem':
+      const {
+        title: azureDevOpsTitle,
+        teamProject,
+        url: azureDevOpsUrl,
+        id: workItemId
+      } = integration
+      return {
+        cardTitle: azureDevOpsTitle,
+        descriptionHTML: teamProject,
+        url: azureDevOpsUrl,
+        linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
+        linkText: `#${workItemId}`
+      }
     case '_xGitLabIssue':
       const {iid, title, descriptionHtml, webUrl} = integration
       return {
@@ -70,7 +84,6 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (!headerFields) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }
-
   return <PokerEstimateHeaderCardContent {...headerFields} />
 }
 
@@ -81,6 +94,15 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
         ...PokerEstimateHeaderCardParabol_task
         integrationHash
         integration {
+          ... on AzureDevOpsWorkItem {
+            __typename
+            id
+            title
+            teamProject
+            type
+            state
+            url
+          }
           ... on JiraIssue {
             __typename
             issueKey

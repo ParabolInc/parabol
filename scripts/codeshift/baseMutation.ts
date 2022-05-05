@@ -1,4 +1,3 @@
-import publish from '../../../utils/publish'
 import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -9,8 +8,6 @@ const MUTATION_NAME: MutationResolvers['MUTATION_NAME'] = async (
 ) => {
   const viewerId = getUserId(authToken)
   const now = new Date()
-  const operationId = dataLoader.share()
-  const subOptions = {mutatorId, operationId}
 
   // VALIDATION
 

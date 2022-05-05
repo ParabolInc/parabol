@@ -3,11 +3,11 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useSubscription from '../../../hooks/useSubscription'
 import NotificationSubscription from '../../../subscriptions/NotificationSubscription'
-import UserProfile from './UserProfile'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import userProfileQuery, {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
+import UserProfile from './UserProfile'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {}
 

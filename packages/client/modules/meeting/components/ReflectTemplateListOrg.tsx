@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {usePreloadedQuery, PreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import ReflectTemplateItem from './ReflectTemplateItem'
 import {ReflectTemplateListOrgQuery} from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
+import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({
   listStyle: 'none',
