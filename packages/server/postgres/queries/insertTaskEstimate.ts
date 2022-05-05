@@ -7,11 +7,11 @@ import {
 interface Input
   extends Omit<
     IInsertTaskEstimateQueryParams,
-    'githubLabelName' | 'jiraFieldId' | 'azureDevOpsFieldlName'
+    'githubLabelName' | 'jiraFieldId' | 'azureDevOpsFieldName'
   > {
   githubLabelName?: string
   jiraFieldId?: string
-  azureDevOpsFieldlName?: string
+  azureDevOpsFieldName?: string
 }
 
 const insertTaskEstimate = async (estimate: Input) => {

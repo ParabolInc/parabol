@@ -432,8 +432,8 @@ export const azureDevOpsWorkItem = (
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
-              const {azureDevOpsFieldlName, label, discussionId, name, taskId, userId} = estimate
-              if (!azureDevOpsFieldlName) {
+              const {azureDevOpsFieldName, label, discussionId, name, taskId, userId} = estimate
+              if (!azureDevOpsFieldName) {
                 return undefined
               }
               let freshEstimate = ''
@@ -449,7 +449,7 @@ export const azureDevOpsWorkItem = (
               return insertTaskEstimate({
                 changeSource: 'external',
                 discussionId,
-                azureDevOpsFieldlName,
+                azureDevOpsFieldName,
                 label: freshEstimate,
                 name,
                 meetingId: null,

@@ -15,7 +15,7 @@ export interface IInsertTaskEstimateQueryParams {
   discussionId: string | null | void;
   jiraFieldId: string | null | void;
   githubLabelName: string | null | void;
-  azureDevOpsFieldlName: string | null | void;
+  azureDevOpsFieldName: string | null | void;
 }
 
 /** 'InsertTaskEstimateQuery' return type */
@@ -27,7 +27,7 @@ export interface IInsertTaskEstimateQueryQuery {
   result: IInsertTaskEstimateQueryResult;
 }
 
-const insertTaskEstimateQueryIR: any = {"name":"insertTaskEstimateQuery","params":[{"name":"changeSource","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":254,"b":265,"line":17,"col":3}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":271,"b":274,"line":18,"col":3}]}},{"name":"label","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":280,"b":284,"line":19,"col":3}]}},{"name":"taskId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":290,"b":295,"line":20,"col":3}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":301,"b":306,"line":21,"col":3}]}},{"name":"meetingId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":312,"b":320,"line":22,"col":3}]}},{"name":"stageId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":326,"b":332,"line":23,"col":3}]}},{"name":"discussionId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":338,"b":349,"line":24,"col":3}]}},{"name":"jiraFieldId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":355,"b":365,"line":25,"col":3}]}},{"name":"githubLabelName","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":371,"b":385,"line":26,"col":3}]}},{"name":"azureDevOpsFieldlName","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":391,"b":411,"line":27,"col":3}]}}],"usedParamSet":{"changeSource":true,"name":true,"label":true,"taskId":true,"userId":true,"meetingId":true,"stageId":true,"discussionId":true,"jiraFieldId":true,"githubLabelName":true,"azureDevOpsFieldlName":true},"statement":{"body":"INSERT INTO \"TaskEstimate\" (\n  \"changeSource\",\n  \"name\",\n  \"label\",\n  \"taskId\",\n  \"userId\",\n  \"meetingId\",\n  \"stageId\",\n  \"discussionId\",\n  \"jiraFieldId\",\n  \"githubLabelName\",\n  \"azureDevOpsFieldlName\"\n) VALUES (\n  :changeSource,\n  :name,\n  :label,\n  :taskId,\n  :userId,\n  :meetingId,\n  :stageId,\n  :discussionId,\n  :jiraFieldId,\n  :githubLabelName,\n  :azureDevOpsFieldlName\n)","loc":{"a":38,"b":413,"line":4,"col":0}}};
+const insertTaskEstimateQueryIR: any = {"name":"insertTaskEstimateQuery","params":[{"name":"changeSource","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":253,"b":264,"line":17,"col":3}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":270,"b":273,"line":18,"col":3}]}},{"name":"label","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":279,"b":283,"line":19,"col":3}]}},{"name":"taskId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":289,"b":294,"line":20,"col":3}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":300,"b":305,"line":21,"col":3}]}},{"name":"meetingId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":311,"b":319,"line":22,"col":3}]}},{"name":"stageId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":325,"b":331,"line":23,"col":3}]}},{"name":"discussionId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":337,"b":348,"line":24,"col":3}]}},{"name":"jiraFieldId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":354,"b":364,"line":25,"col":3}]}},{"name":"githubLabelName","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":370,"b":384,"line":26,"col":3}]}},{"name":"azureDevOpsFieldName","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":390,"b":409,"line":27,"col":3}]}}],"usedParamSet":{"changeSource":true,"name":true,"label":true,"taskId":true,"userId":true,"meetingId":true,"stageId":true,"discussionId":true,"jiraFieldId":true,"githubLabelName":true,"azureDevOpsFieldName":true},"statement":{"body":"INSERT INTO \"TaskEstimate\" (\n  \"changeSource\",\n  \"name\",\n  \"label\",\n  \"taskId\",\n  \"userId\",\n  \"meetingId\",\n  \"stageId\",\n  \"discussionId\",\n  \"jiraFieldId\",\n  \"githubLabelName\",\n  \"azureDevOpsFieldName\"\n) VALUES (\n  :changeSource,\n  :name,\n  :label,\n  :taskId,\n  :userId,\n  :meetingId,\n  :stageId,\n  :discussionId,\n  :jiraFieldId,\n  :githubLabelName,\n  :azureDevOpsFieldName\n)","loc":{"a":38,"b":411,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -43,7 +43,7 @@ const insertTaskEstimateQueryIR: any = {"name":"insertTaskEstimateQuery","params
  *   "discussionId",
  *   "jiraFieldId",
  *   "githubLabelName",
- *   "azureDevOpsFieldlName"
+ *   "azureDevOpsFieldName"
  * ) VALUES (
  *   :changeSource,
  *   :name,
@@ -55,7 +55,7 @@ const insertTaskEstimateQueryIR: any = {"name":"insertTaskEstimateQuery","params
  *   :discussionId,
  *   :jiraFieldId,
  *   :githubLabelName,
- *   :azureDevOpsFieldlName
+ *   :azureDevOpsFieldName
  * )
  * ```
  */

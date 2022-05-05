@@ -6,7 +6,7 @@ export async function up() {
   await client.connect()
   await client.query(`
     ALTER TABLE "TaskEstimate"
-    ADD COLUMN IF NOT EXISTS "azureDevOpsFieldlName" VARCHAR(50);
+    ADD COLUMN IF NOT EXISTS "azureDevOpsFieldName" VARCHAR(50);
   `)
   await client.end()
 }
@@ -16,7 +16,7 @@ export async function down() {
   await client.connect()
   await client.query(`
     ALTER TABLE "TaskEstimate"
-    DROP COLUMN IF EXISTS "azureDevOpsFieldlName";
+    DROP COLUMN IF EXISTS "azureDevOpsFieldName";
   `)
   await client.end()
 }
