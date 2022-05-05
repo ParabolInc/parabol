@@ -2,6 +2,8 @@ const webpack = require('webpack')
 const makeServersConfig = require('./webpack/prod.servers.config')
 const makeClientConfig = require('./webpack/prod.client.config')
 const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
+const cp = require('child_process')
+const {promisify} = require('util')
 
 const compile = (config, isSilent) => {
   return new Promise((resolve) => {
@@ -25,7 +27,8 @@ const prod = async (isDeploy) => {
   await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
-  await Promise.all([compile(serversConfig), compile(clientConfig)])
+  const exec = promisify(cp.exec)
+  await Promise.all([compile(serversConfig), compile(clientConfig), exec('yarn pg:build')])
   if (!isDeploy) {
     require('./toolbox/postDeploy.js')
   }
