@@ -142,7 +142,6 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            {/* :TODO: (jmtaber129): Disable reactjis for empty response */}
             <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
           </>
         )}
