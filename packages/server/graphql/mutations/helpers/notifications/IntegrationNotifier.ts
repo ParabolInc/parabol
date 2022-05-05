@@ -1,8 +1,9 @@
 import {MattermostNotifier} from './MattermostNotifier'
+import {MSTeamsNotifier} from './MSTeamsNotifier'
 import {Notifier} from './Notifier'
 import {SlackNotifier} from './SlackNotifier'
 
-const notifiers = [MattermostNotifier, SlackNotifier]
+const notifiers = [MattermostNotifier, SlackNotifier, MSTeamsNotifier]
 
 export const IntegrationNotifier: Notifier = {
   async startMeeting(dataLoader, meetingId, teamId) {
