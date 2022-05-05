@@ -1,4 +1,4 @@
-import {mergeSchemas} from '@graphql-tools/schema'
+import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
@@ -7,6 +7,7 @@ import composeResolvers from '../composeResolvers'
 import {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
 import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
+import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import mutation from '../rootMutation'
 import query from '../rootQuery'
 import subscription from '../rootSubscription'
@@ -66,11 +67,16 @@ const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql
 
 const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
-  typeDefs,
-  // TODO apply this resolver to every type in the GitHub schema
-  // It is necessary any time client code uses an alias inside a wrapper
+  typeDefs
+})
+
+// IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
+// See https://github.com/ardatan/graphql-tools/issues/4367
+const withNestedResolversSchema = addResolversToSchema({
+  schema: withNestedSchema,
   resolvers: composeResolvers(resolvers, permissions)
 })
+
 const addRequestors = (schema: GraphQLSchema) => {
   const finalSchema = schema as any
   finalSchema.githubRequest = githubRequest
@@ -81,7 +87,7 @@ const addRequestors = (schema: GraphQLSchema) => {
   }
 }
 
-const rootSchema = addRequestors(withNestedSchema)
+const rootSchema = addRequestors(resolveTypesForMutationPayloads(withNestedResolversSchema))
 
 export type RootSchema = typeof rootSchema
 export default rootSchema

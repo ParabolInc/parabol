@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import TangledArrowSVG from './TangledArrowSVG'
-import EmptyDiscussionSVG from './EmptyDiscussionSVG'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -18,18 +17,15 @@ const DiscussionThreadEmptyStateRoot = styled('div')({
 const EmptyDiscussionContainer = styled('div')({
   width: 160,
   margin: '14px auto',
+  textAlign: 'center',
   [mobileBreakpoint]: {
     width: 260
   }
 })
 
-const TangledArrowContainer = styled('div')({
-  display: 'none',
-  margin: '48px auto 0px auto',
-  [mobileBreakpoint]: {
-    width: 76,
-    display: 'block'
-  }
+const EmptyDiscussionImage = styled('img')({
+  width: '80%',
+  height: 'auto'
 })
 
 const Message = styled('div')({
@@ -57,14 +53,9 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
-        <EmptyDiscussionSVG />
+        <EmptyDiscussionImage src={EmptyDiscussionIllustration} />
       </EmptyDiscussionContainer>
       <Message>{isReadOnly ? readOnlyMessage : message}</Message>
-      {!isReadOnly && (
-        <TangledArrowContainer>
-          <TangledArrowSVG />
-        </TangledArrowContainer>
-      )}
     </DiscussionThreadEmptyStateRoot>
   )
 }

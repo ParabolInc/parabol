@@ -18,8 +18,8 @@ export interface IGetGitHubAuthByUserIdTeamIdQueryResult {
   login: string;
   teamId: string;
   userId: string;
-  githubSearchQueries: JsonArray;
   scope: string;
+  githubSearchQueries: JsonArray;
 }
 
 /** 'GetGitHubAuthByUserIdTeamIdQuery' query type */

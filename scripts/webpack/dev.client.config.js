@@ -20,7 +20,7 @@ module.exports = {
       config: [__filename]
     }
   },
-  stats: 'minimal',
+  stats: 'errors-warnings',
   devServer: {
     client: {
       logging: 'warn'
@@ -35,16 +35,10 @@ module.exports = {
         publicPath: '/static/'
       },
       {
-        directory: path.join(PROJECT_ROOT, 'dev'),
-        publicPath: '/static/'
-      },
-      {
+        // ignore proxied servers in /dev
+        // They can restart independently
         directory: path.join(PROJECT_ROOT, 'dev', 'dll'),
         publicPath: '/static/'
-      },
-      {
-        directory: path.join(PROJECT_ROOT, 'self-hosted'),
-        publicPath: '/self-hosted/'
       }
     ],
     devMiddleware: {
@@ -132,7 +126,7 @@ module.exports = {
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
-        AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
+        AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
       })
     }),
     new ReactRefreshWebpackPlugin(),
@@ -144,7 +138,7 @@ module.exports = {
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
       // Environment variables go in the __ACTION__ object above, not here
       // This build may be deployed to many different environments
-    }),
+    })
   ],
   module: {
     rules: [

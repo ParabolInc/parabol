@@ -16,6 +16,7 @@ import {GQLContext} from '../graphql'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
+import pushEstimateToGitLab from './helpers/pushEstimateToGitLab'
 
 const setTaskEstimate = {
   type: new GraphQLNonNull(SetTaskEstimatePayload),
@@ -185,6 +186,12 @@ const setTaskEstimate = {
         return {error: {message}}
       }
       githubLabelName = githubPushRes
+    } else if (service === 'gitlab') {
+      const gitlabPushRes = await pushEstimateToGitLab(taskEstimate, context, info, stageId)
+      if (gitlabPushRes instanceof Error) {
+        const {message} = gitlabPushRes
+        return {error: {message}}
+      }
     }
 
     await insertTaskEstimate({

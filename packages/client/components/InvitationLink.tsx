@@ -1,16 +1,28 @@
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {InvitationLink_massInvitation} from '../__generated__/InvitationLink_massInvitation.graphql'
-import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
+import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {InvitationLinkQuery} from '../__generated__/InvitationLinkQuery.graphql'
 import InvitationLinkDialog from './InvitationLinkDialog'
+import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 interface Props {
-  massInvitation: InvitationLink_massInvitation
+  queryRef: PreloadedQuery<InvitationLinkQuery>
 }
 
+const query = graphql`
+  query InvitationLinkQuery($token: ID!) {
+    massInvitation(token: $token) {
+      ...InvitationLinkDialog_massInvitation
+    }
+  }
+`
+
 function InvitationLink(props: Props) {
-  const {massInvitation} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<InvitationLinkQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {massInvitation} = data
   // the meeting background is prettier than the plain one, so let's always use it
   return (
     <TeamInvitationMeetingAbstract>
@@ -19,10 +31,4 @@ function InvitationLink(props: Props) {
   )
 }
 
-export default createFragmentContainer(InvitationLink, {
-  massInvitation: graphql`
-    fragment InvitationLink_massInvitation on MassInvitationPayload {
-      ...InvitationLinkDialog_massInvitation
-    }
-  `
-})
+export default InvitationLink
