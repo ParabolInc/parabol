@@ -4,6 +4,7 @@ import {requestSubscription} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
+import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
 import {
   MeetingSubscription as TMeetingSubscription,
   MeetingSubscriptionVariables
@@ -81,7 +82,8 @@ const updateHandlers = {
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
-  PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater
+  PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
+  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater
 }
 
 const MeetingSubscription = (

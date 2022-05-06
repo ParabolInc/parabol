@@ -55,6 +55,7 @@ const TeamPromptResponseCard = (props: Props) => {
         }
         response {
           id
+          userId
           content
           plaintextContent
         }
