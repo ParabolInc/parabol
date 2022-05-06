@@ -28,7 +28,10 @@ export async function down() {
       'jiraServer'
     );
     ALTER TABLE "IntegrationProvider"
-    ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
+      ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
+    
+    ALTER TABLE "TeamMemberIntegrationAuth"
+      ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
 
     DROP TYPE "IntegrationProviderServiceEnum_delete";
   END $$;
