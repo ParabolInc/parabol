@@ -10,7 +10,6 @@ import {
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
-import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
@@ -207,29 +206,14 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           }
           return data
         } else if (integration.service === 'gitlab') {
-          const {accessUserId} = integration
-          const gitlabAuth = await dataLoader
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'gitlab', teamId, userId: accessUserId})
-          if (!gitlabAuth?.accessToken) return null
-          const {providerId} = gitlabAuth
-          const provider = await dataLoader.get('integrationProviders').load(providerId)
-          if (!provider?.serverBaseUrl) return null
-          const {gid} = integration
-          const query = `
-            query {
-              issue(id: "${gid}"){
-                ...info
-              }
-            }
-          `
-          const manager = new GitLabServerManager(gitlabAuth, context, info, provider.serverBaseUrl)
-          const gitlabRequest = manager.getGitLabRequest(info, context)
-          const [data, error] = await gitlabRequest(query, {})
-          if (error) {
-            sendToSentry(error, {userId: accessUserId})
-          }
-          return data
+          const {accessUserId, gid} = integration
+          return dataLoader.get('gitlabIssue').load({
+            teamId,
+            accessUserId,
+            gid,
+            info,
+            context
+          })
         }
         return null
       }

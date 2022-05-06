@@ -12,12 +12,9 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
-import sendToSentry from '../../utils/sendToSentry'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
-import {getUserId} from './../../utils/authorization'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -57,7 +54,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         context,
         info
       ) => {
-        const {dataLoader, authToken} = context
+        const {dataLoader} = context
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -125,21 +122,13 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             .load({service: 'gitlab', teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return NULL_FIELD
           const {providerId} = gitlabAuth
-          const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
-          const manager = new GitLabServerManager(
-            gitlabAuth,
-            context,
+          const issue = await dataLoader.get('gitlabIssue').load({
+            teamId,
+            accessUserId,
+            gid,
             info,
-            provider.serverBaseUrl!
-          )
-          const [issueData, issueError] = await manager.getIssue({gid})
-          if (issueError) {
-            console.log(issueError)
-            const userId = getUserId(authToken)
-            sendToSentry(issueError, {userId, tags: {teamId, gid}})
-            return NULL_FIELD
-          }
-          const {issue} = issueData
+            context
+          })
           if (!issue) return NULL_FIELD
           const {projectId} = issue
           const dimensionName = await getDimensionName(meetingId)
