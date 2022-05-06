@@ -62,7 +62,6 @@ const UpsertTeamPromptResponseMutation: StandardMutation<TUpsertTeamPromptRespon
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
       const {meetingId, content} = variables
-      if (!meetingId) return
       const meeting = store.get(meetingId)
       if (!meeting) return
       const phases = meeting.getLinkedRecords('phases')
