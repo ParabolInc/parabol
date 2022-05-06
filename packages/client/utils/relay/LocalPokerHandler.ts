@@ -48,6 +48,7 @@ const defaults = [
     type: 'AzureDevOpsSearchQuery',
     defaultQuery: {
       queryString: '',
+      projectKeyFilters: [] as string[],
       isWIQL: false
     }
   },
