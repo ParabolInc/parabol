@@ -16,6 +16,22 @@ export async function up() {
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`` /* Do undo magic */)
+  await client.query(`
+  DO $$
+  BEGIN
+    DELETE FROM "IntegrationProvider" WHERE "service" = 'msTeams';
+
+    ALTER TYPE "IntegrationProviderServiceEnum" RENAME TO "IntegrationProviderServiceEnum_delete";
+    CREATE TYPE "IntegrationProviderServiceEnum" AS ENUM (
+      'gitlab',
+      'mattermost',
+      'jiraServer'
+    );
+    ALTER TABLE "IntegrationProvider"
+    ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
+
+    DROP TYPE "IntegrationProviderServiceEnum_delete";
+  END $$;
+  `)
   await client.end()
 }
