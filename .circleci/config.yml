@@ -63,16 +63,19 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
+          name: Build Databases
+          command: |
+            cp $DEVOPS_WORKDIR/environments/test .env
+            yarn db:migrate
+            yarn pg:migrate up
+      - run:
           name: Build Assets
           command: |
             cp $DEVOPS_WORKDIR/environments/staging .env
             yarn build --deploy
       - run:
-          name: Migration Testing DBs
+          name: Push Assets to Databases
           command: |
-            cp $DEVOPS_WORKDIR/environments/test .env
-            yarn db:migrate
-            yarn pg:migrate up
             yarn postdeploy
       - run:
           name: Start Testing Server
