@@ -29,14 +29,19 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         $teamId: ID!
         $first: Int
         $queryString: String
+        $projectKeyFilters: [String!]!
         $isWIQL: Boolean!
       ) {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
-                userStories(first: $first, queryString: $queryString, isWIQL: $isWIQL)
-                  @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
+                userStories(
+                  first: $first
+                  queryString: $queryString
+                  projectKeyFilters: $projectKeyFilters
+                  isWIQL: $isWIQL
+                ) @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
                   error {
                     message
                   }

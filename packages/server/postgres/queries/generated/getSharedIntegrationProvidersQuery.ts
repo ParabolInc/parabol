@@ -31,6 +31,7 @@ export interface IGetSharedIntegrationProvidersQueryResult {
   webhookUrl: string | null;
   consumerKey: string | null;
   consumerSecret: string | null;
+  tenantId: string | null;
 }
 
 /** 'GetSharedIntegrationProvidersQuery' query type */
