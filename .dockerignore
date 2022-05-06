@@ -7,3 +7,6 @@
 /.github
 /.vscode
 /packages/client/__generated__
+/.husky
+/.prettierrc
+/docs

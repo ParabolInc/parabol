@@ -11,6 +11,7 @@ interface IUpsertIntegrationProviderInput {
   authStrategy: IntegrationProviderAuthStrategyEnum
   scope?: IntegrationProviderScopeEnum
   clientId?: string
+  tenantId?: string
   clientSecret?: string
   serverBaseUrl?: string
   webhookUrl?: string

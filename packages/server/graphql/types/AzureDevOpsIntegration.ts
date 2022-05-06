@@ -14,6 +14,7 @@ import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
 import AzureDevOpsSearchQuery from './AzureDevOpsSearchQuery'
 import {AzureDevOpsWorkItemConnection} from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -24,6 +25,7 @@ type WorkItemArgs = {
   first: number
   after?: string
   queryString: string | null
+  projectKeyFilters: string[] | null
   isWIQL: boolean
 }
 
@@ -90,17 +92,17 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLString,
           description: 'A string of text to search for, or WIQL if isWIQL is true'
         },
+        projectKeyFilters: {
+          type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+          description: 'A list of projects to restrict the search to, if null will search all'
+        },
         isWIQL: {
           type: new GraphQLNonNull(GraphQLBoolean),
-          description: 'true if the queryString is isWIQL, else false'
+          description: 'true if the queryString is WIQL, else false'
         }
       },
-      resolve: async (
-        {teamId, userId},
-        args: any,
-        {authToken, dataLoader}: GQLContext
-      ) => {
-        const {first, queryString, isWIQL} = args as WorkItemArgs
+      resolve: async ({teamId, userId}, args: any, {authToken, dataLoader}: GQLContext) => {
+        const {first, queryString, projectKeyFilters, isWIQL} = args as WorkItemArgs
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
           const err = new Error('Cannot access another team members user stories')
@@ -139,8 +141,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         if (!manager) {
           return null
         }
-        
-        const restResult = await manager.getAllUserWorkItems(queryString, isWIQL)
+        const restResult = await manager.getAllUserWorkItems(queryString, projectKeyFilters, isWIQL)
         const {error, workItems: innerWorkItems} = restResult
         if (error !== undefined) {
           console.log(error)
@@ -159,7 +160,9 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
                 url: workItem.url,
                 state: workItem.fields['System.State'],
                 type: workItem.fields['System.WorkItemType'],
-                descriptionHTML: workItem.fields['System.Description'] ? workItem.fields['System.Description']: '',
+                descriptionHTML: workItem.fields['System.Description']
+                  ? workItem.fields['System.Description']
+                  : '',
                 service: 'azureDevOps',
                 updatedAt: new Date()
               }
@@ -167,6 +170,17 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           )
           return connectionFromTasks(workItems, first, undefined)
         }
+      }
+    },
+    projects: {
+      // Create a new object for ADO Projects (new schema object)
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsRemoteProject))),
+      description:
+        'A list of projects coming straight from the azure dev ops integration for a specific team member',
+      resolve: ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return []
+        return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
       }
     },
     sharedProviders: {

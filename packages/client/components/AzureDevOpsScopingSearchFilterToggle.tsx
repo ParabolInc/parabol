@@ -8,12 +8,23 @@ import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {AzureDevOpsScopingSearchFilterToggle_meeting} from '../__generated__/AzureDevOpsScopingSearchFilterToggle_meeting.graphql'
 import AzureDevOpsScopingSearchFilterMenu from './AzureDevOpsScopingSearchFilterMenu'
+import FlatButton from './FlatButton'
 import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
+
+const StyledButton = styled(FlatButton)({
+  height: 24,
+  marginLeft: 4,
+  padding: 0,
+  width: 24,
+  background: PALETTE.SKY_500,
+  '&:hover': {
+    background: PALETTE.SKY_500
+  }
+})
 
 const FilterIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
+  color: PALETTE.WHITE,
+  fontSize: ICON_SIZE.MD18
 })
 
 interface Props {
@@ -28,9 +39,9 @@ const AzureDevOpsScopingSearchFilterToggle = (props: Props) => {
   })
   return (
     <>
-      <PlainButton onClick={togglePortal} ref={originRef}>
+      <StyledButton onClick={togglePortal} ref={originRef}>
         <FilterIcon>filter_list</FilterIcon>
-      </PlainButton>
+      </StyledButton>
       {menuPortal(<AzureDevOpsScopingSearchFilterMenu meeting={meeting} menuProps={menuProps} />)}
     </>
   )

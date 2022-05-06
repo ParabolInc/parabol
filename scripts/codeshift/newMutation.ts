@@ -1,4 +1,6 @@
+import stringify from 'fast-json-stable-stringify'
 import j from 'jscodeshift/src/core'
+import prettier from 'prettier'
 
 const parseArgs = require('minimist')
 const fs = require('fs')
@@ -12,7 +14,14 @@ const toPayloadName = (str: string) => `${toPascal(str)}Payload`
 const toSuccessName = (str: string) => `${toPascal(str)}Success`
 
 const createServerMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
-  const MUTATIONS_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'mutations')
+  const MUTATIONS_ROOT = path.join(
+    PROJECT_ROOT,
+    'packages',
+    'server',
+    'graphql',
+    'public',
+    'mutations'
+  )
   const mutationPath = path.join(MUTATIONS_ROOT, `${camelMutationName}.ts`)
   if (fs.existsSync(mutationPath)) {
     console.log('mutation already exists! aborting...')
@@ -22,27 +31,30 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
   const baseMutation = fs.readFileSync(
     path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutation.ts'),
     'utf-8'
-  )
-  const ast = j(baseMutation, {parser: tsParser()})
-  // rename mutation
-  ast.findVariableDeclarators('MUTATION_NAME').renameTo(camelMutationName)
-  // rename export
-  ast.find(j.ExportDefaultDeclaration).forEach((path) => {
-    ; (path.value.declaration as any).name = camelMutationName
-  })
+  ) as string
 
-  // add payload import statement
-  const payloadName = toPayloadName(camelMutationName)
-  ast
-    .find(j.ImportDeclaration)
-    .at(-1)
-    .insertBefore(`import ${payloadName} from '../types/${payloadName}'`)
-    .insertBefore(`import {SubscriptionChannel} from 'parabol-client/types/constEnums'`)
+  let nextMutation = baseMutation.replace(/MUTATION_NAME/g, camelMutationName)
+  if (subscription) {
+    const idx = nextMutation.indexOf('  // VALIDATION')
+    nextMutation =
+      nextMutation.slice(0, idx - 1) +
+      `const operationId = dataLoader.share()
+const subOptions = {mutatorId, operationId}
 
-  // add payload as type
-  ast.find(j.StringLiteral, {value: 'TYPE'}).replaceWith(`GraphQLNonNull(${payloadName})`)
+` +
+      nextMutation.slice(idx + 1)
+  }
+  const ast = j(nextMutation, {parser: tsParser()})
+
   // add the publisher
   if (subscription) {
+    ast
+      .find(j.ImportDeclaration)
+      .at(-1)
+      .insertBefore(
+        `import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import publish from '../../../utils/publish'`
+      )
     const channel = `SubscriptionChannel.${subscription.toUpperCase()}`
     const variable = subscription + 'Id'
     const success = toSuccessName(camelMutationName)
@@ -61,105 +73,68 @@ const createServerMutation = (camelMutationName: string, subscription?: Lowercas
   fs.writeFileSync(mutationPath, res)
 }
 
-const createServerMutationPayload = (camelMutationName: string) => {
+const getSubscriptionExtension = (lcaseSubscription: string, successName: string) => {
+  if (!lcaseSubscription) return ''
+  const pascalSubscription = toPascal(lcaseSubscription)
+  const subscriptionPayload = `${pascalSubscription}SubscriptionPayload`
+  return '\n' + `extend union ${subscriptionPayload} = ${successName}`
+}
+
+const createServerTypeDef = (camelMutationName: string, lcaseSubscription: string) => {
   const payloadName = toPayloadName(camelMutationName)
   const successName = toSuccessName(camelMutationName)
   // simple string replacement
-  const basePayload = fs.readFileSync(
-    path.join(PROJECT_ROOT, 'scripts/codeshift', 'basePayload.ts'),
+  const baseTypeDef = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseTypeDef.graphql'),
     'utf-8'
   )
-  const nextPayload = basePayload
+  const nextTypeDef = baseTypeDef
     .replace(/MUTATION_PAYLOAD/g, payloadName)
     .replace(/SUCCESS_PAYLOAD/g, successName)
-  const TYPES_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'types')
-  const payloadPath = path.join(TYPES_ROOT, `${payloadName}.ts`)
-  fs.writeFileSync(payloadPath, nextPayload)
-}
+    .replace(/MUTATION_NAME/g, camelMutationName)
+    .concat(getSubscriptionExtension(lcaseSubscription, successName))
 
-const addToRootMutation = (camelMutationName: string) => {
-  const rootMutationPath = path.join(
+  const TYPEDEF_ROOT = path.join(
     PROJECT_ROOT,
     'packages',
     'server',
     'graphql',
-    'rootMutation.ts'
+    'public',
+    'typeDefs'
   )
-  const rootMutation = fs.readFileSync(rootMutationPath, 'utf-8')
-  const ast = j(rootMutation, {parser: tsParser()})
-  const alreadyImported =
-    ast.find(j.ImportDeclaration, {
-      specifiers: [
-        {
-          local: {
-            name: camelMutationName
-          }
-        }
-      ]
-    }).length > 0
-  if (alreadyImported) {
-    console.log('Already imported into rootMutation')
-    return
-  }
-
-  ast
-    .find(j.ImportDeclaration)
-    .at(-1)
-    .insertBefore(`import ${camelMutationName} from './mutations/${camelMutationName}'`)
-
-  const objectPath = ast
-    .find(j.ObjectExpression)
-    .at(1)
-    .get()
-  const entry = j.objectProperty.from({
-    key: j.identifier(camelMutationName),
-    value: j.identifier(camelMutationName),
-    shorthand: true
-  })
-  objectPath.value.properties.push(entry)
-
-  const res = ast.toSource({
-    objectCurlySpacing: false,
-    quote: 'single'
-  })
-  fs.writeFileSync(rootMutationPath, res)
+  const payloadPath = path.join(TYPEDEF_ROOT, `${camelMutationName}.graphql`)
+  fs.writeFileSync(payloadPath, nextTypeDef)
 }
 
-const addToRootSubscription = (camelMutationName: string, subscription?: Lowercase<string>) => {
-  if (!subscription) return
-  const fileName = toPascal(subscription) + 'SubscriptionPayload.ts'
-  const subPath = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'types', fileName)
-  const sub = fs.readFileSync(subPath, 'utf-8')
-  const payloadName = toPayloadName(camelMutationName)
+const createServerSuccessPayload = (camelMutationName: string) => {
   const successName = toSuccessName(camelMutationName)
-  const ast = j(sub, {parser: tsParser()})
-  const alreadyImported =
-    ast.find(j.ImportDeclaration, {
-      specifiers: [
-        {
-          local: {
-            name: successName
-          }
-        }
-      ]
-    }).length > 0
-  if (alreadyImported) {
-    console.log('Already imported into rootMutation')
-    return
-  }
-  // add import
-  ast
-    .find(j.ImportDeclaration)
-    .at(-1)
-    .insertBefore(`import {${successName}} from './${payloadName}'`)
+  // simple string replacement
+  const baseSuccessPayload = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseSuccessPayload.ts'),
+    'utf-8'
+  )
+  const nextTypeDef = baseSuccessPayload.replace(/SUCCESS_PAYLOAD/g, successName)
 
-  const payloadArr = ast.find(j.ArrayExpression).get()
-  payloadArr.value.elements.push(j.identifier(successName))
-  const res = ast.toSource({
-    objectCurlySpacing: false,
-    quote: 'single'
-  })
-  fs.writeFileSync(subPath, res)
+  const TYPE_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'graphql', 'public', 'types')
+  const payloadPath = path.join(TYPE_ROOT, `${successName}.ts`)
+  fs.writeFileSync(payloadPath, nextTypeDef)
+}
+
+const addSuccessSourceToCodegen = async (camelMutationName: string) => {
+  const successName = toSuccessName(camelMutationName)
+  const codegenJSON = require('../../codegen.json')
+  const codegenPath = path.join(PROJECT_ROOT, `codegen.json`)
+  const {generates} = codegenJSON
+  const publicKey = Object.keys(generates).find((key) => key.includes('public/'))
+  const publicConfig = generates[publicKey]
+  const {config} = publicConfig
+  const {mappers} = config
+  mappers[successName] = `./types/${successName}#${successName}Source`
+  // stable stringify first to sort
+  const stableString = stringify(codegenJSON)
+  const options = await prettier.resolveConfig(codegenPath)
+  const prettyStableString = prettier.format(stableString, {...options, parser: 'json'})
+  fs.writeFileSync(codegenPath, prettyStableString)
 }
 
 const createClientMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
@@ -188,14 +163,95 @@ const addToClientSubscription = (camelMutationName: string, subscription?: Lower
   const nextStr = subStr.replace(typename, typename + '\n' + fragment)
   fs.writeFileSync(subPath, nextStr)
 }
+
+const addDummyPermission = (camelMutationName: string) => {
+  const permissionPath = path.join(
+    PROJECT_ROOT,
+    'packages',
+    'server',
+    'graphql',
+    'public',
+    'permissions.ts'
+  )
+  const permissionText = fs.readFileSync(permissionPath, 'utf-8')
+  const root = j(permissionText, {parser: tsParser()})
+  const mutationObject = root.find(j.ObjectProperty, {key: {name: 'Mutation'}}).get()
+  const {properties, start, end} = mutationObject.node.value
+  properties.push(
+    j.objectProperty.from({
+      key: j.identifier(camelMutationName),
+      value: j.identifier('isFIXME')
+    })
+  )
+  const docWithBadSpacing = root.toSource({
+    objectCurlySpacing: false,
+    quote: 'single'
+  })
+  const docWithGoodSpacing =
+    docWithBadSpacing.slice(0, start) +
+    // recast prints extra lines that prettier won't fix
+    // https://github.com/benjamn/recast/issues/242
+    docWithBadSpacing.slice(start, end).replace(/\n\n/g, '\n') +
+    docWithBadSpacing.slice(end)
+  fs.writeFileSync(permissionPath, docWithGoodSpacing)
+}
+
+const createPostgresSQL = (camelMutationName: string) => {
+  const baseSQL = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutationSQL.sql'),
+    'utf-8'
+  )
+  const nextSQL = baseSQL.replace(/MUTATION_NAME/g, camelMutationName)
+  const queryName = `${camelMutationName}Query`
+  fs.writeFileSync(
+    path.join(PROJECT_ROOT, 'packages', 'server', 'postgres', 'queries', 'src', `${queryName}.sql`),
+    nextSQL
+  )
+}
+
+const createPostgresQuery = (camelMutationName: string) => {
+  const baseQuery = fs.readFileSync(
+    path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseMutationQuery.ts'),
+    'utf-8'
+  )
+  const nextQuery = baseQuery.replace(/MUTATION_NAME/g, camelMutationName)
+  const queryName = `${camelMutationName}ToPG`
+  fs.writeFileSync(
+    path.join(PROJECT_ROOT, 'packages', 'server', 'postgres', 'queries', `${queryName}.ts`),
+    nextQuery
+  )
+}
+
 const newMutation = () => {
   const argv = parseArgs(process.argv.slice(2), {
     alias: {
       s: 'subscription',
-      f: 'field'
+      h: 'help',
+      p: 'postgres'
     }
   })
 
+  if (argv.help) {
+    console.log(`
+NAME
+    newMutation - Create boilerplate for a new mutation
+
+SYNOPSIS
+    yarn newMutation <mutationName>
+
+OPTIONS
+    -s, --subscription <subscriptionChannel>
+      If this mutation should be published to a subscription, this will wire it up
+
+    -p, --postgres
+      If this mutation will affect postgres, this will create the SQL and query files
+      Once generated, you'll need to write the SQL and call 'yarn pg:build'.
+      You may also need to rename the files depending on the mutation (upsert, remove, etc.)
+
+EXAMPLES
+    yarn newMutation startFun -s meeting`)
+    return
+  }
   const rawMutationName = argv._[0]
   if (!rawMutationName) {
     console.log('Please provide a mutation name as the first argument')
@@ -204,12 +260,15 @@ const newMutation = () => {
   const camelMutationName = rawMutationName[0].toLowerCase() + rawMutationName.slice(1)
   const lcaseSubscription =
     typeof argv.subscription === 'string' ? argv.subscription.toLowerCase().trim() : null
+  if (argv.postgres) {
+    createPostgresSQL(camelMutationName)
+    createPostgresQuery(camelMutationName)
+  }
   createServerMutation(camelMutationName, lcaseSubscription)
-  createServerMutationPayload(camelMutationName)
-
-  addToRootSubscription(camelMutationName, lcaseSubscription)
-  addToRootMutation(camelMutationName)
-
+  createServerTypeDef(camelMutationName, lcaseSubscription)
+  createServerSuccessPayload(camelMutationName)
+  addSuccessSourceToCodegen(camelMutationName)
+  addDummyPermission(camelMutationName)
   createClientMutation(camelMutationName, lcaseSubscription)
   addToClientSubscription(camelMutationName, lcaseSubscription)
 }
