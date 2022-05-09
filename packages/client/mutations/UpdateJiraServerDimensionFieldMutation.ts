@@ -35,14 +35,14 @@ graphql`
 const mutation = graphql`
   mutation UpdateJiraServerDimensionFieldMutation(
     $dimensionName: String!
-    $issueTypeId: ID!
+    $issueType: ID!
     $fieldName: ID!
     $projectId: ID!
     $meetingId: ID!
   ) {
     updateJiraServerDimensionField(
       dimensionName: $dimensionName
-      issueTypeId: $issueTypeId
+      issueType: $issueType
       fieldName: $fieldName
       projectId: $projectId
       meetingId: $meetingId

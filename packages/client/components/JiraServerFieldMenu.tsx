@@ -18,7 +18,6 @@ const NoFieldsLabel = styled('div')({
   padding: '8px 16px 0'
 })
 
-
 interface Props {
   menuProps: MenuProps
   stage: JiraServerFieldMenu_stage
@@ -33,11 +32,11 @@ const JiraServerFieldMenu = (props: Props) => {
   if (task?.integration?.__typename !== 'JiraServerIssue') return null
 
   const {integration} = task
-  const {projectId, issueTypeId, fieldMetadata} = integration
+  const {projectId, issueType, possibleEstimationFieldNames} = integration
 
-  const possibleEstimationFieldNames = fieldMetadata?.map(({name}) => name) ?? []
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
+  /* eslint-disable react-hooks/rules-of-hooks */
   const defaultActiveidx = useMemo(() => {
     if (possibleEstimationFieldNames.length === 0) return undefined
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
@@ -54,13 +53,14 @@ const JiraServerFieldMenu = (props: Props) => {
       {
         dimensionName,
         fieldName,
-        issueTypeId,
+        issueType,
         projectId,
-        meetingId,
+        meetingId
       },
       {
         onCompleted: submitScore,
         onError: () => {
+          /* noop */
         }
       }
     )
@@ -73,9 +73,7 @@ const JiraServerFieldMenu = (props: Props) => {
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}
     >
-      {possibleEstimationFieldNames.length === 0 && 
-        <NoFieldsLabel>No fields found</NoFieldsLabel>
-      }
+      {possibleEstimationFieldNames.length === 0 && <NoFieldsLabel>No fields found</NoFieldsLabel>}
       {possibleEstimationFieldNames.map((fieldName) => {
         return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
       })}
@@ -110,13 +108,8 @@ export default createFragmentContainer(JiraServerFieldMenu, {
             __typename
             id
             projectId
-            issueTypeId
-            fieldMetadata {
-              id
-              name
-              typeId
-              allowedValues
-            }
+            issueType
+            possibleEstimationFieldNames
           }
         }
       }

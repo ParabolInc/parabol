@@ -71,12 +71,12 @@ type JiraServerIssueType = {
   iconUrl: string
   subtask: boolean
 }
- 
+
 export type JiraServerFieldType = {
   fieldId: string
   name: string
   operations: ('add' | 'set' | 'remove')[]
-  allowedValues: string []
+  allowedValues: string[]
   schema: {
     type: 'number' | 'string' | string
   }
@@ -177,8 +177,12 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     let response: Paginated<T> | Error
 
     const separator = path.includes('?') ? '&' : '?'
-    for(let startAt = 0; startAt < MAX_PAGINATION_RESULTS; startAt += MAX_RESULTS_PER_PAGE) {
-      response = await this.request<Paginated<T>>(method, `${path}${separator}startAt=${startAt}&maxResults=${MAX_RESULTS_PER_PAGE}`, body)
+    for (let startAt = 0; startAt < MAX_PAGINATION_RESULTS; startAt += MAX_RESULTS_PER_PAGE) {
+      response = await this.request<Paginated<T>>(
+        method,
+        `${path}${separator}startAt=${startAt}&maxResults=${MAX_RESULTS_PER_PAGE}`,
+        body
+      )
       if (response instanceof Error) {
         return response
       }
@@ -225,18 +229,29 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       return new Error('No issue types specified')
     }
 
-    return this.request<JiraServerCreateIssueResponse>('POST', '/rest/api/2/issue', {
-      fields: {
-        project: {
-          id: projectId
-        },
-        issuetype: {
-          id: bestIssueType.id
-        },
-        summary,
-        description
+    const createdIssue = await this.request<JiraServerCreateIssueResponse>(
+      'POST',
+      '/rest/api/2/issue',
+      {
+        fields: {
+          project: {
+            id: projectId
+          },
+          issuetype: {
+            id: bestIssueType.id
+          },
+          summary,
+          description
+        }
       }
-    })
+    )
+    if (createdIssue instanceof Error) {
+      return createdIssue
+    }
+    return {
+      ...createdIssue,
+      issueType: bestIssueType
+    }
   }
 
   async addComment(comment: string, issueId: string) {
@@ -276,12 +291,12 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
 
     const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 
-    const res = await this.createIssue(repositoryId, summary, description)
+    const createdIssue = await this.createIssue(repositoryId, summary, description)
 
-    if (res instanceof Error) {
-      return res
+    if (createdIssue instanceof Error) {
+      return createdIssue
     }
-    const issueId = res.id
+    const {id: issueId} = createdIssue
 
     return {
       integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
@@ -356,8 +371,8 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     return types
   }
 
-  async getFieldTypes(projectIdOrKey: string, issueTypeId: string) {
-    const path = `/rest/api/2/issue/createmeta/${projectIdOrKey}/issuetypes/${issueTypeId}`
+  async getFieldTypes(projectIdOrKey: string, issueType: string) {
+    const path = `/rest/api/2/issue/createmeta/${projectIdOrKey}/issuetypes/${issueType}`
     const types = await this.requestAll<JiraServerFieldType>('GET', path)
     return types
   }
@@ -370,10 +385,8 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       }
     }
     const response = await this.requestRaw('PUT', url, update)
-    if (response.status !== 201 && response.status !== 200) {
-      return new Error(
-        `Updating issue field failed with status ${response.status}`
-      )
+    if (![200, 201, 204].includes(response.status)) {
+      return new Error(`Updating issue field failed with status ${response.status}`)
     }
     return undefined
   }

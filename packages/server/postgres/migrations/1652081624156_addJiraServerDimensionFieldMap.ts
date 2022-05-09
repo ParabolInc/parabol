@@ -9,12 +9,13 @@ export async function up() {
     "id" SERIAL UNIQUE,
     "providerId" INTEGER NOT NULL,
     "teamId" VARCHAR(120) NOT NULL,
-    "projectId" VARCHAR(120) NOT NULL,
     "dimensionName" VARCHAR(120) NOT NULL,
+    "projectId" VARCHAR(120) NOT NULL,
+    "issueType" VARCHAR(120) NOT NULL,
     "fieldId" VARCHAR(120) NOT NULL,
     "fieldName" VARCHAR(120) NOT NULL,
     "fieldType" VARCHAR(120) NOT NULL,
-    PRIMARY KEY ("providerId", "teamId", "projectId", "dimensionName")
+    PRIMARY KEY ("providerId", "teamId", "projectId", "issueType", "dimensionName")
   );
   `)
   await client.end()

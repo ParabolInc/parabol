@@ -1,15 +1,9 @@
 import getPg from '../getPg'
-import {upsertJiraServerDimensionFieldMapQuery} from './generated/upsertJiraServerDimensionFielMapQuery'
+import {IUpsertJiraServerDimensionFieldMapQueryParams, upsertJiraServerDimensionFieldMapQuery} from './generated/upsertJiraServerDimensionFielMapQuery'
 
-const upsertJiraServerDimensionFieldMap = async (fieldMap: {
-  providerId: number,
-  teamId: string,
-  projectId: string,
-  dimensionName: string,
-  fieldId: string,
-  fieldName: string,
-  fieldType: string
-}) => {
+export type UpsertJiraServerDimensionFieldMapParams = IUpsertJiraServerDimensionFieldMapQueryParams['fieldMap']
+
+const upsertJiraServerDimensionFieldMap = async (fieldMap: UpsertJiraServerDimensionFieldMapParams) => {
   return upsertJiraServerDimensionFieldMapQuery.run(
     {fieldMap},
     getPg()

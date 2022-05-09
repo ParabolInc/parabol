@@ -1,12 +1,15 @@
 import DataLoader from 'dataloader'
 import JiraServerRestManager, {
-  JiraServerRestProject,
-  JiraServerFieldType
+  JiraServerFieldType,
+  JiraServerRestProject
 } from '../integrations/jiraServer/JiraServerRestManager'
-import RootDataLoader from './RootDataLoader'
-import sendToSentry from '../utils/sendToSentry'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
-import getJiraServerDimensionFieldMap, {JiraServerDimensionFieldMap} from '../postgres/queries/getJiraServerDimensionFieldMap'
+import getJiraServerDimensionFieldMap, {
+  GetJiraServerDimensionFieldMapParams,
+  JiraServerDimensionFieldMap
+} from '../postgres/queries/getJiraServerDimensionFieldMap'
+import sendToSentry from '../utils/sendToSentry'
+import RootDataLoader from './RootDataLoader'
 
 export interface JiraServerIssueKey {
   teamId: string
@@ -19,14 +22,14 @@ export interface JiraServerIssueTypeKey {
   teamId: string
   userId: string
   providerId: number
-  issueTypeId: string
+  issueType: string
   projectId: string
 }
 
 export interface JiraServerDimensionFieldKey {
-  providerId: number,
-  teamId: string,
-  projectId: string,
+  providerId: number
+  teamId: string
+  projectId: string
   dimensionName: string
 }
 
@@ -40,7 +43,7 @@ export interface JiraServerIssue {
   description: string | null
   projectId: string
   projectKey: string
-  issueTypeId: string
+  issueType: string
   service: 'jiraServer'
 }
 
@@ -54,9 +57,7 @@ export type JiraServerProject = JiraServerRestProject & {
   providerId: number
 }
 
-export const jiraServerIssue = (
-  parent: RootDataLoader
-) => {
+export const jiraServerIssue = (parent: RootDataLoader) => {
   return new DataLoader<JiraServerIssueKey, JiraServerIssue | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -86,7 +87,7 @@ export const jiraServerIssue = (
             descriptionHTML: issue.renderedFields.description,
             projectId: project.id,
             projectKey: project.key,
-            issueTypeId: issuetype.id,
+            issueType: issuetype.id,
             summary,
             description,
             service: 'jiraServer' as const
@@ -102,9 +103,7 @@ export const jiraServerIssue = (
   )
 }
 
-export const allJiraServerProjects = (
-  parent: RootDataLoader
-) => {
+export const allJiraServerProjects = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, JiraServerProject[], string>(async (keys) => {
     return Promise.all(
       keys.map(async ({userId, teamId}) => {
@@ -131,44 +130,45 @@ export const allJiraServerProjects = (
   })
 }
 
-export const jiraServerFieldTypes = (
-  parent: RootDataLoader
-) => new DataLoader<JiraServerIssueTypeKey, JiraServerFieldType[] | null, string>(async (keys) => {
-    return Promise.all(
-      keys.map(async ({teamId, userId, projectId, issueTypeId}) => {
-        const auth = await parent
-          .get('teamMemberIntegrationAuths')
-          .load({service: 'jiraServer', teamId, userId})
+export const jiraServerFieldTypes = (parent: RootDataLoader) =>
+  new DataLoader<JiraServerIssueTypeKey, JiraServerFieldType[] | null, string>(
+    async (keys) => {
+      return Promise.all(
+        keys.map(async ({teamId, userId, projectId, issueType}) => {
+          const auth = await parent
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'jiraServer', teamId, userId})
 
-        if (!auth) {
-          return null
-        }
+          if (!auth) {
+            return null
+          }
 
-        const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-        const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
-        const fieldTypes = await manager.getFieldTypes(projectId, issueTypeId)
-        return fieldTypes instanceof Error ? null : fieldTypes
-      })
-    )
-  },
-  {
-    ...parent.dataLoaderOptions,
-    cacheKeyFn: ({teamId, userId, projectId, issueTypeId}) => `${teamId}:${userId}:${projectId}:${issueTypeId}`
-  }
-)
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
+          const fieldTypes = await manager.getFieldTypes(projectId, issueType)
+          return fieldTypes instanceof Error ? null : fieldTypes
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, userId, projectId, issueType}) =>
+        `${teamId}:${userId}:${projectId}:${issueType}`
+    }
+  )
 
-export const jiraServerDimensionFieldMap = (
-  parent: RootDataLoader
-) => new DataLoader<JiraServerDimensionFieldKey, JiraServerDimensionFieldMap | null, string>(async (keys) => {
-    return Promise.all(
-      keys.map(async ({providerId, teamId, projectId, dimensionName}) => {
-        return getJiraServerDimensionFieldMap(providerId, teamId, projectId, dimensionName)
-      })
-    )
-  },
-  {
-    ...parent.dataLoaderOptions,
-    cacheKeyFn: ({providerId, teamId, projectId, dimensionName}) => `${providerId}:${teamId}:${projectId}:${dimensionName}`
-  }
-)
-
+export const jiraServerDimensionFieldMap = (parent: RootDataLoader) =>
+  new DataLoader<GetJiraServerDimensionFieldMapParams, JiraServerDimensionFieldMap | null, string>(
+    async (keys) => {
+      return Promise.all(
+        keys.map(async (params) => {
+          return getJiraServerDimensionFieldMap(params)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({providerId, teamId, projectId, issueType, dimensionName}) =>
+        `${providerId}:${teamId}:${projectId}:${issueType}:${dimensionName}`
+    }
+  )

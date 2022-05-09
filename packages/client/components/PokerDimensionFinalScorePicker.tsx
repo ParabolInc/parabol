@@ -131,8 +131,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-
-          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
+          {(integrationType === 'JiraIssue') && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
@@ -158,7 +157,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-          {(integrationType === 'JiraServerIssue') && (
+          {integrationType === 'JiraServerIssue' && (
             <JiraServerFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}

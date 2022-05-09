@@ -7,12 +7,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
 import sendToSentry from '../../utils/sendToSentry'
@@ -99,9 +99,23 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'jiraServer') {
-          const {providerId, repositoryId: projectId} = integration as TaskIntegrationJiraServer
+          const {
+            providerId,
+            repositoryId: projectId,
+            issueId,
+            accessUserId
+          } = integration as TaskIntegrationJiraServer
           const dimensionName = await getDimensionName(meetingId)
-          const existingDimensionField = await dataLoader.get('jiraServerDimensionFieldMap').load({providerId, projectId, teamId, dimensionName})
+
+          const jiraServerIssue = await dataLoader
+            .get('jiraServerIssue')
+            .load({providerId, teamId, userId: accessUserId, issueId})
+          if (!jiraServerIssue) return null
+          const {issueType} = jiraServerIssue
+
+          const existingDimensionField = await dataLoader
+            .get('jiraServerDimensionFieldMap')
+            .load({providerId, projectId, issueType, teamId, dimensionName})
           if (existingDimensionField) {
             return {
               name: existingDimensionField.fieldName,

@@ -144,7 +144,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
             descriptionHTML: issue.renderedFields.description,
             projectId: project.id,
             projectKey: project.key,
-            issueTypeId: issuetype.id,
+            issueType: issuetype.id,
             summary,
             description,
             service: 'jiraServer' as const,

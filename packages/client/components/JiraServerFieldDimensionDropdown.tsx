@@ -58,10 +58,7 @@ const JiraServerFieldDimensionDropdown = (props: Props) => {
           integration {
             ... on JiraServerIssue {
               id
-              fieldMetadata {
-                id
-                name
-              }
+              possibleEstimationFieldNames
             }
           }
         }
@@ -71,7 +68,7 @@ const JiraServerFieldDimensionDropdown = (props: Props) => {
   )
 
   const {serviceField, task} = stage
-  const possibleEstimationFieldNames = task?.integration?.fieldMetadata?.map(({name}) => name) ?? []
+  const possibleEstimationFieldNames = task?.integration?.possibleEstimationFieldNames ?? []
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
@@ -86,7 +83,11 @@ const JiraServerFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const lookupServiceFieldName = possibleEstimationFieldNames.includes(serviceFieldName)
+  const lookupServiceFieldName = [
+    ...possibleEstimationFieldNames,
+    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+    SprintPokerDefaults.SERVICE_FIELD_NULL
+  ].includes(serviceFieldName)
     ? serviceFieldName
     : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 

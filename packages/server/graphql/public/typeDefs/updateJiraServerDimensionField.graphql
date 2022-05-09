@@ -13,7 +13,7 @@ extend type Mutation {
     """
     The Jira Server issue type for which to set the dimension
     """
-    issueTypeId: ID!
+    issueType: ID!
 
     """
     Project id for this setting
@@ -26,18 +26,3 @@ extend type Mutation {
     meetingId: ID!
   ): UpdateDimensionFieldPayload!
 }
-
-type UpdateDimensionFieldSuccess {
-  teamId: ID!
-
-  meetingId: ID
-
-  team: Team!
-
-  """
-  The poker meeting the field was updated from
-  """
-  meeting: PokerMeeting
-}
-
-union UpdateDimensionFieldPayload = UpdateDimensionFieldSuccess | ErrorPayload

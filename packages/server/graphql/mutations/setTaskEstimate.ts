@@ -1,10 +1,10 @@
 import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
@@ -159,7 +159,16 @@ const setTaskEstimate = {
       const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
 
       const {providerId, repositoryId: projectId} = integration as TaskIntegrationJiraServer
-      const existingDimensionField = await dataLoader.get('jiraServerDimensionFieldMap').load({providerId, projectId, teamId, dimensionName})
+      const jiraServerIssue = await dataLoader
+        .get('jiraServerIssue')
+        .load({providerId, teamId, userId: accessUserId, issueId})
+      if (!jiraServerIssue) {
+        return {error: {message: 'Issue not found'}}
+      }
+      const {issueType} = jiraServerIssue
+      const existingDimensionField = await dataLoader
+        .get('jiraServerDimensionFieldMap')
+        .load({providerId, projectId, teamId, dimensionName, issueType})
 
       const fieldId = existingDimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
@@ -175,10 +184,10 @@ const setTaskEstimate = {
         if (res instanceof Error) {
           return {error: {message: res.message}}
         }
-      }
-      else {
-        const updatedStoryPoints = existingDimensionField?.fieldType === 'number' ? Number(value) : value
-        const res = await manager.setField(issueId, fieldId, updatedStoryPoints)        
+      } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+        const updatedStoryPoints =
+          existingDimensionField?.fieldType === 'number' ? Number(value) : value
+        const res = await manager.setField(issueId, fieldId, updatedStoryPoints)
         if (res instanceof Error) {
           return {error: {message: res.message}}
         }
