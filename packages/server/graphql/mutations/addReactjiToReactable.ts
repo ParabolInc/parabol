@@ -1,5 +1,4 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
@@ -119,9 +118,8 @@ const addReactjiToReactable = {
     const subDoc = {id: reactji, userId: viewerId}
     if (isRemove) {
       if (isPgTable) {
-        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await removeTeamResponseReactji.run(
-          {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
+          {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {
@@ -136,9 +134,8 @@ const addReactjiToReactable = {
       }
     } else {
       if (isPgTable) {
-        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await appendTeamResponseReactji.run(
-          {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
+          {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {

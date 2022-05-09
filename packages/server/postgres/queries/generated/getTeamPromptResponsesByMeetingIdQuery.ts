@@ -10,7 +10,7 @@ export interface IGetTeamPromptResponsesByMeetingIdQueryParams {
 
 /** 'GetTeamPromptResponsesByMeetingIdQuery' return type */
 export interface IGetTeamPromptResponsesByMeetingIdQueryResult {
-  id: number;
+  id: string | null;
   createdAt: Date;
   updatedAt: Date;
   meetingId: string;
@@ -27,12 +27,12 @@ export interface IGetTeamPromptResponsesByMeetingIdQueryQuery {
   result: IGetTeamPromptResponsesByMeetingIdQueryResult;
 }
 
-const getTeamPromptResponsesByMeetingIdQueryIR: any = {"name":"getTeamPromptResponsesByMeetingIdQuery","params":[{"name":"meetingIds","codeRefs":{"defined":{"a":59,"b":68,"line":3,"col":9},"used":[{"a":270,"b":279,"line":6,"col":22}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"meetingIds":true},"statement":{"body":"SELECT \"id\", \"createdAt\", \"updatedAt\", \"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\", to_json(\"reactjis\") as \"reactjis\" FROM \"TeamPromptResponse\"\nWHERE \"meetingId\" in :meetingIds","loc":{"a":82,"b":279,"line":5,"col":0}}};
+const getTeamPromptResponsesByMeetingIdQueryIR: any = {"name":"getTeamPromptResponsesByMeetingIdQuery","params":[{"name":"meetingIds","codeRefs":{"defined":{"a":59,"b":68,"line":3,"col":9},"used":[{"a":307,"b":316,"line":6,"col":22}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"meetingIds":true},"statement":{"body":"SELECT CONCAT('teamPromptResponse:', \"id\") as id, \"createdAt\", \"updatedAt\", \"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\", to_json(\"reactjis\") as \"reactjis\" FROM \"TeamPromptResponse\"\nWHERE \"meetingId\" in :meetingIds","loc":{"a":82,"b":316,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT "id", "createdAt", "updatedAt", "meetingId", "userId", "sortOrder", "content", "plaintextContent", to_json("reactjis") as "reactjis" FROM "TeamPromptResponse"
+ * SELECT CONCAT('teamPromptResponse:', "id") as id, "createdAt", "updatedAt", "meetingId", "userId", "sortOrder", "content", "plaintextContent", to_json("reactjis") as "reactjis" FROM "TeamPromptResponse"
  * WHERE "meetingId" in :meetingIds
  * ```
  */

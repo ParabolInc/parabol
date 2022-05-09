@@ -4,4 +4,4 @@
 */
 UPDATE "TeamPromptResponse" SET
   "reactjis" = arr_append_uniq("reactjis", (:reactji)::"Reactji")
-WHERE id = :id;
+WHERE CONCAT('teamPromptResponse:', "id") = :id;

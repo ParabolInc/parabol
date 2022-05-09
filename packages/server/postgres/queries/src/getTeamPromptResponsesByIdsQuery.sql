@@ -2,5 +2,5 @@
   @name getTeamPromptResponsesByIdsQuery
   @param ids -> (...)
 */
-SELECT "id", "createdAt", "updatedAt", "meetingId", "userId", "sortOrder", "content", "plaintextContent", to_json("reactjis") as "reactjis" FROM "TeamPromptResponse"
-WHERE id in :ids;
+SELECT CONCAT('teamPromptResponse:', "id") as id, "createdAt", "updatedAt", "meetingId", "userId", "sortOrder", "content", "plaintextContent", to_json("reactjis") as "reactjis" FROM "TeamPromptResponse"
+WHERE CONCAT('teamPromptResponse:', "id") in :ids;

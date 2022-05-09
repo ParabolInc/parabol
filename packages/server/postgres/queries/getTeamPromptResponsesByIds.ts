@@ -1,5 +1,4 @@
 import {JSONContent} from '@tiptap/core'
-import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {MaybeReadonly} from 'parabol-client/types/generics'
 import Reactji from '../../database/types/Reactji'
 import getPg from '../getPg'
@@ -21,7 +20,6 @@ export const mapToTeamPromptResponse = (
   return results.map((teamPromptResponse: any) => {
     return {
       ...teamPromptResponse,
-      id: TeamPromptResponseId.join(teamPromptResponse.id),
       reactjis: teamPromptResponse.reactjis.map(
         (reactji: {shortname: string; userid: string}) =>
           new Reactji({id: reactji.shortname, userId: reactji.userid})
@@ -34,7 +32,7 @@ export const getTeamPromptResponsesByIds = async (
   teamPromptResponseIds: MaybeReadonly<string[]>
 ): Promise<TeamPromptResponse[]> => {
   const teamPromptResponses = await getTeamPromptResponsesByIdsQuery.run(
-    {ids: teamPromptResponseIds.map((id) => TeamPromptResponseId.split(id))},
+    {ids: teamPromptResponseIds},
     getPg()
   )
   return mapToTeamPromptResponse(teamPromptResponses)

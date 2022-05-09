@@ -4,4 +4,4 @@
 */
 UPDATE "TeamPromptResponse" SET
   "reactjis" = array_remove("reactjis", (:reactji)::"Reactji")
-WHERE id = :id;
+WHERE CONCAT('teamPromptResponse:', "id") = :id;
