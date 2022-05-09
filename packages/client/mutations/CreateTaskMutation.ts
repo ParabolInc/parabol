@@ -60,7 +60,6 @@ graphql`
           id
           iid
           title
-          webPath
           webUrl
         }
       }

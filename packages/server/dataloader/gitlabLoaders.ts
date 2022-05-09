@@ -27,17 +27,10 @@ export const gitlabIssue = (
           if (!gitlabAuth?.providerId) return null
           const {providerId} = gitlabAuth
           const provider = await parent.get('integrationProviders').load(providerId)
-          const query = `
-              query {
-                issue(id: "${gid}"){
-                  ...info
-                }
-              }
-          `
+
           if (!provider?.serverBaseUrl) return null
           const manager = new GitLabServerManager(gitlabAuth, context, info, provider.serverBaseUrl)
-          const gitlabRequest = manager.getGitLabRequest(info, context)
-          const [data, error] = await gitlabRequest(query, {})
+          const [data, error] = await manager.getIssue({gid})
           if (error) {
             console.log(error)
             sendToSentry(error, {userId: accessUserId, tags: {gid, teamId}})

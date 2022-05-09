@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {ReactElement} from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import useRightDrawer from '~/hooks/useRightDrawer'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
 import ErrorBoundary from './ErrorBoundary'
 import EstimatePhaseArea from './EstimatePhaseArea'
 import EstimatePhaseDiscussionDrawer from './EstimatePhaseDiscussionDrawer'
@@ -17,7 +16,6 @@ import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
-import {PokerMeetingPhaseProps} from './PokerMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
@@ -40,13 +38,49 @@ const EstimateAreaWrapper = styled('div')({
   flexDirection: 'column'
 })
 
-interface Props extends PokerMeetingPhaseProps {
+type Props = {
+  toggleSidebar: () => void
+  avatarGroup: ReactElement
   gotoStageId: ReturnType<typeof useGotoStageId>
-  meeting: PokerEstimatePhase_meeting
+  queryRef: PreloadedQuery<any> // TODO: update
 }
 
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, meeting, toggleSidebar, gotoStageId} = props
+  const {avatarGroup, toggleSidebar, gotoStageId, queryRef} = props
+
+  const data = usePreloadedQuery(
+    graphql`
+      query PokerEstimatePhaseQuery($meetingId: ID!) {
+        viewer {
+          meeting(meetingId: $meetingId) {
+            ... on PokerMeeting {
+              ...EstimatePhaseArea_meeting
+              id
+              endedAt
+              isCommentUnread
+              isRightDrawerOpen
+              localStage {
+                ...PokerEstimateHeaderCard_stage
+              }
+              # phases {
+              #   ... on EstimatePhase {
+              #     stages {
+              #       ...PokerEstimateHeaderCard_stage
+              #     }
+              #   }
+              # }
+              showSidebar
+              ...EstimatePhaseDiscussionDrawer_meeting
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const {viewer} = data
+  const {meeting} = viewer
   const {
     id: meetingId,
     localStage,
@@ -57,6 +91,7 @@ const PokerEstimatePhase = (props: Props) => {
   } = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleDrawer = useRightDrawer(meetingId)
+
   if (!localStage) return null
   return (
     <MeetingContent>
@@ -98,26 +133,4 @@ const PokerEstimatePhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerEstimatePhase, {
-  meeting: graphql`
-    fragment PokerEstimatePhase_meeting on PokerMeeting {
-      ...EstimatePhaseArea_meeting
-      id
-      endedAt
-      isCommentUnread
-      isRightDrawerOpen
-      localStage {
-        ...PokerEstimateHeaderCard_stage
-      }
-      phases {
-        ... on EstimatePhase {
-          stages {
-            ...PokerEstimateHeaderCard_stage
-          }
-        }
-      }
-      showSidebar
-      ...EstimatePhaseDiscussionDrawer_meeting
-    }
-  `
-})
+export default PokerEstimatePhase

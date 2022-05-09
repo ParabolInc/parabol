@@ -12,8 +12,9 @@ graphql`
     task {
       ...IntegratedTaskContent_task
       integration {
-        __typename
+        # __typename
         ... on JiraIssue {
+          __typename
           cloudId
           cloudName
           url
@@ -26,6 +27,7 @@ graphql`
           }
         }
         ... on _xGitHubIssue {
+          __typename
           bodyHTML
           title
           number
@@ -34,6 +36,7 @@ graphql`
           }
         }
         ... on JiraServerIssue {
+          __typename
           descriptionHTML
           summary
         }
@@ -41,7 +44,6 @@ graphql`
           descriptionHtml
           title
           iid
-          webPath
           webUrl
         }
         ...TaskIntegrationLinkIntegrationGitHub
@@ -132,14 +134,15 @@ const gitlabTaskIntegrationOptimisitcUpdater = (store, variables) => {
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
   const {title, contentState} = splitDraftContent(contentStr)
-  const descriptionHtml = stateToHTML(contentState)
-  const webPath = `${fullPath}/-/issues/0`
+  const descriptionHtml = stateToHTML(contentState) || ''
+  // const webPath = `${fullPath}/-/issues/0`
   const optimisticIntegration = {
     title,
     descriptionHtml,
     iid: 0,
-    webPath,
-    webUrl: `https://gitlab.com/${webPath}`,
+    webPath: 'test',
+    // webUrl: `https://gitlab.com/${webPath}`,
+    webUrl: `https://gitlab.com/`, // TODO: update these fields
     updatedAt: now.toJSON()
   } as const
   const integration = createProxyRecord(store, '_xGitLabIssue', optimisticIntegration)

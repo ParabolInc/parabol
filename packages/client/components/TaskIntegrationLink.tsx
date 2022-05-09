@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {parseWebPath} from '~/utils/parseWebPath'
+import {parseWebUrl} from '~/utils/parseWebUrl'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
 import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
@@ -79,8 +79,8 @@ const TaskIntegrationLink = (props: Props) => {
       </StyledLink>
     )
   } else if (integration.__typename === '_xGitLabIssue') {
-    const {webPath, iid, webUrl} = integration
-    const {fullPath} = parseWebPath(webPath)
+    const {webUrl, iid} = integration
+    const {fullPath} = parseWebUrl(webUrl)
     return (
       <StyledLink
         href={webUrl}
@@ -117,7 +117,6 @@ graphql`
 graphql`
   fragment TaskIntegrationLinkIntegrationGitLab on _xGitLabIssue {
     iid
-    webPath
     webUrl
   }
 `

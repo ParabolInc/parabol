@@ -2,10 +2,10 @@ import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-r
 import {gitlabIssueArgs} from '~/components/GitLabScopingSearchResultsRoot'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
+import {parseWebUrl} from '../../utils/parseWebUrl'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
 import getGitLabProjectsConn from '../connections/getGitLabProjectsConn'
-import {parseWebPath} from './../../utils/parseWebPath'
 
 const handleGitLabCreateIssue = (
   task: RecordProxy<NonNullable<CreateTaskMutationResponse['createTask']['task']>>,
@@ -18,7 +18,7 @@ const handleGitLabCreateIssue = (
   const meetingId = task.getValue('meetingId')
   if (!viewerId || !meetingId || !integration) return
   const webPath = integration.getValue('webPath') as string | undefined
-  const {fullPath} = webPath ? parseWebPath(webPath) : {fullPath: ''}
+  const {fullPath} = webPath ? parseWebUrl(webPath) : {fullPath: ''}
   const project = createProxyRecord(store, '_xGitLabProject', {
     fullPath
   })

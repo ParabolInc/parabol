@@ -21,8 +21,8 @@ import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
     newStages {
-      ...useMakeStageSummaries_stages
-      ...PokerEstimateHeaderCard_stage
+      # ...useMakeStageSummaries_stages
+      # ...PokerEstimateHeaderCard_stage
       ...PokerCardDeckStage
       ...EstimatePhaseAreaStage
       ...JiraFieldDimensionDropdown_stage

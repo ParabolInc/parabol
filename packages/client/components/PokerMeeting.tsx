@@ -18,12 +18,12 @@ interface Props {
 }
 
 const phaseLookup = {
-  checkin: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  checkin: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  ESTIMATE: lazyPreload(() =>
-    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  ESTIMATE: lazyPreload(
+    () => import(/* webpackChunkName: 'PokerEstimatePhaseRoot' */ './PokerEstimatePhaseRoot')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
@@ -35,9 +35,8 @@ export interface PokerMeetingPhaseProps {
 
 const PokerMeeting = (props: Props) => {
   const {meeting} = props
-  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} = useMeeting(
-    meeting
-  )
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} =
+    useMeeting(meeting)
   const {showSidebar, localPhase} = meeting
 
   if (!safeRoute) return null
@@ -79,7 +78,7 @@ export default createFragmentContainer(PokerMeeting, {
       ...NewMeetingAvatarGroup_meeting
       ...MeetingControlBar_meeting
       ...ScopePhase_meeting
-      ...PokerEstimatePhase_meeting
+      ...PokerEstimatePhaseRoot_meeting
       id
       # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
       init: id @__clientField(handle: "localPoker")

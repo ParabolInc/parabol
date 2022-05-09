@@ -8,11 +8,11 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
+import {parseWebUrl} from '../utils/parseWebUrl'
 import isTempId from '../utils/relay/isTempId'
 import {GitLabScopingSearchResultItem_issue$key} from '../__generated__/GitLabScopingSearchResultItem_issue.graphql'
 import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
-import {parseWebPath} from '../utils/parseWebPath'
 import Ellipsis from './Ellipsis/Ellipsis'
 
 const Item = styled('div')({
@@ -58,14 +58,13 @@ const GitLabScopingSearchResultItem = (props: Props) => {
         id
         iid
         title
-        webPath
         webUrl
       }
     `,
     issueRef
   )
-  const {id: gid, iid, title, webPath, webUrl: url} = issue
-  const {fullPath} = parseWebPath(webPath)
+  const {id: gid, iid, title, webUrl: url} = issue
+  const {fullPath} = parseWebUrl(url)
   const serviceTaskId = GitLabIssueId.join(providerId, gid)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
