@@ -1,9 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import ServerAuthToken from '../../database/types/ServerAuthToken'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
 import {getUserId, isSuperUser} from '../../utils/authorization'
+import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import softDeleteUser from './helpers/softDeleteUser'
@@ -65,13 +67,37 @@ export default {
     }
     const {id: userIdToDelete} = user
 
-    const deletedUserEmail = await softDeleteUser(
-      userIdToDelete,
-      dataLoader,
-      authToken,
-      validReason
-    )
+    const deletedUserEmail = await softDeleteUser(userIdToDelete, dataLoader)
     await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
+
+    // Update HubSpot after deletion
+    const executeGraphQL = require('../executeGraphQL').default
+    const parabolPayload = await executeGraphQL({
+      authToken: new ServerAuthToken(), // Need admin access to run the query
+      query: `
+        query AccountRemoved($userId: ID!) {
+          user(userId: $userId) {
+            isRemoved
+            company {
+              userCount
+              activeUserCount
+            }
+          }
+        }
+      `,
+      variables: {userId: userIdToDelete},
+      isPrivate: true
+    })
+    parabolPayload.data.user.email = user.email
+    segmentIo.track({
+      userId: userIdToDelete,
+      event: 'Account Removed',
+      properties: {
+        reason: validReason,
+        parabolPayload: parabolPayload.data
+      }
+    })
+
     return {}
   }
 }
