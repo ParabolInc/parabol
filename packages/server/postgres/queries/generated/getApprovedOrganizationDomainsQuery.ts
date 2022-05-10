@@ -11,7 +11,7 @@ export interface IGetApprovedOrganizationDomainsQueryResult {
   id: number;
   createdAt: Date;
   removedAt: Date | null;
-  domain: string | null;
+  domain: string;
   orgId: string;
   addedByUserId: string;
 }
