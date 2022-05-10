@@ -8,8 +8,8 @@ import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import dndNoise from '~/utils/dndNoise'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
+import {ParabolScopingSearchResultsPaginationQuery} from '../__generated__/ParabolScopingSearchResultsPaginationQuery.graphql'
 import {ParabolScopingSearchResultsQuery} from '../__generated__/ParabolScopingSearchResultsQuery.graphql'
-import {ParabolScopingSearchResultsRootQuery} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
 import {ParabolScopingSearchResults_meeting$key} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
 import {ParabolScopingSearchResults_query$key} from '../__generated__/ParabolScopingSearchResults_query.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -21,15 +21,15 @@ const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 interface Props {
-  queryRef: PreloadedQuery<ParabolScopingSearchResultsRootQuery>
+  queryRef: PreloadedQuery<ParabolScopingSearchResultsQuery>
   meetingRef: ParabolScopingSearchResults_meeting$key
 }
 
 const ParabolScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
-  const viewerRef = usePreloadedQuery<ParabolScopingSearchResultsRootQuery>(
+  const viewerRef = usePreloadedQuery<ParabolScopingSearchResultsQuery>(
     graphql`
-      query ParabolScopingSearchResultsRootQuery(
+      query ParabolScopingSearchResultsQuery(
         $first: Int!
         $after: DateTime
         $userIds: [ID!]
@@ -60,12 +60,12 @@ const ParabolScopingSearchResults = (props: Props) => {
     meetingRef
   )
   const paginationRes = usePaginationFragment<
-    ParabolScopingSearchResultsQuery,
+    ParabolScopingSearchResultsPaginationQuery,
     ParabolScopingSearchResults_query$key
   >(
     graphql`
       fragment ParabolScopingSearchResults_query on Query
-      @refetchable(queryName: "ParabolScopingSearchResultsQuery") {
+      @refetchable(queryName: "ParabolScopingSearchResultsPaginationQuery") {
         viewer {
           tasks(
             first: $first

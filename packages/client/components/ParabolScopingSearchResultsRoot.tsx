@@ -5,9 +5,9 @@ import {ParabolSearchQuery} from '~/types/clientSchema'
 import {taskScopingStatusFilters} from '~/utils/constants'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MockScopingList from '../modules/meeting/components/MockScopingList'
-import parabolScopingSearchResultsRootQuery, {
-  ParabolScopingSearchResultsRootQuery
-} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
+import parabolScopingSearchResultsQuery, {
+  ParabolScopingSearchResultsQuery
+} from '../__generated__/ParabolScopingSearchResultsQuery.graphql'
 import {ParabolScopingSearchResultsRoot_meeting$key} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
 import ErrorBoundary from './ErrorBoundary'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
@@ -33,8 +33,8 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
   )
   const {teamId, parabolSearchQuery} = meeting
   const {queryString, statusFilters} = parabolSearchQuery as unknown as ParabolSearchQuery
-  const queryRef = useQueryLoaderNow<ParabolScopingSearchResultsRootQuery>(
-    parabolScopingSearchResultsRootQuery,
+  const queryRef = useQueryLoaderNow<ParabolScopingSearchResultsQuery>(
+    parabolScopingSearchResultsQuery,
     {
       first: 50,
       teamIds: [teamId],
