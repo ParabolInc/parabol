@@ -1,16 +1,29 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {usePaginationFragment} from 'react-relay'
+import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
 import {OrgMembersPaginationQuery} from '../../../../__generated__/OrgMembersPaginationQuery.graphql'
+import {OrgMembersQuery} from '../../../../__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '../../../../__generated__/OrgMembers_viewer.graphql'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 interface Props {
-  viewerRef: OrgMembers_viewer$key
+  queryRef: PreloadedQuery<OrgMembersQuery>
 }
 
-const OrgMembers = ({viewerRef}: Props) => {
+const OrgMembers = ({queryRef}: Props) => {
+  const viewerRef = usePreloadedQuery<OrgMembersQuery>(
+    graphql`
+      query OrgMembersQuery($orgId: ID!, $first: Int!, $after: String) {
+        ...OrgMembers_viewer
+      }
+    `,
+    queryRef,
+    {
+      UNSTABLE_renderPolicy: 'full'
+    }
+  )
+
   const {data} = usePaginationFragment<OrgMembersPaginationQuery, OrgMembers_viewer$key>(
     graphql`
       fragment OrgMembers_viewer on Query @refetchable(queryName: "OrgMembersPaginationQuery") {
