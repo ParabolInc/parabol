@@ -143,13 +143,6 @@ const TeamPromptResponseCard = (props: Props) => {
     )
   }
 
-  const discussionUsers = responseStage.discussion.thread.edges
-    .map((node) => node.node.createdByUser)
-    .filter((user) => !!user)
-  const distinctDiscussionUsers = Object.values(
-    Object.fromEntries(discussionUsers.map((user) => [user!.id, user!]))
-  )
-
   return (
     <>
       <ResponseHeader>
