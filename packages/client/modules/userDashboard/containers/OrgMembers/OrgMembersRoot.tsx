@@ -9,14 +9,6 @@ import orgMembersRootQuery, {
 } from '../../../../__generated__/OrgMembersRootQuery.graphql'
 import OrgMembers from '../../components/OrgMembers/OrgMembers'
 
-const query = graphql`
-  query OrgMembersRootQuery($orgId: ID!, $first: Int!, $after: String) {
-    viewer {
-      ...OrgMembers_viewer
-    }
-  }
-`
-
 interface Props {
   orgId: string
 }
@@ -40,11 +32,18 @@ interface OrgMembersContainerProps {
 
 function OrgMembersContainer(props: OrgMembersContainerProps) {
   const {queryRef} = props
-  const data = usePreloadedQuery<OrgMembersRootQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
-  const {viewer} = data
-  return <OrgMembers viewer={viewer} />
+  const data = usePreloadedQuery<OrgMembersRootQuery>(
+    graphql`
+      query OrgMembersRootQuery($orgId: ID!, $first: Int!, $after: String) {
+        ...OrgMembers_viewer
+      }
+    `,
+    queryRef,
+    {
+      UNSTABLE_renderPolicy: 'full'
+    }
+  )
+  return <OrgMembers viewerRef={data} />
 }
 
 export default OrgMembersRoot

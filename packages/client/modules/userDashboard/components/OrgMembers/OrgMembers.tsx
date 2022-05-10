@@ -1,18 +1,45 @@
-import React from 'react'
-import {createPaginationContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+import React from 'react'
+import {usePaginationFragment} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
-import {OrgMembers_viewer} from '../../../../__generated__/OrgMembers_viewer.graphql'
+import {OrgMembersPaginationQuery} from '../../../../__generated__/OrgMembersPaginationQuery.graphql'
+import {OrgMembers_viewer$key} from '../../../../__generated__/OrgMembers_viewer.graphql'
+import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 interface Props {
-  viewer: OrgMembers_viewer
+  viewerRef: OrgMembers_viewer$key
 }
 
-const OrgMembers = (props: Props) => {
-  const {
-    viewer: {organization}
-  } = props
+const OrgMembers = ({viewerRef}: Props) => {
+  const {data} = usePaginationFragment<OrgMembersPaginationQuery, OrgMembers_viewer$key>(
+    graphql`
+      fragment OrgMembers_viewer on Query @refetchable(queryName: "OrgMembersPaginationQuery") {
+        viewer {
+          organization(orgId: $orgId) {
+            ...OrgMemberRow_organization
+            organizationUsers(first: $first, after: $after)
+              @connection(key: "OrgMembers_organizationUsers") {
+              edges {
+                cursor
+                node {
+                  id
+                  role
+                  ...OrgMemberRow_organizationUser
+                }
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+  const {viewer} = data
+  const {organization} = viewer
   if (!organization) return null
   const {organizationUsers} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
@@ -35,57 +62,4 @@ const OrgMembers = (props: Props) => {
   )
 }
 
-export default createPaginationContainer<Props>(
-  OrgMembers,
-  {
-    viewer: graphql`
-      fragment OrgMembers_viewer on User {
-        organization(orgId: $orgId) {
-          ...OrgMemberRow_organization
-          organizationUsers(first: $first, after: $after)
-            @connection(key: "OrgMembers_organizationUsers") {
-            edges {
-              cursor
-              node {
-                id
-                role
-                ...OrgMemberRow_organizationUser
-              }
-            }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-          }
-        }
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps(props) {
-      const {viewer} = props
-      return viewer && viewer.organization && viewer.organization.organizationUsers
-    },
-    getFragmentVariables(prevVars, totalCount) {
-      return {
-        ...prevVars,
-        first: totalCount
-      }
-    },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: count,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query OrgMembersPaginationQuery($first: Int!, $after: String, $orgId: ID!) {
-        viewer {
-          ...OrgMembers_viewer
-        }
-      }
-    `
-  }
-)
+export default OrgMembers
