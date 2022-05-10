@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {RelayPaginationProp} from 'react-relay'
 
 const useLoadMoreOnScrollBottom = (
-  relay: RelayPaginationProp,
+  relay: Pick<RelayPaginationProp, 'loadMore' | 'isLoading' | 'hasMore'>,
   options?: IntersectionObserverInit,
   loadMoreQty = 20
 ) => {

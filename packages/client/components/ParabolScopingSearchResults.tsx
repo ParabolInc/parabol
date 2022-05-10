@@ -1,15 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
-import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import dndNoise from '~/utils/dndNoise'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
-import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
+import {ParabolScopingSearchResultsQuery} from '../__generated__/ParabolScopingSearchResultsQuery.graphql'
+import {ParabolScopingSearchResultsRootQuery} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
+import {ParabolScopingSearchResults_meeting$key} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
+import {ParabolScopingSearchResults_query$key} from '../__generated__/ParabolScopingSearchResults_query.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
@@ -19,18 +21,95 @@ const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 interface Props {
-  relay: RelayPaginationProp
-  viewer: ParabolScopingSearchResults_viewer | null
-  meeting: ParabolScopingSearchResults_meeting
+  queryRef: PreloadedQuery<ParabolScopingSearchResultsRootQuery>
+  meetingRef: ParabolScopingSearchResults_meeting$key
 }
 
 const ParabolScopingSearchResults = (props: Props) => {
-  const {viewer, meeting, relay} = props
+  const {queryRef, meetingRef} = props
+  const viewerRef = usePreloadedQuery<ParabolScopingSearchResultsRootQuery>(
+    graphql`
+      query ParabolScopingSearchResultsRootQuery(
+        $first: Int!
+        $after: DateTime
+        $userIds: [ID!]
+        $teamIds: [ID!]
+        $statusFilters: [TaskStatusEnum!]
+        $filterQuery: String
+      ) {
+        ...ParabolScopingSearchResults_query
+      }
+    `,
+    queryRef,
+    {
+      UNSTABLE_renderPolicy: 'full'
+    }
+  )
+
+  const meeting = useFragment(
+    graphql`
+      fragment ParabolScopingSearchResults_meeting on PokerMeeting {
+        id
+        phases {
+          phaseType
+          ...useGetUsedServiceTaskIds_phase
+        }
+        teamId
+      }
+    `,
+    meetingRef
+  )
+  const {data, hasNext, isLoadingNext, loadNext} = usePaginationFragment<
+    ParabolScopingSearchResultsQuery,
+    ParabolScopingSearchResults_query$key
+  >(
+    graphql`
+      fragment ParabolScopingSearchResults_query on Query
+      @refetchable(queryName: "ParabolScopingSearchResultsQuery") {
+        viewer {
+          tasks(
+            first: $first
+            after: $after
+            userIds: $userIds
+            teamIds: $teamIds
+            archived: false
+            statusFilters: $statusFilters
+            filterQuery: $filterQuery
+          ) @connection(key: "ParabolScopingSearchResults_tasks") {
+            edges {
+              ...ParabolScopingSelectAllTasks_tasks
+              cursor
+              node {
+                ...ParabolScopingSearchResultItem_task
+                id
+                integrationHash
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+
+  const {viewer} = data
   const tasks = viewer?.tasks ?? null
   const incomingEdges = tasks?.edges ?? null
   const [edges, setEdges] = useState([] as readonly any[])
   const [isEditing, setIsEditing] = useState(false)
-  const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
+  const lastItem = useLoadMoreOnScrollBottom(
+    {
+      loadMore: (pageSize) => loadNext(pageSize),
+      hasMore: () => hasNext,
+      isLoading: () => isLoadingNext
+    },
+    {},
+    50
+  )
   useEffect(() => {
     if (!incomingEdges) return
     const unintegratedTaskEdges = incomingEdges.filter(
@@ -98,79 +177,4 @@ const ParabolScopingSearchResults = (props: Props) => {
   )
 }
 
-// TODO: migrate Pagination Container → usePaginationFragment
-export default createPaginationContainer(
-  ParabolScopingSearchResults,
-  {
-    meeting: graphql`
-      fragment ParabolScopingSearchResults_meeting on PokerMeeting {
-        id
-        phases {
-          phaseType
-          ...useGetUsedServiceTaskIds_phase
-        }
-        teamId
-      }
-    `,
-    viewer: graphql`
-      fragment ParabolScopingSearchResults_viewer on User {
-        tasks(
-          first: $first
-          after: $after
-          userIds: $userIds
-          teamIds: $teamIds
-          archived: false
-          statusFilters: $statusFilters
-          filterQuery: $filterQuery
-        ) @connection(key: "ParabolScopingSearchResults_tasks") {
-          edges {
-            ...ParabolScopingSelectAllTasks_tasks
-            cursor
-            node {
-              ...ParabolScopingSearchResultItem_task
-              id
-              integrationHash
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps({viewer}) {
-      return viewer?.tasks
-    },
-    getFragmentVariables(prevVars, totalCount) {
-      return {
-        ...prevVars,
-        first: totalCount
-      }
-    },
-    getVariables(_, {count, cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: count,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query ParabolScopingSearchResultsPaginationQuery(
-        $first: Int!
-        $after: DateTime
-        $teamIds: [ID!]
-        $userIds: [ID!]
-        $statusFilters: [TaskStatusEnum!]
-        $filterQuery: String
-      ) {
-        viewer {
-          ...ParabolScopingSearchResults_viewer
-        }
-      }
-    `
-  }
-)
+export default ParabolScopingSearchResults
