@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import dndNoise from '~/utils/dndNoise'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {ParabolScopingSearchResultsQuery} from '../__generated__/ParabolScopingSearchResultsQuery.graphql'
 import {ParabolScopingSearchResultsRootQuery} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
 import {ParabolScopingSearchResults_meeting$key} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
@@ -59,7 +59,7 @@ const ParabolScopingSearchResults = (props: Props) => {
     `,
     meetingRef
   )
-  const {data, hasNext, isLoadingNext, loadNext} = usePaginationFragment<
+  const paginationRes = usePaginationFragment<
     ParabolScopingSearchResultsQuery,
     ParabolScopingSearchResults_query$key
   >(
@@ -95,21 +95,14 @@ const ParabolScopingSearchResults = (props: Props) => {
     `,
     viewerRef
   )
-
+  const {data} = paginationRes
   const {viewer} = data
   const tasks = viewer?.tasks ?? null
   const incomingEdges = tasks?.edges ?? null
   const [edges, setEdges] = useState([] as readonly any[])
   const [isEditing, setIsEditing] = useState(false)
-  const lastItem = useLoadMoreOnScrollBottom(
-    {
-      loadMore: (pageSize) => loadNext(pageSize),
-      hasMore: () => hasNext,
-      isLoading: () => isLoadingNext
-    },
-    {},
-    50
-  )
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 50)
+
   useEffect(() => {
     if (!incomingEdges) return
     const unintegratedTaskEdges = incomingEdges.filter(
