@@ -13,6 +13,7 @@ graphql`
       ... on IntegrationProviderOAuth2 {
         serverBaseUrl
         clientId
+        tenantId
       }
     }
   }

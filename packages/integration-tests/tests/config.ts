@@ -1,6 +1,6 @@
-import '../../../scripts/webpack/utils/dotenv'
 import {Page} from '@playwright/test'
-import {newConfig, string, number} from 'ts-app-env'
+import {newConfig, number, string} from 'ts-app-env'
+import '../../../scripts/webpack/utils/dotenv'
 
 const EnvConfig = {
   HOST: string(),
@@ -24,7 +24,7 @@ export class Config {
 
   private rootUrlPathFromEnv({HOST, PORT}: typeof EnvConfig): string {
     const scheme = HOST === 'localhost' ? 'http' : 'https'
-    return `${scheme}://${HOST}${PORT ? `:${PORT}` : ''}`
+    return `${scheme}://${HOST}${HOST === 'localhost' ? `:${PORT}` : ''}`
   }
 }
 
