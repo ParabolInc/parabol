@@ -21,6 +21,8 @@ const TimelineFeedList = (props: Props) => {
     TimelineFeedListPaginationQuery,
     TimelineFeedList_viewer$key
   >(
+    // TODO: can't `on User` directly because not implements Node (i.e. a type that has an id).
+    // https://relay.dev/docs/api-reference/use-refetchable-fragment/#arguments
     graphql`
       fragment TimelineFeedList_viewer on Query
       @refetchable(queryName: "TimelineFeedListPaginationQuery") {

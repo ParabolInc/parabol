@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {AppBar, Breakpoint, Layout, NavSidebar} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {DashTopBar_viewer} from '~/__generated__/DashTopBar_viewer.graphql'
+import {DashTopBar_viewer$key} from '~/__generated__/DashTopBar_viewer.graphql'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -20,7 +20,7 @@ const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_W
 
 interface Props {
   toggle: () => void
-  viewer: DashTopBar_viewer | null
+  viewerRef: DashTopBar_viewer$key
 }
 
 const Wrapper = styled('header')({
@@ -89,7 +89,20 @@ const TopBarMain = styled('div')({
 })
 
 const DashTopBar = (props: Props) => {
-  const {toggle, viewer} = props
+  const {toggle, viewerRef} = props
+  const data = useFragment(
+    graphql`
+      fragment DashTopBar_viewer on Query {
+        ...TopBarNotifications_viewer
+        viewer {
+          ...TopBarAvatar_viewer
+          ...TopBarSearch_viewer
+          picture
+        }
+      }
+    `,
+    viewerRef
+  )
   const {history} = useRouter()
   const gotoHome = () => {
     history.push('/meetings')
@@ -105,24 +118,15 @@ const DashTopBar = (props: Props) => {
         </LogoWrapper>
       </LeftNavHeader>
       <TopBarMain>
-        <TopBarSearch viewer={viewer} />
+        <TopBarSearch viewer={data.viewer} />
         <TopBarIcons>
           <TopBarHelp />
-          <TopBarNotifications viewer={viewer || null} />
-          <TopBarAvatar viewer={viewer || null} />
+          <TopBarNotifications viewerRef={data || null} />
+          <TopBarAvatar viewer={data.viewer || null} />
         </TopBarIcons>
       </TopBarMain>
     </Wrapper>
   )
 }
 
-export default createFragmentContainer(DashTopBar, {
-  viewer: graphql`
-    fragment DashTopBar_viewer on User {
-      ...TopBarAvatar_viewer
-      ...TopBarSearch_viewer
-      ...TopBarNotifications_viewer
-      picture
-    }
-  `
-})
+export default DashTopBar

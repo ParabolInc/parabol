@@ -1,14 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject} from 'react'
-import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import {usePaginationFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import useTimeout from '~/hooks/useTimeout'
 import SetNotificationStatusMutation from '~/mutations/SetNotificationStatusMutation'
-import {NotificationDropdown_viewer} from '~/__generated__/NotificationDropdown_viewer.graphql'
+import {
+  NotificationDropdown_viewer,
+  NotificationDropdown_viewer$key
+} from '~/__generated__/NotificationDropdown_viewer.graphql'
+import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuProps} from '../hooks/useMenu'
 import useSegmentTrack from '../hooks/useSegmentTrack'
+import {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import NotificationPicker from './NotificationPicker'
@@ -16,8 +20,7 @@ import NotificationPicker from './NotificationPicker'
 interface Props {
   menuProps: MenuProps
   parentRef: RefObject<HTMLDivElement>
-  relay: RelayPaginationProp
-  viewer: NotificationDropdown_viewer | null
+  viewerRef: NotificationDropdown_viewer$key
 }
 
 const NoNotifications = styled('div')({
@@ -31,15 +34,41 @@ const NoNotifications = styled('div')({
   width: '100%'
 })
 
-const defaultViewer = ({notifications: {edges: []}} as unknown) as NotificationDropdown_viewer
+const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDropdown_viewer
 
 const NotificationDropdown = (props: Props) => {
-  const {viewer, menuProps, parentRef, relay} = props
+  const {viewerRef, menuProps, parentRef} = props
+  const paginationRes = usePaginationFragment<
+    NotificationDropdownPaginationQuery,
+    NotificationDropdown_viewer$key
+  >(
+    graphql`
+      fragment NotificationDropdown_viewer on Query
+      @refetchable(queryName: "NotificationDropdownPaginationQuery") {
+        viewer {
+          notifications(first: $first, after: $after)
+            @connection(key: "NotificationDropdown_notifications") {
+            edges {
+              node {
+                id
+                status
+                ...NotificationPicker_notification
+              }
+            }
+          }
+          id
+        }
+      }
+    `,
+    viewerRef
+  )
+  const {data} = paginationRes
+  const {viewer} = data
   const {notifications} = viewer || defaultViewer
   const {edges} = notifications
   const hasNotifications = edges.length > 0
   const timeOut = useTimeout(300)
-  const lastItem = useLoadMoreOnScrollBottom(relay, {
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {
     root: parentRef.current,
     rootMargin: '8px'
   })
@@ -74,50 +103,4 @@ const NotificationDropdown = (props: Props) => {
   )
 }
 
-export default createPaginationContainer(
-  NotificationDropdown,
-  {
-    viewer: graphql`
-      fragment NotificationDropdown_viewer on User {
-        notifications(first: $first, after: $after)
-          @connection(key: "NotificationDropdown_notifications") {
-          edges {
-            node {
-              id
-              status
-              ...NotificationPicker_notification
-            }
-          }
-        }
-        id
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps(props) {
-      const {viewer} = props
-      return viewer?.notifications
-    },
-    getFragmentVariables(prevVars, totalCount) {
-      return {
-        ...prevVars,
-        first: totalCount
-      }
-    },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: count,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query NotificationDropdownPaginationQuery($first: Int!, $after: DateTime) {
-        viewer {
-          ...NotificationDropdown_viewer
-        }
-      }
-    `
-  }
-)
+export default NotificationDropdown
