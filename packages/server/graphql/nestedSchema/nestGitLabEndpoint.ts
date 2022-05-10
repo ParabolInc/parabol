@@ -104,7 +104,8 @@ const nestGitLabEndpoint = (params: NestGitLabParams) => {
     const source = {
       context: endpointContext,
       wrapper: wrapperAST,
-      wrapperVars: variables
+      wrapperVars: variables,
+      dataLoaderOptions: {maxBatchSize: 1}
     } as NestedSource<any>
     const context = batchRef ?? {}
     const data = (await resolve(source, {}, context, info)) as TData

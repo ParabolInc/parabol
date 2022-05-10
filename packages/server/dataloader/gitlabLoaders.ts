@@ -44,6 +44,7 @@ export const gitlabIssue = (
     },
     {
       ...parent.dataLoaderOptions,
+      maxBatchSize: 1,
       cacheKeyFn: ({teamId, accessUserId, gid}) => `${teamId}:${accessUserId}:${gid}`
     }
   )
