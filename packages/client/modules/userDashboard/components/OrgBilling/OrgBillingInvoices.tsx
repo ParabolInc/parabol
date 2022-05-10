@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
-import {OrgBillingInvoices_viewer} from '~/__generated__/OrgBillingInvoices_viewer.graphql'
+import {usePaginationFragment} from 'react-relay'
+import {OrgBillingInvoices_viewer$key} from '~/__generated__/OrgBillingInvoices_viewer.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {Layout} from '../../../../types/constEnums'
+import {OrgBillingInvoicesPaginationQuery} from '../../../../__generated__/OrgBillingInvoicesPaginationQuery.graphql'
 import InvoiceRow from '../InvoiceRow/InvoiceRow'
 
 const MoreGutter = styled('div')({
@@ -17,18 +18,44 @@ const LoadMoreButton = styled(SecondaryButton)({
 })
 
 interface Props {
-  viewer: OrgBillingInvoices_viewer
-  relay: RelayPaginationProp
+  viewerRef: OrgBillingInvoices_viewer$key
 }
 
 const OrgBillingInvoices = (props: Props) => {
-  const {relay, viewer} = props
+  const {viewerRef} = props
+  const paginationRes = usePaginationFragment<
+    OrgBillingInvoicesPaginationQuery,
+    OrgBillingInvoices_viewer$key
+  >(
+    graphql`
+      fragment OrgBillingInvoices_viewer on Query
+      @refetchable(queryName: "OrgBillingInvoicesPaginationQuery") {
+        viewer {
+          invoices(first: $first, orgId: $orgId, after: $after)
+            @connection(key: "OrgBilling_invoices") {
+            edges {
+              cursor
+              node {
+                ...InvoiceRow_invoice
+                id
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+  const {data, hasNext, isLoadingNext, loadNext} = paginationRes
+  const {viewer} = data
   const {invoices} = viewer
-  const {hasMore, isLoading, loadMore} = relay
-  const loadNext = () => {
-    if (!hasMore() || isLoading()) return
-    // @ts-ignore
-    loadMore(5)
+  const loadMore = () => {
+    if (!hasNext || isLoadingNext) return
+    loadNext(5)
   }
   if (!invoices || !invoices.edges.length) return null
   return (
@@ -37,9 +64,9 @@ const OrgBillingInvoices = (props: Props) => {
         {invoices.edges.map(({node: invoice}) => (
           <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />
         ))}
-        {hasMore() && (
+        {hasNext && (
           <MoreGutter>
-            <LoadMoreButton onClick={loadNext}>{'Load More'}</LoadMoreButton>
+            <LoadMoreButton onClick={loadMore}>{'Load More'}</LoadMoreButton>
           </MoreGutter>
         )}
       </div>
@@ -47,53 +74,4 @@ const OrgBillingInvoices = (props: Props) => {
   )
 }
 
-export default createPaginationContainer(
-  OrgBillingInvoices,
-  {
-    viewer: graphql`
-      fragment OrgBillingInvoices_viewer on User {
-        invoices(first: $first, orgId: $orgId, after: $after)
-          @connection(key: "OrgBilling_invoices") {
-          edges {
-            cursor
-            node {
-              ...InvoiceRow_invoice
-              id
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    // @ts-ignore
-    getConnectionFromProps(props) {
-      return props.viewer && props.viewer.invoices
-    },
-    getFragmentVariables(prevVars, totalCount) {
-      return {
-        ...prevVars,
-        first: totalCount
-      }
-    },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: count,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query OrgBillingInvoicesPaginationQuery($first: Int!, $after: DateTime, $orgId: ID!) {
-        viewer {
-          ...OrgBillingInvoices_viewer
-        }
-      }
-    `
-  }
-)
+export default OrgBillingInvoices
