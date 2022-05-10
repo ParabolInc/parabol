@@ -56,14 +56,17 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit && handleSubmit(newEditorState)
   }
 
-  const editor: Editor | null = useEditor({
-    content,
-    extensions: createEditorExtensions(placeholder),
-    autofocus: autoFocus,
-    onUpdate,
-    onBlur: onSubmit,
-    editable: !readOnly
-  })
+  const editor: Editor | null = useEditor(
+    {
+      content,
+      extensions: createEditorExtensions(placeholder),
+      autofocus: autoFocus,
+      onUpdate,
+      onBlur: onSubmit,
+      editable: !readOnly
+    },
+    [content]
+  )
 
   return (
     <StyledEditor>

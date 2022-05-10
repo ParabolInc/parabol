@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -103,6 +104,9 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
                 picture
                 preferredName
               }
+              response {
+                content
+              }
             }
           }
         }
@@ -142,20 +146,8 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  // :TODO: (jmtaber129): Use content from 'stage.stage'.
-  const content = {
-    type: 'doc',
-    content: [
-      {
-        type: 'paragraph',
-        content: [
-          {type: 'text', text: "What's up! This editor instance exports its "},
-          {type: 'text', marks: [{type: 'bold'}], text: 'content'},
-          {type: 'text', text: ' as JSON.'}
-        ]
-      }
-    ]
-  }
+  const response = stage.stage.response
+  const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
 
   return (
     <ResponsiveDashSidebar
@@ -174,7 +166,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>
           </Header>
-          <PromptResponseEditor autoFocus={true} content={content} readOnly={true} />
+          <PromptResponseEditor content={contentJSON} readOnly={true} />
           {/* :TODO: (jmtaber129): Include reactjis */}
         </DiscussionResponseCard>
         <ThreadColumn>
