@@ -10,17 +10,6 @@ export interface TeamPromptResponse
   content: JSONContent
 }
 
-const mapToTeamPromptResponse = (
-  results: IGetTeamPromptResponsesByIdsQueryResult[]
-): TeamPromptResponse[] => {
-  return results.map((teamPromptResponse: any) => {
-    return {
-      ...teamPromptResponse,
-      content: teamPromptResponse.content as JSONContent
-    } as TeamPromptResponse
-  })
-}
-
 export const getTeamPromptResponsesByIds = async (
   teamPromptResponseIds: readonly number[]
 ): Promise<TeamPromptResponse[]> => {
@@ -28,5 +17,5 @@ export const getTeamPromptResponsesByIds = async (
     {ids: teamPromptResponseIds},
     getPg()
   )
-  return mapToTeamPromptResponse(teamPromptResponses)
+  return teamPromptResponses as TeamPromptResponse[]
 }
