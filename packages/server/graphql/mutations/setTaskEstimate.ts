@@ -241,7 +241,6 @@ const setTaskEstimate = {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
           await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
         } catch (e) {
-          console.log('ERROR')
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
           return {error: {message}}
         }

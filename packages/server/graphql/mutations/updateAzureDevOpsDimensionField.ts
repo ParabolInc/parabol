@@ -16,7 +16,7 @@ const updateAzureDevOpsDimensionField = {
     },
     fieldName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The jira field name that we should push estimates to'
+      description: 'The Azure DevOps field name that we should push estimates to'
     },
     instanceId: {
       type: new GraphQLNonNull(GraphQLID),

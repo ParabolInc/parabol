@@ -13,7 +13,7 @@ const AzureDevOpsDimensionField = new GraphQLObjectType<any, GQLContext>({
     },
     instanceId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The atlassian cloud that the field lives in'
+      description: 'The Azure DevOps tenant/instance that the field lives in'
     },
     dimensionName: {
       type: new GraphQLNonNull(GraphQLString),
@@ -21,7 +21,7 @@ const AzureDevOpsDimensionField = new GraphQLObjectType<any, GQLContext>({
     },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The project under the atlassian cloud the field lives in'
+      description: 'The Azure DevOps project that the field lives in'
     },
     fieldId: {
       type: new GraphQLNonNull(GraphQLID),
