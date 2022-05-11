@@ -1,7 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import upsertAzureDevOpsDimensionFieldMap from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
+import upsertAzureDevOpsDimensionFieldMap, {
+  AzureDevOpsFieldMapProps
+} from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
 import {isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -20,7 +22,7 @@ const updateAzureDevOpsDimensionField = {
     },
     instanceId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The cloudId the field lives on'
+      description: 'The Azure DevOps instanceId the field lives on'
     },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),
@@ -70,15 +72,16 @@ const updateAzureDevOpsDimensionField = {
 
     // RESOLUTION
     try {
-      await upsertAzureDevOpsDimensionFieldMap(
+      const props = {
         teamId,
         dimensionName,
         fieldName,
-        fieldName,
+        fieldId: fieldName,
         instanceId,
-        'string',
+        fieldType: 'string',
         projectKey
-      )
+      } as AzureDevOpsFieldMapProps
+      await upsertAzureDevOpsDimensionFieldMap(props)
     } catch (e) {
       console.log(e)
     }
