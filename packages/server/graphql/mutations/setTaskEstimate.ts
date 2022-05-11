@@ -9,6 +9,8 @@ import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrati
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
@@ -186,6 +188,63 @@ const setTaskEstimate = {
         return {error: {message}}
       }
       githubLabelName = githubPushRes
+    } else if (service === 'azureDevOps') {
+      const {accessUserId, instanceId, issueKey, projectKey} = integration!
+      const [auth, azureDevOpsDimensionFieldMapEntry, azureDevOpsWorkItem] = await Promise.all([
+        dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
+        dataLoader
+          .get('azureDevOpsDimensionFieldMap')
+          .load({teamId, dimensionName, instanceId, projectKey}),
+        dataLoader.get('azureDevOpsWorkItem').load({
+          teamId,
+          userId: accessUserId,
+          instanceId,
+          projectId: projectKey,
+          viewerId: accessUserId,
+          workItemId: issueKey
+        })
+      ])
+
+      if (!auth) {
+        return {error: {message: 'User no longer has access to Azure DevOps'}}
+      }
+
+      if (!azureDevOpsDimensionFieldMapEntry) {
+        return {error: {message: 'Cannot find the correct field to push changes to.'}}
+      }
+
+      if (!azureDevOpsWorkItem) {
+        return {error: {message: 'Cannot find the correct work item to push changes to.'}}
+      }
+
+      const fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
+      const fieldType = azureDevOpsDimensionFieldMapEntry.fieldType
+
+      const manager = new AzureDevOpsServerManager(auth, null)
+
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+        const res = await manager.addScoreComment(
+          instanceId,
+          dimensionName,
+          value,
+          meetingName,
+          discussionURL,
+          issueKey,
+          projectKey
+        )
+        if ('message' in res) {
+          return {error: {message: res.message}}
+        }
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+        const fieldId = fieldTypeToId[azureDevOpsWorkItem.type]
+        try {
+          const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
+          await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
+        } catch (e) {
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
+        }
+      }
     } else if (service === 'gitlab') {
       const gitlabPushRes = await pushEstimateToGitLab(taskEstimate, context, info, stageId)
       if (gitlabPushRes instanceof Error) {

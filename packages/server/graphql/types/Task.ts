@@ -78,6 +78,17 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           await dataLoader
             .get('jiraIssue')
             .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
+        } else if (integration?.service === 'azureDevOps') {
+          const {accessUserId, instanceId, projectKey, issueKey} = integration
+          await dataLoader.get('azureDevOpsWorkItem').load({
+            teamId,
+            userId: accessUserId,
+            instanceId,
+            workItemId: issueKey,
+            taskId,
+            projectId: projectKey,
+            viewerId
+          })
         } else if (integration?.service === 'github') {
           const {accessUserId, nameWithOwner, issueNumber} = integration
           const [githubAuth, estimates] = await Promise.all([
@@ -178,7 +189,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           })
         } else if (integration.service === 'azureDevOps') {
           const {instanceId, projectKey, issueKey} = integration
-          return dataLoader.get('azureDevOpsUserStory').load({
+          return dataLoader.get('azureDevOpsWorkItem').load({
             teamId,
             userId: accessUserId,
             instanceId,
