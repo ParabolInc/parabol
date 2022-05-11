@@ -1,6 +1,5 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import React from 'react'
-import makeAppURL from '../../../utils/makeAppURL'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
@@ -38,12 +37,19 @@ const meetingCopyLabelLookup = {
   teamPrompt: 'an Async Standup Meeting'
 } as const
 
-const urlParams = {
+const utmParams = {
   utm_source: 'invite email',
   utm_medium: 'email',
   utm_campaign: 'invitations'
 }
-const options = {searchParams: urlParams}
+function appendUTM(url: string) {
+  const newUrl = new URL(url)
+  Object.entries(utmParams).forEach(([name, value]) => {
+    newUrl.searchParams.append(name, value)
+  })
+  return newUrl.toString()
+}
+
 export interface TeamInviteProps {
   appOrigin: string
   inviteeName: string
@@ -127,7 +133,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           }
         </p>
         <a
-          href={makeAppURL('https://www.parabol.co/', 'resources/retrospective-meetings', options)}
+          href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
           style={videoLinkStyle}
           title='Retro 101'
         >
@@ -138,11 +144,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           {'Learn more about Parabol meetings:'}
           <br />
           <a
-            href={makeAppURL(
-              'https://www.parabol.co/',
-              'resources/retrospective-meetings',
-              options
-            )}
+            href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
             style={emailLinkStyle}
             title='Getting Started: Retro 101'
           >
@@ -150,7 +152,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           </a>
           <br />
           <a
-            href={makeAppURL('https://www.parabol.co/', 'resources/check-in-meetings', options)}
+            href={appendUTM(ExternalLinks.GETTING_STARTED_CHECK_INS)}
             style={emailLinkStyle}
             title='Leveling Up: Check-in 101'
           >
