@@ -85,7 +85,7 @@ const TeamPromptResponseCard = (props: Props) => {
     UpsertTeamPromptResponseMutation(
       atmosphere,
       {teamPromptResponseId: response?.id, meetingId, content},
-      {onError, onCompleted}
+      {plaintextContent, onError, onCompleted}
     )
   }
 
