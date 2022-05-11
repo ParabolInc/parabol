@@ -45,8 +45,18 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, workItems, providerId} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
+  const getProjectId = (url: URL) => {
+    const firstIndex = url.pathname.indexOf('/', 1)
+    const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
+    return url.pathname.substring(firstIndex + 1, seconedIndex)
+  }
+  const getInstanceId = (url: URL) => {
+    const firstIndex = url.pathname.indexOf('/', 1)
+    return url.host + '/' + url.pathname.substring(1, firstIndex)
+  }
   const serviceTaskIds = workItems.map((userStory) => {
-    return AzureDevOpsIssueId.join(providerId, userStory.id)
+    const url = new URL(userStory.node.url)
+    return AzureDevOpsIssueId.join(getInstanceId(url), getProjectId(url), userStory.node.id)
   })
 
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
@@ -73,7 +83,7 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
       const workItem = workItems.find(
         (workItemEdge) => workItemEdge.node.id === update.serviceTaskId
       )
-      return workItem?.node.summary ?? 'Unknown Work Item'
+      return workItem?.node.title ?? 'Unknown Work Item'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
@@ -101,10 +111,7 @@ export default createFragmentContainer(AzureDevOpsScopingSelectAllIssues, {
       node {
         id
         title
-        teamProject
         url
-        state
-        type
       }
     }
   `
