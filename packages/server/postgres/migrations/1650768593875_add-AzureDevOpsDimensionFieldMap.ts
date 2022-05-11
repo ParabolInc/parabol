@@ -5,7 +5,7 @@ export async function up() {
   await client.connect()
   await client.query(`
   CREATE TABLE IF NOT EXISTS "AzureDevOpsDimensionFieldMap" (
-    "id" SERIAL,
+    "id" SERIAL UNIQUE,
     "teamId" VARCHAR(120) NOT NULL,
     "dimensionName" VARCHAR(120) NOT NULL,
     "fieldName" VARCHAR(140) NOT NULL,
