@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
-import {Editor, EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
+import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 
 const StyledEditor = styled('div')`
   .ProseMirror p.is-editor-empty:first-child::before {
@@ -56,22 +56,17 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit(newEditorState)
   }
 
-  const editor: Editor | null = useEditor({
-    content,
-    extensions: createEditorExtensions(placeholder),
-    autofocus: autoFocus,
-    onUpdate,
-    onBlur: onSubmit,
-    editable: !readOnly
-  })
-
-  useEffect(() => {
-    if (!editor) {
-      return
-    }
-
-    editor.commands.setContent(content)
-  }, [editor, content])
+  const editor = useEditor(
+    {
+      content,
+      extensions: createEditorExtensions(placeholder),
+      autofocus: autoFocus,
+      onUpdate,
+      onBlur: onSubmit,
+      editable: !readOnly
+    },
+    [content]
+  )
 
   return (
     <StyledEditor>
