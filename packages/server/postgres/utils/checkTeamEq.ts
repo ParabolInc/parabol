@@ -10,10 +10,9 @@ const alwaysDefinedFields: (keyof Team)[] = [
   'isPaid',
   'tier',
   'orgId',
-  'createdBy',
   'isOnboardTeam'
 ]
-const ignoredFields: (keyof Team)[] = ['updatedAt']
+const ignoredFields: (keyof Team)[] = ['updatedAt', 'createdBy']
 
 const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: any} = {
   jiraDimensionFields: [],
