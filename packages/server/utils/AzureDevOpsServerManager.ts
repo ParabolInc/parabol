@@ -257,11 +257,12 @@ class AzureDevOpsServerManager {
   }
 
   private readonly patch = async <T>(url: string, payload: any) => {
-    const patchHeaders = this.headers
-    patchHeaders['Content-Type'] = 'application/json-patch+json'
     const res = await this.fetchWithTimeout(url, {
       method: 'PATCH',
-      headers: patchHeaders,
+      headers: {
+        ...this.headers,
+        ['Content-Type']: 'application/json-patch+json'
+      },
       body: JSON.stringify(payload)
     })
     if (res instanceof Error) {
