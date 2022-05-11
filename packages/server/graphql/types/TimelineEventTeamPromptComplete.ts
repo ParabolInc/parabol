@@ -13,7 +13,7 @@ const TimelineEventTeamPromptComplete = new GraphQLObjectType<any>({
     meeting: {
       type: new GraphQLNonNull(TeamPromptMeeting),
       description: 'The meeting that was completed',
-      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
+      resolve: ({meetingId}: {meetingId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
@@ -28,7 +28,7 @@ const TimelineEventTeamPromptComplete = new GraphQLObjectType<any>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team that can see this event',
-      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
+      resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
