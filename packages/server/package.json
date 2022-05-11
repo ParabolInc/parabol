@@ -93,6 +93,7 @@
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
     "abort-controller": "^3.0.0",
+    "adaptivecards": "^2.10.0",
     "analytics-node": "^5.0.0",
     "aws-sdk": "^2.99.0",
     "base64url": "^3.0.1",

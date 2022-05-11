@@ -75,8 +75,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const meetingLinkHeaderTextBlock = new AdaptiveCards.TextBlock('Link: ')
     meetingLinkHeaderTextBlock.wrap = true
     meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-    const meetingLinkTextBlock = new AdaptiveCards.TextBlock()
-    meetingLinkTextBlock.text = urlLink
+    const meetingLinkTextBlock = new AdaptiveCards.TextBlock(urlLink)
     meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
     meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
     meetingLinkTextBlock.wrap = true
@@ -96,9 +95,9 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     card.addItem(meetingLinkColumnSet)
 
-    const adaptivecard = JSON.stringify(card.toJSON())
+    const adaptiveCard = JSON.stringify(card.toJSON())
 
-    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
+    const attachments = MakeACAttachment(adaptiveCard)
 
     return notifyMSTeams('meetingStart', webhookUrl, facilitatorUserId, team.id, attachments)
   },
@@ -128,8 +127,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     summaryColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
     const summaryColumn = new AdaptiveCards.Column()
     summaryColumn.width = 'stretch'
-    const summaryTextBlock = new AdaptiveCards.TextBlock()
-    summaryTextBlock.text = getSummaryText(meeting)
+    const summaryTextBlock = new AdaptiveCards.TextBlock(getSummaryText(meeting))
     summaryTextBlock.wrap = true
     summaryColumn.addItem(summaryTextBlock)
     summaryColumnSet.addColumn(summaryColumn)
@@ -165,9 +163,8 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     card.addItem(meetingEndedActionsColumnSet)
 
-    const adaptivecard = JSON.stringify(card.toJSON())
-    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
-
+    const adaptiveCard = JSON.stringify(card.toJSON())
+    const attachments = MakeACAttachment(adaptiveCard)
     return notifyMSTeams('meetingEnd', webhookUrl, facilitatorUserId, team.id, attachments)
   },
 
@@ -195,15 +192,14 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const meetingDetailColumnSet = GenerateACMeetingAndTeamsDetails(team, meeting)
     card.addItem(meetingDetailColumnSet)
 
-    let teamfixedtime = scheduledEndTime.toISOString()
-    teamfixedtime = teamfixedtime.replace(/.\d+Z$/g, 'Z')
-    const timelimitText = `You have until {{DATE(${teamfixedtime},SHORT)}} at {{TIME(${teamfixedtime})}} to complete it.`
+    const teamFixedTime = scheduledEndTime.toISOString().replace(/.\d+Z$/g, 'Z')
+    const timeLimitText = `You have until {{DATE(${teamFixedTime},SHORT)}} at {{TIME(${teamFixedTime})}} to complete it.`
 
     const timeLimitColumnSet = new AdaptiveCards.ColumnSet()
     timeLimitColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
     const timeLimitColumn = new AdaptiveCards.Column()
     timeLimitColumn.width = 'stretch'
-    const timeLimitTextBlock = new AdaptiveCards.TextBlock(timelimitText)
+    const timeLimitTextBlock = new AdaptiveCards.TextBlock(timeLimitText)
     timeLimitTextBlock.wrap = true
 
     timeLimitColumn.addItem(timeLimitTextBlock)
@@ -218,8 +214,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const meetingLinkHeaderTextBlock = new AdaptiveCards.TextBlock('Link: ')
     meetingLinkHeaderTextBlock.wrap = true
     meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-    const meetingLinkTextBlock = new AdaptiveCards.TextBlock()
-    meetingLinkTextBlock.text = maybeMeetingShortLink
+    const meetingLinkTextBlock = new AdaptiveCards.TextBlock(maybeMeetingShortLink)
     meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
     meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
     meetingLinkTextBlock.wrap = true
@@ -239,8 +234,8 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     card.addItem(meetingLinkColumnSet)
 
-    const adaptivecard = JSON.stringify(card.toJSON())
-    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
+    const adaptiveCard = JSON.stringify(card.toJSON())
+    const attachments = MakeACAttachment(adaptiveCard)
 
     return notifyMSTeams(
       'MEETING_STAGE_TIME_LIMIT_START',
@@ -270,8 +265,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     )
     meetingLinkHeaderTextBlock.wrap = true
     meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-    const meetingLinkTextBlock = new AdaptiveCards.TextBlock()
-    meetingLinkTextBlock.text = meetingUrl
+    const meetingLinkTextBlock = new AdaptiveCards.TextBlock(meetingUrl)
     meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
     meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
     meetingLinkTextBlock.wrap = true
@@ -291,8 +285,8 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     card.addItem(meetingLinkColumnSet)
 
-    const adaptivecard = JSON.stringify(card.toJSON())
-    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
+    const adaptiveCard = JSON.stringify(card.toJSON())
+    const attachments = MakeACAttachment(adaptiveCard)
 
     return notifyMSTeams('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, userId, team.id, attachments)
   },
@@ -316,8 +310,8 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     messageColumnSet.addColumn(messageColumn)
     card.addItem(messageColumnSet)
 
-    const adaptivecard = JSON.stringify(card.toJSON())
-    const attachments = `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${adaptivecard}}]}`
+    const adaptiveCard = JSON.stringify(card.toJSON())
+    const attachments = MakeACAttachment(adaptiveCard)
     return notifyMSTeams('meetingEnd', webhookUrl, userId, teamId, attachments)
   }
 })
@@ -398,8 +392,7 @@ function GenerateACMeetingAndTeamsDetails(team: Team, meeting: Meeting) {
   const teamHeaderTextBlock = new AdaptiveCards.TextBlock('Team: ')
   teamHeaderTextBlock.wrap = true
   teamHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-  const teamValueTextBlock = new AdaptiveCards.TextBlock()
-  teamValueTextBlock.text = team.name
+  const teamValueTextBlock = new AdaptiveCards.TextBlock(team.name)
   teamValueTextBlock.wrap = true
 
   teamDetailColumn.addItem(teamHeaderTextBlock)
@@ -410,8 +403,7 @@ function GenerateACMeetingAndTeamsDetails(team: Team, meeting: Meeting) {
   const meetingHeaderTextBlock = new AdaptiveCards.TextBlock('Meeting: ')
   meetingHeaderTextBlock.wrap = true
   meetingHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-  const meetingValueTextBlock = new AdaptiveCards.TextBlock()
-  meetingValueTextBlock.text = meeting.name
+  const meetingValueTextBlock = new AdaptiveCards.TextBlock(meeting.name)
   meetingValueTextBlock.wrap = true
 
   meetingDetailColumn.addItem(meetingHeaderTextBlock)
@@ -420,4 +412,8 @@ function GenerateACMeetingAndTeamsDetails(team: Team, meeting: Meeting) {
   meetingDetailColumnSet.addColumn(teamDetailColumn)
   meetingDetailColumnSet.addColumn(meetingDetailColumn)
   return meetingDetailColumnSet
+}
+
+function MakeACAttachment(card: string) {
+  return `{"type":"message", "attachments":[{"contentType":"application/vnd.microsoft.card.adaptive","contentUrl":null, "content": ${card}}]}`
 }

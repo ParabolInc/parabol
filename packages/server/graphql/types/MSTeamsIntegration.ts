@@ -1,6 +1,4 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import IntegrationProviderWebhook from './IntegrationProviderWebhook'
 import TeamMemberIntegrationAuthWebhook from './TeamMemberIntegrationAuthWebhook'
@@ -21,14 +19,8 @@ const MSTeamsIntegration = new GraphQLObjectType<any, GQLContext>({
     sharedProviders: {
       description: 'The non-global providers shared with the team or organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderWebhook))),
-      resolve: async (
-        {teamId}: {teamId: string},
-        _args: unknown,
-        {authToken, dataLoader}: GQLContext
-      ) => {
-        const viewerId = getUserId(authToken)
-        const team = await dataLoader.get('teams').load(teamId)
-        if (!team) return standardError(new Error('Team not found'), {userId: viewerId})
+      resolve: async ({teamId}: {teamId: string}, _args: unknown, {dataLoader}: GQLContext) => {
+        const team = await dataLoader.get('teams').loadNonNull(teamId)
         const {orgId} = team
         const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
         const orgTeamIds = orgTeams.map(({id}) => id)
