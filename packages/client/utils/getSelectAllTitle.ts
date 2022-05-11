@@ -4,11 +4,9 @@ import plural from './plural'
 const getSelectAllTitle = (
   availableStoryCount: number,
   usedServiceTaskIdCount: number,
-  storyLabel: string,
-  thresh?: number
+  storyLabel: string
 ) => {
-  const availableCountToAdd =
-    (thresh ? thresh : Threshold.MAX_POKER_STORIES) - usedServiceTaskIdCount
+  const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIdCount
   const selectableCount = Math.min(availableCountToAdd, availableStoryCount)
   const adjective = selectableCount === availableStoryCount ? 'all' : 'next'
   const selectLabel = `Select ${adjective} ${selectableCount} ${plural(
