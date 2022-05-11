@@ -134,7 +134,6 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           )
           const [issueData, issueError] = await manager.getIssue({gid})
           if (issueError) {
-            console.log(issueError)
             const userId = getUserId(authToken)
             sendToSentry(issueError, {userId, tags: {teamId, gid}})
             return NULL_FIELD
