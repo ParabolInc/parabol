@@ -45,7 +45,7 @@ const isIntegrated = (integrations: Integrations) => {
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
   const hasGitLab = gitlab?.auth?.isActive ?? false
-  const hasJiraServer = jiraServer.auth?.isActive ?? false
+  const hasJiraServer = jiraServer?.auth?.isActive ?? false
   const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
   return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps
     ? {

@@ -10,7 +10,8 @@ import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {AzureDevOpsScopingSelectAllIssues_userStories} from '../__generated__/AzureDevOpsScopingSelectAllIssues_userStories.graphql'
+import {AzureDevOpsScopingSelectAllIssues_workItems} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
+
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -35,18 +36,29 @@ const ErrorMessage = styled('div')({
 })
 interface Props {
   meetingId: string
-  userStories: AzureDevOpsScopingSelectAllIssues_userStories
+  workItems: AzureDevOpsScopingSelectAllIssues_workItems
   usedServiceTaskIds: Set<string>
   providerId: string
 }
 
 const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, userStories, providerId} = props
+  const {meetingId, usedServiceTaskIds, workItems, providerId} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = userStories.map((userStory) =>
-    AzureDevOpsIssueId.join(providerId, userStory.id)
-  )
+  const getProjectId = (url: URL) => {
+    const firstIndex = url.pathname.indexOf('/', 1)
+    const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
+    return url.pathname.substring(firstIndex + 1, seconedIndex)
+  }
+  const getInstanceId = (url: URL) => {
+    const firstIndex = url.pathname.indexOf('/', 1)
+    return url.host + '/' + url.pathname.substring(1, firstIndex)
+  }
+  const serviceTaskIds = workItems.map((userStory) => {
+    const url = new URL(userStory.node.url)
+    return AzureDevOpsIssueId.join(getInstanceId(url), getProjectId(url), userStory.node.id)
+  })
+
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -68,15 +80,16 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
       updates
     }
     const contents = updates.map((update) => {
-      const userStory = userStories.find(
-        (userStoryEdge) => userStoryEdge.node.id === update.serviceTaskId
+      const workItem = workItems.find(
+        (workItemEdge) => workItemEdge.node.id === update.serviceTaskId
       )
-      return userStory?.node.summary ?? 'Unknown Story'
+      return workItem?.node.title ?? 'Unknown Work Item'
     })
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
-  if (userStories.length < 2) return null
-  const title = getSelectAllTitle(userStories.length, usedServiceTaskIds.size, 'userStory')
+  if (workItems.length < 2) return null
+  const title = getSelectAllTitle(workItems.length, usedServiceTaskIds.size, 'workItem')
+
 
   return (
     <>
@@ -92,11 +105,13 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
 }
 
 export default createFragmentContainer(AzureDevOpsScopingSelectAllIssues, {
-  userStories: graphql`
-    fragment AzureDevOpsScopingSelectAllIssues_userStories on AzureDevOpsWorkItemEdge
+  workItems: graphql`
+    fragment AzureDevOpsScopingSelectAllIssues_workItems on AzureDevOpsWorkItemEdge
     @relay(plural: true) {
       node {
         id
+        title
+        url
       }
     }
   `

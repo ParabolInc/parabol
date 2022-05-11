@@ -1,0 +1,34 @@
+extend type Mutation {
+  """
+  Enable SAML for domain
+  """
+  enableSAMLForDomain(
+    """
+    A name to use for the redirect URL. Usually the company name without any spaces
+    """
+    name: ID!
+
+    """
+    a list of domains that the account has control over. usually the part after the @ of their email
+    """
+    domains: [ID!]
+
+    """
+    A big chunk of XML data containing the redirect URL and X.509 certificate
+    """
+    metadata: String
+  ): EnableSAMLForDomainPayload!
+}
+
+"""
+Return object for EnableSAMLForDomainPayload
+"""
+union EnableSAMLForDomainPayload = ErrorPayload | EnableSAMLForDomainSuccess
+
+type ErrorPayload {
+  error: StandardMutationError!
+}
+
+type EnableSAMLForDomainSuccess {
+  success: Boolean!
+}

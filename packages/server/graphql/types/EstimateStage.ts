@@ -98,6 +98,17 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'azureDevOps') {
+          const {instanceId, projectKey} = integration
+          const dimensionName = await getDimensionName(meetingId)
+          const azureDevOpsDimensionFieldMapEntry = await dataLoader
+            .get('azureDevOpsDimensionFieldMap')
+            .load({teamId, dimensionName, instanceId, projectKey})
+          if (azureDevOpsDimensionFieldMapEntry) {
+            return {
+              name: azureDevOpsDimensionFieldMapEntry.fieldName,
+              type: azureDevOpsDimensionFieldMapEntry.fieldType
+            }
+          }
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
 
@@ -134,7 +145,6 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           )
           const [issueData, issueError] = await manager.getIssue({gid})
           if (issueError) {
-            console.log(issueError)
             const userId = getUserId(authToken)
             sendToSentry(issueError, {userId, tags: {teamId, gid}})
             return NULL_FIELD
