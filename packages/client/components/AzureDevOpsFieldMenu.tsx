@@ -39,10 +39,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
               __typename
 
               id
-              title
               teamProject
               url
-              state
               type
             }
           }
