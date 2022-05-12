@@ -51,7 +51,7 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(true)
   }
 
-  const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
+  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
     handleSubmit(newEditorState)
   }
