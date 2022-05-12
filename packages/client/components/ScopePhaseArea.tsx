@@ -73,17 +73,10 @@ const ScopePhaseArea = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   const featureFlags = viewerMeetingMember?.user.featureFlags
-  const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
-
-  const isGitLabProviderAvailable = !!(
-    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
-  )
-
   const allowAzureDevOps =
     !!azureDevOpsIntegration?.sharedProviders.length && featureFlags?.azureDevOps
-  const allowGitLab = !!(isGitLabProviderAvailable && featureFlags?.gitlab)
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
 
   const baseTabs = [
@@ -101,7 +94,7 @@ const ScopePhaseArea = (props: Props) => {
       allow: allowJiraServer,
       Component: ScopePhaseAreaJiraServer
     },
-    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab, Component: ScopePhaseAreaGitLab},
+    {icon: <GitLabSVG />, label: 'GitLab', allow: true, Component: ScopePhaseAreaGitLab},
     {
       icon: <AzureDevOpsSVG />,
       label: 'Azure DevOps',
@@ -229,7 +222,6 @@ export default createFragmentContainer(ScopePhaseArea, {
         }
         user {
           featureFlags {
-            gitlab
             azureDevOps
           }
         }

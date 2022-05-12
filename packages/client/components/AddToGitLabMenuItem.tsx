@@ -43,7 +43,6 @@ const AddToGitLabMenuItem = forwardRef((props: Props, ref) => {
   )
   const atmosphere = useAtmosphere()
   const {cloudProvider} = gitlab
-  console.log('🚀  ~ gitlab', gitlab)
   if (!cloudProvider) return null
   const {id: providerId, clientId, serverBaseUrl} = cloudProvider
   const openOAuth = () => {
