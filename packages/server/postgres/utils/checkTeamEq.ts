@@ -12,11 +12,12 @@ const alwaysDefinedFields: (keyof Team)[] = [
   'orgId',
   'isOnboardTeam'
 ]
-const ignoredFields: (keyof Team)[] = ['updatedAt', 'createdBy']
+const ignoredFields: (keyof Team)[] = ['updatedAt']
 
-const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: any} = {
+const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: unknown} = {
   jiraDimensionFields: [],
-  lastMeetingType: 'retrospective'
+  lastMeetingType: 'retrospective',
+  createdBy: null
 }
 
 const checkTeamEq = async (maxErrors = 10) => {
