@@ -9,6 +9,7 @@ import {
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
+// Used for both Jira and Jira Server
 const JiraSearchQuery = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraSearchQuery',
   description: 'A jira search query including all filters selected when the query was executed',

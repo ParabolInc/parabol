@@ -4,6 +4,8 @@ import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import useAtmosphere from '../hooks/useAtmosphere'
+import PersistJiraServerSearchQueryMutation from '../mutations/PersistJiraServerSearchQueryMutation'
 import {JiraServerScopingSearchResultsQuery} from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
 import {JiraServerScopingSearchResults_meeting$key} from '../__generated__/JiraServerScopingSearchResults_meeting.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -22,6 +24,7 @@ interface Props {
 const JiraServerScopingSearchResults = (props: Props) => {
   const {meetingRef} = props
   const {queryRef} = props
+  const atmosphere = useAtmosphere()
 
   const query = usePreloadedQuery(
     graphql`
@@ -36,6 +39,12 @@ const JiraServerScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               jiraServer {
+                providerId
+                searchQueries {
+                  queryString
+                  isJQL
+                  projectKeyFilters
+                }
                 issues(
                   first: $first
                   queryString: $queryString
@@ -71,6 +80,11 @@ const JiraServerScopingSearchResults = (props: Props) => {
       fragment JiraServerScopingSearchResults_meeting on PokerMeeting {
         id
         teamId
+        jiraServerSearchQuery {
+          isJQL
+          projectKeyFilters
+          queryString
+        }
         phases {
           ...useGetUsedServiceTaskIds_phase
           phaseType
@@ -81,8 +95,10 @@ const JiraServerScopingSearchResults = (props: Props) => {
   )
 
   const viewer = query.viewer
+  const {jiraServerSearchQuery, teamId} = meeting
 
   const jiraServer = viewer?.teamMember!.integrations.jiraServer ?? null
+  const providerId = jiraServer?.providerId ?? null
   const issues = jiraServer?.issues ?? null
   const edges = issues?.edges ?? null
   const error = issues?.error ?? null
@@ -106,6 +122,34 @@ const JiraServerScopingSearchResults = (props: Props) => {
     )
   }
 
+  const persistQuery = () => {
+    const {queryString, isJQL} = jiraServerSearchQuery
+    // don't persist an empty string (the default)
+    if (!queryString) return
+    const projectKeyFilters = jiraServerSearchQuery.projectKeyFilters as string[]
+    projectKeyFilters.sort()
+    const lookupKey = JSON.stringify({queryString, projectKeyFilters})
+    const {searchQueries} = jiraServer!
+    const searchHashes = searchQueries.map(({queryString, projectKeyFilters}) => {
+      return JSON.stringify({queryString, projectKeyFilters})
+    })
+    const isQueryNew = !searchHashes.includes(lookupKey)
+
+    if (isQueryNew) {
+      PersistJiraServerSearchQueryMutation(atmosphere, {
+        teamId,
+        service: 'jiraServer',
+        providerId,
+        isRemove: false,
+        jiraServerSearchQuery: {
+          queryString,
+          isJQL,
+          projectKeyFilters: projectKeyFilters as string[]
+        }
+      })
+    }
+  }
+
   return (
     <ResultScroller>
       {edges.map(({node}) => {
@@ -116,9 +160,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
             usedServiceTaskIds={usedServiceTaskIds}
             serviceTaskId={node.id}
             meetingId={meetingId}
-            persistQuery={() => {
-              return null
-            }}
+            persistQuery={persistQuery}
             summary={node.summary}
             url={node.url}
             linkText={node.issueKey}

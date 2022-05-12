@@ -1,25 +1,25 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {JiraScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraScopingSearchHistoryToggle_meeting.graphql'
+import {JiraServerScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraServerScopingSearchHistoryToggle_meeting.graphql'
 import JiraUniversalScopingSearchHistoryToggle from './JiraUniversalScopingSearchHistoryToggle'
 
 interface Props {
-  meetingRef: JiraScopingSearchHistoryToggle_meeting$key
+  meetingRef: JiraServerScopingSearchHistoryToggle_meeting$key
 }
 
-const JiraScopingSearchHistoryToggle = (props: Props) => {
+const JiraServerScopingSearchHistoryToggle = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment JiraScopingSearchHistoryToggle_meeting on PokerMeeting {
+      fragment JiraServerScopingSearchHistoryToggle_meeting on PokerMeeting {
         id
         teamId
         viewerMeetingMember {
           teamMember {
             integrations {
-              atlassian {
-                jiraSearchQueries {
+              jiraServer {
+                searchQueries {
                   id
                   queryString
                   isJQL
@@ -35,16 +35,16 @@ const JiraScopingSearchHistoryToggle = (props: Props) => {
   )
 
   const {id: meetingId, teamId} = meeting
-  const {jiraSearchQueries} = meeting.viewerMeetingMember?.teamMember.integrations?.atlassian ?? {}
+  const {searchQueries} = meeting.viewerMeetingMember?.teamMember.integrations?.jiraServer ?? {}
 
   return (
     <JiraUniversalScopingSearchHistoryToggle
-      service={'jira'}
-      jiraSearchQueries={jiraSearchQueries}
+      service={'jiraServer'}
+      jiraSearchQueries={searchQueries}
       meetingId={meetingId}
       teamId={teamId}
     />
   )
 }
 
-export default JiraScopingSearchHistoryToggle
+export default JiraServerScopingSearchHistoryToggle

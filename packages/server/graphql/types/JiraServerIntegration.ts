@@ -20,6 +20,9 @@ import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
 import {JiraServerIssueConnection} from './JiraServerIssue'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
+import JiraSearchQuery from "./JiraSearchQuery";
+import getLatestIntegrationSearchQueriesWithProviderId
+  from "../../postgres/queries/getLatestIntegrationSearchQueriesWithProviderId";
 
 type IssueArgs = {
   first: number
@@ -155,6 +158,54 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         'A list of projects accessible by this team member. empty if viewer is not the user',
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('allJiraServerProjects').load({teamId, userId})
+      }
+    },
+    providerId: {
+      type:  new GraphQLNonNull(GraphQLInt),
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        return auth?.providerId
+      }
+    },
+    searchQueries: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraSearchQuery))),
+      description:
+        'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
+
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        if (!auth) {
+          return null
+        }
+
+        const searchQueries = await getLatestIntegrationSearchQueriesWithProviderId({
+          teamId,
+          userId,
+          service: 'jiraServer',
+          providerId: auth.providerId
+        })
+
+        return searchQueries.map((searchQuery) => {
+          const query = searchQuery.query as {
+            queryString: string | null
+            isJQL: boolean
+            projectKeyFilters: string[] | null
+          }
+
+          return {
+            id: searchQuery.id,
+            queryString: query.queryString,
+            isJQL: query.isJQL,
+            projectKeyFilters: query.projectKeyFilters,
+            lastUpdatedAt: searchQuery.lastUsedAt
+          }
+        })
       }
     }
   })
