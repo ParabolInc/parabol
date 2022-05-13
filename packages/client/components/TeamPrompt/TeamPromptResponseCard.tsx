@@ -107,7 +107,7 @@ const TeamPromptResponseCard = (props: Props) => {
           'No response, yet...'
         ) : (
           <PromptResponseEditor
-            autoFocus={true}
+            autoFocus={isCurrentViewer}
             handleSubmit={handleSubmit}
             content={contentJSON}
             readOnly={!isCurrentViewer}
