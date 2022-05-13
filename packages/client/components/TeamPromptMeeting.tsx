@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
@@ -81,6 +82,9 @@ const TeamPromptMeeting = (props: Props) => {
             __typename
             stages {
               id
+              teamMember {
+                userId
+              }
               ...TeamPromptResponseCard_stage
             }
           }
@@ -91,10 +95,11 @@ const TeamPromptMeeting = (props: Props) => {
   )
   const {phases} = meeting
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const {viewerId} = useAtmosphere()
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
   const stages = useMemo(() => {
-    return phase.stages
+    const allStages = phase.stages
       .map((stage) => {
         return {
           ...stage,
@@ -102,6 +107,18 @@ const TeamPromptMeeting = (props: Props) => {
         }
       })
       .filter(isNotNull)
+
+    // Find the viewer's card and put it at the beginning.
+    const viewerCardIndex = allStages.findIndex((stage) => stage.teamMember.userId === viewerId)
+    if (viewerCardIndex === -1) {
+      return allStages
+    }
+
+    return [
+      allStages[viewerCardIndex]!,
+      ...allStages.slice(0, viewerCardIndex),
+      ...allStages.slice(viewerCardIndex + 1)
+    ]
   }, [phase])
   const transitioningStages = useTransition(stages)
 
