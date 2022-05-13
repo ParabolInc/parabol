@@ -156,11 +156,12 @@ const TeamPromptResponseCard = (props: Props) => {
     <>
       <ResponseHeader>
         <Avatar picture={picture} size={48} />
-        <TeamMemberName>{preferredName}</TeamMemberName>
-        {response && (
-          <LastUpdatedTime updatedAt={response.updatedAt} createdAt={response.createdAt} />
-        )}
-        {/* :TODO: (jmtaber129): Show when response was last updated */}
+        <TeamMemberName>
+          {preferredName}
+          {response && (
+            <LastUpdatedTime updatedAt={response.updatedAt} createdAt={response.createdAt} />
+          )}
+        </TeamMemberName>
       </ResponseHeader>
       <ResponseCard
         isEmpty={isEmptyResponse}

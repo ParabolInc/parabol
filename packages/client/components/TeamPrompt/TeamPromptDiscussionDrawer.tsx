@@ -15,6 +15,7 @@ import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import LastUpdatedTime from './TeamPromptLastUpdatedTime'
 import {TeamMemberName} from './TeamPromptResponseCard'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
@@ -103,6 +104,10 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
                 picture
                 preferredName
               }
+              response {
+                updatedAt
+                createdAt
+              }
             }
           }
         }
@@ -157,6 +162,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     ]
   }
 
+  const {response} = stage.stage
   return (
     <ResponsiveDashSidebar
       isOpen={isRightDrawerOpen}
@@ -168,8 +174,12 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
         <DiscussionResponseCard>
           <Header>
             <Avatar picture={teamMember.picture} size={48} />
-            <TeamMemberName>{teamMember.preferredName}</TeamMemberName>
-            {/* :TODO: (jmtaber129): Show when response was last updated */}
+            <TeamMemberName>
+              {teamMember.preferredName}
+              {response && (
+                <LastUpdatedTime updatedAt={response.updatedAt} createdAt={response.createdAt} />
+              )}
+            </TeamMemberName>
             <StyledCloseButton onClick={onToggle}>
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>

@@ -19,7 +19,7 @@ export default function LastUpdatedTime({updatedAt, createdAt}: Props) {
   const formattedTime = updatedAt ? relativeDate(updatedAt) : relativeDate(createdAt)
   return (
     <Timestamp>
-      {formattedTime}
+      <span>{formattedTime}</span>
       {isEdited && <span> · Edited</span>}
     </Timestamp>
   )
