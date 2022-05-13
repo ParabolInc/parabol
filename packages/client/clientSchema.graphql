@@ -41,7 +41,7 @@ extend type RetrospectiveMeeting {
 }
 
 extend type TeamPromptMeeting {
-  localDiscussionId: String
+  localStageId: String
   isRightDrawerOpen: Boolean!
 }
 

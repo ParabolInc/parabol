@@ -32,9 +32,9 @@ export const createEditorExtensions = (placeholder?: string) => [
 interface Props {
   autoFocus?: boolean
   content: JSONContent | null
-  handleSubmit: (editor: EditorState) => void
+  handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
-  placeholder: string
+  placeholder?: string
 }
 
 const PromptResponseEditor = (props: Props) => {
@@ -53,7 +53,7 @@ const PromptResponseEditor = (props: Props) => {
 
   const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
-    handleSubmit(newEditorState)
+    handleSubmit && handleSubmit(newEditorState)
   }
 
   const editor = useEditor(
