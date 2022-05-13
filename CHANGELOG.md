@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.58.0 2022-May-12
+
+### Added
+ - **Azure DevOps** is available behind a feature flag and now supports search in Sprint Poker (#6448) and pushing estimates (#6481)
+ - **DX**: You now can run `yarn newMutation` to generate the boilerplate, check README.md for details (#6473)
+ - **Standups**: Live updates for team responses (#6388)
+ - **tests** can now be run in different environments (#6382)
+ - **tests**: the rate limiter is disabled (#6412)
+ - **support**: the mutation `enableSAMLForDomain` can now update the domains without needing to pass all the metadata again (#6447)
+ - **metrics**: Company's active team count now properly ignores inactive teams (#6452)
+ - **metrics**: email invite links contain the correct UTM parameters (#6539)
+
+### Fixed
+ - meeting summary email is now sent again (#6523)
+ - demo Jira and GitHub integrations now work again in the Demo (#6460)
+ - fixed bugs occuring when resetting a retrospective to its grouping phase (#6305, #6306)
+ - subscription payloads are now correctly resolved for SDL types (#6506)
+ - fixed `hardDeleteUser` mutation which would fail for same users depending on their meetings (#6544)
+
+### Changed
+ - Switched to mainline workbox to generate the service worker (#6414)
+ - Reduced docker image size (#6416)
+
 ## 6.57.0 2022-May-4
 
 ### Added

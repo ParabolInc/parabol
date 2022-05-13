@@ -24,6 +24,7 @@ export interface IGetSimilarTaskEstimateQueryResult {
   discussionId: string | null;
   jiraFieldId: string | null;
   githubLabelName: string | null;
+  azureDevOpsFieldName: string | null;
 }
 
 /** 'GetSimilarTaskEstimateQuery' query type */

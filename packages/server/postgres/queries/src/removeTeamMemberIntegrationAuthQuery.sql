@@ -2,7 +2,7 @@
   @name removeTeamMemberIntegrationAuthQuery
 */
 UPDATE "TeamMemberIntegrationAuth"
-SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
+SET "isActive" = FALSE
 WHERE "userId" = :userId
   AND "teamId" = :teamId
   AND "service" = :service

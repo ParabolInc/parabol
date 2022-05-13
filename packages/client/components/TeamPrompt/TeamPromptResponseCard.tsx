@@ -1,9 +1,11 @@
 import styled from '@emotion/styled'
-import {Editor as EditorState, JSONContent} from '@tiptap/core'
+import {Editor as EditorState} from '@tiptap/core'
+import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useEventCallback from '~/hooks/useEventCallback'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
@@ -81,6 +83,7 @@ const TeamPromptResponseCard = (props: Props) => {
         }
         response {
           id
+          userId
           content
           plaintextContent
         }
@@ -120,7 +123,10 @@ const TeamPromptResponseCard = (props: Props) => {
   const {teamMember, meetingId, meeting, discussion, response} = responseStage
   const {picture, preferredName, userId} = teamMember
 
-  const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
+  const contentJSON: JSONContent | null = useMemo(
+    () => (response ? JSON.parse(response.content) : null),
+    [response]
+  )
   const plaintextContent = response?.plaintextContent ?? ''
 
   const discussionEdges = discussion.thread.edges
@@ -130,18 +136,19 @@ const TeamPromptResponseCard = (props: Props) => {
   const isEmptyResponse = !isCurrentViewer && !plaintextContent
 
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const handleSubmit = (editorState: EditorState) => {
+  const handleSubmit = useEventCallback((editorState: EditorState) => {
     if (submitting) return
     submitMutation()
 
     const content = JSON.stringify(editorState.getJSON())
+    const plaintextContent = editorState.getText()
 
     UpsertTeamPromptResponseMutation(
       atmosphere,
       {teamPromptResponseId: response?.id, meetingId, content},
-      {onError, onCompleted}
+      {plaintextContent, onError, onCompleted}
     )
-  }
+  })
 
   return (
     <>
@@ -159,7 +166,7 @@ const TeamPromptResponseCard = (props: Props) => {
         ) : (
           <>
             <PromptResponseEditor
-              autoFocus={true}
+              autoFocus={isCurrentViewer}
               handleSubmit={handleSubmit}
               content={contentJSON}
               readOnly={!isCurrentViewer}

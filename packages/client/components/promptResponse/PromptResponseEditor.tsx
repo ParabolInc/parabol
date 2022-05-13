@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
-import {Editor, EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
+import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import React, {useState} from 'react'
 
@@ -51,12 +51,12 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(true)
   }
 
-  const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
+  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
     handleSubmit && handleSubmit(newEditorState)
   }
 
-  const editor: Editor | null = useEditor(
+  const editor = useEditor(
     {
       content,
       extensions: createEditorExtensions(placeholder),
