@@ -1,36 +1,12 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import upsertJiraServerDimensionFieldMap from '../../../postgres/queries/upsertJiraServerDimensionFieldMap'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
-
-const getJiraServerField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
-  // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled
-  // differently and can't be found on JiraServer fields list
-  const customFields = [
-    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-    SprintPokerDefaults.SERVICE_FIELD_NULL
-  ]
-  if (customFields.includes(fieldName as any)) {
-    return {fieldId: fieldName, type: 'string' as const}
-  }
-  // a regular JiraServer field
-  const {accessToken} = auth
-  const manager = new AtlassianServerManager(accessToken)
-  const fields = await manager.getFields(cloudId)
-  if (fields instanceof Error || fields instanceof RateLimitError) return null
-  const selectedField = fields.find((field) => field.name === fieldName)
-  if (!selectedField) return null
-  const {id: fieldId, schema} = selectedField
-  return {fieldId, type: schema.type as 'string' | 'number'}
-}
 
 const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensionField'] = async (
   _source,

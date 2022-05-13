@@ -22,7 +22,6 @@ const graphQLSubscriptionType = (name: string, types: GraphQLObjectType[]) =>
         // should never happen, but that depends on using the resolveType pattern for all abstract types
         return null
       }
-      console.log('GEORG unknownType', unknownType, data)
       // added via SDL
       if (isObjectType(unknownType)) {
         return unknownType
