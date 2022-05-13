@@ -15,6 +15,7 @@ import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptRe
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
+import LastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
@@ -93,6 +94,8 @@ const TeamPromptResponseCard = (props: Props) => {
           userId
           content
           plaintextContent
+          updatedAt
+          createdAt
         }
       }
     `,
@@ -154,6 +157,9 @@ const TeamPromptResponseCard = (props: Props) => {
       <ResponseHeader>
         <Avatar picture={picture} size={48} />
         <TeamMemberName>{preferredName}</TeamMemberName>
+        {response && (
+          <LastUpdatedTime updatedAt={response.updatedAt} createdAt={response.createdAt} />
+        )}
         {/* :TODO: (jmtaber129): Show when response was last updated */}
       </ResponseHeader>
       <ResponseCard
