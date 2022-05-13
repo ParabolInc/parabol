@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {ValueOf} from 'parabol-client/types/generics'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
@@ -77,11 +78,12 @@ const addReactjiToReactable = {
 
     //AUTH
     let reactable: Reactable
-    const isPgTable = reactableType === 'RESPONSE'
+    const pgLoaderName = pgDataloaderLookup[reactableType] as ValueOf<
+      typeof pgDataloaderLookup
+    > | null
     const rethinkDbTable = rethinkTableLookup[reactableType]
-    if (isPgTable) {
-      const loaderName = pgDataloaderLookup[reactableType]
-      reactable = (await dataLoader.get(loaderName).load(reactableId)) as Reactable
+    if (pgLoaderName) {
+      reactable = await dataLoader.get(pgLoaderName).loadNonNull(reactableId)
     } else {
       reactable = (await r.table(rethinkDbTable).get(reactableId).run()) as Reactable
     }
@@ -116,13 +118,22 @@ const addReactjiToReactable = {
 
     // RESOLUTION
     const subDoc = {id: reactji, userId: viewerId}
-    if (isRemove) {
-      if (isPgTable) {
+    if (pgLoaderName) {
+      if (isRemove) {
         await removeTeamResponseReactji.run(
           {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {
+        await appendTeamResponseReactji.run(
+          {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
+          getPg()
+        )
+      }
+
+      dataLoader.get(pgLoaderName).clear(reactableId)
+    } else {
+      if (isRemove) {
         await r
           .table(rethinkDbTable)
           .get(reactableId)
@@ -131,13 +142,6 @@ const addReactjiToReactable = {
             updatedAt: now
           }))
           .run()
-      }
-    } else {
-      if (isPgTable) {
-        await appendTeamResponseReactji.run(
-          {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
-          getPg()
-        )
       } else {
         await r
           .table(rethinkDbTable)
@@ -153,11 +157,6 @@ const addReactjiToReactable = {
           }))
           .run()
       }
-    }
-
-    if (isPgTable) {
-      const loaderName = pgDataloaderLookup[reactableType]
-      dataLoader.get(loaderName).clear(reactableId)
     }
 
     const data = {reactableId, reactableType}
