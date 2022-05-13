@@ -127,13 +127,8 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     return null
   }
 
-  const discussionId = stage.stage.discussionId
-  if (!discussionId) {
-    return null
-  }
-
-  const teamMember = stage.stage.teamMember
-  if (!teamMember) {
+  const {discussionId, teamMember, response} = stage.stage
+  if (!discussionId || !teamMember) {
     return null
   }
 
@@ -146,7 +141,6 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  const response = stage.stage.response
   const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
 
   return (
