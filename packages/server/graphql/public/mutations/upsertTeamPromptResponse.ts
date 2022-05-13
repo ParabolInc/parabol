@@ -1,5 +1,6 @@
 import {generateText, JSONContent} from '@tiptap/core'
 import {createEditorExtensions} from 'parabol-client/components/promptResponse/PromptResponseEditor'
+import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
@@ -19,9 +20,10 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   // VALIDATION
   if (inputTeamPromptResponseId) {
+    const responseId = TeamPromptResponseId.split(inputTeamPromptResponseId)
     const teamPromptResponse: TeamPromptResponse = await dataLoader
       .get('teamPromptResponses')
-      .load(inputTeamPromptResponseId)
+      .load(responseId)
     if (!teamPromptResponse) {
       return standardError(new Error('TeamPromptResponse not found'), {userId: viewerId})
     }

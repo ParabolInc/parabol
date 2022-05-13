@@ -6,6 +6,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
+import AzureDevOpsFieldDimensionDropdown from './AzureDevOpsFieldDimensionDropdown'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
 import GitLabFieldDimensionDropdown from './GitLabFieldDimensionDropdown'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
@@ -82,6 +83,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
         ...GitHubFieldDimensionDropdown_stage
         ...JiraFieldDimensionDropdown_stage
+        ...AzureDevOpsFieldDimensionDropdown_stage
         ...GitLabFieldDimensionDropdown_stage
         task {
           integration {
@@ -127,9 +129,8 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-          {(integrationType === 'JiraIssue' ||
-            integrationType === 'JiraServerIssue' ||
-            integrationType === 'AzureDevOpsWorkItem') && (
+
+          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
@@ -137,6 +138,16 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
+
+          {integrationType === 'AzureDevOpsWorkItem' && (
+            <AzureDevOpsFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+
           {integrationType === '_xGitLabIssue' && (
             <GitLabFieldDimensionDropdown
               clearError={clearError}

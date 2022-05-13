@@ -29,12 +29,10 @@
   "files": [
     "types/webpackEnv.ts",
     "types/modules.d.ts",
-    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
-    "graphql/queries/tasks.ts",
-    "graphql/queries/archivedTasks.ts",
-    "billing/debug.ts",
-    "hubspot/backfillHubSpot.ts",
     "server.ts",
-    "debugJira.ts"
+    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
   ]
+
+  // if "include" or "files" is added, even if they are empty arrays, then strictNullChecks breaks
+  // repro: https://www.typescriptlang.org/play?strictFunctionTypes=false&strictPropertyInitialization=false&strictBindCallApply=false&noImplicitThis=false&noImplicitReturns=false&alwaysStrict=false&declaration=false&experimentalDecorators=false&emitDecoratorMetadata=false&target=6&ts=3.5.1#code/C4TwDgpgBA8gRgKygXigbwFBSgWwIYhwQDKwATgIJlkD8AXFAM7kCWAdgOYDaAuhgL4ZQkKFTIpYiLgHJ8hEuTHS+AYwD2bZlDwS2AVwA2B7Y21sQJ0dQx4AdADM1ZAKJ4VACwAUngF4BKFAA+KH8MIA
 }

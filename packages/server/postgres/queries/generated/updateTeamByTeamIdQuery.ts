@@ -17,7 +17,6 @@ export interface IUpdateTeamByTeamIdQueryParams {
   lastMeetingType: MeetingTypeEnum | null | void;
   tier: TierEnum | null | void;
   orgId: string | null | void;
-  updatedAt: Date | null | void;
   lockMessageHTML: string | null | void;
 }
 
@@ -44,7 +43,7 @@ export interface IUpdateTeamByTeamIdQueryQuery {
   result: IUpdateTeamByTeamIdQueryResult;
 }
 
-const updateTeamByTeamIdQueryIR: any = {"name":"updateTeamByTeamIdQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":44,"b":46,"line":3,"col":9},"used":[{"a":567,"b":569,"line":15,"col":13}]},"transform":{"type":"array_spread"}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":99,"b":102,"line":6,"col":21}]}},{"name":"isArchived","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":141,"b":150,"line":7,"col":27}]}},{"name":"isPaid","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":191,"b":196,"line":8,"col":23}]}},{"name":"jiraDimensionFields","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":246,"b":264,"line":9,"col":36}]}},{"name":"lastMeetingType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":323,"b":337,"line":10,"col":32}]}},{"name":"tier","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":381,"b":384,"line":11,"col":21}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":418,"b":422,"line":12,"col":22}]}},{"name":"updatedAt","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":461,"b":469,"line":13,"col":26}]}},{"name":"lockMessageHTML","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":518,"b":532,"line":14,"col":32}]}}],"usedParamSet":{"name":true,"isArchived":true,"isPaid":true,"jiraDimensionFields":true,"lastMeetingType":true,"tier":true,"orgId":true,"updatedAt":true,"lockMessageHTML":true,"ids":true},"statement":{"body":"UPDATE \"Team\" SET\n  \"name\" = COALESCE(:name, \"name\"),\n  \"isArchived\" = COALESCE(:isArchived, \"isArchived\"),\n  \"isPaid\" = COALESCE(:isPaid, \"isPaid\"),\n  \"jiraDimensionFields\" = COALESCE(:jiraDimensionFields, \"jiraDimensionFields\"),\n  \"lastMeetingType\" = COALESCE(:lastMeetingType, \"lastMeetingType\"),\n  \"tier\" = COALESCE(:tier, \"tier\"),\n  \"orgId\" = COALESCE(:orgId, \"orgId\"),\n  \"updatedAt\" = COALESCE(:updatedAt, \"updatedAt\"),\n  \"lockMessageHTML\" = COALESCE(:lockMessageHTML, \"lockMessageHTML\")\nWHERE id IN :ids\nRETURNING *","loc":{"a":60,"b":581,"line":5,"col":0}}};
+const updateTeamByTeamIdQueryIR: any = {"name":"updateTeamByTeamIdQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":44,"b":46,"line":3,"col":9},"used":[{"a":516,"b":518,"line":14,"col":13}]},"transform":{"type":"array_spread"}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":99,"b":102,"line":6,"col":21}]}},{"name":"isArchived","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":141,"b":150,"line":7,"col":27}]}},{"name":"isPaid","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":191,"b":196,"line":8,"col":23}]}},{"name":"jiraDimensionFields","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":246,"b":264,"line":9,"col":36}]}},{"name":"lastMeetingType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":323,"b":337,"line":10,"col":32}]}},{"name":"tier","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":381,"b":384,"line":11,"col":21}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":418,"b":422,"line":12,"col":22}]}},{"name":"lockMessageHTML","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":467,"b":481,"line":13,"col":32}]}}],"usedParamSet":{"name":true,"isArchived":true,"isPaid":true,"jiraDimensionFields":true,"lastMeetingType":true,"tier":true,"orgId":true,"lockMessageHTML":true,"ids":true},"statement":{"body":"UPDATE \"Team\" SET\n  \"name\" = COALESCE(:name, \"name\"),\n  \"isArchived\" = COALESCE(:isArchived, \"isArchived\"),\n  \"isPaid\" = COALESCE(:isPaid, \"isPaid\"),\n  \"jiraDimensionFields\" = COALESCE(:jiraDimensionFields, \"jiraDimensionFields\"),\n  \"lastMeetingType\" = COALESCE(:lastMeetingType, \"lastMeetingType\"),\n  \"tier\" = COALESCE(:tier, \"tier\"),\n  \"orgId\" = COALESCE(:orgId, \"orgId\"),\n  \"lockMessageHTML\" = COALESCE(:lockMessageHTML, \"lockMessageHTML\")\nWHERE id IN :ids\nRETURNING *","loc":{"a":60,"b":530,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -57,7 +56,6 @@ const updateTeamByTeamIdQueryIR: any = {"name":"updateTeamByTeamIdQuery","params
  *   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
  *   "tier" = COALESCE(:tier, "tier"),
  *   "orgId" = COALESCE(:orgId, "orgId"),
- *   "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
  *   "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")
  * WHERE id IN :ids
  * RETURNING *

@@ -16,13 +16,13 @@ export interface IRemoveAtlassianAuthQueryQuery {
   result: IRemoveAtlassianAuthQueryResult;
 }
 
-const removeAtlassianAuthQueryIR: any = {"name":"removeAtlassianAuthQuery","params":[{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":136,"b":141,"line":6,"col":18}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":159,"b":164,"line":6,"col":41}]}}],"usedParamSet":{"userId":true,"teamId":true},"statement":{"body":"UPDATE \"AtlassianAuth\"\nSET \"isActive\" = FALSE, \"updatedAt\" = CURRENT_TIMESTAMP\nWHERE \"userId\" = :userId AND \"teamId\" = :teamId AND \"isActive\" = TRUE","loc":{"a":39,"b":186,"line":4,"col":0}}};
+const removeAtlassianAuthQueryIR: any = {"name":"removeAtlassianAuthQuery","params":[{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":103,"b":108,"line":6,"col":18}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":126,"b":131,"line":6,"col":41}]}}],"usedParamSet":{"userId":true,"teamId":true},"statement":{"body":"UPDATE \"AtlassianAuth\"\nSET \"isActive\" = FALSE\nWHERE \"userId\" = :userId AND \"teamId\" = :teamId AND \"isActive\" = TRUE","loc":{"a":39,"b":153,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "AtlassianAuth"
- * SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
+ * SET "isActive" = FALSE
  * WHERE "userId" = :userId AND "teamId" = :teamId AND "isActive" = TRUE
  * ```
  */

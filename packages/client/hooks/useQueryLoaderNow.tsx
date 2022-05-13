@@ -6,13 +6,12 @@ import {
   PreloadFetchPolicy,
   useQueryLoader
 } from 'react-relay'
-import {Environment, GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
+import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
 type QueryLoaderOptions = {
   fetchPolicy?: PreloadFetchPolicy
   preventSuspense?: boolean
-  relayEnvironment?: Environment
 }
 
 export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
@@ -20,7 +19,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   variables: VariablesOf<TQuery> = {},
   options: QueryLoaderOptions = {}
 ) => {
-  const {fetchPolicy, preventSuspense, relayEnvironment} = options
+  const {fetchPolicy, preventSuspense} = options
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
   const varRef = useRef(variables)
   const atmosphere = useAtmosphere()
@@ -31,11 +30,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   const refreshQuery = useCallback(() => {
     // fetchQuery will fetch the query and write the data to the Relay store. This will
     // ensure that when we re-render, the data is already cached and we don't suspend
-    fetchQuery(
-      relayEnvironment ?? atmosphere,
-      preloadableRequest as GraphQLTaggedNode,
-      variables
-    ).subscribe({
+    fetchQuery(atmosphere, preloadableRequest as GraphQLTaggedNode, variables).subscribe({
       complete: () => {
         // *After* the query has been fetched, we call loadQuery again to re-render
         // with a new queryRef. At this point the data for the query should be
@@ -71,13 +66,11 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
   preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
   variables: VariablesOf<TQuery> = {},
   fetchPolicy?: PreloadFetchPolicy,
-  preventSuspense?: boolean,
-  relayEnvironment?: Environment
+  preventSuspense?: boolean
 ) => {
   const {queryRef} = useQueryLoaderNowWithRetry(preloadableRequest, variables, {
     fetchPolicy,
-    preventSuspense,
-    relayEnvironment
+    preventSuspense
   })
   return queryRef
 }

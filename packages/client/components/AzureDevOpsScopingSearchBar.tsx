@@ -12,13 +12,22 @@ import Icon from './Icon'
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24,
+  padding: 3,
   marginRight: 12
 })
 
 const SearchBar = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
   padding: 16
+})
+
+const SearchBarWrapper = styled('div')({
+  alignItems: 'center',
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  borderRadius: '40px',
+  display: 'flex',
+  height: 44,
+  padding: '0 16px',
+  width: '100%'
 })
 
 interface Props {
@@ -39,9 +48,11 @@ const AzureDevOpsScopingSearchBar = (props: Props) => {
   )
   return (
     <SearchBar>
-      <SearchIcon>search</SearchIcon>
-      <AzureDevOpsScopingSearchInput meeting={meeting} />
-      <AzureDevOpsScopingSearchFilterToggle meeting={meeting} />
+      <SearchBarWrapper>
+        <SearchIcon>search</SearchIcon>
+        <AzureDevOpsScopingSearchInput meeting={meeting} />
+        <AzureDevOpsScopingSearchFilterToggle meeting={meeting} />
+      </SearchBarWrapper>
     </SearchBar>
   )
 }
