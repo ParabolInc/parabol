@@ -97,15 +97,40 @@ const TeamPromptResponseCard = (props: Props) => {
           updatedAt
           createdAt
         }
+        discussion {
+          thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+            edges {
+              ...TeamPromptRepliesAvatarList_edges
+            }
+          }
+        }
       }
     `,
     stageRef
   )
 
+  const onSelectDiscussion = () => {
+    if (meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id) {
+      // If we're selecting a discussion that's already open, just close the drawer.
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(responseStage.meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(false, 'isRightDrawerOpen')
+      })
+    } else {
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(responseStage.meetingId)
+        if (!meetingProxy) return
+        meetingProxy.setValue(responseStage.id, 'localStageId')
+        meetingProxy.setValue(true, 'isRightDrawerOpen')
+      })
+    }
+  }
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const {teamMember, meetingId, meeting, response, discussion} = responseStage
+  const {teamMember, meetingId, meeting, discussion, response} = responseStage
   const {picture, preferredName, userId} = teamMember
 
   const discussionEdges = discussion.thread.edges
@@ -133,24 +158,6 @@ const TeamPromptResponseCard = (props: Props) => {
       {plaintextContent, onError, onCompleted}
     )
   })
-
-  const onSelectDiscussion = () => {
-    if (meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id) {
-      // If we're selecting a discussion that's already open, just close the drawer.
-      commitLocalUpdate(atmosphere, (store) => {
-        const meetingProxy = store.get(responseStage.meetingId)
-        if (!meetingProxy) return
-        meetingProxy.setValue(false, 'isRightDrawerOpen')
-      })
-    } else {
-      commitLocalUpdate(atmosphere, (store) => {
-        const meetingProxy = store.get(responseStage.meetingId)
-        if (!meetingProxy) return
-        meetingProxy.setValue(responseStage.id, 'localStageId')
-        meetingProxy.setValue(true, 'isRightDrawerOpen')
-      })
-    }
-  }
 
   return (
     <>

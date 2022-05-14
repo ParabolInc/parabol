@@ -19,8 +19,8 @@ interface Props {
   edgesRef: TeamPromptRepliesAvatarList_edges$key
 }
 
-const SIZE = 24
-const OVERLAP = 4
+const AVATAR_SIZE = 24
+const AVATAR_OVERLAP = 4
 const MAX_AVATARS = 3
 
 const TeamPromptRepliesAvatarList = (props: Props) => {
@@ -47,13 +47,13 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
 
   const transitionChildren = useOverflowAvatars(distinctDiscussionUsers, MAX_AVATARS)
 
-  const offsetSize = SIZE - OVERLAP
+  const offsetSize = AVATAR_SIZE - AVATAR_OVERLAP
 
   const activeTChildren = transitionChildren.filter(
     (child) => child.status !== TransitionStatus.EXITING
   )
-  const minHeight = activeTChildren.length === 0 ? 0 : SIZE
-  const width = activeTChildren.length * SIZE - OVERLAP
+  const minHeight = activeTChildren.length === 0 ? 0 : AVATAR_SIZE
+  const width = activeTChildren.length * AVATAR_SIZE - AVATAR_OVERLAP
 
   return (
     <Wrapper minHeight={minHeight} width={width}>
@@ -70,7 +70,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
                 onTransitionEnd={onTransitionEnd}
                 status={status}
                 offset={offsetSize * displayIdx}
-                width={SIZE}
+                width={AVATAR_SIZE}
               />
               <TeamPromptOverflowAvatar
                 key={`${userId}:overflowCount`}
@@ -79,7 +79,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
                 status={status}
                 offset={offsetSize * displayIdx}
                 overflowCount={overflowCount}
-                width={SIZE}
+                width={AVATAR_SIZE}
               />
             </>
           )
@@ -92,7 +92,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
             onTransitionEnd={onTransitionEnd}
             status={status}
             offset={offsetSize * displayIdx}
-            width={SIZE}
+            width={AVATAR_SIZE}
           />
         )
       })}
