@@ -8,7 +8,7 @@ const MSTeamsIntegration = new GraphQLObjectType<any, GQLContext>({
   description: 'Integration Auth and shared providers available to the team member',
   fields: () => ({
     auth: {
-      description: 'The OAuth2 Authorization for this team member',
+      description: 'The Webhook Authorization for this team member',
       type: TeamMemberIntegrationAuthWebhook,
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
         return dataLoader

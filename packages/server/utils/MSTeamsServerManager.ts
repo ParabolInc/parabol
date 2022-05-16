@@ -14,11 +14,10 @@ export interface MSTeamsApiResponse {
   error?: string
 }
 
-abstract class MSTeamsManager {
+class MSTeamsServerManager {
   webhookUrl: string
-  abstract fetch: typeof fetch
   headers: any
-
+  fetch = fetch
   constructor(webhookUrl: string) {
     this.webhookUrl = webhookUrl
   }
@@ -58,13 +57,6 @@ abstract class MSTeamsManager {
       }
     }
     return res
-  }
-}
-
-class MSTeamsServerManager extends MSTeamsManager {
-  fetch = fetch
-  constructor(webhookUrl: string) {
-    super(webhookUrl)
   }
 }
 
