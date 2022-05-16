@@ -16,7 +16,7 @@ export interface IUpsertTeamPromptResponsesQueryParams {
 
 /** 'UpsertTeamPromptResponsesQuery' return type */
 export interface IUpsertTeamPromptResponsesQueryResult {
-  id: string | null;
+  id: number;
 }
 
 /** 'UpsertTeamPromptResponsesQuery' query type */
@@ -25,7 +25,7 @@ export interface IUpsertTeamPromptResponsesQueryQuery {
   result: IUpsertTeamPromptResponsesQueryResult;
 }
 
-const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponsesQuery","params":[{"name":"responses","codeRefs":{"defined":{"a":51,"b":59,"line":3,"col":9},"used":[{"a":239,"b":247,"line":6,"col":8}]},"transform":{"type":"pick_array_spread","keys":["meetingId","userId","sortOrder","content","plaintextContent"]}}],"usedParamSet":{"responses":true},"statement":{"body":"INSERT INTO \"TeamPromptResponse\" (\"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\")\nVALUES :responses\nON CONFLICT (\"meetingId\", \"userId\") DO UPDATE SET\n  \"content\" = EXCLUDED.\"content\",\n  \"plaintextContent\" = EXCLUDED.\"plaintextContent\"\nRETURNING CONCAT('teamPromptResponse:', \"id\") as id","loc":{"a":130,"b":434,"line":5,"col":0}}};
+const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponsesQuery","params":[{"name":"responses","codeRefs":{"defined":{"a":51,"b":59,"line":3,"col":9},"used":[{"a":239,"b":247,"line":6,"col":8}]},"transform":{"type":"pick_array_spread","keys":["meetingId","userId","sortOrder","content","plaintextContent"]}}],"usedParamSet":{"responses":true},"statement":{"body":"INSERT INTO \"TeamPromptResponse\" (\"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\")\nVALUES :responses\nON CONFLICT (\"meetingId\", \"userId\") DO UPDATE SET\n  \"content\" = EXCLUDED.\"content\",\n  \"plaintextContent\" = EXCLUDED.\"plaintextContent\"\nRETURNING id","loc":{"a":130,"b":395,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -35,7 +35,7 @@ const upsertTeamPromptResponsesQueryIR: any = {"name":"upsertTeamPromptResponses
  * ON CONFLICT ("meetingId", "userId") DO UPDATE SET
  *   "content" = EXCLUDED."content",
  *   "plaintextContent" = EXCLUDED."plaintextContent"
- * RETURNING CONCAT('teamPromptResponse:', "id") as id
+ * RETURNING id
  * ```
  */
 export const upsertTeamPromptResponsesQuery = new PreparedQuery<IUpsertTeamPromptResponsesQueryParams,IUpsertTeamPromptResponsesQueryResult>(upsertTeamPromptResponsesQueryIR);

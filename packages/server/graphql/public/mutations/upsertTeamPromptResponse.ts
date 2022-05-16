@@ -1,5 +1,6 @@
 import {generateText, JSONContent} from '@tiptap/core'
 import {createEditorExtensions} from 'parabol-client/components/promptResponse/PromptResponseEditor'
+import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
@@ -58,14 +59,15 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     return standardError(new Error('Invalid editor format'), {userId: viewerId})
   }
 
-  const teamPromptResponseId = await upsertTeamPromptResponseQuery({
-    meetingId,
-    userId: viewerId,
-    sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
-    content,
-    plaintextContent
-  })
-
+  const teamPromptResponseId = TeamPromptResponseId.join(
+    await upsertTeamPromptResponseQuery({
+      meetingId,
+      userId: viewerId,
+      sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
+      content,
+      plaintextContent
+    })
+  )
   const updatedTeamPromptResponse = await dataLoader
     .get('teamPromptResponses')
     .load(teamPromptResponseId)

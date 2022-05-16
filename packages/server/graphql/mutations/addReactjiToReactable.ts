@@ -1,4 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ValueOf} from 'parabol-client/types/generics'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -120,13 +121,15 @@ const addReactjiToReactable = {
     const subDoc = {id: reactji, userId: viewerId}
     if (pgLoaderName) {
       if (isRemove) {
+        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await removeTeamResponseReactji.run(
-          {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
+          {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {
+        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await appendTeamResponseReactji.run(
-          {id: reactableId, reactji: {shortname: reactji, userid: viewerId}},
+          {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       }
