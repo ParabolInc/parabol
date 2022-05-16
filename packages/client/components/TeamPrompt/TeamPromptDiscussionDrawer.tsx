@@ -4,6 +4,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import findStageById from '~/utils/meetings/findStageById'
 import {TeamPromptDiscussionDrawer_meeting$key} from '~/__generated__/TeamPromptDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '../../styles/elevation'
@@ -15,6 +18,7 @@ import DiscussionThreadRoot from '../DiscussionThreadRoot'
 import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
+import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import {TeamMemberName} from './TeamPromptResponseCard'
 
@@ -62,7 +66,6 @@ const CloseIcon = styled(Icon)({
 })
 
 const DiscussionResponseCard = styled('div')({
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
@@ -81,6 +84,10 @@ const Header = styled('div')({
 const StyledCloseButton = styled(PlainButton)({
   height: 24,
   marginLeft: 'auto'
+})
+
+const StyledReactjis = styled(ReactjiSection)({
+  paddingTop: '16px'
 })
 
 interface Props {
@@ -105,7 +112,13 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
                 preferredName
               }
               response {
+                id
                 content
+                reactjis {
+                  ...ReactjiSection_reactjis
+                  id
+                  isViewerReactji
+                }
               }
             }
           }
@@ -116,6 +129,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
   const {localStageId, id: meetingId, isRightDrawerOpen} = meeting
   if (!localStageId) {
@@ -132,7 +146,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     return null
   }
 
-  const onToggle = () => {
+  const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -141,13 +155,33 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting || !reactjis) return
+    const isRemove = !!reactjis.find((reactji) => {
+      return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
+    })
+    submitMutation()
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {
+        reactableId: response?.id,
+        reactableType: 'RESPONSE',
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
+      {onCompleted, onError}
+    )
+  }
+
   const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
+  const reactjis = response?.reactjis
 
   return (
     <ResponsiveDashSidebar
       isOpen={isRightDrawerOpen}
       isRightDrawer
-      onToggle={onToggle}
+      onToggle={onToggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
       <Drawer isDesktop={isDesktop} isOpen={isRightDrawerOpen}>
@@ -156,12 +190,12 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
             <Avatar picture={teamMember.picture} size={48} />
             <TeamMemberName>{teamMember.preferredName}</TeamMemberName>
             {/* :TODO: (jmtaber129): Show when response was last updated */}
-            <StyledCloseButton onClick={onToggle}>
+            <StyledCloseButton onClick={onToggleDrawer}>
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>
           </Header>
           <PromptResponseEditor content={contentJSON} readOnly={true} />
-          {/* :TODO: (jmtaber129): Include reactjis */}
+          <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
         </DiscussionResponseCard>
         <ThreadColumn>
           <DiscussionThreadRoot

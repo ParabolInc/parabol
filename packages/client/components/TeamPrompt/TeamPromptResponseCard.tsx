@@ -7,6 +7,7 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
@@ -175,8 +176,7 @@ const TeamPromptResponseCard = (props: Props) => {
   const onToggleReactji = (emojiId: string) => {
     if (submitting || !reactjis) return
     const isRemove = !!reactjis.find((reactji) => {
-      const splitIndex = reactji.id.lastIndexOf(':')
-      return reactji.isViewerReactji && reactji.id.slice(splitIndex + 1) === emojiId
+      return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
     })
     submitMutation()
     AddReactjiToReactableMutation(
