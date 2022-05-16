@@ -4,6 +4,7 @@ import {requestSubscription} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
+import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
 import {
   MeetingSubscription as TMeetingSubscription,
   MeetingSubscriptionVariables
@@ -59,6 +60,7 @@ const subscription = graphql`
       ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
       ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
+      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -80,7 +82,8 @@ const updateHandlers = {
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
-  PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater
+  PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
+  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater
 }
 
 const MeetingSubscription = (

@@ -48,10 +48,9 @@ const mutation = graphql`
   }
 `
 
-export const resetRetroMeetingToGroupStageUpdater: SharedUpdater<TResetRetroMeetingToGroupStageMutation['response']['resetRetroMeetingToGroupStage']> = (
-  payload,
-  {store}
-) => {
+export const resetRetroMeetingToGroupStageUpdater: SharedUpdater<
+  TResetRetroMeetingToGroupStageMutation['response']['resetRetroMeetingToGroupStage']
+> = (payload, {store}) => {
   const meeting = payload.getLinkedRecord('meeting')
   if (!meeting) return
   const phases = meeting.getLinkedRecords('phases')
@@ -66,10 +65,9 @@ export const resetRetroMeetingToGroupStageUpdater: SharedUpdater<TResetRetroMeet
   })
 }
 
-const ResetRetroMeetingToGroupStageMutation: SimpleMutation<TResetRetroMeetingToGroupStageMutation> = (
-  atmosphere: Atmosphere,
-  variables: ResetRetroMeetingToGroupStageMutationVariables
-) => {
+const ResetRetroMeetingToGroupStageMutation: SimpleMutation<
+  TResetRetroMeetingToGroupStageMutation
+> = (atmosphere: Atmosphere, variables: ResetRetroMeetingToGroupStageMutationVariables) => {
   return commitMutation<TResetRetroMeetingToGroupStageMutation>(atmosphere, {
     mutation,
     updater: (store) => {

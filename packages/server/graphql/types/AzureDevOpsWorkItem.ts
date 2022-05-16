@@ -8,7 +8,7 @@ import TaskIntegration from './TaskIntegration'
 
 const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsWorkItem',
-  description: 'The Azure DevOps Issue that comes direct from Azure DevOps',
+  description: 'The Azure DevOps Work Item that comes direct from Azure DevOps',
   interfaces: () => [TaskIntegration],
   isTypeOf: ({service}) => service === 'azureDevOps',
   fields: () => ({
@@ -35,6 +35,10 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
     type: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The Type of the Work item'
+    },
+    descriptionHTML: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The description converted into raw HTML'
     }
   })
 })

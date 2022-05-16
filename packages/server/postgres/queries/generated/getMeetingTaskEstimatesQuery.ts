@@ -23,6 +23,7 @@ export interface IGetMeetingTaskEstimatesQueryResult {
   discussionId: string | null;
   jiraFieldId: string | null;
   githubLabelName: string | null;
+  azureDevOpsFieldName: string | null;
 }
 
 /** 'GetMeetingTaskEstimatesQuery' query type */
