@@ -45,10 +45,6 @@ const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
   })
 )
 
-const StyledPromptResponseEditor = styled(PromptResponseEditor)({
-  minHeight: 40,
-})
-
 const ResponseCardFooter = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
@@ -209,7 +205,7 @@ const TeamPromptResponseCard = (props: Props) => {
           'No response, yet...'
         ) : (
           <>
-            <StyledPromptResponseEditor
+            <PromptResponseEditor
               autoFocus={isCurrentViewer}
               handleSubmit={handleSubmit}
               content={contentJSON}
