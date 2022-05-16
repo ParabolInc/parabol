@@ -97,7 +97,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   }
 
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
-    if (workItemType === 'User Story' || workItemType === 'Bug') {
+    if (workItemType === 'Agile:User Story' || workItemType === 'Agile:Bug') {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
@@ -108,7 +108,12 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (workItemType === 'Task') {
+    } else if (
+      workItemType === 'Agile:Task' ||
+      workItemType === 'CMMI:Issue' ||
+      workItemType === 'CMMI:Risk' ||
+      workItemType === 'CMMI:Task'
+    ) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
@@ -119,7 +124,29 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (workItemType === 'Epic' || workItemType === 'Feature') {
+    } else if (workItemType === 'Basic:Task' || workItemType === 'Scrum:Task') {
+      return [
+        {
+          label: SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD
+        },
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    } else if (
+      workItemType === 'Agile:Epic' ||
+      workItemType === 'Agile:Feature' ||
+      workItemType === 'Basic:Issue' ||
+      workItemType === 'Scrum:Bug' ||
+      workItemType === 'Scrum:Epic' ||
+      workItemType === 'Scrum:Feature' ||
+      workItemType === 'Scrum:Product Backlog Item' ||
+      workItemType === 'CMMI:Change Request' ||
+      workItemType === 'CMMI:Epic' ||
+      workItemType === 'CMMI:Feature'
+    ) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL,

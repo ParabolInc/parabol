@@ -7,10 +7,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds'
+//import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+//import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
+//import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -109,7 +109,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const auth = (await dataLoader
+        /*const auth = (await dataLoader
           .get('freshAzureDevOpsAuth')
           .load({teamId, userId})) as IGetTeamMemberIntegrationAuthQueryResult | null
         if (auth === null) {
@@ -126,8 +126,27 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           )
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
+        }*/
+
+        const allUserWorkItems = await dataLoader
+          .get('azureDevOpsAllWorkItems')
+          .load({teamId, userId, queryString, projectKeyFilters, isWIQL})
+        if (!allUserWorkItems) {
+          return connectionFromTasks([], 0, undefined)
+        } else {
+          const workItems = Array.from(
+            allUserWorkItems.map((userWorkItem) => {
+              return {
+                ...userWorkItem,
+                updatedAt: new Date()
+              }
+            })
+          )
+          console.log(`workItems - ${JSON.stringify(workItems)}`)
+          return connectionFromTasks(workItems, first, undefined)
         }
-        const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+        /*const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
         if (!provider) {
           return null
@@ -169,7 +188,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
             })
           )
           return connectionFromTasks(workItems, first, undefined)
-        }
+        } */
       }
     },
     projects: {

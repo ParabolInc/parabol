@@ -35,6 +35,33 @@ export interface AccessibleResources {
   value: Resource[]
 }
 
+export interface ProjectProperty {
+  name: string
+  value: string
+}
+
+export interface ProjectProperties {
+  count: number
+  //was properties
+  value: ProjectProperty[]
+}
+
+export interface ProcessType {
+  custom: string
+  inherited: string
+  system: string
+}
+
+export interface Process {
+  _links: ReferenceLinks
+  description: string
+  id: string
+  isDefault: boolean
+  name: string
+  type: ProcessType
+  url: string
+}
+
 export interface WorkItemQueryResult {
   asOf: string
   columns: WorkItemFieldReference[]
@@ -238,6 +265,7 @@ class AzureDevOpsServerManager {
     if ('message' in json) {
       return new Error(json.message)
     }
+    console.log(`returning json from get:${url} - ${JSON.stringify(json)}`)
     return json
   }
   private readonly post = async <T>(url: string, payload: any) => {
@@ -440,6 +468,74 @@ class AzureDevOpsServerManager {
       }
     }
     return {error: undefined, projects: teamProjectReferences}
+  }
+
+  async getProjectProperties(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
+    const result = await this.get<ProjectProperties>(uri)
+    if (result instanceof Error) {
+      if (!firstError) {
+        firstError = result
+      }
+    }
+    console.log(
+      `Inside getProjectProperties after the REST call.  The value of result is ${JSON.stringify(
+        result
+      )}`
+    )
+    const requestedProperties = result as ProjectProperties
+    return {error: firstError, projectProperties: requestedProperties}
+  }
+
+  async getProjectProcessTemplate(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const result = await this.getProjectProperties(instanceId, projectId)
+    console.log(`Inside getProjectProcessTemplate - result:${JSON.stringify(result)}`)
+    if (!!result.error) {
+      if (!firstError) {
+        firstError = result.error
+      }
+    }
+    const processTemplateProperty = result.projectProperties.value[0]
+    console.log(`processTemplateProperty - ${processTemplateProperty}`)
+    if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
+      return {error: firstError, projectTemplate: ''}
+    }
+    const processTemplateDetailsResult = await this.getProcessTemplate(
+      instanceId,
+      processTemplateProperty?.value
+    )
+    if (!!processTemplateDetailsResult.error) {
+      if (!firstError) {
+        firstError = processTemplateDetailsResult.error
+      }
+    }
+    return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+  }
+
+  async getProcessTemplate(instanceId: string, processId: string) {
+    let firstError: Error | undefined
+    //todo: if the processId is a16fee81-56dc-41c2-9ccc-418966d2b4ed then it is Basic
+    console.log(
+      `Inside getProcessTemplate with - instanceId:${instanceId} | processId:${processId}`
+    )
+    const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
+    const result = await this.get<Process>(uri)
+    if (result instanceof Error) {
+      console.log(`result was an error - ${result}`)
+      if (result.message.includes('VS402362', 0)) {
+        console.log(`VS402362 was found`)
+        return {error: firstError, process: 'Basic'}
+      }
+      if (!firstError) {
+        firstError = result
+      }
+    } else {
+      console.log(`getProcessTemplate - not an error`)
+    }
+    console.log(`getProcessTemplate - result:${JSON.stringify(result)}`)
+    return {error: firstError, process: result.name}
   }
 
   async getAccountProjects(accountName: string) {

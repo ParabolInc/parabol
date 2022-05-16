@@ -44,7 +44,8 @@ const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
   [SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD]: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
   [SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD]:
-    SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL
+    SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
+  [SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD]: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL
 }
 
 const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
@@ -71,6 +72,7 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
 
   const {serviceField} = stage
   const {name: serviceFieldName} = serviceField
+  console.log(`serviceFieldName - ${serviceFieldName}`)
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
