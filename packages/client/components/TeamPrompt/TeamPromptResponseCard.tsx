@@ -5,8 +5,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import useEventCallback from '~/hooks/useEventCallback'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
@@ -50,7 +50,7 @@ const ResponseCardFooter = styled('div')({
   flexWrap: 'wrap',
   alignItems: 'center',
   justifyContent: 'flex-start',
-  paddingTop: 12
+  paddingTop: 4
 })
 
 export const TeamMemberName = styled('h3')({
@@ -58,7 +58,8 @@ export const TeamMemberName = styled('h3')({
 })
 
 const StyledReactjis = styled(ReactjiSection)({
-  paddingRight: '8px'
+  paddingRight: '8px',
+  paddingTop: '8px'
 })
 
 const ReplyButton = styled(PlainButton)({
@@ -66,6 +67,7 @@ const ReplyButton = styled(PlainButton)({
   alignItems: 'flex-start',
   fontWeight: 600,
   lineHeight: '24px',
+  paddingTop: '8px',
   color: PALETTE.SKY_500,
   ':hover, :focus': {
     color: PALETTE.SKY_400
