@@ -24,14 +24,12 @@ const mutation = graphql`
     $teamId: ID!
     $service: IntegrationProviderServiceEnum!
     $providerId: Int
-    $isRemove: Boolean!
     $jiraServerSearchQuery: JiraServerSearchQueryInput
   ) {
     persistIntegrationSearchQuery(
       teamId: $teamId
       service: $service
       providerId: $providerId
-      isRemove: $isRemove
       jiraServerSearchQuery: $jiraServerSearchQuery
     ) {
       ... on ErrorPayload {

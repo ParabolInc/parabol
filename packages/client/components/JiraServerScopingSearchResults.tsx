@@ -140,7 +140,6 @@ const JiraServerScopingSearchResults = (props: Props) => {
         teamId,
         service: 'jiraServer',
         providerId,
-        isRemove: false,
         jiraServerSearchQuery: {
           queryString,
           isJQL,

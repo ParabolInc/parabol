@@ -11,18 +11,17 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import getLatestIntegrationSearchQueriesWithProviderId from '../../postgres/queries/getLatestIntegrationSearchQueriesWithProviderId'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
+import JiraSearchQuery from './JiraSearchQuery'
 import {JiraServerIssueConnection} from './JiraServerIssue'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
-import JiraSearchQuery from "./JiraSearchQuery";
-import getLatestIntegrationSearchQueriesWithProviderId
-  from "../../postgres/queries/getLatestIntegrationSearchQueriesWithProviderId";
 
 type IssueArgs = {
   first: number
@@ -36,6 +35,17 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
   name: 'JiraServerIntegration',
   description: 'Jira Server integration data for a given team member',
   fields: () => ({
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'Composite key in jiraServer:providerId format',
+      resolve: async ({teamId, userId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        return `jiraServer:${auth?.providerId}`
+      }
+    },
     auth: {
       description: 'The OAuth1 Authorization for this team member',
       type: TeamMemberIntegrationAuthOAuth1,
@@ -161,7 +171,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       }
     },
     providerId: {
-      type:  new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -175,7 +185,6 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
-
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
           .load({service: 'jiraServer', teamId, userId})

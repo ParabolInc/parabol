@@ -3,7 +3,6 @@ extend type Mutation {
     teamId: ID!
     service: IntegrationProviderServiceEnum!
     providerId: Int
-    isRemove: Boolean!
     jiraServerSearchQuery: JiraServerSearchQueryInput
   ): PersistIntegrationSearchQueryPayload!
 }
@@ -21,3 +20,5 @@ type PersistIntegrationSearchQuerySuccess {
 }
 
 union PersistIntegrationSearchQueryPayload = PersistIntegrationSearchQuerySuccess | ErrorPayload
+
+extend union NotificationSubscriptionPayload = PersistIntegrationSearchQuerySuccess

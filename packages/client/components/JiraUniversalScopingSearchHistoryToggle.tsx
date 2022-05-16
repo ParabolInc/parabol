@@ -2,6 +2,7 @@ import React from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
+import RemoveJiraServerSearchQueryMutation from '../mutations/RemoveJiraServerSearchQueryMutation'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -39,7 +40,7 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         .map((filter) => filter.slice(filter.indexOf(':') + 1))
         .join(', ')
 
-      // TODO: migrate Jira to use the new table and use generic mutation
+      // TODO: migrate Jira to use the new table and use single mutation for both
       const deleteJiraQuery = () => {
         PersistJiraSearchQueryMutation(atmosphere, {
           teamId,
@@ -53,7 +54,7 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
       }
 
       const deleteJiraServerQuery = () => {
-        // TODO
+        RemoveJiraServerSearchQueryMutation(atmosphere, {id, teamId})
       }
 
       return {
