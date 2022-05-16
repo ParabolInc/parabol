@@ -56,12 +56,8 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const serviceTaskIds = issues.map((issue) => GitLabIssueId.join(providerId, issue.id))
-  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(
-    serviceTaskIds,
-    usedServiceTaskIds,
-    Threshold.MAX_GITLAB_POKER_STORIES
-  )
-  const availableCountToAdd = Threshold.MAX_GITLAB_POKER_STORIES - usedServiceTaskIds.size
+  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
+  const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
     submitMutation()
@@ -95,12 +91,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
     })
   }
   if (issues.length < 2) return null
-  const title = getSelectAllTitle(
-    issues.length,
-    usedServiceTaskIds.size,
-    'issue',
-    Threshold.MAX_GITLAB_POKER_STORIES
-  )
+  const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
 
   return (
     <Item onClick={onClick}>

@@ -1,10 +1,9 @@
 import {useMemo} from 'react'
-import {Threshold} from '../types/constEnums'
+import {Threshold} from '~/types/constEnums'
 
 const useUnusedRecords = (
   serviceTaskIds: string[],
-  usedServiceTaskIds: Set<string>,
-  thresh = Threshold.MAX_POKER_STORIES
+  usedServiceTaskIds: Set<string>
 ): [string[], boolean | null] => {
   return useMemo(() => {
     const unusedServiceTaskIds = [] as string[]
@@ -12,7 +11,7 @@ const useUnusedRecords = (
       if (!usedServiceTaskIds.has(servieTaskId)) unusedServiceTaskIds.push(servieTaskId)
     })
     const allSelected =
-      unusedServiceTaskIds.length === 0 || usedServiceTaskIds.size === thresh
+      unusedServiceTaskIds.length === 0 || usedServiceTaskIds.size === Threshold.MAX_POKER_STORIES
         ? true
         : unusedServiceTaskIds.length === serviceTaskIds.length
         ? false
