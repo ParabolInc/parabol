@@ -120,14 +120,13 @@ const addReactjiToReactable = {
     // RESOLUTION
     const subDoc = {id: reactji, userId: viewerId}
     if (pgLoaderName) {
+      const numberReactableId = TeamPromptResponseId.split(reactableId)
       if (isRemove) {
-        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await removeTeamResponseReactji.run(
           {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
         )
       } else {
-        const numberReactableId = TeamPromptResponseId.split(reactableId)
         await appendTeamResponseReactji.run(
           {id: numberReactableId, reactji: {shortname: reactji, userid: viewerId}},
           getPg()
