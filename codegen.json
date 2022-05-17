@@ -35,7 +35,9 @@
           "Organization": "../../database/types/Organization#default as Organization",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
-          "User": "../../postgres/types/IUser#default as IUser"
+          "User": "../../postgres/types/IUser#default as IUser",
+          "Team": "../../postgres/queries/getTeamsById#Team",
+          "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource"
         }
       },
       "plugins": ["typescript", "typescript-resolvers", "add"],

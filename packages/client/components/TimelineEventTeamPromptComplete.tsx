@@ -63,6 +63,10 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
   )
 
   const {meeting, team} = timelineEvent
+  if (!meeting) {
+    return null
+  }
+
   const {id: meetingId, name: meetingName, responses, phases} = meeting
   const {name: teamName} = team
   const responseCount = responses.length

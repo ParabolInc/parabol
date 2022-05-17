@@ -35,7 +35,6 @@ import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRe
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
-import TimelineEventTeamPromptComplete from './types/TimelineEventTeamPromptComplete'
 import UpdatesPhase from './types/UpdatesPhase'
 
 const rootTypes = [
@@ -73,7 +72,6 @@ const rootTypes = [
   TimelineEventCompletedRetroMeeting,
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
-  TimelineEventTeamPromptComplete,
   ActionMeetingSettings,
   TeamPromptMeeting,
   TeamPromptMeetingMember,
