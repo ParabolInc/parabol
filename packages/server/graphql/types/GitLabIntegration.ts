@@ -75,10 +75,13 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'the datetime cursor'
         }
       },
-      resolve: async (source, {first}, context, info) => {
-        // TODO: add types
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        {first}: {first: number},
+        context,
+        info
+      ) => {
         const {dataLoader} = context
-        const {teamId, userId} = source
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
           .load({service: 'gitlab', teamId, userId})
@@ -97,10 +100,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             first
           })
           if (err) errors.push(err)
-          console.log('🚀  ~ res?.project?.issues?.pageInfo', {
-            first,
-            pageInfo: res?.project?.issues?.pageInfo
-          })
           if (res?.project?.issues?.pageInfo.hasNextPage) hasNextPage = true
           res?.project?.issues?.edges?.forEach((edge) => {
             if (edge?.node) {
@@ -111,7 +110,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             }
           })
         }
-        console.log('🚀  ~ hasNextPage', hasNextPage)
         const firstEdge = projectIssues[0]
         return {
           error: errors,

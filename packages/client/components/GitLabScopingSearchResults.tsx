@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
@@ -31,7 +30,7 @@ const GitLabScopingSearchResults = (props: Props) => {
       query GitLabScopingSearchResultsQuery(
         $teamId: ID!
         $queryString: String!
-        # $selectedProjectsIds: [ID!]
+        $selectedProjectsIds: [ID!]
         $first: Int!
         $includeSubepics: Boolean!
         $sort: _xGitLabIssueSort!
@@ -48,15 +47,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                     id
                   }
                 }
-                # projectIssues(first: 10) @connection(key: "GitLabScopingSearchResults_issues") {
-                #   edges {
-                #     node {
-                #       ... on _xGitLabIssue {
-                #         id
-                #       }
-                #     }
-                #   }
-                # }
                 api {
                   errors {
                     message
@@ -67,21 +57,30 @@ const GitLabScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    project(fullPath: "testa-group/test-project") {
-                      ... on _xGitLabProject {
-                        issues(
-                          includeSubepics: $includeSubepics
-                          state: $state
-                          search: $queryString
-                          sort: $sort
-                          first: $first
-                        ) {
-                          edges {
-                            node {
-                              ... on _xGitLabIssue {
-                                ...GitLabScopingSearchResultItem_issue
-                                ...GitLabScopingSelectAllIssues_issues
-                                id
+                    projects(
+                      membership: true
+                      first: 75
+                      sort: "latest_activity_desc"
+                      ids: $selectedProjectsIds
+                    ) @connection(key: "GitLabScopingSearchResults_projects") {
+                      edges {
+                        node {
+                          ... on _xGitLabProject {
+                            issues(
+                              includeSubepics: $includeSubepics
+                              state: $state
+                              search: $queryString
+                              sort: $sort
+                              first: $first
+                            ) {
+                              edges {
+                                node {
+                                  ... on _xGitLabIssue {
+                                    ...GitLabScopingSearchResultItem_issue
+                                    ...GitLabScopingSelectAllIssues_issues
+                                    id
+                                  }
+                                }
                               }
                             }
                           }
@@ -127,8 +126,9 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
+  // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
+  // console.log('🚀  ~ query', {query, paginationRes})
   console.log('🚀  ~ query', {query, paginationRes})
   const meeting = useFragment(
     graphql`
@@ -150,7 +150,9 @@ const GitLabScopingSearchResults = (props: Props) => {
   const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
   console.log('🚀  ~ gitlab', gitlab)
-  const nullableEdges = gitlab?.api?.query?.project?.issues?.edges ?? null
+  const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
+    (project) => project?.node?.issues?.edges ?? null
+  )
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
@@ -196,7 +198,7 @@ const GitLabScopingSearchResults = (props: Props) => {
           />
         ))}
       </ResultScroller>
-      {lastItem}
+      {/* {lastItem} */}
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}
