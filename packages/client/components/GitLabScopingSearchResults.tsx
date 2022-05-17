@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
@@ -24,17 +25,19 @@ interface Props {
 
 const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
+
   const query = usePreloadedQuery(
     graphql`
       query GitLabScopingSearchResultsQuery(
         $teamId: ID!
         $queryString: String!
-        $selectedProjectsIds: [ID!]
+        # $selectedProjectsIds: [ID!]
         $first: Int!
         $includeSubepics: Boolean!
         $sort: _xGitLabIssueSort!
         $state: _xGitLabIssuableState!
       ) {
+        ...GitLabScopingSearchResults_query
         viewer {
           ...NewGitLabIssueInput_viewer
           teamMember(teamId: $teamId) {
@@ -45,6 +48,15 @@ const GitLabScopingSearchResults = (props: Props) => {
                     id
                   }
                 }
+                # projectIssues(first: 10) @connection(key: "GitLabScopingSearchResults_issues") {
+                #   edges {
+                #     node {
+                #       ... on _xGitLabIssue {
+                #         id
+                #       }
+                #     }
+                #   }
+                # }
                 api {
                   errors {
                     message
@@ -55,30 +67,21 @@ const GitLabScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    projects(
-                      membership: true
-                      first: 75
-                      sort: "latest_activity_desc"
-                      ids: $selectedProjectsIds
-                    ) @connection(key: "GitLabScopingSearchResults_projects") {
-                      edges {
-                        node {
-                          ... on _xGitLabProject {
-                            issues(
-                              includeSubepics: $includeSubepics
-                              state: $state
-                              search: $queryString
-                              sort: $sort
-                              first: $first
-                            ) {
-                              edges {
-                                node {
-                                  ... on _xGitLabIssue {
-                                    ...GitLabScopingSearchResultItem_issue
-                                    ...GitLabScopingSelectAllIssues_issues
-                                    id
-                                  }
-                                }
+                    project(fullPath: "testa-group/test-project") {
+                      ... on _xGitLabProject {
+                        issues(
+                          includeSubepics: $includeSubepics
+                          state: $state
+                          search: $queryString
+                          sort: $sort
+                          first: $first
+                        ) {
+                          edges {
+                            node {
+                              ... on _xGitLabIssue {
+                                ...GitLabScopingSearchResultItem_issue
+                                ...GitLabScopingSelectAllIssues_issues
+                                id
                               }
                             }
                           }
@@ -97,7 +100,36 @@ const GitLabScopingSearchResults = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
+  const paginationRes = usePaginationFragment(
+    graphql`
+      fragment GitLabScopingSearchResults_query on Query
+      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 4})
+      @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              gitlab {
+                projectIssues(first: $count, after: $cursor)
+                  @connection(key: "GitLabScopingSearchResults_projectIssues") {
+                  edges {
+                    node {
+                      ... on _xGitLabIssue {
+                        id
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    query
+  )
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
+  console.log('🚀  ~ query', {query, paginationRes})
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -117,9 +149,8 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
-  const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
-    (project) => project?.node?.issues?.edges ?? null
-  )
+  console.log('🚀  ~ gitlab', gitlab)
+  const nullableEdges = gitlab?.api?.query?.project?.issues?.edges ?? null
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
@@ -165,6 +196,7 @@ const GitLabScopingSearchResults = (props: Props) => {
           />
         ))}
       </ResultScroller>
+      {lastItem}
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}

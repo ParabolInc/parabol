@@ -1,0 +1,18 @@
+query getProjectIssues($fullPath: ID!, $first: Int!) {
+  project(fullPath: $fullPath) {
+    id
+    fullPath
+    issues(first: $first) {
+      edges {
+        node {
+          __typename
+          id
+          iid
+          descriptionHtml
+          webPath
+          updatedAt
+        }
+      }
+    }
+  }
+}
