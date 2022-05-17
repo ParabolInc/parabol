@@ -6,6 +6,7 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
+import sendAccountRemovedToSegment from '../../mutations/helpers/sendAccountRemovedToSegment'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -117,7 +118,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const teamDiscussionIds = discussions.rows.map(({id}) => id)
 
   // soft delete first for side effects
-  const tombstoneId = await softDeleteUser(userIdToDelete, dataLoader, authToken, reasonText)
+  const tombstoneId = await softDeleteUser(userIdToDelete, dataLoader)
 
   // all other writes
   await r({
@@ -209,6 +210,8 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   ])
   // User needs to be deleted after children
   await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])
+
+  sendAccountRemovedToSegment(userIdToDelete, user.email, reasonText)
 
   await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
   return {}
