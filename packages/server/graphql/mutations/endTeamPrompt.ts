@@ -76,12 +76,14 @@ const endTeamPrompt = {
           meetingId
         })
     )
+    const timelineEventId = events[0]!.id
 
     await r.table('TimelineEvent').insert(events).run()
 
     const data = {
       meetingId,
-      teamId
+      teamId,
+      timelineEventId
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
     return data
