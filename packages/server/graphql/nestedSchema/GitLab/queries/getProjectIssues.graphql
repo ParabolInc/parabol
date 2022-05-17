@@ -3,6 +3,9 @@ query getProjectIssues($fullPath: ID!, $first: Int!) {
     id
     fullPath
     issues(first: $first) {
+      pageInfo {
+        hasNextPage
+      }
       edges {
         node {
           __typename

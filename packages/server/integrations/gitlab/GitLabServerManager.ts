@@ -16,6 +16,7 @@ import {
   CreateNoteMutation,
   GetIssueQuery,
   GetProfileQuery,
+  GetProjectIssuesQuery,
   GetProjectsQuery
 } from '../../types/gitlabTypes'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
@@ -145,8 +146,7 @@ class GitLabServerManager implements TaskIntegrationManager {
 
   async getProjectIssues({fullPath, first}: {fullPath: string; first: number}) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
-    // const [projectsData, projectsError] = await gitlabRequest<GetProjectsQuery>(getProjects, {
-    const [issuesData, issuesError] = await gitlabRequest(getProjectIssues, {
+    const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(getProjectIssues, {
       fullPath,
       first
     })

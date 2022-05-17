@@ -103,7 +103,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const paginationRes = usePaginationFragment(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 4})
+      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 5})
       @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
