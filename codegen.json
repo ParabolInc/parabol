@@ -30,11 +30,14 @@
         "mappers": {
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
-          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
-          "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
-          "Organization": "../../database/types/Organization#default as Organization",
-          "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
+          "Organization": "../../database/types/Organization#default as Organization",
+          "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
+          "Team": "../../postgres/queries/getTeamsByIds#Team",
+          "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
+          "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
+          "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
+          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },

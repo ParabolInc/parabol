@@ -134,14 +134,20 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         const {issues} = issueRes
 
         const mappedIssues = issues.map((issue) => {
+          const {project, issuetype, summary, description} = issue.fields
           return {
-            id: issue.id,
-            self: issue.self,
-            issueKey: issue.key,
+            ...issue,
+            userId,
+            teamId,
             providerId: provider.id,
+            issueKey: issue.key,
             descriptionHTML: issue.renderedFields.description,
-            ...issue.fields,
-            service: 'jiraServer',
+            projectId: project.id,
+            projectKey: project.key,
+            issueType: issuetype.id,
+            summary,
+            description,
+            service: 'jiraServer' as const,
             updatedAt: new Date()
           }
         })
