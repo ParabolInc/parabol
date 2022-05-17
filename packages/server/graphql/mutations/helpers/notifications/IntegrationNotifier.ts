@@ -1,20 +1,35 @@
 import {MattermostNotifier} from './MattermostNotifier'
-import {EmptyNotifier, Notifier} from './Notifier'
+import {Notifier} from './Notifier'
 import {SlackNotifier} from './SlackNotifier'
 
 const notifiers = [MattermostNotifier, SlackNotifier]
 
-export const IntegrationNotifier = {
-  ...Object.fromEntries(
-    Object.entries(EmptyNotifier).map(([name, fun]) => [
-      name,
-      async (...args: Parameters<typeof fun>) => {
-        await Promise.allSettled(
-          notifiers.map(async (notifier) => {
-            notifier[name](...args)
-          })
-        )
-      }
-    ])
-  )
-} as Notifier
+export const IntegrationNotifier: Notifier = {
+  async startMeeting(dataLoader, meetingId, teamId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) => notifier.startMeeting(dataLoader, meetingId, teamId))
+    )
+  },
+  async endMeeting(dataLoader, meetingId, teamId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) => notifier.endMeeting(dataLoader, meetingId, teamId))
+    )
+  },
+  async startTimeLimit(dataLoader, scheduledEndTime, meetingId, teamId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) =>
+        notifier.startTimeLimit(dataLoader, scheduledEndTime, meetingId, teamId)
+      )
+    )
+  },
+  async endTimeLimit(dataLoader, meetingId, teamId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) => notifier.endTimeLimit(dataLoader, meetingId, teamId))
+    )
+  },
+  async integrationUpdated(dataLoader, teamId, userId) {
+    await Promise.allSettled(
+      notifiers.map(async (notifier) => notifier.integrationUpdated(dataLoader, teamId, userId))
+    )
+  }
+}
