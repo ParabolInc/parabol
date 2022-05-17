@@ -10,6 +10,7 @@ import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
+import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 
 interface Props {
@@ -32,9 +33,12 @@ const query = graphql`
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
       ...AzureDevOpsProviderRow_viewer
+      ...MSTeamsProviderRow_viewer
 
       featureFlags {
         azureDevOps
+        gitlab
+        msTeams
       }
     }
   }
@@ -47,7 +51,7 @@ const ProviderList = (props: Props) => {
   })
   const {viewer} = data
   const {
-    featureFlags: {azureDevOps: allowAzureDevOps}
+    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
   } = viewer
   return (
     <StyledWrapper>
@@ -58,6 +62,7 @@ const ProviderList = (props: Props) => {
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
       {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />}
+      {allowMSTeams && <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />}
     </StyledWrapper>
   )
 }

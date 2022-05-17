@@ -10,6 +10,7 @@ import UpdateIntegrationProviderInput, {
 } from '../types/UpdateIntegrationProviderInput'
 import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
 import {MattermostNotifier} from './helpers/notifications/MattermostNotifier'
+import {MSTeamsNotifier} from './helpers/notifications/MSTeamsNotifier'
 
 const updateIntegrationProvider = {
   name: 'UpdateIntegrationProvider',
@@ -73,6 +74,14 @@ const updateIntegrationProvider = {
       if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
         Object.assign(currentProvider, webhookProviderMetadataInput)
         await MattermostNotifier.integrationUpdated(dataLoader, teamId, viewerId)
+      }
+    }
+    if (currentProvider.service === 'msTeams') {
+      const {webhookUrl} = currentProvider
+      const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
+      if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
+        Object.assign(currentProvider, webhookProviderMetadataInput)
+        await MSTeamsNotifier.integrationUpdated(dataLoader, teamId, viewerId)
       }
     }
     const data = {userId: viewerId, teamId, providerId: providerDbId}
