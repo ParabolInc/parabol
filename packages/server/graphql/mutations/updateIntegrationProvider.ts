@@ -9,7 +9,7 @@ import UpdateIntegrationProviderInput, {
   IUpdateIntegrationProviderInput
 } from '../types/UpdateIntegrationProviderInput'
 import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
-import {notifyWebhookConfigUpdated} from './helpers/notifications/notifyMattermost'
+import {MattermostNotifier} from './helpers/notifications/MattermostNotifier'
 
 const updateIntegrationProvider = {
   name: 'UpdateIntegrationProvider',
@@ -71,7 +71,8 @@ const updateIntegrationProvider = {
       const {webhookUrl} = currentProvider
       const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
       if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
-        await notifyWebhookConfigUpdated(newWebhookUrl, viewerId, teamId)
+        Object.assign(currentProvider, webhookProviderMetadataInput)
+        await MattermostNotifier.integrationUpdated(dataLoader, teamId, viewerId)
       }
     }
     const data = {userId: viewerId, teamId, providerId: providerDbId}

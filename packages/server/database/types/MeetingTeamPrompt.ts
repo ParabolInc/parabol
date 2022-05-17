@@ -1,6 +1,6 @@
-import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
-import Meeting from './Meeting'
 import GenericMeetingPhase from './GenericMeetingPhase'
+import Meeting from './Meeting'
+import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 
 type TeamPromptPhase = TeamPromptResponsesPhase | GenericMeetingPhase
 
@@ -11,6 +11,10 @@ interface Input {
   name?: string
   phases: [TeamPromptPhase, ...TeamPromptPhase[]]
   facilitatorUserId: string
+}
+
+export function isMeetingTeamPrompt(meeting: Meeting): meeting is MeetingTeamPrompt {
+  return meeting.meetingType === 'teamPrompt'
 }
 
 export default class MeetingTeamPrompt extends Meeting {

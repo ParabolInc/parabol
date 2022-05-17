@@ -1,37 +1,12 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {ValueOf} from '../../../../client/types/generics'
-import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
-import SlackAuth from '../../../database/types/SlackAuth'
-import SlackNotification from '../../../database/types/SlackNotification'
-import {IntegrationProviderMattermost} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import publish from '../../../utils/publish'
-import SlackServerManager from '../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../graphql'
-import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
+import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
-
-const getSlackNotificationAndAuth = async (teamId: string, facilitatorUserId: string) => {
-  const r = await getRethink()
-  const {slackNotification, slackAuth} = await r({
-    slackNotification: r
-      .table('SlackNotification')
-      .getAll(facilitatorUserId, {index: 'userId'})
-      .filter({teamId, event: 'MEETING_STAGE_TIME_LIMIT_END'})
-      .nth(0)
-      .default(null) as unknown as SlackNotification,
-    slackAuth: r
-      .table('SlackAuth')
-      .getAll(facilitatorUserId, {index: 'userId'})
-      .filter({teamId})
-      .nth(0)
-      .default(null) as unknown as SlackAuth
-  }).run()
-  return {slackNotification, slackAuth}
-}
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
@@ -47,26 +22,7 @@ const processMeetingStageTimeLimits = async (
   const {meetingId} = job
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {teamId, facilitatorUserId} = meeting
-  const [{slackNotification, slackAuth}, mattermostProvider] = await Promise.all([
-    getSlackNotificationAndAuth(teamId, facilitatorUserId),
-    dataLoader
-      .get('bestTeamIntegrationProviders')
-      .load({service: 'mattermost', teamId, userId: facilitatorUserId})
-  ])
-  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
-
-  if (slackAuth?.botAccessToken && slackNotification?.channelId) {
-    const manager = new SlackServerManager(slackAuth.botAccessToken)
-    const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
-    const res = await manager.postMessage(slackNotification.channelId, slackText)
-    if (res.ok && !mattermostProvider) return
-  }
-
-  if (mattermostProvider) {
-    const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
-    const res = await notifyMattermostTimeLimitEnd(meetingId, teamId, webhookUrl, dataLoader)
-    if (!(res instanceof Error)) return
-  }
+  IntegrationNotifier.endTimeLimit(dataLoader, meetingId, teamId)
 
   const notification = new NotificationMeetingStageTimeLimitEnd({
     meetingId,
