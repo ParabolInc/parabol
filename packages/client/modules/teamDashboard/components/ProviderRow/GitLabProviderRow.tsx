@@ -37,11 +37,6 @@ const StyledPrimaryButton = styled(StyledButton)({
   borderColor: PALETTE.SLATE_400
 })
 
-const StyledSecondaryButton = styled(StyledButton)({
-  backgroundColor: PALETTE.SLATE_200,
-  marginLeft: 16
-})
-
 interface Props {
   teamId: string
   viewerRef: GitLabProviderRow_viewer$key
@@ -115,21 +110,17 @@ const GitLabProviderRow = (props: Props) => {
       mutationProps
     )
   }
-  const {originRef: menuRef, menuPortal, menuProps, togglePortal} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
+  const {
+    originRef: menuRef,
+    menuPortal,
+    menuProps,
+    togglePortal
+  } = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
-    // tooltipPortal: cloudTooltipPortal,
     openTooltip: cloudOpenTooltip,
     closeTooltip: cloudCloseTooltip,
     originRef: cloudRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
-  const {
-    tooltipPortal: selfHostedTooltipPortal,
-    openTooltip: selfHostedOpenTooltip,
-    closeTooltip: selfHostedCloseTooltip,
-    originRef: selfHostedRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
 
   const viewer = useFragment(
@@ -167,23 +158,6 @@ const GitLabProviderRow = (props: Props) => {
           >
             {isDesktop ? 'Connect' : <Icon>add</Icon>}
           </StyledPrimaryButton>
-          {/* TODO: re-add tooltip when GitLab Cloud integration is ready */}
-          {/* {cloudTooltipPortal('Connect to GitLab Cloud')} */}
-          {null && (
-            <>
-              <StyledSecondaryButton
-                onClick={() => console.log('todo')}
-                palette='warm'
-                waiting={submitting}
-                onMouseOver={selfHostedOpenTooltip}
-                onMouseOut={selfHostedCloseTooltip}
-                ref={selfHostedRef}
-              >
-                {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
-              </StyledSecondaryButton>
-              {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
-            </>
-          )}
         </ProviderActions>
       )}
       {auth && (

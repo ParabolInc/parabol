@@ -138,7 +138,8 @@ const updatePokerScope = {
       viewerId,
       meetingId
     )
-    let newStageIds = [] as string[]
+
+    const newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update
       const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
@@ -164,7 +165,8 @@ const updatePokerScope = {
       // MUTATIVE
       newDiscussions.push(...discussions)
       stages.push(...newStages)
-      newStageIds = newStages.map(({id}) => id)
+      const newIds = newStages.map(({id}) => id)
+      newStageIds.push(...newIds)
     })
 
     if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {

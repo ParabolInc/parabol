@@ -12,10 +12,13 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
+import sendToSentry from '../../utils/sendToSentry'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
+import {getUserId} from './../../utils/authorization'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -55,7 +58,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         context,
         info
       ) => {
-        const {dataLoader} = context
+        const {dataLoader, authToken} = context
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -95,7 +98,44 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
+        if (service === 'jiraServer') {
+          const {
+            providerId,
+            repositoryId: projectId,
+            issueId,
+            accessUserId
+          } = integration as TaskIntegrationJiraServer
+          const dimensionName = await getDimensionName(meetingId)
+
+          const jiraServerIssue = await dataLoader
+            .get('jiraServerIssue')
+            .load({providerId, teamId, userId: accessUserId, issueId})
+          if (!jiraServerIssue) return null
+          const {issueType} = jiraServerIssue
+
+          const existingDimensionField = await dataLoader
+            .get('jiraServerDimensionFieldMap')
+            .load({providerId, projectId, issueType, teamId, dimensionName})
+          if (existingDimensionField) {
+            return {
+              name: existingDimensionField.fieldName,
+              type: existingDimensionField.fieldType
+            }
+          }
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
         if (service === 'azureDevOps') {
+          const {instanceId, projectKey} = integration
+          const dimensionName = await getDimensionName(meetingId)
+          const azureDevOpsDimensionFieldMapEntry = await dataLoader
+            .get('azureDevOpsDimensionFieldMap')
+            .load({teamId, dimensionName, instanceId, projectKey})
+          if (azureDevOpsDimensionFieldMapEntry) {
+            return {
+              name: azureDevOpsDimensionFieldMapEntry.fieldName,
+              type: azureDevOpsDimensionFieldMapEntry.fieldType
+            }
+          }
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
 
@@ -130,7 +170,12 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             info,
             provider.serverBaseUrl!
           )
-          const [issueData] = await manager.getIssue({gid})
+          const [issueData, issueError] = await manager.getIssue({gid})
+          if (issueError) {
+            const userId = getUserId(authToken)
+            sendToSentry(issueError, {userId, tags: {teamId, gid}})
+            return NULL_FIELD
+          }
           const {issue} = issueData
           if (!issue) return NULL_FIELD
           const {projectId} = issue

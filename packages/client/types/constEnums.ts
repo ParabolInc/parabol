@@ -130,6 +130,7 @@ export const enum ExternalLinks {
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
   INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jiraserver',
+  INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/',
@@ -274,7 +275,9 @@ export const enum Providers {
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack',
   AZUREDEVOPS_NAME = 'Azure DevOps',
-  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol'
+  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol',
+  MSTEAMS_NAME = 'Microsoft Teams',
+  MSTEAMS_DESC = 'Push notifications to Microsoft Teams'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
@@ -426,6 +429,12 @@ export const enum SprintPokerDefaults {
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
   JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
+  AZURE_DEVOPS_USERSTORY_FIELD = '__storyPoints',
+  AZURE_DEVOPS_USERSTORY_FIELD_LABEL = 'Story point estimate',
+  AZURE_DEVOPS_TASK_FIELD = '__origEst',
+  AZURE_DEVOPS_TASK_FIELD_LABEL = 'Original Estimate',
+  AZURE_DEVOPS_EFFORT_FIELD = '__effort',
+  AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
   SERVICE_FIELD_COMMENT = '__comment',
   SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
   SERVICE_FIELD_NULL = '',

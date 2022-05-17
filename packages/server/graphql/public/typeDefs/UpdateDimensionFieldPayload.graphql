@@ -1,0 +1,15 @@
+type UpdateDimensionFieldSuccess {
+  teamId: ID!
+
+  meetingId: ID
+
+  team: Team!
+
+  """
+  The poker meeting the field was updated from
+  """
+  meeting: PokerMeeting
+}
+
+union UpdateDimensionFieldPayload = UpdateDimensionFieldSuccess | ErrorPayload
+extend union TeamSubscriptionPayload = UpdateDimensionFieldSuccess
