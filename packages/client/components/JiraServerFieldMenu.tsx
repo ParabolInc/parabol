@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateJiraServerDimensionFieldMutation from '../mutations/UpdateJiraServerDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
-import {JiraServerFieldMenu_stage} from '../__generated__/JiraServerFieldMenu_stage.graphql'
+import {JiraServerFieldMenu_stage$key} from '../__generated__/JiraServerFieldMenu_stage.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
@@ -20,15 +20,42 @@ const NoFieldsLabel = styled('div')({
 
 interface Props {
   menuProps: MenuProps
-  stage: JiraServerFieldMenu_stage
+  stage: JiraServerFieldMenu_stage$key
   submitScore(): void
 }
 
 const JiraServerFieldMenu = (props: Props) => {
-  const {menuProps, stage, submitScore} = props
+  const {menuProps, stage: stageRef, submitScore} = props
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
+
+  const stage = useFragment(
+    graphql`
+      fragment JiraServerFieldMenu_stage on EstimateStage {
+        dimensionRef {
+          name
+        }
+        meetingId
+        serviceField {
+          name
+        }
+        task {
+          integration {
+            ... on JiraServerIssue {
+              __typename
+              id
+              projectId
+              issueType
+              possibleEstimationFieldNames
+            }
+          }
+        }
+      }
+    `,
+    stageRef
+  )
   const {meetingId, dimensionRef, serviceField, task} = stage
+
   if (task?.integration?.__typename !== 'JiraServerIssue') return null
 
   const {integration} = task
@@ -92,27 +119,4 @@ const JiraServerFieldMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraServerFieldMenu, {
-  stage: graphql`
-    fragment JiraServerFieldMenu_stage on EstimateStage {
-      dimensionRef {
-        name
-      }
-      meetingId
-      serviceField {
-        name
-      }
-      task {
-        integration {
-          ... on JiraServerIssue {
-            __typename
-            id
-            projectId
-            issueType
-            possibleEstimationFieldNames
-          }
-        }
-      }
-    }
-  `
-})
+export default JiraServerFieldMenu
