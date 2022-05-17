@@ -3,8 +3,6 @@ import TimelineEvent from './TimelineEvent'
 interface Input {
   id?: string
   createdAt?: Date
-  interactionCount?: number
-  seenCount?: number
   userId: string
   teamId: string
   orgId: string
