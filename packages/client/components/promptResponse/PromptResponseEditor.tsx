@@ -17,6 +17,17 @@ const StyledEditor = styled('div')`
     outline: none;
   }
 `
+/**
+ * Returns tip tap extensions configuration shared by the client and the server
+ * @param placeholder
+ * @returns an array of extensions to be used by the tip tap editor
+ */
+export const createEditorExtensions = (placeholder?: string) => [
+  StarterKit,
+  Placeholder.configure({
+    placeholder
+  })
+]
 
 interface Props {
   autoFocus?: boolean
@@ -47,12 +58,7 @@ const PromptResponseEditor = (props: Props) => {
 
   const editor: Editor | null = useEditor({
     content,
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder
-      })
-    ],
+    extensions: createEditorExtensions(placeholder),
     autofocus: autoFocus,
     onUpdate,
     onBlur: onSubmit,

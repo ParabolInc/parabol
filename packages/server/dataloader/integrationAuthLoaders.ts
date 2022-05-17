@@ -110,7 +110,7 @@ export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
           getTeamMemberIntegrationAuth(service, teamId, userId)
         )
       )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value  : null))
       return vals
     },
     {

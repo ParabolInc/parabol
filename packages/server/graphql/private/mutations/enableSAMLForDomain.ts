@@ -23,61 +23,86 @@ const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   return url.toString()
 }
 
+const normalizeName = (name: string) => {
+  const normalizedName = name.trim().toLowerCase()
+  const nameRegex = /^[a-z0-9_-]+$/
+  if (!nameRegex.test(normalizedName)) {
+    return new Error('Name must be letters and numbers or _ or - with no spaces')
+  }
+  return normalizedName
+}
+
+const validateDomains = async (domains: string[] | null | undefined, slugName: string) => {
+  if (!domains) return undefined
+  const r = await getRethink()
+
+  const normalizedDomains = domains.map((domain) => domain.toLowerCase())
+  const domainOwner = await r
+    .table('SAML')
+    .getAll(r.args(normalizedDomains), {index: 'domains'})
+    .filter((row) => row('id').ne(slugName))
+    .limit(1)
+    .nth(0)
+    .default(null)
+    .run()
+  if (domainOwner) return new Error(`Domain is already owned by ${domainOwner.id}`)
+  return normalizedDomains
+}
+
+const getSignOnURL = (metadata: string | null | undefined, slugName: string) => {
+  if (!metadata) return undefined
+  const idp = samlify.IdentityProvider({metadata})
+  const {singleSignOnService} = idp.entityMeta.meta
+  const [fallbackKey] = Object.keys(singleSignOnService)
+  if (!fallbackKey) {
+    return new Error('Invalid metadata. Does not contain sign on URL')
+  }
+  const postKey = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
+  const inputURL = singleSignOnService[postKey] || singleSignOnService[fallbackKey]
+  try {
+    new URL(inputURL)
+  } catch (e) {
+    return new Error(`Invalid Sign on URL: ${inputURL}`)
+  }
+  return getURLWithSAMLRequestParam(inputURL, slugName)
+}
+
 const enableSAMLForDomain: MutationResolvers['enableSAMLForDomain'] = async (
   _source,
   {name, domains, metadata}
 ) => {
   const r = await getRethink()
-  const normalizedDomains = domains.map((domain) => domain.toLowerCase())
-  const normalizedName = name.trim().toLowerCase()
 
   // VALIDATION
-  const nameRegex = /^[a-z0-9_-]+$/
-  if (!nameRegex.test(normalizedName)) {
-    return {error: {message: 'Name must be letters and numbers or _ or - with no spaces'}}
-  }
-  const idp = samlify.IdentityProvider({metadata})
-  const {singleSignOnService} = idp.entityMeta.meta
-  const [fallbackKey] = Object.keys(singleSignOnService)
-  if (!fallbackKey) {
-    return {error: {message: 'Invalid metadata. Does not contain sign on URL'}}
-  }
-  const postKey = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
-  const signOnURL = singleSignOnService[postKey] || singleSignOnService[fallbackKey]
-  try {
-    new URL(signOnURL)
-  } catch (e) {
-    return {error: {message: `Invalid Sign on URL: ${signOnURL}`}}
-  }
+  const slugName = normalizeName(name)
+  if (slugName instanceof Error) return {error: {message: slugName.message}}
 
-  const conflictingRecord = await r
-    .table('SAML')
-    .getAll(r.args(normalizedDomains), {index: 'domains'})
-    .filter({id: name})
-    .nth(0)
-    .default(null)
-    .run()
+  const signOnURL = getSignOnURL(metadata, slugName)
+  if (signOnURL instanceof Error) return {error: {message: signOnURL.message}}
 
-  if (conflictingRecord) {
-    const {id: conflictId, domains: conflictDomains} = conflictingRecord
-    const domainStr = conflictDomains.join(', ')
-    return {error: {message: `${conflictId} already controls ${domainStr}`}}
-  }
+  const normalizedDomains = await validateDomains(domains, slugName)
+  if (normalizedDomains instanceof Error) return {error: {message: normalizedDomains.message}}
 
   // RESOLUTION
-  const url = getURLWithSAMLRequestParam(signOnURL, normalizedName)
-  await r
-    .table('SAML')
-    .insert(
-      {
-        id: normalizedName,
+  const existingRecord = await r.table('SAML').get(slugName).run()
+  if (existingRecord) {
+    await r
+      .table('SAML')
+      .get(slugName)
+      .update({
         domains: normalizedDomains,
-        url,
-        metadata: metadata
-      },
-      {conflict: 'replace'}
-    )
-    .run()
+        url: signOnURL,
+        metadata: metadata || undefined
+      })
+      .run()
+  } else {
+    if (!normalizedDomains) return {error: {message: 'domains is required for new SAML customers'}}
+    if (!metadata || !signOnURL) return {error: {message: 'Invalid metadata'}}
+    await r
+      .table('SAML')
+      .insert({id: slugName, domains: normalizedDomains, metadata: metadata, signOnURL})
+      .run()
+  }
 
   return {success: true}
 }

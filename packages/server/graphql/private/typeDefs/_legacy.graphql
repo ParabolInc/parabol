@@ -363,26 +363,6 @@ type Mutation {
   ): LoginSAMLPayload!
 
   """
-  Enable SAML for domain
-  """
-  enableSAMLForDomain(
-    """
-    A name to use for the redirect URL. Usually the company name without any spaces
-    """
-    name: ID!
-
-    """
-    a list of domains that the account has control over. usually the part after the @ of their email
-    """
-    domains: [ID!]!
-
-    """
-    A big chunk of XML data containing the redirect URL and X.509 certificate
-    """
-    metadata: String!
-  ): EnableSAMLForDomainPayload!
-
-  """
   Send a message to all authorised Slack users
   """
   messageAllSlackUsers(
@@ -629,6 +609,7 @@ enum IntegrationProviderServiceEnum {
   gitlab
   mattermost
   jiraServer
+  azureDevOps
 }
 
 """
@@ -1959,6 +1940,9 @@ type TeamMemberIntegrations {
   All things associated with a slack integration for a team member
   """
   slack: SlackIntegration
+
+  """All things associated with a A integration for a team member"""
+  azureDevOps: AzureDevOpsIntegration!
 }
 
 """
@@ -2799,9 +2783,60 @@ enum SlackNotificationEventTypeEnum {
   member
 }
 
-"""
-All the user details for a specific meeting
-"""
+"""The Azure DevOps auth + integration helpers for a specific team member"""
+type AzureDevOpsIntegration {
+  """The OAuth2 Authorization for this team member"""
+  auth: TeamMemberIntegrationAuthOAuth2
+
+  """Composite key in ado:teamId:userId format"""
+  id: ID!
+
+  """true if the auth is valid, else false"""
+  isActive: Boolean!
+
+  """
+  The access token to Azure DevOps. null if no access token available or the viewer is not the user
+  """
+  accessToken: ID
+
+  """The Azure DevOps account ID"""
+  accountId: ID!
+
+  """The Azure DevOps instance IDs that the user has granted"""
+  instanceIds: [ID!]!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The user that the access token is attached to"""
+  userId: ID!
+
+
+  """
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """The non-global providers shared with the team or organization"""
+  sharedProviders: [IntegrationProviderOAuth2!]!
+}
+
+"""The Azure DevOps Issue that comes direct from Azure DevOps"""
+type AzureDevOpsWorkItem {
+  """GUID instanceId:issueKey"""
+  id: ID!
+
+  """URL to the issue"""
+  url: String!
+}
+
+"""All the user details for a specific meeting"""
 interface MeetingMember {
   """
   A composite of userId::meetingId
@@ -3896,6 +3931,9 @@ type UserFeatureFlags {
   true if gitlab is allowed
   """
   gitlab: Boolean!
+
+  """true if azuredevops is allowed"""
+  azureDevOps: Boolean!
 }
 
 """
@@ -7801,17 +7839,8 @@ type LoginSAMLPayload {
   authToken: ID
 }
 
-"""
-Return object for EnableSAMLForDomainPayload
-"""
-union EnableSAMLForDomainPayload = ErrorPayload | EnableSAMLForDomainSuccess
-
 type ErrorPayload {
   error: StandardMutationError!
-}
-
-type EnableSAMLForDomainSuccess {
-  success: Boolean!
 }
 
 """

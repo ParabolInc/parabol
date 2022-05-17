@@ -1,12 +1,36 @@
-import React, {Suspense} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useLazyLoadQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import jiraScopingSearchFilterMenuQuery, {
-  JiraScopingSearchFilterMenuQuery
-} from '../__generated__/JiraScopingSearchFilterMenuQuery.graphql'
-import ErrorBoundary from './ErrorBoundary'
+import {JiraScopingSearchFilterMenuRootQuery} from '../__generated__/JiraScopingSearchFilterMenuRootQuery.graphql'
 import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
-import MockFieldList from './MockFieldList'
+
+const query = graphql`
+  query JiraScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) {
+        id
+        ... on PokerMeeting {
+          jiraSearchQuery {
+            projectKeyFilters
+            isJQL
+          }
+        }
+      }
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            projects {
+              id
+              name
+              avatar
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 interface Props {
   menuProps: MenuProps
@@ -16,16 +40,30 @@ interface Props {
 
 const JiraScopingSearchFilterMenuRoot = (props: Props) => {
   const {menuProps, teamId, meetingId} = props
-  const queryRef = useQueryLoaderNow<JiraScopingSearchFilterMenuQuery>(
-    jiraScopingSearchFilterMenuQuery,
-    {teamId, meetingId}
+
+  const data = useLazyLoadQuery<JiraScopingSearchFilterMenuRootQuery>(
+    query,
+    {
+      teamId,
+      meetingId
+    },
+    {
+      UNSTABLE_renderPolicy: 'full',
+      fetchPolicy: 'store-or-network'
+    }
   )
+
+  const projects = data.viewer.teamMember?.integrations.atlassian?.projects ?? []
+  const jiraSearchQuery = data.viewer.meeting?.jiraSearchQuery ?? null
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<MockFieldList />}>
-        {queryRef && <JiraScopingSearchFilterMenu queryRef={queryRef} menuProps={menuProps} />}
-      </Suspense>
-    </ErrorBoundary>
+    <JiraScopingSearchFilterMenu
+      meetingId={meetingId}
+      jiraSearchQuery={jiraSearchQuery}
+      projects={projects}
+      menuProps={menuProps}
+      service={'jira'}
+    />
   )
 }
 

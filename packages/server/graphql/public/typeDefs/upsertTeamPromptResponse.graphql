@@ -1,0 +1,37 @@
+extend type Mutation {
+  """
+  upsert the content of a team prompt response
+  """
+  upsertTeamPromptResponse(
+    """
+    The id of the team prompt response to upsert
+    """
+    teamPromptResponseId: ID
+
+    """
+    The id of the team prompt meeting
+    """
+    meetingId: ID!
+
+    """
+    The stringified content of the team prompt response
+    """
+    content: String!
+  ): UpsertTeamPromptResponsePayload!
+}
+
+type UpsertTeamPromptResponseSuccess {
+  teamPromptResponseId: ID!
+  meetingId: ID!
+
+  """
+  the created/updated team prompt response
+  """
+  teamPromptResponse: TeamPromptResponse
+  """
+  the updated meeting
+  """
+  meeting: NewMeeting
+}
+
+union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload

@@ -5,6 +5,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
+import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
@@ -30,9 +31,11 @@ const query = graphql`
       ...GitLabProviderRow_viewer
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
+      ...AzureDevOpsProviderRow_viewer
 
       featureFlags {
         gitlab
+        azureDevOps
       }
     }
   }
@@ -45,7 +48,7 @@ const ProviderList = (props: Props) => {
   })
   const {viewer} = data
   const {
-    featureFlags: {gitlab: allowGitlab}
+    featureFlags: {gitlab: allowGitlab, azureDevOps: allowAzureDevOps}
   } = viewer
   return (
     <StyledWrapper>
@@ -55,6 +58,7 @@ const ProviderList = (props: Props) => {
       {allowGitlab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
+      {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />}
     </StyledWrapper>
   )
 }

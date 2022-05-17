@@ -63,6 +63,7 @@ import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
 import {UpdateIntegrationProviderSuccess} from './UpdateIntegrationProviderPayload'
 import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
+import {UpdateAzureDevOpsDimensionFieldSuccess} from './UpdateAzureDevOpsDimensionFieldPayload'
 import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimensionScalePayload'
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
@@ -135,10 +136,11 @@ const types = [
   PersistJiraSearchQuerySuccess,
   MovePokerTemplateScaleValueSuccess,
   UpdateJiraDimensionFieldSuccess,
+  UpdateAzureDevOpsDimensionFieldSuccess,
   SetDefaultSlackChannelSuccess,
   SetAppLocationSuccess,
   UpdateGitHubDimensionFieldSuccess,
-  UpdateIntegrationProviderSuccess
+  UpdateIntegrationProviderSuccess,
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

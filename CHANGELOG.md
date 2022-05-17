@@ -5,6 +5,69 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.58.0 2022-May-12
+
+### Added
+ - **Azure DevOps** is available behind a feature flag and now supports search in Sprint Poker (#6448) and pushing estimates (#6481)
+ - **DX**: You now can run `yarn newMutation` to generate the boilerplate, check README.md for details (#6473)
+ - **Standups**: Live updates for team responses (#6388)
+ - **tests** can now be run in different environments (#6382)
+ - **tests**: the rate limiter is disabled (#6412)
+ - **support**: the mutation `enableSAMLForDomain` can now update the domains without needing to pass all the metadata again (#6447)
+ - **metrics**: Company's active team count now properly ignores inactive teams (#6452)
+ - **metrics**: email invite links contain the correct UTM parameters (#6539)
+
+### Fixed
+ - meeting summary email is now sent again (#6523)
+ - demo Jira and GitHub integrations now work again in the Demo (#6460)
+ - fixed bugs occuring when resetting a retrospective to its grouping phase (#6305, #6306)
+ - subscription payloads are now correctly resolved for SDL types (#6506)
+ - fixed `hardDeleteUser` mutation which would fail for same users depending on their meetings (#6544)
+
+### Changed
+ - Switched to mainline workbox to generate the service worker (#6414)
+ - Reduced docker image size (#6416)
+
+## 6.57.0 2022-May-4
+
+### Added
+ - feat(standups): upsertTeamPromptResponse (#6333)
+ - feat(ado): Initial Azure DevOps integration (#6260)
+ - feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
+ - feat(sprint-poker): Can vote on GitLab issue (#6398)
+ - feat(sprint-poker): Push task to GitLab (#6427)
+
+### Changed
+ - chore: Create manualTestingGuide.md (#6426)
+ - chore: removed unused video related components (#6497)
+
+### Fixed
+ - fix(rethinkdb): attempt to fix the table rename (#6480)
+
+## 6.56.0 2022-April-27
+
+### Added
+
+- feat(sprint-poker): Track GitLab events (#6367)
+- feat(standups): Responses grid with static prompt (#6353)
+- feat(standups): Response Cards (#6392)
+- feat(standups): Discussion Drawer (#6370)
+- feat(CI): use prod build for integration tests (#6379)
+- feat(lint): Lint client (#6335)
+- feat(DX): Fast dev mode (#6337)
+- feat: Update illustration of empty discussion threads (#6423)
+
+### Changed
+
+- docs: Update CONTRIBUTING (#6432)
+- chore(deps): bump nconf from 0.11.3 to 0.11.4 (#6438)
+- refactor: update renderQuery to Suspense + Relay Hooks #5297 (#6251)
+
+### Fixed
+
+- fix: viewerMeetingMember can be undefined (#6441)
+- fix: ignore comparison order for equality (#6411)
+
 ## 6.55.0 2022-April-20
 
 ### Added

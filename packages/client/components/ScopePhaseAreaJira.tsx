@@ -38,7 +38,7 @@ const ScopePhaseAreaJira = (props: Props) => {
   const {integrations} = teamMember
   const hasAuth = integrations?.atlassian?.isActive ?? false
   if (!hasAuth) return <ScopePhaseAreaAddJira gotoParabol={gotoParabol} meetingRef={meeting} />
-  return <ScopePhaseAreaJiraScoping meeting={meeting} />
+  return <ScopePhaseAreaJiraScoping meetingRef={meeting} />
 }
 
 export default ScopePhaseAreaJira

@@ -272,7 +272,9 @@ export const enum Providers {
   MATTERMOST_NAME = 'Mattermost',
   MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
-  SLACK_DESC = 'Push notifications to Slack'
+  SLACK_DESC = 'Push notifications to Slack',
+  AZUREDEVOPS_NAME = 'Azure DevOps',
+  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
@@ -367,6 +369,7 @@ export const enum Threshold {
   MAX_POKER_DIMENSION_NAME = 50,
   MAX_REACTJIS = 12,
   MAX_POKER_STORIES = 50,
+  MAX_GITLAB_POKER_STORIES = 15,
   MAX_INTEGRATION_FETCH_TIME = 10000,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
@@ -424,6 +427,12 @@ export const enum SprintPokerDefaults {
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
   JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
+  AZURE_DEVOPS_USERSTORY_FIELD = '__storyPoints',
+  AZURE_DEVOPS_USERSTORY_FIELD_LABEL = 'Story point estimate',
+  AZURE_DEVOPS_TASK_FIELD = '__origEst',
+  AZURE_DEVOPS_TASK_FIELD_LABEL = 'Original Estimate',
+  AZURE_DEVOPS_EFFORT_FIELD = '__effort',
+  AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
   SERVICE_FIELD_COMMENT = '__comment',
   SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
   SERVICE_FIELD_NULL = '',

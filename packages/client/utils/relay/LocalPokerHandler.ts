@@ -16,6 +16,16 @@ const defaults = [
     }
   },
   {
+    service: 'jiraServer',
+    meetingPropName: 'jiraServerSearchQuery',
+    type: 'JiraSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      projectKeyFilters: [] as string[],
+      isJQL: false
+    }
+  },
+  {
     service: 'PARABOL',
     meetingPropName: 'parabolSearchQuery',
     type: 'ParabolSearchQuery',
@@ -30,6 +40,16 @@ const defaults = [
     type: 'GitHubSearchQuery',
     defaultQuery: {
       queryString: ''
+    }
+  },
+  {
+    service: 'azureDevOps',
+    meetingPropName: 'azureDevOpsSearchQuery',
+    type: 'AzureDevOpsSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      projectKeyFilters: [] as string[],
+      isWIQL: false
     }
   },
   {

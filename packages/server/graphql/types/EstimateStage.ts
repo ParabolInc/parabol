@@ -12,9 +12,12 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
+import sendToSentry from '../../utils/sendToSentry'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
+import {getUserId} from './../../utils/authorization'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -51,8 +54,10 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       resolve: async (
         {dimensionRefIdx, meetingId, teamId, taskId},
         _args: unknown,
-        {dataLoader}
+        context,
+        info
       ) => {
+        const {dataLoader, authToken} = context
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -92,6 +97,21 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
+        if (service === 'azureDevOps') {
+          const {instanceId, projectKey} = integration
+          const dimensionName = await getDimensionName(meetingId)
+          const azureDevOpsDimensionFieldMapEntry = await dataLoader
+            .get('azureDevOpsDimensionFieldMap')
+            .load({teamId, dimensionName, instanceId, projectKey})
+          if (azureDevOpsDimensionFieldMapEntry) {
+            return {
+              name: azureDevOpsDimensionFieldMapEntry.fieldName,
+              type: azureDevOpsDimensionFieldMapEntry.fieldType
+            }
+          }
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
+
         if (service === 'github') {
           const {nameWithOwner} = integration
           const dimensionName = await getDimensionName(meetingId)
@@ -101,6 +121,44 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           if (githubFieldMap) {
             return {
               name: githubFieldMap.labelTemplate,
+              type: 'string'
+            }
+          }
+          return {
+            name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            type: 'string'
+          }
+        }
+        if (service === 'gitlab') {
+          const {gid, accessUserId} = integration
+          const gitlabAuth = await dataLoader
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'gitlab', teamId, userId: accessUserId})
+          if (!gitlabAuth?.accessToken) return NULL_FIELD
+          const {providerId} = gitlabAuth
+          const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
+          const manager = new GitLabServerManager(
+            gitlabAuth,
+            context,
+            info,
+            provider.serverBaseUrl!
+          )
+          const [issueData, issueError] = await manager.getIssue({gid})
+          if (issueError) {
+            const userId = getUserId(authToken)
+            sendToSentry(issueError, {userId, tags: {teamId, gid}})
+            return NULL_FIELD
+          }
+          const {issue} = issueData
+          if (!issue) return NULL_FIELD
+          const {projectId} = issue
+          const dimensionName = await getDimensionName(meetingId)
+          const gitlabFieldMap = await dataLoader
+            .get('gitlabDimensionFieldMaps')
+            .load({teamId, dimensionName, projectId, providerId})
+          if (gitlabFieldMap) {
+            return {
+              name: gitlabFieldMap.labelTemplate,
               type: 'string'
             }
           }

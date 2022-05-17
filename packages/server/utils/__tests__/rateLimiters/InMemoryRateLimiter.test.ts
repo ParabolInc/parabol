@@ -1,5 +1,8 @@
 import ms from 'ms'
-import {InMemoryRateLimiter, InMemoryRateLimiterConfig} from '../InMemoryRateLimiter'
+import {
+  InMemoryRateLimiter,
+  InMemoryRateLimiterConfig
+} from '../../rateLimiters/InMemoryRateLimiter'
 
 describe('InMemoryRateLimiter', () => {
   function subject(configOverrides: Partial<InMemoryRateLimiterConfig> = {}): InMemoryRateLimiter {
