@@ -153,10 +153,11 @@ class GitLabServerManager implements TaskIntegrationManager {
     return [issuesData, issuesError] as const
   }
 
-  async getProjects({teamId}: {teamId: string}) {
+  async getProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
     const [projectsData, projectsError] = await gitlabRequest<GetProjectsQuery>(getProjects, {
-      teamId
+      first,
+      ids
     })
     return [projectsData, projectsError] as const
   }

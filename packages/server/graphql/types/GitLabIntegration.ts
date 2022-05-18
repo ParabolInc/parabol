@@ -1,8 +1,9 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import {GetProjectIssuesQuery} from '../../types/gitlabTypes'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -73,14 +74,18 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         after: {
           type: GraphQLISO8601Type,
           description: 'the datetime cursor'
+        },
+        projectsIds: {
+          type: GraphQLList(GraphQLString),
+          description: 'the ids of the projects selected as filters'
         }
       },
-      resolve: async (
-        {teamId, userId}: {teamId: string; userId: string},
-        {first}: {first: number},
-        context,
-        info
-      ) => {
+      resolve: async (_src, args, context, info) => {
+        const {teamId, userId} = _src
+        // {teamId, userId}: {teamId: string; userId: string}
+        console.log('🚀  ~ args', {args, _src})
+        const {first, projectsIds} = args
+        console.log('🚀  ~ projectsIds', projectsIds)
         const {dataLoader} = context
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -90,28 +95,87 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const provider = await dataLoader.get('integrationProviders').load(providerId)
         if (!provider?.serverBaseUrl) return []
         const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
+        // const projects = manager.getProjects({ids: projectsIds})
+        if (!projectsIds) return connectionFromTasks([], 0)
+        const [projectsData, projectsErr] = await manager.getProjects({
+          ids: projectsIds
+        })
+        console.log('🚀  ~ projectsData', projectsData)
+        if (projectsErr) {
+          console.log('🚀  ~ projectsErr', projectsErr)
+        }
+        const projectsFullPaths = new Set<string>()
+        projectsData.projects?.edges?.forEach((edge) => {
+          if (edge?.node?.fullPath) {
+            projectsFullPaths.add(edge?.node?.fullPath)
+          }
+        })
+        console.log('🚀  ~ projectsFullPaths', projectsFullPaths)
+        // if the user has selected a project filter, keep returning more issues as they scroll down
+        // otherwise, show them 50 issues to start with
+        const maxIssues = projectsIds ? 10000 : 50
         const projectIssues = [] as ProjectIssueConnection[]
         const errors = [] as Error[]
         let hasNextPage = true
-        for await (const fullPath of ['nick460/no-issue-project']) {
-          hasNextPage = false
-          const [res, err] = await manager.getProjectIssues({
-            fullPath,
+
+        const testa = Array.from(projectsFullPaths).map((path) =>
+          manager.getProjectIssues({
+            fullPath: path,
             first
           })
-          if (err) errors.push(err)
-          if (res?.project?.issues?.pageInfo.hasNextPage) hasNextPage = true
-          res?.project?.issues?.edges?.forEach((edge) => {
-            if (edge?.node) {
-              projectIssues.push({
-                cursor: edge.node.updatedAt || new Date(),
-                node: edge.node
-              })
-            }
+        )
+
+        const [testaDos] = await Promise.all(testa)
+
+        if (testaDos instanceof Error) return
+
+        testaDos?.forEach((test) => {
+          const edges = test?.project.issues.edges
+          console.log('🚀  ~ test?.project.issues', test?.project.issues?.edges)
+          if (!edges) return
+          // if (edges) {
+          // const {node} = edges
+          edges.forEach((edge) => {
+            const {node} = edge
+            console.log('🚀  ~ node', node)
+            projectIssues.push({
+              cursor: node.updatedAt || new Date(),
+              node
+            })
           })
-        }
+          // }
+        })
+
+        console.log('🚀  ~ testaDos', {
+          testaDos: testaDos[0].project,
+          testa,
+          projectIssues
+        })
+
+        // for await (const fullPath of Array.from(projectsFullPaths)) {
+        //   console.log('🚀  ~ fullPath', {fullPath, proLen: projectIssues.length})
+        //   hasNextPage = false
+        //   const [res, err] = await manager.getProjectIssues({
+        //     fullPath,
+        //     first
+        //   })
+        //   if (err) errors.push(err)
+        //   if (res?.project?.issues?.pageInfo.hasNextPage) hasNextPage = true
+        //   res?.project?.issues?.edges?.forEach((edge) => {
+        //     if (edge?.node && projectIssues.length < maxIssues) {
+        //       projectIssues.push({
+        //         cursor: edge.node.updatedAt || new Date(),
+        //         node: edge.node
+        //       })
+        //     }
+        //   })
+        //   if (maxIssues === projectIssues.length) {
+        //     console.log('BREWAK')
+        //     break
+        //   }
+        // }
         const firstEdge = projectIssues[0]
-        return {
+        const conn = {
           error: errors,
           edges: projectIssues,
           pageInfo: {
@@ -120,6 +184,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             hasNextPage
           }
         }
+        return conn
       }
     },
     projects: {

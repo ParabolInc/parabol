@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
@@ -108,12 +109,13 @@ const GitLabScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
-                projectIssues(first: $count, after: $cursor)
+                projectIssues(projectsIds: $selectedProjectsIds, first: $count, after: $cursor)
                   @connection(key: "GitLabScopingSearchResults_projectIssues") {
                   edges {
                     node {
                       ... on _xGitLabIssue {
                         id
+                        title
                       }
                     }
                   }
@@ -126,9 +128,8 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
-  // console.log('🚀  ~ query', {query, paginationRes})
   console.log('🚀  ~ query', {query, paginationRes})
   const meeting = useFragment(
     graphql`
@@ -198,7 +199,7 @@ const GitLabScopingSearchResults = (props: Props) => {
           />
         ))}
       </ResultScroller>
-      {/* {lastItem} */}
+      {lastItem}
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}

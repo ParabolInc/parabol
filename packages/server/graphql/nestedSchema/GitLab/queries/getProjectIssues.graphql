@@ -14,6 +14,7 @@ query getProjectIssues($fullPath: ID!, $first: Int!) {
           descriptionHtml
           webPath
           updatedAt
+          title
         }
       }
     }
