@@ -1,7 +1,5 @@
 query getProjectIssues($fullPath: ID!, $first: Int!) {
   project(fullPath: $fullPath) {
-    id
-    fullPath
     issues(first: $first) {
       pageInfo {
         hasNextPage

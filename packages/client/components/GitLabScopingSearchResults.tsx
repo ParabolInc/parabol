@@ -103,7 +103,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const paginationRes = usePaginationFragment(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 5})
+      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 20})
       @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
@@ -130,7 +130,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
-  console.log('🚀  ~ query', {query, paginationRes})
+  console.log('🚀  ~ query', {paginationRes})
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -150,7 +150,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
-  console.log('🚀  ~ gitlab', gitlab)
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
