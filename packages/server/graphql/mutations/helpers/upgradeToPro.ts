@@ -1,10 +1,10 @@
 import getRethink from '../../../database/rethinkDriver'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {fromEpochSeconds} from '../../../utils/epochTime'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
+import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import StripeManager from '../../../utils/StripeManager'
 import getCCFromCustomer from './getCCFromCustomer'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 const upgradeToPro = async (orgId: string, source: string, email: string) => {
   const r = await getRethink()
@@ -57,8 +57,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
     updateTeamByOrgId(
       {
         isPaid: true,
-        tier: 'pro',
-        updatedAt: now
+        tier: 'pro'
       },
       orgId
     )

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
-import {Editor, EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
+import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import React, {useState} from 'react'
 
@@ -32,9 +32,9 @@ export const createEditorExtensions = (placeholder?: string) => [
 interface Props {
   autoFocus?: boolean
   content: JSONContent | null
-  handleSubmit: (editor: EditorState) => void
+  handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
-  placeholder: string
+  placeholder?: string
 }
 
 const PromptResponseEditor = (props: Props) => {
@@ -51,19 +51,22 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(true)
   }
 
-  const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
+  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
-    handleSubmit(newEditorState)
+    handleSubmit && handleSubmit(newEditorState)
   }
 
-  const editor: Editor | null = useEditor({
-    content,
-    extensions: createEditorExtensions(placeholder),
-    autofocus: autoFocus,
-    onUpdate,
-    onBlur: onSubmit,
-    editable: !readOnly
-  })
+  const editor = useEditor(
+    {
+      content,
+      extensions: createEditorExtensions(placeholder),
+      autofocus: autoFocus,
+      onUpdate,
+      onBlur: onSubmit,
+      editable: !readOnly
+    },
+    [content]
+  )
 
   return (
     <StyledEditor>

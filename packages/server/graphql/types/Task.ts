@@ -181,12 +181,19 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
         } else if (integration.service === 'jiraServer') {
           const {issueId} = JiraServerIssueId.split(integrationHash!)
-          return dataLoader.get('jiraServerIssue').load({
+          const issue = await dataLoader.get('jiraServerIssue').load({
             teamId,
             userId: accessUserId,
             issueId,
             providerId: integration.providerId
           })
+          return issue
+            ? {
+                ...issue,
+                userId: accessUserId,
+                teamId
+              }
+            : null
         } else if (integration.service === 'azureDevOps') {
           const {instanceId, projectKey, issueKey} = integration
           return dataLoader.get('azureDevOpsWorkItem').load({

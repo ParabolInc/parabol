@@ -1,9 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
-import segmentIo from '../../../utils/segmentIo'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import StripeManager from '../../../utils/StripeManager'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import segmentIo from '../../../utils/segmentIo'
+import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
+import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import StripeManager from '../../../utils/StripeManager'
 
 const resolveDowngradeToPersonal = async (
   orgId: string,
@@ -21,16 +21,13 @@ const resolveDowngradeToPersonal = async (
 
   await Promise.all([
     r({
-      org: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          tier: 'personal',
-          periodEnd: now,
-          stripeSubscriptionId: null,
-          updatedAt: now
-        }),
-      teamIds: (r
+      org: r.table('Organization').get(orgId).update({
+        tier: 'personal',
+        periodEnd: now,
+        stripeSubscriptionId: null,
+        updatedAt: now
+      }),
+      teamIds: r
         .table('Team')
         .getAll(orgId, {index: 'orgId'})
         .update(
@@ -41,13 +38,12 @@ const resolveDowngradeToPersonal = async (
           },
           {returnChanges: true}
         )('changes')('new_val')('id')
-        .default([]) as unknown) as string[]
+        .default([]) as unknown as string[]
     }).run(),
     updateTeamByOrgId(
       {
         tier: 'personal',
-        isPaid: true,
-        updatedAt: now
+        isPaid: true
       },
       orgId
     )

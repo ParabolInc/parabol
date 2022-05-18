@@ -3,9 +3,9 @@
 */
 WITH removedTokens AS (
   UPDATE "TeamMemberIntegrationAuth"
-  SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
+  SET "isActive" = FALSE
   WHERE "providerId" = :id AND "isActive" = TRUE
 )
 UPDATE "IntegrationProvider"
-SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
+SET "isActive" = FALSE
 WHERE "id" = :id AND "isActive" = TRUE;

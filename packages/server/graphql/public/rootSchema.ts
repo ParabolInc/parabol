@@ -53,7 +53,8 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
     const {serverBaseUrl} = provider as IntegrationProviderGitLabOAuth2
     return {
       accessToken: accessToken!,
-      baseUri: serverBaseUrl
+      baseUri: serverBaseUrl,
+      dataLoaderOptions: {maxBatchSize: 5}
     }
   },
   prefix: '_xGitLab',

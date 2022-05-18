@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 import {AddFeatureFlagMutation as TAddFeatureFlagMutation} from '../__generated__/AddFeatureFlagMutation.graphql'
 
@@ -7,9 +7,7 @@ graphql`
   fragment AddFeatureFlagMutation_notification on AddFeatureFlagPayload {
     user {
       id
-      featureFlags {
-        spotlight
-      }
+      # add flag here
     }
   }
 `
