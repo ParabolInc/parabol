@@ -1,6 +1,5 @@
 import {JSONContent} from '@tiptap/core'
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
 import {GQLContext} from '../graphql'
 import Reactable, {reactableFields} from './Reactable'
 import Team from './Team'
@@ -14,8 +13,7 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description:
-        'Team prompt response id in a format of `teamPromptResponse:idGeneratedByDatabase`',
-      resolve: ({id}) => TeamPromptResponseId.join(id)
+        'Team prompt response id in a format of `teamPromptResponse:idGeneratedByDatabase`'
     },
     userId: {
       type: new GraphQLNonNull(GraphQLID),
