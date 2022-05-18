@@ -118,6 +118,8 @@ const GitLabScopingSearchResults = (props: Props) => {
                   first: $count
                   after: $cursor
                   searchQuery: $queryString
+                  state: $state
+                  sort: $sort
                 ) @connection(key: "GitLabScopingSearchResults_projectIssues") {
                   edges {
                     node {
@@ -162,9 +164,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
-  // const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
-  //   (project) => project?.node?.issues?.edges ?? null
-  // )
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!

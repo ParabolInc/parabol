@@ -6,6 +6,7 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
+// import {gitlabIssueArgs} from './../../../client/components/GitLabScopingSearchResultsRoot'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
@@ -19,6 +20,15 @@ type ProjectIssue = NonNullable<NonNullable<NonNullable<ProjectIssuesRes['edges'
 type ProjectIssueConnection = {
   node: ProjectIssue
   cursor: string | Date
+}
+export type ProjectsIssuesArgs = {
+  first: number
+  projectsIds: string[] | null
+  searchQuery: string
+  sort: string
+  state: string
+  fullPath: string
+  includeSubepics: boolean
 }
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -95,10 +105,23 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         searchQuery: {
           type: GraphQLNonNull(GraphQLString),
           description: 'the search query that the user enters to filter issues'
+        },
+        sort: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'the sort string that defines the order of the returned issues'
+        },
+        state: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'the state of issues, e.g. opened or closed'
         }
       },
-      resolve: async ({teamId, userId}: {teamId: string; userId: string}, args, context, info) => {
-        const {first, projectsIds, searchQuery} = args
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        args: any,
+        context,
+        info
+      ) => {
+        const {projectsIds} = args as ProjectsIssuesArgs
         console.log('🚀  ~ args', args)
         const {dataLoader} = context
         const auth = await dataLoader
@@ -123,17 +146,15 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
-        console.log('🚀  ~ projectsFullPaths', projectsFullPaths)
         const projectIssues = [] as ProjectIssueConnection[]
         const errors = [] as Error[]
         let hasNextPage = true
 
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
           manager.getProjectIssues({
-            fullPath,
-            first,
-            searchQuery
-            // ...gitlabIssueArgs
+            ...args,
+            includeSubepics: true,
+            fullPath
           })
         )
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)

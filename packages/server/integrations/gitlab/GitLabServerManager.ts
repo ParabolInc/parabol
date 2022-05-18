@@ -10,6 +10,7 @@ import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.gra
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
 import {RootSchema} from '../../graphql/public/rootSchema'
+import {ProjectsIssuesArgs} from '../../graphql/types/GitLabIntegration'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {
   CreateIssueMutation,
@@ -147,17 +148,19 @@ class GitLabServerManager implements TaskIntegrationManager {
   async getProjectIssues({
     fullPath,
     first,
-    searchQuery
-  }: {
-    fullPath: string
-    first: number
-    searchQuery: string
-  }) {
+    includeSubepics,
+    searchQuery,
+    sort,
+    state
+  }: ProjectsIssuesArgs) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
     const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(getProjectIssues, {
       fullPath,
       first,
-      searchQuery
+      searchQuery,
+      includeSubepics,
+      sort,
+      state
     })
     return [issuesData, issuesError] as const
   }
