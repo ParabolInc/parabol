@@ -126,23 +126,23 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const errors = [] as Error[]
         let hasNextPage = true
 
-        const projectIssuesPromises = Array.from(projectsFullPaths).map((path) =>
+        const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
           manager.getProjectIssues({
-            fullPath: path,
+            fullPath,
             first
           })
         )
-        const [projectIssuesRes] = await Promise.all(projectIssuesPromises)
-        projectIssuesRes?.forEach((res) => {
-          if (res instanceof Error) {
-            sendToSentry(res, {userId})
+        const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
+        projectsIssuesResponses?.forEach((res) => {
+          const [projectIssuesData, err] = res
+          if (err) {
+            sendToSentry(err, {userId})
             return
           }
-          const edges = res?.project?.issues?.edges
+          const edges = projectIssuesData.project?.issues?.edges
           edges?.forEach((edge) => {
             if (!edge?.node) return
             const {node} = edge
-            console.log('🚀  ~ node', node)
             projectIssues.push({
               cursor: node.updatedAt || new Date(),
               node
