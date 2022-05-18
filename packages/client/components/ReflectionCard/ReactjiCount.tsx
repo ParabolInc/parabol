@@ -11,7 +11,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
 import {ReactjiCount_reactji} from '~/__generated__/ReactjiCount_reactji.graphql'
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
-// import emojiIndex from 'emoji-mart/dist-modern/utils/emoji-index/emoji-index'
 
 uncompress(data)
 

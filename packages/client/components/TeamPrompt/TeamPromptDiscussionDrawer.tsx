@@ -156,7 +156,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
   }
 
   const onToggleReactji = (emojiId: string) => {
-    if (submitting || !reactjis) return
+    if (submitting || !reactjis || !response) return
     const isRemove = !!reactjis.find((reactji) => {
       return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
     })
@@ -175,7 +175,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
   }
 
   const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
-  const reactjis = response?.reactjis
+  const reactjis = response?.reactjis ?? []
 
   return (
     <ResponsiveDashSidebar
@@ -195,7 +195,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
             </StyledCloseButton>
           </Header>
           <PromptResponseEditor content={contentJSON} readOnly={true} />
-          <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
+          <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
         </DiscussionResponseCard>
         <ThreadColumn>
           <DiscussionThreadRoot

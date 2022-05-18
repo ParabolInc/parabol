@@ -11,6 +11,7 @@ import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
+import plural from '~/utils/plural'
 import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
@@ -220,7 +221,7 @@ const TeamPromptResponseCard = (props: Props) => {
                 {replyCount > 0 ? (
                   <>
                     <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
-                    {`${replyCount} ${replyCount > 1 ? 'replies' : 'reply'}`}
+                    {replyCount} {plural(replyCount, 'Reply', 'Replies')}
                   </>
                 ) : (
                   'Reply'
