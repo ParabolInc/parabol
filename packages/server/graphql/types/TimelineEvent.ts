@@ -1,4 +1,12 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfigMap,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLInterfaceType,
+  GraphQLNonNull
+} from 'graphql'
+import TimelineEventDB from '../../database/types/TimelineEvent'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -8,7 +16,12 @@ import Team from './Team'
 import TimelineEventTypeEnum from './TimelineEventTypeEnum'
 import User from './User'
 
-export const timelineEventInterfaceFields = () => ({
+type TimelineEventSource = TimelineEventDB & {orgId: string; teamId: string}
+
+export const timelineEventInterfaceFields = (): GraphQLFieldConfigMap<
+  TimelineEventSource,
+  GQLContext
+> => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
