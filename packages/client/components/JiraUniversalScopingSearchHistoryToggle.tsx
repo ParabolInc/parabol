@@ -3,6 +3,7 @@ import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import RemoveJiraServerSearchQueryMutation from '../mutations/RemoveJiraServerSearchQueryMutation'
+import IntegrationRepoId from '../shared/gqlIds/IntegrationRepoId'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -37,7 +38,11 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
       }
       const queryStringLabel = isJQL ? queryString : `“${queryString}”`
       const projectFilters = projectKeyFilters
-        .map((filter) => filter.slice(filter.indexOf(':') + 1))
+        .map((filter) => {
+          return service === 'jiraServer'
+            ? IntegrationRepoId.split(filter).projectKey
+            : filter.split(':')[1]
+        })
         .join(', ')
 
       // TODO: migrate Jira to use the new table and use single mutation for both
