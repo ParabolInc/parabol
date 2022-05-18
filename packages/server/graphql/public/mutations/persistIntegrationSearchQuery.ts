@@ -15,8 +15,6 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  console.log('persistIntegrationSearchQuery')
-
   //AUTH
   if (!isTeamMember(authToken, teamId)) {
     return {error: {message: `Not on team`}}
