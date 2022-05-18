@@ -71,4 +71,19 @@ type TimelineEventTeamPromptComplete implements TimelineEvent {
   The meetingId that was completed
   """
   meetingId: ID!
+
+  """
+  The number of responses generated in the meeting
+  """
+  responseCount: Int!
+
+  """
+  The number of tasks generated in the meeting
+  """
+  taskCount: Int!
+
+  """
+  The number of comments generated in the meeting
+  """
+  commentCount: Int!
 }

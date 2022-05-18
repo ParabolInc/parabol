@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import getPhaseByTypename from '~/utils/getPhaseByTypename'
 import plural from '../utils/plural'
 import {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
 import StyledLink from './StyledLink'
@@ -29,29 +28,12 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
       fragment TimelineEventTeamPromptComplete_timelineEvent on TimelineEventTeamPromptComplete {
         ...TimelineEventCard_timelineEvent
         id
+        responseCount
+        taskCount
+        commentCount
         meeting {
           id
           name
-          phases {
-            ... on TeamPromptResponsesPhase {
-              __typename
-              stages {
-                discussion {
-                  commentCount
-                  thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-                    edges {
-                      node {
-                        __typename
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          responses {
-            id
-          }
         }
         team {
           id
@@ -62,19 +44,13 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     timelineEventRef
   )
 
-  const {meeting, team} = timelineEvent
+  const {meeting, team, responseCount, commentCount, taskCount} = timelineEvent
   if (!meeting) {
     return null
   }
 
-  const {id: meetingId, name: meetingName, responses, phases} = meeting
+  const {id: meetingId, name: meetingName} = meeting
   const {name: teamName} = team
-  const responseCount = responses.length
-  const {stages} = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
-  const commentCount = stages.reduce((sum, stage) => sum + stage.discussion.commentCount, 0)
-  const taskCount = stages.flatMap((stage) =>
-    stage.discussion.thread.edges.filter((edge) => edge.node.__typename === 'Task')
-  ).length
 
   return (
     <TimelineEventCard
