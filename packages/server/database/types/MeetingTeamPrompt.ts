@@ -13,6 +13,10 @@ interface Input {
   facilitatorUserId: string
 }
 
+export function isMeetingTeamPrompt(meeting: Meeting): meeting is MeetingTeamPrompt {
+  return meeting.meetingType === 'teamPrompt'
+}
+
 export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
 

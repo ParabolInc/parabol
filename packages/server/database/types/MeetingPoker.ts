@@ -15,6 +15,10 @@ interface Input {
   templateRefId: string
 }
 
+export function isMeetingPoker(meeting: Meeting): meeting is MeetingPoker{
+  return meeting.meetingType === 'poker'
+}
+
 export default class MeetingPoker extends Meeting {
   meetingType!: 'poker'
   templateId: string

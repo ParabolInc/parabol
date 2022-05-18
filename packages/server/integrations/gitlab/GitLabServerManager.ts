@@ -49,7 +49,8 @@ class GitLabServerManager implements TaskIntegrationManager {
         info,
         endpointContext: {
           accessToken: this.auth.accessToken,
-          baseUri: this.serverBaseUrl
+          baseUri: this.serverBaseUrl,
+          dataLoaderOptions: {maxBatchSize: 5}
         },
         batchRef
       })

@@ -1,12 +1,12 @@
 import getPg from '../getPg'
 import {getTeamPromptResponsesByMeetingIdQuery} from './generated/getTeamPromptResponsesByMeetingIdQuery'
-import {TeamPromptResponse} from './getTeamPromptResponsesByIds'
+import {mapToTeamPromptResponse, TeamPromptResponse} from './getTeamPromptResponsesByIds'
 
 export const getTeamPromptResponsesByMeetingIds = async (
   meetingIds: readonly string[]
 ): Promise<TeamPromptResponse[]> => {
   const responses = await getTeamPromptResponsesByMeetingIdQuery.run({meetingIds}, getPg())
-  return responses as TeamPromptResponse[]
+  return mapToTeamPromptResponse(responses)
 }
 
 export const getTeamPromptResponsesByMeetingId = async (

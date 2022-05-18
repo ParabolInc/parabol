@@ -6,7 +6,7 @@ const getPgConfig = () => ({
   database: process.env.POSTGRES_DB,
   host: process.env.POSTGRES_HOST,
   port: Number(process.env.POSTGRES_PORT),
-  max: PROD ? 40 : 5
+  max: Number(process.env.POSTGRES_POOL_SIZE) || PROD ? 20 : 5
 })
 
 export default getPgConfig

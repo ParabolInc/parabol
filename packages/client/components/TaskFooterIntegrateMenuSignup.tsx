@@ -19,8 +19,8 @@ interface Props {
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
-  integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
   featureFlags: TaskFooterIntegrateMenuQuery['response']['viewer']['featureFlags']
+  integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
 }
 
 const NarrowMenu = styled(Menu)({

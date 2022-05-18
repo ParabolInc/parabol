@@ -8,6 +8,7 @@ import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -15,10 +16,8 @@ import {GQLContext} from '../graphql'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifications/notifySlack'
-import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-import getPhase from '../../utils/getPhase'
 
 export default {
   type: new GraphQLNonNull(EndSprintPokerPayload),
@@ -107,8 +106,7 @@ export default {
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').load(templateId)
     ])
-    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
     const isKill = phase && phase.phaseType !== 'ESTIMATE'
     if (!isKill) {

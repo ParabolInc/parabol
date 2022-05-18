@@ -82,10 +82,6 @@ export default class TaskIntegrationManagerFactory {
       }
       const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
-      if (!provider) {
-        return null
-      }
-
       return new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
     }
 

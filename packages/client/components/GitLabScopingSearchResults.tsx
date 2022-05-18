@@ -77,8 +77,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                                     ...GitLabScopingSearchResultItem_issue
                                     ...GitLabScopingSelectAllIssues_issues
                                     id
-                                    descriptionHtml
-                                    title
                                   }
                                 }
                               }
