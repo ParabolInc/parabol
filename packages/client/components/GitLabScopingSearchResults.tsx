@@ -107,7 +107,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 20})
+      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 25})
       @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {

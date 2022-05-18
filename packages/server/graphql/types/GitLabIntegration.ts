@@ -104,9 +104,9 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const provider = await dataLoader.get('integrationProviders').load(providerId)
         if (!provider?.serverBaseUrl) return []
         const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
-        if (!projectsIds) return connectionFromTasks([], 0)
         const [projectsData, projectsErr] = await manager.getProjects({
-          ids: projectsIds
+          ids: projectsIds,
+          first: 50 // if no project filters have been selected, get the 50 most recently used projects
         })
         if (projectsErr) {
           sendToSentry(new Error('Unable to get GitLab projects in projectIssues query'), {userId})
@@ -119,9 +119,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           }
         })
         console.log('🚀  ~ projectsFullPaths', projectsFullPaths)
-        // if the user has selected a project filter, keep returning more issues as they scroll down
-        // otherwise, show them 50 issues to start with
-        const maxIssues = projectsIds ? 10000 : 50
         const projectIssues = [] as ProjectIssueConnection[]
         const errors = [] as Error[]
         let hasNextPage = true
@@ -133,7 +130,11 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           })
         )
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
-        projectsIssuesResponses?.forEach((res) => {
+        console.log(
+          '🚀  ~ projectsIssuesResponses',
+          projectsIssuesResponses.map((project) => project[0])
+        )
+        for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
           if (err) {
             sendToSentry(err, {userId})
@@ -148,30 +149,8 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
               node
             })
           })
-        })
+        }
 
-        // for await (const fullPath of Array.from(projectsFullPaths)) {
-        //   console.log('🚀  ~ fullPath', {fullPath, proLen: projectIssues.length})
-        //   hasNextPage = false
-        //   const [res, err] = await manager.getProjectIssues({
-        //     fullPath,
-        //     first
-        //   })
-        //   if (err) errors.push(err)
-        //   if (res?.project?.issues?.pageInfo.hasNextPage) hasNextPage = true
-        //   res?.project?.issues?.edges?.forEach((edge) => {
-        //     if (edge?.node && projectIssues.length < maxIssues) {
-        //       projectIssues.push({
-        //         cursor: edge.node.updatedAt || new Date(),
-        //         node: edge.node
-        //       })
-        //     }
-        //   })
-        //   if (maxIssues === projectIssues.length) {
-        //     console.log('BREWAK')
-        //     break
-        //   }
-        // }
         const firstEdge = projectIssues[0]
         return {
           error: errors,

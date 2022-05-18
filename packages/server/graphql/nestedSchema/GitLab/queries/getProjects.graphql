@@ -1,5 +1,11 @@
 query getProjects($first: Int, $after: String, $ids: [ID!]) {
-  projects(ids: $ids, membership: true, first: 100, after: $after, sort: "latest_activity_desc") {
+  projects(
+    ids: $ids
+    membership: true
+    first: $first
+    after: $after
+    sort: "latest_activity_desc"
+  ) {
     edges {
       node {
         __typename
