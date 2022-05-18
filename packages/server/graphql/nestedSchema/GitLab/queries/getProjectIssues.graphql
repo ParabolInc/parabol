@@ -13,6 +13,7 @@ query getProjectIssues($fullPath: ID!, $first: Int!) {
           webPath
           updatedAt
           title
+          webUrl
         }
       }
     }

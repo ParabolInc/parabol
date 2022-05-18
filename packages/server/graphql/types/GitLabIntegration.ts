@@ -5,10 +5,12 @@ import sendToSentry from '../../utils/sendToSentry'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import PageInfoDateCursor from './PageInfoDateCursor'
+import RepoIntegration from './RepoIntegration'
 import TaskIntegration from './TaskIntegration'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
@@ -63,6 +65,18 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     gitlabSearchQueries: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitLabSearchQuery))),
       resolve: async () => []
+    },
+    projects: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RepoIntegration))),
+      description: 'A list of projects accessible by this team member',
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        _args: unknown,
+        context,
+        info
+      ) => {
+        return fetchGitLabProjects(teamId, userId, context, info)
+      }
     },
     projectIssues: {
       type: new GraphQLNonNull(GitLabProjectIssuesConnection),
@@ -120,11 +134,15 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         )
         const [projectIssuesRes] = await Promise.all(projectIssuesPromises)
         projectIssuesRes?.forEach((res) => {
-          if (res instanceof Error || !res) return
-          const edges = res.project?.issues?.edges
+          if (res instanceof Error) {
+            sendToSentry(res, {userId})
+            return
+          }
+          const edges = res?.project?.issues?.edges
           edges?.forEach((edge) => {
             if (!edge?.node) return
             const {node} = edge
+            console.log('🚀  ~ node', node)
             projectIssues.push({
               cursor: node.updatedAt || new Date(),
               node
