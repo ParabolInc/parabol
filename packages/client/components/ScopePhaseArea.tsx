@@ -81,6 +81,7 @@ const ScopePhaseArea = (props: Props) => {
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
+  const allowGitLab = !!(isGitLabProviderAvailable && featureFlags?.gitlab)
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
 
   const baseTabs = [
@@ -101,7 +102,7 @@ const ScopePhaseArea = (props: Props) => {
     {
       icon: <GitLabSVG />,
       label: 'GitLab',
-      allow: isGitLabProviderAvailable,
+      allow: allowGitLab,
       Component: ScopePhaseAreaGitLab
     },
     {
@@ -232,6 +233,7 @@ export default createFragmentContainer(ScopePhaseArea, {
         user {
           featureFlags {
             azureDevOps
+            gitlab
           }
         }
       }
