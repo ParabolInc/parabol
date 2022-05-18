@@ -20,10 +20,9 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   // VALIDATION
   if (inputTeamPromptResponseId) {
-    const responseId = TeamPromptResponseId.split(inputTeamPromptResponseId)
     const teamPromptResponse: TeamPromptResponse = await dataLoader
       .get('teamPromptResponses')
-      .load(responseId)
+      .load(inputTeamPromptResponseId)
     if (!teamPromptResponse) {
       return standardError(new Error('TeamPromptResponse not found'), {userId: viewerId})
     }
@@ -60,13 +59,15 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     return standardError(new Error('Invalid editor format'), {userId: viewerId})
   }
 
-  const teamPromptResponseId = await upsertTeamPromptResponseQuery({
-    meetingId,
-    userId: viewerId,
-    sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
-    content,
-    plaintextContent
-  })
+  const teamPromptResponseId = TeamPromptResponseId.join(
+    await upsertTeamPromptResponseQuery({
+      meetingId,
+      userId: viewerId,
+      sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
+      content,
+      plaintextContent
+    })
+  )
   const updatedTeamPromptResponse = await dataLoader
     .get('teamPromptResponses')
     .load(teamPromptResponseId)
