@@ -1,6 +1,6 @@
-query getProjectIssues($fullPath: ID!, $first: Int!) {
+query getProjectIssues($fullPath: ID!, $first: Int!, $searchQuery: String) {
   project(fullPath: $fullPath) {
-    issues(first: $first) {
+    issues(first: $first, search: $searchQuery) {
       pageInfo {
         hasNextPage
       }

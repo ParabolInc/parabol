@@ -113,8 +113,12 @@ const GitLabScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
-                projectIssues(projectsIds: $selectedProjectsIds, first: $count, after: $cursor)
-                  @connection(key: "GitLabScopingSearchResults_projectIssues") {
+                projectIssues(
+                  projectsIds: $selectedProjectsIds
+                  first: $count
+                  after: $cursor
+                  searchQuery: $queryString
+                ) @connection(key: "GitLabScopingSearchResults_projectIssues") {
                   edges {
                     node {
                       ... on _xGitLabIssue {

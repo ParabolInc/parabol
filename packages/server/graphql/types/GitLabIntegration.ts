@@ -91,10 +91,15 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         projectsIds: {
           type: GraphQLList(GraphQLString),
           description: 'the ids of the projects selected as filters'
+        },
+        searchQuery: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'the search query that the user enters to filter issues'
         }
       },
       resolve: async ({teamId, userId}: {teamId: string; userId: string}, args, context, info) => {
-        const {first, projectsIds} = args
+        const {first, projectsIds, searchQuery} = args
+        console.log('🚀  ~ args', args)
         const {dataLoader} = context
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -126,7 +131,9 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
           manager.getProjectIssues({
             fullPath,
-            first
+            first,
+            searchQuery
+            // ...gitlabIssueArgs
           })
         )
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
