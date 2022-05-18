@@ -51,14 +51,14 @@ const ProviderList = (props: Props) => {
   })
   const {viewer} = data
   const {
-    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
+    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams, gitlab: allowGitLab}
   } = viewer
   return (
     <StyledWrapper>
       <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
       <JiraServerProviderRow teamId={teamId} viewerRef={viewer} />
       <GitHubProviderRow teamId={teamId} viewer={viewer} />
-      <GitLabProviderRow teamId={teamId} viewerRef={viewer} />
+      {allowGitLab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
       {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />}
