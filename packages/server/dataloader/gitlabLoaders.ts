@@ -21,7 +21,6 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             teamId,
             userId
           })
-          console.log('🚀  ~ gitlabAuthToRefresh', gitlabAuthToRefresh)
           if (!gitlabAuthToRefresh) return null
           const redis = getRedis()
           const key = getGitLabAuthRedisKey(userId)
@@ -36,10 +35,7 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             const {clientId, clientSecret, serverBaseUrl} = provider
             const manager = new GitLabOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
             const oauthRes = await manager.refresh(refreshToken)
-            if (oauthRes instanceof Error) {
-              sendToSentry(oauthRes, {userId})
-              return null
-            }
+            if (oauthRes instanceof Error) return null
             const {accessToken, refreshToken: newRefreshToken, expires_in} = oauthRes
             const updatedRefreshToken = newRefreshToken || refreshToken
             const newGitlabAuth = {
@@ -47,15 +43,13 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
               accessToken,
               refreshToken: updatedRefreshToken
             }
-            await upsertTeamMemberIntegrationAuth(newGitlabAuth)
             const tokenTTL = expires_in - 30
-            await redis.set(key, tokenTTL, 'EX', tokenTTL)
+            await Promise.all([
+              upsertTeamMemberIntegrationAuth(newGitlabAuth),
+              redis.set(key, tokenTTL, 'EX', tokenTTL)
+            ])
             return newGitlabAuth
           }
-          console.log('🚀  ~ gitlabAuthToRefresh', {
-            gitlabAuthToRefresh,
-            isValidAuth
-          })
           return gitlabAuthToRefresh as IGetTeamMemberIntegrationAuthQueryResult | null
         })
       )
