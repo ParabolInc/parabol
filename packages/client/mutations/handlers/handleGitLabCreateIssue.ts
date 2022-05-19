@@ -26,7 +26,6 @@ const handleGitLabCreateIssue = (
   const integrations = teamMember?.getLinkedRecord('integrations')
   const gitlab = integrations?.getLinkedRecord('gitlab')
   const typename = integration.getType()
-  console.log('🚀  ~ typename', typename)
   if (typename !== '_xGitLabIssue') return
   const selectedProjectsIds = gitlabSearchQuery?.getValue('selectedProjectsIds') as
     | string[]
@@ -35,8 +34,7 @@ const handleGitLabCreateIssue = (
   const gitlabProjectsIssuesConn = getGitLabProjectsIssuesConn(gitlab, {
     searchQuery,
     projectsIds: formattedProjectsIds,
-    state: gitlabIssueArgs.state,
-    sort: gitlabIssueArgs.sort
+    ...gitlabIssueArgs
   })
   console.log('🚀  ~ gitlabProjectsIssuesConn', {gitlabProjectsIssuesConn, integration})
   if (!gitlabProjectsIssuesConn) return
