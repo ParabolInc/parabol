@@ -528,7 +528,7 @@ class AzureDevOpsServerManager {
     remoteIssueId: string,
     projectKey: string
   ) {
-    const comment = `<div>*${dimensionName}: ${finalScore}*</div>
+    const comment = `<div><b>${dimensionName}: ${finalScore}</b></div>
     <div>See the <a href='${discussionURL}'>discussion</a> in ${meetingName}</div>
 
     <div>Powered by <a href='${ExternalLinks.GETTING_STARTED_SPRINT_POKER}'>Parabol</a></div>`
