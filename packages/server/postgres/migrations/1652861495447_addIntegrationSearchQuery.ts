@@ -32,6 +32,9 @@ export async function up() {
     CREATE UNIQUE INDEX integration_search_query_unique_null 
     ON "IntegrationSearchQuery" ("userId", "teamId", "service", "query")
     WHERE "providerId" IS NULL;
+    
+    DROP TRIGGER IF EXISTS "update_IntegrationSearchQuery_updatedAt" ON "IntegrationSearchQuery";
+    CREATE TRIGGER "update_IntegrationSearchQuery_updatedAt" BEFORE UPDATE ON "IntegrationSearchQuery" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
   `)
   await client.end()
 }
@@ -39,6 +42,9 @@ export async function up() {
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`DROP TABLE IF EXISTS "IntegrationSearchQuery";`)
+  await client.query(`
+    DROP TRIGGER IF EXISTS "update_IntegrationSearchQuery_updatedAt" ON "IntegrationSearchQuery";
+    DROP TABLE IF EXISTS "IntegrationSearchQuery";
+  `)
   await client.end()
 }
