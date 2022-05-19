@@ -39,6 +39,7 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
   display: isFacilitator ? undefined : 'none'
 }))
 
+/*
 const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
@@ -46,7 +47,7 @@ const labelLookup = {
   [SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD]:
     SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
   [SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD]: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL
-}
+}*/
 
 const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   const {clearError, isFacilitator, stageRef, submitScore} = props
@@ -70,9 +71,10 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     stageRef
   )
 
-  const {serviceField} = stage
+  const {serviceField, task} = stage
   const {name: serviceFieldName} = serviceField
-  console.log(`serviceFieldName - ${serviceFieldName}`)
+  const workItemType = task?.integration?.type
+
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
@@ -86,7 +88,48 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const label = labelLookup[serviceFieldName] || SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+  const getLabelValue = (workItemType: string | undefined) => {
+    if (!workItemType) {
+      return SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+    }
+    if (
+      workItemType === 'Agile:Epic' ||
+      workItemType === 'Agile:Feature' ||
+      workItemType === 'Basic:Issue' ||
+      workItemType === 'Scrum:Bug' ||
+      workItemType === 'Scrum:Epic' ||
+      workItemType === 'Scrum:Feature' ||
+      workItemType === 'Scrum:Product Backlog Item' ||
+      workItemType === 'CMMI:Change Request' ||
+      workItemType === 'CMMI:Epic' ||
+      workItemType === 'CMMI:Feature'
+    ) {
+      return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD
+        ? SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL
+        : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+    } else if (workItemType === 'Basic:Task' || workItemType === 'Scrum:Task') {
+      return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD
+        ? SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL
+        : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+    } else if (
+      workItemType === 'Agile:Task' ||
+      workItemType === 'CMMI:Issue' ||
+      workItemType === 'CMMI:Risk' ||
+      workItemType === 'CMMI:Task'
+    ) {
+      return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD
+        ? SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL
+        : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+    } else if (workItemType === 'Agile:User Story' || workItemType === 'Agile:Bug') {
+      return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD
+        ? SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL
+        : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+    } else {
+      return SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
+    }
+  }
+
+  const label = getLabelValue(workItemType)
 
   return (
     <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>

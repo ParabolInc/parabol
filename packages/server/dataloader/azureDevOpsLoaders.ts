@@ -191,20 +191,17 @@ export const azureDevOpsAllWorkItems = (
             projectKeyFilters,
             isWIQL
           )
-          console.log(`manager.getAllUserWorkItems - ${JSON.stringify(restResult)}`)
+
           const {error, workItems} = restResult
 
           if (error !== undefined || workItems === undefined) {
             console.log(error)
           } else {
             returnedWorkItems.push(...workItems)
-            console.log(`returnedWorkItems.length - ${returnedWorkItems.length}`)
           }
           const mappedWorkItems: AzureDevOpsWorkItem[] = await Promise.all(
             returnedWorkItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
-              console.log(`inside mappedWorkItems - ${returnedWorkItem.url}`)
               const instanceId = getInstanceId(new URL(returnedWorkItem.url))
-              console.log(`instanceId - ${instanceId}`)
               const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
                 manager,
                 userId,
@@ -212,7 +209,6 @@ export const azureDevOpsAllWorkItems = (
                 instanceId,
                 returnedWorkItem
               )
-              console.log(`got mappedWorkItem`)
               return mappedWorkItem
             })
           )
@@ -366,7 +362,6 @@ export const azureDevOpsDimensionFieldMap = (
             instanceId,
             projectKey
           )
-          console.log(`azureDevOpsDimensionFieldMap is - ${azureDevOpsDimensionFieldMap}`)
           return azureDevOpsDimensionFieldMap
         })
       )
@@ -420,25 +415,6 @@ export const azureDevOpsUserStory = (
               instanceId,
               returnedWorkItem
             )
-            /*const azureDevOpsWorkItem = {
-              id: returnedWorkItem.id.toString(),
-              title: returnedWorkItem.fields['System.Title'],
-              teamProject: getProjectId(new URL(returnedWorkItem.url)),
-              url: returnedWorkItem.url,
-              state: returnedWorkItem.fields['System.State'],
-              type: returnedWorkItem.fields['System.WorkItemType'],
-              descriptionHTML: returnedWorkItem.fields['System.Description']
-                ? returnedWorkItem.fields['System.Description']
-                : '',
-              service: 'azureDevOps'
-            } as AzureDevOpsWorkItem
-            const projectResult = await manager.getProjectProcessTemplate(instanceId, azureDevOpsWorkItem.teamProject)
-            const {error: projectResultError, projectTemplate} = projectResult
-            if (!!projectResultError) {
-              sendToSentry(projectResultError, {userId, tags: {instanceId, workItemId, teamId}})
-            } else {
-              azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
-            }*/
             return azureDevOpsWorkItem
           }
         })
@@ -486,26 +462,6 @@ export const azureDevOpsWorkItem = (
             instanceId,
             returnedWorkItem
           )
-          /*
-          const azureDevOpsWorkItem = {
-            id: returnedWorkItem.id.toString(),
-            title: returnedWorkItem.fields['System.Title'],
-            teamProject: getProjectId(new URL(returnedWorkItem.url)),
-            url: returnedWorkItem.url,
-            state: returnedWorkItem.fields['System.State'],
-            type: returnedWorkItem.fields['System.WorkItemType'],
-            descriptionHTML: returnedWorkItem.fields['System.Description']
-              ? returnedWorkItem.fields['System.Description']
-              : '',
-            service: 'azureDevOps'
-          } as AzureDevOpsWorkItem
-          const projectResult = await manager.getProjectProcessTemplate(instanceId, azureDevOpsWorkItem.teamProject)
-          const {error: projectResultError, projectTemplate} = projectResult
-          if (!!projectResultError) {
-            sendToSentry(projectResultError, {userId, tags: {instanceId, workItemId, teamId}})
-          } else {
-            azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
-          }*/
 
           // update our records
           await Promise.all(
@@ -581,7 +537,6 @@ export const getMappedAzureDevOpsWorkItem = async (
   } else {
     azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
   }
-  console.log(`Returning azureDevOpsWorkItem -  ${JSON.stringify(azureDevOpsWorkItem)}`)
   return azureDevOpsWorkItem
 }
 
