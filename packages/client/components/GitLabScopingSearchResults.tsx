@@ -27,7 +27,6 @@ interface Props {
 const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
 
-  // $includeSubepics: Boolean!
   const query = usePreloadedQuery(
     graphql`
       query GitLabScopingSearchResultsQuery(
