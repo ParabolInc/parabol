@@ -87,7 +87,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         return fetchGitLabProjects(teamId, userId, context, info)
       }
     },
-    projectIssues: {
+    projectsIssues: {
       type: new GraphQLNonNull(GitLabProjectIssuesConnection),
       args: {
         first: {
@@ -121,7 +121,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         info
       ) => {
         const {projectsIds} = args as ProjectsIssuesArgs
-        console.log('🚀  ~ args', args)
         const {dataLoader} = context
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -145,7 +144,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
-        const projectIssues = [] as ProjectIssueConnection[]
+        const projectsIssues = [] as ProjectIssueConnection[]
         const errors = [] as Error[]
         let hasNextPage = true
 
@@ -166,20 +165,20 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           edges?.forEach((edge) => {
             if (!edge?.node) return
             const {node} = edge
-            projectIssues.push({
+            projectsIssues.push({
               cursor: node.updatedAt || new Date(),
               node
             })
           })
         }
 
-        const firstEdge = projectIssues[0]
+        const firstEdge = projectsIssues[0]
         return {
           error: errors,
-          edges: projectIssues,
+          edges: projectsIssues,
           pageInfo: {
             startCursor: firstEdge && firstEdge.cursor,
-            endCursor: firstEdge ? projectIssues.at(-1)!.cursor : new Date(),
+            endCursor: firstEdge ? projectsIssues.at(-1)!.cursor : new Date(),
             hasNextPage
           }
         }

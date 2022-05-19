@@ -111,14 +111,14 @@ const GitLabScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
-                projectIssues(
+                projectsIssues(
                   projectsIds: $selectedProjectsIds
                   first: $count
                   after: $cursor
                   searchQuery: $queryString
                   state: $state
                   sort: $sort
-                ) @connection(key: "GitLabScopingSearchResults_projectIssues") {
+                ) @connection(key: "GitLabScopingSearchResults_projectsIssues") {
                   edges {
                     node {
                       ... on _xGitLabIssue {
@@ -141,7 +141,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
   const nullableEdges =
-    paginationRes.data.viewer.teamMember?.integrations.gitlab.projectIssues.edges
+    paginationRes.data.viewer.teamMember?.integrations.gitlab.projectsIssues.edges
   console.log('🚀  ~ nullableEdges', {nullableEdges})
   const meeting = useFragment(
     graphql`

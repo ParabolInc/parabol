@@ -145,11 +145,11 @@ class GitLabServerManager implements TaskIntegrationManager {
     return [noteData, noteError] as const
   }
 
-  async getProjectIssues(projectsIssuesArgs: ProjectsIssuesArgs) {
+  async getProjectIssues(projectIssuesArgs: Omit<ProjectsIssuesArgs, 'projectsIds'>) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
     const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(
       getProjectIssues,
-      projectsIssuesArgs
+      projectIssuesArgs
     )
     return [issuesData, issuesError] as const
   }

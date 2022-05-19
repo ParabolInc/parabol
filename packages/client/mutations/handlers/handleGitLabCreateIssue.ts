@@ -1,9 +1,9 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {gitlabIssueArgs} from '~/components/GitLabScopingSearchResultsRoot'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
-import getGitLabProjectsConn from '../connections/getGitLabProjectsConn'
-import {gitlabIssueArgs} from './../../components/GitLabScopingSearchResultsRoot'
+import getGitLabProjectsIssuesConn from '../connections/getGitLabProjectsIssuesConn'
 
 const handleGitLabCreateIssue = (
   task: RecordProxy<NonNullable<CreateTaskMutationResponse['createTask']['task']>>,
@@ -32,23 +32,23 @@ const handleGitLabCreateIssue = (
     | string[]
     | undefined
   const formattedProjectsIds = selectedProjectsIds?.length ? selectedProjectsIds : null
-  const gitlabProjectsConn = getGitLabProjectsConn(gitlab, {
+  const gitlabProjectsIssuesConn = getGitLabProjectsIssuesConn(gitlab, {
     searchQuery,
     projectsIds: formattedProjectsIds,
     state: gitlabIssueArgs.state,
     sort: gitlabIssueArgs.sort
   })
-  console.log('🚀  ~ gitlabProjectsConn', {gitlabProjectsConn, integration})
-  if (!gitlabProjectsConn) return
+  console.log('🚀  ~ gitlabProjectsIssuesConn', {gitlabProjectsIssuesConn, integration})
+  if (!gitlabProjectsIssuesConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(
     store,
-    gitlabProjectsConn,
+    gitlabProjectsIssuesConn,
     integration,
     '_xGitLabIssue'
   )
   newEdge.setValue(now, 'cursor')
-  ConnectionHandler.insertEdgeBefore(gitlabProjectsConn, newEdge)
+  ConnectionHandler.insertEdgeBefore(gitlabProjectsIssuesConn, newEdge)
 }
 
 export default handleGitLabCreateIssue
