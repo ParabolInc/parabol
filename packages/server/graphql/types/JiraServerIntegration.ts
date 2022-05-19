@@ -196,7 +196,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           .load({service: 'jiraServer', teamId, userId})
 
         if (!auth) {
-          return null
+          return []
         }
 
         const searchQueries = await getLatestIntegrationSearchQueriesWithProviderId({
