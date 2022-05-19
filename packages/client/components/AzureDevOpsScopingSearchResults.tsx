@@ -99,11 +99,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
     return url.pathname.substring(firstIndex + 1, seconedIndex)
   }
 
-  /*const getInstanceId = (url: URL) => {
-    const firstIndex = url.pathname.indexOf('/', 1)
-    return url.host + '/' + url.pathname.substring(1, firstIndex)
-  }*/
-
   const getServiceTaskId = (url: URL) => {
     return AzureDevOpsClientManager.getInstanceId(url) + ':' + getProjectId(url)
   }
