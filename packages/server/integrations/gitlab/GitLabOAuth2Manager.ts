@@ -19,7 +19,12 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
   }
 
   async refresh(refreshToken: string) {
-    return this.fetchToken<{accessToken: string; scopes: string}>({
+    return this.fetchToken<{
+      accessToken: string
+      scopes: string
+      refreshToken: string
+      expires_in: number
+    }>({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
     })

@@ -8,6 +8,7 @@ import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrat
 import upsertTeamMemberIntegrationAuth from '../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
+import {getGitLabAuthRedisKey} from '../../utils/getGitLabAuthRedisKey'
 import getRedis from '../../utils/getRedis'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -108,7 +109,7 @@ const addTeamMemberIntegrationAuth = {
           const redis = getRedis()
           const {expires_in} = tokenMetadata
           const tokenTTL = expires_in - 30
-          const key = `gitlabAuth::${viewerId}`
+          const key = getGitLabAuthRedisKey(viewerId)
           await redis.set(key, tokenTTL, 'EX', tokenTTL)
         }
       }
