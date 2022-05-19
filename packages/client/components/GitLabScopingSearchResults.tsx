@@ -33,7 +33,6 @@ const GitLabScopingSearchResults = (props: Props) => {
         $teamId: ID!
         $queryString: String!
         $selectedProjectsIds: [ID!]
-        $first: Int!
         $sort: _xGitLabIssueSort!
         $state: _xGitLabIssuableState!
       ) {
@@ -56,37 +55,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                       column
                     }
                     path
-                  }
-                  query {
-                    projects(
-                      membership: true
-                      first: 75
-                      sort: "latest_activity_desc"
-                      ids: $selectedProjectsIds
-                    ) @connection(key: "GitLabScopingSearchResults_projects") {
-                      edges {
-                        node {
-                          ... on _xGitLabProject {
-                            issues(
-                              state: $state
-                              search: $queryString
-                              sort: $sort
-                              first: $first
-                            ) {
-                              edges {
-                                node {
-                                  ... on _xGitLabIssue {
-                                    ...GitLabScopingSearchResultItem_issue
-                                    ...GitLabScopingSelectAllIssues_issues
-                                    id
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
                   }
                 }
               }
