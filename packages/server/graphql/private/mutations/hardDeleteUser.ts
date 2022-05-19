@@ -13,7 +13,7 @@ import {MutationResolvers} from '../resolverTypes'
 const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   _source,
   {userId, email, reasonText},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
   // VALIDATION
   if (userId && email) {
@@ -208,10 +208,12 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       [teamDiscussionIds, userIdToDelete]
     )
   ])
+
+  // Send metrics to HubSpot before the user is really deleted in DB
+  await sendAccountRemovedToSegment(userIdToDelete, user.email, reasonText)
+
   // User needs to be deleted after children
   await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])
-
-  sendAccountRemovedToSegment(userIdToDelete, user.email, reasonText)
 
   await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
   return {}
