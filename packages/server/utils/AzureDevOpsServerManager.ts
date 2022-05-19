@@ -607,10 +607,10 @@ class AzureDevOpsServerManager {
     remoteIssueId: string,
     projectKey: string
   ) {
-    const comment = `*${dimensionName}: ${finalScore}*
-    \n[See the discussion | ${discussionURL}] in ${meetingName}
+    const comment = `<div><b>${dimensionName}: ${finalScore}</b></div>
+    <div>See the <a href='${discussionURL}'>discussion</a> in ${meetingName}</div>
 
-    \n_Powered by [Parabol | ${ExternalLinks.GETTING_STARTED_SPRINT_POKER}]_`
+    <div>Powered by <a href='${ExternalLinks.GETTING_STARTED_SPRINT_POKER}'>Parabol</a></div>`
 
     const res = await this.post<WorkItemAddCommentResponse>(
       `https://${instanceId}/${projectKey}/_apis/wit/workItems/${remoteIssueId}/comments?api-version=7.1-preview.3`,
