@@ -7,11 +7,22 @@ const getGitLabProjectsConn = (
   if (!gitlabTeamMemberIntegration) return null
   return ConnectionHandler.getConnection(
     gitlabTeamMemberIntegration,
-    'GitLabScopingSearchResults_projects',
+    // 'GitLabScopingSearchResults_projectIssues',
+    'GitLabScopingSearchResults_projectIssues',
     {
-      membership: true,
-      sort: 'latest_activity_desc',
-      ids: selectedProjectsIds
+      searchQuery: '',
+
+      // first: 20
+      // membership: true,
+      // sort: 'latest_activity_desc',
+
+      // projectsIds: selectedProjectsIds,
+      // includeSubepics: true,
+      sort: 'UPDATED_DESC',
+      state: 'opened'
+      // first: 25
+      // after: '',
+      // searchQuery: ''
     }
   )
 }
