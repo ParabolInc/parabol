@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '../types/constEnums'
 import {TeamInvitationDialog_verifiedInvitation} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import TeamInvitationAccept from './TeamInvitationAccept'
@@ -15,15 +15,16 @@ import TeamInvitationGoogleCreateAccount from './TeamInvitationGoogleCreateAccou
 import TeamInvitationGoogleSignin from './TeamInvitationGoogleSignin'
 import TeamInvitationSSO from './TeamInvitationSSO'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
+interface Props extends RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationDialog_verifiedInvitation
 }
 
 const TeamInvitationDialog = (props: Props) => {
-  const {atmosphere, verifiedInvitation, match} = props
+  const {verifiedInvitation, match} = props
   const {params} = match
   const {token: invitationToken} = params
 
+  const atmosphere = useAtmosphere()
   useEffect(() => {
     window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, invitationToken)
   }, [invitationToken])
@@ -71,7 +72,7 @@ const TeamInvitationDialog = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withRouter(TeamInvitationDialog)), {
+export default createFragmentContainer(withRouter(TeamInvitationDialog), {
   verifiedInvitation: graphql`
     fragment TeamInvitationDialog_verifiedInvitation on VerifiedInvitationPayload {
       ...TeamInvitationErrorAccepted_verifiedInvitation

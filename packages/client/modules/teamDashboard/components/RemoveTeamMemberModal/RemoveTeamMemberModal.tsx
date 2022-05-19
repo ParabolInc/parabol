@@ -1,17 +1,15 @@
-import {RemoveTeamMemberModal_teamMember} from '../../../../__generated__/RemoveTeamMemberModal_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import IconLabel from '../../../../components/IconLabel'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import DialogContainer from '../../../../components/DialogContainer'
-import DialogTitle from '../../../../components/DialogTitle'
 import DialogContent from '../../../../components/DialogContent'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import DialogTitle from '../../../../components/DialogTitle'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
+import {RemoveTeamMemberModal_teamMember} from '../../../../__generated__/RemoveTeamMemberModal_teamMember.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 320
@@ -21,13 +19,14 @@ const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   closePortal: () => void
   teamMember: RemoveTeamMemberModal_teamMember
 }
 
 const RemoveTeamMemberModal = (props: Props) => {
-  const {atmosphere, closePortal, teamMember} = props
+  const atmosphere = useAtmosphere()
+  const {closePortal, teamMember} = props
   const {teamMemberId, preferredName} = teamMember
   const handleClick = () => {
     closePortal()
@@ -47,7 +46,7 @@ const RemoveTeamMemberModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(RemoveTeamMemberModal), {
+export default createFragmentContainer(RemoveTeamMemberModal, {
   teamMember: graphql`
     fragment RemoveTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id

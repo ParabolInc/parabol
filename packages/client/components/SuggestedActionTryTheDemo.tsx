@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import {PALETTE} from '../styles/paletteV3'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -11,17 +11,14 @@ import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props
-  extends WithAtmosphereProps,
-    WithMutationProps,
-    RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props extends WithMutationProps, RouteComponentProps<{[x: string]: string | undefined}> {
   suggestedAction: SuggestedActionTryTheDemo_suggestedAction
 }
 
 const SuggestedActionTryTheDemo = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const onClick = () => {
-    const {atmosphere, history, submitting, submitMutation, suggestedAction, onError, onCompleted} =
-      props
+    const {history, submitting, submitMutation, suggestedAction, onError, onCompleted} = props
     const {id: suggestedActionId} = suggestedAction
     if (submitting) return
     submitMutation()
@@ -45,13 +42,10 @@ const SuggestedActionTryTheDemo = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(withRouter(SuggestedActionTryTheDemo))),
-  {
-    suggestedAction: graphql`
-      fragment SuggestedActionTryTheDemo_suggestedAction on SuggestedActionTryTheDemo {
-        id
-      }
-    `
-  }
-)
+export default createFragmentContainer(withMutationProps(withRouter(SuggestedActionTryTheDemo)), {
+  suggestedAction: graphql`
+    fragment SuggestedActionTryTheDemo_suggestedAction on SuggestedActionTryTheDemo {
+      id
+    }
+  `
+})

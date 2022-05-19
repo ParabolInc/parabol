@@ -4,7 +4,7 @@
  */
 import styled from '@emotion/styled'
 import React from 'react'
-import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ICON_SIZE} from '../../styles/typographyV2'
@@ -12,7 +12,7 @@ import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutati
 import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props extends WithMutationProps {
   meetingId: string
   reflectionId: string
   dataCy: string
@@ -52,9 +52,9 @@ const StyledIcon = styled(Icon)({
 })
 
 const ReflectionCardDeleteButton = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const handleDelete = () => {
-    const {atmosphere, onCompleted, onError, meetingId, reflectionId, submitMutation, submitting} =
-      props
+    const {onCompleted, onError, meetingId, reflectionId, submitMutation, submitting} = props
     if (submitting) return
     submitMutation()
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
@@ -71,4 +71,4 @@ const ReflectionCardDeleteButton = (props: Props) => {
   )
 }
 
-export default withMutationProps(withAtmosphere(ReflectionCardDeleteButton))
+export default withMutationProps(ReflectionCardDeleteButton)

@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import Legitity from '../validation/Legitity'
 import {EditableOrgName_organization} from '../__generated__/EditableOrgName_organization.graphql'
 import EditableText from './EditableText'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   organization: EditableOrgName_organization
 }
 
@@ -19,9 +19,9 @@ const EditableOrgText = styled(EditableText)({
 })
 
 const EditableOrgName = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const handleSubmit = (rawName) => {
-    const {atmosphere, onError, onCompleted, setDirty, submitMutation, submitting, organization} =
-      props
+    const {onError, onCompleted, setDirty, submitMutation, submitting, organization} = props
     if (submitting) return
     setDirty()
     const {error, value: name} = validate(rawName)
@@ -65,7 +65,7 @@ const EditableOrgName = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableOrgName)), {
+export default createFragmentContainer(withMutationProps(EditableOrgName), {
   organization: graphql`
     fragment EditableOrgName_organization on Organization {
       id

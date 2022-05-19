@@ -1,5 +1,4 @@
 import React, {Suspense} from 'react'
-import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../../types/constEnums'
 import {renderLoader} from '../../../../utils/relay/renderLoader'
@@ -17,4 +16,4 @@ const OrganizationsRoot = () => {
   )
 }
 
-export default withAtmosphere(OrganizationsRoot)
+export default OrganizationsRoot

@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
-import {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
+import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
@@ -18,7 +18,7 @@ interface State {
   isOldBrowserErr: boolean
 }
 
-class ErrorBoundary extends Component<Props & WithAtmosphereProps, State> {
+class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
   state: State = {
     error: undefined,
     errorInfo: undefined,
