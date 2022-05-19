@@ -21,6 +21,7 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             teamId,
             userId
           })
+          console.log('🚀  ~ gitlabAuthToRefresh', gitlabAuthToRefresh)
           if (!gitlabAuthToRefresh) return null
           const redis = getRedis()
           const key = getGitLabAuthRedisKey(userId)
