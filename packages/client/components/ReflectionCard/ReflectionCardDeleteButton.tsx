@@ -2,15 +2,15 @@
  * Renders the delete button for a retro card, which floats in the top-right
  * corner of the card.
  */
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import PlainButton from '../PlainButton/PlainButton'
+import React from 'react'
 import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
-import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
-import Icon from '../Icon'
 import {PALETTE} from '../../styles/paletteV3'
 import {ICON_SIZE} from '../../styles/typographyV2'
+import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import Icon from '../Icon'
+import PlainButton from '../PlainButton/PlainButton'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string
@@ -51,38 +51,24 @@ const StyledIcon = styled(Icon)({
   zIndex: 2
 })
 
-class ReflectionCardDeleteButton extends Component<Props> {
-  handleDelete = () => {
-    const {
-      atmosphere,
-      onCompleted,
-      onError,
-      meetingId,
-      reflectionId,
-      submitMutation,
-      submitting
-    } = this.props
+const ReflectionCardDeleteButton = (props: Props) => {
+  const handleDelete = () => {
+    const {atmosphere, onCompleted, onError, meetingId, reflectionId, submitMutation, submitting} =
+      props
     if (submitting) return
     submitMutation()
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
   }
 
-  render() {
-    const {submitting, dataCy} = this.props
-    const userLabel = 'Delete this reflection card'
-    if (submitting) return null
-    return (
-      <DeleteButton
-        data-cy={dataCy}
-        aria-label={userLabel}
-        onClick={this.handleDelete}
-        title={userLabel}
-      >
-        <StyledIcon>cancel</StyledIcon>
-        <Background />
-      </DeleteButton>
-    )
-  }
+  const {submitting, dataCy} = props
+  const userLabel = 'Delete this reflection card'
+  if (submitting) return null
+  return (
+    <DeleteButton data-cy={dataCy} aria-label={userLabel} onClick={handleDelete} title={userLabel}>
+      <StyledIcon>cancel</StyledIcon>
+      <Background />
+    </DeleteButton>
+  )
 }
 
 export default withMutationProps(withAtmosphere(ReflectionCardDeleteButton))

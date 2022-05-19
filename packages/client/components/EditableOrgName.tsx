@@ -1,13 +1,13 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import EditableText from './EditableText'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import Legitity from '../validation/Legitity'
 import {EditableOrgName_organization} from '../__generated__/EditableOrgName_organization.graphql'
+import EditableText from './EditableText'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   organization: EditableOrgName_organization
@@ -18,20 +18,13 @@ const EditableOrgText = styled(EditableText)({
   lineHeight: '36px'
 })
 
-class EditableOrgName extends Component<Props> {
-  handleSubmit = (rawName) => {
-    const {
-      atmosphere,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting,
-      organization
-    } = this.props
+const EditableOrgName = (props: Props) => {
+  const handleSubmit = (rawName) => {
+    const {atmosphere, onError, onCompleted, setDirty, submitMutation, submitting, organization} =
+      props
     if (submitting) return
     setDirty()
-    const {error, value: name} = this.validate(rawName)
+    const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
     const updatedOrg = {
@@ -41,8 +34,8 @@ class EditableOrgName extends Component<Props> {
     UpdateOrgMutation(atmosphere, {updatedOrg}, {onError, onCompleted})
   }
 
-  validate = (rawOrgName: string) => {
-    const {error, onError} = this.props
+  const validate = (rawOrgName: string) => {
+    const {error, onError} = props
 
     const res = new Legitity(rawOrgName)
       .trim()
@@ -58,20 +51,18 @@ class EditableOrgName extends Component<Props> {
     return res
   }
 
-  render() {
-    const {error, organization} = this.props
-    const {name} = organization
-    return (
-      <EditableOrgText
-        error={error as string}
-        handleSubmit={this.handleSubmit}
-        initialValue={name}
-        maxLength={50}
-        validate={this.validate}
-        placeholder={'Organization Name'}
-      />
-    )
-  }
+  const {error, organization} = props
+  const {name} = organization
+  return (
+    <EditableOrgText
+      error={error as string}
+      handleSubmit={handleSubmit}
+      initialValue={name}
+      maxLength={50}
+      validate={validate}
+      placeholder={'Organization Name'}
+    />
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableOrgName)), {
