@@ -9,6 +9,7 @@ import {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldM
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 
 interface Props {
   menuProps: MenuProps
@@ -68,17 +69,14 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
   const {integration} = task
   const {teamProject, url, type: workItemType} = integration
-  const getInstanceId = (url: URL) => {
-    const index = url.pathname.indexOf('/', 1)
-    return url.hostname + url.pathname.substring(0, index)
-  }
+
   const handleClick = (fieldName: string) => () => {
     if (fieldName !== serviceFieldName) {
       UpdateAzureDevOpsDimensionFieldMutation(
         atmosphere,
         {
           meetingId,
-          instanceId: getInstanceId(new URL(url)),
+          instanceId: AzureDevOpsClientManager.getInstanceId(new URL(url)),
           dimensionName,
           fieldName,
           projectKey: teamProject

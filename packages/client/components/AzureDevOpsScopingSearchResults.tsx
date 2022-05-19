@@ -9,6 +9,7 @@ import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/Azur
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -98,13 +99,13 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
     return url.pathname.substring(firstIndex + 1, seconedIndex)
   }
 
-  const getInstanceId = (url: URL) => {
+  /*const getInstanceId = (url: URL) => {
     const firstIndex = url.pathname.indexOf('/', 1)
     return url.host + '/' + url.pathname.substring(1, firstIndex)
-  }
+  }*/
 
   const getServiceTaskId = (url: URL) => {
-    return getInstanceId(url) + ':' + getProjectId(url)
+    return AzureDevOpsClientManager.getInstanceId(url) + ':' + getProjectId(url)
   }
 
   if (!edges) {
