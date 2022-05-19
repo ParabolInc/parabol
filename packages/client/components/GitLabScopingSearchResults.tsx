@@ -27,6 +27,7 @@ interface Props {
 const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
 
+  // $includeSubepics: Boolean!
   const query = usePreloadedQuery(
     graphql`
       query GitLabScopingSearchResultsQuery(
@@ -34,7 +35,6 @@ const GitLabScopingSearchResults = (props: Props) => {
         $queryString: String!
         $selectedProjectsIds: [ID!]
         $first: Int!
-        $includeSubepics: Boolean!
         $sort: _xGitLabIssueSort!
         $state: _xGitLabIssuableState!
       ) {
@@ -69,7 +69,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                         node {
                           ... on _xGitLabProject {
                             issues(
-                              includeSubepics: $includeSubepics
                               state: $state
                               search: $queryString
                               sort: $sort

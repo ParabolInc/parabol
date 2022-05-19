@@ -1,29 +1,15 @@
 import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
+import {ProjectsIssuesArgs} from './../../../server/graphql/types/GitLabIntegration'
 
 const getGitLabProjectsConn = (
   gitlabTeamMemberIntegration: ReadOnlyRecordProxy | null | undefined,
-  selectedProjectsIds: string[] | null
+  projectIssuesArgs: Omit<ProjectsIssuesArgs, 'fullPath' | 'first'>
 ) => {
   if (!gitlabTeamMemberIntegration) return null
   return ConnectionHandler.getConnection(
     gitlabTeamMemberIntegration,
-    // 'GitLabScopingSearchResults_projectIssues',
     'GitLabScopingSearchResults_projectIssues',
-    {
-      searchQuery: '',
-
-      // first: 20
-      // membership: true,
-      // sort: 'latest_activity_desc',
-
-      // projectsIds: selectedProjectsIds,
-      // includeSubepics: true,
-      sort: 'UPDATED_DESC',
-      state: 'opened'
-      // first: 25
-      // after: '',
-      // searchQuery: ''
-    }
+    projectIssuesArgs
   )
 }
 

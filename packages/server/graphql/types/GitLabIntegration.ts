@@ -28,7 +28,6 @@ export type ProjectsIssuesArgs = {
   sort: string
   state: string
   fullPath: string
-  includeSubepics: boolean
 }
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -153,15 +152,10 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
           manager.getProjectIssues({
             ...args,
-            includeSubepics: true,
             fullPath
           })
         )
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
-        console.log(
-          '🚀  ~ projectsIssuesResponses',
-          projectsIssuesResponses.map((project) => project[0])
-        )
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
           if (err) {
