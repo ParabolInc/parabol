@@ -6,6 +6,9 @@ import StarterKit from '@tiptap/starter-kit'
 import React, {useState} from 'react'
 
 const StyledEditor = styled('div')`
+  .ProseMirror {
+    min-height: 40px;
+  }
   .ProseMirror p.is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);

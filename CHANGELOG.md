@@ -5,44 +5,78 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.59.0 2022-May-18
+
+### Added
+
+- chore: added PR labeler workflow (#6525)
+- feat(standups): Activities from other team members get real-time updates (#6504)
+- feat(standups): Integrate response cards with discussion drawer (#6469)
+- feat(standups): Place viewer's card at the start of the list (#6559)
+- feat(notifications): Refactor Slack/Mattermost into NotificationHelper (#6262)
+- feat: Notifications support for MS Teams (#6494)
+- feat(Jira Server): Voting to different fields in Sprint Poker is now supported (#6437)
+
+### Changed
+
+- docs: Added general rules to code review policy (#6507)
+- docs: Added code review experiment proposal (#6508)
+- refactor: Set updateAt field via a Postgres trigger (#6493)
+- chore: remove MAX_GITLAB_POKER_STORIES (#6547)
+- chore: remove GitLab feature flag (#6554)
+- chore: readd gitlab feature flag (#6566)
+
+### Fixed
+
+- fix(devOps): reduce max pg connections to 30 (#6521)
+- fix: ignore updateAt field in checkTableEq for Teams (#6490)
+- fix: nested GitLab query batching (#6541)
+- fix: increase initial page size for archived tasks (#6555)
+
 ## 6.58.0 2022-May-12
 
 ### Added
- - **Azure DevOps** is available behind a feature flag and now supports search in Sprint Poker (#6448) and pushing estimates (#6481)
- - **DX**: You now can run `yarn newMutation` to generate the boilerplate, check README.md for details (#6473)
- - **Standups**: Live updates for team responses (#6388)
- - **tests** can now be run in different environments (#6382)
- - **tests**: the rate limiter is disabled (#6412)
- - **support**: the mutation `enableSAMLForDomain` can now update the domains without needing to pass all the metadata again (#6447)
- - **metrics**: Company's active team count now properly ignores inactive teams (#6452)
- - **metrics**: email invite links contain the correct UTM parameters (#6539)
+
+- **Azure DevOps** is available behind a feature flag and now supports search in Sprint Poker (#6448) and pushing estimates (#6481)
+- **DX**: You now can run `yarn newMutation` to generate the boilerplate, check README.md for details (#6473)
+- **Standups**: Live updates for team responses (#6388)
+- **tests** can now be run in different environments (#6382)
+- **tests**: the rate limiter is disabled (#6412)
+- **support**: the mutation `enableSAMLForDomain` can now update the domains without needing to pass all the metadata again (#6447)
+- **metrics**: Company's active team count now properly ignores inactive teams (#6452)
+- **metrics**: email invite links contain the correct UTM parameters (#6539)
 
 ### Fixed
- - meeting summary email is now sent again (#6523)
- - demo Jira and GitHub integrations now work again in the Demo (#6460)
- - fixed bugs occuring when resetting a retrospective to its grouping phase (#6305, #6306)
- - subscription payloads are now correctly resolved for SDL types (#6506)
- - fixed `hardDeleteUser` mutation which would fail for same users depending on their meetings (#6544)
+
+- meeting summary email is now sent again (#6523)
+- demo Jira and GitHub integrations now work again in the Demo (#6460)
+- fixed bugs occuring when resetting a retrospective to its grouping phase (#6305, #6306)
+- subscription payloads are now correctly resolved for SDL types (#6506)
+- fixed `hardDeleteUser` mutation which would fail for same users depending on their meetings (#6544)
 
 ### Changed
- - Switched to mainline workbox to generate the service worker (#6414)
- - Reduced docker image size (#6416)
+
+- Switched to mainline workbox to generate the service worker (#6414)
+- Reduced docker image size (#6416)
 
 ## 6.57.0 2022-May-4
 
 ### Added
- - feat(standups): upsertTeamPromptResponse (#6333)
- - feat(ado): Initial Azure DevOps integration (#6260)
- - feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
- - feat(sprint-poker): Can vote on GitLab issue (#6398)
- - feat(sprint-poker): Push task to GitLab (#6427)
+
+- feat(standups): upsertTeamPromptResponse (#6333)
+- feat(ado): Initial Azure DevOps integration (#6260)
+- feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
+- feat(sprint-poker): Can vote on GitLab issue (#6398)
+- feat(sprint-poker): Push task to GitLab (#6427)
 
 ### Changed
- - chore: Create manualTestingGuide.md (#6426)
- - chore: removed unused video related components (#6497)
+
+- chore: Create manualTestingGuide.md (#6426)
+- chore: removed unused video related components (#6497)
 
 ### Fixed
- - fix(rethinkdb): attempt to fix the table rename (#6480)
+
+- fix(rethinkdb): attempt to fix the table rename (#6480)
 
 ## 6.56.0 2022-April-27
 
