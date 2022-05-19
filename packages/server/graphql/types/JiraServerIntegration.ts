@@ -11,7 +11,7 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
-import getLatestIntegrationSearchQueriesWithProviderId from '../../postgres/queries/getLatestIntegrationSearchQueriesWithProviderId'
+import getLatestIntegrationSearchQueries from '../../postgres/queries/getLatestIntegrationSearchQueries'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -199,7 +199,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return []
         }
 
-        const searchQueries = await getLatestIntegrationSearchQueriesWithProviderId({
+        const searchQueries = await getLatestIntegrationSearchQueries({
           teamId,
           userId,
           service: 'jiraServer',

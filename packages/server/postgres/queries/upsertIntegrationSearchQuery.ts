@@ -1,18 +1,23 @@
 import getPg from '../getPg'
-import {
-  upsertIntegrationSearchQueryQuery
-} from './generated/upsertIntegrationSearchQueryQuery'
-import { IntegrationProviderServiceEnum } from "./generated/getIntegrationProvidersByIdsQuery";
+import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
+import {upsertIntegrationSearchQueryQuery} from './generated/upsertIntegrationSearchQueryQuery'
+import {upsertIntegrationSearchQueryWithProviderIdQuery} from './generated/upsertIntegrationSearchQueryWithProviderIdQuery'
 
 interface IUpsertIntegrationSearchQueryInput {
-  userId: string,
-  teamId: string,
-  service: IntegrationProviderServiceEnum,
+  userId: string
+  teamId: string
+  service: IntegrationProviderServiceEnum
   query: object
+  providerId: number | null
 }
 const upsertIntegrationSearchQuery = async (query: IUpsertIntegrationSearchQueryInput) => {
-  const result = await upsertIntegrationSearchQueryQuery.run(query as any, getPg())
-  // guaranteed result because upsert will always result in a row
+  const {providerId} = query
+  const upsertQuery =
+    providerId === null
+      ? upsertIntegrationSearchQueryQuery
+      : upsertIntegrationSearchQueryWithProviderIdQuery
+  const result = await upsertQuery.run(query as any, getPg())
+
   return result[0]
 }
 

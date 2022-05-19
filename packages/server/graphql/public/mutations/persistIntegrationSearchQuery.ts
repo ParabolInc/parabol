@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getIntegrationProvidersByIds from '../../../postgres/queries/getIntegrationProvidersByIds'
 import upsertIntegrationSearchQuery from '../../../postgres/queries/upsertIntegrationSearchQuery'
-import upsertIntegrationSearchQueryWithProviderId from '../../../postgres/queries/upsertIntegrationSearchQueryWithProviderId'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
@@ -43,21 +42,15 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     ) {
       return {error: {message: `Provider does not exists`}}
     }
-    await upsertIntegrationSearchQueryWithProviderId({
-      userId: viewerId,
-      teamId,
-      service,
-      query,
-      providerId
-    })
-  } else {
-    await upsertIntegrationSearchQuery({
-      userId: viewerId,
-      teamId,
-      service,
-      query
-    })
   }
+
+  await upsertIntegrationSearchQuery({
+    userId: viewerId,
+    teamId,
+    service,
+    query,
+    providerId: providerId ?? null
+  })
 
   const data = {teamId, userId: viewerId}
 
