@@ -3,6 +3,7 @@ import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import segment from '../segmentIo'
+import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
 export type AnalyticsEvent = 'Meeting Started' | 'Meeting Joined' | 'Meeting Completed'
@@ -45,14 +46,13 @@ class Analytics {
     meetingMembers: MeetingMember[],
     template: MeetingTemplate
   ) => {
-    const templateProperties = {
-      meetingTemplateId: template.id,
-      meetingTemplateName: template.name,
-      meetingTemplateScope: template.scope,
-      meetingTemplateIsFromParabol: !!template.isStarter
-    }
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, templateProperties)
+      this.meetingEnd(
+        meetingMember.userId,
+        completedMeeting,
+        meetingMembers,
+        createMeetingTemplateAnalyticsParams(template)
+      )
     )
   }
 
@@ -61,14 +61,13 @@ class Analytics {
     meetingMembers: MeetingMember[],
     template: MeetingTemplate
   ) => {
-    const templateProperties = {
-      meetingTemplateId: template.id,
-      meetingTemplateName: template.name,
-      meetingTemplateScope: template.scope,
-      meetingTemplateIsFromParabol: !!template.isStarter
-    }
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, templateProperties)
+      this.meetingEnd(
+        meetingMember.userId,
+        completedMeeting,
+        meetingMembers,
+        createMeetingTemplateAnalyticsParams(template)
+      )
     )
   }
 
