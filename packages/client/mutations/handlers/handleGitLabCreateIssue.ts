@@ -36,7 +36,6 @@ const handleGitLabCreateIssue = (
     projectsIds: formattedProjectsIds,
     ...gitlabIssueArgs
   })
-  console.log('🚀  ~ gitlabProjectsIssuesConn', {gitlabProjectsIssuesConn, integration})
   if (!gitlabProjectsIssuesConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(

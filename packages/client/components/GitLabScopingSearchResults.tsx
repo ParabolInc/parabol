@@ -110,7 +110,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {viewer} = query
   const nullableEdges =
     paginationRes.data.viewer.teamMember?.integrations.gitlab.projectsIssues.edges
-  console.log('🚀  ~ nullableEdges', {nullableEdges})
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
