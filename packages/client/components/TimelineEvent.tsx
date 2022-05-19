@@ -10,26 +10,34 @@ interface Props {
 }
 
 const lookup = {
-  TimelineEventJoinedParabol: lazy(() =>
-    import(/* webpackChunkName: 'TimelineEventJoinedParabol' */ './TimelineEventJoinedParabol')
+  TimelineEventJoinedParabol: lazy(
+    () =>
+      import(/* webpackChunkName: 'TimelineEventJoinedParabol' */ './TimelineEventJoinedParabol')
   ),
-  TimelineEventTeamCreated: lazy(() =>
-    import(/* webpackChunkName: 'TimelineEventTeamCreated' */ './TimelineEventTeamCreated')
+  TimelineEventTeamCreated: lazy(
+    () => import(/* webpackChunkName: 'TimelineEventTeamCreated' */ './TimelineEventTeamCreated')
   ),
-  TimelineEventCompletedRetroMeeting: lazy(() =>
-    import(
-      /* webpackChunkName: 'TimelineEventCompletedRetroMeeting' */ './TimelineEventCompletedRetroMeeting'
-    )
+  TimelineEventCompletedRetroMeeting: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'TimelineEventCompletedRetroMeeting' */ './TimelineEventCompletedRetroMeeting'
+      )
   ),
-  TimelineEventPokerComplete: lazy(() =>
-    import(
-      /* webpackChunkName: 'TimelineEventPokerComplete' */ './TimelineEventPokerComplete'
-    )
+  TimelineEventPokerComplete: lazy(
+    () =>
+      import(/* webpackChunkName: 'TimelineEventPokerComplete' */ './TimelineEventPokerComplete')
   ),
-  TimelineEventCompletedActionMeeting: lazy(() =>
-    import(
-      /* webpackChunkName: 'TimelineEventCompletedActionMeeting' */ './TimelineEventCompletedActionMeeting'
-    )
+  TimelineEventCompletedActionMeeting: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'TimelineEventCompletedActionMeeting' */ './TimelineEventCompletedActionMeeting'
+      )
+  ),
+  TimelineEventTeamPromptComplete: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'TimelineEventTeamPromptComplete' */ './TimelineEventTeamPromptComplete'
+      )
   )
 }
 function TimelineEvent(props: Props) {
@@ -56,6 +64,7 @@ export default createFragmentContainer(TimelineEvent, {
       ...TimelineEventCompletedRetroMeeting_timelineEvent
       ...TimelineEventCompletedActionMeeting_timelineEvent
       ...TimelineEventPokerComplete_timelineEvent
+      ...TimelineEventTeamPromptComplete_timelineEvent
       __typename
     }
   `
