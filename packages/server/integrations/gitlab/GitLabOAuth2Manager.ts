@@ -6,7 +6,12 @@ import OAuth2Manager, {
 
 export default class GitLabOAuth2Manager extends OAuth2Manager {
   async authorize(code: string, redirectUri: string) {
-    return this.fetchToken<{accessToken: string; refreshToken: string; scopes: string}>({
+    return this.fetchToken<{
+      accessToken: string
+      refreshToken: string
+      scopes: string
+      expires_in: number
+    }>({
       grant_type: 'authorization_code',
       code,
       redirect_uri: redirectUri

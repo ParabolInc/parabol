@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
-import {decode} from 'jsonwebtoken'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import getRedis from '../utils/getRedis'
 import RootDataLoader from './RootDataLoader'
 
 export const freshGitlabAuth = (parent: RootDataLoader) => {
@@ -21,10 +21,12 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             console.log('🚀  ~ noop!')
             return null
           }
-          console.log('🚀  ~ gitlabAuthToRefresh', gitlabAuthToRefresh)
-          const {accessToken: existingAccessToken, refreshToken, providerId} = gitlabAuthToRefresh
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          console.log('🚀  ~ decodedToken', decodedToken)
+          const redis = getRedis()
+          const isValidAuth = await redis.get(`gitlabAuth::${userId}`)
+          console.log('🚀  ~ gitlabAuthToRefresh', {
+            gitlabAuthToRefresh,
+            isValidAuth
+          })
           return gitlabAuthToRefresh as IGetTeamMemberIntegrationAuthQueryResult | null
         })
       )
