@@ -1,27 +1,15 @@
-import SegmentIo from 'analytics-node'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import segment from '../segmentIo'
+import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
-type AnalyticsEvent = 'Meeting Started' | 'Meeting Joined' | 'Meeting Completed'
+export type AnalyticsEvent = 'Meeting Started' | 'Meeting Joined' | 'Meeting Completed'
 
 /**
- * Wrapper for segment providing a more typesafe interface
+ * Provides a unified inteface for sending all the analytics events
  */
-class SegmentAnalytics {
-  constructor(private segmentIo: SegmentIo) {}
-
-  track(userId: string, event: AnalyticsEvent, properties?: any) {
-    return this.segmentIo.track({
-      userId,
-      event,
-      properties
-    })
-  }
-}
-
 class Analytics {
   private segmentAnalytics: SegmentAnalytics
 
@@ -34,12 +22,16 @@ class Analytics {
     meetingMembers: MeetingMember[],
     responses: TeamPromptResponse[]
   ) => {
-    const userIdsResponses = responses.map((response) => ({response, userId: response.userId}))
-    meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, {
-        responseAdded: userIdsResponses[meetingMember.userId].response?.length > 0
-      })
+    const userIdsResponses: Record<string, string> = responses.reduce(
+      (previous, response) => ({...previous, [response.userId]: response.plaintextContent}),
+      {}
     )
+    meetingMembers.forEach((meetingMember) => {
+      const plaintextResponseContent = userIdsResponses[meetingMember.userId]
+      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, {
+        responseAdded: plaintextResponseContent && plaintextResponseContent.length > 0
+      })
+    })
   }
 
   checkInEnd = (completedMeeting: Meeting, meetingMembers: MeetingMember[]) => {
