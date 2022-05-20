@@ -140,11 +140,11 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
+  console.log('🚀  ~ paginationRes', paginationRes)
   // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
   const nullableEdges =
     paginationRes.data.viewer.teamMember?.integrations.gitlab.projectIssues.edges
-  console.log('🚀  ~ nullableEdges', {nullableEdges})
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
