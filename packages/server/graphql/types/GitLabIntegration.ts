@@ -147,14 +147,14 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         })
         const projectsIssues = [] as ProjectIssueEdge[]
         const errors = [] as Error[]
-        let hasNextPage = true
+        let hasNextPage = false
         const cursors = {}
 
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
           const parsed = args.after && JSON.parse(args.after)
-          console.log('🚀  ~ parsed', parsed)
+          // console.log('🚀  ~ parsed', parsed)
           const after = parsed && parsed[fullPath]
-          console.log('🚀  ~ after', after)
+          // console.log('🚀  ~ after', after)
           // const after =
           //   null && args.after && fullPath === 'parabol1/parabol'
           //     ? 'eyJ1cGRhdGVkX2F0IjoiMjAyMC0xMi0wMiAyMjo0NDozMy4wMDAwMDAwMDAgVVRDIiwiaWQiOiI3NTUyNTEzMCJ9'
@@ -173,22 +173,20 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             sendToSentry(err, {userId})
             return
           }
-          const fullPath = projectIssuesData.project?.fullPath
-          const edges = projectIssuesData.project?.issues?.edges
+          const project = projectIssuesData.project
+          if (!project?.issues) return
+          const {fullPath, issues} = project
+          const {edges, pageInfo} = issues
+          if (pageInfo.hasNextPage) {
+            hasNextPage = true
+          }
           edges?.forEach((edge) => {
             if (!edge?.node) return
             const {node} = edge
-            // console.log('🚀  ~ node', node)
             if (fullPath) {
               cursors[fullPath] = edge.cursor
             }
-
-            // if the last item in projectsIssues doesn't have the same projectId, add the fullPath
-            // and cursor to a cursors obj
-
             projectsIssues.push({
-              // cursor: new Date(),
-              // cursor: node.updatedAt || new Date(),
               cursor: edge?.cursor || new Date(),
               node
             })
@@ -196,33 +194,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         }
 
         const firstEdge = projectsIssues[0]
-        // console.log('🚀  ~ projectsIssues len', {len: projectsIssues.length, firstEdge})
-        // let endCursor
-        // if (firstEdge) {
-        //   // console.log('got the first edge', projectsIssues.at(-1)!.cursor)
-        //   endCursor = projectsIssues.at(-1)!.cursor
-        // } else {
-        //   // console.log('NOOOP NEW DATE plz', new Date())
-        //   endCursor = new Date()
-        // }
-
-        // const cursors = {} as {[fullPath: string]: string}
-        // const vals = Array.from(projectsFullPaths).map((projectFullPath) => {
-        //   for (let i = projectsIssues.length - 1; i >= 0; i--) {
-        //     const webPath = projectsIssues[i]?.node.webPath
-        //     const webUrl = projectsIssues[i]?.node.webUrl
-        //     if (!webPath) return
-        //     const {fullPath} = parseWebPath(webPath)
-        //     // console.log('🚀  ~ fullPath', {fullPath, projectFullPath, webPath, webUrl})
-        //     const cursor = projectsIssues[i]?.cursor as string
-        //     if (fullPath === projectFullPath && !cursors[fullPath] && cursor) {
-        //       cursors[fullPath] = cursor
-        //     }
-        //   }
-        // })
         const stringifiedEndCursors = JSON.stringify(cursors)
-        console.log('🚀  ~ cursors', {cursors, stringifiedEndCursors})
-
         return {
           error: errors,
           edges: projectsIssues,
