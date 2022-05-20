@@ -6,11 +6,11 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
-// import {gitlabIssueArgs} from './../../../client/components/GitLabScopingSearchResultsRoot'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import PageInfo from './PageInfo'
 import RepoIntegration from './RepoIntegration'
+import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
@@ -121,7 +121,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         info
       ) => {
         const {projectsIds} = args as ProjectsIssuesArgs
-        console.log('🚀  ~ args', args)
         const {dataLoader} = context
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -163,6 +162,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
           if (err) {
+            errors.push(err)
             sendToSentry(err, {userId})
             return
           }
@@ -189,7 +189,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const firstEdge = projectsIssues[0]
         const stringifiedEndCursors = JSON.stringify(cursors)
         return {
-          error: errors,
+          error: errors[0],
           edges: projectsIssues,
           pageInfo: {
             startCursor: firstEdge && firstEdge.cursor,
@@ -215,6 +215,10 @@ const {connectionType, edgeType} = connectionDefinitions({
     pageInfo: {
       type: PageInfo,
       description: 'Page info with cursors coerced to ISO8601 dates'
+    },
+    error: {
+      type: StandardMutationError,
+      description: 'An error with the connection, if any'
     }
   })
 })

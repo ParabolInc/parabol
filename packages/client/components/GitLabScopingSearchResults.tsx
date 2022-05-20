@@ -87,6 +87,9 @@ const GitLabScopingSearchResults = (props: Props) => {
                   state: $state
                   sort: $sort
                 ) @connection(key: "GitLabScopingSearchResults_projectsIssues") {
+                  error {
+                    message
+                  }
                   edges {
                     node {
                       ... on _xGitLabIssue {
@@ -108,7 +111,10 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 25)
   const {hasNext, data} = paginationRes
-  const nullableEdges = data.viewer.teamMember?.integrations.gitlab.projectsIssues.edges
+  const projectsIssues = data.viewer.teamMember?.integrations.gitlab.projectsIssues
+  const nullableEdges = projectsIssues?.edges
+  const errorMessage = projectsIssues?.error?.message ?? null
+
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -127,10 +133,8 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {integrations} = teamMember
   const {gitlab} = integrations
   const {id: meetingId, phases} = meeting
-  const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
-  console.log('🚀  ~ issues', issues)
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
@@ -140,10 +144,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   if (issues.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults
-          error={errors?.[0]?.message}
-          msg={'No issues match that query'}
-        />
+        <IntegrationScopingNoResults error={errorMessage} msg={'No issues match that query'} />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     )
