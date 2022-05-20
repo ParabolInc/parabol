@@ -106,7 +106,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 25)
   const {hasNext, data} = paginationRes
   const nullableEdges = data.viewer.teamMember?.integrations.gitlab.projectsIssues.edges
   const meeting = useFragment(

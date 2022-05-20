@@ -120,7 +120,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         context,
         info
       ) => {
-        const {first, projectsIds} = args as ProjectsIssuesArgs
+        const {projectsIds} = args as ProjectsIssuesArgs
         console.log('🚀  ~ args', args)
         const {dataLoader} = context
         const auth = await dataLoader
@@ -152,14 +152,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
 
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
           const parsed = args.after && JSON.parse(args.after)
-          // console.log('🚀  ~ parsed', parsed)
-          const after = parsed && parsed[fullPath]
-          // console.log('🚀  ~ after', after)
-          // const after =
-          //   null && args.after && fullPath === 'parabol1/parabol'
-          //     ? 'eyJ1cGRhdGVkX2F0IjoiMjAyMC0xMi0wMiAyMjo0NDozMy4wMDAwMDAwMDAgVVRDIiwiaWQiOiI3NTUyNTEzMCJ9'
-          //     : args.after
-          // console.log('🚀  ~ after', {after, fullPath})
+          const after = (parsed && parsed[fullPath]) ?? ''
           return manager.getProjectIssues({
             ...args,
             fullPath,
