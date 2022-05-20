@@ -28,7 +28,8 @@ const ResponseHeader = styled('div')({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '0 8px'
+  padding: '0 8px',
+  marginBottom: 12
 })
 
 const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
@@ -57,7 +58,8 @@ const ResponseCardFooter = styled('div')({
 })
 
 export const TeamMemberName = styled('h3')({
-  padding: '0 8px'
+  padding: '0 8px',
+  margin: 0
 })
 
 const StyledReactjis = styled(ReactjiSection)({
