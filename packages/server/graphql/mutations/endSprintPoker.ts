@@ -4,9 +4,9 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
-import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
@@ -14,7 +14,6 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
-import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
@@ -107,7 +106,7 @@ export default {
       dataLoader.get('meetingTemplates').load(templateId)
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-    sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
+    analytics.retrospectiveEnd(completedMeeting, meetingMembers, template)
     const isKill = phase && phase.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)

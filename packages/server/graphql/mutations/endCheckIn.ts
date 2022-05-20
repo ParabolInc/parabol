@@ -6,19 +6,18 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
-import MeetingMember from '../../database/types/MeetingMember'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import generateUID from '../../generateUID'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
-import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
@@ -223,7 +222,7 @@ export default {
     const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-    sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])
+    analytics.checkInEnd(completedCheckIn, meetingMembers)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     const events = teamMembers.map(
       (teamMember) =>
