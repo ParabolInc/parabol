@@ -106,6 +106,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
+  console.log('🚀  ~ paginationRes', paginationRes)
   // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
   const nullableEdges =

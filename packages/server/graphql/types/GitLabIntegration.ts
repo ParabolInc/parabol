@@ -6,7 +6,6 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
-// import {gitlabIssueArgs} from './../../../client/components/GitLabScopingSearchResultsRoot'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
@@ -146,7 +145,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         })
         const projectsIssues = [] as ProjectIssueConnection[]
         const errors = [] as Error[]
-        let hasNextPage = true
+        const hasNextPage = true
 
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
           manager.getProjectIssues({
