@@ -10,6 +10,7 @@
     "hooks",
     "polyfills.ts",
     "components/promptResponse/PromptResponseEditor.tsx",
-    "components/EstimatePhaseEmptyState.tsx"
+    "components/EstimatePhaseEmptyState.tsx",
+    "mutations/AddFeatureFlagMutation.ts"
   ]
 }

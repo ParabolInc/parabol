@@ -1,5 +1,6 @@
-import Reflection from './Reflection'
+import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import Comment from './Comment'
+import Reflection from './Reflection'
 
-export type ReactableEnum = 'COMMENT' | 'REFLECTION'
-export type Reactable = Reflection | Comment
+export type ReactableEnum = 'COMMENT' | 'REFLECTION' | 'RESPONSE'
+export type Reactable = Reflection | Comment | TeamPromptResponse

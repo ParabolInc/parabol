@@ -13,7 +13,11 @@ const IntegrationHash = {
       case 'jira':
         return JiraIssueId.join(integration.cloudId, integration.issueKey)
       case 'jiraServer':
-        return JiraServerIssueId.join(integration.providerId, integration.repositoryId, integration.issueId)
+        return JiraServerIssueId.join(
+          integration.providerId,
+          integration.repositoryId,
+          integration.issueId
+        )
       case 'gitlab':
         return GitLabIssueId.join(integration.providerId, integration.gid)
       case 'azureDevOps':

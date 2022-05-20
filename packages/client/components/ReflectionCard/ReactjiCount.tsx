@@ -10,7 +10,7 @@ import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
 import {ReactjiCount_reactji} from '~/__generated__/ReactjiCount_reactji.graphql'
-// import emojiIndex from 'emoji-mart/dist-modern/utils/emoji-index/emoji-index'
+import ReactjiId from '../../shared/gqlIds/ReactjiId'
 
 uncompress(data)
 
@@ -62,7 +62,7 @@ const ReactjiCount = (props: Props) => {
   const {onToggle, reactji, status, onTransitionEnd} = props
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
-  const [, name = ''] = id.split(':')
+  const {name} = ReactjiId.split(id)
   const unified = data.emojis[name]?.unified ?? ''
   const unicode = unifiedToNative(unified) || ''
   const onClick = () => {

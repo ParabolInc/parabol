@@ -169,11 +169,7 @@ const updatePokerScope = {
       newStageIds.push(...newIds)
     })
 
-    const thresh =
-      updates[0]?.service === 'gitlab'
-        ? Threshold.MAX_GITLAB_POKER_STORIES // GitLab query complexity exceeds limit with MAX_POKER_STORIES
-        : Threshold.MAX_POKER_STORIES
-    if (stages.length > thresh * dimensions.length) {
+    if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
       return {error: {message: 'Story limit reached'}}
     }
     await r

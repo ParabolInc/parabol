@@ -6,8 +6,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import useHotkey from '~/hooks/useHotkey'
-import useMutationProps from '~/hooks/useMutationProps'
 import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
@@ -20,8 +18,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
-import AddFeatureFlagMutation from '../mutations/AddFeatureFlagMutation'
-import useAtmosphere from '~/hooks/useAtmosphere'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting
@@ -30,15 +26,7 @@ interface Props extends RetroMeetingPhaseProps {
 const RetroGroupPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {endedAt, showSidebar, viewerMeetingMember} = meeting
-  const {onError, onCompleted} = useMutationProps()
-  const atmosphere = useAtmosphere()
-
-  useHotkey('s p o t l i g h t', () => {
-    const isSpotlightActive = viewerMeetingMember?.user.featureFlags.spotlight
-    if (isSpotlightActive) return
-    AddFeatureFlagMutation(atmosphere, {flag: 'spotlight'}, {onError, onCompleted})
-  })
+  const {endedAt, showSidebar} = meeting
 
   return (
     <MeetingContent ref={callbackRef}>
@@ -70,13 +58,6 @@ export default createFragmentContainer(RetroGroupPhase, {
       ...GroupingKanban_meeting
       endedAt
       showSidebar
-      viewerMeetingMember {
-        user {
-          featureFlags {
-            spotlight
-          }
-        }
-      }
     }
   `
 })

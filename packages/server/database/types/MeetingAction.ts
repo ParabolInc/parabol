@@ -14,6 +14,10 @@ interface Input {
   facilitatorUserId: string
 }
 
+export function isMeetingAction(meeting: Meeting): meeting is MeetingAction{
+  return meeting.meetingType === 'action'
+}
+
 export default class MeetingAction extends Meeting {
   meetingType!: 'action'
   taskCount?: number
