@@ -3,9 +3,7 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {JiraServerIssue as JiraServerRestIssue} from '../../dataloader/jiraServerLoaders'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 
@@ -96,14 +94,10 @@ const {connectionType, edgeType} = connectionDefinitions({
   nodeType: JiraServerIssue,
   edgeFields: () => ({
     cursor: {
-      type: GraphQLISO8601Type
+      type: GraphQLString
     }
   }),
   connectionFields: () => ({
-    pageInfo: {
-      type: PageInfoDateCursor,
-      description: 'Page info with cursors coerced to ISO8601 dates'
-    },
     error: {
       type: StandardMutationError,
       description: 'An error with the connection, if any'

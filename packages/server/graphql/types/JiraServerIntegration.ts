@@ -16,7 +16,6 @@ import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
 import JiraSearchQuery from './JiraSearchQuery'
 import {JiraServerIssueConnection} from './JiraServerIssue'
@@ -25,7 +24,7 @@ import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
 
 type IssueArgs = {
   first: number
-  after?: string
+  after: string
   queryString: string | null
   isJQL: boolean
   projectKeyFilters: string[] | null
@@ -84,11 +83,11 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       args: {
         first: {
           type: GraphQLInt,
-          defaultValue: 100
+          defaultValue: 25
         },
         after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
+          type: GraphQLString,
+          defaultValue: '0'
         },
         queryString: {
           type: GraphQLString,
@@ -105,7 +104,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         }
       },
       resolve: async ({teamId, userId}, args: any, {authToken, dataLoader}) => {
-        const {first, queryString, isJQL, projectKeyFilters} = args as IssueArgs
+        const {first, after, queryString, isJQL, projectKeyFilters} = args as IssueArgs
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -136,7 +135,18 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           (projectKeyFilter) => IntegrationRepoId.split(projectKeyFilter).projectKey!
         )
 
-        const issueRes = await integrationManager.getIssues(queryString, isJQL, projectKeys)
+        // "first + 1" is a trick to make pagination works easier, see hasNextPage
+        const maxResults = first + 1
+        // Cursor must be a string
+        const afterInt = parseInt(after, 10)
+        const startAt = afterInt + 1
+        const issueRes = await integrationManager.getIssues(
+          queryString,
+          isJQL,
+          projectKeys,
+          maxResults,
+          startAt
+        )
 
         if (issueRes instanceof Error) {
           return connectionFromTasks([], first, {
@@ -165,7 +175,22 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           }
         })
 
-        return connectionFromTasks(mappedIssues, first)
+        const nodes = mappedIssues.slice(0, first)
+        const edges = mappedIssues.map((node, index) => ({
+          cursor: `${index + afterInt}`,
+          node
+        }))
+
+        const firstEdge = edges[0]
+
+        return {
+          edges,
+          pageInfo: {
+            startCursor: firstEdge && firstEdge.cursor,
+            endCursor: firstEdge ? edges[edges.length - 1]!.cursor : null,
+            hasNextPage: mappedIssues.length > nodes.length
+          }
+        }
       }
     },
     projects: {

@@ -2376,7 +2376,7 @@ type JiraServerIssueConnection {
   """
   Page info with cursors coerced to ISO8601 dates
   """
-  pageInfo: PageInfoDateCursor
+  pageInfo: PageInfo
 
   """
   A list of edges.
@@ -2397,7 +2397,7 @@ type JiraServerIssueEdge {
   The item at the end of the edge
   """
   node: JiraServerIssue!
-  cursor: DateTime
+  cursor: String
 }
 
 """
