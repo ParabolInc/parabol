@@ -30,7 +30,7 @@ class Analytics {
     meetingMembers.forEach((meetingMember) => {
       const plaintextResponseContent = userIdsResponses[meetingMember.userId]
       this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, {
-        responseAdded: plaintextResponseContent && plaintextResponseContent.length > 0
+        responseAdded: !!plaintextResponseContent
       })
     })
   }
@@ -87,7 +87,7 @@ class Analytics {
       userIds: wasFacilitator ? presentMemberUserIds : undefined,
       meetingType,
       meetingNumber,
-      teamMembersCount: meetingMembers.length,
+      teamMembersCount: meetingMembers.length, // TODO: use team members count
       teamMembersPresentCount: meetingMembers.length,
       teamId,
       ...meetingSpecificProperties
