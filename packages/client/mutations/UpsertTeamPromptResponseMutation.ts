@@ -14,6 +14,7 @@ graphql`
       content
       plaintextContent
       updatedAt
+      createdAt
     }
   }
 `
@@ -80,7 +81,8 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
         userId: viewerId,
         content,
         plaintextContent,
-        updatedAt: now
+        updatedAt: now,
+        createdAt: now
       }
     }
   }

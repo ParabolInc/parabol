@@ -18,8 +18,8 @@ import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptRe
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
-import LastUpdatedTime from './TeamPromptLastUpdatedTime'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
+import LastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
@@ -118,13 +118,6 @@ const TeamPromptResponseCard = (props: Props) => {
             ...ReactjiSection_reactjis
             id
             isViewerReactji
-          }
-        }
-        discussion {
-          thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-            edges {
-              ...TeamPromptRepliesAvatarList_edges
-            }
           }
         }
       }

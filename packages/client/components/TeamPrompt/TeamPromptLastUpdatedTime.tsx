@@ -16,11 +16,11 @@ interface Props {
 
 export default function LastUpdatedTime({updatedAt, createdAt}: Props) {
   const isEdited = createdAt !== updatedAt
-  const formattedTime = updatedAt ? relativeDate(updatedAt) : relativeDate(createdAt)
+  const formattedTime = relativeDate(updatedAt)
   return (
     <Timestamp>
-      <span>{formattedTime}</span>
-      {isEdited && <span> · Edited</span>}
+      {formattedTime}
+      {isEdited && ' · Edited'}
     </Timestamp>
   )
 }
