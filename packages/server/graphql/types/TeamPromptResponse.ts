@@ -1,6 +1,7 @@
 import {JSONContent} from '@tiptap/core'
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Reactable, {reactableFields} from './Reactable'
 import Team from './Team'
 
@@ -36,6 +37,10 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
     plaintextContent: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'the plain text content of the response'
+    },
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The timestamp the response was created'
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),

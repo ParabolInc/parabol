@@ -4,13 +4,15 @@ import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import useAnimatedMeetingCard from '~/hooks/useAnimatedMeetingCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
+import {TransitionStatus} from '~/hooks/useTransition'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
-import {Card} from '~/types/constEnums'
+import {BezierCurve, Card} from '~/types/constEnums'
 import plural from '~/utils/plural'
 import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -22,6 +24,22 @@ import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
+
+const Dimensions = {
+  RESPONSE_WIDTH: 296,
+  RESPONSE_MIN_HEIGHT: 100
+}
+
+const ResponseWrapper = styled('div')<{
+  status: TransitionStatus
+}>(({status}) => ({
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
+  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
+  display: 'flex',
+  flexDirection: 'column',
+  width: Dimensions.RESPONSE_WIDTH,
+  flexShrink: 0
+}))
 
 const ResponseHeader = styled('div')({
   display: 'flex',
@@ -78,10 +96,13 @@ const ReplyButton = styled(PlainButton)({
 
 interface Props {
   stageRef: TeamPromptResponseCard_stage$key
+  status: TransitionStatus
+  displayIdx: number
+  onTransitionEnd: () => void
 }
 
 const TeamPromptResponseCard = (props: Props) => {
-  const {stageRef} = props
+  const {stageRef, status, onTransitionEnd, displayIdx} = props
 
   const responseStage = useFragment(
     graphql`
@@ -193,8 +214,10 @@ const TeamPromptResponseCard = (props: Props) => {
     )
   }
 
+  const ref = useAnimatedMeetingCard(displayIdx, status)
+
   return (
-    <>
+    <ResponseWrapper ref={ref} status={status} onTransitionEnd={onTransitionEnd}>
       <ResponseHeader>
         <Avatar picture={picture} size={48} />
         <TeamMemberName>{preferredName}</TeamMemberName>
@@ -231,7 +254,7 @@ const TeamPromptResponseCard = (props: Props) => {
           </>
         )}
       </ResponseCard>
-    </>
+    </ResponseWrapper>
   )
 }
 
