@@ -117,8 +117,8 @@ class Analytics {
   taskPublished = (
     userId: string,
     teamId: string,
-    meetingId: string,
-    service: IntegrationProviderServiceEnumType
+    service: IntegrationProviderServiceEnumType,
+    meetingId?: string
   ) => {
     this.track(userId, 'Task Published', {
       teamId,
