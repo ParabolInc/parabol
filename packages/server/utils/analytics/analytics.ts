@@ -1,12 +1,21 @@
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import segment from '../segmentIo'
 import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
-export type AnalyticsEvent = 'Meeting Started' | 'Meeting Joined' | 'Meeting Completed'
+export type AnalyticsEvent =
+  // meeting
+  | 'Meeting Started'
+  | 'Meeting Joined'
+  | 'Meeting Completed'
+  // team
+  | 'Added Integration'
+  // task
+  | 'Task Published'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -91,6 +100,30 @@ class Analytics {
       teamMembersPresentCount: meetingMembers.length,
       teamId,
       ...meetingSpecificProperties
+    })
+  }
+
+  integrationAdded = (
+    userId: string,
+    teamId: string,
+    service: IntegrationProviderServiceEnumType
+  ) => {
+    this.track(userId, 'Added Integration', {
+      teamId,
+      service
+    })
+  }
+
+  taskPublished = (
+    userId: string,
+    teamId: string,
+    meetingId: string,
+    service: IntegrationProviderServiceEnumType
+  ) => {
+    this.track(userId, 'Task Published', {
+      teamId,
+      meetingId,
+      service
     })
   }
 
