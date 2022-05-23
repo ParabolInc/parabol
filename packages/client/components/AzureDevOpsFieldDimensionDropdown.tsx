@@ -89,6 +89,9 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   }
 
   const getLabelValue = (workItemType: string | undefined) => {
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) {
+      return SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
+    }
     if (!workItemType) {
       return SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
     }
