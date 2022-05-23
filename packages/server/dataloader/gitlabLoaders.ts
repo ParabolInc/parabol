@@ -2,9 +2,7 @@ import DataLoader from 'dataloader'
 import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import getRedis from '../utils/getRedis'
 import sendToSentry from '../utils/sendToSentry'
-import {getGitLabAuthRedisKey} from './../utils/getGitLabAuthRedisKey'
 import RootDataLoader from './RootDataLoader'
 
 export const freshGitlabAuth = (parent: RootDataLoader) => {
@@ -16,17 +14,16 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {
-          const gitlabAuthToRefresh = await parent.get('teamMemberIntegrationAuths').load({
+          const gitlabAuth = await parent.get('teamMemberIntegrationAuths').load({
             service: 'gitlab',
             teamId,
             userId
           })
-          if (!gitlabAuthToRefresh) return null
-          const redis = getRedis()
-          const key = getGitLabAuthRedisKey(userId)
-          const isValidAuth = await redis.get(key)
-          if (!isValidAuth) {
-            const {providerId, refreshToken} = gitlabAuthToRefresh
+          if (!gitlabAuth) return null
+          const {expiresAt} = gitlabAuth
+          const now = new Date()
+          if (expiresAt && expiresAt < now) {
+            const {providerId, refreshToken} = gitlabAuth
             if (!refreshToken) {
               sendToSentry(new Error('No refresh token in gitlabAuth'), {userId})
               return null
@@ -37,20 +34,18 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) return null
             const {accessToken, refreshToken: newRefreshToken, expires_in} = oauthRes
-            const updatedRefreshToken = newRefreshToken || refreshToken
+            const expiresAtTimestamp = new Date().getTime() + (expires_in - 30) * 1000
+            const expiresAt = new Date(expiresAtTimestamp)
             const newGitlabAuth = {
-              ...gitlabAuthToRefresh,
+              ...gitlabAuth,
               accessToken,
-              refreshToken: updatedRefreshToken
+              refreshToken: newRefreshToken,
+              expiresAt
             }
-            const tokenTTL = expires_in - 30
-            await Promise.all([
-              upsertTeamMemberIntegrationAuth(newGitlabAuth),
-              redis.set(key, tokenTTL, 'EX', tokenTTL)
-            ])
+            upsertTeamMemberIntegrationAuth(newGitlabAuth)
             return newGitlabAuth
           }
-          return gitlabAuthToRefresh as IGetTeamMemberIntegrationAuthQueryResult | null
+          return gitlabAuth as IGetTeamMemberIntegrationAuthQueryResult | null
         })
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
