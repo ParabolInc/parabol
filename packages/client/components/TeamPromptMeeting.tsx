@@ -96,6 +96,7 @@ const TeamPromptMeeting = (props: Props) => {
       .sort((stageA, stageB) =>
         sortByISO8601Date(stageA.response!.createdAt, stageB.response!.createdAt)
       )
+    // Empty stages are implicitly ordered by stage creation time on the backend.
     const orderedEmptyStages = nonViewerStages.filter((stage) => !stage.response?.plaintextContent)
     let orderedStages = [...orderedNonEmptyStages, ...orderedEmptyStages]
 
