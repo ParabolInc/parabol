@@ -1,6 +1,6 @@
 import {GraphQLEnumType} from 'graphql'
 
-export type UserFeatureFlagEnum = 'standups' | 'azureDevOps' | 'msTeams' | 'gitlab'
+export type UserFeatureFlagEnum = 'standups' | 'azureDevOps' | 'msTeams'
 
 const UserFlagEnum = new GraphQLEnumType({
   name: 'UserFlagEnum',
@@ -8,8 +8,7 @@ const UserFlagEnum = new GraphQLEnumType({
   values: {
     standups: {},
     azureDevOps: {},
-    msTeams: {},
-    gitlab: {}
+    msTeams: {}
   }
 })
 
