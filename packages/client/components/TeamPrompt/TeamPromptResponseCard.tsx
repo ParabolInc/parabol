@@ -4,7 +4,7 @@ import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import useAnimatedMeetingCard from '~/hooks/useAnimatedMeetingCard'
+import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
 import {TransitionStatus} from '~/hooks/useTransition'
@@ -214,7 +214,7 @@ const TeamPromptResponseCard = (props: Props) => {
     )
   }
 
-  const ref = useAnimatedMeetingCard(displayIdx, status)
+  const ref = useAnimatedCard(displayIdx, status)
 
   return (
     <ResponseWrapper ref={ref} status={status} onTransitionEnd={onTransitionEnd}>
