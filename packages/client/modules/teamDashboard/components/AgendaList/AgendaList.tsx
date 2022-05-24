@@ -1,10 +1,10 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
+import {AgendaList_agendaItems} from '~/__generated__/AgendaList_agendaItems.graphql'
 import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
-// import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
-import styled from '@emotion/styled'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
@@ -14,7 +14,6 @@ import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
 import dndNoise from '../../../../utils/dndNoise'
 import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
-import {AgendaList_agendaItems} from '~/__generated__/AgendaList_agendaItems.graphql'
 
 const AgendaListRoot = styled('div')<{isMeeting: boolean}>(({isMeeting}) => ({
   display: 'flex',
@@ -57,7 +56,8 @@ const AgendaList = (props: Props) => {
       destination.droppableId !== AGENDA_ITEM ||
       source.droppableId !== AGENDA_ITEM ||
       destination.index === source.index ||
-      !destinationItem || !sourceItem
+      !destinationItem ||
+      !sourceItem
     ) {
       return
     }
@@ -145,13 +145,3 @@ export default createFragmentContainer(AgendaList, {
     }
   `
 })
-
-// <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
-//  {(scrollRef) => {
-//    return (
-//      <div ref={scrollRef}>
-//        {/* wrap filteredAgendaItems here */}
-//      </div>
-//    )
-//  }}
-// </SexyScrollbar>
