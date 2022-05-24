@@ -29,6 +29,9 @@ export type ProjectsIssuesArgs = {
   state: string
   fullPath: string
 }
+type Cursors = {
+  ['fullPath']: string
+}
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitLabIntegration',
@@ -156,7 +159,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const projectsIssues = [] as ProjectIssueEdge[]
         const errors = [] as Error[]
         let hasNextPage = false
-        const cursors = {}
+        const cursors = {} as Cursors
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
