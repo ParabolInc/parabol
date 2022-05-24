@@ -194,7 +194,7 @@ interface WorkItemAddFieldResponse {
   url: string
 }
 
-const MAX_REQUEST_TIME = 5000
+const MAX_REQUEST_TIME = 8000
 
 class AzureDevOpsServerManager {
   accessToken = ''

@@ -7,10 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-//import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-//import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-//import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -109,25 +106,6 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        /*const auth = (await dataLoader
-          .get('freshAzureDevOpsAuth')
-          .load({teamId, userId})) as IGetTeamMemberIntegrationAuthQueryResult | null
-        if (auth === null) {
-          const err = new Error(
-            'You cannot get user stories from Azure DevOps without have an auth token'
-          )
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
-        }
-        const {accessToken} = auth
-        if (accessToken === null) {
-          const err = new Error(
-            'You cannot get user stories from Azure DevOps without have an accessToken'
-          )
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
-        }*/
-
         const allUserWorkItems = await dataLoader
           .get('azureDevOpsAllWorkItems')
           .load({teamId, userId, queryString, projectKeyFilters, isWIQL})
@@ -142,53 +120,8 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
               }
             })
           )
-          console.log(`workItems - ${JSON.stringify(workItems)}`)
           return connectionFromTasks(workItems, first, undefined)
         }
-
-        /*const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-
-        if (!provider) {
-          return null
-        }
-
-        const manager = new AzureDevOpsServerManager(
-          auth,
-          provider as IntegrationProviderAzureDevOps
-        )
-
-        if (!manager) {
-          return null
-        }
-        const restResult = await manager.getAllUserWorkItems(queryString, projectKeyFilters, isWIQL)
-        const {error, workItems: innerWorkItems} = restResult
-        if (error !== undefined) {
-          console.log(error)
-          standardError(error, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, error)
-        }
-        if (innerWorkItems === undefined) {
-          return connectionFromTasks([], 0, undefined)
-        } else {
-          const workItems = Array.from(
-            innerWorkItems.map((workItem) => {
-              return {
-                id: workItem.id.toString(),
-                title: workItem.fields['System.Title'],
-                teamProject: workItem.fields['System.Title'],
-                url: workItem.url,
-                state: workItem.fields['System.State'],
-                type: workItem.fields['System.WorkItemType'],
-                descriptionHTML: workItem.fields['System.Description']
-                  ? workItem.fields['System.Description']
-                  : '',
-                service: 'azureDevOps',
-                updatedAt: new Date()
-              }
-            })
-          )
-          return connectionFromTasks(workItems, first, undefined)
-        } */
       }
     },
     projects: {
@@ -219,7 +152,6 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old'
-      //resolve: async ({teamId, userId, jiraSearchQueries}) => {}
     }
   })
 })
