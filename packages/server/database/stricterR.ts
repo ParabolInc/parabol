@@ -1,8 +1,11 @@
 /*eslint-disable*/
 import {EventEmitter} from 'events'
 import {TcpNetConnectOpts} from 'net'
-import {DeepPartial} from 'rethinkdb-ts/lib/internal-types'
 import {ConnectionOptions} from 'tls'
+
+type DeepPartial<T> = RValue<T> | {
+    [P in keyof T]?: T[P] extends Array<infer U1> ? Array<DeepPartial<U1>> : T[P] extends ReadonlyArray<infer U2> ? ReadonlyArray<DeepPartial<U2>> : DeepPartial<T[P]>;
+};
 
 // User defined schemas
 export interface TableSchema {
@@ -472,9 +475,9 @@ export interface RDatum<T = any> extends RQuery<T> {
   map<Res = any, U = T extends Array<infer T1> ? T1 : never>(
     ...args: Array<RStream | ((arg: RDatum<U>, ...args: RDatum[]) => any)>
   ): T extends any[] ? RDatum<Res[]> : never
-  concatMap<Res = any, U = T extends Array<infer T1> ? T1 : never>(
-    ...args: Array<RStream | ((arg: RDatum<U>, ...args: RDatum[]) => any)>
-  ): T extends any[] ? RDatum<Res[]> : never
+  concatMap<Res = any, U = T extends ArrayLike<infer T1> ? T1 : never>(
+    ...args: Array<RStream | ((arg: RDatum<U>, ...args: RDatum[]) => Res)>
+  ): T extends ArrayLike<any> ? RDatum<Res[]> : never
   forEach<
     U = any,
     ONE = T extends Array<infer T1> ? T1 : never,
@@ -600,7 +603,7 @@ export interface RDatum<T = any> extends RQuery<T> {
     type: 'object' | 'OBJECT'
   ): T extends Array<unknown> ? RDatum<U> : never
   coerceTo(type: 'string' | 'STRING'): RDatum<string>
-  coerceTo(type: 'array' | 'ARRAY'): RDatum<any[]>
+  coerceTo(type: 'array' | 'ARRAY'): T extends ArrayLike<RSelection<infer U>> ? RDatum<U[]> : RDatum<any[]>
   // Works only if T is a string
   coerceTo(
     type: 'number' | 'NUMBER'

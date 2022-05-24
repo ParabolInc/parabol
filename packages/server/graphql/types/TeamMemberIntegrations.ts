@@ -8,6 +8,7 @@ import GitHubIntegration from './GitHubIntegration'
 import GitLabIntegration from './GitLabIntegration'
 import JiraServerIntegration from './JiraServerIntegration'
 import MattermostIntegration from './MattermostIntegration'
+import MSTeamsIntegration from './MSTeamsIntegration'
 import SlackIntegration from './SlackIntegration'
 
 const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
@@ -62,6 +63,11 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
     azureDevOps: {
       type: new GraphQLNonNull(AzureDevOpsIntegration),
       description: 'All things associated with a A integration for a team member',
+      resolve: (source) => source
+    },
+    msTeams: {
+      type: new GraphQLNonNull(MSTeamsIntegration),
+      description: 'All things associated with a Microsoft Teams integration for a team member',
       resolve: (source) => source
     }
   })

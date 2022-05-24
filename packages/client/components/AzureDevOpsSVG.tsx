@@ -7,11 +7,11 @@ const AzureDevOpsSVG = React.memo(() => {
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
       <defs>
         <linearGradient id='a' x1='9' y1='16.97' x2='9' y2='1.03' gradientUnits='userSpaceOnUse'>
-          <stop offset='0' stop-color='#0078d4' />
-          <stop offset='.16' stop-color='#1380da' />
-          <stop offset='.53' stop-color='#3c91e5' />
-          <stop offset='.82' stop-color='#559cec' />
-          <stop offset='1' stop-color='#5ea0ef' />
+          <stop offset='0' stopColor='#0078d4' />
+          <stop offset='.16' stopColor='#1380da' />
+          <stop offset='.53' stopColor='#3c91e5' />
+          <stop offset='.82' stopColor='#559cec' />
+          <stop offset='1' stopColor='#5ea0ef' />
         </linearGradient>
       </defs>
       <path

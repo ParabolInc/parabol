@@ -4363,6 +4363,7 @@ enum TimelineEventEnum {
   joinedParabol
   createdTeam
   POKER_COMPLETE
+  TEAM_PROMPT_COMPLETE
 }
 
 """

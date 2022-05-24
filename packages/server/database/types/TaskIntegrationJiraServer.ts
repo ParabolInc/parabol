@@ -3,7 +3,7 @@ import BaseTaskIntegration from './BaseTaskIntegration'
 interface Input {
   accessUserId: string
   providerId: number
-  issueId: string,
+  issueId: string
   repositoryId: string
 }
 

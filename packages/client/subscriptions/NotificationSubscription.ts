@@ -106,10 +106,7 @@ const subscription = graphql`
       ... on AddFeatureFlagPayload {
         user {
           id
-          featureFlags {
-            gitlab
-            spotlight
-          }
+          # add flag here
         }
       }
 
