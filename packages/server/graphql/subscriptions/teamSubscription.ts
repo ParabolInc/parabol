@@ -7,7 +7,7 @@ import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
 
 export default {
   type: new GraphQLNonNull(TeamSubscriptionPayload),
-  subscribe: (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
+  subscribe: (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
@@ -17,6 +17,6 @@ export default {
     const userId = getUserId(authToken)
     const {tms: teamIds} = authToken
     const channelNames = teamIds.concat(userId).map((id) => `${SubscriptionChannel.TEAM}.${id}`)
-    return getPubSub().subscribe(channelNames)
+    return getPubSub().subscribe(channelNames, socketId)
   }
 }

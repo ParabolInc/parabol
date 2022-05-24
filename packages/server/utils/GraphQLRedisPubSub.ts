@@ -36,19 +36,20 @@ export default class GraphQLRedisPubSub {
     return this.publisher.publish(channel, JSON.stringify(payload))
   }
 
-  subscribe = (channels: string[], options: SubscribeOptions = {}) => {
-    this.subscriber.subscribe(...channels)
+  subscribe = (channels: string[], socketId: string, options: SubscribeOptions = {}) => {
     const onStart = (listener: SubscriptionListener) => {
       channels.forEach((channel) => {
-        this.listenersByChannel[channel] = this.listenersByChannel[channel] || []
-        this.listenersByChannel[channel]!.push(listener)
+        const chan = `${socketId}:${channel}`
+        this.subscriber.subscribe(chan)
+        this.listenersByChannel[chan] = this.listenersByChannel[chan] || []
+        this.listenersByChannel[chan]!.push(listener)
       })
     }
     const onCompleted = (listener: SubscriptionListener) => {
       options?.onCompleted?.()
       this.unsubscribe(channels, listener)
     }
-    return new SubscriptionIterator({onStart, onCompleted, transform: options?.transform})
+    return new SubscriptionIterator({onStart, onCompleted, transform: options?.transform, channels})
   }
 
   unsubscribe = (channels: string[], listener: SubscriptionListener) => {

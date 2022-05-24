@@ -7,7 +7,7 @@ import NotificationSubscriptionPayload from '../types/NotificationSubscriptionPa
 
 export default {
   type: new GraphQLNonNull(NotificationSubscriptionPayload),
-  subscribe: (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
+  subscribe: (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
@@ -17,6 +17,6 @@ export default {
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.NOTIFICATION}.${viewerId}`
 
-    return getPubSub().subscribe([channelName])
+    return getPubSub().subscribe([channelName], socketId)
   }
 }

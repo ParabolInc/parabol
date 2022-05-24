@@ -16,7 +16,7 @@ export default {
   subscribe: async (
     _source: unknown,
     {meetingId}: {meetingId: string},
-    {authToken}: GQLContext
+    {authToken, socketId}: GQLContext
   ) => {
     // AUTH
     const r = await getRethink()
@@ -32,6 +32,6 @@ export default {
 
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
-    return getPubSub().subscribe([channelName])
+    return getPubSub().subscribe([channelName], socketId)
   }
 }

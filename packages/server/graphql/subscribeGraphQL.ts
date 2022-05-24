@@ -22,6 +22,10 @@ import DocumentCache from './DocumentCache'
 import publicSchema from './public/rootSchema'
 import ResponseStream from './ResponseStream'
 
+import Redis from 'ioredis'
+const {REDIS_URL} = process.env
+const redis = new Redis(REDIS_URL, {connectionName: 'subscription'})
+
 export interface SubscribeRequest {
   connectionContext: ConnectionContext
   variables?: {[key: string]: any}
@@ -74,6 +78,20 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     }
     return
   }
+
+  const subData = {
+    ...context,
+    docId: req.docId,
+    query: req.query,
+    opId: req.opId,
+    variables: req.variables
+  }
+  const jsonSubData = JSON.stringify(subData)
+
+  Promise.all(sourceStream.channels.map(channel => 
+    redis.hset(`subscription:${channel}`, socketId, jsonSubData)
+  ))
+
   const responseStream = new ResponseStream(sourceStream, req)
   // hold onto responseStream so we can unsubscribe from other contexts
   connectionContext.subs[opId] = responseStream

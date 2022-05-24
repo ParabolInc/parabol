@@ -5,6 +5,7 @@ interface Handlers {
   onStart?: (listener: SubscriptionListener) => void
   onCompleted?: (listener: SubscriptionListener) => void
   transform?: SubscriptionTransform
+  channels: string[]
 }
 
 export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
@@ -13,6 +14,7 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
   private pullQueue = [] as ((resolvedValue?: any) => void)[]
   private transform?: SubscriptionTransform
   private onCompleted?: (listener: SubscriptionListener) => void
+  channels: string[]
   private pushValue: SubscriptionListener = async (input) => {
     const value = this.transform ? await this.transform(input) : input
     if (value !== undefined) {
@@ -25,9 +27,10 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
     }
   }
 
-  constructor({onStart, onCompleted, transform}: Handlers) {
+  constructor({onStart, onCompleted, transform, channels}: Handlers) {
     this.transform = transform
     this.onCompleted = onCompleted
+    this.channels = channels
     onStart?.(this.pushValue)
   }
 

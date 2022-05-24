@@ -8,7 +8,7 @@ import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPa
 
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),
-  subscribe: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
+  subscribe: async (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
     // AUTH
     const viewerId = getUserId(authToken)
     const r = await getRethink()
@@ -23,6 +23,6 @@ export default {
     const channelNames = orgIds
       .concat(viewerId)
       .map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
-    return getPubSub().subscribe(channelNames)
+    return getPubSub().subscribe(channelNames, socketId)
   }
 }

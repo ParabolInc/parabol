@@ -7,7 +7,7 @@ import TaskSubscriptionPayload from '../types/TaskSubscriptionPayload'
 
 const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),
-  subscribe: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
+  subscribe: async (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
@@ -16,7 +16,7 @@ const taskSubscription = {
     // RESOLUTION
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.TASK}.${viewerId}`
-    return getPubSub().subscribe([channelName])
+    return getPubSub().subscribe([channelName], socketId)
   }
 }
 
