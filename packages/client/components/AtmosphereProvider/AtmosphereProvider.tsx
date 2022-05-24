@@ -3,10 +3,6 @@ import {RelayEnvironmentProvider} from 'react-relay'
 import Atmosphere from '../../Atmosphere'
 import TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'
 
-export const AtmosphereContext = React.createContext<Atmosphere | TLocalAtmosphere | undefined>(
-  undefined
-)
-
 interface Props {
   children: ReactNode
   // LocalAtmosphere has a bunch of junk we don't want to SSR, so we have client-only files pass it in
@@ -37,12 +33,9 @@ class AtmosphereProvider extends Component<Props> {
   render() {
     if (!this.atmosphere) return null
     return (
-      // AtmosphereContext is now only used in the HOC withAtmosphere
-      <AtmosphereContext.Provider value={this.atmosphere}>
-        <RelayEnvironmentProvider environment={this.atmosphere}>
-          {this.props.children}
-        </RelayEnvironmentProvider>
-      </AtmosphereContext.Provider>
+      <RelayEnvironmentProvider environment={this.atmosphere}>
+        {this.props.children}
+      </RelayEnvironmentProvider>
     )
   }
 }

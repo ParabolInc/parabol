@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {DeepNonNullable} from '~/types/generics'
 import {RetroSidebarDiscussSection_meeting} from '~/__generated__/RetroSidebarDiscussSection_meeting.graphql'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -20,7 +20,7 @@ import MeetingSubnavItem from './MeetingSubnavItem'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   meeting: RetroSidebarDiscussSection_meeting
@@ -61,7 +61,8 @@ const ScrollWrapper = styled('div')({
 type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting['phases'][0]>
 
 const RetroSidebarDiscussSection = (props: Props) => {
-  const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
+  const atmosphere = useAtmosphere()
+  const {gotoStageId, handleMenuClick, meeting} = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
   const discussPhase = phases.find(({phaseType}) => phaseType === 'discuss')
   // assert that the discuss phase and its stages are non-null
@@ -80,7 +81,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
       destination.droppableId !== DISCUSSION_TOPIC ||
       source.droppableId !== DISCUSSION_TOPIC ||
       destination.index === source.index ||
-      !sourceTopic || !destinationTopic
+      !sourceTopic ||
+      !destinationTopic
     ) {
       return
     }
@@ -185,7 +187,7 @@ graphql`
   }
 `
 
-export default createFragmentContainer(withAtmosphere(RetroSidebarDiscussSection), {
+export default createFragmentContainer(RetroSidebarDiscussSection, {
   meeting: graphql`
     fragment RetroSidebarDiscussSection_meeting on RetrospectiveMeeting {
       id

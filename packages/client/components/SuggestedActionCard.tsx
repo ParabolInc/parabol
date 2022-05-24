@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import {DECELERATE, fadeIn} from '../styles/animation'
 import {buttonShadow, cardShadow} from '../styles/elevation'
@@ -11,7 +11,7 @@ import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import SuggestedActionBackground from './SuggestedActionBackground'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   backgroundColor: string
   children: ReactNode
   iconName: string
@@ -57,8 +57,9 @@ const FloatingSealIcon = styled(Icon)({
 })
 
 const SuggestedActionCard = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const onCancel = () => {
-    const {atmosphere, submitting, submitMutation, suggestedActionId, onCompleted, onError} = props
+    const {submitting, submitMutation, suggestedActionId, onCompleted, onError} = props
     if (submitting) return
     submitMutation()
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
@@ -77,4 +78,4 @@ const SuggestedActionCard = (props: Props) => {
   )
 }
 
-export default withMutationProps(withAtmosphere(SuggestedActionCard))
+export default withMutationProps(SuggestedActionCard)

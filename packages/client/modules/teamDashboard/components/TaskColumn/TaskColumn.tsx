@@ -5,9 +5,6 @@ import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beauti
 import {createFragmentContainer} from 'react-relay'
 import {TaskColumn_teams} from '~/__generated__/TaskColumn_teams.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
@@ -60,7 +57,7 @@ const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({user
   marginLeft: userCanAdd ? 8 : 16
 }))
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   area: AreaEnum
   isViewerMeetingSection?: boolean
   meetingId?: string
@@ -119,7 +116,7 @@ const TaskColumn = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(TaskColumn), {
+export default createFragmentContainer(TaskColumn, {
   tasks: graphql`
     fragment TaskColumn_tasks on Task
     @relay(plural: true)

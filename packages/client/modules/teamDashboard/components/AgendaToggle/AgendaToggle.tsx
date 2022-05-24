@@ -1,10 +1,8 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
 import Icon from '../../../../components/Icon'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
@@ -40,14 +38,15 @@ const Wrapper = styled('div')({
   }
 })
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props extends WithMutationProps {
   onCompleted: CompletedHandler
   onError: ErrorHandler
   teamId: string
 }
 
 const AgendaToggle = (props: Props) => {
-  const {atmosphere, submitMutation, submitting, onError, onCompleted, teamId} = props
+  const atmosphere = useAtmosphere()
+  const {submitMutation, submitting, onError, onCompleted, teamId} = props
   const toggleHide = () => {
     if (!submitting) {
       submitMutation()
@@ -68,4 +67,4 @@ const AgendaToggle = (props: Props) => {
   )
 }
 
-export default withMutationProps(withAtmosphere(AgendaToggle))
+export default withMutationProps(AgendaToggle)

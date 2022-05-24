@@ -2,17 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import EditableText from '../../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
 import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import {EditableTeamName_team} from '../../../../__generated__/EditableTeamName_team.graphql'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   team: EditableTeamName_team
 }
 
@@ -23,9 +21,9 @@ const InheritedStyles = styled('div')({
 })
 
 const EditableTeamName = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const handleSubmit = (rawName) => {
     const {
-      atmosphere,
       onError,
       onCompleted,
       setDirty,
@@ -80,7 +78,7 @@ const EditableTeamName = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTeamName)), {
+export default createFragmentContainer(withMutationProps(EditableTeamName), {
   team: graphql`
     fragment EditableTeamName_team on Team {
       teamId: id

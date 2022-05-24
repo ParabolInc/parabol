@@ -1,20 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {useEffect} from 'react'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   meetingId: string
   urlAction?: 'csv' | undefined
   emailCSVUrl: string
@@ -168,6 +166,7 @@ const ExportToCSV = (props: Props) => {
       exportToCSV().catch()
     }
   }, [props.urlAction])
+  const atmosphere = useAtmosphere()
 
   const handlePokerMeeting = (meeting: Meeting) => {
     const rows = [] as CSVPokerRow[]
@@ -319,7 +318,7 @@ const ExportToCSV = (props: Props) => {
   }
 
   const exportToCSV = async () => {
-    const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = props
+    const {meetingId, submitMutation, submitting, onCompleted} = props
     if (submitting) return
     submitMutation()
     const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
@@ -370,4 +369,4 @@ const ExportToCSV = (props: Props) => {
   )
 }
 
-export default withAtmosphere(withMutationProps(ExportToCSV))
+export default withMutationProps(ExportToCSV)
