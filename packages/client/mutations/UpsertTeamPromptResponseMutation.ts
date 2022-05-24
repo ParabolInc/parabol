@@ -91,6 +91,10 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
     mutation,
     variables,
     optimisticResponse,
+    updater: (store) => {
+      const payload = store.getRootField('upsertTeamPromptResponse')
+      upsertTeamPromptResponseUpdater(payload as any, {atmosphere, store})
+    },
     onCompleted,
     onError
   })
