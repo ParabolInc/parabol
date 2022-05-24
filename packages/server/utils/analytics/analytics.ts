@@ -14,6 +14,7 @@ export type AnalyticsEvent =
   | 'Meeting Completed'
   // team
   | 'Added Integration'
+  | 'Removed Integration'
   // task
   | 'Task Published'
 
@@ -109,6 +110,17 @@ class Analytics {
     service: IntegrationProviderServiceEnumType | 'slack'
   ) => {
     this.track(userId, 'Added Integration', {
+      teamId,
+      service
+    })
+  }
+
+  integrationRemoved = (
+    userId: string,
+    teamId: string,
+    service: IntegrationProviderServiceEnumType | 'slack'
+  ) => {
+    this.track(userId, 'Removed Integration', {
       teamId,
       service
     })
