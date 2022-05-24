@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getAtlassianAuthsByUserId from '../../postgres/queries/getAtlassianAuthsByUserId'
+import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
+import {analytics} from '../../utils/analytics/analytics'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLMutation} from '../graphql'
 import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
-import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
-import getAtlassianAuthsByUserId from '../../postgres/queries/getAtlassianAuthsByUserId'
 
 export default {
   name: 'AddAtlassianAuth',
@@ -81,14 +81,7 @@ export default {
       ...atlassianAuthsToUpdate
     ])
 
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Added Integration',
-      properties: {
-        teamId,
-        service: 'Atlassian'
-      }
-    })
+    analytics.integrationAdded(viewerId, teamId, 'jira')
     const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
     return data
