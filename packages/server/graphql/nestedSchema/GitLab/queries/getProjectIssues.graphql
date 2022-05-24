@@ -1,16 +1,19 @@
 query getProjectIssues(
   $fullPath: ID!
   $first: Int!
+  $after: String
   $searchQuery: String
   $sort: IssueSort
   $state: IssuableState
 ) {
   project(fullPath: $fullPath) {
-    issues(first: $first, search: $searchQuery, sort: $sort, state: $state) {
+    fullPath
+    issues(first: $first, after: $after, search: $searchQuery, sort: $sort, state: $state) {
       pageInfo {
         hasNextPage
       }
       edges {
+        cursor
         node {
           __typename
           id

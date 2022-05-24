@@ -3,12 +3,14 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
 import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
 import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
+import Ellipsis from './Ellipsis/Ellipsis'
 import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -17,6 +19,14 @@ import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
+})
+
+const LoadingNext = styled('div')({
+  display: 'flex',
+  height: 32,
+  fontSize: 24,
+  justifyContent: 'center',
+  width: '100%'
 })
 
 interface Props {
@@ -47,16 +57,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                     id
                   }
                 }
-                api {
-                  errors {
-                    message
-                    locations {
-                      line
-                      column
-                    }
-                    path
-                  }
-                }
               }
             }
           }
@@ -73,7 +73,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 25})
+      @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
       @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
@@ -87,6 +87,9 @@ const GitLabScopingSearchResults = (props: Props) => {
                   state: $state
                   sort: $sort
                 ) @connection(key: "GitLabScopingSearchResults_projectsIssues") {
+                  error {
+                    message
+                  }
                   edges {
                     node {
                       ... on _xGitLabIssue {
@@ -106,11 +109,12 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  console.log('🚀  ~ paginationRes', paginationRes)
-  // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
-  const {viewer} = query
-  const nullableEdges =
-    paginationRes.data.viewer.teamMember?.integrations.gitlab.projectsIssues.edges
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 25)
+  const {hasNext, data} = paginationRes
+  const projectsIssues = data.viewer.teamMember?.integrations.gitlab.projectsIssues
+  const nullableEdges = projectsIssues?.edges
+  const errorMessage = projectsIssues?.error?.message ?? null
+
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -124,11 +128,11 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     meetingRef
   )
+  const {viewer} = query
   const teamMember = viewer.teamMember!
   const {integrations} = teamMember
   const {gitlab} = integrations
   const {id: meetingId, phases} = meeting
-  const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
@@ -140,10 +144,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   if (issues.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults
-          error={errors?.[0]?.message}
-          msg={'No issues match that query'}
-        />
+        <IntegrationScopingNoResults error={errorMessage} msg={'No issues match that query'} />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     )
@@ -174,8 +175,13 @@ const GitLabScopingSearchResults = (props: Props) => {
             providerId={providerId}
           />
         ))}
+        {lastItem}
+        {hasNext && (
+          <LoadingNext key={'loadingNext'}>
+            <Ellipsis />
+          </LoadingNext>
+        )}
       </ResultScroller>
-      {/* {lastItem} */}
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}
