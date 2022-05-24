@@ -1,8 +1,10 @@
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
+import {AnyMeeting} from '../../postgres/types/Meeting'
 import segment from '../segmentIo'
 import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
@@ -136,6 +138,37 @@ class Analytics {
     this.track(userId, 'Task Published', {
       teamId,
       meetingId,
+      service
+    })
+  }
+
+  taskCreated = (
+    userId: string,
+    teamId: string,
+    isReply: boolean,
+    meeting?: AnyMeeting,
+    service?: IntegrationProviderServiceEnumType
+  ) => {
+    let isAsync
+    let meetingId
+    if (meeting) {
+      const {phases, id} = meeting
+      meetingId = id
+      const discussPhase = phases.find(
+        ({phaseType}: {phaseType: NewMeetingPhaseTypeEnum}) =>
+          phaseType === 'discuss' || phaseType === 'agendaitems'
+      )
+      if (discussPhase) {
+        const {stages} = discussPhase
+        isAsync = stages.some((stage) => stage.isAsync)
+      }
+    }
+
+    this.track(userId, 'Task Created', {
+      meetingId,
+      teamId,
+      isAsync,
+      isReply,
       service
     })
   }
