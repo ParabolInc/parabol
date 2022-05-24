@@ -39,7 +39,7 @@ export default function LastUpdatedTime({updatedAt, createdAt}: Props) {
     <Timestamp>
       <Hover onMouseEnter={showCreatedTime} onMouseLeave={closeCreatedTime} ref={createdTimeRef}>
         {relativeDate(createdAt)}
-        {createdTimePortal(absoluteDate(updatedAt))}
+        {createdTimePortal(absoluteDate(createdAt))}
       </Hover>
       {isEdited && (
         <Hover onMouseEnter={showUpdatedTime} onMouseLeave={closeUpdatedTime} ref={updatedTimeRef}>
