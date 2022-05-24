@@ -22,13 +22,12 @@ graphql`
 const mutation = graphql`
   mutation PersistJiraServerSearchQueryMutation(
     $teamId: ID!
-    $service: IntegrationProviderServiceEnum!
     $providerId: Int
     $jiraServerSearchQuery: JiraServerSearchQueryInput
   ) {
     persistIntegrationSearchQuery(
       teamId: $teamId
-      service: $service
+      service: jiraServer
       providerId: $providerId
       jiraServerSearchQuery: $jiraServerSearchQuery
     ) {
@@ -48,9 +47,6 @@ const PersistJiraServerSearchQueryMutation: SimpleMutation<
   return commitMutation<TPersistJiraServerSearchQueryMutation>(atmosphere, {
     mutation,
     variables
-    // TODO: Add optimistic updater
-    // optimisticUpdater: (store) => {
-    // },
   })
 }
 

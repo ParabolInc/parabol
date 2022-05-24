@@ -32,8 +32,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   }
 
   if (providerId) {
-    const integrationProviders = await getIntegrationProvidersByIds([providerId])
-    const integrationProvider = integrationProviders[0]
+    const integrationProvider = (await getIntegrationProvidersByIds([providerId]))[0]
 
     if (
       !integrationProvider ||

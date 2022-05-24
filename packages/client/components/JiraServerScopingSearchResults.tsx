@@ -138,7 +138,6 @@ const JiraServerScopingSearchResults = (props: Props) => {
     if (isQueryNew) {
       PersistJiraServerSearchQueryMutation(atmosphere, {
         teamId,
-        service: 'jiraServer',
         providerId,
         jiraServerSearchQuery: {
           queryString,
