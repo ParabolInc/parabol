@@ -144,11 +144,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
-        const projectsIssues = [] as ProjectIssueEdge[]
-        const errors = [] as Error[]
-        let hasNextPage = false
-        const cursors = {}
-
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
           const parsed = args.after && JSON.parse(args.after)
           const after = (parsed && parsed[fullPath]) ?? ''
@@ -158,6 +153,10 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             after
           })
         })
+        const projectsIssues = [] as ProjectIssueEdge[]
+        const errors = [] as Error[]
+        let hasNextPage = false
+        const cursors = {}
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
