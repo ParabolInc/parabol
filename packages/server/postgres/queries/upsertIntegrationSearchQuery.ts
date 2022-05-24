@@ -1,3 +1,4 @@
+import {JiraSearchQueryInput, JiraServerSearchQueryInput} from '../../graphql/public/resolverTypes'
 import getPg from '../getPg'
 import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
 import {upsertIntegrationSearchQueryQuery} from './generated/upsertIntegrationSearchQueryQuery'
@@ -7,7 +8,7 @@ interface IUpsertIntegrationSearchQueryInput {
   userId: string
   teamId: string
   service: IntegrationProviderServiceEnum
-  query: object
+  query: JiraServerSearchQueryInput | JiraSearchQueryInput
   providerId: number | null
 }
 const upsertIntegrationSearchQuery = async (query: IUpsertIntegrationSearchQueryInput) => {
