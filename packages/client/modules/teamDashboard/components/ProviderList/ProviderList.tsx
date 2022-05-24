@@ -37,7 +37,6 @@ const query = graphql`
 
       featureFlags {
         azureDevOps
-        gitlab
         msTeams
       }
     }
@@ -51,7 +50,7 @@ const ProviderList = (props: Props) => {
   })
   const {viewer} = data
   const {
-    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams, gitlab: allowGitLab}
+    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
   } = viewer
   return (
     <StyledWrapper>
