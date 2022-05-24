@@ -106,7 +106,7 @@ class Analytics {
   integrationAdded = (
     userId: string,
     teamId: string,
-    service: IntegrationProviderServiceEnumType
+    service: IntegrationProviderServiceEnumType | 'slack'
   ) => {
     this.track(userId, 'Added Integration', {
       teamId,
