@@ -43,7 +43,11 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           .get('teamMemberIntegrationAuths')
           .load({service: 'jiraServer', teamId, userId})
 
-        return `jiraServer:${auth?.providerId}`
+        if (!auth) {
+          return ''
+        }
+
+        return `jiraServer:${auth.providerId}`
       }
     },
     auth: {
