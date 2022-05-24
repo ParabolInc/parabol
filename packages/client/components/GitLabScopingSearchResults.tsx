@@ -5,8 +5,10 @@ import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} f
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
+import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
 import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
+import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -99,21 +101,33 @@ const GitLabScopingSearchResults = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  const paginationRes = usePaginationFragment(
+  const paginationRes = usePaginationFragment<
+    GitLabScopingSearchResultsPaginationQuery,
+    GitLabScopingSearchResults_query$key
+  >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 5})
+      @argumentDefinitions(cursor: {type: "DateTime"}, count: {type: "Int", defaultValue: 25})
       @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
-                projectIssues(first: $count, after: $cursor)
-                  @connection(key: "GitLabScopingSearchResults_projectIssues") {
+                projectIssues(
+                  projectsIds: $selectedProjectsIds
+                  first: $count
+                  after: $cursor
+                  searchQuery: $queryString
+                  state: $state
+                  sort: $sort
+                ) @connection(key: "GitLabScopingSearchResults_projectIssues") {
                   edges {
                     node {
                       ... on _xGitLabIssue {
+                        ...GitLabScopingSearchResultItem_issue
+                        ...GitLabScopingSelectAllIssues_issues
                         id
+                        title
                       }
                     }
                   }
@@ -129,6 +143,8 @@ const GitLabScopingSearchResults = (props: Props) => {
   console.log('🚀  ~ paginationRes', paginationRes)
   // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 12)
   const {viewer} = query
+  const nullableEdges =
+    paginationRes.data.viewer.teamMember?.integrations.gitlab.projectIssues.edges
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -148,9 +164,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
-  const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
-    (project) => project?.node?.issues?.edges ?? null
-  )
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!

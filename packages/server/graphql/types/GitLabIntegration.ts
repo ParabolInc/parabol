@@ -1,8 +1,10 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import {GetProjectIssuesQuery} from '../../types/gitlabTypes'
+import sendToSentry from '../../utils/sendToSentry'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -17,6 +19,15 @@ type ProjectIssue = NonNullable<NonNullable<NonNullable<ProjectIssuesRes['edges'
 type ProjectIssueConnection = {
   node: ProjectIssue
   cursor: string | Date
+}
+export type ProjectsIssuesArgs = {
+  first: number
+  projectsIds: string[] | null
+  searchQuery: string
+  sort: string
+  state: string
+  fullPath: string
+  includeSubepics: boolean
 }
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -64,64 +75,6 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitLabSearchQuery))),
       resolve: async () => []
     },
-    projectIssues: {
-      type: new GraphQLNonNull(GitLabProjectIssuesConnection),
-      args: {
-        first: {
-          type: GraphQLNonNull(GraphQLInt)
-        },
-        after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
-        }
-      },
-      resolve: async (
-        {teamId, userId}: {teamId: string; userId: string},
-        {first}: {first: number},
-        context,
-        info
-      ) => {
-        const {dataLoader} = context
-        const auth = await dataLoader
-          .get('teamMemberIntegrationAuths')
-          .load({service: 'gitlab', teamId, userId})
-        if (!auth?.accessToken) return []
-        const {providerId} = auth
-        const provider = await dataLoader.get('integrationProviders').load(providerId)
-        if (!provider?.serverBaseUrl) return []
-        const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
-        const projectIssues = [] as ProjectIssueConnection[]
-        const errors = [] as Error[]
-        let hasNextPage = true
-        for await (const fullPath of ['nick460/no-issue-project']) {
-          hasNextPage = false
-          const [res, err] = await manager.getProjectIssues({
-            fullPath,
-            first
-          })
-          if (err) errors.push(err)
-          if (res?.project?.issues?.pageInfo.hasNextPage) hasNextPage = true
-          res?.project?.issues?.edges?.forEach((edge) => {
-            if (edge?.node) {
-              projectIssues.push({
-                cursor: edge.node.updatedAt || new Date(),
-                node: edge.node
-              })
-            }
-          })
-        }
-        const firstEdge = projectIssues[0]
-        return {
-          error: errors,
-          edges: projectIssues,
-          pageInfo: {
-            startCursor: firstEdge && firstEdge.cursor,
-            endCursor: firstEdge ? projectIssues.at(-1)!.cursor : new Date(),
-            hasNextPage
-          }
-        }
-      }
-    },
     projects: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RepoIntegration))),
       description: 'A list of projects accessible by this team member',
@@ -132,6 +85,104 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         info
       ) => {
         return fetchGitLabProjects(teamId, userId, context, info)
+      }
+    },
+    projectIssues: {
+      type: new GraphQLNonNull(GitLabProjectIssuesConnection),
+      args: {
+        first: {
+          type: GraphQLNonNull(GraphQLInt)
+        },
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        },
+        projectsIds: {
+          type: GraphQLList(GraphQLString),
+          description: 'the ids of the projects selected as filters'
+        },
+        searchQuery: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'the search query that the user enters to filter issues'
+        },
+        sort: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'the sort string that defines the order of the returned issues'
+        },
+        state: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'the state of issues, e.g. opened or closed'
+        }
+      },
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        args: any,
+        context,
+        info
+      ) => {
+        const {projectsIds} = args as ProjectsIssuesArgs
+        const {dataLoader} = context
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'gitlab', teamId, userId})
+        if (!auth?.accessToken) return []
+        const {providerId} = auth
+        const provider = await dataLoader.get('integrationProviders').load(providerId)
+        if (!provider?.serverBaseUrl) return []
+        const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
+        const [projectsData, projectsErr] = await manager.getProjects({
+          ids: projectsIds,
+          first: 50 // if no project filters have been selected, get the 50 most recently used projects
+        })
+        if (projectsErr) {
+          sendToSentry(new Error('Unable to get GitLab projects in projectIssues query'), {userId})
+          return connectionFromTasks([], 0)
+        }
+        const projectsFullPaths = new Set<string>()
+        projectsData.projects?.edges?.forEach((edge) => {
+          if (edge?.node?.fullPath) {
+            projectsFullPaths.add(edge?.node?.fullPath)
+          }
+        })
+        const projectIssues = [] as ProjectIssueConnection[]
+        const errors = [] as Error[]
+        const hasNextPage = true
+
+        const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
+          manager.getProjectIssues({
+            ...args,
+            includeSubepics: true,
+            fullPath
+          })
+        )
+        const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
+        for (const res of projectsIssuesResponses) {
+          const [projectIssuesData, err] = res
+          if (err) {
+            sendToSentry(err, {userId})
+            return
+          }
+          const edges = projectIssuesData.project?.issues?.edges
+          edges?.forEach((edge) => {
+            if (!edge?.node) return
+            const {node} = edge
+            projectIssues.push({
+              cursor: node.updatedAt || new Date(),
+              node
+            })
+          })
+        }
+
+        const firstEdge = projectIssues[0]
+        return {
+          error: errors,
+          edges: projectIssues,
+          pageInfo: {
+            startCursor: firstEdge && firstEdge.cursor,
+            endCursor: firstEdge ? projectIssues.at(-1)!.cursor : new Date(),
+            hasNextPage
+          }
+        }
       }
     }
     // The GitLab schema get injected here as 'api'

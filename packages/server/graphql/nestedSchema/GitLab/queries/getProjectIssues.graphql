@@ -1,8 +1,19 @@
-query getProjectIssues($fullPath: ID!, $first: Int!) {
+query getProjectIssues(
+  $fullPath: ID!
+  $first: Int!
+  $searchQuery: String
+  $includeSubepics: Boolean
+  $sort: IssueSort
+  $state: IssuableState
+) {
   project(fullPath: $fullPath) {
-    id
-    fullPath
-    issues(first: $first) {
+    issues(
+      first: $first
+      search: $searchQuery
+      includeSubepics: $includeSubepics
+      sort: $sort
+      state: $state
+    ) {
       pageInfo {
         hasNextPage
       }
@@ -14,6 +25,8 @@ query getProjectIssues($fullPath: ID!, $first: Int!) {
           descriptionHtml
           webPath
           updatedAt
+          title
+          webUrl
         }
       }
     }

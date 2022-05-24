@@ -18,7 +18,7 @@ const fetchGitLabProjects = async (
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   if (!provider?.serverBaseUrl) return []
   const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
-  const [data, error] = await manager.getProjects({teamId})
+  const [data, error] = await manager.getProjects({})
   if (error) {
     console.error(error.message)
     return []
