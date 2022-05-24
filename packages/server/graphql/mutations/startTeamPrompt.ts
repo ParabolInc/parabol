@@ -74,7 +74,8 @@ const startTeamPrompt = {
       teamId,
       meetingCount,
       phases,
-      facilitatorUserId: viewerId
+      facilitatorUserId: viewerId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?' // :TODO: (jmtaber129): Get this from meeting settings.
     })
     await r.table('NewMeeting').insert(meeting).run()
 

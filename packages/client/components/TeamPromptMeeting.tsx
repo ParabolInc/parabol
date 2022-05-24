@@ -62,6 +62,7 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptDiscussionDrawer_meeting
         id
         isRightDrawerOpen
+        meetingPrompt
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -82,7 +83,7 @@ const TeamPromptMeeting = (props: Props) => {
     `,
     meetingRef
   )
-  const {phases} = meeting
+  const {phases, meetingPrompt} = meeting
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {viewerId} = useAtmosphere()
 
@@ -132,7 +133,7 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} />
-              <Prompt>What are you working on today? Stuck on anything?</Prompt>
+              <Prompt>{meetingPrompt}</Prompt>
               <ErrorBoundary>
                 <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
                   <ResponsesGrid>

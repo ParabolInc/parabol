@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {getTeamPromptResponsesByMeetingId} from '../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {getUserId} from '../../utils/authorization'
@@ -14,6 +14,10 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
   description: 'A team prompt meeting',
   fields: () => ({
     ...newMeetingFields(),
+    meetingPrompt: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The name of the meeting'
+    },
     settings: {
       type: new GraphQLNonNull(TeamPromptMeetingSettings),
       description: 'The settings that govern the team prompt meeting',

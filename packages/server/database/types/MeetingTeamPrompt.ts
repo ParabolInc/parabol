@@ -8,6 +8,7 @@ interface Input {
   id?: string
   teamId: string
   meetingCount: number
+  meetingPrompt: string
   name?: string
   phases: [TeamPromptPhase, ...TeamPromptPhase[]]
   facilitatorUserId: string
@@ -19,9 +20,10 @@ export function isMeetingTeamPrompt(meeting: Meeting): meeting is MeetingTeamPro
 
 export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
+  meetingPrompt: string
 
   constructor(input: Input) {
-    const {id, teamId, meetingCount, name, phases, facilitatorUserId} = input
+    const {id, teamId, meetingCount, meetingPrompt, name, phases, facilitatorUserId} = input
     super({
       id,
       teamId,
@@ -31,5 +33,6 @@ export default class MeetingTeamPrompt extends Meeting {
       meetingType: 'teamPrompt',
       name: name ?? `Async Standup #${meetingCount + 1}`
     })
+    this.meetingPrompt = meetingPrompt
   }
 }
