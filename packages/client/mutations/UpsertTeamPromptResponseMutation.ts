@@ -82,7 +82,7 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
         content,
         plaintextContent,
         updatedAt: now,
-        createdAt: now
+        createdAt: !teamPromptResponseId ? now : undefined
       }
     }
   }
