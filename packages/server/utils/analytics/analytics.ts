@@ -13,9 +13,10 @@ export type AnalyticsEvent =
   | 'Meeting Joined'
   | 'Meeting Completed'
   // team
-  | 'Added Integration'
-  | 'Removed Integration'
+  | 'Integration Added'
+  | 'Integration Removed'
   // task
+  | 'Task Created'
   | 'Task Published'
 
 /**
@@ -109,7 +110,7 @@ class Analytics {
     teamId: string,
     service: IntegrationProviderServiceEnumType | 'slack'
   ) => {
-    this.track(userId, 'Added Integration', {
+    this.track(userId, 'Integration Added', {
       teamId,
       service
     })
@@ -120,7 +121,7 @@ class Analytics {
     teamId: string,
     service: IntegrationProviderServiceEnumType | 'slack'
   ) => {
-    this.track(userId, 'Removed Integration', {
+    this.track(userId, 'Integration Removed', {
       teamId,
       service
     })
