@@ -1,9 +1,15 @@
-import {ProjectsIssuesArgs} from 'parabol-server/graphql/types/GitLabIntegration'
 import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
+
+type ProjectsIssuesArgs = {
+  projectsIds: string[] | null
+  searchQuery: string
+  sort: string
+  state: string
+}
 
 const getGitLabProjectsIssuesConn = (
   gitlabTeamMemberIntegration: ReadOnlyRecordProxy | null | undefined,
-  projectsIssuesArgs: Omit<ProjectsIssuesArgs, 'fullPath' | 'first'>
+  projectsIssuesArgs: ProjectsIssuesArgs
 ) => {
   if (!gitlabTeamMemberIntegration) return null
   return ConnectionHandler.getConnection(
