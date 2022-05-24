@@ -38,6 +38,7 @@
           "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
+          "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
@@ -46,17 +47,13 @@
       "schema": "packages/server/graphql/public/schema.graphql"
     },
     "packages/server/types/githubTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": "packages/server/utils/githubQueries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/utils/githubSchema.graphql"
     },
     "packages/server/types/gitlabTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": [
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"

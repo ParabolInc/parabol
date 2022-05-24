@@ -1,0 +1,32 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  updateMeetingPrompt(
+    """
+    The meeting to update the prompt
+    """
+    meetingId: ID!
+
+    """
+    The updated prompt
+    """
+    newPrompt: String!
+  ): UpdateMeetingPromptPayload!
+}
+
+"""
+Return value for updateMeetingPrompt, which could be an error
+"""
+union UpdateMeetingPromptPayload = UpdateMeetingPromptSuccess | ErrorPayload
+
+type UpdateMeetingPromptSuccess {
+  meetingId: ID!
+
+  """
+  the updated meeting
+  """
+  meeting: TeamPromptMeeting
+}
+
+extend union MeetingSubscriptionPayload = UpdateMeetingPromptSuccess

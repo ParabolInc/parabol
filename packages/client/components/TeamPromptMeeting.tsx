@@ -4,13 +4,17 @@ import React, {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useBreakpoint from '~/hooks/useBreakpoint'
+import useEventCallback from '~/hooks/useEventCallback'
 import useMeeting from '~/hooks/useMeeting'
+import useMutationProps from '~/hooks/useMutationProps'
 import useTransition from '~/hooks/useTransition'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
+import Legitity from '~/validation/Legitity'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
+import EditableText from './EditableText'
 import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
@@ -19,6 +23,7 @@ import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
+import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 
 const Prompt = styled('h1')({
   textAlign: 'center',
@@ -27,6 +32,8 @@ const Prompt = styled('h1')({
   lineHeight: '32px',
   fontWeight: 400
 })
+
+const EditablePrompt = Prompt.withComponent(EditableText)
 
 const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   height: '100%',
@@ -61,6 +68,7 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
         id
+        facilitatorUserId
         isRightDrawerOpen
         meetingPrompt
         phases {
@@ -83,9 +91,12 @@ const TeamPromptMeeting = (props: Props) => {
     `,
     meetingRef
   )
-  const {phases, meetingPrompt} = meeting
+  const {id: meetingId, facilitatorUserId, phases, meetingPrompt} = meeting
+  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const {viewerId} = useAtmosphere()
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isFacilitator = viewerId === facilitatorUserId
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
   const stages = useMemo(() => {
@@ -121,6 +132,27 @@ const TeamPromptMeeting = (props: Props) => {
 
   const {isRightDrawerOpen} = meeting
 
+  const handleUpdatePrompt = useEventCallback((newPrompt) => {
+    if (submitting) return
+    submitMutation()
+
+    UpdateMeetingPromptMutation(atmosphere, {meetingId, newPrompt}, {onError, onCompleted})
+  })
+
+  const validate = (rawMeetingPrompt: string) => {
+    const res = new Legitity(rawMeetingPrompt)
+      .trim()
+      .required('Standups need names')
+      .min(2, 'Standups need good prompts')
+
+    if (res.error) {
+      onError(new Error(res.error))
+    } else if (error) {
+      onCompleted()
+    }
+    return res
+  }
+
   if (!safeRoute) return null
 
   return (
@@ -133,7 +165,19 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} />
-              <Prompt>{meetingPrompt}</Prompt>
+              {isFacilitator ? (
+                <EditablePrompt
+                  error={error?.message}
+                  handleSubmit={handleUpdatePrompt}
+                  initialValue={meetingPrompt}
+                  isWrap
+                  maxLength={500}
+                  validate={validate}
+                  placeholder={'What are you working on today? Stuck on anything?'}
+                />
+              ) : (
+                <Prompt>{meetingPrompt}</Prompt>
+              )}
               <ErrorBoundary>
                 <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
                   <ResponsesGrid>
