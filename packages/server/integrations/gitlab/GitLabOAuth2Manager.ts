@@ -10,7 +10,7 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
       accessToken: string
       refreshToken: string
       scopes: string
-      expires_in: number
+      expiresIn: number
     }>({
       grant_type: 'authorization_code',
       code,
@@ -23,7 +23,7 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
       accessToken: string
       scopes: string
       refreshToken: string
-      expires_in: number
+      expiresIn: number
     }>({
       grant_type: 'refresh_token',
       refresh_token: refreshToken

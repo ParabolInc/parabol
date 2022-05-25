@@ -104,9 +104,9 @@ const addTeamMemberIntegrationAuth = {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
         const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-        if ('expires_in' in authRes) {
-          const {expires_in, ...metadata} = authRes
-          const expiresAtTimestamp = new Date().getTime() + (expires_in - 30) * 1000
+        if ('expiresIn' in authRes) {
+          const {expiresIn, ...metadata} = authRes
+          const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
           const expiresAt = new Date(expiresAtTimestamp)
           tokenMetadata = {
             expiresAt,

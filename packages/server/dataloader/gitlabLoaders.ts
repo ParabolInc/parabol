@@ -33,8 +33,8 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             const manager = new GitLabOAuth2Manager(clientId!, clientSecret!, serverBaseUrl!)
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) return null
-            const {accessToken, refreshToken: newRefreshToken, expires_in} = oauthRes
-            const expiresAtTimestamp = new Date().getTime() + (expires_in - 30) * 1000
+            const {accessToken, refreshToken: newRefreshToken, expiresIn} = oauthRes
+            const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
             const expiresAt = new Date(expiresAtTimestamp)
             const newGitlabAuth = {
               ...gitlabAuth,
@@ -45,7 +45,7 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             upsertTeamMemberIntegrationAuth(newGitlabAuth)
             return newGitlabAuth
           }
-          return gitlabAuth as IGetTeamMemberIntegrationAuthQueryResult | null
+          return gitlabAuth as IGetTeamMemberIntegrationAuthQueryResult
         })
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))

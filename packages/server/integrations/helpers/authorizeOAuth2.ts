@@ -36,7 +36,7 @@ export const authorizeOAuth2 = async <
     accessToken: string
     refreshToken: string | undefined
     scopes: string | undefined
-    expires_in: number | undefined
+    expiresIn: number | undefined
   }
 >({
   authUrl,
@@ -74,10 +74,15 @@ export const authorizeOAuth2 = async <
   if ('error' in tokenJson) {
     return new Error(tokenJson.error)
   }
-  const {access_token: accessToken, refresh_token: oauthRefreshToken, scope, expires_in} = tokenJson
+  const {
+    access_token: accessToken,
+    refresh_token: oauthRefreshToken,
+    scope,
+    expires_in: expiresIn
+  } = tokenJson
   return {
     accessToken,
-    expires_in,
+    expiresIn,
     refreshToken: oauthRefreshToken,
     scopes: scope
   } as unknown as TSuccess
