@@ -134,12 +134,13 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         const stagesForTaskId = stages.filter(
           (stage) => stage.getValue('taskId') === firstStageTaskId
         )
-        const prevDimensionRefIds = stagesForTaskId.map((stage) => {
+        stagesForTaskId.forEach((stage) => {
           const dimensionRef = stage.getLinkedRecord('dimensionRef')
-          return dimensionRef?.getValue('id') ?? ''
-        }) as string[]
-        dimensionRefIds.push(...prevDimensionRefIds)
-      } else {
+          const dimensionRefId = dimensionRef?.getValue('id') as string | null
+          dimensionRefId && dimensionRefIds.push(dimensionRefId)
+        })
+      }
+      if (dimensionRefIds.length === 0) {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.SLATE_600,
           label: '#'
