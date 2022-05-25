@@ -18,6 +18,7 @@ export interface IGetTeamPromptResponsesByMeetingIdQueryResult {
   sortOrder: number;
   content: Json;
   plaintextContent: string;
+  reactjis: Json | null;
 }
 
 /** 'GetTeamPromptResponsesByMeetingIdQuery' query type */
@@ -26,12 +27,12 @@ export interface IGetTeamPromptResponsesByMeetingIdQueryQuery {
   result: IGetTeamPromptResponsesByMeetingIdQueryResult;
 }
 
-const getTeamPromptResponsesByMeetingIdQueryIR: any = {"name":"getTeamPromptResponsesByMeetingIdQuery","params":[{"name":"meetingIds","codeRefs":{"defined":{"a":59,"b":68,"line":3,"col":9},"used":[{"a":235,"b":244,"line":6,"col":22}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"meetingIds":true},"statement":{"body":"SELECT \"id\", \"createdAt\", \"updatedAt\", \"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\" FROM \"TeamPromptResponse\"\nWHERE \"meetingId\" in :meetingIds","loc":{"a":82,"b":244,"line":5,"col":0}}};
+const getTeamPromptResponsesByMeetingIdQueryIR: any = {"name":"getTeamPromptResponsesByMeetingIdQuery","params":[{"name":"meetingIds","codeRefs":{"defined":{"a":59,"b":68,"line":3,"col":9},"used":[{"a":270,"b":279,"line":6,"col":22}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"meetingIds":true},"statement":{"body":"SELECT \"id\", \"createdAt\", \"updatedAt\", \"meetingId\", \"userId\", \"sortOrder\", \"content\", \"plaintextContent\", to_json(\"reactjis\") as \"reactjis\" FROM \"TeamPromptResponse\"\nWHERE \"meetingId\" in :meetingIds","loc":{"a":82,"b":279,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT "id", "createdAt", "updatedAt", "meetingId", "userId", "sortOrder", "content", "plaintextContent" FROM "TeamPromptResponse"
+ * SELECT "id", "createdAt", "updatedAt", "meetingId", "userId", "sortOrder", "content", "plaintextContent", to_json("reactjis") as "reactjis" FROM "TeamPromptResponse"
  * WHERE "meetingId" in :meetingIds
  * ```
  */

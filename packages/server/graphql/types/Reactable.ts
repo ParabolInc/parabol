@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
-import Reactji from './Reactji'
 import resolveReactjis from '../resolvers/resolveReactjis'
 import getReactableType from './getReactableType'
+import Reactji from './Reactji'
 
 export const reactableFields = () => ({
   id: {
@@ -23,7 +23,8 @@ const Reactable = new GraphQLInterfaceType({
     const reactableType = getReactableType(type)
     const lookup = {
       COMMENT: require('./Comment').default,
-      REFLECTION: require('./RetroReflection').default
+      REFLECTION: require('./RetroReflection').default,
+      RESPONSE: require('./TeamPromptResponse').default
     } as const
     return lookup[reactableType]
   }

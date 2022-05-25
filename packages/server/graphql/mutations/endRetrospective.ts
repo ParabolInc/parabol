@@ -4,20 +4,18 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
-import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
-import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
-import {endSlackMeeting} from './helpers/notifications/notifySlack'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
@@ -130,9 +128,8 @@ export default {
     // wait for removeEmptyTasks before finishRetroMeeting & wait for meeting stats
     // to be generated in finishRetroMeeting before sending Slack notifications
     await finishRetroMeeting(completedRetrospective, dataLoader)
-    endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
+    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
+    analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
       (teamMember) =>

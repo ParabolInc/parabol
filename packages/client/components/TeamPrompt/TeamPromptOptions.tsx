@@ -11,9 +11,6 @@ import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
 const Options = styled(CardButton)({
-  position: 'absolute',
-  top: 0,
-  right: 0,
   color: PALETTE.SLATE_700,
   height: 32,
   width: 32,

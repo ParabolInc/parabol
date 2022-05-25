@@ -1,12 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import RemoveAtlassianAuthPayload from '../types/RemoveAtlassianAuthPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getAtlassianAuthByUserIdTeamId from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import removeAtlassianAuth from '../../postgres/queries/removeAtlassianAuth'
+import {analytics} from '../../utils/analytics/analytics'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import RemoveAtlassianAuthPayload from '../types/RemoveAtlassianAuthPayload'
 
 export default {
   name: 'RemoveAtlassianAuth',
@@ -39,6 +40,7 @@ export default {
     }
 
     await removeAtlassianAuth(viewerId, teamId)
+    analytics.integrationRemoved(viewerId, teamId, 'jira')
 
     const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveAtlassianAuthPayload', data, subOptions)

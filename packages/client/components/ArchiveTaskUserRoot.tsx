@@ -13,7 +13,7 @@ const ArchiveTaskUserRoot = ({teamIds, userIds}: Props) => {
   const queryRef = useQueryLoaderNow<TeamArchiveQuery>(teamArchiveQuery, {
     userIds,
     teamIds,
-    first: 10
+    first: 40
   })
 
   return (

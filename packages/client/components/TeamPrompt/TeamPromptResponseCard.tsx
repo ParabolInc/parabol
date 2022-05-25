@@ -6,15 +6,19 @@ import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card} from '~/types/constEnums'
+import plural from '~/utils/plural'
 import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
+import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
@@ -43,8 +47,21 @@ const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
   })
 )
 
+const ResponseCardFooter = styled('div')({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  paddingTop: 4
+})
+
 export const TeamMemberName = styled('h3')({
   padding: '0 8px'
+})
+
+const StyledReactjis = styled(ReactjiSection)({
+  paddingRight: '8px',
+  paddingTop: '8px'
 })
 
 const ReplyButton = styled(PlainButton)({
@@ -52,6 +69,7 @@ const ReplyButton = styled(PlainButton)({
   alignItems: 'flex-start',
   fontWeight: 600,
   lineHeight: '24px',
+  paddingTop: '8px',
   color: PALETTE.SKY_500,
   ':hover, :focus': {
     color: PALETTE.SKY_400
@@ -86,6 +104,11 @@ const TeamPromptResponseCard = (props: Props) => {
           userId
           content
           plaintextContent
+          reactjis {
+            ...ReactjiSection_reactjis
+            id
+            isViewerReactji
+          }
         }
         discussion {
           thread(first: 1000) @connection(key: "DiscussionThread_thread") {
@@ -128,6 +151,7 @@ const TeamPromptResponseCard = (props: Props) => {
     [response]
   )
   const plaintextContent = response?.plaintextContent ?? ''
+  const reactjis = response?.reactjis
 
   const discussionEdges = discussion.thread.edges
   const replyCount = discussionEdges.length
@@ -149,6 +173,25 @@ const TeamPromptResponseCard = (props: Props) => {
       {plaintextContent, onError, onCompleted}
     )
   })
+
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting || !reactjis) return
+    const isRemove = !!reactjis.find((reactji) => {
+      return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
+    })
+    submitMutation()
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {
+        reactableId: response?.id,
+        reactableType: 'RESPONSE',
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
+      {onCompleted, onError}
+    )
+  }
 
   return (
     <>
@@ -172,17 +215,19 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            <ReplyButton onClick={() => onSelectDiscussion()}>
-              {replyCount > 0 ? (
-                <>
-                  <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
-                  {`${replyCount} ${replyCount > 1 ? 'replies' : 'reply'}`}
-                </>
-              ) : (
-                'Reply'
-              )}
-            </ReplyButton>
-            {/* :TODO: (jmtaber129): Add reactjis */}
+            <ResponseCardFooter>
+              <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
+              <ReplyButton onClick={() => onSelectDiscussion()}>
+                {replyCount > 0 ? (
+                  <>
+                    <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
+                    {replyCount} {plural(replyCount, 'Reply', 'Replies')}
+                  </>
+                ) : (
+                  'Reply'
+                )}
+              </ReplyButton>
+            </ResponseCardFooter>
           </>
         )}
       </ResponseCard>

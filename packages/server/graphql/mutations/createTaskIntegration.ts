@@ -4,9 +4,9 @@ import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -164,14 +164,8 @@ export default {
       publish(SubscriptionChannel.TASK, userId, 'CreateTaskIntegrationPayload', data, subOptions)
     })
 
-    segmentIo.track({
-      userId: viewerId,
-      event: `Published Task to ${taskIntegrationManager.title}`,
-      properties: {
-        teamId,
-        meetingId
-      }
-    })
+    analytics.taskPublished(viewerId, teamId, integrationProviderService, meetingId)
+
     return data
   }
 }
