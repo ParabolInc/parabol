@@ -62,9 +62,7 @@ export default class TaskIntegrationManagerFactory {
     }
 
     if (service === 'gitlab') {
-      const auth = await dataLoader
-        .get('teamMemberIntegrationAuths')
-        .load({service: 'gitlab', teamId, userId})
+      const auth = await dataLoader.get('freshGitlabAuth').load({teamId, userId})
       if (!auth) return null
       const {providerId} = auth
       const provider = await dataLoader.get('integrationProviders').load(providerId)

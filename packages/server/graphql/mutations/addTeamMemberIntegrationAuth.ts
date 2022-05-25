@@ -18,6 +18,7 @@ interface OAuth2Auth {
   accessToken: string
   refreshToken: string
   scopes: string
+  expiresAt?: Date | null
 }
 
 const addTeamMemberIntegrationAuth = {
@@ -103,7 +104,18 @@ const addTeamMemberIntegrationAuth = {
       if (service === 'gitlab') {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
         const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
+        const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
+        if ('expiresIn' in authRes) {
+          const {expiresIn, ...metadata} = authRes
+          const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
+          const expiresAt = new Date(expiresAtTimestamp)
+          tokenMetadata = {
+            expiresAt,
+            ...metadata
+          }
+        } else {
+          tokenMetadata = authRes
+        }
       }
       if (service === 'azureDevOps') {
         // tokenMetadata = (await AzureDevOpsServerManager.init(oauthCodeOrPat, oauthVerifier)) as
