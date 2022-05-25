@@ -4,18 +4,20 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
+import {PALETTE} from '~/styles/paletteV3'
 import {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
-import {PALETTE} from '../../styles/paletteV3'
-import CardButton from '../CardButton'
+import FlatButton from '../FlatButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
-const Options = styled(CardButton)({
-  color: PALETTE.SLATE_700,
-  height: 32,
-  width: 32,
-  opacity: 1,
-  ':hover': {
+const OptionsButton = styled(FlatButton)({
+  color: PALETTE.SLATE_600,
+  height: '100%',
+  width: 'auto',
+  aspectRatio: '1/1',
+  borderRadius: '100%',
+  ':hover, :focus, :active': {
+    color: PALETTE.SLATE_700,
     backgroundColor: PALETTE.SLATE_300
   }
 })
@@ -40,9 +42,9 @@ const TeamPromptOptions = (props: Props) => {
 
   return (
     <>
-      <Options ref={originRef} onClick={togglePortal}>
-        <IconLabel ref={originRef} icon='more_vert' />
-      </Options>
+      <OptionsButton ref={originRef} onClick={togglePortal}>
+        <IconLabel ref={originRef} icon='more_vert' iconLarge />
+      </OptionsButton>
       {menuPortal(<TeamPromptOptionsMenu meetingRef={meeting} menuProps={menuProps} />)}
     </>
   )
