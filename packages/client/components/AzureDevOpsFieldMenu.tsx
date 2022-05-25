@@ -149,7 +149,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   const getDefaultIdx = () => {
     let returnedIndex = 0
     menuValues.forEach((menuOption, index) => {
-      console.log(`Inside getDefaultIdx with an index of ${index}`)
       const {label, fieldValue} = menuOption
       if (serviceFieldName === label || serviceFieldName === fieldValue) {
         returnedIndex = index
@@ -159,7 +158,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
       serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL ||
       serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL
     ) {
-      console.log(`found a do not update serviceFieldName.  Settings index to ${menuValues.length}`)
       returnedIndex = menuValues.length + 1
     }
     return returnedIndex
