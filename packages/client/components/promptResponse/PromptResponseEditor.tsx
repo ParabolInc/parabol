@@ -59,6 +59,9 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(false)
     const newContent = newEditorState.getJSON()
 
+    // to avoid creating an empty post on first blur
+    if (!content && newEditorState.isEmpty) return
+
     if (areEqual(content, newContent)) return
 
     handleSubmit?.(newEditorState)
