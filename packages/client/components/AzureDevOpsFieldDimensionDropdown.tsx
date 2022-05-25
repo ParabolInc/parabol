@@ -7,6 +7,12 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
+import {
+  azureDevOpsEffortWorkItems,
+  azureDevOpsOrigionalEstimateWorkItems,
+  azureDevOpsRemainingWorkWorkItems,
+  azureDevOpsStoryPointWorkItems
+} from '../utils/AzureDevOpsWorkItemFields'
 import {AzureDevOpsFieldDimensionDropdown_stage$key} from '../__generated__/AzureDevOpsFieldDimensionDropdown_stage.graphql'
 import AzureDevOpsFieldMenu from './AzureDevOpsFieldMenu'
 import Icon from './Icon'
@@ -38,16 +44,6 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
   fontSize: ICON_SIZE.MD18,
   display: isFacilitator ? undefined : 'none'
 }))
-
-/*
-const labelLookup = {
-  [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
-  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
-  [SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD]: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
-  [SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD]:
-    SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
-  [SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD]: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL
-}*/
 
 const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   const {clearError, isFacilitator, stageRef, submitScore} = props
@@ -95,35 +91,19 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     if (!workItemType) {
       return SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
     }
-    if (
-      workItemType === 'Agile:Epic' ||
-      workItemType === 'Agile:Feature' ||
-      workItemType === 'Basic:Issue' ||
-      workItemType === 'Scrum:Bug' ||
-      workItemType === 'Scrum:Epic' ||
-      workItemType === 'Scrum:Feature' ||
-      workItemType === 'Scrum:Product Backlog Item' ||
-      workItemType === 'CMMI:Change Request' ||
-      workItemType === 'CMMI:Epic' ||
-      workItemType === 'CMMI:Feature'
-    ) {
+    if (azureDevOpsEffortWorkItems.indexOf(workItemType) !== -1) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (workItemType === 'Basic:Task' || workItemType === 'Scrum:Task') {
+    } else if (azureDevOpsRemainingWorkWorkItems.indexOf(workItemType) !== -1) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (
-      workItemType === 'Agile:Task' ||
-      workItemType === 'CMMI:Issue' ||
-      workItemType === 'CMMI:Risk' ||
-      workItemType === 'CMMI:Task'
-    ) {
+    } else if (azureDevOpsOrigionalEstimateWorkItems.indexOf(workItemType) !== -1) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (workItemType === 'Agile:User Story' || workItemType === 'Agile:Bug') {
+    } else if (azureDevOpsStoryPointWorkItems.indexOf(workItemType) !== -1) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL

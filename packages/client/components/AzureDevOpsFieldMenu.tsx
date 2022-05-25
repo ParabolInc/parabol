@@ -5,11 +5,17 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateAzureDevOpsDimensionFieldMutation from '../mutations/UpdateAzureDevOpsDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
+import {
+  azureDevOpsEffortWorkItems,
+  azureDevOpsOrigionalEstimateWorkItems,
+  azureDevOpsRemainingWorkWorkItems,
+  azureDevOpsStoryPointWorkItems
+} from '../utils/AzureDevOpsWorkItemFields'
 import {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 
 interface Props {
   menuProps: MenuProps
@@ -95,7 +101,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   }
 
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
-    if (workItemType === 'Agile:User Story' || workItemType === 'Agile:Bug') {
+    if (azureDevOpsStoryPointWorkItems.indexOf(workItemType) !== -1) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
@@ -106,12 +112,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (
-      workItemType === 'Agile:Task' ||
-      workItemType === 'CMMI:Issue' ||
-      workItemType === 'CMMI:Risk' ||
-      workItemType === 'CMMI:Task'
-    ) {
+    } else if (azureDevOpsOrigionalEstimateWorkItems.indexOf(workItemType) !== -1) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
@@ -122,7 +123,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (workItemType === 'Basic:Task' || workItemType === 'Scrum:Task') {
+    } else if (azureDevOpsRemainingWorkWorkItems.indexOf(workItemType) !== -1) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL,
@@ -133,18 +134,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (
-      workItemType === 'Agile:Epic' ||
-      workItemType === 'Agile:Feature' ||
-      workItemType === 'Basic:Issue' ||
-      workItemType === 'Scrum:Bug' ||
-      workItemType === 'Scrum:Epic' ||
-      workItemType === 'Scrum:Feature' ||
-      workItemType === 'Scrum:Product Backlog Item' ||
-      workItemType === 'CMMI:Change Request' ||
-      workItemType === 'CMMI:Epic' ||
-      workItemType === 'CMMI:Feature'
-    ) {
+    } else if (azureDevOpsEffortWorkItems.indexOf(workItemType) !== -1) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL,
@@ -178,7 +168,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           return <MenuItem key={fieldValue} label={label} onClick={handleClick(fieldValue)} />
         })}
         <MenuItemHR />
-
         <MenuItem
           label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
           onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
