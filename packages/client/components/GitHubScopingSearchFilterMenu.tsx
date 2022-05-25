@@ -77,6 +77,19 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
                             }
                           }
                         }
+                        issueContributionsByRepository(maxRepositories: 100) {
+                          contributions(orderBy: {direction: DESC}, first: 1) {
+                            edges {
+                              node {
+                                occurredAt
+                              }
+                            }
+                          }
+                          repository {
+                            id
+                            nameWithOwner
+                          }
+                        }
                       }
                     }
                   }
@@ -96,21 +109,36 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const githubSearchQuery = meeting?.githubSearchQuery
   const queryString = githubSearchQuery?.queryString ?? null
   const atmosphere = useAtmosphere()
-  const contributionsByRepo =
+  const contributionsCollection =
     query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
-      ?.commitContributionsByRepository ?? []
+  // const contributionsByRepo =
+  //   query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
+  //     ?.commitContributionsByRepository ?? []
+  // const contributionsByRepo = contributionsCollection?.commitContributionsByRepository
   const repoContributions = useMemo(() => {
-    const contributions = contributionsByRepo.map((contributionByRepo) =>
-      contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
-    )
-    return contributions
+    const repoContributions =
+      contributionsCollection?.commitContributionsByRepository?.map((contributionByRepo) =>
+        contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
+      ) ?? []
+    const issueContributions =
+      contributionsCollection?.issueContributionsByRepository.map((contributionByRepo) => {
+        const repository = contributionByRepo.repository
+        const edges = contributionByRepo.contributions.edges
+        const edge = edges![0]
+        const occurredAt = edge?.node?.occurredAt
+        return {
+          repository,
+          occurredAt
+        }
+      }) ?? []
+    return [...repoContributions, ...issueContributions]
       .filter(isNotNull)
       .sort(
         (a, b) =>
           new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
       )
       .map((sortedContributions) => sortedContributions?.repository)
-  }, [contributionsByRepo])
+  }, [contributionsCollection])
 
   const {
     query: searchQuery,
@@ -127,6 +155,10 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
     )
     return Array.from(new Set([...selectedRepos, ...repos])).slice(0, adjustedMax)
   }, [filteredRepoContributions])
+  console.log('🚀  ~ selectedAndFilteredRepos', {
+    selectedAndFilteredRepos,
+    filteredRepoContributions
+  })
 
   const {portalStatus, isDropdown} = menuProps
   return (
