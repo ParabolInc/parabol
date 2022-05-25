@@ -8,7 +8,6 @@ import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
 import GitLabSearchQuery from './GitLabSearchQuery'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
-import PageInfo from './PageInfo'
 import RepoIntegration from './RepoIntegration'
 import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
@@ -147,8 +146,8 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
+        const parsed = args.after && JSON.parse(args.after)
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
-          const parsed = args.after && JSON.parse(args.after)
           const after = (parsed && parsed[fullPath]) ?? ''
           return manager.getProjectIssues({
             ...args,
@@ -214,10 +213,6 @@ const {connectionType, edgeType} = connectionDefinitions({
     }
   }),
   connectionFields: () => ({
-    pageInfo: {
-      type: PageInfo,
-      description: 'Page info with cursors coerced to ISO8601 dates'
-    },
     error: {
       type: StandardMutationError,
       description: 'An error with the connection, if any'
