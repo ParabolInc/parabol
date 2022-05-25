@@ -111,10 +111,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const contributionsCollection =
     query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
-  // const contributionsByRepo =
-  //   query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
-  //     ?.commitContributionsByRepository ?? []
-  // const contributionsByRepo = contributionsCollection?.commitContributionsByRepository
   const repoContributions = useMemo(() => {
     const repoContributions =
       contributionsCollection?.commitContributionsByRepository?.map((contributionByRepo) =>
@@ -155,10 +151,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
     )
     return Array.from(new Set([...selectedRepos, ...repos])).slice(0, adjustedMax)
   }, [filteredRepoContributions])
-  console.log('🚀  ~ selectedAndFilteredRepos', {
-    selectedAndFilteredRepos,
-    filteredRepoContributions
-  })
 
   const {portalStatus, isDropdown} = menuProps
   return (
