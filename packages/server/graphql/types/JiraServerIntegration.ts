@@ -135,9 +135,9 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           (projectKeyFilter) => IntegrationRepoId.split(projectKeyFilter).projectKey!
         )
 
-        // "first + 1" is a trick to make pagination works easier, see hasNextPage
+        // Request one extra item to see if there are more results
         const maxResults = first + 1
-        // Cursor must be a string
+        // Relay requires the cursor to be a string
         const afterInt = parseInt(after, 10)
         const startAt = afterInt + 1
         const issueRes = await integrationManager.getIssues(
