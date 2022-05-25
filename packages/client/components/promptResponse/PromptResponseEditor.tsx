@@ -3,6 +3,7 @@ import {Editor as EditorState} from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
 import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import areEqual from 'fbjs/lib/areEqual'
 import React, {useState} from 'react'
 
 const StyledEditor = styled('div')`
@@ -56,7 +57,14 @@ const PromptResponseEditor = (props: Props) => {
 
   const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
-    handleSubmit && handleSubmit(newEditorState)
+    const newContent = newEditorState.getJSON()
+
+    // to avoid creating an empty post on first blur
+    if (!content && newEditorState.isEmpty) return
+
+    if (areEqual(content, newContent)) return
+
+    handleSubmit?.(newEditorState)
   }
 
   const editor = useEditor(

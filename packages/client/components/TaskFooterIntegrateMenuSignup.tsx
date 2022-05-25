@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {TaskFooterIntegrateMenuQuery} from '~/__generated__/TaskFooterIntegrateMenuQuery.graphql'
 import {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -19,7 +18,6 @@ interface Props {
   mutationProps: MenuMutationProps
   teamId: string
   label?: string
-  featureFlags: TaskFooterIntegrateMenuQuery['response']['viewer']['featureFlags']
   integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
 }
 
@@ -34,7 +32,7 @@ const Label = styled('div')({
 })
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
-  const {menuProps, mutationProps, teamId, label, integrationsRef, featureFlags} = props
+  const {menuProps, mutationProps, teamId, label, integrationsRef} = props
   const {submitting} = mutationProps
   const integrations = useFragment(
     graphql`
@@ -58,13 +56,11 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
       )}
       <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
       <AddToJiraMenuItem mutationProps={mutationProps} teamId={teamId} />
-      {featureFlags.gitlab && (
-        <AddToGitLabMenuItem
-          mutationProps={mutationProps}
-          teamId={teamId}
-          gitlabRef={integrations.gitlab}
-        />
-      )}
+      <AddToGitLabMenuItem
+        mutationProps={mutationProps}
+        teamId={teamId}
+        gitlabRef={integrations.gitlab}
+      />
     </NarrowMenu>
   )
 }

@@ -1,18 +1,16 @@
-import {EditableTeamName_team} from '../../../../__generated__/EditableTeamName_team.graphql'
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import EditableText from '../../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
+import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
-import {FONT_FAMILY} from '../../../../styles/typographyV2'
+import {EditableTeamName_team} from '../../../../__generated__/EditableTeamName_team.graphql'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   team: EditableTeamName_team
 }
 
@@ -22,20 +20,20 @@ const InheritedStyles = styled('div')({
   lineHeight: '32px'
 })
 
-class EditableTeamName extends Component<Props> {
-  handleSubmit = (rawName) => {
+const EditableTeamName = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const handleSubmit = (rawName) => {
     const {
-      atmosphere,
       onError,
       onCompleted,
       setDirty,
       submitMutation,
       submitting,
       team: {teamId}
-    } = this.props
+    } = props
     if (submitting) return
     setDirty()
-    const {error, value: name} = this.validate(rawName)
+    const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
     const updatedTeam = {
@@ -45,7 +43,7 @@ class EditableTeamName extends Component<Props> {
     UpdateTeamNameMutation(atmosphere, updatedTeam, onError, onCompleted)
   }
 
-  validate = (rawTeamName: string) => {
+  const validate = (rawTeamName: string) => {
     const {
       error,
       onError,
@@ -53,7 +51,7 @@ class EditableTeamName extends Component<Props> {
         teamId,
         organization: {teams}
       }
-    } = this.props
+    } = props
     const teamNames = teams.filter(({id}) => id !== teamId).map(({name}) => name)
     const res = teamNameValidation(rawTeamName, teamNames)
     if (res.error) {
@@ -64,25 +62,23 @@ class EditableTeamName extends Component<Props> {
     return res
   }
 
-  render() {
-    const {error, team} = this.props
-    const {teamName} = team
-    return (
-      <InheritedStyles>
-        <EditableText
-          error={error as string}
-          handleSubmit={this.handleSubmit}
-          initialValue={teamName}
-          maxLength={50}
-          validate={this.validate}
-          placeholder={'Team Name'}
-        />
-      </InheritedStyles>
-    )
-  }
+  const {error, team} = props
+  const {teamName} = team
+  return (
+    <InheritedStyles>
+      <EditableText
+        error={error as string}
+        handleSubmit={handleSubmit}
+        initialValue={teamName}
+        maxLength={50}
+        validate={validate}
+        placeholder={'Team Name'}
+      />
+    </InheritedStyles>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTeamName)), {
+export default createFragmentContainer(withMutationProps(EditableTeamName), {
   team: graphql`
     fragment EditableTeamName_team on Team {
       teamId: id

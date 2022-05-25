@@ -2,14 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {PromoteTeamMemberModal_teamMember} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
@@ -22,20 +20,13 @@ const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   closePortal: () => void
   teamMember: PromoteTeamMemberModal_teamMember
 }
 const PromoteTeamMemberModal = (props: Props) => {
-  const {
-    atmosphere,
-    closePortal,
-    submitMutation,
-    submitting,
-    onError,
-    onCompleted,
-    teamMember
-  } = props
+  const atmosphere = useAtmosphere()
+  const {closePortal, submitMutation, submitting, onError, onCompleted, teamMember} = props
   const {preferredName, teamId, userId} = teamMember
   const handleClick = () => {
     submitMutation()
@@ -55,7 +46,7 @@ const PromoteTeamMemberModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(PromoteTeamMemberModal)), {
+export default createFragmentContainer(withMutationProps(PromoteTeamMemberModal), {
   teamMember: graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
       userId

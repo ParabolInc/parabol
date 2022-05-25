@@ -1,15 +1,12 @@
 import React, {Suspense} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useSubscription from '../../../hooks/useSubscription'
 import NotificationSubscription from '../../../subscriptions/NotificationSubscription'
 import userProfileQuery, {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import UserProfile from './UserProfile'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {}
+interface Props extends RouteComponentProps<{teamId: string}> {}
 
 const UserProfileRoot = (props: Props) => {
   const {
@@ -26,4 +23,4 @@ const UserProfileRoot = (props: Props) => {
   )
 }
 
-export default withRouter(withAtmosphere(UserProfileRoot))
+export default withRouter(UserProfileRoot)

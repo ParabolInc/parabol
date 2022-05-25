@@ -74,9 +74,7 @@ const createTaskInService = async (
       integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber)
     }
   } else if (service === 'gitlab') {
-    const gitlabAuth = await dataLoader
-      .get('teamMemberIntegrationAuths')
-      .load({service: 'gitlab', teamId, userId: accessUserId})
+    const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
     if (!gitlabAuth) {
       return {error: new Error('Cannot create GitLab task without a valid GitHLab token')}
     }

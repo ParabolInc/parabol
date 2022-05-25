@@ -42,6 +42,10 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the response was created'
     },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The timestamp the response was updated at'
+    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the shared sort order for reponses'

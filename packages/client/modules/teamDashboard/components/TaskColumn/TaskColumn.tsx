@@ -1,18 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {TaskColumn_teams} from '~/__generated__/TaskColumn_teams.graphql'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
 
@@ -60,7 +57,7 @@ const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({user
   marginLeft: userCanAdd ? 8 : 16
 }))
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   area: AreaEnum
   isViewerMeetingSection?: boolean
   meetingId?: string
@@ -71,59 +68,59 @@ interface Props extends WithAtmosphereProps {
   teams: TaskColumn_teams | null
 }
 
-class TaskColumn extends Component<Props> {
-  render() {
-    const {
-      area,
-      isViewerMeetingSection,
-      meetingId,
-      myTeamMemberId,
-      teamMemberFilterId,
-      status,
-      tasks,
-      teams
-    } = this.props
-    const label = taskStatusLabels[status]
-    const userCanAdd = area === TEAM_DASH || area === USER_DASH || isViewerMeetingSection
-    return (
-      <Droppable droppableId={status} type={DroppableType.TASK}>
-        {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-          <Column isDragging={dropSnapshot.isDraggingOver}>
-            <ColumnHeader>
-              <TaskColumnAddTask
-                area={area}
-                isViewerMeetingSection={isViewerMeetingSection}
-                status={status}
-                tasks={tasks}
-                meetingId={meetingId}
-                myTeamMemberId={myTeamMemberId}
-                teamMemberFilterId={teamMemberFilterId || ''}
-                teams={teams}
-              />
-              <StatusLabelBlock userCanAdd={userCanAdd}>
-                <StatusLabel>{label}</StatusLabel>
-                {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
-              </StatusLabelBlock>
-            </ColumnHeader>
-            <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
-              <TaskColumnInner
-                area={area}
-                tasks={tasks}
-                isViewerMeetingSection={isViewerMeetingSection}
-                meetingId={meetingId}
-              />
-              {dropProvided.placeholder}
-            </ColumnBody>
-          </Column>
-        )}
-      </Droppable>
-    )
-  }
+const TaskColumn = (props: Props) => {
+  const {
+    area,
+    isViewerMeetingSection,
+    meetingId,
+    myTeamMemberId,
+    teamMemberFilterId,
+    status,
+    tasks,
+    teams
+  } = props
+  const label = taskStatusLabels[status]
+  const userCanAdd = area === TEAM_DASH || area === USER_DASH || isViewerMeetingSection
+  return (
+    <Droppable droppableId={status} type={DroppableType.TASK}>
+      {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
+        <Column isDragging={dropSnapshot.isDraggingOver}>
+          <ColumnHeader>
+            <TaskColumnAddTask
+              area={area}
+              isViewerMeetingSection={isViewerMeetingSection}
+              status={status}
+              tasks={tasks}
+              meetingId={meetingId}
+              myTeamMemberId={myTeamMemberId}
+              teamMemberFilterId={teamMemberFilterId || ''}
+              teams={teams}
+            />
+            <StatusLabelBlock userCanAdd={userCanAdd}>
+              <StatusLabel>{label}</StatusLabel>
+              {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
+            </StatusLabelBlock>
+          </ColumnHeader>
+          <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
+            <TaskColumnInner
+              area={area}
+              tasks={tasks}
+              isViewerMeetingSection={isViewerMeetingSection}
+              meetingId={meetingId}
+            />
+            {dropProvided.placeholder}
+          </ColumnBody>
+        </Column>
+      )}
+    </Droppable>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(TaskColumn), {
+export default createFragmentContainer(TaskColumn, {
   tasks: graphql`
-    fragment TaskColumn_tasks on Task @relay(plural: true) @argumentDefinitions(meetingId: {type: "ID"}) {
+    fragment TaskColumn_tasks on Task
+    @relay(plural: true)
+    @argumentDefinitions(meetingId: {type: "ID"}) {
       ...TaskColumnAddTask_tasks
       ...TaskColumnInner_tasks @arguments(meetingId: $meetingId)
       id
