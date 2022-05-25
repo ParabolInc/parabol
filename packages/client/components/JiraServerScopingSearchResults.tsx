@@ -1,19 +1,31 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import PersistJiraServerSearchQueryMutation from '../mutations/PersistJiraServerSearchQueryMutation'
+import {JiraServerScopingSearchResultsPaginationQuery} from '../__generated__/JiraServerScopingSearchResultsPaginationQuery.graphql'
 import {JiraServerScopingSearchResultsQuery} from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
 import {JiraServerScopingSearchResults_meeting$key} from '../__generated__/JiraServerScopingSearchResults_meeting.graphql'
+import {JiraServerScopingSearchResults_query$key} from '../__generated__/JiraServerScopingSearchResults_query.graphql'
+import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
+})
+
+const LoadingNext = styled('div')({
+  display: 'flex',
+  height: 32,
+  fontSize: 24,
+  justifyContent: 'center',
+  width: '100%'
 })
 
 interface Props {
@@ -33,8 +45,8 @@ const JiraServerScopingSearchResults = (props: Props) => {
         $queryString: String
         $isJQL: Boolean!
         $projectKeyFilters: [ID!]
-        $first: Int
       ) {
+        ...JiraServerScopingSearchResults_query
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
@@ -45,8 +57,31 @@ const JiraServerScopingSearchResults = (props: Props) => {
                   isJQL
                   projectKeyFilters
                 }
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+
+  const paginationRes = usePaginationFragment<
+    JiraServerScopingSearchResultsPaginationQuery,
+    JiraServerScopingSearchResults_query$key
+  >(
+    graphql`
+      fragment JiraServerScopingSearchResults_query on Query
+      @argumentDefinitions(first: {type: "Int", defaultValue: 25}, after: {type: "String"})
+      @refetchable(queryName: "JiraServerScopingSearchResultsPaginationQuery") {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              jiraServer {
                 issues(
                   first: $first
+                  after: $after
                   queryString: $queryString
                   isJQL: $isJQL
                   projectKeyFilters: $projectKeyFilters
@@ -71,9 +106,11 @@ const JiraServerScopingSearchResults = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    query
   )
+
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
+  const {data, hasNext} = paginationRes
 
   const meeting = useFragment(
     graphql`
@@ -94,12 +131,9 @@ const JiraServerScopingSearchResults = (props: Props) => {
     meetingRef
   )
 
-  const viewer = query.viewer
+  const viewer = data.viewer
   const {jiraServerSearchQuery, teamId} = meeting
-
-  const jiraServer = viewer?.teamMember!.integrations.jiraServer ?? null
-  const providerId = jiraServer?.providerId ?? null
-  const issues = jiraServer?.issues ?? null
+  const issues = viewer?.teamMember!.integrations.jiraServer?.issues ?? null
   const edges = issues?.edges ?? null
   const error = issues?.error ?? null
   const [isEditing, setIsEditing] = useState(false)
@@ -124,12 +158,14 @@ const JiraServerScopingSearchResults = (props: Props) => {
 
   const persistQuery = () => {
     const {queryString, isJQL} = jiraServerSearchQuery
+    const jiraServer = query?.viewer.teamMember?.integrations.jiraServer
+    const providerId = jiraServer?.providerId ?? null
+    const searchQueries = jiraServer?.searchQueries ?? []
     // don't persist an empty string (the default)
     if (!queryString) return
     const projectKeyFilters = jiraServerSearchQuery.projectKeyFilters as string[]
     projectKeyFilters.sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
-    const {searchQueries} = jiraServer!
     const searchHashes = searchQueries.map(({queryString, projectKeyFilters}) => {
       return JSON.stringify({queryString, projectKeyFilters})
     })
@@ -166,6 +202,12 @@ const JiraServerScopingSearchResults = (props: Props) => {
           />
         )
       })}
+      {lastItem}
+      {hasNext && (
+        <LoadingNext key={'loadingNext'}>
+          <Ellipsis />
+        </LoadingNext>
+      )}
     </ResultScroller>
   )
 }
