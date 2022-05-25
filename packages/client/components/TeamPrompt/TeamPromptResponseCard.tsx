@@ -19,6 +19,7 @@ import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
+import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
@@ -27,7 +28,8 @@ const ResponseHeader = styled('div')({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '0 8px'
+  padding: '0 8px',
+  marginBottom: 12
 })
 
 const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
@@ -56,7 +58,8 @@ const ResponseCardFooter = styled('div')({
 })
 
 export const TeamMemberName = styled('h3')({
-  padding: '0 8px'
+  padding: '0 8px',
+  margin: 0
 })
 
 const StyledReactjis = styled(ReactjiSection)({
@@ -99,22 +102,24 @@ const TeamPromptResponseCard = (props: Props) => {
           picture
           preferredName
         }
-        response {
-          id
-          userId
-          content
-          plaintextContent
-          reactjis {
-            ...ReactjiSection_reactjis
-            id
-            isViewerReactji
-          }
-        }
         discussion {
           thread(first: 1000) @connection(key: "DiscussionThread_thread") {
             edges {
               ...TeamPromptRepliesAvatarList_edges
             }
+          }
+        }
+        response {
+          id
+          userId
+          content
+          plaintextContent
+          updatedAt
+          createdAt
+          reactjis {
+            ...ReactjiSection_reactjis
+            id
+            isViewerReactji
           }
         }
       }
@@ -197,8 +202,15 @@ const TeamPromptResponseCard = (props: Props) => {
     <>
       <ResponseHeader>
         <Avatar picture={picture} size={48} />
-        <TeamMemberName>{preferredName}</TeamMemberName>
-        {/* :TODO: (jmtaber129): Show when response was last updated */}
+        <TeamMemberName>
+          {preferredName}
+          {response && (
+            <TeamPromptLastUpdatedTime
+              updatedAt={response.updatedAt}
+              createdAt={response.createdAt}
+            />
+          )}
+        </TeamMemberName>
       </ResponseHeader>
       <ResponseCard
         isEmpty={isEmptyResponse}

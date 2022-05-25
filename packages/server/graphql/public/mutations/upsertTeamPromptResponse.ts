@@ -68,11 +68,8 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       plaintextContent
     })
   )
-  const updatedTeamPromptResponse = await dataLoader
-    .get('teamPromptResponses')
-    .load(teamPromptResponseId)
-  updatedTeamPromptResponse.content = contentJSON
-  updatedTeamPromptResponse.plaintextContent = plaintextContent
+
+  dataLoader.get('teamPromptResponses').clear(teamPromptResponseId)
 
   const data = {
     meetingId,

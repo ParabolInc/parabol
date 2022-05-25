@@ -20,6 +20,7 @@ import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import {TeamMemberName} from './TeamPromptResponseCard'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
@@ -114,6 +115,8 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
               response {
                 id
                 content
+                updatedAt
+                createdAt
                 reactjis {
                   ...ReactjiSection_reactjis
                   id
@@ -188,8 +191,15 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
         <DiscussionResponseCard>
           <Header>
             <Avatar picture={teamMember.picture} size={48} />
-            <TeamMemberName>{teamMember.preferredName}</TeamMemberName>
-            {/* :TODO: (jmtaber129): Show when response was last updated */}
+            <TeamMemberName>
+              {teamMember.preferredName}
+              {response && (
+                <TeamPromptLastUpdatedTime
+                  updatedAt={response.updatedAt}
+                  createdAt={response.createdAt}
+                />
+              )}
+            </TeamMemberName>
             <StyledCloseButton onClick={onToggleDrawer}>
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>

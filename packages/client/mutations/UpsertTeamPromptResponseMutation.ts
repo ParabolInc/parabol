@@ -13,6 +13,8 @@ graphql`
       userId
       content
       plaintextContent
+      updatedAt
+      createdAt
     }
   }
 `
@@ -69,6 +71,7 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
 > = (atmosphere, variables, {plaintextContent, onError, onCompleted}) => {
   const {viewerId} = atmosphere
   const {meetingId, teamPromptResponseId, content} = variables
+  const now = new Date().toJSON()
   const optimisticResponse = {
     upsertTeamPromptResponse: {
       __typename: 'UpsertTeamPromptResponseSuccess',
@@ -77,7 +80,9 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
         id: teamPromptResponseId ?? clientTempId(viewerId),
         userId: viewerId,
         content,
-        plaintextContent
+        plaintextContent,
+        updatedAt: now,
+        createdAt: !teamPromptResponseId ? now : undefined
       }
     }
   }
@@ -86,6 +91,10 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
     mutation,
     variables,
     optimisticResponse,
+    updater: (store) => {
+      const payload = store.getRootField('upsertTeamPromptResponse')
+      upsertTeamPromptResponseUpdater(payload as any, {atmosphere, store})
+    },
     onCompleted,
     onError
   })
