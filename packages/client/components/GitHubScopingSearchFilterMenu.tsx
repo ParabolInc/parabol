@@ -119,9 +119,8 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
     const issueContributions =
       contributionsCollection?.issueContributionsByRepository.map((contributionByRepo) => {
         const repository = contributionByRepo.repository
-        const edges = contributionByRepo.contributions.edges
-        const edge = edges![0]
-        const occurredAt = edge?.node?.occurredAt
+        const edges = contributionByRepo.contributions.edges ?? []
+        const occurredAt = edges[0]?.node?.occurredAt
         return {
           repository,
           occurredAt
