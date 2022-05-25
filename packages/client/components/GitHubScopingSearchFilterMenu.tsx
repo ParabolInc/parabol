@@ -112,7 +112,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const contributionsCollection =
     query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
   const repoContributions = useMemo(() => {
-    const repoContributions =
+    const commitContributions =
       contributionsCollection?.commitContributionsByRepository?.map((contributionByRepo) =>
         contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
       ) ?? []
@@ -126,7 +126,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
           occurredAt
         }
       }) ?? []
-    return [...repoContributions, ...issueContributions]
+    return [...commitContributions, ...issueContributions]
       .filter(isNotNull)
       .sort(
         (a, b) =>
