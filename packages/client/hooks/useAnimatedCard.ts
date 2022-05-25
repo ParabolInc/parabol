@@ -3,7 +3,7 @@ import requestDoubleAnimationFrame from '../components/RetroReflectPhase/request
 import {BezierCurve} from '../types/constEnums'
 import {TransitionStatus} from './useTransition'
 
-const useAnimatedMeetingCard = (displayIdx: number, status: TransitionStatus) => {
+const useAnimatedCard = (displayIdx: number, status: TransitionStatus) => {
   const ref = useRef<HTMLDivElement>(null)
   const lastIdxRef = useRef(displayIdx)
   const lastRectRef = useRef({left: 0, top: 0})
@@ -43,4 +43,4 @@ const useAnimatedMeetingCard = (displayIdx: number, status: TransitionStatus) =>
   return ref
 }
 
-export default useAnimatedMeetingCard
+export default useAnimatedCard
