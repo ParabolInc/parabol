@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -61,17 +61,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   const {serviceField, task, meetingId, dimensionRef} = stage
   const {name: serviceFieldName} = serviceField
   const {name: dimensionName} = dimensionRef
-  const defaultActiveIdx = useMemo(() => {
-    if (
-      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL ||
-      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT
-    ) {
-      return 1
-    } else {
-      return 0
-    }
-  }, [serviceFieldName])
-
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
   const {integration} = task
   const {teamProject, url, type: workItemType} = integration
@@ -154,7 +143,28 @@ const AzureDevOpsFieldMenu = (props: Props) => {
       ]
     }
   }
+
   const menuValues = getDefaultMenuValues(workItemType)
+
+  const getDefaultIdx = () => {
+    let returnedIndex = 0
+    menuValues.forEach((menuOption, index) => {
+      console.log(`Inside getDefaultIdx with an index of ${index}`)
+      const {label, fieldValue} = menuOption
+      if (serviceFieldName === label || serviceFieldName === fieldValue) {
+        returnedIndex = index
+      }
+    })
+    if (
+      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL ||
+      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL
+    ) {
+      console.log(`found a do not update serviceFieldName.  Settings index to ${menuValues.length}`)
+      returnedIndex = menuValues.length + 1
+    }
+    return returnedIndex
+  }
+  const defaultActiveIdx = getDefaultIdx()
 
   return (
     <>
