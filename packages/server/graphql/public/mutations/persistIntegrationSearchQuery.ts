@@ -3,7 +3,7 @@ import getIntegrationProvidersByIds from '../../../postgres/queries/getIntegrati
 import upsertIntegrationSearchQuery from '../../../postgres/queries/upsertIntegrationSearchQuery'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import {JiraSearchQueryInput, JiraServerSearchQueryInput, MutationResolvers} from '../resolverTypes'
 
 const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearchQuery'] = async (
   _source,
@@ -19,7 +19,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     return {error: {message: `Not on team`}}
   }
 
-  let query
+  let query: JiraServerSearchQueryInput | JiraSearchQueryInput
   switch (service) {
     case 'jiraServer':
       query = jiraServerSearchQuery!

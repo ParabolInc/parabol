@@ -36,7 +36,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
   description: 'Jira Server integration data for a given team member',
   fields: () => ({
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'Composite key in jiraServer:providerId format',
       resolve: async ({teamId, userId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
         const auth = await dataLoader
@@ -44,7 +44,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           .load({service: 'jiraServer', teamId, userId})
 
         if (!auth) {
-          return ''
+          return null
         }
 
         return `jiraServer:${auth.providerId}`
@@ -181,7 +181,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       }
     },
     providerId: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: GraphQLInt,
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
