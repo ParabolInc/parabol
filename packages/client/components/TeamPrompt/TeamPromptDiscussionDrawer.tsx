@@ -20,7 +20,7 @@ import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
-import LastUpdatedTime from './TeamPromptLastUpdatedTime'
+import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import {TeamMemberName} from './TeamPromptResponseCard'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
@@ -194,7 +194,10 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
             <TeamMemberName>
               {teamMember.preferredName}
               {response && (
-                <LastUpdatedTime updatedAt={response.updatedAt} createdAt={response.createdAt} />
+                <TeamPromptLastUpdatedTime
+                  updatedAt={response.updatedAt}
+                  createdAt={response.createdAt}
+                />
               )}
             </TeamMemberName>
             <StyledCloseButton onClick={onToggleDrawer}>

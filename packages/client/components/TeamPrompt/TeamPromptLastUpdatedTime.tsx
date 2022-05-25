@@ -20,7 +20,7 @@ interface Props {
   updatedAt: string | Date
 }
 
-export default function LastUpdatedTime({updatedAt, createdAt}: Props) {
+export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props) {
   const {
     tooltipPortal: createdTimePortal,
     openTooltip: showCreatedTime,

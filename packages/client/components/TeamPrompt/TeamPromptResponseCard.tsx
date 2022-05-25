@@ -19,7 +19,7 @@ import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
-import LastUpdatedTime from './TeamPromptLastUpdatedTime'
+import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
@@ -205,7 +205,10 @@ const TeamPromptResponseCard = (props: Props) => {
         <TeamMemberName>
           {preferredName}
           {response && (
-            <LastUpdatedTime updatedAt={response.updatedAt} createdAt={response.createdAt} />
+            <TeamPromptLastUpdatedTime
+              updatedAt={response.updatedAt}
+              createdAt={response.createdAt}
+            />
           )}
         </TeamMemberName>
       </ResponseHeader>
