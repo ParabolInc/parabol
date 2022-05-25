@@ -77,7 +77,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
 
     let touched = false
     // add mounted nodes + update new orderings
-    const mountingKeys = [] as Key[]
+    const updatedKeys = [] as Key[]
     children.forEach((nextChild, idxInNext) => {
       const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)
       const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev]!.status
@@ -88,12 +88,12 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       })
       if (idxInPrev === -1 || idxInPrev !== idxInNext) {
         touched = true
-        mountingKeys.push(nextChild.key)
+        updatedKeys.push(nextChild.key)
         // beginTransition(nextChild.key)
       }
     })
     if (touched) {
-      beginTransition(mountingKeys)
+      beginTransition(updatedKeys)
     }
 
     // add exiting nodes

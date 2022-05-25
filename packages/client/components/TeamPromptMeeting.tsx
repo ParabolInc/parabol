@@ -100,10 +100,10 @@ const TeamPromptMeeting = (props: Props) => {
     const orderedEmptyStages = nonViewerStages.filter((stage) => !stage.response?.plaintextContent)
     let orderedStages = [...orderedNonEmptyStages, ...orderedEmptyStages]
 
-    // Find the viewer's card.
-    const viewerCardIndex = allStages.findIndex((stage) => stage.teamMember.userId === viewerId)
-    if (viewerCardIndex !== -1) {
-      orderedStages = [allStages[viewerCardIndex]!, ...orderedStages]
+    // Add the viewer's card to the front.
+    const viewerCard = allStages.find((stage) => stage.teamMember.userId === viewerId)
+    if (viewerCard) {
+      orderedStages = [viewerCard, ...orderedStages]
     }
 
     return orderedStages.map((stage, displayIdx) => {
