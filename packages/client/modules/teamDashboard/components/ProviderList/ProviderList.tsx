@@ -37,7 +37,6 @@ const query = graphql`
 
       featureFlags {
         azureDevOps
-        gitlab
         msTeams
       }
     }
@@ -51,14 +50,14 @@ const ProviderList = (props: Props) => {
   })
   const {viewer} = data
   const {
-    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams, gitlab: allowGitLab}
+    featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
   } = viewer
   return (
     <StyledWrapper>
       <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
       <JiraServerProviderRow teamId={teamId} viewerRef={viewer} />
       <GitHubProviderRow teamId={teamId} viewer={viewer} />
-      {allowGitLab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
+      <GitLabProviderRow teamId={teamId} viewerRef={viewer} />
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
       {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />}
