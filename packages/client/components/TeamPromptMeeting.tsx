@@ -4,36 +4,23 @@ import React, {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useEventCallback from '~/hooks/useEventCallback'
 import useMeeting from '~/hooks/useMeeting'
-import useMutationProps from '~/hooks/useMutationProps'
 import useTransition from '~/hooks/useTransition'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
-import Legitity from '~/validation/Legitity'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
-import EditableText from './EditableText'
 import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
+import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
-
-const Prompt = styled('h1')({
-  textAlign: 'center',
-  margin: 16,
-  fontSize: 20,
-  lineHeight: '32px',
-  fontWeight: 400
-})
-
-const EditablePrompt = Prompt.withComponent(EditableText)
 
 const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   height: '100%',
@@ -67,10 +54,8 @@ const TeamPromptMeeting = (props: Props) => {
         ...useMeeting_meeting
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
-        id
-        facilitatorUserId
+        ...TeamPromptEditablePrompt_meeting
         isRightDrawerOpen
-        meetingPrompt
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -91,12 +76,10 @@ const TeamPromptMeeting = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, facilitatorUserId, phases, meetingPrompt} = meeting
-  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
+  const {phases} = meeting
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isFacilitator = viewerId === facilitatorUserId
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
   const stages = useMemo(() => {
@@ -132,27 +115,6 @@ const TeamPromptMeeting = (props: Props) => {
 
   const {isRightDrawerOpen} = meeting
 
-  const handleUpdatePrompt = useEventCallback((newPrompt) => {
-    if (submitting) return
-    submitMutation()
-
-    UpdateMeetingPromptMutation(atmosphere, {meetingId, newPrompt}, {onError, onCompleted})
-  })
-
-  const validate = (rawMeetingPrompt: string) => {
-    const res = new Legitity(rawMeetingPrompt)
-      .trim()
-      .required('Standups need prompts')
-      .min(2, 'Standups need good prompts')
-
-    if (res.error) {
-      onError(new Error(res.error))
-    } else if (error) {
-      onCompleted()
-    }
-    return res
-  }
-
   if (!safeRoute) return null
 
   return (
@@ -165,19 +127,7 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} />
-              {isFacilitator ? (
-                <EditablePrompt
-                  error={error?.message}
-                  handleSubmit={handleUpdatePrompt}
-                  initialValue={meetingPrompt}
-                  isWrap
-                  maxLength={500}
-                  validate={validate}
-                  placeholder={'What are you working on today? Stuck on anything?'}
-                />
-              ) : (
-                <Prompt>{meetingPrompt}</Prompt>
-              )}
+              <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
                   <ResponsesGrid>
