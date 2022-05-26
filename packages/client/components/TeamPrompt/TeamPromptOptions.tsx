@@ -6,16 +6,17 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
-import FlatButton from '../FlatButton'
+import BaseButton from '../BaseButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
-const OptionsButton = styled(FlatButton)({
+const OptionsButton = styled(BaseButton)({
   color: PALETTE.SLATE_600,
   height: '100%',
-  width: 'auto',
-  aspectRatio: '1/1',
+  aspectRatio: '1 / 1',
+  opacity: 1,
   borderRadius: '100%',
+  padding: 0,
   ':hover, :focus, :active': {
     color: PALETTE.SLATE_700,
     backgroundColor: PALETTE.SLATE_300
