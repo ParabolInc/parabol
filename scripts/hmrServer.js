@@ -9,7 +9,7 @@ const hmrServer = async () => {
   const compiler = webpack(config)
   const server = new WebpackDevServer({...config.devServer}, compiler)
   await waitForRelayCompiler()
-  await server.start(process.env.PORT, 'localhost')
+  await server.start()
 }
 
 hmrServer()

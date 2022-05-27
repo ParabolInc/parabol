@@ -10,7 +10,7 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
-const {PORT, SOCKET_PORT} = process.env
+const {PORT, HOST, SOCKET_PORT} = process.env
 
 const USE_REFRESH = false
 module.exports = {
@@ -48,6 +48,7 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
     port: PORT,
+    ...(HOST !== 'localhost' ? {allowedHosts: ['localhost', HOST]} : null), // alternative is to set disableHostCheck: true
     proxy: [
       'sse',
       'sse-ping',
@@ -126,7 +127,7 @@ module.exports = {
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
-        AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
+        AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
       })
     }),
     new ReactRefreshWebpackPlugin(),

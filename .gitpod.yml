@@ -1,0 +1,29 @@
+# Please adjust to your needs (see https://www.gitpod.io/docs/config-gitpod-file)
+# and commit this file to your remote git repository to share the goodness with others.
+tasks:
+  - name: prepare
+    before: |
+      # rewrite host
+      cp .env.example .env
+      MY_HOST=$(gp url 3000)
+      sed -i -r "s#^(HOST\s*=).*#\1$MY_HOST#" .env # using ‘#’ as the delimiter of the s command
+    init: |
+      brew update
+      brew install watchman
+      gp sync-done prepare
+  - name: db
+    init: |
+      gp sync-await prepare
+      yarn db:start
+      gp sync-done db
+  - name: app
+    init: yarn install
+    command: |
+      gp sync-await db
+      yarn dev
+ports:
+  - port: 3000 # app
+    visibility: public
+    onOpen: open-preview
+  - port: 8082 # redis console
+  - port: 8080 #rethinkdb console
