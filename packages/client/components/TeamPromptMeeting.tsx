@@ -8,6 +8,7 @@ import useEventCallback from '~/hooks/useEventCallback'
 import useMeeting from '~/hooks/useMeeting'
 import useMutationProps from '~/hooks/useMutationProps'
 import useTransition from '~/hooks/useTransition'
+import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
@@ -23,7 +24,6 @@ import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
-import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 
 const Prompt = styled('h1')({
   textAlign: 'center',
@@ -142,7 +142,7 @@ const TeamPromptMeeting = (props: Props) => {
   const validate = (rawMeetingPrompt: string) => {
     const res = new Legitity(rawMeetingPrompt)
       .trim()
-      .required('Standups need names')
+      .required('Standups need prompts')
       .min(2, 'Standups need good prompts')
 
     if (res.error) {
