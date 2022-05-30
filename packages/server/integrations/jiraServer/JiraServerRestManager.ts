@@ -201,7 +201,13 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
     )
   }
 
-  async getIssues(queryString: string | null, isJQL: boolean, projectKeys: string[]) {
+  async getIssues(
+    queryString: string | null,
+    isJQL: boolean,
+    projectKeys: string[],
+    maxResults = 25,
+    startAt = 0
+  ) {
     if (queryString && queryString.length === 1) {
       return new Error('Search term is too short, please enter at least 2 characters')
     }
@@ -210,7 +216,8 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
 
     const payload = {
       jql,
-      maxResults: 100,
+      maxResults,
+      startAt,
       expand: ['renderedFields']
     }
 
