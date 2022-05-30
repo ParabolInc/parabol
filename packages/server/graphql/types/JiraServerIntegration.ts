@@ -48,7 +48,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
-        return `jiraServer:${auth.providerId}`
+        return `jiraServer:${teamId}:${auth.providerId}`
       }
     },
     auth: {
