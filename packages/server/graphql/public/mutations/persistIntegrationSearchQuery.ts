@@ -1,3 +1,4 @@
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getIntegrationProvidersByIds from '../../../postgres/queries/getIntegrationProvidersByIds'
 import upsertIntegrationSearchQuery from '../../../postgres/queries/upsertIntegrationSearchQuery'
@@ -31,8 +32,10 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
       throw new Error('Service not implemented')
   }
 
-  if (providerId) {
-    const integrationProvider = (await getIntegrationProvidersByIds([providerId]))[0]
+  const dbProviderId = providerId ? IntegrationProviderId.split(providerId) : null
+
+  if (dbProviderId) {
+    const integrationProvider = (await getIntegrationProvidersByIds([dbProviderId]))[0]
 
     if (
       !integrationProvider ||
@@ -48,7 +51,7 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     teamId,
     service,
     query,
-    providerId: providerId ?? null
+    providerId: dbProviderId ?? null
   })
 
   const data = {teamId, userId: viewerId}

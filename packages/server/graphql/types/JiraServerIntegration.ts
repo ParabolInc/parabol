@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {toGlobalId} from 'graphql-relay'
+import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
@@ -207,13 +208,17 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       }
     },
     providerId: {
-      type: GraphQLInt,
+      type: GraphQLID,
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
           .load({service: 'jiraServer', teamId, userId})
 
-        return auth?.providerId
+        if (!auth) {
+          return null
+        }
+
+        return IntegrationProviderId.join(auth.providerId)
       }
     },
     searchQueries: {

@@ -22,7 +22,7 @@ graphql`
 const mutation = graphql`
   mutation PersistJiraServerSearchQueryMutation(
     $teamId: ID!
-    $providerId: Int
+    $providerId: ID
     $jiraServerSearchQuery: JiraServerSearchQueryInput
   ) {
     persistIntegrationSearchQuery(

@@ -2,7 +2,7 @@ extend type Mutation {
   persistIntegrationSearchQuery(
     teamId: ID!
     service: IntegrationProviderServiceEnum!
-    providerId: Int
+    providerId: ID
     jiraServerSearchQuery: JiraServerSearchQueryInput
   ): PersistIntegrationSearchQueryPayload!
 }
