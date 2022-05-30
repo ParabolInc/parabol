@@ -20,7 +20,6 @@ export async function down() {
   DO $$
   BEGIN
     DELETE FROM "IntegrationProvider" WHERE "service" = 'msTeams';
-
     ALTER TYPE "IntegrationProviderServiceEnum" RENAME TO "IntegrationProviderServiceEnum_delete";
     CREATE TYPE "IntegrationProviderServiceEnum" AS ENUM (
       'gitlab',
@@ -30,10 +29,8 @@ export async function down() {
     );
     ALTER TABLE "IntegrationProvider"
       ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
-
     ALTER TABLE "TeamMemberIntegrationAuth"
       ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
-
     DROP TYPE "IntegrationProviderServiceEnum_delete";
   END $$;
   `)

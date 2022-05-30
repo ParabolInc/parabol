@@ -159,8 +159,8 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         if (service === 'gitlab') {
           const {gid, accessUserId} = integration
           const gitlabAuth = await dataLoader
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'gitlab', teamId, userId: accessUserId})
+            .get('freshGitlabAuth')
+            .load({teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return NULL_FIELD
           const {providerId} = gitlabAuth
           const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)

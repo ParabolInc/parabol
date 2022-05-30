@@ -43,9 +43,7 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
     _args,
     {dataLoader}: GQLContext
   ) => {
-    const token = await dataLoader
-      .get('teamMemberIntegrationAuths')
-      .load({service: 'gitlab', teamId, userId})
+    const token = await dataLoader.get('freshGitlabAuth').load({teamId, userId})
     if (!token) throw new Error('No GitLab token found')
     const {accessToken, providerId} = token
     const provider = await dataLoader.get('integrationProviders').load(providerId)

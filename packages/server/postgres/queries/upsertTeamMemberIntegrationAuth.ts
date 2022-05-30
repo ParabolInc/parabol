@@ -20,6 +20,7 @@ export interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegr
   accessToken: string
   refreshToken: string
   scopes: string
+  expiresAt: Date | null
 }
 
 type ITeamMemberIntegrationAuthInput =

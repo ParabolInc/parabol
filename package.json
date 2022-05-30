@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.59.0",
+  "version": "6.60.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -29,8 +29,8 @@
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
-    "db:start": "docker-compose -f docker/dev.yml up -d",
-    "db:stop": "docker-compose -f docker/dev.yml down",
+    "db:start": "docker compose -f docker/dev.yml up -d",
+    "db:stop": "docker compose -f docker/dev.yml down",
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/migrate.js",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",

@@ -5,6 +5,40 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.60.0 2022-May-25
+
+### Added
+
+- feat(Jira Server): Use the newer Jira Software logo (#6578)
+- feat(standups): Response Reactjis (#6407)
+- feat(standups): Summary Card (#6529)
+- feat(standups): Sending meeting completed event when standup ends (#6587)
+- feat(Azure DevOps): Correctly format Sprint Poker comments as HTML (#6597)
+- feat: added avatar group in standups (#6614)
+- feat(metrics): migrate and consolidate integration related metrics (#6617)
+- feat(gitlab): refresh gitlab tokens (#6594)
+
+### Changed
+
+- chore: added PR template (#6565)
+- chore(DX): Fix Postgres DB path in dev.yml (#6486)
+- docs: Fix code policy link in PR template (#6600)
+- refactor: handle default value for isOnboardTeam (#6598)
+- chore: Convert components using HOCs to function components (#6591)
+- chore: Migrate withAtmosphere -> useAtmosphere (#6595)
+- chore: remove gitlab flag (#6619)
+
+### Fixed
+
+- fix: Due date month could sometimes not be set to the current month (#6581)
+- fix: pr template location (#6586)
+- fix: display search on archived tasks page (#6548)
+- fix(metrics): fix the bug where user deletion event won't update HubSpot (#6542)
+- fix: added write permission to pull request labeler workflow (#6603)
+- fix: stop-color warning in SVG (#6612)
+- fix(jira): Fix server error when pushing task to jira (#6613)
+- fix: Enforce mapping completeness for 'meetingTypeToIcon' (#6611)
+
 ## 6.59.0 2022-May-18
 
 ### Added
@@ -86,6 +120,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat(standups): Responses grid with static prompt (#6353)
 - feat(standups): Response Cards (#6392)
 - feat(standups): Discussion Drawer (#6370)
+- feat(standups): Standup UI - last updated time (#6557)
 - feat(CI): use prod build for integration tests (#6379)
 - feat(lint): Lint client (#6335)
 - feat(DX): Fast dev mode (#6337)

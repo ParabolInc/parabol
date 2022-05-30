@@ -4,13 +4,15 @@ import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
+import {TransitionStatus} from '~/hooks/useTransition'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import ReactjiId from '~/shared/gqlIds/ReactjiId'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
-import {Card} from '~/types/constEnums'
+import {BezierCurve, Card} from '~/types/constEnums'
 import plural from '~/utils/plural'
 import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -19,15 +21,33 @@ import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
+import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
 const MIN_CARD_HEIGHT = 100
+
+const Dimensions = {
+  RESPONSE_WIDTH: 296,
+  RESPONSE_MIN_HEIGHT: 100
+}
+
+const ResponseWrapper = styled('div')<{
+  status: TransitionStatus
+}>(({status}) => ({
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
+  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
+  display: 'flex',
+  flexDirection: 'column',
+  width: Dimensions.RESPONSE_WIDTH,
+  flexShrink: 0
+}))
 
 const ResponseHeader = styled('div')({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '0 8px'
+  padding: '0 8px',
+  marginBottom: 12
 })
 
 const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
@@ -56,7 +76,8 @@ const ResponseCardFooter = styled('div')({
 })
 
 export const TeamMemberName = styled('h3')({
-  padding: '0 8px'
+  padding: '0 8px',
+  margin: 0
 })
 
 const StyledReactjis = styled(ReactjiSection)({
@@ -78,10 +99,13 @@ const ReplyButton = styled(PlainButton)({
 
 interface Props {
   stageRef: TeamPromptResponseCard_stage$key
+  status: TransitionStatus
+  displayIdx: number
+  onTransitionEnd: () => void
 }
 
 const TeamPromptResponseCard = (props: Props) => {
-  const {stageRef} = props
+  const {stageRef, status, onTransitionEnd, displayIdx} = props
 
   const responseStage = useFragment(
     graphql`
@@ -99,22 +123,24 @@ const TeamPromptResponseCard = (props: Props) => {
           picture
           preferredName
         }
-        response {
-          id
-          userId
-          content
-          plaintextContent
-          reactjis {
-            ...ReactjiSection_reactjis
-            id
-            isViewerReactji
-          }
-        }
         discussion {
           thread(first: 1000) @connection(key: "DiscussionThread_thread") {
             edges {
               ...TeamPromptRepliesAvatarList_edges
             }
+          }
+        }
+        response {
+          id
+          userId
+          content
+          plaintextContent
+          updatedAt
+          createdAt
+          reactjis {
+            ...ReactjiSection_reactjis
+            id
+            isViewerReactji
           }
         }
       }
@@ -193,12 +219,21 @@ const TeamPromptResponseCard = (props: Props) => {
     )
   }
 
+  const ref = useAnimatedCard(displayIdx, status)
+
   return (
-    <>
+    <ResponseWrapper ref={ref} status={status} onTransitionEnd={onTransitionEnd}>
       <ResponseHeader>
         <Avatar picture={picture} size={48} />
-        <TeamMemberName>{preferredName}</TeamMemberName>
-        {/* :TODO: (jmtaber129): Show when response was last updated */}
+        <TeamMemberName>
+          {preferredName}
+          {response && (
+            <TeamPromptLastUpdatedTime
+              updatedAt={response.updatedAt}
+              createdAt={response.createdAt}
+            />
+          )}
+        </TeamMemberName>
       </ResponseHeader>
       <ResponseCard
         isEmpty={isEmptyResponse}
@@ -231,7 +266,7 @@ const TeamPromptResponseCard = (props: Props) => {
           </>
         )}
       </ResponseCard>
-    </>
+    </ResponseWrapper>
   )
 }
 
