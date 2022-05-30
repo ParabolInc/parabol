@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeIntegrationSearchQueryToPG from '../../../postgres/queries/removeIntegrationSearchQueryToPG'
+import removeIntegrationSearchQueryToPG from '../../../postgres/queries/removeIntegrationSearchQuery'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
