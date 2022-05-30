@@ -125,15 +125,14 @@ const JiraServerScopingSearchResults = (props: Props) => {
   const persistQuery = () => {
     const {queryString, isJQL} = jiraServerSearchQuery
     // don't persist an empty string (the default)
-    if (!queryString) return
-    const projectKeyFilters = jiraServerSearchQuery.projectKeyFilters as string[]
-    projectKeyFilters.sort()
+    if (!queryString.trim()) return
+    const projectKeyFilters = [...(jiraServerSearchQuery.projectKeyFilters as string[])].sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
     const {searchQueries} = jiraServer!
-    const searchHashes = searchQueries.map(({queryString, projectKeyFilters}) => {
-      return JSON.stringify({queryString, projectKeyFilters})
+
+    const isQueryNew = !searchQueries.find(({queryString, projectKeyFilters}) => {
+      return JSON.stringify({queryString, projectKeyFilters}) === lookupKey
     })
-    const isQueryNew = !searchHashes.includes(lookupKey)
 
     if (isQueryNew) {
       PersistJiraServerSearchQueryMutation(atmosphere, {
