@@ -38,7 +38,6 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         })
       }
       const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-      console.log('projectKeyFilters', projectKeyFilters)
       const projectFilters = projectKeyFilters
         .map((filter) => {
           return service === 'jiraServer'
