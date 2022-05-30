@@ -4,6 +4,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import RemoveJiraServerSearchQueryMutation from '../mutations/RemoveJiraServerSearchQueryMutation'
 import IntegrationRepoId from '../shared/gqlIds/IntegrationRepoId'
+import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
@@ -37,11 +38,12 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
         })
       }
       const queryStringLabel = isJQL ? queryString : `“${queryString}”`
+      console.log('projectKeyFilters', projectKeyFilters)
       const projectFilters = projectKeyFilters
         .map((filter) => {
           return service === 'jiraServer'
             ? IntegrationRepoId.split(filter).projectKey
-            : filter.split(':')[1]
+            : JiraProjectId.split(filter).projectKey
         })
         .join(', ')
 
