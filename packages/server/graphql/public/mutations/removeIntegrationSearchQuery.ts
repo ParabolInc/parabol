@@ -1,3 +1,4 @@
+import {fromGlobalId} from 'graphql-relay'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeIntegrationSearchQueryToPG from '../../../postgres/queries/removeIntegrationSearchQuery'
 import {getUserId} from '../../../utils/authorization'
@@ -13,7 +14,7 @@ const removeIntegrationSearchQuery: MutationResolvers['removeIntegrationSearchQu
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  await removeIntegrationSearchQueryToPG(parseInt(id, 10), viewerId, teamId)
+  await removeIntegrationSearchQueryToPG(parseInt(fromGlobalId(id).id, 10), viewerId, teamId)
 
   // RESOLUTION
   const data = {teamId, userId: viewerId}
