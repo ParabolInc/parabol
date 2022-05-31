@@ -7,7 +7,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {toGlobalId} from 'graphql-relay'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import TeamMember from '../../database/types/TeamMember'
@@ -249,7 +248,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           }
 
           return {
-            id: toGlobalId('IntegrationSearchQuery', searchQuery.id),
+            id: searchQuery.id,
             queryString: query.queryString,
             isJQL: query.isJQL,
             projectKeyFilters: query.projectKeyFilters,
