@@ -32,3 +32,4 @@ stats.json
 storybook-static/
 test-report.xml
 webpack-assets.json
+.vercel
