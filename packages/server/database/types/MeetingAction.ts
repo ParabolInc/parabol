@@ -14,7 +14,7 @@ interface Input {
   facilitatorUserId: string
 }
 
-export function isMeetingAction(meeting: Meeting): meeting is MeetingAction{
+export function isMeetingAction(meeting: Meeting): meeting is MeetingAction {
   return meeting.meetingType === 'action'
 }
 

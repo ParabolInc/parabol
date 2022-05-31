@@ -131,7 +131,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-          {(integrationType === 'JiraIssue') && (
+          {integrationType === 'JiraIssue' && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}

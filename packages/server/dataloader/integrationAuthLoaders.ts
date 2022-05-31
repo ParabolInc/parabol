@@ -1,6 +1,9 @@
 import DataLoader from 'dataloader'
-import SlackNotification, {SlackNotificationEvent} from '../database/types/SlackNotification'
 import TeamMemberIntegrationAuthId from '../../client/shared/gqlIds/TeamMemberIntegrationAuthId'
+import getRethink from '../database/rethinkDriver'
+import SlackAuth from '../database/types/SlackAuth'
+import SlackNotification, {SlackNotificationEvent} from '../database/types/SlackNotification'
+import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
@@ -13,9 +16,6 @@ import getSharedIntegrationProviders from '../postgres/queries/getSharedIntegrat
 import getTeamMemberIntegrationAuth from '../postgres/queries/getTeamMemberIntegrationAuth'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
-import errorFilter from '../graphql/errorFilter'
-import getRethink from '../database/rethinkDriver'
-import SlackAuth from '../database/types/SlackAuth'
 
 interface TeamMemberIntegrationAuthPrimaryKey {
   service: IntegrationProviderServiceEnum
@@ -110,7 +110,7 @@ export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
           getTeamMemberIntegrationAuth(service, teamId, userId)
         )
       )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value  : null))
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
       return vals
     },
     {

@@ -32,6 +32,7 @@
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "Organization": "../../database/types/Organization#default as Organization",
+          "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
@@ -46,17 +47,13 @@
       "schema": "packages/server/graphql/public/schema.graphql"
     },
     "packages/server/types/githubTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": "packages/server/utils/githubQueries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/utils/githubSchema.graphql"
     },
     "packages/server/types/gitlabTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": [
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"

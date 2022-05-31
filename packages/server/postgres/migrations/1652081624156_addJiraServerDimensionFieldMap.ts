@@ -29,4 +29,3 @@ export async function down() {
   `)
   await client.end()
 }
-

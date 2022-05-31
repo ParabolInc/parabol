@@ -39,8 +39,7 @@ const JiraServerScopingSearchResultsRoot = (props: Props) => {
       teamId,
       queryString: normalizedQueryString,
       isJQL,
-      projectKeyFilters: projectKeyFilters as string[],
-      first: 25
+      projectKeyFilters: projectKeyFilters as string[]
     }
   )
 

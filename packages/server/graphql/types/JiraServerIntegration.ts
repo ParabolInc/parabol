@@ -7,23 +7,25 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import TeamMember from '../../database/types/TeamMember'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import getLatestIntegrationSearchQueries from '../../postgres/queries/getLatestIntegrationSearchQueries'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
+import JiraSearchQuery from './JiraSearchQuery'
 import {JiraServerIssueConnection} from './JiraServerIssue'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
 
 type IssueArgs = {
   first: number
-  after?: string
+  after: string
   queryString: string | null
   isJQL: boolean
   projectKeyFilters: string[] | null
@@ -33,6 +35,21 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
   name: 'JiraServerIntegration',
   description: 'Jira Server integration data for a given team member',
   fields: () => ({
+    id: {
+      type: GraphQLID,
+      description: 'Composite key in jiraServer:providerId format',
+      resolve: async ({teamId, userId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        if (!auth) {
+          return null
+        }
+
+        return `jiraServer:${teamId}:${auth.providerId}`
+      }
+    },
     auth: {
       description: 'The OAuth1 Authorization for this team member',
       type: TeamMemberIntegrationAuthOAuth1,
@@ -71,11 +88,11 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       args: {
         first: {
           type: GraphQLInt,
-          defaultValue: 100
+          defaultValue: 25
         },
         after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
+          type: GraphQLString,
+          defaultValue: '0'
         },
         queryString: {
           type: GraphQLString,
@@ -92,7 +109,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         }
       },
       resolve: async ({teamId, userId}, args: any, {authToken, dataLoader}) => {
-        const {first, queryString, isJQL, projectKeyFilters} = args as IssueArgs
+        const {first, after, queryString, isJQL, projectKeyFilters} = args as IssueArgs
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -123,7 +140,18 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           (projectKeyFilter) => IntegrationRepoId.split(projectKeyFilter).projectKey!
         )
 
-        const issueRes = await integrationManager.getIssues(queryString, isJQL, projectKeys)
+        // Request one extra item to see if there are more results
+        const maxResults = first + 1
+        // Relay requires the cursor to be a string
+        const afterInt = parseInt(after, 10)
+        const startAt = afterInt + 1
+        const issueRes = await integrationManager.getIssues(
+          queryString,
+          isJQL,
+          projectKeys,
+          maxResults,
+          startAt
+        )
 
         if (issueRes instanceof Error) {
           return connectionFromTasks([], first, {
@@ -152,7 +180,22 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           }
         })
 
-        return connectionFromTasks(mappedIssues, first)
+        const nodes = mappedIssues.slice(0, first)
+        const edges = mappedIssues.map((node, index) => ({
+          cursor: `${index + afterInt}`,
+          node
+        }))
+
+        const firstEdge = edges[0]
+
+        return {
+          edges,
+          pageInfo: {
+            startCursor: firstEdge && firstEdge.cursor,
+            endCursor: firstEdge ? edges[edges.length - 1]!.cursor : null,
+            hasNextPage: mappedIssues.length > nodes.length
+          }
+        }
       }
     },
     projects: {
@@ -161,6 +204,57 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
         'A list of projects accessible by this team member. empty if viewer is not the user',
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('allJiraServerProjects').load({teamId, userId})
+      }
+    },
+    providerId: {
+      type: GraphQLID,
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        if (!auth) {
+          return null
+        }
+
+        return IntegrationProviderId.join(auth.providerId)
+      }
+    },
+    searchQueries: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraSearchQuery))),
+      description:
+        'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        if (!auth) {
+          return []
+        }
+
+        const searchQueries = await getLatestIntegrationSearchQueries({
+          teamId,
+          userId,
+          service: 'jiraServer',
+          providerId: auth.providerId
+        })
+
+        return searchQueries.map((searchQuery) => {
+          const query = searchQuery.query as {
+            queryString: string | null
+            isJQL: boolean
+            projectKeyFilters: string[] | null
+          }
+
+          return {
+            id: searchQuery.id,
+            queryString: query.queryString,
+            isJQL: query.isJQL,
+            projectKeyFilters: query.projectKeyFilters,
+            lastUpdatedAt: searchQuery.lastUsedAt
+          }
+        })
       }
     }
   })

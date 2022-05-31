@@ -66,6 +66,7 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
+      ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
       ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)
@@ -78,6 +79,7 @@ const subscription = graphql`
       ...RemoveOrgUserMutation_notification @relay(mask: false)
       ...InvalidateSessionsMutation_notification @relay(mask: false)
       ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
+      ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
 
       ... on AuthTokenPayload {
         id
