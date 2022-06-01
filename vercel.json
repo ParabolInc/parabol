@@ -11,6 +11,10 @@
     {
       "source": "/static/:path*",
       "destination": "/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/"
     }
   ]
 }
