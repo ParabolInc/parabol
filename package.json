@@ -24,7 +24,7 @@
     "start": "pm2-runtime start pm2.config.js",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node scripts/prod.js",
-    "build:client": "node scripts/prod-client.js && echo INVITATION_SHORTLINK:$INVITATION_SHORTLINK",
+    "build:client": "node scripts/prod-client.js",
     "clean": "rm -rf ./packages/client/__generated__ && rm ./queryMap.json && rm ./packages/server/graphql/public/schema.graphql && rm ./packages/server/graphql/private/schema.graphql && rm -rf ./dev && rm -rf ./dist && rm -rf ./build",
     "codegen": "node scripts/codegenGraphQL.js",
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
