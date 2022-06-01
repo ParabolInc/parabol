@@ -1,15 +1,16 @@
-import fetch, {RequestInit} from 'node-fetch'
 import AbortController from 'abort-controller'
+import fetch, {RequestInit} from 'node-fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {isError} from 'util'
+import {ExternalLinks} from '~/types/constEnums'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds';
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery';
-import {isError} from 'util';
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -111,10 +112,12 @@ export interface WorkItemRelations {
   url: string
 }
 
+export interface AccountProjects {
+  count: number
+  value: TeamProjectReference[]
+}
+
 export interface TeamProjectReference {
-  abbreviation: string
-  defaultTeamImageUrl: string
-  description: string
   id: string
   lastUpdateTime: string
   name: string
@@ -144,6 +147,26 @@ export interface AzureDevOpsError {
   message: string
 }
 
+interface WorkItemAddCommentResponse {
+  workItemId: number
+  id: number
+  version: number
+  text: string
+  createdBy: object
+  createdDate: string
+  modifiedBy: object
+  modifiedDate: string
+  url: string
+}
+
+interface WorkItemAddFieldResponse {
+  id: number
+  rev: number
+  fields: object
+  _links: object
+  url: string
+}
+
 const MAX_REQUEST_TIME = 5000
 
 class AzureDevOpsServerManager {
@@ -151,7 +174,7 @@ class AzureDevOpsServerManager {
   private headers = {
     Authorization: '',
     Accept: 'application/json' as const,
-    'Content-Type': 'application/json' as const
+    'Content-Type': 'application/json'
   }
 
   async init(code: string, codeVerifier: string | null) {
@@ -168,17 +191,18 @@ class AzureDevOpsServerManager {
     })
   }
 
-  private readonly provider: IntegrationProviderAzureDevOps
-
+  private readonly provider: IntegrationProviderAzureDevOps | undefined
 
   constructor(
     auth: IGetTeamMemberIntegrationAuthQueryResult | null,
-    provider: IntegrationProviderAzureDevOps
+    provider: IntegrationProviderAzureDevOps | null
   ) {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
     }
-    this.provider = provider
+    if (!!provider) {
+      this.provider = provider
+    }
   }
 
   setToken(token: string) {
@@ -220,6 +244,25 @@ class AzureDevOpsServerManager {
     const res = await this.fetchWithTimeout(url, {
       method: 'POST',
       headers: this.headers,
+      body: JSON.stringify(payload)
+    })
+    if (res instanceof Error) {
+      return res
+    }
+    const json = (await res.json()) as AzureDevOpsError | T
+    if ('message' in json) {
+      return new Error(json.message)
+    }
+    return json
+  }
+
+  private readonly patch = async <T>(url: string, payload: any) => {
+    const res = await this.fetchWithTimeout(url, {
+      method: 'PATCH',
+      headers: {
+        ...this.headers,
+        ['Content-Type']: 'application/json-patch+json'
+      },
       body: JSON.stringify(payload)
     })
     if (res instanceof Error) {
@@ -280,20 +323,37 @@ class AzureDevOpsServerManager {
     return {error: firstError, workItems: workItemReferences}
   }
 
-  async getUserStories(instanceId: string, queryString: string | null, isWIQL: boolean) {
-    if (isWIQL) {
-      const customQueryString = queryString
-        ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString}`
-        : "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
-
-      return await this.executeWiqlQuery(instanceId, customQueryString)
+  async getWorkItems(
+    instanceId: string,
+    queryString: string | null,
+    projectKeyFilters: string[] | null,
+    isWIQL: boolean
+  ) {
+    let projectFilter = ''
+    if (projectKeyFilters && projectKeyFilters.length > 0) {
+      projectKeyFilters.forEach((projectKey, idx) => {
+        if (idx === 0) projectFilter = `AND ( [System.TeamProject] = '${projectKey}'`
+        else projectFilter += ` OR [System.TeamProject] = '${projectKey}'`
+      })
+      projectFilter += ` )`
     }
-    const textFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
-    const customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' ${textFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    let customQueryString = ''
+    if (isWIQL)
+      customQueryString = queryString
+        ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString} ${projectFilter}`
+        : `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    else {
+      const queryFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
+      customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' ${queryFilter} ${projectFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+    }
     return await this.executeWiqlQuery(instanceId, customQueryString)
   }
 
-  async getAllUserWorkItems(queryString: string | null, isWIQL: boolean) {
+  async getAllUserWorkItems(
+    queryString: string | null,
+    projectKeyFilters: string[] | null,
+    isWIQL: boolean
+  ) {
     const allWorkItems = [] as WorkItem[]
     let firstError: Error | undefined
 
@@ -309,9 +369,10 @@ class AzureDevOpsServerManager {
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
-      const {error: workItemsError, workItems} = await this.getUserStories(
+      const {error: workItemsError, workItems} = await this.getWorkItems(
         instanceId,
         queryString,
+        projectKeyFilters,
         isWIQL
       )
       if (!!workItemsError) {
@@ -361,17 +422,17 @@ class AzureDevOpsServerManager {
     let firstError: Error | undefined
     const meResult = await this.getMe()
     const {error: meError, azureDevOpsUser} = meResult
-    if (!meError || !azureDevOpsUser) return {error: meError, projects: null}
+    if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
 
     const {id} = azureDevOpsUser
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-    if (!accessibleError) return {error: accessibleError, projects: null}
+    if (!!accessibleError) return {error: accessibleError, projects: null}
 
     for (const resource of accessibleOrgs) {
       const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
         resource.accountName
       )
-      if (!accountProjectsError && !firstError) {
+      if (!!accountProjectsError && !firstError) {
         firstError = accountProjectsError
         break
       } else {
@@ -384,7 +445,7 @@ class AzureDevOpsServerManager {
   async getAccountProjects(accountName: string) {
     const teamProjectReferences = [] as TeamProjectReference[]
     let firstError: Error | undefined
-    const result = await this.get<TeamProjectReference[]>(
+    const result = await this.get<AccountProjects>(
       `https://dev.azure.com/${accountName}/_apis/projects?api-version=7.1-preview.4`
     )
     if (result instanceof Error) {
@@ -392,8 +453,12 @@ class AzureDevOpsServerManager {
         firstError = result
       }
     } else {
-      const resultReferences = result as TeamProjectReference[]
-      teamProjectReferences.push(...resultReferences)
+      const projects = result.value.map((project) => {
+        return {
+          ...project
+        }
+      })
+      teamProjectReferences.push(...projects)
     }
     return {error: firstError, accountProjects: teamProjectReferences}
   }
@@ -420,7 +485,6 @@ class AzureDevOpsServerManager {
     return {error: firstError, accessibleOrgs: accessibleOrgs}
   }
 
-
   async refresh(refreshToken: string) {
     return this.fetchToken({
       grant_type: 'refresh_token',
@@ -433,14 +497,17 @@ class AzureDevOpsServerManager {
   private async fetchToken(
     params: OAuth2PkceAuthorizationParams | OAuth2PkceRefreshAuthorizationParams
   ) {
+    if (!this.provider) {
+      return new Error('No Azure DevOps provider found')
+    }
+
     const body = {
       ...params,
       client_id: this.provider.clientId
     }
 
     const additonalHeaders = {
-      // eslint-disable-next-line prettier/prettier
-      'Origin': 'http://localhost:8081'
+      Origin: 'http://localhost:8081'
     }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
@@ -452,6 +519,52 @@ class AzureDevOpsServerManager {
     return oAuthRes
   }
 
+  async addScoreComment(
+    instanceId: string,
+    dimensionName: string,
+    finalScore: string,
+    meetingName: string,
+    discussionURL: string,
+    remoteIssueId: string,
+    projectKey: string
+  ) {
+    const comment = `<div><b>${dimensionName}: ${finalScore}</b></div>
+    <div>See the <a href='${discussionURL}'>discussion</a> in ${meetingName}</div>
+
+    <div>Powered by <a href='${ExternalLinks.GETTING_STARTED_SPRINT_POKER}'>Parabol</a></div>`
+
+    const res = await this.post<WorkItemAddCommentResponse>(
+      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${remoteIssueId}/comments?api-version=7.1-preview.3`,
+      {
+        text: comment
+      }
+    )
+
+    if (res instanceof Error) {
+      return res
+    }
+
+    return res
+  }
+
+  async addScoreField(
+    instanceId: string,
+    fieldId: string,
+    finalScore: string | number,
+    remoteIssueId: string,
+    projectKey: string
+  ) {
+    return await this.patch<WorkItemAddFieldResponse>(
+      `https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1-preview.3`,
+      [
+        {
+          op: 'add',
+          path: fieldId,
+          value: finalScore
+        }
+      ]
+    )
+  }
 }
 
 export default AzureDevOpsServerManager

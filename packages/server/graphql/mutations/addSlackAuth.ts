@@ -3,9 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import SlackAuth from '../../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import SlackServerManager from '../../utils/SlackServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -43,10 +43,7 @@ export const upsertNotifications = async (
       id: (existingNotification && existingNotification.id) || undefined
     })
   })
-  await r
-    .table('SlackNotification')
-    .insert(upsertableNotifications, {conflict: 'replace'})
-    .run()
+  await r.table('SlackNotification').insert(upsertableNotifications, {conflict: 'replace'}).run()
 }
 
 const upsertAuth = async (
@@ -78,10 +75,7 @@ const upsertAuth = async (
     botUserId: slackRes.bot_user_id,
     botAccessToken: slackRes.access_token
   })
-  await r
-    .table('SlackAuth')
-    .insert(slackAuth, {conflict: 'replace'})
-    .run()
+  await r.table('SlackAuth').insert(slackAuth, {conflict: 'replace'}).run()
   return slackAuth.id
 }
 
@@ -131,14 +125,7 @@ export default {
       upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
       upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Added Integration',
-      properties: {
-        teamId,
-        service: 'Slack'
-      }
-    })
+    analytics.integrationAdded(viewerId, teamId, 'slack')
     const data = {slackAuthId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
     return data

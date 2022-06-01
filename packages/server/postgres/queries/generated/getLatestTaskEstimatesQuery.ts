@@ -22,6 +22,7 @@ export interface IGetLatestTaskEstimatesQueryResult {
   discussionId: string | null;
   jiraFieldId: string | null;
   githubLabelName: string | null;
+  azureDevOpsFieldName: string | null;
 }
 
 /** 'GetLatestTaskEstimatesQuery' query type */

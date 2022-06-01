@@ -1,7 +1,13 @@
 import {ReactableEnum} from '../../database/types/Reactable'
 
-const getReactableType = (type: any): ReactableEnum => {
-  return type.reflectionGroupId ? 'REFLECTION' : 'COMMENT'
+const getReactableType = (reactable: any): ReactableEnum => {
+  if (reactable.reflectionGroupId) {
+    return 'REFLECTION'
+  } else if (reactable.discussionId) {
+    return 'COMMENT'
+  } else {
+    return 'RESPONSE'
+  }
 }
 
 export default getReactableType

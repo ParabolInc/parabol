@@ -1,20 +1,19 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
+import generateUID from '../../generateUID'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import StartTeamPromptPayload from '../types/StartTeamPromptPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
-import standardError from '../../utils/standardError'
-import isStartMeetingLocked from './helpers/isStartMeetingLocked'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
-import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import generateUID from '../../generateUID'
-import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
-import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
-import {startSlackMeeting} from './helpers/notifications/notifySlack'
-import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 import RedisLockQueue from '../../utils/RedisLockQueue'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import StartTeamPromptPayload from '../types/StartTeamPromptPayload'
+import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import isStartMeetingLocked from './helpers/isStartMeetingLocked'
+import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
+import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -75,12 +74,12 @@ const startTeamPrompt = {
       teamId,
       meetingCount,
       phases,
-      facilitatorUserId: viewerId
+      facilitatorUserId: viewerId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?' // :TODO: (jmtaber129): Get this from meeting settings.
     })
     await r.table('NewMeeting').insert(meeting).run()
 
-    startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     sendMeetingStartToSegment(meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)

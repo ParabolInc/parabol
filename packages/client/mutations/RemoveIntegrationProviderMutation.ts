@@ -8,6 +8,7 @@ graphql`
     teamMember {
       ...MattermostProviderRowTeamMember @relay(mask: false)
       ...GitLabProviderRowTeamMember @relay(mask: false)
+      ...MSTeamsProviderRowTeamMember @relay(mask: false)
     }
   }
 `

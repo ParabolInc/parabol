@@ -3711,6 +3711,7 @@ enum TimelineEventEnum {
   joinedParabol
   createdTeam
   POKER_COMPLETE
+  TEAM_PROMPT_COMPLETE
 }
 
 """
@@ -8661,6 +8662,7 @@ The type of reactable
 enum ReactableEnum {
   COMMENT
   REFLECTION
+  RESPONSE
 }
 
 type AddReflectTemplatePayload {

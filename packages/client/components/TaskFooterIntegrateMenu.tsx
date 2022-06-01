@@ -45,7 +45,7 @@ const isIntegrated = (integrations: Integrations) => {
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
   const hasGitLab = gitlab?.auth?.isActive ?? false
-  const hasJiraServer = jiraServer.auth?.isActive ?? false
+  const hasJiraServer = jiraServer?.auth?.isActive ?? false
   const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
   return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps
     ? {
@@ -62,9 +62,6 @@ const query = graphql`
   query TaskFooterIntegrateMenuQuery($teamId: ID!, $userId: ID!) {
     viewer {
       id
-      featureFlags {
-        gitlab
-      }
       assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
         preferredName
         ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
@@ -93,7 +90,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     taskRef
   )
 
-  const {id: viewerId, viewerTeamMember, assigneeTeamMember, featureFlags} = viewer
+  const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {integrations: viewerIntegrations, repoIntegrations: viewerRepoIntegrations} =
     viewerTeamMember
@@ -147,7 +144,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       teamId={teamId}
       label={label}
       integrationsRef={viewerIntegrations}
-      featureFlags={featureFlags}
     />
   )
 }

@@ -1,17 +1,17 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import DayPicker, {DayModifiers} from 'react-day-picker'
-import '../styles/daypicker.css'
-import Menu from './Menu'
-import {MenuProps} from '../hooks/useMenu'
-import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {DueDatePicker_task} from '../__generated__/DueDatePicker_task.graphql'
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
+import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
+import '../styles/daypicker.css'
+import {PALETTE} from '../styles/paletteV3'
+import {DueDatePicker_task} from '../__generated__/DueDatePicker_task.graphql'
+import Menu from './Menu'
 
 interface Props {
   menuProps: MenuProps
@@ -48,7 +48,7 @@ const DueDatePicker = (props: Props) => {
     const dueDate = selected ? null : day
     UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, onCompleted, onError)
     menuProps.closePortal()
-      ; (document as any).activeElement?.blur()
+    ;(document as any).activeElement?.blur()
   }
 
   const selectedDate = dueDate ? new Date(dueDate) : undefined
@@ -61,7 +61,7 @@ const DueDatePicker = (props: Props) => {
       {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
       <DayPicker
         disabledDays={{before: now}}
-        fromMonth={selectedDate || now}
+        fromMonth={now}
         initialMonth={selectedDate || now}
         onDayClick={handleDayClick}
         selectedDays={selectedDate}

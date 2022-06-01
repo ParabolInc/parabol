@@ -10,7 +10,6 @@ UPDATE "Team" SET
   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
   "tier" = COALESCE(:tier, "tier"),
   "orgId" = COALESCE(:orgId, "orgId"),
-  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
   "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")
 WHERE id IN :ids
 RETURNING *;

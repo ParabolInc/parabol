@@ -24,7 +24,7 @@ const terminateSubscription = async (orgId: string) => {
         )('changes')(0)('old_val')
         .default(null) as unknown as string
     }).run(),
-    updateTeamByOrgId({isPaid: false, updatedAt: now}, orgId)
+    updateTeamByOrgId({isPaid: false}, orgId)
   ])
   const {stripeSubscriptionId} = rethinkResult
 

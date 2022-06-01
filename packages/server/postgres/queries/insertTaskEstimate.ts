@@ -4,9 +4,14 @@ import {
   insertTaskEstimateQuery
 } from './generated/insertTaskEstimateQuery'
 
-interface Input extends Omit<IInsertTaskEstimateQueryParams, 'githubLabelName' | 'jiraFieldId'> {
+interface Input
+  extends Omit<
+    IInsertTaskEstimateQueryParams,
+    'githubLabelName' | 'jiraFieldId' | 'azureDevOpsFieldName'
+  > {
   githubLabelName?: string
   jiraFieldId?: string
+  azureDevOpsFieldName?: string
 }
 
 const insertTaskEstimate = async (estimate: Input) => {

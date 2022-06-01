@@ -5,10 +5,11 @@ const ReactableEnum = new GraphQLEnumType({
   description: 'The type of reactable',
   values: {
     COMMENT: {},
-    REFLECTION: {}
+    REFLECTION: {},
+    RESPONSE: {}
   }
 })
 
-export type ReactableEnumType = 'COMMENT' | 'REFLECTION'
+export type ReactableEnumType = 'COMMENT' | 'REFLECTION' | 'RESPONSE'
 
 export default ReactableEnum

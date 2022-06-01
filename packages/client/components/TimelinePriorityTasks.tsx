@@ -4,7 +4,6 @@ import React, {useMemo} from 'react'
 import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import DraggableTask from '../containers/TaskCard/DraggableTask'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
@@ -17,7 +16,7 @@ import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTas
 import Icon from './Icon'
 import TimelineNoTasks from './TimelineNoTasks'
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   viewer: TimelinePriorityTasks_viewer
 }
 
@@ -104,7 +103,7 @@ const TimelinePriorityTasks = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(TimelinePriorityTasks), {
+export default createFragmentContainer(TimelinePriorityTasks, {
   viewer: graphql`
     fragment TimelinePriorityTasks_viewer on User {
       tasks(first: 1000, userIds: $userIds) @connection(key: "UserColumnsContainer_tasks") {

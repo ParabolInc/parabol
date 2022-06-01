@@ -121,7 +121,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
       isDropdown={isDropdown}
     >
       <SearchMenuItem
-        placeholder='Search your GitLab projects'
+        placeholder='Search GitLab projects'
         onChange={onQueryChange}
         value={searchQuery}
       />

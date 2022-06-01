@@ -53,7 +53,8 @@ export interface UserTasksKey {
 
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
-  {type: 'REFLECTION', loader: 'retroReflections'}
+  {type: 'REFLECTION', loader: 'retroReflections'},
+  {type: 'RESPONSE', loader: 'teamPromptResponses'}
 ] as const
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
@@ -78,6 +79,7 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         r
           .table('Comment')
           .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .filter({isActive: true})
           .group('discussionId') as any
       )
         .count()

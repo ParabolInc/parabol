@@ -18,9 +18,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         _args: unknown,
         {dataLoader}
       ) => {
-        return dataLoader
-          .get('teamMemberIntegrationAuths')
-          .load({service: 'gitlab', teamId, userId})
+        return dataLoader.get('freshGitlabAuth').load({teamId, userId})
       }
     },
     cloudProvider: {
