@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.61.0 2022-June-1
+
+### Added
+
+- feat(jira-server): Add pagination of results in sprint poker (#6607)
+- feat(standups): Card ordering w/ animated transitions (#6618)
+- feat(standups): Improved standups options button size (#6629)
+- feat(jira-server): Save and allow to reuse recent search queries in the scope phase of poker meeting for JiraServer (#6551)
+- chore: added PR template (#6565)
+- feat(standups): Basic editable prompt (#6640)
+
+### Fixed
+
+- fix(standups): Include TeamPromptMeetingMember on MeetingMember type (#6352)
+- fix(Sprint Poker): An exception could occur when modifying the scope in fast succession (#6599)
+
 ## 6.60.0 2022-May-25
 
 ### Added
