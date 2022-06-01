@@ -38,7 +38,7 @@ interface Props {
 
 const TeamPromptEditablePrompt = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {submitMutation, submitting, onCompleted, onError} = useMutationProps()
+  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
   const {closePortal, openPortal, modalPortal} = useModal()
   const {meetingRef} = props
   const meeting = useFragment(
@@ -57,7 +57,7 @@ const TeamPromptEditablePrompt = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
 
   const handleUpdatePrompt = useEventCallback((newPrompt) => {
-    if (submitting) return
+    if (submitting || error) return
     submitMutation()
 
     UpdateMeetingPromptMutation(atmosphere, {meetingId, newPrompt}, {onError, onCompleted})
@@ -75,7 +75,10 @@ const TeamPromptEditablePrompt = (props: Props) => {
             <TeamPromptEditablePromptModal
               initialPrompt={meetingPrompt}
               onCloseModal={closePortal}
-              onUpdatePrompt={handleUpdatePrompt}
+              onSubmitUpdatePrompt={handleUpdatePrompt}
+              error={error?.message}
+              onCompleted={onCompleted}
+              onError={onError}
             />
           )}
         </>
