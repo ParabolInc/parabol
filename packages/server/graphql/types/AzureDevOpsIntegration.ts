@@ -75,7 +75,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The user that the access token is attached to'
     },
-    userStories: {
+    workItems: {
       type: new GraphQLNonNull(AzureDevOpsWorkItemConnection),
       description:
         'A list of work items coming straight from the azure dev ops integration for a specific team member',
@@ -151,7 +151,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         if (innerWorkItems === undefined) {
           return connectionFromTasks([], 0, undefined)
         } else {
-          const userStories = Array.from(
+          const workItems = Array.from(
             innerWorkItems.map((workItem) => {
               return {
                 id: workItem.id.toString(),
@@ -160,12 +160,15 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
                 url: workItem.url,
                 state: workItem.fields['System.State'],
                 type: workItem.fields['System.WorkItemType'],
+                descriptionHTML: workItem.fields['System.Description']
+                  ? workItem.fields['System.Description']
+                  : '',
                 service: 'azureDevOps',
                 updatedAt: new Date()
               }
             })
           )
-          return connectionFromTasks(userStories, first, undefined)
+          return connectionFromTasks(workItems, first, undefined)
         }
       }
     },

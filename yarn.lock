@@ -5205,6 +5205,11 @@ acorn@^8.0.4, acorn@^8.2.4, acorn@^8.4.1, acorn@^8.5.0, acorn@^8.7.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.7.0.tgz#90951fde0f8f09df93549481e5fc141445b791cf"
   integrity sha512-V/LGr1APy+PXIwKebEWrkZPwoeoF+w1jiOBUmuxuiUIaOHtob8Qc9BTrYo7VuI5fR8tqsy+buA2WFooR5olqvQ==
 
+adaptivecards@^2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/adaptivecards/-/adaptivecards-2.10.0.tgz#1c94e84491afe5a4f2d4060f6e0fc57b895205e3"
+  integrity sha512-QcgXGFlX3rgIfZkxvQY896zEVBh30mE37z3XKhcQW2OqSUrVH6dNT78MkM//W4wRdrZizSHqXKLaKyVVxAgVFg==
+
 add-stream@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/add-stream/-/add-stream-1.0.0.tgz#6a7990437ca736d5e1288db92bd3266d5f5cb2aa"
@@ -7812,6 +7817,7 @@ draft-js-utils@^1.4.0:
 
 "draft-js@https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6":
   version "0.10.5"
+  uid "025fddba56f21aaf3383aee778e0b17025c9a7bc"
   resolved "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6#025fddba56f21aaf3383aee778e0b17025c9a7bc"
   dependencies:
     fbjs "^0.8.15"
@@ -7819,9 +7825,9 @@ draft-js-utils@^1.4.0:
     object-assign "^4.1.0"
 
 dset@^3.1.0:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/dset/-/dset-3.1.1.tgz#07de5af7a8d03eab337ad1a8ba77fe17bba61a8c"
-  integrity sha512-hYf+jZNNqJBD2GiMYb+5mqOIX4R4RRHXU3qWMWYN+rqcR2/YpRL2bUHr8C8fU+5DNvqYjJ8YvMGSLuVPWU1cNg==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/dset/-/dset-3.1.2.tgz#89c436ca6450398396dc6538ea00abc0c54cd45a"
+  integrity sha512-g/M9sqy3oHe477Ar4voQxWtaPIFw1jTdKZuomOjhCcBx9nHUNn0pu6NopuFFrTh/TRZIKEj+76vLWFu9BNKk+Q==
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -9353,6 +9359,11 @@ graphql-middleware@^6.1.18:
   dependencies:
     "@graphql-tools/delegate" "^8.5.4"
     "@graphql-tools/schema" "^8.3.3"
+
+graphql-relay@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.10.0.tgz#3b661432edf1cb414cd4a132cf595350e524db2b"
+  integrity sha512-44yBuw2/DLNEiMypbNZBt1yMDbBmyVPVesPywnteGGALiBmdyy1JP8jSg8ClLePg8ZZxk0O4BLhd1a6U/1jDOQ==
 
 graphql-request@^3.3.0:
   version "3.7.0"
@@ -12655,10 +12666,9 @@ neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nest-graphql-endpoint@^0.6.2:
+nest-graphql-endpoint@mattkrick/nest-graphql-endpoint#add-options:
   version "0.6.2"
-  resolved "https://registry.yarnpkg.com/nest-graphql-endpoint/-/nest-graphql-endpoint-0.6.2.tgz#fa1ff4fccdfaedba1bf9382f72b8f4c1bd649dd6"
-  integrity sha512-rguljXpzo2Uku7CPyvMaXGPrbcI+uE2Nzawrk60goIyXSAAtU+xkfZze+smIn5Wt1i5rIFGtLSQaaJhYQ+OWxg==
+  resolved "https://codeload.github.com/mattkrick/nest-graphql-endpoint/tar.gz/e5fba7e8f3f92f55044dd3f1c0eb2d8dab7513fd"
   dependencies:
     "@graphql-tools/schema" "^8.3.6"
     "@graphql-tools/wrap" "^8.4.10"

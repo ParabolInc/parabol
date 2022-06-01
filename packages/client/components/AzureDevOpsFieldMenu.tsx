@@ -1,74 +1,24 @@
-import styled from '@emotion/styled-base'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import useModal from '../hooks/useModal'
-import textOverflow from '../styles/helpers/textOverflow'
-import {PALETTE} from '../styles/paletteV3'
-import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
+import UpdateAzureDevOpsDimensionFieldMutation from '../mutations/UpdateAzureDevOpsDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
-import FlatButton from './FlatButton'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-
-const LabelOptionRoot = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  minWidth: '300px'
-})
-
-const LabelOptionBlock = styled('div')({
-  display: 'block',
-  flexDirection: 'column',
-  maxWidth: '200px',
-  paddingTop: 12,
-  paddingLeft: 16,
-  paddingBottom: 12,
-  flexGrow: 1
-})
-
-const LabelOptionName = styled('div')({
-  color: PALETTE.SLATE_700,
-  display: 'flex',
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  lineHeight: '24px'
-})
-
-const LabelOptionSub = styled('div')({
-  ...textOverflow,
-  color: PALETTE.SLATE_600,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 12,
-  lineHeight: '16px'
-})
-
-const EditButtonGroup = styled('div')({
-  paddingLeft: '8px',
-  paddingRight: '8px',
-  marginTop: 'auto',
-  marginBottom: 'auto'
-})
-const Button = styled(FlatButton)({
-  alignItems: 'center',
-  color: PALETTE.SLATE_600,
-  height: 32,
-  justifyContent: 'center',
-  padding: 0,
-  width: 32
-})
-
-const ActionButton = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
-})
+import MenuItemHR from './MenuItemHR'
 
 interface Props {
   menuProps: MenuProps
   stageRef: AzureDevOpsFieldMenu_stage$key
   submitScore(): void
+}
+
+interface MenuOption {
+  label: string
+  fieldValue: string
 }
 
 const AzureDevOpsFieldMenu = (props: Props) => {
@@ -87,6 +37,10 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           integration {
             ... on AzureDevOpsWorkItem {
               __typename
+
+              id
+              teamProject
+              url
               type
             }
           }
@@ -97,42 +51,96 @@ const AzureDevOpsFieldMenu = (props: Props) => {
     stageRef
   )
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const {serviceField, task, dimensionRef, meetingId} = stage
-  const {name: dimensionName} = dimensionRef
+  const {serviceField, task, meetingId, dimensionRef} = stage
   const {name: serviceFieldName} = serviceField
-  const defaults = [
-    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
-    SprintPokerDefaults.SERVICE_FIELD_NULL
-  ] as string[]
-  const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
-  const {
-    modalPortal,
-    openPortal,
-    closePortal: closeModal
-  } = useModal({
-    id: 'editAzureDevOpsLabel',
-    parentId: 'azureDevOpsFieldMenu'
-  })
+  const {name: dimensionName} = dimensionRef
+  const defaultActiveIdx = useMemo(() => {
+    if (
+      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL ||
+      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT
+    ) {
+      return 1
+    } else {
+      return 0
+    }
+  }, [serviceFieldName])
 
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
   const {integration} = task
-  const {type} = integration
-  const handleClick = (labelTemplate: string) => () => {
-    if (labelTemplate !== serviceFieldName) {
-      // call the mutation
+  const {teamProject, url, type: workItemType} = integration
+  const getInstanceId = (url: URL) => {
+    const index = url.pathname.indexOf('/', 1)
+    return url.hostname + url.pathname.substring(0, index)
+  }
+  const handleClick = (fieldName: string) => () => {
+    if (fieldName !== serviceFieldName) {
+      UpdateAzureDevOpsDimensionFieldMutation(
+        atmosphere,
+        {
+          meetingId,
+          instanceId: getInstanceId(new URL(url)),
+          dimensionName,
+          fieldName,
+          projectKey: teamProject
+        },
+        {
+          onCompleted: submitScore,
+          onError: () => {
+            /* noop */
+          }
+        }
+      )
     } else {
       submitScore()
     }
     closePortal()
   }
-  const openEditModal = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    openPortal()
+
+  const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
+    if (workItemType === 'User Story' || workItemType === 'Bug') {
+      return [
+        {
+          label: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD
+        },
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    } else if (workItemType === 'Task') {
+      return [
+        {
+          label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD
+        },
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    } else if (workItemType === 'Epic' || workItemType === 'Feature') {
+      return [
+        {
+          label: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD
+        },
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    } else {
+      return [
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    }
   }
-  const defaultLabelTemplate = `${dimensionName}: {{#}}`
-  const serviceFieldTemplate = defaults.includes(serviceFieldName)
-    ? defaultLabelTemplate
-    : serviceFieldName
+  const menuValues = getDefaultMenuValues(workItemType)
+
   return (
     <>
       <Menu
@@ -141,10 +149,11 @@ const AzureDevOpsFieldMenu = (props: Props) => {
         isDropdown={isDropdown}
         defaultActiveIdx={defaultActiveIdx}
       >
-        <MenuItem
-          label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
-          onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
-        />
+        {menuValues.map(({label, fieldValue}) => {
+          return <MenuItem key={fieldValue} label={label} onClick={handleClick(fieldValue)} />
+        })}
+        <MenuItemHR />
+
         <MenuItem
           label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
           onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}

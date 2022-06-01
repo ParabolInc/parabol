@@ -5,21 +5,128 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.61.0 2022-June-1
+
+### Added
+
+- feat(jira-server): Add pagination of results in sprint poker (#6607)
+- feat(standups): Card ordering w/ animated transitions (#6618)
+- feat(standups): Improved standups options button size (#6629)
+- feat(jira-server): Save and allow to reuse recent search queries in the scope phase of poker meeting for JiraServer (#6551)
+- chore: added PR template (#6565)
+- feat(standups): Basic editable prompt (#6640)
+
+### Fixed
+
+- fix(standups): Include TeamPromptMeetingMember on MeetingMember type (#6352)
+- fix(Sprint Poker): An exception could occur when modifying the scope in fast succession (#6599)
+
+## 6.60.0 2022-May-25
+
+### Added
+
+- feat(Jira Server): Use the newer Jira Software logo (#6578)
+- feat(standups): Response Reactjis (#6407)
+- feat(standups): Summary Card (#6529)
+- feat(standups): Sending meeting completed event when standup ends (#6587)
+- feat(Azure DevOps): Correctly format Sprint Poker comments as HTML (#6597)
+- feat: added avatar group in standups (#6614)
+- feat(metrics): migrate and consolidate integration related metrics (#6617)
+- feat(gitlab): refresh gitlab tokens (#6594)
+
+### Changed
+
+- chore: added PR template (#6565)
+- chore(DX): Fix Postgres DB path in dev.yml (#6486)
+- docs: Fix code policy link in PR template (#6600)
+- refactor: handle default value for isOnboardTeam (#6598)
+- chore: Convert components using HOCs to function components (#6591)
+- chore: Migrate withAtmosphere -> useAtmosphere (#6595)
+- chore: remove gitlab flag (#6619)
+
+### Fixed
+
+- fix: Due date month could sometimes not be set to the current month (#6581)
+- fix: pr template location (#6586)
+- fix: display search on archived tasks page (#6548)
+- fix(metrics): fix the bug where user deletion event won't update HubSpot (#6542)
+- fix: added write permission to pull request labeler workflow (#6603)
+- fix: stop-color warning in SVG (#6612)
+- fix(jira): Fix server error when pushing task to jira (#6613)
+- fix: Enforce mapping completeness for 'meetingTypeToIcon' (#6611)
+
+## 6.59.0 2022-May-18
+
+### Added
+
+- chore: added PR labeler workflow (#6525)
+- feat(standups): Activities from other team members get real-time updates (#6504)
+- feat(standups): Integrate response cards with discussion drawer (#6469)
+- feat(standups): Place viewer's card at the start of the list (#6559)
+- feat(notifications): Refactor Slack/Mattermost into NotificationHelper (#6262)
+- feat: Notifications support for MS Teams (#6494)
+- feat(Jira Server): Voting to different fields in Sprint Poker is now supported (#6437)
+
+### Changed
+
+- docs: Added general rules to code review policy (#6507)
+- docs: Added code review experiment proposal (#6508)
+- refactor: Set updateAt field via a Postgres trigger (#6493)
+- chore: remove MAX_GITLAB_POKER_STORIES (#6547)
+- chore: remove GitLab feature flag (#6554)
+- chore: readd gitlab feature flag (#6566)
+
+### Fixed
+
+- fix(devOps): reduce max pg connections to 30 (#6521)
+- fix: ignore updateAt field in checkTableEq for Teams (#6490)
+- fix: nested GitLab query batching (#6541)
+- fix: increase initial page size for archived tasks (#6555)
+
+## 6.58.0 2022-May-12
+
+### Added
+
+- **Azure DevOps** is available behind a feature flag and now supports search in Sprint Poker (#6448) and pushing estimates (#6481)
+- **DX**: You now can run `yarn newMutation` to generate the boilerplate, check README.md for details (#6473)
+- **Standups**: Live updates for team responses (#6388)
+- **tests** can now be run in different environments (#6382)
+- **tests**: the rate limiter is disabled (#6412)
+- **support**: the mutation `enableSAMLForDomain` can now update the domains without needing to pass all the metadata again (#6447)
+- **metrics**: Company's active team count now properly ignores inactive teams (#6452)
+- **metrics**: email invite links contain the correct UTM parameters (#6539)
+
+### Fixed
+
+- meeting summary email is now sent again (#6523)
+- demo Jira and GitHub integrations now work again in the Demo (#6460)
+- fixed bugs occuring when resetting a retrospective to its grouping phase (#6305, #6306)
+- subscription payloads are now correctly resolved for SDL types (#6506)
+- fixed `hardDeleteUser` mutation which would fail for same users depending on their meetings (#6544)
+
+### Changed
+
+- Switched to mainline workbox to generate the service worker (#6414)
+- Reduced docker image size (#6416)
+
 ## 6.57.0 2022-May-4
 
 ### Added
- - feat(standups): upsertTeamPromptResponse (#6333)
- - feat(ado): Initial Azure DevOps integration (#6260)
- - feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
- - feat(sprint-poker): Can vote on GitLab issue (#6398)
- - feat(sprint-poker): Push task to GitLab (#6427)
+
+- feat(standups): upsertTeamPromptResponse (#6333)
+- feat(ado): Initial Azure DevOps integration (#6260)
+- feat(jira-server): Allow searching for issues in Sprint Poker (#6406)
+- feat(sprint-poker): Can vote on GitLab issue (#6398)
+- feat(sprint-poker): Push task to GitLab (#6427)
 
 ### Changed
- - chore: Create manualTestingGuide.md (#6426)
- - chore: removed unused video related components (#6497)
+
+- chore: Create manualTestingGuide.md (#6426)
+- chore: removed unused video related components (#6497)
 
 ### Fixed
- - fix(rethinkdb): attempt to fix the table rename (#6480)
+
+- fix(rethinkdb): attempt to fix the table rename (#6480)
 
 ## 6.56.0 2022-April-27
 
@@ -29,6 +136,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat(standups): Responses grid with static prompt (#6353)
 - feat(standups): Response Cards (#6392)
 - feat(standups): Discussion Drawer (#6370)
+- feat(standups): Standup UI - last updated time (#6557)
 - feat(CI): use prod build for integration tests (#6379)
 - feat(lint): Lint client (#6335)
 - feat(DX): Fast dev mode (#6337)

@@ -33,9 +33,16 @@
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "Organization": "../../database/types/Organization#default as Organization",
+          "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
+          "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
+          "Team": "../../postgres/queries/getTeamsByIds#Team",
+          "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
+          "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
+          "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
+          "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }

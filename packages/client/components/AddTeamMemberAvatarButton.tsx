@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useModal from '../hooks/useModal'
 import useTooltip from '../hooks/useTooltip'
@@ -12,9 +12,8 @@ import lazyPreload from '../utils/lazyPreload'
 import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import Icon from './Icon'
 import OutlinedButton from './OutlinedButton'
-import {PALETTE} from '~/styles/paletteV3'
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   meetingId?: string
   teamId: string
   teamMembers: AddTeamMemberAvatarButton_teamMembers
@@ -70,12 +69,12 @@ const StyledIcon = styled(Icon)<{isMeeting: boolean}>(
     }
 )
 
-const AddTeamMemberModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
+const AddTeamMemberModal = lazyPreload(
+  () => import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
 )
 
-const AddTeamMemberModalDemo = lazyPreload(() =>
-  import(/* webpackChunkName: 'AddTeamMemberModalDemo' */ './AddTeamMemberModalDemo')
+const AddTeamMemberModalDemo = lazyPreload(
+  () => import(/* webpackChunkName: 'AddTeamMemberModalDemo' */ './AddTeamMemberModalDemo')
 )
 
 const AddTeamMemberAvatarButton = (props: Props) => {
@@ -113,7 +112,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(AddTeamMemberAvatarButton), {
+export default createFragmentContainer(AddTeamMemberAvatarButton, {
   teamMembers: graphql`
     fragment AddTeamMemberAvatarButton_teamMembers on TeamMember @relay(plural: true) {
       ...AddTeamMemberModal_teamMembers

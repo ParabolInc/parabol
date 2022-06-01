@@ -5,7 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import Atmosphere from '../Atmosphere'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -16,7 +15,7 @@ import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVot
 import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import Icon from './Icon'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props extends WithMutationProps {
   isExpanded: boolean
   meeting: ReflectionGroupVoting_meeting
   reflectionGroup: ReflectionGroupVoting_reflectionGroup
@@ -35,8 +34,8 @@ const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
         ? '#fff'
         : 'rgba(255, 255, 255, .25)'
       : isEnabled
-        ? PALETTE.SLATE_600
-        : PALETTE.SLATE_400,
+      ? PALETTE.SLATE_600
+      : PALETTE.SLATE_400,
     cursor: isEnabled ? 'pointer' : undefined,
     fontSize: ICON_SIZE.MD18,
     height: 24,
@@ -54,8 +53,8 @@ const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
         ? PALETTE.SLATE_200
         : '#fff'
       : voteCount === 0
-        ? PALETTE.SLATE_700
-        : PALETTE.SKY_500,
+      ? PALETTE.SLATE_700
+      : PALETTE.SKY_500,
     fontWeight: 600,
     padding: '0 4px',
     userSelect: 'none'
@@ -147,7 +146,7 @@ const ReflectionGroupVoting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(ReflectionGroupVoting)), {
+export default createFragmentContainer(withMutationProps(ReflectionGroupVoting), {
   meeting: graphql`
     fragment ReflectionGroupVoting_meeting on RetrospectiveMeeting {
       localStage {

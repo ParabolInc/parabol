@@ -1,9 +1,9 @@
 import {TaskIntegration, TaskServiceEnum} from '../../../server/database/types/Task'
+import AzureDevOpsIssueId from './AzureDevOpsIssueId'
 import GitHubIssueId from './GitHubIssueId'
 import GitLabIssueId from './GitLabIssueId'
 import JiraIssueId from './JiraIssueId'
 import JiraServerIssueId from './JiraServerIssueId'
-import AzureDevOpsIssueId from './AzureDevOpsIssueId'
 
 const IntegrationHash = {
   join: (integration: TaskIntegration) => {
@@ -13,11 +13,19 @@ const IntegrationHash = {
       case 'jira':
         return JiraIssueId.join(integration.cloudId, integration.issueKey)
       case 'jiraServer':
-        return JiraServerIssueId.join(integration.providerId, integration.repositoryId, integration.issueId)
+        return JiraServerIssueId.join(
+          integration.providerId,
+          integration.repositoryId,
+          integration.issueId
+        )
       case 'gitlab':
         return GitLabIssueId.join(integration.providerId, integration.gid)
       case 'azureDevOps':
-        return AzureDevOpsIssueId.join(integration.instanceId, integration.projectKey, integration.issueKey)
+        return AzureDevOpsIssueId.join(
+          integration.instanceId,
+          integration.projectKey,
+          integration.issueKey
+        )
       default:
         return ''
     }

@@ -16,13 +16,13 @@ export interface IRemoveGitHubAuthQueryQuery {
   result: IRemoveGitHubAuthQueryResult;
 }
 
-const removeGitHubAuthQueryIR: any = {"name":"removeGitHubAuthQuery","params":[{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":130,"b":135,"line":6,"col":18}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":153,"b":158,"line":6,"col":41}]}}],"usedParamSet":{"userId":true,"teamId":true},"statement":{"body":"UPDATE \"GitHubAuth\"\nSET \"isActive\" = FALSE, \"updatedAt\" = CURRENT_TIMESTAMP\nWHERE \"userId\" = :userId AND \"teamId\" = :teamId AND \"isActive\" = TRUE","loc":{"a":36,"b":180,"line":4,"col":0}}};
+const removeGitHubAuthQueryIR: any = {"name":"removeGitHubAuthQuery","params":[{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":97,"b":102,"line":6,"col":18}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":120,"b":125,"line":6,"col":41}]}}],"usedParamSet":{"userId":true,"teamId":true},"statement":{"body":"UPDATE \"GitHubAuth\"\nSET \"isActive\" = FALSE\nWHERE \"userId\" = :userId AND \"teamId\" = :teamId AND \"isActive\" = TRUE","loc":{"a":36,"b":147,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "GitHubAuth"
- * SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
+ * SET "isActive" = FALSE
  * WHERE "userId" = :userId AND "teamId" = :teamId AND "isActive" = TRUE
  * ```
  */

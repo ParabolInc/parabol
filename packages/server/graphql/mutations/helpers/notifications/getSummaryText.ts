@@ -1,9 +1,13 @@
-import plural from 'parabol-client/utils/plural'
 import relativeDate from 'parabol-client/utils/date/relativeDate'
-import {AnyMeeting} from '../../../../postgres/types/Meeting'
+import plural from 'parabol-client/utils/plural'
+import Meeting from '../../../../database/types/Meeting'
+import {isMeetingAction} from '../../../../database/types/MeetingAction'
+import {isMeetingPoker} from '../../../../database/types/MeetingPoker'
+import {isMeetingRetrospective} from '../../../../database/types/MeetingRetrospective'
+import {isMeetingTeamPrompt} from '../../../../database/types/MeetingTeamPrompt'
 
-const getSummaryText = (meeting: AnyMeeting) => {
-  if (meeting.meetingType === 'retrospective') {
+const getSummaryText = (meeting: Meeting) => {
+  if (isMeetingRetrospective(meeting)) {
     const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
     return `Your team shared ${reflectionCount} ${plural(
       reflectionCount,
@@ -12,7 +16,7 @@ const getSummaryText = (meeting: AnyMeeting) => {
       commentCount,
       'comment'
     )} and created ${taskCount} ${plural(taskCount, 'task')}.`
-  } else if (meeting.meetingType === 'action') {
+  } else if (isMeetingAction(meeting)) {
     const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
@@ -27,15 +31,17 @@ const getSummaryText = (meeting: AnyMeeting) => {
       commentCount,
       'comment'
     )}.`
-  } else if (meeting.meetingType === 'teamPrompt') {
+  } else if (isMeetingTeamPrompt(meeting)) {
     return 'TODO: Implement teamPrompt summary text'
-  } else {
+  } else if (isMeetingPoker(meeting)) {
     const {storyCount = 0, commentCount = 0} = meeting
     return `You voted on ${storyCount} ${plural(
       storyCount,
       'story',
       'stories'
     )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
+  } else {
+    throw new Error(`Meeting type not supported ${meeting.meetingType}`)
   }
 }
 
