@@ -16,11 +16,13 @@ import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
   textAlign: 'center',
   margin: '16px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   fontSize: 20,
   lineHeight: '32px',
   fontWeight: 400,
   cursor: isEditable ? 'pointer' : 'default',
-  outline: isEditable ? undefined : 'none',
   ':hover': {
     opacity: isEditable ? 0.5 : undefined
   }
@@ -28,8 +30,8 @@ const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
 
 const StyledIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
-  marginLeft: 8
+  fontSize: ICON_SIZE.MD24,
+  marginLeft: 16
 })
 
 interface Props {

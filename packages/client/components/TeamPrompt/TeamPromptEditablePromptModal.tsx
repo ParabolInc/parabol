@@ -149,7 +149,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
       <DialogContent>
         <TextArea
           autoFocus={true}
-          maxLength={200}
+          maxLength={500}
           onChange={(e) => {
             const nextValue = e.target.value || ''
             setEditablePrompt(nextValue)
