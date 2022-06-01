@@ -47,12 +47,13 @@ const TeamPromptEditablePrompt = (props: Props) => {
         id
         facilitatorUserId
         meetingPrompt
+        endedAt
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, meetingPrompt, facilitatorUserId} = meeting
+  const {id: meetingId, meetingPrompt, facilitatorUserId, endedAt} = meeting
   const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
 
@@ -65,7 +66,7 @@ const TeamPromptEditablePrompt = (props: Props) => {
 
   return (
     <>
-      {isFacilitator ? (
+      {isFacilitator && !endedAt ? (
         <>
           <Prompt isEditable={isFacilitator} onClick={openPortal}>
             {meetingPrompt}
