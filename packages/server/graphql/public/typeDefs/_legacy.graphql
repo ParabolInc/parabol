@@ -2990,56 +2990,6 @@ type CreditCard {
 }
 
 """
-A grouping of organizations. Automatically grouped by top level domain of each
-"""
-type Company {
-  """
-  the top level domain
-  """
-  id: ID!
-
-  """
-  the number of active teams across all organizations
-  """
-  activeTeamCount: Int!
-
-  """
-  the number of active users across all organizations
-  """
-  activeUserCount: Int!
-
-  """
-  the last time any team in the organization started a meeting, null if no meetings were ever run
-  """
-  lastMetAt: DateTime
-
-  """
-  the total number of meetings started across all teams on all organizations
-  """
-  meetingCount: Int!
-
-  """
-  the longest monthly streak for meeting at least once per month for any team in the company
-  """
-  monthlyTeamStreakMax: Int!
-
-  """
-  Get the list of all organizations that belong to the company
-  """
-  organizations: [Organization!]!
-
-  """
-  The highest tier for any organization within the company
-  """
-  tier: TierEnum!
-
-  """
-  the total number of users across all organizations
-  """
-  userCount: Int!
-}
-
-"""
 A connection to a list of items.
 """
 type OrganizationUserConnection {

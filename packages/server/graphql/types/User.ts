@@ -26,7 +26,6 @@ import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
-import isCompanyDomain from '../../utils/isCompanyDomain'
 import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -35,7 +34,6 @@ import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
 import AuthIdentity from './AuthIdentity'
-import Company from './Company'
 import Discussion from './Discussion'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -64,15 +62,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     },
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
-    company: {
-      type: Company,
-      description: 'The assumed company this organizaiton belongs to',
-      resolve: async ({email}: {email: string}, _args: unknown, {authToken}: GQLContext) => {
-        const domain = getDomainFromEmail(email)
-        if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
-        return {id: domain}
-      }
-    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the user was created'
