@@ -31,6 +31,7 @@
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
+          "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "Organization": "../../database/types/Organization#default as Organization",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "Team": "../../postgres/queries/getTeamsByIds#Team",

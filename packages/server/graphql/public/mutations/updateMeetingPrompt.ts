@@ -31,7 +31,7 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
   }
 
   // VALIDATION
-  if (newPrompt.length < 2) {
+  if (newPrompt.length < 2 || newPrompt.length > 500) {
     return standardError(new Error('Invalid meeting prompt'), {userId: viewerId})
   }
 
