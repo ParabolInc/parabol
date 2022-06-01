@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {PALETTE} from '../../styles/paletteV3'
@@ -20,7 +20,19 @@ interface Props {
   updatedAt: string | Date
 }
 
+const UPDATE_INTERVAL_MS = 1000
+
 export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props) {
+  const [relativeCreatedAt, setRelativeCreatedAt] = useState(() => relativeDate(createdAt))
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setRelativeCreatedAt(relativeDate(createdAt))
+    }, UPDATE_INTERVAL_MS)
+
+    return () => clearInterval(intervalId)
+  }, [createdAt])
+
   const {
     tooltipPortal: createdTimePortal,
     openTooltip: showCreatedTime,
@@ -38,7 +50,7 @@ export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props)
   return (
     <Timestamp>
       <Hover onMouseEnter={showCreatedTime} onMouseLeave={closeCreatedTime} ref={createdTimeRef}>
-        {relativeDate(createdAt)}
+        {relativeCreatedAt}
         {createdTimePortal(absoluteDate(createdAt))}
       </Hover>
       {isEdited && (
