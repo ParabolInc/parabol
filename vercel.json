@@ -5,8 +5,12 @@
       "destination": "https://action-staging.parabol.co/graphql"
     },
     {
-      "source": "/sse/:path*",
-      "destination": "https://action-staging.parabol.co/sse/:path*"
+      "source": "/sse/",
+      "destination": "https://action-staging.parabol.co/sse/"
+    },
+    {
+      "source": "/sse-ping",
+      "destination": "https://action-staging.parabol.co/sse-ping"
     },
     {
       "source": "/static/:path*",
