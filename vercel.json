@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/graphql",
+      "destination": "https://action-staging.parabol.co/graphql"
+    },
+    {
+      "source": "/static/:path*",
+      "destination": "/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://action-staging.parabol.co/:path*"
+    }
+  ]
+}
