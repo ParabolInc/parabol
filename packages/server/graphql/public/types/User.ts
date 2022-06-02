@@ -8,6 +8,9 @@ const User: UserResolvers = {
     const domain = getDomainFromEmail(email)
     if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
     return {id: domain}
+  },
+  featureFlags: ({featureFlags}) => {
+    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   }
 }
 
