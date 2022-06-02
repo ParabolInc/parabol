@@ -13,7 +13,7 @@ export const azureDevOpsEffortWorkItems = [
 
 export const azureDevOpsRemainingWorkWorkItems = ['Basic:Task', 'Scrum:Task']
 
-export const azureDevOpsOrigionalEstimateWorkItems = [
+export const azureDevOpsOriginalEstimateWorkItems = [
   'Agile:Task',
   'CMMI:Issue',
   'CMMI:Risk',

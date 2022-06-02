@@ -8,7 +8,7 @@ import {SprintPokerDefaults} from '../types/constEnums'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {
   azureDevOpsEffortWorkItems,
-  azureDevOpsOrigionalEstimateWorkItems,
+  azureDevOpsOriginalEstimateWorkItems,
   azureDevOpsRemainingWorkWorkItems,
   azureDevOpsStoryPointWorkItems
 } from '../utils/AzureDevOpsWorkItemFields'
@@ -101,7 +101,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (azureDevOpsOrigionalEstimateWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsOriginalEstimateWorkItems.indexOf(workItemType) !== -1) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,

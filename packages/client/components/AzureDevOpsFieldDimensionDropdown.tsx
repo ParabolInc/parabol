@@ -9,7 +9,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {
   azureDevOpsEffortWorkItems,
-  azureDevOpsOrigionalEstimateWorkItems,
+  azureDevOpsOriginalEstimateWorkItems,
   azureDevOpsRemainingWorkWorkItems,
   azureDevOpsStoryPointWorkItems
 } from '../utils/AzureDevOpsWorkItemFields'
@@ -99,7 +99,7 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (azureDevOpsOrigionalEstimateWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsOriginalEstimateWorkItems.indexOf(workItemType) !== -1) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
