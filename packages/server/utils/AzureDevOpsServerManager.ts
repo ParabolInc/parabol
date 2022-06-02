@@ -482,7 +482,7 @@ class AzureDevOpsServerManager {
   async getProjectProcessTemplate(instanceId: string, projectId: string) {
     let firstError: Error | undefined
     const result = await this.getProjectProperties(instanceId, projectId)
-    if (!!result.error) {
+    if (result.error) {
       firstError = result.error
     }
     const processTemplateProperty = result.projectProperties.value[0]
@@ -493,7 +493,7 @@ class AzureDevOpsServerManager {
       instanceId,
       processTemplateProperty?.value
     )
-    if (!!processTemplateDetailsResult.error) {
+    if (processTemplateDetailsResult.error) {
       if (!firstError) {
         firstError = processTemplateDetailsResult.error
       }
