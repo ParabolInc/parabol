@@ -1,0 +1,31 @@
+extend type Mutation {
+  """
+  Allow or deny the User to view insights for the provided domain
+  """
+  toggleAllowInsights(
+    """
+    true to set, false to unset
+    """
+    value: Boolean!
+    """
+    The domain (e.g. parabol.co) that the user should be able to view insights on
+    """
+    domain: String!
+    """
+    emails to give the insights priviledge to
+    """
+    emails: [String!]!
+  ): ToggleAllowInsightsPayload!
+}
+
+"""
+Return value for toggleAllowInsights, which could be an error
+"""
+union ToggleAllowInsightsPayload = ErrorPayload | ToggleAllowInsightsSuccess
+
+type ToggleAllowInsightsSuccess {
+  """
+  How many records were updated
+  """
+  organizationUsersAffected: Int!
+}
