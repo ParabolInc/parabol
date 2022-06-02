@@ -12,10 +12,12 @@ interface Input {
   removedAt?: Date
   role?: OrgUserRole
   tier?: TierEnum
+  allowInsights?: boolean
 }
 
 export default class OrganizationUser {
   id: string
+  allowInsights: boolean
   inactive: boolean
   joinedAt: Date
   newUserUntil: Date
@@ -26,8 +28,20 @@ export default class OrganizationUser {
   tier: TierEnum | null
 
   constructor(input: Input) {
-    const {userId, id, removedAt, inactive, orgId, joinedAt, newUserUntil, role, tier} = input
+    const {
+      allowInsights,
+      userId,
+      id,
+      removedAt,
+      inactive,
+      orgId,
+      joinedAt,
+      newUserUntil,
+      role,
+      tier
+    } = input
     this.id = id || generateUID()
+    this.allowInsights = allowInsights || false
     this.inactive = inactive || false
     this.joinedAt = joinedAt || new Date()
     this.newUserUntil = newUserUntil || new Date()
