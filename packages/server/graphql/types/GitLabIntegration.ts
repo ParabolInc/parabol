@@ -29,7 +29,7 @@ export type ProjectsIssuesArgs = {
   fullPath: string
 }
 type Cursors = {
-  ['fullPath']: string
+  [fullPath: string]: string
 }
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -168,7 +168,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             return
           }
           const project = projectIssuesData.project
-          if (!project?.issues) return
+          if (!project?.issues) continue
           const {fullPath, issues} = project
           const {edges, pageInfo} = issues
           if (pageInfo.hasNextPage) {

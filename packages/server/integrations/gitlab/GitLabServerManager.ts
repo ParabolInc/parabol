@@ -10,7 +10,6 @@ import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.gra
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
 import {RootSchema} from '../../graphql/public/rootSchema'
-import {ProjectsIssuesArgs} from '../../graphql/types/GitLabIntegration'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {
   CreateIssueMutation,
@@ -18,6 +17,7 @@ import {
   GetIssueQuery,
   GetProfileQuery,
   GetProjectIssuesQuery,
+  GetProjectIssuesQueryVariables,
   GetProjectsQuery
 } from '../../types/gitlabTypes'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
@@ -145,7 +145,7 @@ class GitLabServerManager implements TaskIntegrationManager {
     return [noteData, noteError] as const
   }
 
-  async getProjectIssues(projectIssuesArgs: Omit<ProjectsIssuesArgs, 'projectsIds'>) {
+  async getProjectIssues(projectIssuesArgs: GetProjectIssuesQueryVariables) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
     const [issuesData, issuesError] = await gitlabRequest<GetProjectIssuesQuery>(
       getProjectIssues,
