@@ -42,7 +42,6 @@ export interface ProjectProperty {
 
 export interface ProjectProperties {
   count: number
-  //was properties
   value: ProjectProperty[]
 }
 
@@ -474,9 +473,7 @@ class AzureDevOpsServerManager {
     const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
     const result = await this.get<ProjectProperties>(uri)
     if (result instanceof Error) {
-      if (!firstError) {
-        firstError = result
-      }
+      firstError = result
     }
     const requestedProperties = result as ProjectProperties
     return {error: firstError, projectProperties: requestedProperties}
@@ -486,9 +483,7 @@ class AzureDevOpsServerManager {
     let firstError: Error | undefined
     const result = await this.getProjectProperties(instanceId, projectId)
     if (!!result.error) {
-      if (!firstError) {
-        firstError = result.error
-      }
+      firstError = result.error
     }
     const processTemplateProperty = result.projectProperties.value[0]
     if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
@@ -510,13 +505,12 @@ class AzureDevOpsServerManager {
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
     const result = await this.get<Process>(uri)
+    const unknownProcessErrorCode = 'VS402362'
     if (result instanceof Error) {
-      if (result.message.includes('VS402362', 0)) {
+      if (result.message.includes(unknownProcessErrorCode, 0)) {
         return {error: firstError, process: 'Basic'}
       }
-      if (!firstError) {
-        firstError = result
-      }
+      firstError = result
     }
     return {error: firstError, process: result.name}
   }
