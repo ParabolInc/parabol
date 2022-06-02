@@ -580,7 +580,7 @@ export const azureDevOpsWorkItems = (
             })
           )
 
-          return await mappedWorkItems
+          return mappedWorkItems
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
