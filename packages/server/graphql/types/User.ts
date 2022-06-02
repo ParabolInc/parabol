@@ -49,8 +49,6 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
-import UserFeatureFlags from './UserFeatureFlags'
-import {UserFeatureFlagEnum} from './UserFlagEnum'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -69,17 +67,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The user email'
-    },
-    featureFlags: {
-      type: new GraphQLNonNull(UserFeatureFlags),
-      description: 'Any super power given to the user via a super user',
-      resolve: ({featureFlags}: {featureFlags: UserFeatureFlagEnum[]}) => {
-        const flagObj = {} as Record<UserFeatureFlagEnum, boolean>
-        featureFlags.forEach((flag) => {
-          flagObj[flag] = true
-        })
-        return flagObj
-      }
     },
     identities: {
       type: new GraphQLList(AuthIdentity),
