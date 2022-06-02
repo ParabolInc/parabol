@@ -5,7 +5,7 @@ export type IntegrationProviderAuthStrategyEnum = 'oauth1' | 'oauth2' | 'pat' | 
 
 export type IntegrationProviderScopeEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost' | 'msTeams';
 
 /** 'GetSharedIntegrationProvidersQuery' parameters type */
 export interface IGetSharedIntegrationProvidersQueryParams {
@@ -31,6 +31,7 @@ export interface IGetSharedIntegrationProvidersQueryResult {
   webhookUrl: string | null;
   consumerKey: string | null;
   consumerSecret: string | null;
+  tenantId: string | null;
 }
 
 /** 'GetSharedIntegrationProvidersQuery' query type */

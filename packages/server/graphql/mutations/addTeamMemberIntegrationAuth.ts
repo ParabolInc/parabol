@@ -1,11 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
+import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
 import JiraServerOAuth1Manager, {
   OAuth1Auth
 } from '../../integrations/jiraServer/JiraServerOAuth1Manager'
-import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
-import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
+import {IntegrationProviderAzureDevOps} from '../../postgres/queries/getIntegrationProvidersByIds'
 import upsertTeamMemberIntegrationAuth from '../../postgres/queries/upsertTeamMemberIntegrationAuth'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddTeamMemberIntegrationAuthPayload from '../types/AddTeamMemberIntegrationAuthPayload'
@@ -15,6 +18,7 @@ interface OAuth2Auth {
   accessToken: string
   refreshToken: string
   scopes: string
+  expiresAt?: Date | null
 }
 
 const addTeamMemberIntegrationAuth = {
@@ -100,7 +104,31 @@ const addTeamMemberIntegrationAuth = {
       if (service === 'gitlab') {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
         const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-        tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
+        const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
+        if ('expiresIn' in authRes) {
+          const {expiresIn, ...metadata} = authRes
+          const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
+          const expiresAt = new Date(expiresAtTimestamp)
+          tokenMetadata = {
+            expiresAt,
+            ...metadata
+          }
+        } else {
+          tokenMetadata = authRes
+        }
+      }
+      if (service === 'azureDevOps') {
+        // tokenMetadata = (await AzureDevOpsServerManager.init(oauthCodeOrPat, oauthVerifier)) as
+        if (!oauthVerifier) {
+          return {
+            error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
+          }
+        }
+        const manager = new AzureDevOpsServerManager(
+          null,
+          integrationProvider as IntegrationProviderAzureDevOps
+        )
+        tokenMetadata = (await manager.init(oauthCodeOrPat, oauthVerifier)) as OAuth2Auth | Error
       }
     }
     if (authStrategy === 'oauth1') {
@@ -127,6 +155,8 @@ const addTeamMemberIntegrationAuth = {
       teamId,
       userId: viewerId
     })
+
+    analytics.integrationAdded(viewerId, teamId, service)
 
     const data = {userId: viewerId, teamId, service}
     return data

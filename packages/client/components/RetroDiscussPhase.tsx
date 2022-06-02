@@ -12,7 +12,8 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import {DiscussionThreadables, Header as DiscussionThreadHeader} from './DiscussionThreadList'
+import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
@@ -211,6 +212,15 @@ const RetroDiscussPhase = (props: Props) => {
                   allowedThreadables={allowedThreadables}
                   meetingContentRef={phaseRef}
                   discussionId={discussionId!}
+                  header={
+                    <DiscussionThreadHeader>{'Discussion & Takeaway Tasks'}</DiscussionThreadHeader>
+                  }
+                  emptyState={
+                    <DiscussionThreadListEmptyState
+                      allowTasks={true}
+                      isReadOnly={allowedThreadables.length === 0}
+                    />
+                  }
                 />
               </ThreadColumn>
             </ColumnsContainer>

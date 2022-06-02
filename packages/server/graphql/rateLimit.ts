@@ -1,5 +1,3 @@
-import {getUserId} from '../utils/authorization'
-import standardError from '../utils/standardError'
 import {
   GraphQLFieldResolver,
   GraphQLNonNull,
@@ -7,6 +5,8 @@ import {
   GraphQLOutputType,
   GraphQLResolveInfo
 } from 'graphql'
+import {getUserId} from '../utils/authorization'
+import standardError from '../utils/standardError'
 import {GQLContext} from './graphql'
 
 interface Options {
@@ -24,10 +24,6 @@ const rateLimit =
     // when we scale horizontally & stop using sticky servers, periodically push to redis
     const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
     if (lastMinute > perMinute || (lastHour && lastHour > perHour)) {
-      if (process.env.NODE_ENV === 'test') {
-        return
-      }
-
       const returnVal = standardError(new Error('Rate limit reached'), {
         userId,
         tags: {query: fieldName, variables: JSON.stringify(args)}

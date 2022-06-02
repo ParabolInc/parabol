@@ -1,14 +1,33 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import {useLazyLoadQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
+import {JiraScopingSearchFilterMenuRootQuery} from '../__generated__/JiraScopingSearchFilterMenuRootQuery.graphql'
 import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
 
 const query = graphql`
   query JiraScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
-      ...JiraScopingSearchFilterMenu_viewer
+      meeting(meetingId: $meetingId) {
+        id
+        ... on PokerMeeting {
+          jiraSearchQuery {
+            projectKeyFilters
+            isJQL
+          }
+        }
+      }
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            projects {
+              id
+              name
+              avatar
+            }
+          }
+        }
+      }
     }
   }
 `
@@ -21,17 +40,29 @@ interface Props {
 
 const JiraScopingSearchFilterMenuRoot = (props: Props) => {
   const {menuProps, teamId, meetingId} = props
-  const atmosphere = useAtmosphere()
+
+  const data = useLazyLoadQuery<JiraScopingSearchFilterMenuRootQuery>(
+    query,
+    {
+      teamId,
+      meetingId
+    },
+    {
+      UNSTABLE_renderPolicy: 'full',
+      fetchPolicy: 'store-or-network'
+    }
+  )
+
+  const projects = data.viewer.teamMember?.integrations.atlassian?.projects ?? []
+  const jiraSearchQuery = data.viewer.meeting?.jiraSearchQuery ?? null
+
   return (
-    <QueryRenderer
-      variables={{teamId, meetingId}}
-      environment={atmosphere}
-      query={query}
-      fetchPolicy={'store-or-network' as any}
-      render={({props, error}) => {
-        const viewer = (props as any)?.viewer ?? null
-        return <JiraScopingSearchFilterMenu viewer={viewer} error={error} menuProps={menuProps} />
-      }}
+    <JiraScopingSearchFilterMenu
+      meetingId={meetingId}
+      jiraSearchQuery={jiraSearchQuery}
+      projects={projects}
+      menuProps={menuProps}
+      service={'jira'}
     />
   )
 }

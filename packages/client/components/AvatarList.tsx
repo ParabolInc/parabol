@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, useRef} from 'react'
+import React, {ReactElement, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useResizeObserver from '~/hooks/useResizeObserver'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
 import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
@@ -42,6 +43,7 @@ interface Props {
   emptyEl?: ReactElement
   isAnimated?: boolean
   borderColor?: string
+  maxAvatars?: number
 }
 
 const AvatarList = (props: Props) => {
@@ -49,7 +51,20 @@ const AvatarList = (props: Props) => {
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
-  const transitionChildren = useOverflowAvatars(rowRef, users, size, overlap)
+
+  const [maxAvatars, setMaxAvatars] = useState(0)
+  const checkOverflow = () => {
+    const {current: el} = rowRef
+    if (!el) return
+    const {clientWidth: totalWidth} = el
+    const lappedAvatarWidth = size - overlap
+    const maxAvatars = Math.floor((totalWidth - size) / lappedAvatarWidth)
+    setMaxAvatars(maxAvatars)
+  }
+  useLayoutEffect(checkOverflow, [])
+  useResizeObserver(checkOverflow, rowRef)
+
+  const transitionChildren = useOverflowAvatars(users, maxAvatars)
   const showAnimated = isAnimated ?? true
   const activeTChildren = transitionChildren.filter(
     (child) => child.status !== TransitionStatus.EXITING

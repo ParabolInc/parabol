@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
 import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
@@ -11,7 +11,7 @@ import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShort
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
-import {MassInvitationTokenLink_viewer} from '../__generated__/MassInvitationTokenLink_viewer.graphql'
+import {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
   borderRadius: 4,
@@ -32,14 +32,32 @@ const StyledCopyShortLink = styled(CopyShortLink)({
 
 interface Props {
   meetingId: string | undefined
-  viewer: MassInvitationTokenLink_viewer
+  queryRef: PreloadedQuery<MassInvitationTokenLinkQuery>
 }
 
 const FIVE_MINUTES = ms('5m')
 const acceptableLifeLeft = Threshold.MASS_INVITATION_TOKEN_LIFESPAN - FIVE_MINUTES
 
+const query = graphql`
+  query MassInvitationTokenLinkQuery($teamId: ID!, $meetingId: ID) {
+    viewer {
+      team(teamId: $teamId) {
+        id
+        massInvitation(meetingId: $meetingId) {
+          id
+          expiration
+        }
+      }
+    }
+  }
+`
+
 const MassInvitationTokenLink = (props: Props) => {
-  const {meetingId, viewer} = props
+  const {meetingId, queryRef} = props
+  const data = usePreloadedQuery<MassInvitationTokenLinkQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
   const {team} = viewer
   const {id: teamId, massInvitation} = team!
   const atmosphere = useAtmosphere()
@@ -70,16 +88,4 @@ const MassInvitationTokenLink = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(MassInvitationTokenLink, {
-  viewer: graphql`
-    fragment MassInvitationTokenLink_viewer on User {
-      team(teamId: $teamId) {
-        id
-        massInvitation(meetingId: $meetingId) {
-          id
-          expiration
-        }
-      }
-    }
-  `
-})
+export default MassInvitationTokenLink

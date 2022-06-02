@@ -6,6 +6,7 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {AnyMeeting} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import segmentIo from '../../../../utils/segmentIo'
@@ -17,7 +18,6 @@ import {
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
-import {AnyMeeting} from '../../../../postgres/types/Meeting'
 
 const notifyMattermost = async (
   event: EventEnum,

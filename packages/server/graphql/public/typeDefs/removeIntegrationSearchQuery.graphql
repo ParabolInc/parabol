@@ -1,0 +1,25 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  removeIntegrationSearchQuery(
+    """
+    integration search query ID
+    """
+    id: ID!
+    teamId: ID!
+  ): RemoveIntegrationSearchQueryPayload!
+}
+
+type RemoveIntegrationSearchQuerySuccess {
+  userId: ID
+  teamId: ID
+  jiraServerIntegration: JiraServerIntegration
+}
+
+"""
+Return value for removeIntegrationSearchQuery, which could be an error
+"""
+union RemoveIntegrationSearchQueryPayload = ErrorPayload | RemoveIntegrationSearchQuerySuccess
+
+extend union NotificationSubscriptionPayload = RemoveIntegrationSearchQuerySuccess

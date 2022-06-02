@@ -1,21 +1,22 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPhase from '../../utils/getPhase'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import rMapIf from '../../database/rMapIf'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
-import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
-import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamMember from '../../database/types/TeamMember'
+import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
+import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
+import insertDiscussions from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JoinMeetingPayload from '../types/JoinMeetingPayload'
@@ -135,7 +136,21 @@ const joinMeeting = {
     const appendToTeamPromptResponses = async () => {
       const responsesPhase = getPhase(phases, 'RESPONSES')
       if (!responsesPhase) return
+      const teamMemberResponseStage = responsesPhase.stages.find(
+        (stage) => stage.teamMemberId === teamMemberId
+      )
+      // only add a new stage for the new users (ie. invited to the team after the meeting was started)
+      if (teamMemberResponseStage) return
       const responsesStage = new TeamPromptResponseStage({teamMemberId})
+      await insertDiscussions([
+        {
+          id: responsesStage.discussionId,
+          teamId,
+          meetingId,
+          discussionTopicId: teamMemberId,
+          discussionTopicType: 'teamPromptResponse' as const
+        }
+      ])
       return addStageToPhase(responsesStage, 'RESPONSES')
     }
 

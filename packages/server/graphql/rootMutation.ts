@@ -115,6 +115,7 @@ import startSprintPoker from './mutations/startSprintPoker'
 import startTeamPrompt from './mutations/startTeamPrompt'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
+import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
@@ -242,6 +243,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       startRetrospective,
       startSprintPoker,
       setTaskHighlight,
+      startTeamPrompt,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,
@@ -283,7 +285,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
-      startTeamPrompt,
-      endTeamPrompt
+      endTeamPrompt,
+      updateAzureDevOpsDimensionField
     } as any)
 })

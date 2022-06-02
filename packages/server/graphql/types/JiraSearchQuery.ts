@@ -6,17 +6,16 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {globalIdField} from 'graphql-relay'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
+// Used for both Jira and Jira Server
 const JiraSearchQuery = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraSearchQuery',
   description: 'A jira search query including all filters selected when the query was executed',
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid'
-    },
+    id: globalIdField(),
     queryString: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The query string, either simple or JQL depending on the isJQL flag'
@@ -28,7 +27,7 @@ const JiraSearchQuery = new GraphQLObjectType<any, GQLContext>({
     },
     projectKeyFilters: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
-      description: 'The list of project keys selected as a filter. null if not set',
+      description: 'The list of project keys selected as a filter',
       resolve: ({projectKeyFilters}) => projectKeyFilters || []
     },
     lastUsedAt: {

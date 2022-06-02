@@ -40,7 +40,11 @@ const archiveTimelineEvent = {
       return {error: {message: 'Timeline Event not found'}}
     }
 
-    const meetingTypes: TimelineEventEnum[] = ['actionComplete', 'retroComplete']
+    const meetingTypes: TimelineEventEnum[] = [
+      'actionComplete',
+      'retroComplete',
+      'TEAM_PROMPT_COMPLETE'
+    ]
     if (meetingTypes.includes(type)) {
       // it's a meeting timeline event, archive it for everyone
       const {teamId, meetingId} = timelineEvent as
@@ -53,11 +57,7 @@ const archiveTimelineEvent = {
         .get('timelineEventsByMeetingId')
         .load(meetingId)
       const eventIds = meetingTimelineEvents.map(({id}) => id)
-      await r
-        .table('TimelineEvent')
-        .getAll(r.args(eventIds))
-        .update({isActive: false})
-        .run()
+      await r.table('TimelineEvent').getAll(r.args(eventIds)).update({isActive: false}).run()
       meetingTimelineEvents.map((event) => {
         const {id: timelineEventId, userId} = event
         publish(

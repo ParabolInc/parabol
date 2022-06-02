@@ -62,7 +62,7 @@ const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator} = props
   const {integrations, teamId} = facilitator
-  const {mattermost, slack} = integrations
+  const {mattermost, slack, msTeams} = integrations
   const notifications = slack?.notifications ?? []
   const timeLimitEvent = notifications.find(
     (notification) => notification.event === 'MEETING_STAGE_TIME_LIMIT_START'
@@ -72,7 +72,8 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
   const isMattermostActive = mattermost.auth?.isActive ?? false
-  const noActiveIntegrations = !slack?.isActive && !isMattermostActive
+  const isMSTeamsActive = msTeams.auth?.isActive ?? false
+  const noActiveIntegrations = !slack?.isActive && !isMattermostActive && !isMSTeamsActive
 
   const onClick = () => {
     if (slack?.isActive) {
@@ -98,6 +99,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
         </ButtonRow>
       )}
       {isMattermostActive && <Note>{'Notifying via Mattermost'}</Note>}
+      {isMSTeamsActive && <Note>{'Notifying via MS Teams'}</Note>}
       <StyledNotificationErrorMessage error={error} />
     </Block>
   )
@@ -109,6 +111,11 @@ export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
       teamId
       integrations {
         mattermost {
+          auth {
+            isActive
+          }
+        }
+        msTeams {
           auth {
             isActive
           }

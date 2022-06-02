@@ -29,7 +29,6 @@ type IssueArgs = {
   queryString: string | null
   isJQL: boolean
   projectKeyFilters: string[] | null
-  [argName: string]: any
 }
 
 const AtlassianIntegration = new GraphQLObjectType<AtlassianAuth, GQLContext>({

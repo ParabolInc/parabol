@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../__generated__/AddAgendaItemMutation.graphql'
@@ -44,8 +44,11 @@ const mutation = graphql`
   }
 `
 
-export const addAgendaItemUpdater = (payload, {store}) => {
+export const addAgendaItemUpdater: SharedUpdater<
+  TAddAgendaItemMutation['response']['addAgendaItem']
+> = (payload, {store}) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
+  if (!agendaItem) return
   handleAddAgendaItems(agendaItem, store)
 }
 
@@ -60,7 +63,7 @@ const AddAgendaItemMutation: StandardMutation<TAddAgendaItemMutation> = (
     updater: (store) => {
       const payload = store.getRootField('addAgendaItem')
       if (!payload) return
-      addAgendaItemUpdater(payload, {store})
+      addAgendaItemUpdater(payload, {store, atmosphere})
     },
     optimisticUpdater: (store) => {
       const {newAgendaItem} = variables

@@ -26,6 +26,7 @@ interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
   clientId: string
   clientSecret: string
   serverBaseUrl: string
+  tenantId: string
 }
 
 // Not used yet
@@ -51,12 +52,22 @@ export interface IntegrationProviderGitLabPAT extends IntegrationProviderPAT {
 export interface IntegrationProviderJiraServer extends IntegrationProviderOAuth1 {
   service: 'jiraServer'
 }
+export interface IntegrationProviderMSTeams extends IntegrationProviderWebhook {
+  service: 'msTeams'
+}
+
+export interface IntegrationProviderAzureDevOps extends IntegrationProviderOAuth2 {
+  service: 'azureDevOps'
+  tenantId: string
+}
 
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
   | IntegrationProviderGitLabPAT
   | IntegrationProviderJiraServer
+  | IntegrationProviderAzureDevOps
+  | IntegrationProviderMSTeams
 
 const getIntegrationProvidersByIds = async <T = TIntegrationProvider>(ids: readonly number[]) => {
   const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())

@@ -1,20 +1,48 @@
-import React, {useState} from 'react'
-import Placeholder from '@tiptap/extension-placeholder'
-import {EditorContent, Editor, EditorEvents, useEditor} from '@tiptap/react'
+import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
+import Placeholder from '@tiptap/extension-placeholder'
+import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import areEqual from 'fbjs/lib/areEqual'
+import React, {useState} from 'react'
+
+const StyledEditor = styled('div')`
+  .ProseMirror {
+    min-height: 40px;
+  }
+  .ProseMirror p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  .ProseMirror-focused:focus {
+    outline: none;
+  }
+`
+/**
+ * Returns tip tap extensions configuration shared by the client and the server
+ * @param placeholder
+ * @returns an array of extensions to be used by the tip tap editor
+ */
+export const createEditorExtensions = (placeholder?: string) => [
+  StarterKit,
+  Placeholder.configure({
+    placeholder
+  })
+]
 
 interface Props {
   autoFocus?: boolean
-  editorState: EditorState
-  setEditorState: (newEditorState: EditorState) => void
-  handleSubmit: (editor: EditorState) => void
+  content: JSONContent | null
+  handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
-  placeholder: string
+  placeholder?: string
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, editorState, setEditorState, handleSubmit, readOnly, placeholder} = props
+  const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
   const [_isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -23,36 +51,38 @@ const PromptResponseEditor = (props: Props) => {
     setAutoFocus(false)
   }
 
-  const onUpdate = ({editor: newEditorState}: EditorEvents['update']) => {
+  const onUpdate = () => {
     setEditing(true)
-    setEditorState(newEditorState)
   }
 
-  const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
+  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
-    handleSubmit(newEditorState)
+    const newContent = newEditorState.getJSON()
+
+    // to avoid creating an empty post on first blur
+    if (!content && newEditorState.isEmpty) return
+
+    if (areEqual(content, newContent)) return
+
+    handleSubmit?.(newEditorState)
   }
 
-  const doc = editorState.getText()
-  const showPlaceholder = !doc && !!placeholder
-  const editor: Editor | null = useEditor({
-    content: editorState.getJSON(),
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder: showPlaceholder ? placeholder : ''
-      })
-    ],
-    autofocus: autoFocus,
-    onUpdate,
-    onBlur: onSubmit,
-    editable: !readOnly,
-  })
+  const editor = useEditor(
+    {
+      content,
+      extensions: createEditorExtensions(placeholder),
+      autofocus: autoFocus,
+      onUpdate,
+      onBlur: onSubmit,
+      editable: !readOnly
+    },
+    [content]
+  )
 
   return (
-    <EditorContent
-      editor={editor}
-    />
+    <StyledEditor>
+      <EditorContent editor={editor} />
+    </StyledEditor>
   )
 }
 export default PromptResponseEditor

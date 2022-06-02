@@ -29,17 +29,17 @@ const mutation = graphql`
           ...ScopePhaseAreaGitLab_teamMember
           ...MattermostProviderRowTeamMember
           ...JiraServerProviderRowTeamMember
+          ...AzureDevOpsProviderRowTeamMember
+          ...MSTeamsProviderRowTeamMember
         }
       }
     }
   }
 `
 
-const AddTeamMemberIntegrationAuthMutation: StandardMutation<TAddTeamMemberIntegrationAuthMutation> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted}
-) => {
+const AddTeamMemberIntegrationAuthMutation: StandardMutation<
+  TAddTeamMemberIntegrationAuthMutation
+> = (atmosphere, variables, {onError, onCompleted}) => {
   return commitMutation<TAddTeamMemberIntegrationAuthMutation>(atmosphere, {
     mutation,
     variables,

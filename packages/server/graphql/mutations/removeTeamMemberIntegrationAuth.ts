@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {IntegrationProviderServiceEnum as TIntegrationProviderServiceEnum} from '../../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import removeTeamMemberIntegrationAuthQuery from '../../postgres/queries/removeTeamMemberIntegrationAuth'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -34,6 +35,7 @@ const removeTeamMemberIntegrationAuth = {
 
     // RESOLUTION
     await removeTeamMemberIntegrationAuthQuery(service, teamId, viewerId)
+    analytics.integrationRemoved(viewerId, teamId, service)
 
     const data = {userId: viewerId, teamId}
     return data

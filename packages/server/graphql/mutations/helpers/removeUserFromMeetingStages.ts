@@ -30,9 +30,9 @@ const removeUserFromMeetingStages = async (
         for (let i = 0; i < stages.length; i++) {
           const stage = stages[i]!
           const {readyToAdvance} = stage
-          const userIdIdx = readyToAdvance.indexOf(userId)
+          const userIdIdx = readyToAdvance?.indexOf(userId) ?? -1
           if (userIdIdx !== -1) {
-            readyToAdvance.splice(userIdIdx, 1)
+            readyToAdvance?.splice(userIdIdx, 1)
             isChanged = true
           }
           if (isEstimateStage(stage)) {

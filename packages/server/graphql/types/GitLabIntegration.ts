@@ -1,6 +1,9 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
+import GitLabSearchQuery from './GitLabSearchQuery'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
+import RepoIntegration from './RepoIntegration'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -15,9 +18,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         _args: unknown,
         {dataLoader}
       ) => {
-        return dataLoader
-          .get('teamMemberIntegrationAuths')
-          .load({service: 'gitlab', teamId, userId})
+        return dataLoader.get('freshGitlabAuth').load({teamId, userId})
       }
     },
     cloudProvider: {
@@ -42,6 +43,22 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         return dataLoader
           .get('sharedIntegrationProviders')
           .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
+      }
+    },
+    gitlabSearchQueries: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitLabSearchQuery))),
+      resolve: async () => []
+    },
+    projects: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RepoIntegration))),
+      description: 'A list of projects accessible by this team member',
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        _args: unknown,
+        context,
+        info
+      ) => {
+        return fetchGitLabProjects(teamId, userId, context, info)
       }
     }
     // The GitLab schema get injected here as 'api'

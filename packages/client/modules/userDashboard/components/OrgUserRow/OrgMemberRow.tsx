@@ -1,9 +1,8 @@
-import {OrgMemberRow_organization} from '../../../../__generated__/OrgMemberRow_organization.graphql'
-import {OrgMemberRow_organizationUser} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {forwardRef, Ref} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton, {FlatButtonProps} from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -14,21 +13,20 @@ import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import RowInfoLink from '../../../../components/Row/RowInfoLink'
 import EmphasisTag from '../../../../components/Tag/EmphasisTag'
-import RoleTag from '../../../../components/Tag/RoleTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
+import RoleTag from '../../../../components/Tag/RoleTag'
 import Toggle from '../../../../components/Toggle/Toggle'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
+import useTooltip from '../../../../hooks/useTooltip'
 import InactivateUserMutation from '../../../../mutations/InactivateUserMutation'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
+import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {Breakpoint} from '../../../../types/constEnums'
-import useTooltip from '../../../../hooks/useTooltip'
+import {OrgMemberRow_organization} from '../../../../__generated__/OrgMemberRow_organization.graphql'
+import {OrgMemberRow_organizationUser} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
 
 const AvatarBlock = styled('div')({
   display: 'none',
@@ -65,7 +63,7 @@ const ToggleBlock = styled('div')({
   width: 36
 })
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props extends WithMutationProps {
   billingLeaderCount: number
   organizationUser: OrgMemberRow_organizationUser
   organization: OrgMemberRow_organization
@@ -88,30 +86,26 @@ const MenuButton = forwardRef((props: FlatButtonProps, ref: Ref<HTMLButtonElemen
   </StyledButton>
 ))
 
-const LeaveOrgModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'LeaveOrgModal' */ '../LeaveOrgModal/LeaveOrgModal')
+const LeaveOrgModal = lazyPreload(
+  () => import(/* webpackChunkName: 'LeaveOrgModal' */ '../LeaveOrgModal/LeaveOrgModal')
 )
 
-const BillingLeaderActionMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu'
-  )
+const BillingLeaderActionMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu'
+    )
 )
 
-const RemoveFromOrgModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'RemoveFromOrgModal' */ '../RemoveFromOrgModal/RemoveFromOrgModal')
+const RemoveFromOrgModal = lazyPreload(
+  () =>
+    import(/* webpackChunkName: 'RemoveFromOrgModal' */ '../RemoveFromOrgModal/RemoveFromOrgModal')
 )
 
 const OrgMemberRow = (props: Props) => {
-  const {
-    atmosphere,
-    billingLeaderCount,
-    submitMutation,
-    onError,
-    onCompleted,
-    organizationUser,
-    organization
-  } = props
+  const atmosphere = useAtmosphere()
+  const {billingLeaderCount, submitMutation, onError, onCompleted, organizationUser, organization} =
+    props
   const {orgId, isViewerBillingLeader, tier} = organization
   const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
@@ -145,9 +139,12 @@ const OrgMemberRow = (props: Props) => {
       })
     }
   }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.LOWER_RIGHT)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
 
   return (
     <StyledRow>
@@ -227,7 +224,7 @@ const OrgMemberRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(OrgMemberRow)), {
+export default createFragmentContainer(withMutationProps(OrgMemberRow), {
   organization: graphql`
     fragment OrgMemberRow_organization on Organization {
       isViewerBillingLeader: isBillingLeader

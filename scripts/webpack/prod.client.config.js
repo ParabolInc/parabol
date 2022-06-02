@@ -9,7 +9,7 @@ const getS3BasePath = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const {InjectManifest} = require('wrkbx')
+const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const getProjectRoot = require('./utils/getProjectRoot')
 
@@ -128,10 +128,8 @@ module.exports = ({isDeploy, isStats}) => ({
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({
-      swSrc: 'sw.js',
-      entry: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
+      swSrc: path.join(PROJECT_ROOT, 'packages/client/serviceWorker/sw.ts'),
       swDest: 'sw.js',
-      importWorkboxFrom: 'disabled',
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     isDeploy &&

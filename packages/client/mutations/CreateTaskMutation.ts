@@ -21,6 +21,7 @@ import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
+import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
@@ -40,7 +41,6 @@ graphql`
       integrationHash
       integration {
         ... on JiraIssue {
-          ...JiraScopingSearchResultItem_issue
           cloudId
           cloudName
           url
@@ -55,6 +55,13 @@ graphql`
           repository {
             nameWithOwner
           }
+        }
+        ... on _xGitLabIssue {
+          id
+          iid
+          title
+          webPath
+          webUrl
         }
       }
     }
@@ -96,6 +103,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   handleUpsertTasks(task, store)
   handleJiraCreateIssue(task, store)
   handleGitHubCreateIssue(task, store)
+  handleGitLabCreateIssue(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -187,6 +195,17 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           })
           optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
+        } else if (service === 'gitlab') {
+          const webPath = `/${serviceProjectHash}/-/issues/?`
+          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
+            state: 'opened',
+            title: plaintextContent,
+            description: '',
+            webPath,
+            webUrl: `/${webPath}`,
+            iid: '?'
+          })
+          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')
         }
@@ -196,6 +215,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleUpsertTasks(task as any, store)
       handleJiraCreateIssue(task, store)
       handleGitHubCreateIssue(task as any, store)
+      handleGitLabCreateIssue(task as any, store)
     },
     onError,
     onCompleted

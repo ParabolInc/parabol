@@ -1,18 +1,10 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
 import {MenuProps} from '../hooks/useMenu'
-import renderQuery from '../utils/relay/renderQuery'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import meetingCardOptionsMenuQuery, {
+  MeetingCardOptionsMenuQuery
+} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import MeetingCardOptionsMenu from './MeetingCardOptionsMenu'
-
-const query = graphql`
-  query MeetingCardOptionsMenuRootQuery($teamId: ID!, $meetingId: ID) {
-    viewer {
-      ...MeetingCardOptionsMenu_viewer
-    }
-  }
-`
 
 interface Props {
   meetingId: string
@@ -23,15 +15,16 @@ interface Props {
 
 const MeetingCardOptionsMenuRoot = (props: Props) => {
   const {meetingId, teamId, menuProps, popTooltip} = props
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<MeetingCardOptionsMenuQuery>(meetingCardOptionsMenuQuery, {
+    meetingId,
+    teamId
+  })
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{meetingId, teamId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(MeetingCardOptionsMenu, {props: {menuProps, popTooltip}})}
-    />
+    <Suspense fallback={''}>
+      {queryRef && (
+        <MeetingCardOptionsMenu queryRef={queryRef} menuProps={menuProps} popTooltip={popTooltip} />
+      )}
+    </Suspense>
   )
 }
 

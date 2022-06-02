@@ -1,11 +1,13 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
 import * as atlassianLoaders from './atlassianLoaders'
-import * as jiraServerLoaders from './jiraServerLoaders'
+import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as githubLoaders from './githubLoaders'
+import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
+import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
@@ -30,8 +32,10 @@ const loaderMakers = {
   ...jiraServerLoaders,
   ...customLoaderMakers,
   ...githubLoaders,
+  ...gitlabLoaders,
   ...integrationAuthLoaders,
-  ...pollLoaders
+  ...pollLoaders,
+  ...azureDevOpsLoaders
 } as const
 
 type LoaderMakers = typeof loaderMakers
@@ -57,7 +61,9 @@ type CustomLoaderMakers = typeof customLoaderMakers &
   typeof pollLoaders &
   typeof integrationAuthLoaders &
   typeof primaryKeyLoaderMakers &
-  typeof foreignKeyLoaderMakers
+  typeof foreignKeyLoaderMakers &
+  typeof azureDevOpsLoaders &
+  typeof gitlabLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>

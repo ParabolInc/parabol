@@ -1,11 +1,13 @@
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-
-import { TeamPromptTopBar_meeting$key } from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
-import {HeadingBlock, MeetingTopBarStyles} from '../MeetingTopBar'
+import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
+import TeamPromptOptions from './TeamPromptOptions'
 
 const TeamPromptHeaderTitle = styled('h1')({
   fontSize: 16,
@@ -15,10 +17,25 @@ const TeamPromptHeaderTitle = styled('h1')({
 })
 
 const TeamPromptHeader = styled('div')({
+  margin: 'auto 0',
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'flex-start'
+})
+
+const ButtonContainer = styled('div')({
+  alignItems: 'center',
+  justifyContent: 'center',
+  display: 'flex',
+  height: 32,
+  [meetingAvatarMediaQueries[0]]: {
+    height: 48,
+    marginLeft: 10
+  },
+  [meetingAvatarMediaQueries[1]]: {
+    height: 56
+  }
 })
 
 interface Props {
@@ -32,22 +49,27 @@ const TeamPromptTopBar = (props: Props) => {
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         name
+        ...TeamPromptOptions_meeting
+        ...NewMeetingAvatarGroup_meeting
       }
     `,
     meetingRef
   )
 
-  const { name: meetingName } = meeting
+  const {name: meetingName} = meeting
 
   return (
     <MeetingTopBarStyles>
-      <HeadingBlock>
-        <TeamPromptHeader>
-          <BackButton ariaLabel='Back to Meetings' to='/meetings' />
-          <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
-        </TeamPromptHeader>
-      </HeadingBlock>
-      {/* :TODO: (jmtaber129): Add avatars, overflow menu, etc. */}
+      <TeamPromptHeader>
+        <BackButton ariaLabel='Back to Meetings' to='/meetings' />
+        <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+      </TeamPromptHeader>
+      <IconGroupBlock>
+        <NewMeetingAvatarGroup meeting={meeting} />
+        <ButtonContainer>
+          <TeamPromptOptions meetingRef={meeting} />
+        </ButtonContainer>
+      </IconGroupBlock>
     </MeetingTopBarStyles>
   )
 }

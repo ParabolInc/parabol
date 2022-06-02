@@ -2,18 +2,21 @@ import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
+//import AzureDevOpsIssueId from '~/shared/gqlIds/AzureDevOpsIssueId'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
+import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {
   UpdatePokerScopeMutation as TUpdatePokerScopeMutation,
   UpdatePokerScopeMutationResponse
 } from '../__generated__/UpdatePokerScopeMutation.graphql'
+import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
@@ -53,6 +56,20 @@ graphql`
       }
     }
     meeting {
+      gitlabSearchQuery {
+        queryString
+        selectedProjectsIds
+      }
+      githubSearchQuery {
+        queryString
+      }
+      jiraSearchQuery {
+        queryString
+        projectKeyFilters
+      }
+      parabolSearchQuery {
+        queryString
+      }
       phases {
         ... on EstimatePhase {
           stages {
@@ -80,37 +97,29 @@ const mutation = graphql`
   }
 `
 
-type Meeting = NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']>
+export type PokerScopeMeeting = NonNullable<
+  UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']
+>
 
 interface Handlers extends BaseLocalHandlers {
   contents: string[]
+  selectedAll?: boolean
 }
 
 const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Handlers> = (
   atmosphere,
   variables,
-  {onError, onCompleted, contents}
+  {onError, onCompleted, contents, selectedAll}
 ) => {
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('updatePokerScope')
-      const meeting = payload.getLinkedRecord('meeting')
-      const newStages = payload.getLinkedRecords('newStages')
-      if (!meeting || !newStages) return
-      const phases = meeting.getLinkedRecords('phases')
-      const estimatePhase = phases.find((phase) => phase.getType() === 'EstimatePhase')!
-      const stages = estimatePhase.getLinkedRecords('stages')
-      const nextStages = [...stages, ...newStages]
-      estimatePhase.setLinkedRecords(nextStages, 'stages')
-    },
     optimisticUpdater: (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!viewer) return
       const viewerId = viewer?.getValue('id')
       const {meetingId, updates} = variables
-      const meeting = store.get<Meeting>(meetingId)
+      const meeting = store.get<PokerScopeMeeting>(meetingId)
       if (!meeting) return
       const teamId = (meeting.getValue('teamId') || '') as string
       const team = store.get(teamId)
@@ -125,12 +134,13 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         const stagesForTaskId = stages.filter(
           (stage) => stage.getValue('taskId') === firstStageTaskId
         )
-        const prevDimensionRefIds = stagesForTaskId.map((stage) => {
+        stagesForTaskId.forEach((stage) => {
           const dimensionRef = stage.getLinkedRecord('dimensionRef')
-          return dimensionRef?.getValue('id') ?? ''
-        }) as string[]
-        dimensionRefIds.push(...prevDimensionRefIds)
-      } else {
+          const dimensionRefId = dimensionRef?.getValue('id') as string | null
+          dimensionRefId && dimensionRefIds.push(dimensionRefId)
+        })
+      }
+      if (dimensionRefIds.length === 0) {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.SLATE_600,
           label: '#'
@@ -177,7 +187,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             .setLinkedRecords([], 'estimates')
             .setLinkedRecords([], 'editors')
             .setLinkedRecord(team!, 'team')
-
           if (service === 'jira') {
             const descriptionHTML = stateToHTML(contentState)
             const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
@@ -195,11 +204,22 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               descriptionHTML
             })
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+          } else if (service === 'azureDevOps') {
+            //const descriptionHTML = stateToHTML(contentState)
+            //const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
+            const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
+              teamId,
+              meetingId,
+              userId: viewerId,
+              url: '',
+              state: '',
+              type: ''
+            })
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {
             const bodyHTML = stateToHTML(contentState)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
-              serviceTaskId
-            )
+            const {issueNumber, nameWithOwner, repoName, repoOwner} =
+              GitHubIssueId.split(serviceTaskId)
             const repository = createProxyRecord(store, '_xGitHubRepository', {
               nameWithOwner,
               name: repoName,
@@ -260,7 +280,30 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         }
       })
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      const {updatePokerScope} = res
+      const {meeting} = updatePokerScope
+      if (!meeting) return
+      const {viewerId} = atmosphere
+      const {meetingId, updates} = variables
+      const update = updates[0]!
+      const {service, action} = update
+      const searchQuery = getSearchQueryFromMeeting(meeting, service)
+      if (!searchQuery) return
+      const [searchQueryString, searchQueryFilters] = searchQuery
+      SendClientSegmentEventMutation(atmosphere, 'Updated Poker Scope', {
+        viewerId,
+        meetingId,
+        service,
+        action,
+        searchQueryString,
+        searchQueryFilters,
+        selectedAll
+      })
+    },
     onError,
     cacheConfig: {
       metadata: {

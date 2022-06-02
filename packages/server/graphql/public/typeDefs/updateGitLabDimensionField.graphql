@@ -1,0 +1,32 @@
+extend type Mutation {
+  """
+  Update how a parabol dimension maps to a GitLab label
+  """
+  updateGitLabDimensionField(
+    """
+    The Poker dimension that we're updating, e.g. story points
+    """
+    dimensionName: String
+    """
+    The template string to map to a label, e.g. __comment
+    """
+    labelTemplate: String
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField.
+    """
+    meetingId: ID
+    """
+    The id of the project the issue belongs to
+    """
+    projectId: Int
+  ): UpdateGitLabDimensionFieldPayload!
+}
+
+union UpdateGitLabDimensionFieldPayload = ErrorPayload | UpdateGitLabDimensionFieldSuccess
+
+type UpdateGitLabDimensionFieldSuccess {
+  teamId: ID
+  meetingId: ID
+  team: Team
+  meeting: NewMeeting
+}

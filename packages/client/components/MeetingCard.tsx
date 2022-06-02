@@ -8,7 +8,7 @@ import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
-import useAnimatedMeetingCard from '../hooks/useAnimatedMeetingCard'
+import useAnimatedCard from '../hooks/useAnimatedCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
@@ -157,21 +157,12 @@ const MeetingCard = (props: Props) => {
   const {meeting, status, onTransitionEnd, displayIdx} = props
   const {name, team, id: meetingId, meetingType, phases} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
-  if (!team) {
-    // 95% sure there's a bug in relay causing this
-    const errObj = {id: meetingId} as any
-    if (meeting.hasOwnProperty('team')) {
-      errObj.team = team
-    }
-    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
-    return null
-  }
-  const {id: teamId, name: teamName} = team
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
+  /* eslint-disable react-hooks/rules-of-hooks */
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const ref = useAnimatedMeetingCard(displayIdx, status)
+  const ref = useAnimatedCard(displayIdx, status)
   const popTooltip = () => {
     openTooltip()
     setTimeout(() => {
@@ -184,6 +175,16 @@ const MeetingCard = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+  if (!team) {
+    // 95% sure there's a bug in relay causing this
+    const errObj = {id: meetingId} as any
+    if (meeting.hasOwnProperty('team')) {
+      errObj.team = team
+    }
+    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    return null
+  }
+  const {id: teamId, name: teamName} = team
 
   return (
     <CardWrapper

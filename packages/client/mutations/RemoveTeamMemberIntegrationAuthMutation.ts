@@ -9,6 +9,8 @@ graphql`
       ...GitLabProviderRowTeamMember
       ...MattermostProviderRowTeamMember
       ...JiraServerProviderRowTeamMember
+      ...AzureDevOpsProviderRowTeamMember
+      ...MSTeamsProviderRowTeamMember
     }
   }
 `
@@ -29,11 +31,9 @@ const mutation = graphql`
   }
 `
 
-const RemoveTeamMemberIntegrationAuthMutation: StandardMutation<TRemoveTeamMemberIntegrationAuthMutation> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted}
-) => {
+const RemoveTeamMemberIntegrationAuthMutation: StandardMutation<
+  TRemoveTeamMemberIntegrationAuthMutation
+> = (atmosphere, variables, {onError, onCompleted}) => {
   return commitMutation<TRemoveTeamMemberIntegrationAuthMutation>(atmosphere, {
     mutation,
     variables,

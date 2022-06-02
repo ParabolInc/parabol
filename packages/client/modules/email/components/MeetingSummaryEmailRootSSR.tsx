@@ -34,6 +34,7 @@ export const meetingSummaryUrlParams = {
 
 const MeetingSummaryEmailRootSSR = (props: Props) => {
   const {appOrigin, environment, meetingId} = props
+
   return (
     <QueryRenderer<MeetingSummaryEmailRootSSRQuery>
       environment={environment}

@@ -8,7 +8,6 @@ UPDATE "Team" SET
   "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),
   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
   "tier" = COALESCE(:tier, "tier"),
-  "orgId" = COALESCE(:orgId, "orgId"),
-  "updatedAt" = COALESCE(:updatedAt, "updatedAt")
+  "orgId" = COALESCE(:orgId, "orgId")
 WHERE "orgId" = :orgId
 RETURNING "id";

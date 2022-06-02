@@ -3,10 +3,12 @@ import TeamMemberIntegrationsId from '../../../client/shared/gqlIds/TeamMemberIn
 import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
-import JiraServerIntegration from './JiraServerIntegration'
+import AzureDevOpsIntegration from './AzureDevOpsIntegration'
 import GitHubIntegration from './GitHubIntegration'
 import GitLabIntegration from './GitLabIntegration'
+import JiraServerIntegration from './JiraServerIntegration'
 import MattermostIntegration from './MattermostIntegration'
+import MSTeamsIntegration from './MSTeamsIntegration'
 import SlackIntegration from './SlackIntegration'
 
 const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
@@ -57,6 +59,16 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
         const auths = await dataLoader.get('slackAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)
       }
+    },
+    azureDevOps: {
+      type: new GraphQLNonNull(AzureDevOpsIntegration),
+      description: 'All things associated with a A integration for a team member',
+      resolve: (source) => source
+    },
+    msTeams: {
+      type: new GraphQLNonNull(MSTeamsIntegration),
+      description: 'All things associated with a Microsoft Teams integration for a team member',
+      resolve: (source) => source
     }
   })
 })
