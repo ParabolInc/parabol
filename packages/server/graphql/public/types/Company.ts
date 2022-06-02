@@ -8,7 +8,9 @@ export type CompanySource = {id: string}
 const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
 
 const Company: CompanyResolvers = {
-  activeTeamCount: async ({id: domain}, _args, {dataLoader}) => {
+  activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {
+    // by default, active is defined as having met within 30 days
+    const metAfter = after ? new Date(after) : new Date(Date.now() - THIRTY_DAYS)
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
     const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
@@ -24,26 +26,28 @@ const Company: CompanyResolvers = {
           return true
         } else {
           const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-          const completedMeetingsLast30Days = completedMeetings.filter(
-            ({endedAt}) => new Date().getTime() - endedAt!.getTime() < THIRTY_DAYS
+          const completedMeetingsSinceAfter = completedMeetings.filter(
+            ({endedAt}) => endedAt! > metAfter
           )
-          return completedMeetingsLast30Days.length > 0
+          return completedMeetingsSinceAfter.length > 0
         }
       })
     )
     return areTeamsActive.filter(Boolean).length
   },
 
-  activeUserCount: async ({id: domain}, _args, {dataLoader}) => {
+  activeUserCount: async ({id: domain}, {after}, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
     const organizationUsersByOrgId = (
       await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)
     ).filter(errorFilter)
     const organizationUsers = organizationUsersByOrgId.flat()
-    const activeOrganizationUsers = organizationUsers.filter(
-      (organizationUser) => !organizationUser.inactive
-    )
+    const activeOrganizationUsers = organizationUsers.filter((organizationUser) => {
+      const isActive = !organizationUser.inactive
+      const joinedAfter = after ? organizationUser.joinedAt > new Date(after) : true
+      return isActive && joinedAfter
+    })
     const userIds = activeOrganizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size

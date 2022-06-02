@@ -10,12 +10,23 @@ type Company {
   """
   the number of active teams across all organizations
   """
-  activeTeamCount: Int!
+  activeTeamCount(
+    """
+    Only include teams that have met since this time.
+    Defaults to 30 days ago
+    """
+    after: DateTime
+  ): Int!
 
   """
   the number of active users across all organizations
   """
-  activeUserCount: Int!
+  activeUserCount(
+    """
+    Only include users that joined after this time
+    """
+    after: DateTime
+  ): Int!
 
   """
   the number of active workspaces used by the company
