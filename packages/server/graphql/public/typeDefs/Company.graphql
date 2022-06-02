@@ -18,6 +18,11 @@ type Company {
   activeUserCount: Int!
 
   """
+  the number of active workspaces used by the company
+  """
+  activeOrganizationCount: Int!
+
+  """
   the last time any team in the organization started a meeting, null if no meetings were ever run
   """
   lastMetAt: DateTime
@@ -25,7 +30,7 @@ type Company {
   """
   the total number of meetings started across all teams on all organizations
   """
-  meetingCount: Int!
+  meetingCount(after: DateTime): Int!
 
   """
   the longest monthly streak for meeting at least once per month for any team in the company

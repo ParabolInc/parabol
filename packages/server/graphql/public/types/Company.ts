@@ -1,8 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
-import {TierEnum as ETierEnum} from '../../../database/types/Invoice'
-import OrganizationType from '../../../database/types/Organization'
-import OrganizationUser from '../../../database/types/OrganizationUser'
 import errorFilter from '../../errorFilter'
 import {CompanyResolvers} from '../resolverTypes'
 
@@ -13,7 +10,7 @@ const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}: OrganizationType) => id)
+    const orgIds = organizations.map(({id}) => id)
     const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
       errorFilter
     )
@@ -39,25 +36,51 @@ const Company: CompanyResolvers = {
 
   activeUserCount: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}: OrganizationType) => id)
+    const orgIds = organizations.map(({id}) => id)
     const organizationUsersByOrgId = (
       await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)
     ).filter(errorFilter)
     const organizationUsers = organizationUsersByOrgId.flat()
     const activeOrganizationUsers = organizationUsers.filter(
-      (organizationUser: OrganizationUser) => !organizationUser.inactive
+      (organizationUser) => !organizationUser.inactive
     )
-    const userIds = activeOrganizationUsers.map(
-      (organizationUser: OrganizationUser) => organizationUser.userId
-    )
+    const userIds = activeOrganizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
   },
+  activeOrganizationCount: async ({id: domain}, _args, {dataLoader}) => {
+    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const allOrgIds = organizations.map(({id}) => id)
+    // filter out orgs with 0 teams
+    const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(allOrgIds)).filter(
+      errorFilter
+    )
+    const teams = teamsByOrgId.flat().filter(({isArchived}) => !isArchived)
+    const orgIdsWithManyTeamsSet = new Set<string>()
+    teams.forEach((team) => {
+      orgIdsWithManyTeamsSet.add(team.orgId)
+    })
+    const orgIdsWithManyTeams = [...orgIdsWithManyTeamsSet]
+    // get the number of teams for each org
 
+    // get the number of org users for each org
+    const organizationUsersByOrgId = (
+      await dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsWithManyTeams)
+    ).filter(errorFilter)
+    const organizationUsers = organizationUsersByOrgId.flat()
+    const activeOrganizationUsers = organizationUsers.filter(
+      (organizationUser) => !organizationUser.inactive
+    )
+    // filter out orgs with only 1 org user
+    const activeOrganizations = orgIdsWithManyTeams.filter((orgId) => {
+      return activeOrganizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
+    })
+    return activeOrganizations.length
+  },
   lastMetAt: async ({id: domain}, _args, {dataLoader}) => {
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}: OrganizationType) => id)
+    const orgIds = organizations.map(({id}) => id)
     const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
       errorFilter
     )
@@ -73,23 +96,30 @@ const Company: CompanyResolvers = {
     return lastMetAt
   },
 
-  meetingCount: async ({id: domain}, _args, {dataLoader}) => {
+  meetingCount: async ({id: domain}, {after}, {dataLoader}) => {
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}: OrganizationType) => id)
+    const orgIds = organizations.map(({id}) => id)
     const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
       errorFilter
     )
     const teams = teamsByOrgId.flat()
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
-    return r.table('NewMeeting').getAll(r.args(teamIds), {index: 'teamId'}).count().default(0).run()
+    const filterFn = after ? () => true : (meeting: any) => meeting('createdAt').ge(after)
+    return r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter(filterFn)
+      .count()
+      .default(0)
+      .run()
   },
 
   monthlyTeamStreakMax: async ({id: domain}, _args, {dataLoader}) => {
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}: OrganizationType) => id)
+    const orgIds = organizations.map(({id}) => id)
     const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
       errorFilter
     )
@@ -148,7 +178,7 @@ const Company: CompanyResolvers = {
 
   tier: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const tiers: ETierEnum[] = organizations.map(({tier}: OrganizationType) => tier)
+    const tiers = organizations.map(({tier}) => tier)
     if (tiers.includes('enterprise')) return 'enterprise'
     if (tiers.includes('pro')) return 'pro'
     return 'personal'
@@ -156,14 +186,12 @@ const Company: CompanyResolvers = {
 
   userCount: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    const orgIds = organizations.map(({id}: OrganizationType) => id)
+    const orgIds = organizations.map(({id}) => id)
     const organizationUsersByOrgId = (
       await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)
     ).filter(errorFilter)
     const organizationUsers = organizationUsersByOrgId.flat()
-    const userIds = organizationUsers.map(
-      (organizationUser: OrganizationUser) => organizationUser.userId
-    )
+    const userIds = organizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
   }
