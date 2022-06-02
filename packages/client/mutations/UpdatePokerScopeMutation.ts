@@ -56,6 +56,8 @@ graphql`
       }
     }
     meeting {
+      ...useInitialSafeRoute_meeting
+      ...useUpdatedSafeRoute_meeting
       gitlabSearchQuery {
         queryString
         selectedProjectsIds
