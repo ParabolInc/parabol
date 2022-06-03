@@ -68,6 +68,7 @@ jobs:
             cp $DEVOPS_WORKDIR/environments/test .env
             yarn db:migrate
             yarn pg:migrate up
+            yarn pg:build
       - run:
           name: Build Assets
           command: |
