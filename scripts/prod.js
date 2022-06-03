@@ -24,8 +24,10 @@ const compile = (config, isSilent) => {
 
 const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
+  console.log('PG BUILD START', Date.now())
   const exec = promisify(cp.exec)
   await exec('yarn pg:build')
+  console.log('PG BUILD COMPLETE', Date.now())
   await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
