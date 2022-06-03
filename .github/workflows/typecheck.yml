@@ -33,6 +33,5 @@ jobs:
           yarn typecheck
         env:
           CI: true
-          DEBUG: "*"
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
