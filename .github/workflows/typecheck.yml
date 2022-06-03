@@ -4,13 +4,24 @@ on: [push]
 
 jobs:
   build:
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '16.14.0'
+          node-version: "16.14.0"
       - name: Typecheck
         run: |
           cp .env.example .env
