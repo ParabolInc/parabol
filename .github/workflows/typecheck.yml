@@ -8,8 +8,11 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: pgparaboladmin
-          POSTGRES_PASSWORD: parabol
+          POSTGRES_PASSWORD: "parabol"
+          POSTGRES_USER: "pgparaboladmin"
+          POSTGRES_DB: "parabol-saas"
+          POSTGRES_HOST: "localhost"
+          POSTGRES_PORT: "5432"
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
