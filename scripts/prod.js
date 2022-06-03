@@ -4,6 +4,7 @@ const makeClientConfig = require('./webpack/prod.client.config')
 const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
 const cp = require('child_process')
 const {promisify} = require('util')
+const {Pool} = require('pg')
 
 const compile = (config, isSilent) => {
   return new Promise((resolve) => {
@@ -26,6 +27,9 @@ const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   console.log('PG BUILD START', Date.now())
   const exec = promisify(cp.exec)
+  const pg = new Pool({user: 'pgparaboladmin', password: 'parabol'})
+  const res1 = await pg.query(`SELECT 1`)
+  console.log({res1})
   await exec('yarn pg:build')
   console.log('PG BUILD COMPLETE', Date.now())
   const res = await exec('ls packages/server/postgres/queries/generated')
