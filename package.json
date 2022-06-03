@@ -26,7 +26,7 @@
     "build": "node scripts/prod.js",
     "clean": "rm -rf ./packages/client/__generated__ && rm ./queryMap.json && rm ./packages/server/graphql/public/schema.graphql && rm ./packages/server/graphql/private/schema.graphql && rm -rf ./dev && rm -rf ./dist && rm -rf ./build",
     "codegen": "node scripts/codegenGraphQL.js",
-    "pg:build": "DEBUG=* pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
+    "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
     "db:start": "docker compose -f docker/dev.yml up -d",

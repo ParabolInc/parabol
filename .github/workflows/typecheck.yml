@@ -37,4 +37,3 @@ jobs:
           yarn pg:build
         env:
           CI: true
-          DEBUG: "*,-babel"
