@@ -31,7 +31,7 @@ jobs:
       - name: Typecheck
         run: |
           cp .env.example .env
-          yarn
+          node ./scripts/testPG.js
           yarn pg:build
         env:
           CI: true

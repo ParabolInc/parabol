@@ -27,7 +27,13 @@ const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   console.log('PG BUILD START', Date.now())
   const exec = promisify(cp.exec)
-  const pg = new Pool({user: 'pgparaboladmin', password: 'parabol'})
+  const pg = new Pool({
+    user: 'pgparaboladmin',
+    password: 'parabol',
+    database: 'parabol-saas',
+    host: 'localhost',
+    port: 5432
+  })
   const res1 = await pg.query(`SELECT 1`)
   console.log({res1})
   await exec('yarn pg:build')
