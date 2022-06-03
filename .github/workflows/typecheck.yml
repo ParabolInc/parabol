@@ -32,10 +32,9 @@ jobs:
         run: |
           cp .env.example .env
           yarn
-          node ./scripts/testPG.js
+          yarn db:migrate
+          yarn pg:migrate up
           yarn pg:build
         env:
           CI: true
           DEBUG: "*,-babel"
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
