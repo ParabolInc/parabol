@@ -56,6 +56,7 @@ graphql`
       }
     }
     meeting {
+      ...PokerMeeting_meeting
       ...useInitialSafeRoute_meeting
       ...useUpdatedSafeRoute_meeting
       gitlabSearchQuery {
