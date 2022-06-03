@@ -28,6 +28,8 @@ const prod = async (isDeploy) => {
   const exec = promisify(cp.exec)
   await exec('yarn pg:build')
   console.log('PG BUILD COMPLETE', Date.now())
+  const res = await exec('ls packages/server/postgres/queries/generated')
+  console.log(res.stdout)
   await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
