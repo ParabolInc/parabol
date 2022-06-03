@@ -6,7 +6,7 @@ jobs:
   build:
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: "parabol"
           POSTGRES_USER: "pgparaboladmin"
