@@ -41,5 +41,7 @@ jobs:
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
+          yarn build
+          yarn typecheck
         env:
           CI: true
