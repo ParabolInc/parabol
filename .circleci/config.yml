@@ -130,7 +130,7 @@ jobs:
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
-              git add queryMap.json build dist packages/client/__generated__ scripts/toolbox -f
+              git add queryMap.json build dist packages/client/__generated__ scripts/toolbox packages/server/postgres/queries/generated -f
               git commit -m "build $ACTION_VERSION"
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
