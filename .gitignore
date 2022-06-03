@@ -15,7 +15,8 @@ dist/
 dump.rdb
 node_modules/
 package-lock.json
-packages/server/postgres/queries/generated
+packages/server/postgres/queries/generated/*
+!packages/server/postgres/queries/generated/.gitkeep
 packages/server/types/githubTypes.ts
 packages/server/types/gitlabTypes.ts
 packages/server/graphql/private/resolverTypes.ts
