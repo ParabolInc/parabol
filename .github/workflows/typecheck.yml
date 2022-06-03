@@ -29,9 +29,9 @@ jobs:
         run: |
           cp .env.example .env
           yarn
-          yarn build
-          yarn typecheck
+          yarn pg:build
         env:
           CI: true
+          DEBUG: "*,-babel"
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
