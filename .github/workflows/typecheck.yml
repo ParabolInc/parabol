@@ -5,6 +5,12 @@ on: [push]
 jobs:
   build:
     services:
+    rethinkdb:
+      image: rethinkdb:2.4.0
+        ports:
+          - '8080:8080'
+          - '29015:29015'
+          - '28015:28015'
       postgres:
         image: postgres:12
         env:
