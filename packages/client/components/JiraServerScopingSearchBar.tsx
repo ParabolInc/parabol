@@ -3,8 +3,8 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {JiraServerScopingSearchBar_meeting$key} from '../__generated__/JiraServerScopingSearchBar_meeting.graphql'
 import JiraServerScopingSearchFilterToggle from './JiraServerScopingSearchFilterToggle'
+import JiraServerScopingSearchHistoryToggle from './JiraServerScopingSearchHistoryToggle'
 import ScopingSearchBar from './ScopingSearchBar'
-import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 import ScopingSearchInput from './ScopingSearchInput'
 
 interface Props {
@@ -36,6 +36,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
           }
         }
         ...JiraServerScopingSearchFilterToggle_meeting
+        ...JiraServerScopingSearchHistoryToggle_meeting
       }
     `,
     meetingRef
@@ -43,8 +44,9 @@ const JiraServerScopingSearchBar = (props: Props) => {
 
   const {id: meetingId, viewerMeetingMember, jiraServerSearchQuery} = meeting
   const {isJQL, queryString, projectKeyFilters} = jiraServerSearchQuery
+  const jiraServer = viewerMeetingMember?.teamMember.integrations.jiraServer
 
-  const projects = viewerMeetingMember?.teamMember.integrations.jiraServer?.projects
+  const projects = jiraServer?.projects
   const selectedProjectsPaths = [] as string[]
   projectKeyFilters?.forEach((projectId) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
@@ -56,7 +58,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
-      <ScopingSearchHistoryToggle />
+      <JiraServerScopingSearchHistoryToggle meetingRef={meeting} />
       <ScopingSearchInput
         placeholder={placeholder}
         queryString={queryString}

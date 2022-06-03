@@ -29,14 +29,19 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         $teamId: ID!
         $first: Int
         $queryString: String
+        $projectKeyFilters: [String!]!
         $isWIQL: Boolean!
       ) {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
-                userStories(first: $first, queryString: $queryString, isWIQL: $isWIQL)
-                  @connection(key: "AzureDevOpsScopingSearchResults_userStories") {
+                workItems(
+                  first: $first
+                  queryString: $queryString
+                  projectKeyFilters: $projectKeyFilters
+                  isWIQL: $isWIQL
+                ) @connection(key: "AzureDevOpsScopingSearchResults_workItems") {
                   error {
                     message
                   }
@@ -77,9 +82,10 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
 
   const viewer = query.viewer
   const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
-  const userStories = azureDevOps?.userStories ?? null
-  const edges = userStories?.edges ?? null
-  const error = userStories?.error ?? null
+  const workItems = azureDevOps?.workItems ?? null
+  const edges = workItems?.edges ?? null
+  const error = workItems?.error ?? null
+
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!

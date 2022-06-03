@@ -6,9 +6,11 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
+import AzureDevOpsFieldDimensionDropdown from './AzureDevOpsFieldDimensionDropdown'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
 import GitLabFieldDimensionDropdown from './GitLabFieldDimensionDropdown'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
+import JiraServerFieldDimensionDropdown from './JiraServerFieldDimensionDropdown'
 import LinkButton from './LinkButton'
 import StyledError from './StyledError'
 
@@ -82,7 +84,9 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
         ...GitHubFieldDimensionDropdown_stage
         ...JiraFieldDimensionDropdown_stage
+        ...AzureDevOpsFieldDimensionDropdown_stage
         ...GitLabFieldDimensionDropdown_stage
+        ...JiraServerFieldDimensionDropdown_stage
         task {
           integration {
             __typename
@@ -127,9 +131,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-          {(integrationType === 'JiraIssue' ||
-            integrationType === 'JiraServerIssue' ||
-            integrationType === 'AzureDevOpsWorkItem') && (
+          {integrationType === 'JiraIssue' && (
             <JiraFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
@@ -137,8 +139,26 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
+
+          {integrationType === 'AzureDevOpsWorkItem' && (
+            <AzureDevOpsFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+
           {integrationType === '_xGitLabIssue' && (
             <GitLabFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+          {integrationType === 'JiraServerIssue' && (
+            <JiraServerFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
               isFacilitator={isFacilitator}

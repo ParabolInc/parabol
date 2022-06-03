@@ -46,7 +46,7 @@ export default class GenericMeetingStage {
   suggestedEndTime: Date | undefined
   suggestedTimeLimit: number | undefined
   viewCount: number
-  readyToAdvance = [] as string[]
+  readyToAdvance: string[] | undefined = []
   phaseType: string
   constructor(input: GenericMeetingStageInput) {
     const {durations, phaseType, id, isNavigable, isNavigableByFacilitator, startAt, viewCount} =

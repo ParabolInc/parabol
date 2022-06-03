@@ -2,12 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
@@ -31,22 +29,15 @@ const AddPromptLinkPlus = styled(Icon)({
   margin: '0 16px 0 16px'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   prompts: AddTemplatePrompt_prompts
   templateId: string
 }
 
 const AddTemplatePrompt = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const addPrompt = () => {
-    const {
-      atmosphere,
-      prompts,
-      templateId,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = props
+    const {prompts, templateId, onError, onCompleted, submitMutation, submitting} = props
     if (submitting) return
     submitMutation()
     const sortOrders = prompts.map(({sortOrder}) => sortOrder)
@@ -74,7 +65,7 @@ const AddTemplatePrompt = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplatePrompt)), {
+export default createFragmentContainer(withMutationProps(AddTemplatePrompt), {
   prompts: graphql`
     fragment AddTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       sortOrder

@@ -1,11 +1,12 @@
-import {and, not} from 'graphql-shield'
+import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import {Resolvers} from './resolverTypes'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
+import isOrgTier from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
+import isViewerBillingLeader from './rules/isViewerBillingLeader'
 import rateLimit from './rules/rateLimit'
-
 type Wildcard = {
   '*': ShieldRule
 }
@@ -27,7 +28,12 @@ const permissionMap: PermissionMap<Resolvers> = {
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
-    )
+    ),
+    addApprovedOrganizationDomains: or(
+      isSuperUser,
+      and(isViewerBillingLeader, isOrgTier('enterprise'))
+    ),
+    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader)
   },
   Query: {
     '*': isAuthenticated,

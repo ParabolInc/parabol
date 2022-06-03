@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.57.0",
+  "version": "6.61.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -29,8 +29,8 @@
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
-    "db:start": "docker-compose -f docker/dev.yml up -d",
-    "db:stop": "docker-compose -f docker/dev.yml down",
+    "db:start": "docker compose -f docker/dev.yml up -d",
+    "db:stop": "docker compose -f docker/dev.yml down",
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/migrate.js",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",
@@ -48,7 +48,7 @@
     "prepare": "husky install"
   },
   "resolutions": {
-    "typescript": "4.5.5",
+    "typescript": "4.6.3",
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
@@ -95,5 +95,6 @@
     "webpack": "5.64.1",
     "webpack-cli": "4.9.1",
     "yarn-deduplicate": "^3.1.0"
-  }
+  },
+  "dependencies": {}
 }

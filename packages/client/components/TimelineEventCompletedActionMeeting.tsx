@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
 import relativeDate from '../utils/date/relativeDate'
@@ -23,49 +23,45 @@ const CountItem = styled('span')({
   fontWeight: 600
 })
 
-class TimelineEventCompletedActionMeeting extends Component<Props> {
-  render() {
-    const {timelineEvent} = this.props
-    const {meeting, team} = timelineEvent
-    const {
-      id: meetingId,
-      name: meetingName,
-      createdAt,
-      endedAt,
-      agendaItemCount,
-      commentCount,
-      taskCount
-    } = meeting
-    const {name: teamName} = team
-    const meetingDuration = relativeDate(createdAt, {
-      now: endedAt,
-      max: 2,
-      suffix: false,
-      smallDiff: 'less than a minute'
-    })
-    return (
-      <TimelineEventCard
-        iconName='change_history'
-        timelineEvent={timelineEvent}
-        title={
-          <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
-        }
-      >
-        <TimelineEventBody>
-          {`It lasted ${meetingDuration} and generated `}
-          <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
-          {', '}
-          <CountItem>{`${agendaItemCount} ${plural(agendaItemCount, 'agenda item')}`}</CountItem>
-          {' and '}
-          <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
-          <br />
-          <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
-          {' in your meeting or '}
-          <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
-        </TimelineEventBody>
-      </TimelineEventCard>
-    )
-  }
+const TimelineEventCompletedActionMeeting = (props: Props) => {
+  const {timelineEvent} = props
+  const {meeting, team} = timelineEvent
+  const {
+    id: meetingId,
+    name: meetingName,
+    createdAt,
+    endedAt,
+    agendaItemCount,
+    commentCount,
+    taskCount
+  } = meeting
+  const {name: teamName} = team
+  const meetingDuration = relativeDate(createdAt, {
+    now: endedAt,
+    max: 2,
+    suffix: false,
+    smallDiff: 'less than a minute'
+  })
+  return (
+    <TimelineEventCard
+      iconName='change_history'
+      timelineEvent={timelineEvent}
+      title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
+    >
+      <TimelineEventBody>
+        {`It lasted ${meetingDuration} and generated `}
+        <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
+        {', '}
+        <CountItem>{`${agendaItemCount} ${plural(agendaItemCount, 'agenda item')}`}</CountItem>
+        {' and '}
+        <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
+        <br />
+        <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
+        {' in your meeting or '}
+        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+      </TimelineEventBody>
+    </TimelineEventCard>
+  )
 }
 
 export default createFragmentContainer(TimelineEventCompletedActionMeeting, {

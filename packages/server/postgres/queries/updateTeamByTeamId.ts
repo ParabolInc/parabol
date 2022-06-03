@@ -1,16 +1,12 @@
+import getPg from '../../postgres/getPg'
 import {
   IUpdateTeamByTeamIdQueryParams,
   updateTeamByTeamIdQuery
 } from './generated/updateTeamByTeamIdQuery'
-import getPg from '../../postgres/getPg'
-import {OptionalExceptFor} from '../../utils/TypeUtil'
 import {JiraDimensionField} from './getTeamsByIds'
 
 export interface UpdateTeamParams
-  extends OptionalExceptFor<
-    Omit<IUpdateTeamByTeamIdQueryParams, 'jiraDimensionFields'>,
-    'updatedAt'
-  > {
+  extends Partial<Omit<IUpdateTeamByTeamIdQueryParams, 'jiraDimensionFields'>> {
   jiraDimensionFields?: JiraDimensionField[]
 }
 

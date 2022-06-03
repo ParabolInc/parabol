@@ -14,6 +14,7 @@ import TeamMember from '../../database/types/TeamMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
+import insertDiscussions from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -141,6 +142,15 @@ const joinMeeting = {
       // only add a new stage for the new users (ie. invited to the team after the meeting was started)
       if (teamMemberResponseStage) return
       const responsesStage = new TeamPromptResponseStage({teamMemberId})
+      await insertDiscussions([
+        {
+          id: responsesStage.discussionId,
+          teamId,
+          meetingId,
+          discussionTopicId: teamMemberId,
+          discussionTopicType: 'teamPromptResponse' as const
+        }
+      ])
       return addStageToPhase(responsesStage, 'RESPONSES')
     }
 

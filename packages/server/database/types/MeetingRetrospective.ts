@@ -14,6 +14,10 @@ interface Input {
   maxVotesPerGroup: number
 }
 
+export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
+  return meeting.meetingType === 'retrospective'
+}
+
 export default class MeetingRetrospective extends Meeting {
   meetingType!: 'retrospective'
   showConversionModal?: boolean

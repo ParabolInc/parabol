@@ -1,11 +1,15 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
-import {Editor, EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
+import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import areEqual from 'fbjs/lib/areEqual'
 import React, {useState} from 'react'
 
 const StyledEditor = styled('div')`
+  .ProseMirror {
+    min-height: 40px;
+  }
   .ProseMirror p.is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);
@@ -32,9 +36,9 @@ export const createEditorExtensions = (placeholder?: string) => [
 interface Props {
   autoFocus?: boolean
   content: JSONContent | null
-  handleSubmit: (editor: EditorState) => void
+  handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
-  placeholder: string
+  placeholder?: string
 }
 
 const PromptResponseEditor = (props: Props) => {
@@ -51,19 +55,29 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(true)
   }
 
-  const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
+  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
-    handleSubmit(newEditorState)
+    const newContent = newEditorState.getJSON()
+
+    // to avoid creating an empty post on first blur
+    if (!content && newEditorState.isEmpty) return
+
+    if (areEqual(content, newContent)) return
+
+    handleSubmit?.(newEditorState)
   }
 
-  const editor: Editor | null = useEditor({
-    content,
-    extensions: createEditorExtensions(placeholder),
-    autofocus: autoFocus,
-    onUpdate,
-    onBlur: onSubmit,
-    editable: !readOnly
-  })
+  const editor = useEditor(
+    {
+      content,
+      extensions: createEditorExtensions(placeholder),
+      autofocus: autoFocus,
+      onUpdate,
+      onBlur: onSubmit,
+      editable: !readOnly
+    },
+    [content]
+  )
 
   return (
     <StyledEditor>

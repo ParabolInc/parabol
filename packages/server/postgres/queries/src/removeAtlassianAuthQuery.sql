@@ -2,5 +2,5 @@
   @name removeAtlassianAuthQuery
 */
 UPDATE "AtlassianAuth"
-SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
+SET "isActive" = FALSE
 WHERE "userId" = :userId AND "teamId" = :teamId AND "isActive" = TRUE;

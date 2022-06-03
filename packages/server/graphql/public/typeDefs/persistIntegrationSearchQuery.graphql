@@ -1,0 +1,24 @@
+extend type Mutation {
+  persistIntegrationSearchQuery(
+    teamId: ID!
+    service: IntegrationProviderServiceEnum!
+    providerId: ID
+    jiraServerSearchQuery: JiraServerSearchQueryInput
+  ): PersistIntegrationSearchQueryPayload!
+}
+
+input JiraServerSearchQueryInput {
+  queryString: String!
+  isJQL: Boolean!
+  projectKeyFilters: [ID!]!
+}
+
+type PersistIntegrationSearchQuerySuccess {
+  userId: ID
+  teamId: ID
+  jiraServerIntegration: JiraServerIntegration
+}
+
+union PersistIntegrationSearchQueryPayload = PersistIntegrationSearchQuerySuccess | ErrorPayload
+
+extend union NotificationSubscriptionPayload = PersistIntegrationSearchQuerySuccess

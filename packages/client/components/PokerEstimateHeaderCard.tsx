@@ -43,13 +43,13 @@ const getHeaderFields = (
     case 'AzureDevOpsWorkItem':
       const {
         title: azureDevOpsTitle,
-        teamProject,
         url: azureDevOpsUrl,
-        id: workItemId
+        id: workItemId,
+        descriptionHTML: azureDevOpsDescriptionHTML
       } = integration
       return {
         cardTitle: azureDevOpsTitle,
-        descriptionHTML: teamProject,
+        descriptionHTML: azureDevOpsDescriptionHTML,
         url: azureDevOpsUrl,
         linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
         linkText: `#${workItemId}`
@@ -102,6 +102,7 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
             type
             state
             url
+            descriptionHTML
           }
           ... on JiraIssue {
             __typename

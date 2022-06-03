@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -10,7 +10,7 @@ import {BillingLeaderActionMenu_organizationUser} from '../__generated__/Billing
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props extends WithMutationProps {
   menuProps: MenuProps
   isViewerLastBillingLeader: boolean
   organizationUser: BillingLeaderActionMenu_organizationUser
@@ -21,7 +21,6 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 
 const BillingLeaderActionMenu = (props: Props) => {
   const {
-    atmosphere,
     menuProps,
     isViewerLastBillingLeader,
     organizationUser,
@@ -33,18 +32,21 @@ const BillingLeaderActionMenu = (props: Props) => {
     toggleLeave,
     toggleRemove
   } = props
+  const atmosphere = useAtmosphere()
   const {id: orgId, tier} = organization
   const {viewerId} = atmosphere
   const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
   const {id: userId} = user
 
-  const setRole = (role: string | null = null) => () => {
-    if (submitting) return
-    submitMutation()
-    const variables = {orgId, userId, role}
-    SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
-  }
+  const setRole =
+    (role: string | null = null) =>
+    () => {
+      if (submitting) return
+      submitMutation()
+      const variables = {orgId, userId, role}
+      SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
+    }
 
   return (
     <>
@@ -73,7 +75,7 @@ const BillingLeaderActionMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(BillingLeaderActionMenu)), {
+export default createFragmentContainer(withMutationProps(BillingLeaderActionMenu), {
   organization: graphql`
     fragment BillingLeaderActionMenu_organization on Organization {
       id

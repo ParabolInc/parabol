@@ -7,7 +7,8 @@ async function setup() {
   // so the safety checks will eventually fail if run too much
   await Promise.all([
     r.table('FailedAuthRequest').delete().run(),
-    r.table('PasswordResetRequest').delete().run()
+    r.table('PasswordResetRequest').delete().run(),
+    r.table('SAML').getAll('example.com', {index: 'domains'}).delete().run()
   ])
 }
 

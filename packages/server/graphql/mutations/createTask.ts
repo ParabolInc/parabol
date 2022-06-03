@@ -5,14 +5,13 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task, {TaskServiceEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
@@ -42,42 +41,6 @@ export const validateTaskUserIsTeamMember = async (
   const teamMemberId = toTeamMemberId(teamId, userId)
   const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
   return teamMember ? undefined : 'Invalid user ID'
-}
-
-const sendToSentryTaskCreated = async (
-  meetingId: string | null | undefined,
-  viewerId: string,
-  teamId: string,
-  isReply: boolean,
-  integrationService: string | undefined,
-  dataLoader: DataLoaderWorker
-) => {
-  let isAsync
-  if (meetingId) {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return
-    const {phases} = meeting
-    const discussPhase = phases.find(
-      ({phaseType}: {phaseType: NewMeetingPhaseTypeEnum}) =>
-        phaseType === 'discuss' || phaseType === 'agendaitems'
-    )
-    if (discussPhase) {
-      const {stages} = discussPhase
-      isAsync = stages.some((stage) => stage.isAsync)
-    }
-  }
-
-  segmentIo.track({
-    userId: viewerId,
-    event: 'Task added',
-    properties: {
-      meetingId,
-      teamId,
-      isAsync,
-      isReply,
-      integrationService
-    }
-  })
 }
 
 const validateTaskDiscussionId = async (
@@ -275,14 +238,8 @@ export default {
       mutatorId
     }).catch()
 
-    sendToSentryTaskCreated(
-      meetingId,
-      viewerId,
-      teamId,
-      !!threadParentId,
-      integration?.service,
-      dataLoader
-    ).catch()
+    const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
+    analytics.taskCreated(viewerId, teamId, !!threadParentId, meeting, integration?.service)
     return {taskId}
   }
 }

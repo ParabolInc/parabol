@@ -1,18 +1,27 @@
 import styled from '@emotion/styled'
+import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import ReactjiId from '~/shared/gqlIds/ReactjiId'
+import findStageById from '~/utils/meetings/findStageById'
 import {TeamPromptDiscussionDrawer_meeting$key} from '~/__generated__/TeamPromptDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ICON_SIZE} from '../../styles/typographyV2'
 import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../../types/constEnums'
+import Avatar from '../Avatar/Avatar'
 import DiscussionThreadRoot from '../DiscussionThreadRoot'
 import Icon from '../Icon'
-import LabelHeading from '../LabelHeading/LabelHeading'
 import PlainButton from '../PlainButton/PlainButton'
+import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
+import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
+import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
+import {TeamMemberName} from './TeamPromptResponseCard'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -29,7 +38,8 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   right: isDesktop ? 0 : undefined,
   transition: `all 200ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
-  width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
+  transform: `translateX(${isOpen ? 0 : DiscussionThreadEnum.WIDTH}px)`,
+  width: DiscussionThreadEnum.WIDTH,
   zIndex: ZIndex.SIDEBAR
 }))
 
@@ -56,22 +66,29 @@ const CloseIcon = styled(Icon)({
   }
 })
 
-const Header = styled('div')({
-  alignItems: 'center',
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
+const DiscussionResponseCard = styled('div')({
   display: 'flex',
+  flexDirection: 'column',
   justifyContent: 'space-between',
   padding: '8px 8px 8px 12px',
   width: '100%'
 })
 
-const HeaderLabel = styled(LabelHeading)({
-  textTransform: 'none',
-  width: '100%'
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: '0 8px'
 })
 
 const StyledCloseButton = styled(PlainButton)({
-  height: 24
+  height: 24,
+  marginLeft: 'auto'
+})
+
+const StyledReactjis = styled(ReactjiSection)({
+  paddingTop: '16px'
 })
 
 interface Props {
@@ -83,19 +100,56 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptDiscussionDrawer_meeting on TeamPromptMeeting {
-        localDiscussionId
+        localStageId
         isRightDrawerOpen
         id
+        phases {
+          stages {
+            id
+            ... on TeamPromptResponseStage {
+              discussionId
+              teamMember {
+                picture
+                preferredName
+              }
+              response {
+                id
+                content
+                updatedAt
+                createdAt
+                reactjis {
+                  ...ReactjiSection_reactjis
+                  id
+                  isViewerReactji
+                }
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
 
   const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const {localDiscussionId, id: meetingId, isRightDrawerOpen} = meeting
+  const {localStageId, id: meetingId, isRightDrawerOpen} = meeting
+  if (!localStageId) {
+    return null
+  }
 
-  const onToggle = () => {
+  const stage = findStageById(meeting.phases, localStageId)
+  if (!stage) {
+    return null
+  }
+
+  const {discussionId, teamMember, response} = stage.stage
+  if (!discussionId || !teamMember) {
+    return null
+  }
+
+  const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -104,30 +158,65 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
     })
   }
 
-  return localDiscussionId ? (
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting || !reactjis || !response) return
+    const isRemove = !!reactjis.find((reactji) => {
+      return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
+    })
+    submitMutation()
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {
+        reactableId: response?.id,
+        reactableType: 'RESPONSE',
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
+      {onCompleted, onError}
+    )
+  }
+
+  const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
+  const reactjis = response?.reactjis ?? []
+
+  return (
     <ResponsiveDashSidebar
       isOpen={isRightDrawerOpen}
       isRightDrawer
-      onToggle={onToggle}
+      onToggle={onToggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
       <Drawer isDesktop={isDesktop} isOpen={isRightDrawerOpen}>
-        <Header>
-          <HeaderLabel>{'TODO: show response card'}</HeaderLabel>
-          <StyledCloseButton onClick={onToggle}>
-            <CloseIcon>close</CloseIcon>
-          </StyledCloseButton>
-        </Header>
+        <DiscussionResponseCard>
+          <Header>
+            <Avatar picture={teamMember.picture} size={48} />
+            <TeamMemberName>
+              {teamMember.preferredName}
+              {response && (
+                <TeamPromptLastUpdatedTime
+                  updatedAt={response.updatedAt}
+                  createdAt={response.createdAt}
+                />
+              )}
+            </TeamMemberName>
+            <StyledCloseButton onClick={onToggleDrawer}>
+              <CloseIcon>close</CloseIcon>
+            </StyledCloseButton>
+          </Header>
+          <PromptResponseEditor content={contentJSON} readOnly={true} />
+          <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+        </DiscussionResponseCard>
         <ThreadColumn>
           <DiscussionThreadRoot
-            discussionId={localDiscussionId!}
+            discussionId={discussionId}
             allowedThreadables={['comment', 'task']}
             width={'100%'}
           />
         </ThreadColumn>
       </Drawer>
     </ResponsiveDashSidebar>
-  ) : null
+  )
 }
 
 export default TeamPromptDiscussionDrawer
