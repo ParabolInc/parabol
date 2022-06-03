@@ -1,25 +1,31 @@
+const effortField = '/fields/Microsoft.VSTS.Scheduling.Effort'
+const remainingWorkField = '/fields/Microsoft.VSTS.Scheduling.RemainingWork'
+const storyPointsField = '/fields/Microsoft.VSTS.Scheduling.StoryPoints'
+const originalEstimateField = '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate'
+const sizeField = '/fields/Microsoft.VSTS.Scheduling.Size'
+
 // Agile fields in map, TODO add Scrum and CMMI fields
 export const fieldTypeToId = {
-  'Basic:Issue': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Basic:Task': '/fields/Microsoft.VSTS.Scheduling.RemainingWork',
-  'Agile:Epic': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Agile:Feature': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Agile:User Story': '/fields/Microsoft.VSTS.Scheduling.StoryPoints',
-  'Agile:Task': '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate',
-  'Agile:Bug': '/fields/Microsoft.VSTS.Scheduling.StoryPoints',
-  'Scrum:Bug': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Scrum:Epic': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Scrum:Feature': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Scrum:Product Backlog Item': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'Scrum:Task': '/fields/Microsoft.VSTS.Scheduling.RemainingWork',
-  'CMMI:Bug': '/fields/Microsoft.VSTS.Scheduling.Size',
-  'CMMI:Change Request': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'CMMI:Epic': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'CMMI:Feature': '/fields/Microsoft.VSTS.Scheduling.Effort',
-  'CMMI:Issue': '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate',
-  'CMMI:Requirement': '/fields/Microsoft.VSTS.Scheduling.Size',
-  'CMMI:Risk': '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate',
-  'CMMI:Task': '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate'
+  'Basic:Issue': effortField,
+  'Basic:Task': remainingWorkField,
+  'Agile:Epic': effortField,
+  'Agile:Feature': effortField,
+  'Agile:User Story': storyPointsField,
+  'Agile:Task': originalEstimateField,
+  'Agile:Bug': storyPointsField,
+  'Scrum:Bug': effortField,
+  'Scrum:Epic': effortField,
+  'Scrum:Feature': effortField,
+  'Scrum:Product Backlog Item': effortField,
+  'Scrum:Task': remainingWorkField,
+  'CMMI:Bug': sizeField,
+  'CMMI:Change Request': effortField,
+  'CMMI:Epic': effortField,
+  'CMMI:Feature': effortField,
+  'CMMI:Issue': originalEstimateField,
+  'CMMI:Requirement': sizeField,
+  'CMMI:Risk': originalEstimateField,
+  'CMMI:Task': originalEstimateField
 }
 
 export const getInstanceId = (url: URL) => {
