@@ -1,11 +1,10 @@
-import {MigrationBuilder, ColumnDefinitions} from 'node-pg-migrate'
+import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import Team from '../../../database/types/Team'
-import {timelineEvents} from '../../../dataloader/primaryLoaderMakers'
 import {TEAM_NAME_LIMIT} from '../../constants'
+import {backupTeamQuery} from '../../generatedMigrationHelpers'
 import getPg from '../../getPg'
-import {backupTeamQuery, IBackupTeamQueryParams} from '../../queries/generated/backupTeamQuery'
 import catchAndLog from '../../utils/catchAndLog'
 
 const undefinedTeamFieldsAndTheirDefaultValues = {
@@ -13,7 +12,7 @@ const undefinedTeamFieldsAndTheirDefaultValues = {
   isOnboardTeam: false
 }
 
-const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
+const cleanTeams = (teams: Team[]) => {
   const cleanedTeams = []
   teams.forEach((team) => {
     const cleanedTeam = Object.assign({}, undefinedTeamFieldsAndTheirDefaultValues, team, {
@@ -24,7 +23,7 @@ const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
     })
     cleanedTeams.push(cleanedTeam)
   })
-  return cleanedTeams as IBackupTeamQueryParams['teams']
+  return cleanedTeams as any
 }
 
 export const shorthands: ColumnDefinitions | undefined = undefined

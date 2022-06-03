@@ -1,7 +1,7 @@
 import {ColumnDefinitions} from 'node-pg-migrate'
 import getRethink from '../../../database/rethinkDriver'
+import {backfillSegmentIdQuery} from '../../generatedMigrationHelpers'
 import getPg from '../../getPg'
-import {backfillSegmentIdQuery} from '../../queries/generated/backfillSegmentIdQuery'
 import catchAndLog from '../../utils/catchAndLog'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
