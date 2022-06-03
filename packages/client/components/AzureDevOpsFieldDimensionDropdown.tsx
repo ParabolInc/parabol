@@ -91,19 +91,19 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
     if (!workItemType) {
       return SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
     }
-    if (azureDevOpsEffortWorkItems.indexOf(workItemType) !== -1) {
+    if (azureDevOpsEffortWorkItems.includes(workItemType)) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_EFFORT_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (azureDevOpsRemainingWorkWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsRemainingWorkWorkItems.includes(workItemType)) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (azureDevOpsOriginalEstimateWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsOriginalEstimateWorkItems.includes(workItemType)) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL
-    } else if (azureDevOpsStoryPointWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsStoryPointWorkItems.includes(workItemType)) {
       return serviceFieldName === SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD
         ? SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL

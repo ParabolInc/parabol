@@ -90,7 +90,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   }
 
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
-    if (azureDevOpsStoryPointWorkItems.indexOf(workItemType) !== -1) {
+    if (azureDevOpsStoryPointWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
@@ -101,7 +101,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (azureDevOpsOriginalEstimateWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsOriginalEstimateWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
@@ -112,7 +112,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (azureDevOpsRemainingWorkWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsRemainingWorkWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL,
@@ -123,7 +123,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (azureDevOpsEffortWorkItems.indexOf(workItemType) !== -1) {
+    } else if (azureDevOpsEffortWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL,
