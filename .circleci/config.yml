@@ -64,6 +64,7 @@ jobs:
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Build Databases
+          # Use the test env so the ports match up (NODE_ENV=testing)
           command: |
             cp $DEVOPS_WORKDIR/environments/test .env
             yarn db:migrate
@@ -71,12 +72,15 @@ jobs:
             yarn pg:build
       - run:
           name: Build Assets
+          # Use the staging env to run webpack (NODE_ENV=production)
           command: |
             cp $DEVOPS_WORKDIR/environments/staging .env
             yarn build --deploy
       - run:
           name: Push Assets to Databases
+          # Use the test env so the ports match up (NODE_ENV=testing)
           command: |
+            cp $DEVOPS_WORKDIR/environments/test .env
             yarn postdeploy
       - run:
           name: Start Testing Server
