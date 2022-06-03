@@ -748,9 +748,9 @@ export default abstract class AtlassianManager {
     throw res
   }
 
-  async getScreens(cloudId: string) {
+  async getScreens(cloudId: string, maxResults: number) {
     return this.get<JiraScreensResponse>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens?maxResults=${maxResults}`
     )
   }
 
