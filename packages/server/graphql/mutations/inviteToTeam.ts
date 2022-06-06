@@ -3,6 +3,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import util from 'util'
+import {isNotNull} from '../../../client/utils/predicates'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
@@ -17,6 +18,7 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import getIsEmailApprovedByOrg from '../public/mutations/helpers/getIsEmailApprovedByOrg'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
@@ -80,12 +82,24 @@ export default {
         const user = users.find((user) => user.email === email)
         return !(user && user.tms && user.tms.includes(teamId))
       })
+
+      // filter out invitees that aren't approved by the org
+      const approvalErrors = await Promise.all(
+        newInvitees.map((email) => {
+          return getIsEmailApprovedByOrg(email, orgId, dataLoader)
+        })
+      )
+      const newAllowedInvitees = newInvitees
+        .map((invitee, idx) => {
+          return approvalErrors[idx] instanceof Error ? undefined : invitee
+        })
+        .filter(isNotNull)
       const tokens = await Promise.all(
-        newInvitees.map(async () => (await randomBytes(48)).toString('hex'))
+        newAllowedInvitees.map(async () => (await randomBytes(48)).toString('hex'))
       )
       const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
       // insert invitation records
-      const teamInvitationsToInsert = newInvitees.map((email, idx) => {
+      const teamInvitationsToInsert = newAllowedInvitees.map((email, idx) => {
         return new TeamInvitation({
           expiresAt,
           email,
@@ -156,7 +170,7 @@ export default {
         })
       )
 
-      const successfulInvitees = newInvitees.filter((_email, idx) => emailResults[idx])
+      const successfulInvitees = newAllowedInvitees.filter((_email, idx) => emailResults[idx])
       const data = {
         removedSuggestedActionId,
         teamId,

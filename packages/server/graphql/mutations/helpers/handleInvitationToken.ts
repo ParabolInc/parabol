@@ -9,10 +9,7 @@ const handleInvitationToken = async (
   dataLoader: DataLoaderWorker,
   notificationId?: string
 ) => {
-  const viewer = await dataLoader.get('users').load(viewerId)
-  if (!viewer) {
-    throw new Error('Authorization Error')
-  }
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const {email, tms} = viewer
   const isMassInviteToken = getIsMassInviteToken(invitationToken)
   if (isMassInviteToken) return handleMassInviteToken(invitationToken, email, tms, dataLoader)

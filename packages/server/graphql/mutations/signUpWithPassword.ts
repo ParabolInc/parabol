@@ -53,7 +53,7 @@ const signUpWithPassword = {
       }
       const r = await getRethink()
       const isOrganic = !invitationToken
-      const {ip} = context
+      const {ip, dataLoader} = context
       const loginAttempt = await attemptLogin(email, password, ip)
       if (loginAttempt.userId) {
         context.authToken = loginAttempt.authToken
@@ -74,7 +74,7 @@ const signUpWithPassword = {
       if (!nickname || !domain) {
         return {error: {message: 'Invalid email'}}
       }
-      const verificationRequired = await isEmailVerificationRequired(domain)
+      const verificationRequired = await isEmailVerificationRequired(email, dataLoader)
       if (verificationRequired) {
         const existingVerification = await r
           .table('EmailVerification')

@@ -148,10 +148,6 @@ export type RethinkSchema = {
     type: ScheduledJobUnion
     index: 'runAt' | 'type'
   }
-  SecureDomain: {
-    type: any
-    index: 'domain'
-  }
   SlackAuth: {
     type: SlackAuth
     index: 'teamId' | 'userId'

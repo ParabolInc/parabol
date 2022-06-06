@@ -80,7 +80,7 @@ const SIGNUP_WITH_PASSWORD_MUTATION = `
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID
+    $invitationToken: ID! = ""
     $segmentId: ID
   ) {
     signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, segmentId: $segmentId) {
@@ -124,7 +124,6 @@ export const signUpWithEmail = async (emailInput: string) => {
     variables: {
       email,
       password,
-      invitationToken: null,
       segmentId: null
     }
   })
