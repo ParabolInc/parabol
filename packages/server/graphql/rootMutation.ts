@@ -3,7 +3,6 @@ import {GQLContext} from './graphql'
 import addAgendaItem from './mutations/addAgendaItem'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
-import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addMissingJiraField from './mutations/addMissingJiraField'
@@ -156,7 +155,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addReflectTemplate,
       addReflectTemplatePrompt,
       addSlackAuth,
-      addFeatureFlag,
       addGitHubAuth,
       addOrg,
       addTeam,

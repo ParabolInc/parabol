@@ -11,7 +11,6 @@ import OrganizationUser from '../../database/types/OrganizationUser'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForBillingLeaders} from '../resolvers'
-import Company from './Company'
 import CreditCard from './CreditCard'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -45,14 +44,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       type: CreditCard,
       description: 'The safe credit card details',
       resolve: resolveForBillingLeaders('creditCard')
-    },
-    company: {
-      type: Company,
-      description: 'The assumed company this organizaiton belongs to',
-      resolve: async ({activeDomain}, _args: unknown, {authToken}) => {
-        if (!activeDomain || !isSuperUser(authToken)) return null
-        return {id: activeDomain}
-      }
     },
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),

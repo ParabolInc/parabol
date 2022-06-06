@@ -2990,56 +2990,6 @@ type CreditCard {
 }
 
 """
-A grouping of organizations. Automatically grouped by top level domain of each
-"""
-type Company {
-  """
-  the top level domain
-  """
-  id: ID!
-
-  """
-  the number of active teams across all organizations
-  """
-  activeTeamCount: Int!
-
-  """
-  the number of active users across all organizations
-  """
-  activeUserCount: Int!
-
-  """
-  the last time any team in the organization started a meeting, null if no meetings were ever run
-  """
-  lastMetAt: DateTime
-
-  """
-  the total number of meetings started across all teams on all organizations
-  """
-  meetingCount: Int!
-
-  """
-  the longest monthly streak for meeting at least once per month for any team in the company
-  """
-  monthlyTeamStreakMax: Int!
-
-  """
-  Get the list of all organizations that belong to the company
-  """
-  organizations: [Organization!]!
-
-  """
-  The highest tier for any organization within the company
-  """
-  tier: TierEnum!
-
-  """
-  the total number of users across all organizations
-  """
-  userCount: Int!
-}
-
-"""
 A connection to a list of items.
 """
 type OrganizationUserConnection {
@@ -3262,26 +3212,6 @@ enum TaskStatusEnum {
   stuck
   done
   future
-}
-
-"""
-The types of flags that give an individual user super powers
-"""
-type UserFeatureFlags {
-  """
-  true if spotlight is allowed
-  """
-  spotlight: Boolean!
-
-  """
-  true if standups is allowed
-  """
-  standups: Boolean!
-
-  """
-  true if gitlab is allowed
-  """
-  gitlab: Boolean!
 }
 
 """
@@ -7125,26 +7055,6 @@ type Mutation {
   addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
 
-  """
-  Give someone advanced features in a flag
-  """
-  addFeatureFlag(
-    """
-    a list of the complete or partial email of the person to whom you are giving advanced features.
-          Matches via a regex to support entire domains
-    """
-    emails: [String!]
-
-    """
-    grant access to an entire domain. the part of the email after the @
-    """
-    domain: String
-
-    """
-    the flag that you want to give to the user
-    """
-    flag: UserFlagEnum!
-  ): AddFeatureFlagPayload!
   addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
 
   """
@@ -8687,29 +8597,6 @@ type AddSlackAuthPayload {
   The user with updated slackAuth
   """
   user: User
-}
-
-type AddFeatureFlagPayload {
-  error: StandardMutationError
-
-  """
-  the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users
-  """
-  user: User
-
-  """
-  the users given the super power
-  """
-  users: [User]
-}
-
-"""
-A flag to give an individual user super powers
-"""
-enum UserFlagEnum {
-  spotlight
-  standups
-  gitlab
 }
 
 type AddGitHubAuthPayload {
@@ -11123,8 +11010,7 @@ type UpdateDragLocationPayload {
 }
 
 union NotificationSubscriptionPayload =
-    AddFeatureFlagPayload
-  | AddNewFeaturePayload
+    AddNewFeaturePayload
   | AddOrgPayload
   | AddTeamPayload
   | ArchiveTimelineEventSuccess
