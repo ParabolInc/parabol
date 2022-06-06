@@ -121,7 +121,8 @@ const NewJiraIssueInput = (props: Props) => {
   const projectKey = repoIntegration?.key
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_LEFT
+    MenuPosition.UPPER_LEFT,
+    {isDropdown: true}
   )
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {

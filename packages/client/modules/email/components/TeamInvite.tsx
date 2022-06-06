@@ -37,6 +37,19 @@ const meetingCopyLabelLookup = {
   teamPrompt: 'an Async Standup Meeting'
 } as const
 
+const utmParams = {
+  utm_source: 'invite email',
+  utm_medium: 'email',
+  utm_campaign: 'invitations'
+}
+function appendUTM(url: string) {
+  const newUrl = new URL(url)
+  Object.entries(utmParams).forEach(([name, value]) => {
+    newUrl.searchParams.append(name, value)
+  })
+  return newUrl.toString()
+}
+
 export interface TeamInviteProps {
   appOrigin: string
   inviteeName: string
@@ -119,7 +132,11 @@ const TeamInvite = (props: TeamInviteProps) => {
             'Parabol is software for remote teams to run online retrospective and check-in meetings. See the video and links below:'
           }
         </p>
-        <a href={ExternalLinks.GETTING_STARTED_RETROS} style={videoLinkStyle} title='Retro 101'>
+        <a
+          href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
+          style={videoLinkStyle}
+          title='Retro 101'
+        >
           <img crossOrigin='' alt='' src={videoGraphicSrc} style={videoGraphicStyle} />
         </a>
         <EmptySpace height={24} />
@@ -127,7 +144,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           {'Learn more about Parabol meetings:'}
           <br />
           <a
-            href={ExternalLinks.GETTING_STARTED_RETROS}
+            href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
             style={emailLinkStyle}
             title='Getting Started: Retro 101'
           >
@@ -135,7 +152,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           </a>
           <br />
           <a
-            href={ExternalLinks.GETTING_STARTED_CHECK_INS}
+            href={appendUTM(ExternalLinks.GETTING_STARTED_CHECK_INS)}
             style={emailLinkStyle}
             title='Leveling Up: Check-in 101'
           >

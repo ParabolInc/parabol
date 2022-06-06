@@ -1,15 +1,15 @@
-import {TeamMemberAvatarMenu_teamMember} from '../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {MenuProps} from '../../hooks/useMenu'
+import {TeamMemberAvatarMenu_teamMember} from '../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
-import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
-import {MenuProps} from '../../hooks/useMenu'
 import MenuItemLabel from '../MenuItemLabel'
-import styled from '@emotion/styled'
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   isLead: boolean
   isViewerLead: boolean
   teamMember: TeamMemberAvatarMenu_teamMember
@@ -25,15 +25,8 @@ const StyledLabel = styled(MenuItemLabel)({
 })
 
 const TeamMemberAvatarMenu = (props: Props) => {
-  const {
-    atmosphere,
-    isViewerLead,
-    teamMember,
-    menuProps,
-    togglePromote,
-    toggleRemove,
-    toggleLeave
-  } = props
+  const {isViewerLead, teamMember, menuProps, togglePromote, toggleRemove, toggleLeave} = props
+  const atmosphere = useAtmosphere()
   const {preferredName, userId} = teamMember
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
@@ -61,7 +54,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(TeamMemberAvatarMenu), {
+export default createFragmentContainer(TeamMemberAvatarMenu, {
   teamMember: graphql`
     fragment TeamMemberAvatarMenu_teamMember on TeamMember {
       isSelf

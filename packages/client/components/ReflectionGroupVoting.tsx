@@ -5,7 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import Atmosphere from '../Atmosphere'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -16,7 +15,7 @@ import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVot
 import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import Icon from './Icon'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props extends WithMutationProps {
   isExpanded: boolean
   meeting: ReflectionGroupVoting_meeting
   reflectionGroup: ReflectionGroupVoting_reflectionGroup
@@ -147,7 +146,7 @@ const ReflectionGroupVoting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(ReflectionGroupVoting)), {
+export default createFragmentContainer(withMutationProps(ReflectionGroupVoting), {
   meeting: graphql`
     fragment ReflectionGroupVoting_meeting on RetrospectiveMeeting {
       localStage {

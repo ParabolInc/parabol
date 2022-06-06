@@ -9,12 +9,17 @@ import {
 import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
-const useQueryLoaderNow = <TQuery extends OperationType>(
+type QueryLoaderOptions = {
+  fetchPolicy?: PreloadFetchPolicy
+  preventSuspense?: boolean
+}
+
+export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
   variables: VariablesOf<TQuery> = {},
-  fetchPolicy?: PreloadFetchPolicy,
-  preventSuspense?: boolean
+  options: QueryLoaderOptions = {}
 ) => {
+  const {fetchPolicy, preventSuspense} = options
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
   const varRef = useRef(variables)
   const atmosphere = useAtmosphere()
@@ -54,6 +59,19 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
     }
   }, [])
 
+  return {queryRef, retry: refreshQuery}
+}
+
+const useQueryLoaderNow = <TQuery extends OperationType>(
+  preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
+  variables: VariablesOf<TQuery> = {},
+  fetchPolicy?: PreloadFetchPolicy,
+  preventSuspense?: boolean
+) => {
+  const {queryRef} = useQueryLoaderNowWithRetry(preloadableRequest, variables, {
+    fetchPolicy,
+    preventSuspense
+  })
   return queryRef
 }
 

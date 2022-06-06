@@ -2,6 +2,9 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
+import TimelineEventTeamPromptComplete from '../../database/types/TimelineEventTeamPromptComplete'
+import {getTeamPromptResponsesByMeetingId} from '../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -61,9 +64,30 @@ const endTeamPrompt = {
       })
     }
 
+    const [meetingMembers, team, teamMembers, responses] = await Promise.all([
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
+      getTeamPromptResponsesByMeetingId(meetingId)
+    ])
+
+    const events = teamMembers.map(
+      (teamMember) =>
+        new TimelineEventTeamPromptComplete({
+          userId: teamMember.userId,
+          teamId,
+          orgId: team.orgId,
+          meetingId
+        })
+    )
+    const timelineEventId = events[0]!.id
+    await r.table('TimelineEvent').insert(events).run()
+    analytics.teamPromptEnd(meeting, meetingMembers, responses)
+
     const data = {
       meetingId,
-      teamId
+      teamId,
+      timelineEventId
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
     return data

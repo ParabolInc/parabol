@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
@@ -11,15 +12,17 @@ import getGitHubAuthByUserIdTeamId, {
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
+import getGitLabDimensionFieldMaps, {
+  GitLabDimensionFieldMap
+} from '../postgres/queries/getGitLabDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
-import normalizeRethinkDbResults from './normalizeRethinkDbResults'
+import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
-import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -49,7 +52,8 @@ export interface UserTasksKey {
 
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
-  {type: 'REFLECTION', loader: 'retroReflections'}
+  {type: 'REFLECTION', loader: 'retroReflections'},
+  {type: 'RESPONSE', loader: 'teamPromptResponses'}
 ] as const
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
@@ -74,6 +78,7 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         r
           .table('Comment')
           .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .filter({isActive: true})
           .group('discussionId') as any
       )
         .count()
@@ -132,7 +137,7 @@ export const reactables = (parent: RootDataLoader) => {
       )) as Reactable[][]
       const reactables = reactableResults.flat()
       const keyIds = keys.map(({id}) => id)
-      const ret = normalizeRethinkDbResults(keyIds, reactables)
+      const ret = normalizeResults(keyIds, reactables)
       return ret
     },
     {
@@ -236,6 +241,29 @@ export const githubAuth = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {teamId: string; dimensionName: string; projectId: number; providerId: number},
+    GitLabDimensionFieldMap | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, projectId, providerId}) =>
+          getGitLabDimensionFieldMaps(teamId, dimensionName, projectId, providerId)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, dimensionName, projectId, providerId}) =>
+        `${teamId}:${dimensionName}:${projectId}:${providerId}`
     }
   )
 }

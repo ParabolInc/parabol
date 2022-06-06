@@ -24,6 +24,11 @@ graphql`
     task {
       title
       integration {
+        ... on AzureDevOpsWorkItem {
+          __typename
+          id
+          title
+        }
         ... on JiraIssue {
           __typename
           issueKey
@@ -96,6 +101,11 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
           return {
             title: integration.summary,
             subtitle: integration.issueKey
+          }
+        } else if (integration.__typename === 'AzureDevOpsWorkItem') {
+          return {
+            title: integration.title,
+            subtitle: `#${integration.id}`
           }
         } else if (integration.__typename === '_xGitHubIssue') {
           return {

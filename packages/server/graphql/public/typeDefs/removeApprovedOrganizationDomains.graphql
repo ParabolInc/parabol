@@ -1,0 +1,29 @@
+extend type Mutation {
+  """
+  Remove the approved domains for a given organization
+  """
+  removeApprovedOrganizationDomains(
+    """
+    The ID for the organization to remove the restriction from
+    """
+    orgId: ID!
+    """
+    The list of emails and/or domains to unrestrict from the org
+    """
+    emailDomains: [String!]!
+  ): RemoveApprovedOrganizationDomainsPayload!
+}
+
+"""
+Return value for removeApprovedOrganizationDomains, which could be an error
+"""
+union RemoveApprovedOrganizationDomainsPayload =
+    ErrorPayload
+  | RemoveApprovedOrganizationDomainsSuccess
+
+type RemoveApprovedOrganizationDomainsSuccess {
+  """
+  The organization with updated restrictions
+  """
+  organization: Organization!
+}

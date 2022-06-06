@@ -1,18 +1,16 @@
-import {LeaveTeamModal_teamMember} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import IconLabel from '../../../../components/IconLabel'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../../components/DialogContainer'
-import DialogTitle from '../../../../components/DialogTitle'
 import DialogContent from '../../../../components/DialogContent'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import DialogTitle from '../../../../components/DialogTitle'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useRouter from '../../../../hooks/useRouter'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
+import {LeaveTeamModal_teamMember} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 356
@@ -22,13 +20,15 @@ const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props {
   teamMember: LeaveTeamModal_teamMember
   closePortal: () => void
 }
 
 const LeaveTeamModal = (props: Props) => {
-  const {atmosphere, closePortal, history, teamMember} = props
+  const {closePortal, teamMember} = props
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
   const {teamMemberId} = teamMember
   const handleClick = () => {
     history.push('/meetings')
@@ -50,7 +50,7 @@ const LeaveTeamModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withRouter(LeaveTeamModal)), {
+export default createFragmentContainer(LeaveTeamModal, {
   teamMember: graphql`
     fragment LeaveTeamModal_teamMember on TeamMember {
       teamMemberId: id

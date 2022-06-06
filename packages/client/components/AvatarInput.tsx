@@ -1,5 +1,5 @@
-import React, {Component, lazy, Suspense} from 'react'
 import styled from '@emotion/styled'
+import React, {Component, lazy, Suspense} from 'react'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 
@@ -11,7 +11,7 @@ const Control = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   overflow: 'hidden',
-  padding: '.5rem',
+  padding: '.5rem 1rem 1rem',
   position: 'relative'
 })
 

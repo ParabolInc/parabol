@@ -24,7 +24,6 @@ import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import createImposterToken from './mutations/createImposterToken'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
@@ -116,6 +115,7 @@ import startSprintPoker from './mutations/startSprintPoker'
 import startTeamPrompt from './mutations/startTeamPrompt'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
+import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
@@ -168,7 +168,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       autoGroupReflections,
       changeTaskTeam,
       setNotificationStatus,
-      createImposterToken,
       createTaskIntegration,
       createMassInvitation,
       createOAuth1AuthorizeUrl,
@@ -244,6 +243,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       startRetrospective,
       startSprintPoker,
       setTaskHighlight,
+      startTeamPrompt,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,
@@ -285,7 +285,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
-      startTeamPrompt,
-      endTeamPrompt
+      endTeamPrompt,
+      updateAzureDevOpsDimensionField
     } as any)
 })

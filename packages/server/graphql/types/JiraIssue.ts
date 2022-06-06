@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLList} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import connectionDefinitions from '../connectionDefinitions'
@@ -69,6 +69,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
           .load({cloudId, projectKey, teamId, userId})
         return {
           ...jiraRemoteProjectRes,
+          service: 'jira',
           cloudId,
           userId,
           teamId

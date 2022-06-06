@@ -147,6 +147,8 @@ export const CREATE_ACCOUNT_SLUG = 'create-account'
 /* Meeting Types */
 export const ACTION = 'action'
 export const RETROSPECTIVE = 'retrospective'
+export const POKER = 'poker'
+export const TEAM_PROMPT = 'teamPrompt'
 
 /* Spotlight */
 export const MAX_REDUCTION_PERCENTAGE = 1

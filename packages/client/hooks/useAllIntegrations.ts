@@ -29,6 +29,9 @@ const gqlQuery = graphql`
           ... on _xGitHubRepository {
             nameWithOwner
           }
+          ... on _xGitLabProject {
+            fullPath
+          }
           ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }
@@ -37,12 +40,14 @@ const gqlQuery = graphql`
 `
 
 const getValue = (item: FetchedItems[0]) => {
-  if (item.__typename == 'JiraServerRemoteProject') {
+  if (item.__typename === 'JiraServerRemoteProject') {
     return item.key?.toLowerCase() ?? ''
-  } else if (item.__typename == 'JiraRemoteProject') {
+  } else if (item.__typename === 'JiraRemoteProject') {
     return item.key?.toLowerCase() ?? ''
   } else if (item.__typename === '_xGitHubRepository') {
     return item.nameWithOwner?.toLowerCase() ?? ''
+  } else if (item.__typename === '_xGitLabProject') {
+    return item.fullPath?.toLowerCase() ?? ''
   }
   return ''
 }

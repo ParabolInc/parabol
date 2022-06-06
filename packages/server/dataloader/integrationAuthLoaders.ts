@@ -1,5 +1,9 @@
 import DataLoader from 'dataloader'
 import TeamMemberIntegrationAuthId from '../../client/shared/gqlIds/TeamMemberIntegrationAuthId'
+import getRethink from '../database/rethinkDriver'
+import SlackAuth from '../database/types/SlackAuth'
+import SlackNotification, {SlackNotificationEvent} from '../database/types/SlackNotification'
+import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
@@ -137,4 +141,56 @@ export const bestTeamIntegrationAuths = (parent: RootDataLoader) => {
       cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
     }
   )
+}
+
+interface TeamNotificationEvent {
+  teamId: string
+  event: SlackNotificationEvent
+}
+
+export type SlackNotificationAuth = SlackNotification & {auth: SlackAuth}
+
+export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
+  return new DataLoader<TeamNotificationEvent, SlackNotificationAuth[], string>(async (keys) => {
+    const r = await getRethink()
+    const notifications = await r
+      .expr(keys)
+      .concatMap((key) =>
+        r
+          .table('SlackNotification')
+          .getAll(key('teamId'), {index: 'teamId'})
+          .filter({event: key('event')})
+      )
+      .coerceTo('array')
+      .run()
+
+    const distinctChannelNotifications = keys.map((key) => {
+      const usedChannelIds = new Set()
+      return notifications.filter((notification) => {
+        const {teamId, event, channelId} = notification
+        if (teamId !== key.teamId || event !== key.event) return false
+        if (!channelId || usedChannelIds.has(channelId)) return false
+        usedChannelIds.add(channelId)
+        return true
+      })
+    })
+    const notificationUserIds = distinctChannelNotifications.flatMap((not) =>
+      not.map(({userId}) => userId)
+    )
+    const userSlackAuths = (await parent.get('slackAuthByUserId').loadMany(notificationUserIds))
+      .filter(errorFilter)
+      .flat()
+
+    return distinctChannelNotifications.map(
+      (notifications) =>
+        notifications
+          .map((notification) => ({
+            ...notification,
+            auth: userSlackAuths.find(
+              ({userId, teamId}) => userId === notification.userId && teamId === notification.teamId
+            )
+          }))
+          .filter(({auth}) => !!auth) as SlackNotificationAuth[]
+    )
+  })
 }

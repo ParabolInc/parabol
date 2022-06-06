@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import FlatButton from '../../../../components/FlatButton'
@@ -13,19 +12,18 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {DECELERATE, fadeIn} from '../../../../styles/animation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {AuthToken} from '../../../../types/AuthToken'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
@@ -39,7 +37,7 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props {
   teamId: string
   retry: () => void
   viewer: AtlassianProviderRow_viewer
@@ -107,16 +105,9 @@ const ProviderName = styled('div')({
 })
 
 const AtlassianProviderRow = (props: Props) => {
-  const {
-    atmosphere,
-    retry,
-    viewer,
-    teamId,
-    submitting,
-    submitMutation,
-    onError,
-    onCompleted
-  } = props
+  const {retry, viewer, teamId} = props
+  const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
@@ -185,19 +176,16 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(withRouter(AtlassianProviderRow))),
-  {
-    viewer: graphql`
-      fragment AtlassianProviderRow_viewer on User {
-        teamMember(teamId: $teamId) {
-          integrations {
-            atlassian {
-              ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
-            }
+export default createFragmentContainer(AtlassianProviderRow, {
+  viewer: graphql`
+    fragment AtlassianProviderRow_viewer on User {
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
           }
         }
       }
-    `
-  }
-)
+    }
+  `
+})

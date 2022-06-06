@@ -1,6 +1,8 @@
-import CardsSVG from '../../components/CardsSVG'
+import React from 'react'
+import {MeetingTypeEnum} from '~/../server/postgres/types/Meeting'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeetingSidebar_meeting.graphql'
-import {ACTION, RETROSPECTIVE} from '../constants'
+import CardsSVG from '../../components/CardsSVG'
+import {ACTION, POKER, RETROSPECTIVE, TEAM_PROMPT} from '../constants'
 
 /* Used by the server! cannot convert to enums yet */
 
@@ -40,8 +42,9 @@ export const phaseImageLookup = {
 export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
   [ACTION]: 'change_history',
-  poker: CardsSVG
-} as const
+  [POKER]: CardsSVG,
+  [TEAM_PROMPT]: 'group_work'
+} as Record<MeetingTypeEnum, string | React.ComponentType>
 
 export const phaseTypeToSlug = {
   checkin: 'checkin',
@@ -55,5 +58,6 @@ export const phaseTypeToSlug = {
   lastcall: 'lastcall',
   SUMMARY: 'summary',
   SCOPE: 'scope',
-  ESTIMATE: 'estimate'
+  ESTIMATE: 'estimate',
+  RESPONSES: 'responses'
 } as Record<NewMeetingPhaseTypeEnum, string>

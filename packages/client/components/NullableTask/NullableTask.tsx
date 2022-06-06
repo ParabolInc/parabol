@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw} from 'draft-js'
-import React, {useEffect, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -14,7 +14,6 @@ interface Props {
   className?: string
   isAgenda?: boolean
   isDraggingOver?: TaskStatusEnum
-  measure?: () => void
   task: NullableTask_task
   dataCy: string
   isViewerMeetingSection?: boolean
@@ -22,7 +21,16 @@ interface Props {
 }
 
 const NullableTask = (props: Props) => {
-  const {area, className, isAgenda, task, isDraggingOver, dataCy, isViewerMeetingSection, meetingId} = props
+  const {
+    area,
+    className,
+    isAgenda,
+    task,
+    isDraggingOver,
+    dataCy,
+    isViewerMeetingSection,
+    meetingId
+  } = props
   const {content, createdBy, createdByUser, integration} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -34,20 +42,6 @@ const NullableTask = (props: Props) => {
   }, [content])
 
   const atmosphere = useAtmosphere()
-  useEffect(
-    () => {
-      let isMounted = true
-      setTimeout(() => {
-        isMounted && props.measure && props.measure()
-      })
-      return () => {
-        isMounted = false
-      }
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
 
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId || integration
   return showOutcome ? (
@@ -70,7 +64,8 @@ const NullableTask = (props: Props) => {
 export default createFragmentContainer(NullableTask, {
   task: graphql`
     # from this place upward the tree, the task components are also used outside of meetings, thus we default to null here
-    fragment NullableTask_task on Task @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
+    fragment NullableTask_task on Task
+    @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
       content
       createdBy
       createdByUser {
