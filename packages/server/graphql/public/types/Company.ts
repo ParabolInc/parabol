@@ -1,11 +1,22 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import errorFilter from '../../errorFilter'
+import {DataLoaderWorker} from '../../graphql'
 import {CompanyResolvers} from '../resolverTypes'
 
 export type CompanySource = {id: string}
 
 const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
+
+const getTeamsByOrgIds = async (
+  orgIds: string[],
+  dataLoader: DataLoaderWorker,
+  includeArchived: boolean
+) => {
+  const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(errorFilter)
+  const teams = teamsByOrgId.flat()
+  return includeArchived ? teams : teams.filter(({isArchived}) => !isArchived)
+}
 
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {
@@ -13,10 +24,7 @@ const Company: CompanyResolvers = {
     const metAfter = after ? new Date(after) : new Date(Date.now() - THIRTY_DAYS)
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
-    const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
-      errorFilter
-    )
-    const teams = teamsByOrgId.flat().filter(({isArchived}) => !isArchived)
+    const teams = await getTeamsByOrgIds(orgIds, dataLoader, false)
     const teamIds = teams.map(({id}) => id)
 
     const areTeamsActive = await Promise.all(
@@ -55,17 +63,13 @@ const Company: CompanyResolvers = {
   activeOrganizationCount: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const allOrgIds = organizations.map(({id}) => id)
-    // filter out orgs with 0 teams
-    const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(allOrgIds)).filter(
-      errorFilter
-    )
-    const teams = teamsByOrgId.flat().filter(({isArchived}) => !isArchived)
+    // get the organizations with at least 1 unarchived team (when moveTeamsToOrg is called it can leave empty orgs behind)
+    const teams = await getTeamsByOrgIds(allOrgIds, dataLoader, false)
     const orgIdsWithManyTeamsSet = new Set<string>()
     teams.forEach((team) => {
       orgIdsWithManyTeamsSet.add(team.orgId)
     })
     const orgIdsWithManyTeams = [...orgIdsWithManyTeamsSet]
-    // get the number of teams for each org
 
     // get the number of org users for each org
     const organizationUsersByOrgId = (
@@ -85,10 +89,7 @@ const Company: CompanyResolvers = {
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
-    const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
-      errorFilter
-    )
-    const teams = teamsByOrgId.flat()
+    const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
     const lastMetAt = await r
@@ -104,10 +105,7 @@ const Company: CompanyResolvers = {
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
-    const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
-      errorFilter
-    )
-    const teams = teamsByOrgId.flat()
+    const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
     const filterFn = after ? () => true : (meeting: any) => meeting('createdAt').ge(after)
@@ -124,10 +122,7 @@ const Company: CompanyResolvers = {
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
-    const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
-      errorFilter
-    )
-    const teams = teamsByOrgId.flat()
+    const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
     return (

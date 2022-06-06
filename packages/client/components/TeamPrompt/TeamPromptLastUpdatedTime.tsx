@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import useRefreshInterval from '~/hooks/useRefreshInterval'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {PALETTE} from '../../styles/paletteV3'
@@ -20,7 +21,11 @@ interface Props {
   updatedAt: string | Date
 }
 
+const RELATIVE_DATES_UPDATE_INTERVAL_MS = 1000
+
 export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props) {
+  useRefreshInterval(RELATIVE_DATES_UPDATE_INTERVAL_MS)
+
   const {
     tooltipPortal: createdTimePortal,
     openTooltip: showCreatedTime,
