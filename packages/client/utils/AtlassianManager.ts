@@ -747,7 +747,11 @@ export default abstract class AtlassianManager {
       const projectKey = JiraProjectKeyId.join(issueKey)
       const project = await this.getProject(cloudId, projectKey)
 
-      if ('simplified' in project && project.simplified) {
+      if (project instanceof RateLimitError || project instanceof Error) {
+        throw project
+      }
+
+      if (project.simplified) {
         if (timeTrackingFieldName) {
           throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING)
         }
