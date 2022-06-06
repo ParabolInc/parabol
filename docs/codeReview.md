@@ -20,7 +20,7 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 - Issues can go in these columns: To Prioritize, Backlog, To Do, In Progress, Stuck.
 - Pull Requests can go in these columns: Stuck, Self Review, Reviewer Review, Maintainer Review.
 - A PR may correpsond to 0 or many issues. These issues shall stay "In Progress" and when the PR gets merged, they'll be moved to "Done" automatically.
-- The motivation for this structure is to relax the constraint that 1 issue has 1 PR. If a PR resolves 3 issues, we only have to update the status of the PR, not update all 3 issues as a group. If a PR fails to resolve 1 of the 3 issues, the remaining issue stays "In Progress" instead of being moved from "Maintainer Review" back to "In Progress".
+- The motivation for this structure is to relax the constraint that 1 issue has 1 PR. If a PR resolves 3 issues, we only have to update the status of the PR, not update all 3 issues as a group. If a PR fails to resolve 1 of the 3 issues, the remaining issue stays "In Progress" instead of being moved from "Maintainer Review" back to "In Progress". If an issue has multiple PRs, the issue can stay "In Progress" while the PRs move through the process.
 
 ## Reviewer
 
