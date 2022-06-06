@@ -1,0 +1,58 @@
+"""
+A flag to give an individual user super powers
+"""
+enum UserFlagEnum {
+  standups
+  azureDevOps
+  msTeams
+  insights
+}
+
+"""
+The types of flags that give an individual user super powers
+"""
+type UserFeatureFlags {
+  standups: Boolean!
+  azureDevOps: Boolean!
+  msTeams: Boolean!
+  insights: Boolean!
+}
+
+extend type Mutation {
+  """
+  Give someone advanced features in a flag
+  """
+  addFeatureFlag(
+    """
+    a list of the complete or partial email of the person to whom you are giving advanced features.
+          Matches via a regex to support entire domains
+    """
+    emails: [String!]
+
+    """
+    grant access to an entire domain. the part of the email after the @
+    """
+    domain: String
+
+    """
+    the flag that you want to give to the user
+    """
+    flag: UserFlagEnum!
+  ): AddFeatureFlagPayload!
+}
+
+type AddFeatureFlagPayload {
+  error: StandardMutationError
+
+  """
+  the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users
+  """
+  user: User
+
+  """
+  the users given the super power
+  """
+  users: [User]
+}
+
+extend union NotificationSubscriptionPayload = AddFeatureFlagPayload
