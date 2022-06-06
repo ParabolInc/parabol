@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
 import React, {useCallback, useEffect, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import {Breakpoint} from '~/types/constEnums'
 import Legitity from '~/validation/Legitity'
 import DialogContainer from '../DialogContainer'
 import DialogContent from '../DialogContent'
@@ -12,7 +14,8 @@ import PlainButton from '../PlainButton/PlainButton'
 import RaisedButton from '../RaisedButton'
 
 const StyledDialogContainer = styled(DialogContainer)({
-  width: 860
+  width: 860,
+  overflow: 'auto'
 })
 
 const StyledDialogTitle = styled(DialogTitle)({
@@ -25,7 +28,7 @@ const LightbulbWrapper = styled('span')({
   marginRight: 12
 })
 
-const TextArea = styled(TextAreaAutoSize)({
+const TextArea = styled(TextAreaAutoSize)<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: 'transparent',
   padding: 24,
   borderColor: PALETTE.SLATE_500,
@@ -33,26 +36,26 @@ const TextArea = styled(TextAreaAutoSize)({
   borderRadius: 8,
   marginB: 24,
   display: 'block',
-  fontSize: 18,
+  fontSize: isDesktop ? 18 : 16,
   fontWeight: 400,
   lineHeight: '23.4px',
   outline: 'none',
   resize: 'none',
   width: '100%'
-})
+}))
 
 const SuggestedPromptsHeader = styled('h3')({
   fontSize: 20
 })
 
-const SuggestedPromptWrapper = styled('div')({
+const SuggestedPromptWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   padding: '8px 6px',
-  fontSize: 18,
+  fontSize: isDesktop ? 18 : 16,
   cursor: 'pointer',
   '&:hover': {
     backgroundColor: PALETTE.SLATE_200
   }
-})
+}))
 
 const UpdatePromptFooter = styled('div')({
   display: 'flex',
@@ -107,13 +110,16 @@ interface Props {
   onCloseModal: () => void
   onSubmitUpdatePrompt: (newPrompt: string) => void
   onCompleted: () => void
-  onError: (error: Error) => void
   error?: string
 }
 
 const TeamPromptEditablePromptModal = (props: Props) => {
-  const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error, onError, onCompleted} = props
+  const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error, onCompleted} = props
   const [editablePrompt, setEditablePrompt] = useState(initialPrompt)
+  const [validationError, setValidationError] = useState('')
+  const displayError = validationError ?? error
+
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const validate = useCallback(
     (rawMeetingPrompt: string) => {
@@ -123,17 +129,18 @@ const TeamPromptEditablePromptModal = (props: Props) => {
         .min(2, 'Prompts should be at least two characters long')
 
       if (res.error) {
-        onError(new Error(res.error))
-      } else if (error) {
-        onCompleted()
+        setValidationError(res.error)
+      } else if (validationError) {
+        setValidationError('')
       }
     },
-    [error, onError, onCompleted]
+    [validationError, setValidationError, onCompleted]
   )
 
   useEffect(() => validate(editablePrompt), [editablePrompt])
 
   const handleSubmitUpdate = () => {
+    if (validationError) return
     onSubmitUpdatePrompt(editablePrompt)
     onCloseModal()
   }
@@ -148,8 +155,10 @@ const TeamPromptEditablePromptModal = (props: Props) => {
       </StyledDialogTitle>
       <DialogContent>
         <TextArea
+          isDesktop={isDesktop}
           autoFocus={true}
           maxLength={500}
+          maxRows={3}
           onChange={(e) => {
             const nextValue = e.target.value || ''
             setEditablePrompt(nextValue)
@@ -157,22 +166,26 @@ const TeamPromptEditablePromptModal = (props: Props) => {
           placeholder={'What are you working on today? Stuck on anything?'}
           value={editablePrompt}
         />
-        {error && (
+        {displayError && (
           <ErrorWrapper>
             <ErrorIcon>info</ErrorIcon>
-            {error}
+            {displayError}
           </ErrorWrapper>
         )}
         <SuggestedPromptsHeader>Suggestions</SuggestedPromptsHeader>
         {SUGGESTED_PROMPTS.map((prompt, i) => (
-          <SuggestedPromptWrapper key={i} onClick={() => setEditablePrompt(prompt)}>
+          <SuggestedPromptWrapper
+            isDesktop={isDesktop}
+            key={i}
+            onClick={() => setEditablePrompt(prompt)}
+          >
             <LightbulbWrapper>💡</LightbulbWrapper>
             {prompt}
           </SuggestedPromptWrapper>
         ))}
         <UpdatePromptFooter>
           <StyledRaisedButton
-            disabled={!!error}
+            disabled={!!validationError}
             onClick={handleSubmitUpdate}
             size='medium'
             palette={'blue'}

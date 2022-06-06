@@ -60,7 +60,7 @@ const TeamPromptEditablePrompt = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
 
   const handleUpdatePrompt = useEventCallback((newPrompt) => {
-    if (submitting || error) return
+    if (submitting) return
     submitMutation()
 
     UpdateMeetingPromptMutation(atmosphere, {meetingId, newPrompt}, {onError, onCompleted})
@@ -81,7 +81,6 @@ const TeamPromptEditablePrompt = (props: Props) => {
               onSubmitUpdatePrompt={handleUpdatePrompt}
               error={error?.message}
               onCompleted={onCompleted}
-              onError={onError}
             />
           )}
         </>
