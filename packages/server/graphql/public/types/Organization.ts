@@ -2,7 +2,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import {OrganizationResolvers} from '../resolverTypes'
 
 const Organization: OrganizationResolvers = {
-  approvedDomains: async ({id: orgId}) => {
+  approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('organizationApprovedDomainsByOrgId').load(orgId)
   },
   company: async ({activeDomain}, _args, {authToken}) => {
