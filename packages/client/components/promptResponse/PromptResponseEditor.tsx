@@ -1,10 +1,12 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
+import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useState} from 'react'
+import {PALETTE} from '~/styles/paletteV3'
 
 const StyledEditor = styled('div')`
   .ProseMirror {
@@ -20,14 +22,25 @@ const StyledEditor = styled('div')`
   .ProseMirror-focused:focus {
     outline: none;
   }
+
+  a {
+    text-decoration: underline;
+    color: ${PALETTE.SLATE_600};
+    :hover {
+      cursor: pointer;
+    }
+  }
 `
 /**
  * Returns tip tap extensions configuration shared by the client and the server
  * @param placeholder
  * @returns an array of extensions to be used by the tip tap editor
  */
-export const createEditorExtensions = (placeholder?: string) => [
+export const createEditorExtensions = (isEditing: boolean, placeholder?: string) => [
   StarterKit,
+  Link.configure({
+    openOnClick: !isEditing
+  }),
   Placeholder.configure({
     placeholder
   })
@@ -43,7 +56,7 @@ interface Props {
 
 const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
-  const [_isEditing, setIsEditing] = useState(false)
+  const [_isEditing, setIsEditing] = useState(autoFocusProp ?? false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
   const setEditing = (isEditing: boolean) => {
@@ -70,13 +83,13 @@ const PromptResponseEditor = (props: Props) => {
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(placeholder),
+      extensions: createEditorExtensions(_isEditing, placeholder),
       autofocus: autoFocus,
       onUpdate,
       onBlur: onSubmit,
       editable: !readOnly
     },
-    [content]
+    [content, _isEditing]
   )
 
   return (
