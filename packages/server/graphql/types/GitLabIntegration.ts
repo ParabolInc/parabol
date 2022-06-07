@@ -146,9 +146,15 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
-        const parsed = args.after && JSON.parse(args.after)
+        let parsedAfter: Cursors
+        try {
+          parsedAfter = args.after && JSON.parse(args.after)
+        } catch (e) {
+          sendToSentry(new Error('Error parsing after'), {userId, tags: {after: args.after}})
+          return connectionFromTasks([], 0)
+        }
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
-          const after = (parsed && parsed[fullPath]) ?? ''
+          const after = (parsedAfter && parsedAfter[fullPath]) ?? ''
           return manager.getProjectIssues({
             ...args,
             fullPath,
