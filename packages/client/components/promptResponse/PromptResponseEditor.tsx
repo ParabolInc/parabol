@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
-import Link from '@tiptap/extension-link'
-import Placeholder from '@tiptap/extension-placeholder'
-import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import {EditorContent, EditorEvents, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
+import useForceUpdate from '~/hooks/useForceUpdate'
 import {PALETTE} from '~/styles/paletteV3'
+import {BBox} from '~/types/animations'
+import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
+import {createEditorExtensions} from './tiptapConfig'
 
 const StyledEditor = styled('div')`
   .ProseMirror {
@@ -31,20 +32,6 @@ const StyledEditor = styled('div')`
     }
   }
 `
-/**
- * Returns tip tap extensions configuration shared by the client and the server
- * @param placeholder
- * @returns an array of extensions to be used by the tip tap editor
- */
-export const createEditorExtensions = (isEditing: boolean, placeholder?: string) => [
-  StarterKit,
-  Link.configure({
-    openOnClick: !isEditing
-  }),
-  Placeholder.configure({
-    placeholder
-  })
-]
 
 interface Props {
   autoFocus?: boolean
@@ -58,6 +45,9 @@ const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
   const [_isEditing, setIsEditing] = useState(autoFocusProp ?? false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
+  const [linkMenuProps, setLinkMenuProps] = useState<{text: string; href: string} | undefined>()
+  const editorRef = useRef<PureEditorContent>(null)
+  const forceUpdate = useForceUpdate()
 
   const setEditing = (isEditing: boolean) => {
     setIsEditing(isEditing)
@@ -83,18 +73,47 @@ const PromptResponseEditor = (props: Props) => {
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(_isEditing, placeholder),
+      extensions: createEditorExtensions(setLinkMenuProps, placeholder),
       autofocus: autoFocus,
       onUpdate,
       onBlur: onSubmit,
       editable: !readOnly
     },
-    [content, _isEditing]
+    [content, setLinkMenuProps]
   )
+
+  const cachedCoordsRef = useRef<BBox | null>(null)
+
+  const renderLinkChanger = () => {
+    const originCoords = editorRef.current?.editorContentRef.current.getBoundingClientRect()
+    if (originCoords) {
+      cachedCoordsRef.current = originCoords
+    }
+    if (!cachedCoordsRef.current) {
+      setTimeout(forceUpdate)
+      return null
+    }
+
+    return (
+      editor &&
+      linkMenuProps && (
+        <EditorLinkChangerTipTap
+          text={linkMenuProps.text}
+          link={linkMenuProps.href}
+          tiptapEditor={editor}
+          originCoords={originCoords}
+          removeModal={() => {
+            setLinkMenuProps(undefined)
+          }}
+        />
+      )
+    )
+  }
 
   return (
     <StyledEditor>
-      <EditorContent editor={editor} />
+      {renderLinkChanger()}
+      <EditorContent ref={editorRef} editor={editor} />
     </StyledEditor>
   )
 }
