@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useEventCallback from '~/hooks/useEventCallback'
 import useModal from '~/hooks/useModal'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
@@ -59,12 +58,12 @@ const TeamPromptEditablePrompt = (props: Props) => {
   const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
 
-  const handleUpdatePrompt = useEventCallback((newPrompt) => {
+  const handleUpdatePrompt = (newPrompt) => {
     if (submitting) return
     submitMutation()
 
     UpdateMeetingPromptMutation(atmosphere, {meetingId, newPrompt}, {onError, onCompleted})
-  })
+  }
 
   return (
     <>

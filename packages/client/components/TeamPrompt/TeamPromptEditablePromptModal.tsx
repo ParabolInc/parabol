@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
-import React, {useCallback, useEffect, useState} from 'react'
+import React from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import useBreakpoint from '~/hooks/useBreakpoint'
+import useForm from '~/hooks/useForm'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint} from '~/types/constEnums'
@@ -114,34 +115,35 @@ interface Props {
 }
 
 const TeamPromptEditablePromptModal = (props: Props) => {
-  const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error, onCompleted} = props
-  const [editablePrompt, setEditablePrompt] = useState(initialPrompt)
-  const [validationError, setValidationError] = useState('')
-  const displayError = validationError ?? error
+  const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error} = props
+  const {
+    validateField,
+    setDirtyField,
+    setValue,
+    onChange: onChangePrompt,
+    fields
+  } = useForm({
+    meetingPrompt: {
+      getDefault: () => initialPrompt,
+      validate: (rawMeetingPrompt) => {
+        return new Legitity(rawMeetingPrompt)
+          .trim()
+          .required('A prompt is required to start the activity')
+          .min(2, 'Prompts should be at least two characters long')
+      }
+    }
+  })
+
+  const displayError = fields.meetingPrompt.error ?? error
 
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  const validate = useCallback(
-    (rawMeetingPrompt: string) => {
-      const res = new Legitity(rawMeetingPrompt)
-        .trim()
-        .required('A prompt is required to start the activity')
-        .min(2, 'Prompts should be at least two characters long')
-
-      if (res.error) {
-        setValidationError(res.error)
-      } else if (validationError) {
-        setValidationError('')
-      }
-    },
-    [validationError, setValidationError, onCompleted]
-  )
-
-  useEffect(() => validate(editablePrompt), [editablePrompt])
-
   const handleSubmitUpdate = () => {
-    if (validationError) return
-    onSubmitUpdatePrompt(editablePrompt)
+    setDirtyField()
+    const {meetingPrompt: meetingPromptRes} = validateField()
+    if (meetingPromptRes.error) return
+    const {value: meetingPrompt} = meetingPromptRes
+    onSubmitUpdatePrompt(meetingPrompt)
     onCloseModal()
   }
 
@@ -155,16 +157,14 @@ const TeamPromptEditablePromptModal = (props: Props) => {
       </StyledDialogTitle>
       <DialogContent>
         <TextArea
+          {...fields.meetingPrompt}
+          name={'meetingPrompt'}
           isDesktop={isDesktop}
           autoFocus={true}
           maxLength={500}
           maxRows={3}
-          onChange={(e) => {
-            const nextValue = e.target.value || ''
-            setEditablePrompt(nextValue)
-          }}
+          onChange={onChangePrompt}
           placeholder={'What are you working on today? Stuck on anything?'}
-          value={editablePrompt}
         />
         {displayError && (
           <ErrorWrapper>
@@ -177,7 +177,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
           <SuggestedPromptWrapper
             isDesktop={isDesktop}
             key={i}
-            onClick={() => setEditablePrompt(prompt)}
+            onClick={() => setValue('meetingPrompt', prompt)}
           >
             <LightbulbWrapper>💡</LightbulbWrapper>
             {prompt}
@@ -185,7 +185,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
         ))}
         <UpdatePromptFooter>
           <StyledRaisedButton
-            disabled={!!validationError}
+            disabled={!!fields.meetingPrompt.error}
             onClick={handleSubmitUpdate}
             size='medium'
             palette={'blue'}
