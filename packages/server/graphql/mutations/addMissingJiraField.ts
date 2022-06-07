@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
-import {JiraScreen, RateLimitError} from '~/utils/AtlassianManager'
+import {JiraScreen, JiraScreensResponse, RateLimitError} from '~/utils/AtlassianManager'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -87,16 +87,39 @@ const addMissingJiraField = {
     }
     const {fieldType, fieldId} = dimensionField
 
-    console.log(`Adding missing Jira field, fieldId: ${fieldId}, cloudId: ${cloudId}, projectKey: ${projectKey}`)
+    console.log(
+      `Adding missing Jira field, fieldId: ${fieldId}, cloudId: ${cloudId}, projectKey: ${projectKey}`
+    )
 
-    const maxResults = 2000
-    const screensResponse = await manager.getScreens(cloudId, maxResults)
+    const batchSize = 1000
+    const screensResponse = await manager.getScreens(cloudId, batchSize)
+    const screens: JiraScreen[] = []
     if (screensResponse instanceof Error || screensResponse instanceof RateLimitError) {
       console.log('Unable to fetch screens for cloudId:', cloudId)
       return {error: {message: screensResponse.message}}
     }
 
-    const {values: screens} = screensResponse
+    console.log(`Total screens count: ${screensResponse.total}, batch size: ${batchSize}`)
+
+    screens.push(...screensResponse.values)
+
+    if (!screensResponse.isLast) {
+      const remainingScreensCount = screensResponse.total - batchSize
+      const iterationsCount = Math.ceil(remainingScreensCount / 30)
+      const promises: Promise<JiraScreensResponse | Error | RateLimitError>[] = []
+      for (let i = 1; i <= iterationsCount; i++) {
+        console.log(`Fetching additional batch: ${i * batchSize} - ${batchSize}`)
+        promises.push(manager.getScreens(cloudId, batchSize, i * batchSize))
+      }
+      const screenResponses = await Promise.all(promises)
+      for (const response of screenResponses) {
+        if (response instanceof Error || response instanceof RateLimitError) {
+          console.log('Unable to fetch screens for cloudId:', cloudId)
+          return {error: {message: response.message}}
+        }
+        screens.push(...response.values)
+      }
+    }
 
     console.log(`Screens fetched: ${screens.length}`)
 
@@ -109,9 +132,10 @@ const addMissingJiraField = {
       return 0.5
     }
 
-    const possibleScreens = screens.map((screen) => {
-      return {screenId: screen.id, probability: evaluateProbability(screen), name: screen.name}
-    })
+    const possibleScreens = screens
+      .map((screen) => {
+        return {screenId: screen.id, probability: evaluateProbability(screen), name: screen.name}
+      })
       .filter(isNotNull)
       .filter((screen) => screen.probability >= 0.9)
       .sort((screen1, screen2) => screen2.probability - screen1.probability)
@@ -126,9 +150,10 @@ const addMissingJiraField = {
     const dummyValues = {number: 0, string: '0'}
     const dummyValue = dummyValues[fieldType]
 
-    let updatedScreen: {screenId: string;} | null = null
+    let updatedScreen: {screenId: string} | null = null
     const screensToCleanup: Array<{screenId: string; tabId: string}> = []
     // iterate over all the screens sorted by probability, try to update the given field
+    // by default, there will only be 2 possible screens, and only one screen with probability = 1
     for (let i = 0; i < possibleScreens.length; i++) {
       const screen = possibleScreens[i]!
       const {screenId} = screen
