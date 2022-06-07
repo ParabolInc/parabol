@@ -3,12 +3,12 @@ import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import generateUID from '../generateUID'
-import {getUserById} from '../postgres/queries/getUsersByIds'
+import {DataLoaderWorker} from '../graphql/graphql'
+import {Team} from '../postgres/queries/getTeamsByIds'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
-import {Team} from '../postgres/queries/getTeamsByIds'
 
 const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null> => {
   const r = await getRethink()
@@ -45,26 +45,19 @@ const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null>
   return newTeamLeadUserId
 }
 
-const acceptTeamInvitation = async (team: Team, userId: string) => {
+const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const now = new Date()
-  const teamId = team.id
-  const [user, organizationUsers] = await Promise.all([
-    getUserById(userId),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})
-      .coerceTo('array')
-      .run()
+  const {id: teamId, orgId} = team
+  const [user, organizationUser] = await Promise.all([
+    dataLoader.get('users').load(userId),
+    dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
   if (!user) {
     throw new Error('User not found')
   }
-  const {orgId} = team
-  const email = user?.email
+  const {email} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
-  const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   const [, invitationNotificationIds] = await Promise.all([
     insertNewTeamMember(user, teamId),
     r
@@ -95,7 +88,10 @@ const acceptTeamInvitation = async (team: Team, userId: string) => {
       .run()
   ])
 
-  if (!userInOrg) {
+  if (!organizationUser) {
+    // clear the cache, adjustUserCount will mutate these
+    dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
+    dataLoader.get('users').clear(userId)
     try {
       await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
     } catch (e) {

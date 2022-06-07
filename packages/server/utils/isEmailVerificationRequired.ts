@@ -1,14 +1,12 @@
-import getRethink from '../database/rethinkDriver'
+import {DataLoaderWorker} from '../graphql/graphql'
 
-const isEmailVerificationRequired = async (denormDomain: string) => {
-  const domain = denormDomain.toLowerCase()
-  const r = await getRethink()
-  return r
-    .table('SecureDomain')
-    .getAll(domain, {index: 'domain'})
-    .count()
-    .gt(0)
-    .run()
+const isEmailVerificationRequired = async (email: string, dataLoader: DataLoaderWorker) => {
+  const domain = email.split('@')[1]!
+  const [approvedEmail, approvedDomain] = await Promise.all([
+    dataLoader.get('organizationApprovedDomains').load(email),
+    dataLoader.get('organizationApprovedDomains').load(domain)
+  ])
+  return approvedEmail || approvedDomain
 }
 
 export default isEmailVerificationRequired

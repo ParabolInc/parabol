@@ -1,0 +1,60 @@
+extend type Mutation {
+  """
+  Redeem an invitation token for a logged in user
+  """
+  acceptTeamInvitation(
+    """
+    The invitation token or mass invitation code
+    """
+    invitationToken: ID!
+
+    """
+    the notification clicked to accept, if any
+    """
+    notificationId: ID
+  ): AcceptTeamInvitationPayload!
+}
+
+type AcceptTeamInvitationPayload {
+  error: StandardMutationError
+
+  """
+  The new auth token sent to the mutator
+  """
+  authToken: ID
+
+  """
+  the meetingId to redirect to
+  """
+  meetingId: ID
+
+  """
+  The team that the invitee will be joining
+  """
+  team: Team
+
+  """
+  The new team member on the team
+  """
+  teamMember: TeamMember
+  notifications: NotificationTeamInvitation
+
+  """
+  For payloads going to the team leader that got new suggested actions
+  """
+  teamLead: User
+}
+
+extend union NotificationSubscriptionPayload = AcceptTeamInvitationPayload
+extend union TeamSubscriptionPayload = AcceptTeamInvitationPayload
+
+"""
+The reason the invitation failed
+"""
+enum TeamInvitationErrorEnum {
+  accepted
+  expired
+  notFound
+  restrictedDomain
+  unverifiedEmail
+}

@@ -2990,56 +2990,6 @@ type CreditCard {
 }
 
 """
-A grouping of organizations. Automatically grouped by top level domain of each
-"""
-type Company {
-  """
-  the top level domain
-  """
-  id: ID!
-
-  """
-  the number of active teams across all organizations
-  """
-  activeTeamCount: Int!
-
-  """
-  the number of active users across all organizations
-  """
-  activeUserCount: Int!
-
-  """
-  the last time any team in the organization started a meeting, null if no meetings were ever run
-  """
-  lastMetAt: DateTime
-
-  """
-  the total number of meetings started across all teams on all organizations
-  """
-  meetingCount: Int!
-
-  """
-  the longest monthly streak for meeting at least once per month for any team in the company
-  """
-  monthlyTeamStreakMax: Int!
-
-  """
-  Get the list of all organizations that belong to the company
-  """
-  organizations: [Organization!]!
-
-  """
-  The highest tier for any organization within the company
-  """
-  tier: TierEnum!
-
-  """
-  the total number of users across all organizations
-  """
-  userCount: Int!
-}
-
-"""
 A connection to a list of items.
 """
 type OrganizationUserConnection {
@@ -3262,26 +3212,6 @@ enum TaskStatusEnum {
   stuck
   done
   future
-}
-
-"""
-The types of flags that give an individual user super powers
-"""
-type UserFeatureFlags {
-  """
-  true if spotlight is allowed
-  """
-  spotlight: Boolean!
-
-  """
-  true if standups is allowed
-  """
-  standups: Boolean!
-
-  """
-  true if gitlab is allowed
-  """
-  gitlab: Boolean!
 }
 
 """
@@ -6992,15 +6922,6 @@ type MassInvitationPayload {
   teamName: String
 }
 
-"""
-The reason the invitation failed
-"""
-enum TeamInvitationErrorEnum {
-  accepted
-  expired
-  notFound
-}
-
 type VerifiedInvitationPayload {
   errorType: TeamInvitationErrorEnum
 
@@ -7049,21 +6970,6 @@ type VerifiedInvitationPayload {
 }
 
 type Mutation {
-  """
-  Redeem an invitation token for a logged in user
-  """
-  acceptTeamInvitation(
-    """
-    The 48-byte hex encoded invitation token or the 2-part JWT for mass invitation tokens
-    """
-    invitationToken: ID
-
-    """
-    the notification clicked to accept, if any
-    """
-    notificationId: ID
-  ): AcceptTeamInvitationPayload!
-
   """
   Create a new agenda item
   """
@@ -7149,26 +7055,6 @@ type Mutation {
   addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
 
-  """
-  Give someone advanced features in a flag
-  """
-  addFeatureFlag(
-    """
-    a list of the complete or partial email of the person to whom you are giving advanced features.
-          Matches via a regex to support entire domains
-    """
-    emails: [String!]
-
-    """
-    grant access to an entire domain. the part of the email after the @
-    """
-    domain: String
-
-    """
-    the flag that you want to give to the user
-    """
-    flag: UserFlagEnum!
-  ): AddFeatureFlagPayload!
   addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
 
   """
@@ -8534,36 +8420,6 @@ type Mutation {
   ): RemoveTeamMemberIntegrationAuthPayload!
 }
 
-type AcceptTeamInvitationPayload {
-  error: StandardMutationError
-
-  """
-  The new auth token sent to the mutator
-  """
-  authToken: ID
-
-  """
-  the meetingId to redirect to
-  """
-  meetingId: ID
-
-  """
-  The team that the invitee will be joining
-  """
-  team: Team
-
-  """
-  The new team member on the team
-  """
-  teamMember: TeamMember
-  notifications: NotificationTeamInvitation
-
-  """
-  For payloads going to the team leader that got new suggested actions
-  """
-  teamLead: User
-}
-
 type AddAgendaItemPayload {
   error: StandardMutationError
   agendaItem: AgendaItem
@@ -8741,29 +8597,6 @@ type AddSlackAuthPayload {
   The user with updated slackAuth
   """
   user: User
-}
-
-type AddFeatureFlagPayload {
-  error: StandardMutationError
-
-  """
-  the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users
-  """
-  user: User
-
-  """
-  the users given the super power
-  """
-  users: [User]
-}
-
-"""
-A flag to give an individual user super powers
-"""
-enum UserFlagEnum {
-  spotlight
-  standups
-  gitlab
 }
 
 type AddGitHubAuthPayload {
@@ -11177,9 +11010,7 @@ type UpdateDragLocationPayload {
 }
 
 union NotificationSubscriptionPayload =
-    AcceptTeamInvitationPayload
-  | AddFeatureFlagPayload
-  | AddNewFeaturePayload
+    AddNewFeaturePayload
   | AddOrgPayload
   | AddTeamPayload
   | ArchiveTimelineEventSuccess
@@ -11376,8 +11207,7 @@ union TaskSubscriptionPayload =
   | UpdateTaskDueDatePayload
 
 union TeamSubscriptionPayload =
-    AcceptTeamInvitationPayload
-  | AddAgendaItemPayload
+    AddAgendaItemPayload
   | AddAtlassianAuthPayload
   | AddGitHubAuthPayload
   | AddIntegrationProviderSuccess

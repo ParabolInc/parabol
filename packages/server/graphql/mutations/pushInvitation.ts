@@ -1,14 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import ms from 'ms'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import publish from '../../utils/publish'
+import PushInvitation from '../../database/types/PushInvitation'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import getIsUserIdApprovedByOrg from '../public/mutations/helpers/getIsUserIdApprovedByOrg'
 import rateLimit from '../rateLimit'
-import ms from 'ms'
 import PushInvitationPayload from '../types/PushInvitationPayload'
-import PushInvitation from '../../database/types/PushInvitation'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const MAX_GLOBAL_DENIALS = 3
 const GLOBAL_DENIAL_TIME = ms('30d')
@@ -45,6 +46,16 @@ export default {
       if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
 
       // VALIDATION
+      const team = await dataLoader.get('teams').load(teamId)
+      if (!team) {
+        return {error: {message: 'Invalid teamId'}}
+      }
+
+      const {orgId} = team
+      const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader)
+      if (approvalError instanceof Error) {
+        return {error: {message: approvalError.message}}
+      }
       const pushInvitations = (await r
         .table('PushInvitation')
         .getAll(viewerId, {index: 'userId'})

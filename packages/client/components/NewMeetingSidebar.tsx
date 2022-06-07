@@ -107,7 +107,7 @@ const NewMeetingSidebar = (props: Props) => {
   }
 
   return (
-    <SidebarParent>
+    <SidebarParent data-cy='sidebar'>
       <SidebarHeader>
         <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
         <div>
