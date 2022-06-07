@@ -6,33 +6,35 @@ import {
   SelectionState
 } from 'draft-js'
 import React, {ReactNode, RefObject, Suspense, useRef, useState} from 'react'
-import getAnchorLocation from './getAnchorLocation'
-import getSelectionLink from './getSelectionLink'
-import getSelectionText from './getSelectionText'
-import getWordAt from './getWordAt'
+import useForceUpdate from '../../hooks/useForceUpdate'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
+import {SetEditorState} from '../../types/draft'
 import addSpace from '../../utils/draftjs/addSpace'
 import getFullLinkSelection from '../../utils/draftjs/getFullLinkSelection'
 import makeAddLink from '../../utils/draftjs/makeAddLink'
 import splitBlock from '../../utils/draftjs/splitBlock'
 import getDraftCoords from '../../utils/getDraftCoords'
-import linkify from '../../utils/linkify'
-import {SetEditorState} from '../../types/draft'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import useForceUpdate from '../../hooks/useForceUpdate'
 import lazyPreload from '../../utils/lazyPreload'
+import linkify from '../../utils/linkify'
+import getAnchorLocation from './getAnchorLocation'
+import getSelectionLink from './getSelectionLink'
+import getSelectionText from './getSelectionText'
+import getWordAt from './getWordAt'
 
-const EditorLinkChanger = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'EditorLinkChanger' */
-    '../EditorLinkChanger/EditorLinkChanger'
-  )
+const EditorLinkChanger = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'EditorLinkChanger' */
+      '../EditorLinkChanger/EditorLinkChangerDraftjs'
+    )
 )
 
-const EditorLinkViewer = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'EditorLinkViewer' */
-    '../EditorLinkViewer/EditorLinkViewer'
-  )
+const EditorLinkViewer = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'EditorLinkViewer' */
+      '../EditorLinkViewer/EditorLinkViewer'
+    )
 )
 
 const getEntityKeyAtCaret = (editorState: EditorState) => {

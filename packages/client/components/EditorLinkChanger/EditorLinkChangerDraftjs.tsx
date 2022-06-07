@@ -1,17 +1,17 @@
+import styled from '@emotion/styled'
 import {EditorState, SelectionState} from 'draft-js'
 import React, {RefObject, useEffect} from 'react'
-import styled from '@emotion/styled'
-import RaisedButton from '../RaisedButton'
+import {MenuPosition} from '../../hooks/useCoords'
+import useMenu from '../../hooks/useMenu'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {PALETTE} from '../../styles/paletteV3'
+import {BBox} from '../../types/animations'
 import completeEntity from '../../utils/draftjs/completeEntity'
 import linkify from '../../utils/linkify'
 import withForm, {WithFormProps} from '../../utils/relay/withForm'
 import Legitity from '../../validation/Legitity'
 import BasicInput from '../InputField/BasicInput'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import {BBox} from '../../types/animations'
-import {MenuPosition} from '../../hooks/useCoords'
-import useMenu from '../../hooks/useMenu'
+import RaisedButton from '../RaisedButton'
 
 const ModalBoundary = styled('div')({
   color: PALETTE.SLATE_700,
