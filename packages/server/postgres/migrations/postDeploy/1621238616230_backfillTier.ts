@@ -1,8 +1,8 @@
 import {ColumnDefinitions} from 'node-pg-migrate'
 import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
+import {updateUserTiersQuery} from '../../generatedMigrationHelpers'
 import getPg from '../../getPg'
-import {updateUserTiersQuery} from '../../queries/generated/updateUserTiersQuery'
 import catchAndLog from '../../utils/catchAndLog'
 
 export const shorthands: ColumnDefinitions | undefined = undefined

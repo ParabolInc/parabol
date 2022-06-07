@@ -3,8 +3,8 @@ import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
 import {USER_EMAIL_LIMIT, USER_PREFERRED_NAME_LIMIT} from '../../constants'
+import {backupUserQuery} from '../../generatedMigrationHelpers'
 import getPg from '../../getPg'
-import {backupUserQuery, IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -19,7 +19,7 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
   featureFlags: []
 }
 
-const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
+const cleanUsers = (users: User[]): any => {
   const cleanedUsers = [] as any
   users.forEach((user) => {
     if (user.email.length > USER_EMAIL_LIMIT) {
@@ -28,7 +28,7 @@ const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
     const cleanedUser = Object.assign({}, undefinedUserFieldsAndTheirDefaultPgValues, user, {
       email: user.email === 'DELETED' ? getDeletedEmail(user.id) : user.email,
       preferredName: user.preferredName.slice(0, USER_PREFERRED_NAME_LIMIT)
-    }) as IBackupUserQueryParams['users'][0]
+    }) as any
     cleanedUsers.push(cleanedUser)
   })
   return cleanedUsers
