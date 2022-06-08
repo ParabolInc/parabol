@@ -138,7 +138,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           first: 50 // if no project filters have been selected, get the 50 most recently used projects
         })
         if (projectsErr) {
-          sendToSentry(new Error('Unable to get GitLab projects in projectIssues query'), {userId})
+          sendToSentry(new Error('Unable to get GitLab projects in projectsIssues query'), {userId})
           return connectionFromTasks([], 0)
         }
         const projectsFullPaths = new Set<string>()
@@ -177,7 +177,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const projectsIssues = [] as ProjectIssueEdge[]
         const errors = [] as Error[]
         let hasNextPage = false
-        const cursorsDetails = [] as CursorDetails[]
+        const endCursor = [] as CursorDetails[]
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
@@ -186,35 +186,34 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             sendToSentry(err, {userId})
             return
           }
-          const project = projectIssuesData.project
+          const {project} = projectIssuesData
           if (!project?.issues) continue
           const {fullPath, issues} = project
           const {edges, pageInfo} = issues
           if (pageInfo.hasNextPage) {
             hasNextPage = true
+            const currentCursorDetails = endCursor.find(
+              (cursorDetails) => cursorDetails.fullPath === fullPath
+            )
+            const newCursor = pageInfo.endCursor ?? ''
+            if (currentCursorDetails) currentCursorDetails.cursor = newCursor
+            else endCursor.push({fullPath, cursor: newCursor})
           }
           edges?.forEach((edge) => {
             if (!edge?.node) return
             const {node, cursor} = edge
-            if (fullPath) {
-              const currentCursorDetails = cursorsDetails.find(
-                (details) => details.fullPath === fullPath
-              )
-              if (currentCursorDetails) currentCursorDetails.cursor = cursor
-              else cursorsDetails.push({fullPath, cursor})
-            }
             projectsIssues.push({cursor, node})
           })
         }
 
         const firstEdge = projectsIssues[0]
-        const stringifiedEndCursorsDetails = JSON.stringify(cursorsDetails)
+        const stringifiedEndCursor = JSON.stringify(endCursor)
         return {
           error: errors[0],
           edges: projectsIssues,
           pageInfo: {
             startCursor: firstEdge && firstEdge.cursor,
-            endCursor: stringifiedEndCursorsDetails,
+            endCursor: stringifiedEndCursor,
             hasNextPage
           }
         }

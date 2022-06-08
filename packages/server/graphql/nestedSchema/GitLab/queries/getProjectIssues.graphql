@@ -11,6 +11,7 @@ query getProjectIssues(
     issues(first: $first, after: $after, search: $searchQuery, sort: $sort, state: $state) {
       pageInfo {
         hasNextPage
+        endCursor
       }
       edges {
         cursor
