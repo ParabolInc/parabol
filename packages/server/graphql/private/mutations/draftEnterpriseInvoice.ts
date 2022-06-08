@@ -6,7 +6,7 @@ import {fromEpochSeconds} from '../../../utils/epochTime'
 import segmentIo from '../../../utils/segmentIo'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
@@ -91,7 +91,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   if (!user) {
     return {error: {message: 'User not found'}}
   }
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   let customerId
   if (!stripeId) {
     // create the customer

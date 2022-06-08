@@ -3,7 +3,7 @@ import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from './getCCFromCustomer'
 
 const upgradeToPro = async (orgId: string, source: string, email: string) => {
@@ -21,7 +21,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
     .count()
     .run()
 
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const customer = stripeId
     ? await manager.updatePayment(stripeId, source)
     : await manager.createCustomer(orgId, email, source)

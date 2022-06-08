@@ -3,7 +3,7 @@ import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import segmentIo from '../../../utils/segmentIo'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 
 const resolveDowngradeToPersonal = async (
   orgId: string,
@@ -11,7 +11,7 @@ const resolveDowngradeToPersonal = async (
   userId: string
 ) => {
   const now = new Date()
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const r = await getRethink()
   try {
     await manager.deleteSubscription(stripeSubscriptionId)
