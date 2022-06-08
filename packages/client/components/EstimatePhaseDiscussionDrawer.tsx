@@ -98,7 +98,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         <DiscussionThreadRoot
           allowedThreadables={allowedThreadables}
           discussionId={discussionId!}
-          width={'calc(100% - 16px)'}
+          width={'100%'}
           emptyState={
             <DiscussionThreadListEmptyState
               allowTasks={false}
