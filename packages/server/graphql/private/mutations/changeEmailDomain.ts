@@ -18,7 +18,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   const normalizedOldDomain = oldDomain.toLowerCase()
 
   // RESOLUTION
-  const [orgRes, teamMemberRes] = await Promise.all([
+  const [orgRes, teamMemberRes, samlRes] = await Promise.all([
     r
       .table('Organization')
       .filter((row) => row('activeDomain').eq(normalizedOldDomain))
@@ -30,9 +30,21 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       .update((row) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}), {
         returnChanges: true
       })
+      .run(),
+    r
+      .table('SAML')
+      .filter((row) => row('domains').contains(normalizedOldDomain))
+      .update(
+        (row) => ({
+          domains: row('domains').map((domain) =>
+            r.branch(domain.eq(normalizedOldDomain), normalizedNewDomain, domain)
+          )
+        }),
+        {returnChanges: true}
+      )
       .run()
   ])
-  console.log('🚀  ~ results', {orgRes, teamMemberRes})
+  console.log('🚀  ~ results', {orgRes, teamMemberRes, samlRes})
 
   const data = {}
   return data
