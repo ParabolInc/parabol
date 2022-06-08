@@ -21,15 +21,16 @@ type ProjectIssueEdge = {
 }
 export type ProjectsIssuesArgs = {
   first: number
-  after: string
+  after?: string
   projectsIds: string[] | null
   searchQuery: string
   sort: string
   state: string
   fullPath: string
 }
-type Cursors = {
-  [fullPath: string]: string
+type CursorDetails = {
+  fullPath: string
+  cursor: string
 }
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -97,7 +98,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         },
         after: {
           type: GraphQLString,
-          description: 'the datetime cursor'
+          description: 'the stringified cursors for pagination'
         },
         projectsIds: {
           type: GraphQLList(GraphQLString),
@@ -122,7 +123,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         context,
         info
       ) => {
-        const {projectsIds} = args as ProjectsIssuesArgs
+        const {projectsIds, after = ''} = args as ProjectsIssuesArgs
         const {dataLoader} = context
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -146,15 +147,27 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
-        let parsedAfter: Cursors
+        let parsedAfter: CursorDetails[] | null
         try {
-          parsedAfter = args.after && JSON.parse(args.after)
+          parsedAfter = after.length ? JSON.parse(after) : null
         } catch (e) {
-          sendToSentry(new Error('Error parsing after'), {userId, tags: {after: args.after}})
+          sendToSentry(new Error('Error parsing after'), {userId, tags: {after}})
           return connectionFromTasks([], 0)
         }
+        const isValidJSON = parsedAfter?.every(
+          (cursorsDetails) =>
+            typeof cursorsDetails.cursor === 'string' && typeof cursorsDetails.fullPath === 'string'
+        )
+        if (isValidJSON === false) {
+          sendToSentry(new Error('after arg has an invalid JSON structure'), {
+            userId,
+            tags: {after}
+          })
+          return connectionFromTasks([], 0)
+        }
+
         const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
-          const after = (parsedAfter && parsedAfter[fullPath]) ?? ''
+          const after = parsedAfter?.find((cursor) => cursor.fullPath === fullPath)?.cursor ?? ''
           return manager.getProjectIssues({
             ...args,
             fullPath,
@@ -164,7 +177,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         const projectsIssues = [] as ProjectIssueEdge[]
         const errors = [] as Error[]
         let hasNextPage = false
-        const cursors = {} as Cursors
+        const cursorsDetails = [] as CursorDetails[]
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
@@ -182,25 +195,26 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           }
           edges?.forEach((edge) => {
             if (!edge?.node) return
-            const {node} = edge
+            const {node, cursor} = edge
             if (fullPath) {
-              cursors[fullPath] = edge.cursor
+              const currentCursorDetails = cursorsDetails.find(
+                (details) => details.fullPath === fullPath
+              )
+              if (currentCursorDetails) currentCursorDetails.cursor = cursor
+              else cursorsDetails.push({fullPath, cursor})
             }
-            projectsIssues.push({
-              cursor: edge?.cursor || new Date(),
-              node
-            })
+            projectsIssues.push({cursor, node})
           })
         }
 
         const firstEdge = projectsIssues[0]
-        const stringifiedEndCursors = JSON.stringify(cursors)
+        const stringifiedEndCursorsDetails = JSON.stringify(cursorsDetails)
         return {
           error: errors[0],
           edges: projectsIssues,
           pageInfo: {
             startCursor: firstEdge && firstEdge.cursor,
-            endCursor: stringifiedEndCursors,
+            endCursor: stringifiedEndCursorsDetails,
             hasNextPage
           }
         }
