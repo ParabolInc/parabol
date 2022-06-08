@@ -1,26 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
+import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubScopingSearchBar_meeting$key} from '../__generated__/GitHubScopingSearchBar_meeting.graphql'
 import GitHubScopingSearchFilterToggle from './GitHubScopingSearchFilterToggle'
 import GitHubScopingSearchHistoryToggle from './GitHubScopingSearchHistoryToggle'
-import GitHubScopingSearchInput from './GitHubScopingSearchInput'
-
-const SearchBar = styled('div')({
-  padding: 16
-})
-
-const SearchBarWrapper = styled('div')({
-  alignItems: 'center',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: '40px',
-  display: 'flex',
-  height: 44,
-  padding: '0 16px',
-  width: '100%'
-})
+import ScopingSearchBar from './ScopingSearchBar'
+import ScopingSearchInput from './ScopingSearchInput'
 
 interface Props {
   meetingRef: GitHubScopingSearchBar_meeting$key
@@ -29,25 +15,56 @@ interface Props {
 const GitHubScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
 
+  graphql`
+    fragment GitHubScopingSearchBarGitHubIntegration on GitHubIntegration {
+      githubSearchQueries {
+        queryString
+      }
+    }
+  `
+
   const meeting = useFragment(
     graphql`
       fragment GitHubScopingSearchBar_meeting on PokerMeeting {
+        id
+        githubSearchQuery {
+          queryString
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              github {
+                ...GitHubScopingSearchBarGitHubIntegration @relay(mask: false)
+              }
+            }
+          }
+        }
         ...GitHubScopingSearchHistoryToggle_meeting
-        ...GitHubScopingSearchInput_meeting
         ...GitHubScopingSearchFilterToggle_meeting
       }
     `,
     meetingRef
   )
 
+  const {queryString} = meeting.githubSearchQuery
+
+  const githubSearchQueries =
+    meeting.viewerMeetingMember?.teamMember?.integrations?.github?.githubSearchQueries
+  const defaultInput =
+    githubSearchQueries?.[0]?.queryString ?? SprintPokerDefaults.GITHUB_DEFAULT_QUERY
+
   return (
-    <SearchBar>
-      <SearchBarWrapper>
-        <GitHubScopingSearchHistoryToggle meetingRef={meeting} />
-        <GitHubScopingSearchInput meetingRef={meeting} />
-        <GitHubScopingSearchFilterToggle meetingRef={meeting} />
-      </SearchBarWrapper>
-    </SearchBar>
+    <ScopingSearchBar>
+      <GitHubScopingSearchHistoryToggle meetingRef={meeting} />
+      <ScopingSearchInput
+        placeholder={'Search GitHub issues...'}
+        queryString={queryString}
+        meetingId={meeting.id}
+        linkedRecordName={'githubSearchQuery'}
+        defaultInput={defaultInput}
+      />
+      <GitHubScopingSearchFilterToggle meetingRef={meeting} />
+    </ScopingSearchBar>
   )
 }
 

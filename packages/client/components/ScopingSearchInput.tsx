@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
@@ -36,10 +36,11 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
+  defaultInput?: string
 }
 
 const ScopingSearchInput = (props: Props) => {
-  const {placeholder, queryString, meetingId, linkedRecordName} = props
+  const {placeholder, queryString, meetingId, linkedRecordName, defaultInput} = props
   const atmosphere = useAtmosphere()
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
@@ -52,6 +53,12 @@ const ScopingSearchInput = (props: Props) => {
       searchQuery.setValue(value, 'queryString')
     })
   }
+
+  useEffect(() => {
+    if (defaultInput) {
+      setSearch(meetingId, defaultInput)
+    }
+  }, [])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
