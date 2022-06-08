@@ -95,8 +95,7 @@ const addMissingJiraField = {
     const screensResponse = await manager.getScreens(cloudId, batchSize)
     const screens: JiraScreen[] = []
     if (screensResponse instanceof Error || screensResponse instanceof RateLimitError) {
-      console.log('Unable to fetch screens for cloudId:', cloudId)
-      return {error: {message: screensResponse.message}}
+      return standardError(screensResponse)
     }
 
     console.log(`Total screens count: ${screensResponse.total}, batch size: ${batchSize}`)
@@ -114,8 +113,7 @@ const addMissingJiraField = {
       const screenResponses = await Promise.all(promises)
       for (const response of screenResponses) {
         if (response instanceof Error || response instanceof RateLimitError) {
-          console.log('Unable to fetch screens for cloudId:', cloudId)
-          return {error: {message: response.message}}
+          return standardError(response)
         }
         screens.push(...response.values)
       }
