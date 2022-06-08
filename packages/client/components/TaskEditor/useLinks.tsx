@@ -29,11 +29,11 @@ const EditorLinkChanger = lazyPreload(
     )
 )
 
-const EditorLinkViewer = lazyPreload(
+const EditorLinkViewerDraft = lazyPreload(
   () =>
     import(
-      /* webpackChunkName: 'EditorLinkViewer' */
-      '../EditorLinkViewer/EditorLinkViewer'
+      /* webpackChunkName: 'EditorLinkViewerDraft' */
+      '../EditorLinkViewer/EditorLinkViewerDraft'
     )
 )
 
@@ -280,8 +280,8 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     }
     if (!linkViewerData) return null
     return (
-      <Suspense fallback={''} key={'EditorLinkViewer'}>
-        <EditorLinkViewer
+      <Suspense fallback={''} key={'EditorLinkViewerDraft'}>
+        <EditorLinkViewerDraft
           originCoords={coords}
           editorState={editorState}
           setEditorState={setEditorState}

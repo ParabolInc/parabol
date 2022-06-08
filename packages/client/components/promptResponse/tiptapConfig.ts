@@ -7,7 +7,7 @@ import StarterKit from '@tiptap/starter-kit'
  * @param placeholder
  * @returns an array of extensions to be used by the tip tap editor
  */
-export const createEditorExtensions = (onOpenLinkMenu?, placeholder?: string) => [
+export const createEditorExtensions = (onOpenLinkMenu?, setSelectedHref?, placeholder?: string) => [
   StarterKit,
   Link.extend({
     addKeyboardShortcuts() {
@@ -19,13 +19,26 @@ export const createEditorExtensions = (onOpenLinkMenu?, placeholder?: string) =>
           }
 
           const href: string | undefined = this.editor.getAttributes('link').href
-          this.editor.commands.extendMarkRange('link')
-
-          const {from, to} = this.editor.view.state.selection
+          let {from, to} = this.editor.view.state.selection
+          if (to === from) {
+            this.editor.commands.setTextSelection({to: to - 1, from: from - 1})
+            this.editor.commands.extendMarkRange('link')
+            const selection = this.editor.view.state.selection
+            to = selection.to
+            from = selection.from
+          }
           const text = this.editor.state.doc.textBetween(from, to, '')
           onOpenLinkMenu({text, href})
           return true
         }
+      }
+    },
+    onSelectionUpdate() {
+      const href = this.editor.getAttributes('link').href
+      if (href && setSelectedHref) {
+        setSelectedHref(href)
+      } else {
+        setSelectedHref(undefined)
       }
     }
   }),

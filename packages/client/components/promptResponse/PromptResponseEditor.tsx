@@ -7,6 +7,7 @@ import useForceUpdate from '~/hooks/useForceUpdate'
 import {PALETTE} from '~/styles/paletteV3'
 import {BBox} from '~/types/animations'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
+import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
 import {createEditorExtensions} from './tiptapConfig'
 
 const StyledEditor = styled('div')`
@@ -46,6 +47,7 @@ const PromptResponseEditor = (props: Props) => {
   const [_isEditing, setIsEditing] = useState(autoFocusProp ?? false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
   const [linkMenuProps, setLinkMenuProps] = useState<{text: string; href: string} | undefined>()
+  const [selectedHref, setSelectedHref] = useState<string | null>(null)
   const editorRef = useRef<PureEditorContent>(null)
   const forceUpdate = useForceUpdate()
 
@@ -70,10 +72,15 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit?.(newEditorState)
   }
 
+  const handleOpenLinkChanger = ({text, href}: {text: string; href: string}) => {
+    setSelectedHref(null)
+    setLinkMenuProps({text, href})
+  }
+
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(setLinkMenuProps, placeholder),
+      extensions: createEditorExtensions(handleOpenLinkChanger, setSelectedHref, placeholder),
       autofocus: autoFocus,
       onUpdate,
       onBlur: onSubmit,
@@ -83,12 +90,15 @@ const PromptResponseEditor = (props: Props) => {
   )
 
   const cachedCoordsRef = useRef<BBox | null>(null)
+  // Note that this gets the bounding box for the entire textbox, which causes the link viewer + changer to render below
+  // the input regardless of cursor position.
+  // :TODO: (jmtaber129): Get a bounding box that will render the menus closer to the cursor.
+  const originCoords = editorRef.current?.editorContentRef.current.getBoundingClientRect()
+  if (originCoords) {
+    cachedCoordsRef.current = originCoords
+  }
 
   const renderLinkChanger = () => {
-    const originCoords = editorRef.current?.editorContentRef.current.getBoundingClientRect()
-    if (originCoords) {
-      cachedCoordsRef.current = originCoords
-    }
     if (!cachedCoordsRef.current) {
       setTimeout(forceUpdate)
       return null
@@ -110,9 +120,53 @@ const PromptResponseEditor = (props: Props) => {
     )
   }
 
+  const renderLinkViewer = () => {
+    if (!cachedCoordsRef.current) {
+      setTimeout(forceUpdate)
+      return null
+    }
+
+    const onAddHyperlink = () => {
+      if (!editor) {
+        return
+      }
+
+      const href: string | undefined = editor.getAttributes('link').href
+      editor.commands.extendMarkRange('link')
+
+      let {from, to} = editor.view.state.selection
+      if (to === from) {
+        editor.commands.setTextSelection({to: to - 1, from: from - 1})
+        editor.commands.extendMarkRange('link')
+        const selection = editor.view.state.selection
+        to = selection.to
+        from = selection.from
+      }
+      const text = editor.state.doc.textBetween(from, to, '')
+      setSelectedHref(null)
+      setLinkMenuProps({text, href: href ?? ''})
+    }
+
+    return (
+      editor &&
+      selectedHref && (
+        <EditorLinkViewerTipTap
+          href={selectedHref}
+          tiptapEditor={editor}
+          addHyperlink={onAddHyperlink}
+          originCoords={originCoords}
+          removeModal={() => {
+            setSelectedHref(null)
+          }}
+        />
+      )
+    )
+  }
+
   return (
     <StyledEditor>
       {renderLinkChanger()}
+      {renderLinkViewer()}
       <EditorContent ref={editorRef} editor={editor} />
     </StyledEditor>
   )
