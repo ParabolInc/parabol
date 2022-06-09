@@ -4,7 +4,7 @@ export const ResponseCardDimensions = {
   MIN_RESPONSE_WIDTH: 320
 }
 
-export const GRID_PADDING_LEFT_RIGHT_PERCENT = 0.07 // 7% of the screen
+export const GRID_PADDING_LEFT_RIGHT_PERCENT = 0.1 // 10% of the screen
 const GRID_SCREEN_WIDTH_PERCENT = 1 - GRID_PADDING_LEFT_RIGHT_PERCENT * 2 // The % of the screen that's available for the grid
 
 // Each value represents the width of the screen for a given number of columns (including gap between and padding on each side)
