@@ -10,8 +10,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isSuperUser,
     connectSocket: allow,
-    disconnectSocket: allow,
-    changeEmailDomain: allow
+    disconnectSocket: allow
   },
   Query: {
     '*': isSuperUser
