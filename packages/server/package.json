@@ -115,7 +115,7 @@
     "html-minifier-terser": "^5.0.2",
     "immutable": "3.8.2",
     "ioredis": "^4.11.2",
-    "jsdom": "^16.6.0",
+    "jsdom": "^19.0.0",
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^3.5.2",
