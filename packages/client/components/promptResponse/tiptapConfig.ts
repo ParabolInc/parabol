@@ -7,7 +7,12 @@ import StarterKit from '@tiptap/starter-kit'
  * @param placeholder
  * @returns an array of extensions to be used by the tip tap editor
  */
-export const createEditorExtensions = (onOpenLinkMenu?, setSelectedHref?, placeholder?: string) => [
+export const createEditorExtensions = (
+  isReadOnly?: boolean,
+  onOpenLinkMenu?,
+  setSelectedHref?,
+  placeholder?: string
+) => [
   StarterKit,
   Link.extend({
     addKeyboardShortcuts() {
@@ -41,6 +46,8 @@ export const createEditorExtensions = (onOpenLinkMenu?, setSelectedHref?, placeh
         setSelectedHref(undefined)
       }
     }
+  }).configure({
+    openOnClick: isReadOnly
   }),
   Placeholder.configure({
     placeholder

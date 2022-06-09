@@ -80,13 +80,18 @@ const PromptResponseEditor = (props: Props) => {
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(handleOpenLinkChanger, setSelectedHref, placeholder),
+      extensions: createEditorExtensions(
+        readOnly,
+        handleOpenLinkChanger,
+        setSelectedHref,
+        placeholder
+      ),
       autofocus: autoFocus,
       onUpdate,
       onBlur: onSubmit,
       editable: !readOnly
     },
-    [content, setLinkMenuProps]
+    [content, readOnly, setLinkMenuProps]
   )
 
   const cachedCoordsRef = useRef<BBox | null>(null)
