@@ -1,4 +1,5 @@
 import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
+import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
 import {getUserId} from '../../../utils/authorization'
 import {MutationResolvers} from '../../public/resolverTypes'
 
@@ -67,6 +68,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   // console.log('🚀  ~ results', {orgRes, teamMemberRes, samlRes, invoiceRes})
 
   await updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain)
+  await updateUserEmailDomainsToPG(normalizedOldDomain, normalizedNewDomain)
 
   const data = {}
   return data
