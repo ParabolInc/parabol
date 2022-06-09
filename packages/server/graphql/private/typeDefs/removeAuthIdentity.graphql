@@ -11,7 +11,7 @@ extend type Mutation {
     """
     The type of auth to remove
     """
-    identityType: AuthIdentityType!
+    identityType: AuthIdentityTypeEnum!
 
     """
     Add a local auth with a dummy hashed password
