@@ -7,9 +7,6 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
-import upsertAzureDevOpsDimensionFieldMap, {
-  AzureDevOpsFieldMapProps
-} from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
@@ -212,7 +209,7 @@ const setTaskEstimate = {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
 
-      let fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
+      /* let fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
       let fieldType = 'string'
       if (!azureDevOpsDimensionFieldMapEntry) {
         try {
@@ -232,7 +229,14 @@ const setTaskEstimate = {
       } else {
         fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
         fieldType = azureDevOpsDimensionFieldMapEntry.fieldType
-      }
+      }*/
+      const fieldName = azureDevOpsDimensionFieldMapEntry
+        ? azureDevOpsDimensionFieldMapEntry.fieldName
+        : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
+
+      const fieldType = azureDevOpsDimensionFieldMapEntry
+        ? azureDevOpsDimensionFieldMapEntry.fieldType
+        : 'string'
 
       if (!azureDevOpsWorkItem) {
         return {error: {message: 'Cannot find the correct work item to push changes to.'}}
