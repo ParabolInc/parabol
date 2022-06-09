@@ -209,27 +209,6 @@ const setTaskEstimate = {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
 
-      /* let fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
-      let fieldType = 'string'
-      if (!azureDevOpsDimensionFieldMapEntry) {
-        try {
-          const props = {
-            teamId,
-            dimensionName,
-            fieldName: fieldName,
-            fieldId: fieldName,
-            instanceId,
-            fieldType: fieldType,
-            projectKey
-          } as AzureDevOpsFieldMapProps
-          await upsertAzureDevOpsDimensionFieldMap(props)
-        } catch (e) {
-          console.log(e)
-        }
-      } else {
-        fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
-        fieldType = azureDevOpsDimensionFieldMapEntry.fieldType
-      }*/
       const fieldName = azureDevOpsDimensionFieldMapEntry
         ? azureDevOpsDimensionFieldMapEntry.fieldName
         : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
