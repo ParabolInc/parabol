@@ -17,9 +17,21 @@ interface Props {
 const EditorLinkChangerTipTap = (props: Props) => {
   const {text, link, removeModal, originCoords, tiptapEditor} = props
   const [selection] = useState(tiptapEditor.view.state.selection)
-  const handleSubmit = ({text, href}) => {
-    tiptapEditor.chain().focus().setTextSelection(selection).setLink({href}).run()
-    console.log(text, href)
+  const handleSubmit = ({text: newText, href}) => {
+    tiptapEditor
+      .chain()
+      .focus()
+      .setTextSelection(selection)
+      .setLink({href})
+      .command(({tr}) => {
+        if (text !== newText) {
+          // Replace the existing text iff it was changed.
+          tr.insertText(newText)
+        }
+
+        return true
+      })
+      .run()
   }
 
   const handleEscape = () => {
