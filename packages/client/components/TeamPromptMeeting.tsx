@@ -3,13 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import useEventCallback from '~/hooks/useEventCallback'
 import useMeeting from '~/hooks/useMeeting'
 import useMutationProps from '~/hooks/useMutationProps'
 import useTransition from '~/hooks/useTransition'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
-import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+import {DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
 import Legitity from '~/validation/Legitity'
@@ -22,6 +21,10 @@ import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
+import {
+  GRID_PADDING_LEFT_RIGHT_PERCENT,
+  ResponsesGridBreakpoints
+} from './TeamPrompt/TeamPromptGridDimensions'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -33,13 +36,18 @@ const Prompt = styled('h1')({
   fontWeight: 400
 })
 
+const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
+
 const EditablePrompt = Prompt.withComponent(EditableText)
 
-const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+const ResponsesGridContainer = styled('div')({
   height: '100%',
   overflow: 'auto',
-  padding: maybeTabletPlus ? '32px 10%' : 16
-}))
+  padding: 16,
+  [twoColumnResponseMediaQuery]: {
+    padding: `32px ${GRID_PADDING_LEFT_RIGHT_PERCENT * 100}%`
+  }
+})
 
 const ResponsesGrid = styled('div')({
   flex: 1,
@@ -93,7 +101,6 @@ const TeamPromptMeeting = (props: Props) => {
   )
   const {id: meetingId, facilitatorUserId, phases, meetingPrompt} = meeting
   const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
@@ -179,7 +186,7 @@ const TeamPromptMeeting = (props: Props) => {
                 <Prompt>{meetingPrompt}</Prompt>
               )}
               <ErrorBoundary>
-                <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
+                <ResponsesGridContainer>
                   <ResponsesGrid>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
