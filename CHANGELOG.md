@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.62.0 2022-June-9
+
+### Added
+
+- feat(restrictDomains): Add table and mutations (#6476)
+- feat(standups): Update relative createdAt automatically (#6658)
+- feat(domainStats): Support querying domain stat fields (#6664)
+- feat(integration-tests): add more testing to the 2-minute demo (#6183)
+- feat(restrictDomains): Add restriction to acceptTeamInvitation (#6487)
+
+
+### Fixed
+
+- fix: github repos filter menu shows limited selection (#6627)
+- fix(sprint-poker): Prevent kicking facilitator off the meeting while modifying the scope (#6667)
+- fix(jira): Show meaningful field update error for team-managed projects (#6656)
+- fix bad merge on Organization.ts (#6682)
+- fix(Retro Templates): Added missing prompts (#6671)
+- fix(jira): Handle a case with a huge number of Jira projects and avoid timeout error when trying to fix Jira field automatically (#6676)
+- fix(standups): Discussion thread drawer is cut off on mobile (#6695)
+
+### Changed
+
+- chore(deps): bump protobufjs from 6.11.2 to 6.11.3 (#6669)
+- chore(deps): bump sharp from 0.30.3 to 0.30.5 (#6665)
+- chore(dx): remove generated pg files from git (#6519)
+
 ## 6.61.0 2022-June-1
 
 ### Added

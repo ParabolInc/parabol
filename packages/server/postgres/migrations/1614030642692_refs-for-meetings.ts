@@ -9,8 +9,7 @@ import {parse} from 'url'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import TemplateScale from '../../database/types/TemplateScale'
-import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
-import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
+import {insertTemplateRefQuery, insertTemplateScaleRefQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
@@ -36,10 +35,10 @@ export async function up(): Promise<void> {
   const client = new Client(getPgConfig())
   await client.connect()
 
-  const meetings = ((await r
+  const meetings = (await r
     .table('NewMeeting')
     .filter({meetingType: 'poker' as any})
-    .run()) as unknown) as MeetingPoker[]
+    .run()) as unknown as MeetingPoker[]
   const templateIds = meetings.map(({templateId}) => templateId)
   const uniqueTemplateIds = Array.from(new Set(templateIds))
   const dimensionsByTemplateId = (await r
@@ -118,11 +117,7 @@ export async function up(): Promise<void> {
   // wipe the jira dimension fields since we can no longer use dimensionId
   await r
     .table('Team')
-    .filter((row) =>
-      row('jiraDimensionFields')
-        .default(null)
-        .ne(null)
-    )
+    .filter((row) => row('jiraDimensionFields').default(null).ne(null))
     .update({jiraDimensionFields: []})
     .run()
 

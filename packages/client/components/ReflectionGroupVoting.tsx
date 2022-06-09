@@ -117,7 +117,7 @@ const ReflectionGroupVoting = (props: Props) => {
     <UpvoteColumn>
       <UpvoteRow data-cy='reflection-vote-row'>
         <UpvoteIcon
-          data-cy={`remove-vote`}
+          aria-label={`Remove vote`}
           isExpanded={isExpanded}
           isEnabled={canDownvote}
           color={isExpanded ? PALETTE.SKY_400 : PALETTE.SKY_500}
@@ -133,7 +133,7 @@ const ReflectionGroupVoting = (props: Props) => {
           {viewerVoteCount}
         </VoteCount>
         <UpvoteIcon
-          data-cy={`add-vote`}
+          aria-label={`Add vote`}
           isExpanded={isExpanded}
           isEnabled={canUpvote}
           color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.SLATE_600}

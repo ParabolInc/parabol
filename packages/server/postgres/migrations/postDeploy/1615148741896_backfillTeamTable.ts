@@ -3,15 +3,15 @@ import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import Team from '../../../database/types/Team'
 import {TEAM_NAME_LIMIT} from '../../constants'
+import {backupTeamQuery} from '../../generatedMigrationHelpers'
 import getPg from '../../getPg'
-import {backupTeamQuery, IBackupTeamQueryParams} from '../../queries/generated/backupTeamQuery'
 
 const undefinedTeamFieldsAndTheirDefaultValues = {
   jiraDimensionFields: [],
   isOnboardTeam: false
 }
 
-const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
+const cleanTeams = (teams: Team[]) => {
   const cleanedTeams = []
   teams.forEach((team) => {
     const cleanedTeam = Object.assign({}, undefinedTeamFieldsAndTheirDefaultValues, team, {
@@ -22,7 +22,7 @@ const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
     })
     cleanedTeams.push(cleanedTeam)
   })
-  return cleanedTeams as IBackupTeamQueryParams['teams']
+  return cleanedTeams as any
 }
 
 export const shorthands: ColumnDefinitions | undefined = undefined

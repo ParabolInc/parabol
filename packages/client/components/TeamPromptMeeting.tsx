@@ -3,10 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition from '~/hooks/useTransition'
-import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+import {DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
@@ -18,14 +17,23 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
+import {
+  GRID_PADDING_LEFT_RIGHT_PERCENT,
+  ResponsesGridBreakpoints
+} from './TeamPrompt/TeamPromptGridDimensions'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
-const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
+
+const ResponsesGridContainer = styled('div')({
   height: '100%',
   overflow: 'auto',
-  padding: maybeTabletPlus ? '32px 10%' : 16
-}))
+  padding: 16,
+  [twoColumnResponseMediaQuery]: {
+    padding: `32px ${GRID_PADDING_LEFT_RIGHT_PERCENT * 100}%`
+  }
+})
 
 const ResponsesGrid = styled('div')({
   flex: 1,
@@ -76,7 +84,6 @@ const TeamPromptMeeting = (props: Props) => {
     meetingRef
   )
   const {phases} = meeting
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -128,7 +135,7 @@ const TeamPromptMeeting = (props: Props) => {
               <TeamPromptTopBar meetingRef={meeting} />
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
-                <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
+                <ResponsesGridContainer>
                   <ResponsesGrid>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
