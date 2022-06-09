@@ -1,12 +1,14 @@
-// import {ChangeEmailDomainSuccessResolvers} from '../../public/resolverTypes'
+import isValid from '../../../graphql/isValid'
+import {ChangeEmailDomainSuccessResolvers} from '../../private/resolverTypes'
 
 export type ChangeEmailDomainSuccessSource = {
-  id: string
+  userIds: string[]
 }
 
-const ChangeEmailDomainSuccess = {
-  users: async ({id}, _args, {dataLoader}) => {
-    return dataLoader.get('').load(id)
+const ChangeEmailDomainSuccess: ChangeEmailDomainSuccessResolvers = {
+  users: async ({userIds}, _args, {dataLoader}) => {
+    const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
+    return users
   }
 }
 

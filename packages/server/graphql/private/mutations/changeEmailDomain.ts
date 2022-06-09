@@ -68,9 +68,9 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   // console.log('🚀  ~ results', {orgRes, teamMemberRes, samlRes, invoiceRes})
 
   await updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain)
-  await updateUserEmailDomainsToPG(normalizedOldDomain, normalizedNewDomain)
+  const updatedUserIds = await updateUserEmailDomainsToPG(normalizedOldDomain, normalizedNewDomain)
 
-  const data = {}
+  const data = {userIds: updatedUserIds.map(({id}) => id)}
   return data
 }
 
