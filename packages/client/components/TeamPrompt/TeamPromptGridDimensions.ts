@@ -1,16 +1,24 @@
 export const ResponseCardDimensions = {
   MIN_CARD_HEIGHT: 100,
   GAP: 32,
-  PREFERRED_RESPONSE_WIDTH: 360
+  MIN_RESPONSE_WIDTH: 320
 }
 
+export const GRID_PADDING_LEFT_RIGHT_PERCENT = 0.07 // 7% of the screen
+const GRID_SCREEN_WIDTH_PERCENT = 1 - GRID_PADDING_LEFT_RIGHT_PERCENT * 2 // The % of the screen that's available for the grid
+
+// Each value represents the width of the screen for a given number of columns (including gap between and padding on each side)
 export const ResponsesGridBreakpoints = {
   TWO_RESPONSE_COLUMN:
-    ResponseCardDimensions.PREFERRED_RESPONSE_WIDTH * 2 + ResponseCardDimensions.GAP,
+    ((ResponseCardDimensions.MIN_RESPONSE_WIDTH + ResponseCardDimensions.GAP) * 2) /
+    GRID_SCREEN_WIDTH_PERCENT,
   THREE_RESPONSE_COLUMNS:
-    ResponseCardDimensions.PREFERRED_RESPONSE_WIDTH * 3 + ResponseCardDimensions.GAP,
+    ((ResponseCardDimensions.MIN_RESPONSE_WIDTH + ResponseCardDimensions.GAP) * 3) /
+    GRID_SCREEN_WIDTH_PERCENT,
   FOUR_RESPONSE_COLUMNS:
-    ResponseCardDimensions.PREFERRED_RESPONSE_WIDTH * 4 + ResponseCardDimensions.GAP,
+    ((ResponseCardDimensions.MIN_RESPONSE_WIDTH + ResponseCardDimensions.GAP) * 4) /
+    GRID_SCREEN_WIDTH_PERCENT,
   FIVE_RESPONSE_COLUMNS:
-    ResponseCardDimensions.PREFERRED_RESPONSE_WIDTH * 5 + ResponseCardDimensions.GAP
+    ((ResponseCardDimensions.MIN_RESPONSE_WIDTH + ResponseCardDimensions.GAP) * 5) /
+    GRID_SCREEN_WIDTH_PERCENT
 }

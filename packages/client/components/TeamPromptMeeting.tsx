@@ -21,7 +21,10 @@ import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
-import {ResponsesGridBreakpoints} from './TeamPrompt/TeamPromptGridDimensions'
+import {
+  GRID_PADDING_LEFT_RIGHT_PERCENT,
+  ResponsesGridBreakpoints
+} from './TeamPrompt/TeamPromptGridDimensions'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -42,7 +45,7 @@ const ResponsesGridContainer = styled('div')({
   overflow: 'auto',
   padding: 16,
   [twoColumnResponseMediaQuery]: {
-    padding: `32px 7%`
+    padding: `32px ${GRID_PADDING_LEFT_RIGHT_PERCENT * 100}%`
   }
 })
 
