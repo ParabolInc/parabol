@@ -22,13 +22,13 @@ function getSeedTasks(teamId: string) {
   return [
     {
       status: 'active' as TaskStatusEnum,
-      sortOrder: 0,
+      sortOrder: 1,
       content: convertToTaskContent(CONTENT_STRING),
       plaintextContent: CONTENT_STRING
     },
     {
       status: 'active' as TaskStatusEnum,
-      sortOrder: 1,
+      sortOrder: 0,
       content: content,
       plaintextContent: taskContent
     }
