@@ -1,7 +1,7 @@
 import {r} from 'rethinkdb-ts'
 import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
 import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
-import {MutationResolvers} from '../../public/resolverTypes'
+import {MutationResolvers} from '../../private/resolverTypes'
 
 const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   _source,
