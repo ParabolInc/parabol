@@ -1,3 +1,4 @@
+import isValid from '../../../graphql/isValid'
 import {RemoveAuthIdentitySuccessResolvers} from '../../private/resolverTypes'
 
 export type RemoveAuthIdentitySuccessSource = {
@@ -6,7 +7,8 @@ export type RemoveAuthIdentitySuccessSource = {
 
 const RemoveAuthIdentitySuccess: RemoveAuthIdentitySuccessResolvers = {
   users: async ({userIds}, _args, {dataLoader}) => {
-    return dataLoader.get('').loadMany(userIds)
+    const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
+    return users
   }
 }
 

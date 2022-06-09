@@ -34,7 +34,8 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   })
   const result = await Promise.all(updateUsersPromises)
 
-  const data = {}
+  const updatedUserIds = users.map(({id}) => id)
+  const data = {userIds: updatedUserIds}
   return data
 }
 
