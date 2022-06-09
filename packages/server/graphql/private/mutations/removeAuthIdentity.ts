@@ -40,10 +40,8 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
         isEmailVerified: false
       })
       const newIdentities = [...filteredIdentities, newIdentity]
-      user.identities = newIdentities
       return updateUser({identities: newIdentities}, userId)
     } else {
-      user.identities = filteredIdentities
       return updateUser({identities: filteredIdentities}, userId)
     }
   })
