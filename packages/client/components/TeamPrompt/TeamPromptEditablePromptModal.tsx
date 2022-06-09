@@ -59,6 +59,7 @@ const SuggestedPromptWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop})
 }))
 
 const UpdatePromptFooter = styled('div')({
+  paddingTop: 24,
   display: 'flex',
   justifyContent: 'flex-end'
 })
@@ -103,7 +104,8 @@ const SUGGESTED_PROMPTS = [
   'What will you do today?',
   'What have you done since yesterday?',
   'What did you learn today?',
-  'What’s got your attention today?'
+  'What’s got your attention today?',
+  'What are you working on today? Stuck on anything?'
 ]
 
 interface Props {

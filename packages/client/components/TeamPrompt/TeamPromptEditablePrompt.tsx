@@ -14,7 +14,7 @@ import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 
 const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
   textAlign: 'center',
-  margin: '16px',
+  margin: '16px 7%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
