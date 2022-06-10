@@ -8,11 +8,11 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   {oldDomain, newDomain}
 ) => {
   // VALIDATION
+  const normalizedNewDomain = newDomain.toLowerCase().trim()
+  const normalizedOldDomain = oldDomain.toLowerCase().trim()
   if (oldDomain === newDomain) {
     throw new Error('New domain is the same as the old one')
   }
-  const normalizedNewDomain = newDomain.toLowerCase()
-  const normalizedOldDomain = oldDomain.toLowerCase()
 
   // RESOLUTION
   const [updatedUserIds] = await Promise.all([
@@ -26,21 +26,16 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     r
       .table('TeamMember')
       .filter((row) => r.expr(row('email')).split('@').nth(1).eq(normalizedOldDomain))
-      .update((row) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}), {
-        returnChanges: true
-      })
+      .update((row) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}))
       .run(),
     r
       .table('SAML')
       .filter((row) => row('domains').contains(normalizedOldDomain))
-      .update(
-        (row) => ({
-          domains: row('domains').map((domain) =>
-            r.branch(domain.eq(normalizedOldDomain), normalizedNewDomain, domain)
-          )
-        }),
-        {returnChanges: true}
-      )
+      .update((row) => ({
+        domains: row('domains').map((domain) =>
+          r.branch(domain.eq(normalizedOldDomain), normalizedNewDomain, domain)
+        )
+      }))
       .run(),
     r
       .table('Invoice')
@@ -49,18 +44,15 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
           email.split('@').nth(1).eq(normalizedOldDomain)
         )
       )
-      .update(
-        (row) => ({
-          billingLeaderEmails: row('billingLeaderEmails').map((email) =>
-            r.branch(
-              email.split('@').nth(1).eq(normalizedOldDomain),
-              email.split('@').nth(0).add(`@${normalizedNewDomain}`),
-              email
-            )
+      .update((row) => ({
+        billingLeaderEmails: row('billingLeaderEmails').map((email) =>
+          r.branch(
+            email.split('@').nth(1).eq(normalizedOldDomain),
+            email.split('@').nth(0).add(`@${normalizedNewDomain}`),
+            email
           )
-        }),
-        {returnChanges: true}
-      )
+        )
+      }))
       .run()
   ])
 
