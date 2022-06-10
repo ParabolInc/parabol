@@ -1,0 +1,28 @@
+extend type Mutation {
+  """
+  Change a company's domain so that affected users can only log in with the new domain
+  """
+  changeEmailDomain(
+    """
+    The company's old domain that we want to change
+    """
+    oldDomain: String!
+
+    """
+    The new domain that we're changing to
+    """
+    newDomain: String!
+  ): ChangeEmailDomainPayload!
+}
+
+"""
+Return value for changeEmailDomain, which could be an error
+"""
+union ChangeEmailDomainPayload = ErrorPayload | ChangeEmailDomainSuccess
+
+type ChangeEmailDomainSuccess {
+  """
+  The users whose domains were changed
+  """
+  users: [User!]!
+}
