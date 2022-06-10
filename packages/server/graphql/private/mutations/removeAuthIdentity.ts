@@ -21,7 +21,8 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   {ip}
 ) => {
   // VALIDATION
-  const users = await getUsersByDomain(domain)
+  const normalizedDomain = domain.toLowerCase().trim()
+  const users = await getUsersByDomain(normalizedDomain)
   if (!users.length) {
     return {error: {message: 'No user emails match that domain'}}
   }
@@ -30,7 +31,10 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   const updateUsersPromises = users.map(async (user) => {
     const {id: userId, identities} = user
     const filteredIdentities = identities.filter((identity) => identity.type !== identityType)
-    if (!filteredIdentities.length || addLocal) {
+    const localIdentity = identities.find(
+      (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
+    )
+    if (!localIdentity && addLocal) {
       const identityId = `${userId}:${AuthIdentityTypeEnum.LOCAL}`
       const dummyPassword = generateRandomString(Security.SALT_ROUNDS)
       const dummyHashedPassword = await bcrypt.hash(dummyPassword, Security.SALT_ROUNDS)
