@@ -1,19 +1,10 @@
-import base64url from 'base64url'
 import bcrypt from 'bcrypt'
-import crypto from 'crypto'
 import {AuthIdentityTypeEnum, Security} from 'parabol-client/types/constEnums'
-import {r} from 'rethinkdb-ts'
-import util from 'util'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
-import PasswordResetRequest from '../../../database/types/PasswordResetRequest'
-import getMailManager from '../../../email/getMailManager'
-import resetPasswordEmailCreator from '../../../email/resetPasswordEmailCreator'
 import generateRandomString from '../../../generateRandomString'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
-import updateUser from '../../../postgres/queries/updateUser'
+import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
 import {MutationResolvers} from '../../private/resolverTypes'
-
-const randomBytes = util.promisify(crypto.randomBytes)
 
 const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   _source,
@@ -28,7 +19,7 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   }
 
   // RESOLUTION
-  const updateUsersPromises = users.map(async (user) => {
+  const usersWithUpdatedIdentitiesPromises = users.map(async (user) => {
     const {id: userId, identities} = user
     const filteredIdentities = identities.filter((identity) => identity.type !== identityType)
     const localIdentity = identities.find(
@@ -44,39 +35,20 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
         isEmailVerified: false
       })
       const newIdentities = [...filteredIdentities, newIdentity]
-      return updateUser({identities: newIdentities}, userId)
+      return {...user, identities: newIdentities}
     } else {
-      return updateUser({identities: filteredIdentities}, userId)
+      return {...user, identities: filteredIdentities}
     }
   })
-  await Promise.all(updateUsersPromises)
+  const usersWithUpdatedIdentities = await Promise.all(usersWithUpdatedIdentitiesPromises)
 
-  // send forgot password email
-  users.forEach(async ({email}) => {
-    const tokenBuffer = await randomBytes(48)
-    const resetPasswordToken = base64url.encode(tokenBuffer)
-    // invalidate all other tokens for this email
-    await r
-      .table('PasswordResetRequest')
-      .getAll(email, {index: 'email'})
-      .filter({isValid: true})
-      .update({isValid: false})
-      .run()
-    await r
-      .table('PasswordResetRequest')
-      .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
-      .run()
-    const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
-    await getMailManager().sendEmail({
-      to: email,
-      subject,
-      body,
-      html,
-      tags: ['type:resetPassword']
-    })
-  })
+  await Promise.all(
+    usersWithUpdatedIdentities.map(({identities, id: userId, email}) =>
+      processEmailPasswordReset(ip, email, identities, userId)
+    )
+  )
 
-  const updatedUserIds = users.map(({id}) => id)
+  const updatedUserIds = usersWithUpdatedIdentities.map(({id}) => id)
   const data = {userIds: updatedUserIds}
   return data
 }
