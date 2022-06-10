@@ -161,15 +161,18 @@ const PokerDimensionValueControl = (props: Props) => {
           />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
-        <PokerDimensionFinalScorePicker
-          canUpdate={isStale}
-          stageRef={stage}
-          error={errorStr}
-          submitScore={onSubmitScore}
-          clearError={onCompleted}
-          inputRef={inputRef}
-          isFacilitator={isFacilitator}
-        />
+
+        {hasIntegration && (
+          <PokerDimensionFinalScorePicker
+            canUpdate={isStale}
+            stageRef={stage}
+            error={errorStr}
+            submitScore={onSubmitScore}
+            clearError={onCompleted}
+            inputRef={inputRef}
+            isFacilitator={isFacilitator}
+          />
+        )}
 
         {!hasIntegration && isFacilitator && (
           <>
