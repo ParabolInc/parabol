@@ -1,23 +1,20 @@
 query getProjectIssues(
   $fullPath: ID!
   $first: Int!
+  $after: String
   $searchQuery: String
-  $includeSubepics: Boolean
   $sort: IssueSort
   $state: IssuableState
 ) {
   project(fullPath: $fullPath) {
-    issues(
-      first: $first
-      search: $searchQuery
-      includeSubepics: $includeSubepics
-      sort: $sort
-      state: $state
-    ) {
+    fullPath
+    issues(first: $first, after: $after, search: $searchQuery, sort: $sort, state: $state) {
       pageInfo {
         hasNextPage
+        endCursor
       }
       edges {
+        cursor
         node {
           __typename
           id

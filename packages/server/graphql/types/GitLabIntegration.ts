@@ -7,27 +7,30 @@ import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchGitLabProjects from '../queries/helpers/fetchGitLabProjects'
 import GitLabSearchQuery from './GitLabSearchQuery'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
-import PageInfoDateCursor from './PageInfoDateCursor'
 import RepoIntegration from './RepoIntegration'
+import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
 type ProjectIssuesRes = NonNullable<NonNullable<GetProjectIssuesQuery['project']>['issues']>
 type ProjectIssue = NonNullable<NonNullable<NonNullable<ProjectIssuesRes['edges']>[0]>['node']>
-type ProjectIssueConnection = {
+type ProjectIssueEdge = {
   node: ProjectIssue
   cursor: string | Date
 }
 export type ProjectsIssuesArgs = {
   first: number
+  after?: string
   projectsIds: string[] | null
   searchQuery: string
   sort: string
   state: string
   fullPath: string
-  includeSubepics: boolean
+}
+type CursorDetails = {
+  fullPath: string
+  cursor: string
 }
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -87,15 +90,15 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         return fetchGitLabProjects(teamId, userId, context, info)
       }
     },
-    projectIssues: {
+    projectsIssues: {
       type: new GraphQLNonNull(GitLabProjectIssuesConnection),
       args: {
         first: {
           type: GraphQLNonNull(GraphQLInt)
         },
         after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
+          type: GraphQLString,
+          description: 'the stringified cursors for pagination'
         },
         projectsIds: {
           type: GraphQLList(GraphQLString),
@@ -120,7 +123,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
         context,
         info
       ) => {
-        const {projectsIds} = args as ProjectsIssuesArgs
+        const {projectsIds, after = ''} = args as ProjectsIssuesArgs
         const {dataLoader} = context
         const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
@@ -135,7 +138,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           first: 50 // if no project filters have been selected, get the 50 most recently used projects
         })
         if (projectsErr) {
-          sendToSentry(new Error('Unable to get GitLab projects in projectIssues query'), {userId})
+          sendToSentry(new Error('Unable to get GitLab projects in projectsIssues query'), {userId})
           return connectionFromTasks([], 0)
         }
         const projectsFullPaths = new Set<string>()
@@ -144,42 +147,73 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             projectsFullPaths.add(edge?.node?.fullPath)
           }
         })
-        const projectIssues = [] as ProjectIssueConnection[]
-        const errors = [] as Error[]
-        const hasNextPage = true
-
-        const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) =>
-          manager.getProjectIssues({
-            ...args,
-            includeSubepics: true,
-            fullPath
-          })
+        let parsedAfter: CursorDetails[] | null
+        try {
+          parsedAfter = after.length ? JSON.parse(after) : null
+        } catch (e) {
+          sendToSentry(new Error('Error parsing after'), {userId, tags: {after}})
+          return connectionFromTasks([], 0)
+        }
+        const isValidJSON = parsedAfter?.every(
+          (cursorsDetails) =>
+            typeof cursorsDetails.cursor === 'string' && typeof cursorsDetails.fullPath === 'string'
         )
+        if (isValidJSON === false) {
+          sendToSentry(new Error('after arg has an invalid JSON structure'), {
+            userId,
+            tags: {after}
+          })
+          return connectionFromTasks([], 0)
+        }
+
+        const projectsIssuesPromises = Array.from(projectsFullPaths).map((fullPath) => {
+          const after = parsedAfter?.find((cursor) => cursor.fullPath === fullPath)?.cursor ?? ''
+          return manager.getProjectIssues({
+            ...args,
+            fullPath,
+            after
+          })
+        })
+        const projectsIssues = [] as ProjectIssueEdge[]
+        const errors = [] as Error[]
+        let hasNextPage = false
+        const endCursor = [] as CursorDetails[]
         const projectsIssuesResponses = await Promise.all(projectsIssuesPromises)
         for (const res of projectsIssuesResponses) {
           const [projectIssuesData, err] = res
           if (err) {
+            errors.push(err)
             sendToSentry(err, {userId})
             return
           }
-          const edges = projectIssuesData.project?.issues?.edges
+          const {project} = projectIssuesData
+          if (!project?.issues) continue
+          const {fullPath, issues} = project
+          const {edges, pageInfo} = issues
+          if (pageInfo.hasNextPage) {
+            hasNextPage = true
+            const currentCursorDetails = endCursor.find(
+              (cursorDetails) => cursorDetails.fullPath === fullPath
+            )
+            const newCursor = pageInfo.endCursor ?? ''
+            if (currentCursorDetails) currentCursorDetails.cursor = newCursor
+            else endCursor.push({fullPath, cursor: newCursor})
+          }
           edges?.forEach((edge) => {
             if (!edge?.node) return
-            const {node} = edge
-            projectIssues.push({
-              cursor: node.updatedAt || new Date(),
-              node
-            })
+            const {node, cursor} = edge
+            projectsIssues.push({cursor, node})
           })
         }
 
-        const firstEdge = projectIssues[0]
+        const firstEdge = projectsIssues[0]
+        const stringifiedEndCursor = JSON.stringify(endCursor)
         return {
-          error: errors,
-          edges: projectIssues,
+          error: errors[0],
+          edges: projectsIssues,
           pageInfo: {
             startCursor: firstEdge && firstEdge.cursor,
-            endCursor: firstEdge ? projectIssues.at(-1)!.cursor : new Date(),
+            endCursor: stringifiedEndCursor,
             hasNextPage
           }
         }
@@ -194,13 +228,13 @@ const {connectionType, edgeType} = connectionDefinitions({
   nodeType: TaskIntegration,
   edgeFields: () => ({
     cursor: {
-      type: GraphQLISO8601Type
+      type: GraphQLString
     }
   }),
   connectionFields: () => ({
-    pageInfo: {
-      type: PageInfoDateCursor,
-      description: 'Page info with cursors coerced to ISO8601 dates'
+    error: {
+      type: StandardMutationError,
+      description: 'An error with the connection, if any'
     }
   })
 })
