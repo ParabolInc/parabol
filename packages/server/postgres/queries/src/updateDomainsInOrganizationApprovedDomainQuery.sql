@@ -3,4 +3,4 @@
 */
 UPDATE "OrganizationApprovedDomain"
 SET domain = replace(domain, :oldDomain, :newDomain)
-WHERE domain = :oldDomain;
+WHERE domain LIKE :oldDomain;

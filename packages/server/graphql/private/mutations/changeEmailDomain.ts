@@ -25,7 +25,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       .run(),
     r
       .table('TeamMember')
-      .filter((row) => r.expr(row('email')).split('@').nth(1).eq(normalizedOldDomain))
+      .filter((row) => row('email').match(`@${normalizedOldDomain}$`))
       .update((row) => ({email: row('email').split('@').nth(0).add(`@${normalizedNewDomain}`)}))
       .run(),
     r
