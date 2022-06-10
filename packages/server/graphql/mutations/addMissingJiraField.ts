@@ -91,20 +91,21 @@ const addMissingJiraField = {
       `Adding missing Jira field, fieldId: ${fieldId}, cloudId: ${cloudId}, projectKey: ${projectKey}`
     )
 
-    const batchSize = 1000
+    // Jira does not allow fetching more than 100 screens
+    const batchSize = 100
     const screensResponse = await manager.getScreens(cloudId, batchSize)
     const screens: JiraScreen[] = []
     if (screensResponse instanceof Error || screensResponse instanceof RateLimitError) {
       return standardError(screensResponse)
     }
 
-    console.log(`Total screens count: ${screensResponse.total}, batch size: ${batchSize}`)
+    console.log(`Total screens count: ${screensResponse.total}, batch size: ${batchSize}, isLast: ${screensResponse.isLast}`)
 
     screens.push(...screensResponse.values)
 
     if (!screensResponse.isLast) {
       const remainingScreensCount = screensResponse.total - batchSize
-      const iterationsCount = Math.ceil(remainingScreensCount / 30)
+      const iterationsCount = Math.ceil(remainingScreensCount / batchSize)
       const promises: Promise<JiraScreensResponse | Error | RateLimitError>[] = []
       for (let i = 1; i <= iterationsCount; i++) {
         console.log(`Fetching additional batch: ${i * batchSize} - ${batchSize}`)
@@ -123,8 +124,9 @@ const addMissingJiraField = {
 
     // we're trying to guess what's the probability that given screen is assigned to an issue project
     const evaluateProbability = (screen: JiraScreen) => {
-      if (screen.name.startsWith(projectKey) && screen.name.includes('Default')) return 1
-      if (screen.name.includes(projectKey)) return 0.9
+      const nameProjectPrefix = `${projectKey}:`
+      if (screen.name.startsWith(nameProjectPrefix) && screen.name.includes('Default')) return 1
+      if (screen.name.startsWith(nameProjectPrefix)) return 0.9
       if (screen.name.includes('Bug')) return 0
 
       return 0.5
