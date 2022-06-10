@@ -15,6 +15,7 @@ import TopBarAvatar from './TopBarAvatar'
 import TopBarHelp from './TopBarHelp'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
+import TopBarStartMeetingButton from './TopBarStartMeetingButton'
 
 const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 
@@ -107,6 +108,7 @@ const DashTopBar = (props: Props) => {
       <TopBarMain>
         <TopBarSearch viewer={viewer} />
         <TopBarIcons>
+          <TopBarStartMeetingButton />
           <TopBarHelp />
           <TopBarNotifications viewer={viewer || null} />
           <TopBarAvatar viewer={viewer || null} />
