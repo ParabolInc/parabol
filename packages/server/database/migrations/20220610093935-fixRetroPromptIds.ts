@@ -16,35 +16,38 @@ const createdAt = new Date('2022-01-28')
 export const up = async function (r) {
   await r.table('ReflectPrompt').getAll(r.args(newIds)).update({createdAt}).run()
 
-  await Promise.all(
-    promptIdMapping.map(async ({oldId, newId}) => {
-      await r({
-        retroReflection: r
-          .table('RetroReflection')
-          .filter({promptId: oldId})
-          .update({promptId: newId}),
-        retroReflectionGroup: r
-          .table('RetroReflectionGroup')
-          .filter({promptId: oldId})
-          .update({promptId: newId})
-      }).run()
-    })
-  )
+  await r.table('RetroReflection').indexCreate('promptId').run()
+  await r.table('RetroReflectionGroup').indexCreate('promptId').run()
+  await r.table('RetroReflection').indexWait().run()
+  await r.table('RetroReflectionGroup').indexWait().run()
+
+  for (const {oldId, newId} of promptIdMapping) {
+    await r({
+      retroReflection: r
+        .table('RetroReflection')
+        .getAll(oldId, {index: 'promptId'})
+        .update({promptId: newId}),
+      retroReflectionGroup: r
+        .table('RetroReflectionGroup')
+        .getAll(oldId, {index: 'promptId'})
+        .update({promptId: newId})
+    }).run()
+  }
 }
 
 export const down = async function (r) {
-  await Promise.all(
-    promptIdMapping.map(async ({oldId, newId}) => {
-      await r({
-        retroReflection: r
-          .table('RetroReflection')
-          .filter({promptId: newId})
-          .update({promptId: oldId}),
-        retroReflectionGroup: r
-          .table('RetroReflectionGroup')
-          .filter({promptId: newId})
-          .update({promptId: oldId})
-      }).run()
-    })
-  )
+  for (const {oldId, newId} of promptIdMapping) {
+    await r({
+      retroReflection: r
+        .table('RetroReflection')
+        .getAll(newId, {index: 'promptId'})
+        .update({promptId: oldId}),
+      retroReflectionGroup: r
+        .table('RetroReflectionGroup')
+        .getAll(newId, {index: 'promptId'})
+        .update({promptId: oldId})
+    }).run()
+  }
+  await r.table('RetroReflection').indexDrop('promptId').run()
+  await r.table('RetroReflectionGroup').indexDrop('promptId').run()
 }
