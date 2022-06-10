@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.62.1 2022-June-10
+
+### Fixed
+
+- Fixed some retrospective prompts for existing meetings
+
 ## 6.62.0 2022-June-9
 
 ### Added
