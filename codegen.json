@@ -16,6 +16,7 @@
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
+          "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
           "User": "../../postgres/types/IUser#default as IUser"
