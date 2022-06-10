@@ -16,37 +16,35 @@ const createdAt = new Date('2022-01-28')
 export const up = async function (r) {
   await r.table('ReflectPrompt').getAll(r.args(newIds)).update({createdAt}).run()
 
-  const renames = Object.fromEntries(
-    promptIdMapping.flatMap(({oldId, newId}) => {
-      return [
-        [
-          `${oldId}-RetroReflection`,
-          r.table('RetroReflection').filter({promptId: oldId}).update({promptId: newId})
-        ],
-        [
-          `${oldId}-RetroReflectionGroup`,
-          r.table('RetroReflectionGroup').filter({promptId: oldId}).update({promptId: newId})
-        ]
-      ]
+  await Promise.all(
+    promptIdMapping.map(async ({oldId, newId}) => {
+      await r({
+        retroReflection: r
+          .table('RetroReflection')
+          .filter({promptId: oldId})
+          .update({promptId: newId}),
+        retroReflectionGroup: r
+          .table('RetroReflectionGroup')
+          .filter({promptId: oldId})
+          .update({promptId: newId})
+      }).run()
     })
   )
-  await r(renames).run()
 }
 
 export const down = async function (r) {
-  const renames = Object.fromEntries(
-    promptIdMapping.flatMap(({oldId, newId}) => {
-      return [
-        [
-          `${oldId}-RetroReflection`,
-          r.table('RetroReflection').filter({promptId: newId}).update({promptId: oldId})
-        ],
-        [
-          `${oldId}-RetroReflectionGroup`,
-          r.table('RetroReflectionGroup').filter({promptId: newId}).update({promptId: oldId})
-        ]
-      ]
+  await Promise.all(
+    promptIdMapping.map(async ({oldId, newId}) => {
+      await r({
+        retroReflection: r
+          .table('RetroReflection')
+          .filter({promptId: newId})
+          .update({promptId: oldId}),
+        retroReflectionGroup: r
+          .table('RetroReflectionGroup')
+          .filter({promptId: newId})
+          .update({promptId: oldId})
+      }).run()
     })
   )
-  await r(renames).run()
 }
