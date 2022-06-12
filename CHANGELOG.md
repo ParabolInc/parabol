@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.62.2 2022-June-12
+
+### Added
+
+- feat: Add start meeting button to top bar (#6707)
+- feat: change email domain (#6708)
+- feat: remove auth identity (#6713)
+
+### Fixed
+
+- fix(jira): Fix add missing jira field new algorithm (#6722)
+
 ## 6.62.1 2022-June-10
 
 ### Fixed
@@ -20,7 +32,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat(domainStats): Support querying domain stat fields (#6664)
 - feat(integration-tests): add more testing to the 2-minute demo (#6183)
 - feat(restrictDomains): Add restriction to acceptTeamInvitation (#6487)
-
 
 ### Fixed
 
