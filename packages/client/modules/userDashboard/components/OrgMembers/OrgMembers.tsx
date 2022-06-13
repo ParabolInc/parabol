@@ -1,9 +1,12 @@
+import graphql from 'babel-plugin-relay/macro'
+import type {Parser as JSON2CSVParser} from 'json2csv'
+import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import React from 'react'
 import {createPaginationContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import Panel from '../../../../components/Panel/Panel'
 import {OrgMembers_viewer} from '../../../../__generated__/OrgMembers_viewer.graphql'
+import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 interface Props {
   viewer: OrgMembers_viewer
@@ -19,8 +22,38 @@ const OrgMembers = (props: Props) => {
     (count, {node}) => (node.role === 'BILLING_LEADER' ? count + 1 : count),
     0
   )
+
+  const exportToCSV = async () => {
+    const rows = [
+      {
+        test: 'testa'
+      }
+    ]
+    // const {name: teamName} = team
+    const teamName = 'hurrah'
+    const label = 'whatALabel'
+    const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
+    const csv = parser.parse(rows)
+    const date = new Date()
+    const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
+    // note: using encodeUri does NOT work on the # symbol & breaks
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
+    const encodedUri = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', `Parabol${label}_${teamName}_${numDate}.csv`)
+    document.body.appendChild(link) // Required for FF
+    link.click()
+    console.log('🚀  ~ link', link)
+    document.body.removeChild(link)
+  }
+
   return (
-    <Panel label='Organization Members'>
+    <Panel
+      label='Organization Members'
+      controls={<ExportToCSVButton emailCSVUrl='/org/csv' handleClick={exportToCSV} />}
+    >
       {organizationUsers.edges.map(({node: organizationUser}) => {
         return (
           <OrgMemberRow
