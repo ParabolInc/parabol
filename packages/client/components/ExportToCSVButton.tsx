@@ -5,8 +5,7 @@ import {ExternalLinks} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
-  emailCSVUrl: string
-  handleClick: any
+  handleClick: () => void
 }
 
 const label = 'Export to CSV'
@@ -29,7 +28,7 @@ const Img = styled('img')({
 })
 
 const ExportToCSVButton = (props: Props) => {
-  const {emailCSVUrl, handleClick} = props
+  const {handleClick} = props
   return (
     <Button onClick={handleClick}>
       <Img crossOrigin='' alt={label} src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`} />

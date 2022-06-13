@@ -17,7 +17,7 @@ const OrgMembers = (props: Props) => {
     viewer: {organization}
   } = props
   if (!organization) return null
-  const {organizationUsers, name: orgName} = organization
+  const {organizationUsers, name: orgName, isBillingLeader} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
     (count, {node}) => (node.role === 'BILLING_LEADER' ? count + 1 : count),
     0
@@ -53,7 +53,7 @@ const OrgMembers = (props: Props) => {
   return (
     <Panel
       label='Organization Members'
-      controls={<ExportToCSVButton emailCSVUrl='/org/csv' handleClick={exportToCSV} />}
+      controls={isBillingLeader && <ExportToCSVButton handleClick={exportToCSV} />}
     >
       {organizationUsers.edges.map(({node: organizationUser}) => {
         return (
@@ -77,6 +77,7 @@ export default createPaginationContainer<Props>(
         organization(orgId: $orgId) {
           ...OrgMemberRow_organization
           name
+          isBillingLeader
           organizationUsers(first: $first, after: $after)
             @connection(key: "OrgMembers_organizationUsers") {
             edges {
