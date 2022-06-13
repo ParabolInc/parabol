@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {usePaginationFragment} from 'react-relay'
-import {OrgBillingInvoices_viewer$key} from '~/__generated__/OrgBillingInvoices_viewer.graphql'
+import {OrgBillingInvoices_query$key} from '~/__generated__/OrgBillingInvoices_query.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {Layout} from '../../../../types/constEnums'
@@ -18,17 +18,17 @@ const LoadMoreButton = styled(SecondaryButton)({
 })
 
 interface Props {
-  viewerRef: OrgBillingInvoices_viewer$key
+  queryRef: OrgBillingInvoices_query$key
 }
 
 const OrgBillingInvoices = (props: Props) => {
-  const {viewerRef} = props
+  const {queryRef} = props
   const paginationRes = usePaginationFragment<
     OrgBillingInvoicesPaginationQuery,
-    OrgBillingInvoices_viewer$key
+    OrgBillingInvoices_query$key
   >(
     graphql`
-      fragment OrgBillingInvoices_viewer on Query
+      fragment OrgBillingInvoices_query on Query
       @refetchable(queryName: "OrgBillingInvoicesPaginationQuery") {
         viewer {
           invoices(first: $first, orgId: $orgId, after: $after)
@@ -48,7 +48,7 @@ const OrgBillingInvoices = (props: Props) => {
         }
       }
     `,
-    viewerRef
+    queryRef
   )
   const {data, hasNext, isLoadingNext, loadNext} = paginationRes
   const {viewer} = data

@@ -47,7 +47,7 @@ const MyDashboardTimeline = (props: Props) => {
           ...TimelineRightDrawer_viewer
           ...useNewFeatureSnackbar_viewer
         }
-        ...TimelineFeedList_viewer
+        ...TimelineFeedList_query
       }
     `,
     queryRef,
@@ -65,7 +65,7 @@ const MyDashboardTimeline = (props: Props) => {
           <ErrorBoundary>
             <Suspense fallback={<TimelineLoadingEvents />}>
               <TimelineSuggestedAction viewer={viewer} />
-              <TimelineFeedList viewerRef={data} />
+              <TimelineFeedList queryRef={data} />
             </Suspense>
           </ErrorBoundary>
         </TimelineFeedItems>

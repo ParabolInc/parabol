@@ -4,7 +4,7 @@ import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} 
 import {OrgBillingQuery} from '../../../../__generated__/OrgBillingQuery.graphql'
 import {OrgBillingRefetchQuery} from '../../../../__generated__/OrgBillingRefetchQuery.graphql'
 import {OrgBilling_organization$key} from '../../../../__generated__/OrgBilling_organization.graphql'
-import {OrgBilling_viewer$key} from '../../../../__generated__/OrgBilling_viewer.graphql'
+import {OrgBilling_query$key} from '../../../../__generated__/OrgBilling_query.graphql'
 import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
 import OrgBillingInvoices from './OrgBillingInvoices'
@@ -20,7 +20,7 @@ const OrgBilling = (props: Props) => {
   const viewRef = usePreloadedQuery<OrgBillingQuery>(
     graphql`
       query OrgBillingQuery($orgId: ID!, $first: Int!, $after: DateTime) {
-        ...OrgBilling_viewer
+        ...OrgBilling_query
       }
     `,
     queryRef,
@@ -28,10 +28,10 @@ const OrgBilling = (props: Props) => {
       UNSTABLE_renderPolicy: 'full'
     }
   )
-  const [viewer, refetch] = useRefetchableFragment<OrgBillingRefetchQuery, OrgBilling_viewer$key>(
+  const [queryData, refetch] = useRefetchableFragment<OrgBillingRefetchQuery, OrgBilling_query$key>(
     graphql`
-      fragment OrgBilling_viewer on Query @refetchable(queryName: "OrgBillingRefetchQuery") {
-        ...OrgBillingInvoices_viewer
+      fragment OrgBilling_query on Query @refetchable(queryName: "OrgBillingRefetchQuery") {
+        ...OrgBillingInvoices_query
       }
     `,
     viewRef
@@ -51,7 +51,7 @@ const OrgBilling = (props: Props) => {
     <div>
       <OrgBillingUpgrade organization={organization} invoiceListRefetch={refetch} />
       <OrgBillingCreditCardInfo organization={organization} />
-      <OrgBillingInvoices viewerRef={viewer} />
+      <OrgBillingInvoices queryRef={queryData} />
       <OrgBillingDangerZone organization={organization} />
     </div>
   )

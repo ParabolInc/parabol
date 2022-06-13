@@ -125,7 +125,7 @@ const Dashboard = (props: Props) => {
       {isDesktop ? (
         <DashTopBar queryRef={data} toggle={toggle} />
       ) : (
-        <MobileDashTopBar viewerRef={data} toggle={toggle} />
+        <MobileDashTopBar queryRef={data} toggle={toggle} />
       )}
       <DashPanel>
         {isDesktop ? (

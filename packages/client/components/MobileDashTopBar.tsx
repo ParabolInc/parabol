@@ -14,7 +14,7 @@ import TopBarNotifications from './TopBarNotifications'
 
 interface Props {
   toggle: () => void
-  viewerRef: MobileDashTopBar_query$key
+  queryRef: MobileDashTopBar_query$key
 }
 
 const Wrapper = styled('header')({
@@ -56,7 +56,7 @@ const Title = styled('div')({
 })
 
 const MobileDashTopBar = (props: Props) => {
-  const {toggle, viewerRef} = props
+  const {toggle, queryRef} = props
   const data = useFragment(
     graphql`
       fragment MobileDashTopBar_query on Query {
@@ -66,7 +66,7 @@ const MobileDashTopBar = (props: Props) => {
         }
       }
     `,
-    viewerRef
+    queryRef
   )
   const {viewer} = data
   const pageName = viewer?.pageName ?? 'Parabol'

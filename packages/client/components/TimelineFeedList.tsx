@@ -4,7 +4,7 @@ import React from 'react'
 import {usePaginationFragment} from 'react-relay'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
-import {TimelineFeedList_viewer$key} from '../__generated__/TimelineFeedList_viewer.graphql'
+import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
 
 const ResultScroller = styled('div')({
@@ -12,19 +12,19 @@ const ResultScroller = styled('div')({
 })
 
 interface Props {
-  viewerRef: TimelineFeedList_viewer$key
+  queryRef: TimelineFeedList_query$key
 }
 
 const TimelineFeedList = (props: Props) => {
-  const {viewerRef} = props
+  const {queryRef} = props
   const paginationRes = usePaginationFragment<
     TimelineFeedListPaginationQuery,
-    TimelineFeedList_viewer$key
+    TimelineFeedList_query$key
   >(
     // TODO: can't `on User` directly because not implements Node (i.e. a type that has an id).
     // https://relay.dev/docs/api-reference/use-refetchable-fragment/#arguments
     graphql`
-      fragment TimelineFeedList_viewer on Query
+      fragment TimelineFeedList_query on Query
       @refetchable(queryName: "TimelineFeedListPaginationQuery") {
         viewer {
           timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
@@ -44,7 +44,7 @@ const TimelineFeedList = (props: Props) => {
         }
       }
     `,
-    viewerRef
+    queryRef
   )
 
   const {data} = paginationRes
