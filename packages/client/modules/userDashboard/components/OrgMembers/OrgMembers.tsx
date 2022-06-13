@@ -4,7 +4,7 @@ import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-re
 import Panel from '../../../../components/Panel/Panel'
 import {OrgMembersPaginationQuery} from '../../../../__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '../../../../__generated__/OrgMembersQuery.graphql'
-import {OrgMembers_viewer$key} from '../../../../__generated__/OrgMembers_viewer.graphql'
+import {OrgMembers_query$key} from '../../../../__generated__/OrgMembers_query.graphql'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 interface Props {
@@ -12,10 +12,10 @@ interface Props {
 }
 
 const OrgMembers = ({queryRef}: Props) => {
-  const viewerRef = usePreloadedQuery<OrgMembersQuery>(
+  const query = usePreloadedQuery<OrgMembersQuery>(
     graphql`
       query OrgMembersQuery($orgId: ID!, $first: Int!, $after: String) {
-        ...OrgMembers_viewer
+        ...OrgMembers_query
       }
     `,
     queryRef,
@@ -24,9 +24,9 @@ const OrgMembers = ({queryRef}: Props) => {
     }
   )
 
-  const {data} = usePaginationFragment<OrgMembersPaginationQuery, OrgMembers_viewer$key>(
+  const {data} = usePaginationFragment<OrgMembersPaginationQuery, OrgMembers_query$key>(
     graphql`
-      fragment OrgMembers_viewer on Query @refetchable(queryName: "OrgMembersPaginationQuery") {
+      fragment OrgMembers_query on Query @refetchable(queryName: "OrgMembersPaginationQuery") {
         viewer {
           organization(orgId: $orgId) {
             ...OrgMemberRow_organization
@@ -49,7 +49,7 @@ const OrgMembers = ({queryRef}: Props) => {
         }
       }
     `,
-    viewerRef
+    query
   )
   const {viewer} = data
   const {organization} = viewer

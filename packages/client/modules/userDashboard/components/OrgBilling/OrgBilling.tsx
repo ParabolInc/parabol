@@ -17,7 +17,7 @@ interface Props {
 
 const OrgBilling = (props: Props) => {
   const {queryRef, organizationRef} = props
-  const viewRef = usePreloadedQuery<OrgBillingQuery>(
+  const data = usePreloadedQuery<OrgBillingQuery>(
     graphql`
       query OrgBillingQuery($orgId: ID!, $first: Int!, $after: DateTime) {
         ...OrgBilling_query
@@ -34,7 +34,7 @@ const OrgBilling = (props: Props) => {
         ...OrgBillingInvoices_query
       }
     `,
-    viewRef
+    data
   )
   const organization = useFragment(
     graphql`
