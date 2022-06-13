@@ -19,7 +19,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     getUsersbyDomain(normalizedOldDomain),
     getUsersbyDomain(normalizedNewDomain)
   ])
-  const oldDomainUserIds = oldDomainUsers
+  const oldDomainFilteredUserIds = oldDomainUsers
     .filter((user) => {
       const emailName = user.email.split('@')[0]
       const nameExistsInNewDomain = newDomainUsers.find(
@@ -31,7 +31,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
 
   // RESOLUTION
   const [updatedUserIds] = await Promise.all([
-    updateUserEmailDomainsToPG(normalizedNewDomain, oldDomainUserIds),
+    updateUserEmailDomainsToPG(normalizedNewDomain, oldDomainFilteredUserIds),
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
     r
       .table('Organization')
