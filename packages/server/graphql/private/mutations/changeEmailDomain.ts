@@ -1,4 +1,5 @@
 import {r} from 'rethinkdb-ts'
+import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
 import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
 import {MutationResolvers} from '../../private/resolverTypes'
@@ -14,9 +15,23 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     throw new Error('New domain is the same as the old one')
   }
 
+  const [oldDomainUsers, newDomainUsers] = await Promise.all([
+    getUsersbyDomain(normalizedOldDomain),
+    getUsersbyDomain(normalizedNewDomain)
+  ])
+  const oldDomainUserIds = oldDomainUsers
+    .filter((user) => {
+      const emailName = user.email.split('@')[0]
+      const nameExistsInNewDomain = newDomainUsers.find(
+        (user) => user.email.split('@')[0] === emailName
+      )
+      return !nameExistsInNewDomain
+    })
+    .map(({id}) => id)
+
   // RESOLUTION
   const [updatedUserIds] = await Promise.all([
-    updateUserEmailDomainsToPG(normalizedOldDomain, normalizedNewDomain),
+    updateUserEmailDomainsToPG(normalizedNewDomain, oldDomainUserIds),
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
     r
       .table('Organization')
