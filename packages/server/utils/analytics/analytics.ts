@@ -9,6 +9,15 @@ import segment from '../segmentIo'
 import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
+export type UpgradeEventProperties = {
+  orgId: string
+  domain?: string
+  orgName: string
+  oldTier: string
+  newTier: string
+  billingLeaderEmail: string
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -17,6 +26,8 @@ export type AnalyticsEvent =
   // team
   | 'Integration Added'
   | 'Integration Removed'
+  // org
+  | 'Organization Upgraded'
   // task
   | 'Task Created'
   | 'Task Published'
@@ -171,6 +182,10 @@ class Analytics {
       isReply,
       service
     })
+  }
+
+  organizationUpgraded = (userId: string, upgradeEventProperties: UpgradeEventProperties) => {
+    this.track(userId, 'Organization Upgraded', upgradeEventProperties)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>
