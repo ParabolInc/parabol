@@ -16,6 +16,7 @@ const OrgMembers = (props: Props) => {
   const {
     viewer: {organization}
   } = props
+  console.log('🚀  ~ organization', organization)
   if (!organization) return null
   const {organizationUsers} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
@@ -24,12 +25,17 @@ const OrgMembers = (props: Props) => {
   )
 
   const exportToCSV = async () => {
-    const rows = [
-      {
-        test: 'testa'
+    const rows = organizationUsers.edges.map((orgUser, idx) => {
+      const {node} = orgUser
+      return {
+        Row: idx,
+        Name: node.user.preferredName,
+        Email: node.user.email,
+        Inactive: node.inactive,
+        'Billing Lead': node.role === 'BILLING_LEADER'
       }
-    ]
-    // const {name: teamName} = team
+    })
+    console.log('🚀  ~ rows', rows)
     const teamName = 'hurrah'
     const label = 'whatALabel'
     const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
@@ -81,7 +87,12 @@ export default createPaginationContainer<Props>(
               cursor
               node {
                 id
+                inactive
                 role
+                user {
+                  preferredName
+                  email
+                }
                 ...OrgMemberRow_organizationUser
               }
             }
