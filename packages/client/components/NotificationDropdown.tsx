@@ -6,9 +6,9 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useTimeout from '~/hooks/useTimeout'
 import SetNotificationStatusMutation from '~/mutations/SetNotificationStatusMutation'
 import {
-  NotificationDropdown_viewer,
-  NotificationDropdown_viewer$key
-} from '~/__generated__/NotificationDropdown_viewer.graphql'
+  NotificationDropdown_query,
+  NotificationDropdown_query$key
+} from '~/__generated__/NotificationDropdown_query.graphql'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuProps} from '../hooks/useMenu'
 import useSegmentTrack from '../hooks/useSegmentTrack'
@@ -20,7 +20,7 @@ import NotificationPicker from './NotificationPicker'
 interface Props {
   menuProps: MenuProps
   parentRef: RefObject<HTMLDivElement>
-  viewerRef: NotificationDropdown_viewer$key
+  queryRef: NotificationDropdown_query$key
 }
 
 const NoNotifications = styled('div')({
@@ -34,16 +34,16 @@ const NoNotifications = styled('div')({
   width: '100%'
 })
 
-const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDropdown_viewer
+const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDropdown_query
 
 const NotificationDropdown = (props: Props) => {
-  const {viewerRef, menuProps, parentRef} = props
+  const {queryRef, menuProps, parentRef} = props
   const paginationRes = usePaginationFragment<
     NotificationDropdownPaginationQuery,
-    NotificationDropdown_viewer$key
+    NotificationDropdown_query$key
   >(
     graphql`
-      fragment NotificationDropdown_viewer on Query
+      fragment NotificationDropdown_query on Query
       @refetchable(queryName: "NotificationDropdownPaginationQuery") {
         viewer {
           notifications(first: $first, after: $after)
@@ -60,7 +60,7 @@ const NotificationDropdown = (props: Props) => {
         }
       }
     `,
-    viewerRef
+    queryRef
   )
   const {data} = paginationRes
   const {viewer} = data

@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-import {TopBarNotifications_viewer$key} from '~/__generated__/TopBarNotifications_viewer.graphql'
+import {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
 import TopBarIcon from './TopBarIcon'
 
 const NotificationDropdown = lazyPreload(
@@ -16,14 +16,14 @@ const NotificationDropdown = lazyPreload(
 )
 
 interface Props {
-  viewerRef: TopBarNotifications_viewer$key
+  queryRef: TopBarNotifications_query$key
 }
 
-const TopBarNotifications = ({viewerRef}: Props) => {
+const TopBarNotifications = ({queryRef}: Props) => {
   const data = useFragment(
     graphql`
-      fragment TopBarNotifications_viewer on Query {
-        ...NotificationDropdown_viewer
+      fragment TopBarNotifications_query on Query {
+        ...NotificationDropdown_query
         viewer {
           notifications(first: $first, after: $after)
             @connection(key: "NotificationDropdown_notifications") {
@@ -37,7 +37,7 @@ const TopBarNotifications = ({viewerRef}: Props) => {
         }
       }
     `,
-    viewerRef
+    queryRef
   )
   const {viewer} = data
   const notifications = viewer?.notifications || {edges: []}
@@ -59,7 +59,7 @@ const TopBarNotifications = ({viewerRef}: Props) => {
         ariaLabel={'Notifications'}
       />
       {menuPortal(
-        <NotificationDropdown parentRef={menuContentRef} menuProps={menuProps} viewerRef={data} />
+        <NotificationDropdown parentRef={menuContentRef} menuProps={menuProps} queryRef={data} />
       )}
     </>
   )

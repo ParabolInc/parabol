@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {AppBar} from '~/types/constEnums'
-import {MobileDashTopBar_viewer$key} from '../__generated__/MobileDashTopBar_viewer.graphql'
+import {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
@@ -14,7 +14,7 @@ import TopBarNotifications from './TopBarNotifications'
 
 interface Props {
   toggle: () => void
-  viewerRef: MobileDashTopBar_viewer$key
+  viewerRef: MobileDashTopBar_query$key
 }
 
 const Wrapper = styled('header')({
@@ -59,8 +59,8 @@ const MobileDashTopBar = (props: Props) => {
   const {toggle, viewerRef} = props
   const data = useFragment(
     graphql`
-      fragment MobileDashTopBar_viewer on Query {
-        ...TopBarNotifications_viewer
+      fragment MobileDashTopBar_query on Query {
+        ...TopBarNotifications_query
         viewer {
           pageName
         }
@@ -82,7 +82,7 @@ const MobileDashTopBar = (props: Props) => {
         {/* Disable search in mobile for now */}
         {false && <TopBarIcon icon={'search'} ariaLabel={'Search'} />}
         <TopBarHelp />
-        <TopBarNotifications viewerRef={data || null} />
+        <TopBarNotifications queryRef={data || null} />
       </TopBarIcons>
     </Wrapper>
   )

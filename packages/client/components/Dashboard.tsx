@@ -92,8 +92,8 @@ const Dashboard = (props: Props) => {
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
       query DashboardQuery($first: Int!, $after: DateTime) {
-        ...DashTopBar_viewer
-        ...MobileDashTopBar_viewer
+        ...DashTopBar_query
+        ...MobileDashTopBar_query
         viewer {
           ...MeetingsDash_viewer
           ...MobileDashSidebar_viewer
@@ -123,7 +123,7 @@ const Dashboard = (props: Props) => {
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
-        <DashTopBar viewerRef={data} toggle={toggle} />
+        <DashTopBar queryRef={data} toggle={toggle} />
       ) : (
         <MobileDashTopBar viewerRef={data} toggle={toggle} />
       )}
