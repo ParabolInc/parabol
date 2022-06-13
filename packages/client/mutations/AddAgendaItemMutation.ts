@@ -44,10 +44,9 @@ const mutation = graphql`
   }
 `
 
-export const addAgendaItemUpdater: SharedUpdater<TAddAgendaItemMutation['response']['addAgendaItem']> = (
-  payload,
-  {store}
-) => {
+export const addAgendaItemUpdater: SharedUpdater<
+  TAddAgendaItemMutation['response']['addAgendaItem']
+> = (payload, {store}) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
   if (!agendaItem) return
   handleAddAgendaItems(agendaItem, store)

@@ -42,4 +42,5 @@ segmentIo.track = async (options: any) => {
     properties
   })
 }
+/** @deprecated use {@link analytics} instead of directly sending events to segment */
 export default segmentIo as SegmentIo

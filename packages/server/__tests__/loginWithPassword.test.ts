@@ -8,7 +8,7 @@ test('Login after signup', async () => {
       mutation LoginWithPasswordMutation(
         $email: ID!
         $password: String!
-        $invitationToken: ID
+        $invitationToken: ID! = ""
       ) {
         loginWithPassword(email: $email, password: $password) {
           error {
@@ -44,7 +44,7 @@ test('Login after signup', async () => {
     variables: {
       email,
       password,
-      invitationToken: null
+      invitationToken: ''
     }
   })
   expect(login).toMatchObject({

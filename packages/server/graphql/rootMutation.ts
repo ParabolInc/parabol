@@ -1,10 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
-import acceptTeamInvitation from './mutations/acceptTeamInvitation'
 import addAgendaItem from './mutations/addAgendaItem'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
-import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addMissingJiraField from './mutations/addMissingJiraField'
@@ -115,6 +113,7 @@ import startSprintPoker from './mutations/startSprintPoker'
 import startTeamPrompt from './mutations/startTeamPrompt'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
+import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
@@ -145,7 +144,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
   fields: () =>
     ({
-      acceptTeamInvitation,
       addAgendaItem,
       addAtlassianAuth,
       addComment,
@@ -157,7 +155,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addReflectTemplate,
       addReflectTemplatePrompt,
       addSlackAuth,
-      addFeatureFlag,
       addGitHubAuth,
       addOrg,
       addTeam,
@@ -284,6 +281,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
-      endTeamPrompt
+      endTeamPrompt,
+      updateAzureDevOpsDimensionField
     } as any)
 })

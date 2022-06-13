@@ -1,10 +1,10 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
+import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
+import {insertAtlassianAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
-import {insertAtlassianAuthsQuery} from '../queries/generated/insertAtlassianAuthsQuery'
-import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 const connectRethinkDB = async () => {
@@ -40,11 +40,7 @@ export async function up(): Promise<void> {
 
   const atlassianIntegrations = await r
     .table('AtlassianAuth')
-    .filter((row) =>
-      row('accessToken')
-        .default(null)
-        .ne(null)
-    )
+    .filter((row) => row('accessToken').default(null).ne(null))
     .run()
   const auths = atlassianIntegrations.map(
     ({

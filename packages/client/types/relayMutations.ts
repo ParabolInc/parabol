@@ -58,7 +58,9 @@ export interface OnNextHistoryContext extends OnNextBaseContext {
 }
 
 export type OnNextHandler<TSubResponse, C = OnNextBaseContext> = (
-  payload: Omit<TSubResponse, ' $refType'>,
+  payload: undefined extends TSubResponse
+    ? Omit<NonNullable<TSubResponse>, ' $refType'> | undefined
+    : Omit<TSubResponse, ' $refType'>,
   context: C
 ) => void
 

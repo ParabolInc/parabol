@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeGitHubAuthDB from '../../postgres/queries/removeGitHubAuth'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -33,6 +34,7 @@ export default {
     // RESOLUTION
     await removeGitHubAuthDB(viewerId, teamId)
 
+    analytics.integrationRemoved(viewerId, teamId, 'github')
     const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveGitHubAuthPayload', data, subOptions)
     return data

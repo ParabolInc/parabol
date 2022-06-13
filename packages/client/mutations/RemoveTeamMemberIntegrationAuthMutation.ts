@@ -10,6 +10,7 @@ graphql`
       ...MattermostProviderRowTeamMember
       ...JiraServerProviderRowTeamMember
       ...AzureDevOpsProviderRowTeamMember
+      ...MSTeamsProviderRowTeamMember
     }
   }
 `

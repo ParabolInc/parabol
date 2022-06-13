@@ -94,7 +94,7 @@ export const newMeetingStageFields = () => ({
     type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if the viewer is ready to advance, else false',
     resolve: (
-      {readyToAdvance}: {readyToAdvance: string[]},
+      {readyToAdvance}: {readyToAdvance?: string[]},
       _args: any,
       {authToken}: {authToken: AuthToken}
     ) => {
@@ -106,7 +106,7 @@ export const newMeetingStageFields = () => ({
     type: new GraphQLNonNull(GraphQLInt),
     description: 'the number of meeting members ready to advance, excluding the facilitator',
     resolve: async (
-      {meetingId, readyToAdvance}: {meetingId: string; readyToAdvance: string[]},
+      {meetingId, readyToAdvance}: {meetingId: string; readyToAdvance?: string[]},
       _args: any,
       {dataLoader}: GQLContext,
       ref: any

@@ -32,7 +32,12 @@ const transformBody = (contentType: string, body?: Record<string, string>): stri
 }
 
 export const authorizeOAuth2 = async <
-  TSuccess = {accessToken: string; refreshToken: string | undefined; scopes: string | undefined}
+  TSuccess = {
+    accessToken: string
+    refreshToken: string | undefined
+    scopes: string | undefined
+    expiresIn: number | undefined
+  }
 >({
   authUrl,
   searchParams,
@@ -69,9 +74,15 @@ export const authorizeOAuth2 = async <
   if ('error' in tokenJson) {
     return new Error(tokenJson.error)
   }
-  const {access_token: accessToken, refresh_token: oauthRefreshToken, scope} = tokenJson
+  const {
+    access_token: accessToken,
+    refresh_token: oauthRefreshToken,
+    scope,
+    expires_in: expiresIn
+  } = tokenJson
   return {
     accessToken,
+    expiresIn,
     refreshToken: oauthRefreshToken,
     scopes: scope
   } as unknown as TSuccess

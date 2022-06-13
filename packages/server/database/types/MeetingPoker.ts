@@ -15,6 +15,10 @@ interface Input {
   templateRefId: string
 }
 
+export function isMeetingPoker(meeting: Meeting): meeting is MeetingPoker {
+  return meeting.meetingType === 'poker'
+}
+
 export default class MeetingPoker extends Meeting {
   meetingType!: 'poker'
   templateId: string
@@ -22,16 +26,8 @@ export default class MeetingPoker extends Meeting {
   storyCount?: number
   commentCount?: number
   constructor(input: Input) {
-    const {
-      id,
-      teamId,
-      meetingCount,
-      name,
-      phases,
-      facilitatorUserId,
-      templateId,
-      templateRefId
-    } = input
+    const {id, teamId, meetingCount, name, phases, facilitatorUserId, templateId, templateRefId} =
+      input
     super({
       id,
       teamId,

@@ -56,6 +56,9 @@ graphql`
       }
     }
     meeting {
+      ...PokerMeeting_meeting
+      ...useInitialSafeRoute_meeting
+      ...useUpdatedSafeRoute_meeting
       gitlabSearchQuery {
         queryString
         selectedProjectsIds
@@ -114,17 +117,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('updatePokerScope')
-      const meeting = payload.getLinkedRecord('meeting')
-      const newStages = payload.getLinkedRecords('newStages')
-      if (!meeting || !newStages) return
-      const phases = meeting.getLinkedRecords('phases')
-      const estimatePhase = phases.find((phase) => phase.getType() === 'EstimatePhase')!
-      const stages = estimatePhase.getLinkedRecords('stages')
-      const nextStages = [...stages, ...newStages]
-      estimatePhase.setLinkedRecords(nextStages, 'stages')
-    },
     optimisticUpdater: (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!viewer) return
@@ -145,12 +137,13 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         const stagesForTaskId = stages.filter(
           (stage) => stage.getValue('taskId') === firstStageTaskId
         )
-        const prevDimensionRefIds = stagesForTaskId.map((stage) => {
+        stagesForTaskId.forEach((stage) => {
           const dimensionRef = stage.getLinkedRecord('dimensionRef')
-          return dimensionRef?.getValue('id') ?? ''
-        }) as string[]
-        dimensionRefIds.push(...prevDimensionRefIds)
-      } else {
+          const dimensionRefId = dimensionRef?.getValue('id') as string | null
+          dimensionRefId && dimensionRefIds.push(dimensionRefId)
+        })
+      }
+      if (dimensionRefIds.length === 0) {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.SLATE_600,
           label: '#'

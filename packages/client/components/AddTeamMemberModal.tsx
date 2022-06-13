@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -5,12 +6,12 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import styled from '@emotion/styled'
-import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
+import momentumPng from '../../../static/images/illustrations/illus-momentum.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
+import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -19,7 +20,6 @@ import Icon from './Icon'
 import BasicTextArea from './InputField/BasicTextArea'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
-import momentumPng from '../../../static/images/illustrations/illus-momentum.png'
 
 interface Props {
   closePortal: () => void
@@ -161,8 +161,9 @@ const AddTeamMemberModal = (props: Props) => {
       } else if (alreadyInvitedEmails.length > 2) {
         onError(
           new Error(
-            `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails.length -
-              1} other emails are already on the team`
+            `${alreadyInvitedEmails[0]} and ${
+              alreadyInvitedEmails.length - 1
+            } other emails are already on the team`
           )
         )
       }

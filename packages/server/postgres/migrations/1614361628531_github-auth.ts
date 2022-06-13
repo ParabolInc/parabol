@@ -2,8 +2,8 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
+import {insertGitHubAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
-import {insertGitHubAuthsQuery} from '../queries/generated/insertGitHubAuthsQuery'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(): Promise<void> {
@@ -18,11 +18,7 @@ export async function up(): Promise<void> {
   const ghIntegrations = await r
     .table('Provider')
     .filter({service: 'GitHubIntegration', isActive: true})
-    .filter((row) =>
-      row('accessToken')
-        .default(null)
-        .ne(null)
-    )
+    .filter((row) => row('accessToken').default(null).ne(null))
     .run()
   const auths = ghIntegrations.map(
     ({accessToken, createdAt, isActive, providerUserName, teamId, updatedAt, userId}) => ({

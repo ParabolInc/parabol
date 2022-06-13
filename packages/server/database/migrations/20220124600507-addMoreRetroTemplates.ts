@@ -626,6 +626,7 @@ const makePrompt = (promptInfo: PromptInput, idx: number) => {
   const {question, description, promptColor, promptId, templateId, sortOrder} = promptInfo
   const paletteIdx = idx > promptColors.length - 1 ? idx % promptColors.length : idx
   const groupColor = promptColor ? promptColor : promptColors[paletteIdx]
+  // FIXME this creates duplicated ids
   const id = promptId ? promptId : nameToId(question, false)
   return {
     createdAt,
@@ -642,8 +643,8 @@ const makePrompt = (promptInfo: PromptInput, idx: number) => {
   }
 }
 
-const templates = templateNames.map((templateName) => makeTemplate(templateName))
-const reflectPrompts = promptsInfo.map((promptInfo, idx) => makePrompt(promptInfo, idx))
+export const templates = templateNames.map((templateName) => makeTemplate(templateName))
+export const reflectPrompts = promptsInfo.map((promptInfo, idx) => makePrompt(promptInfo, idx))
 
 export const up = async function (r: R) {
   try {

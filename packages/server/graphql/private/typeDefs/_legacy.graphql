@@ -363,26 +363,6 @@ type Mutation {
   ): LoginSAMLPayload!
 
   """
-  Enable SAML for domain
-  """
-  enableSAMLForDomain(
-    """
-    A name to use for the redirect URL. Usually the company name without any spaces
-    """
-    name: ID!
-
-    """
-    a list of domains that the account has control over. usually the part after the @ of their email
-    """
-    domains: [ID!]!
-
-    """
-    A big chunk of XML data containing the redirect URL and X.509 certificate
-    """
-    metadata: String!
-  ): EnableSAMLForDomainPayload!
-
-  """
   Send a message to all authorised Slack users
   """
   messageAllSlackUsers(
@@ -2396,7 +2376,7 @@ type JiraServerIssueConnection {
   """
   Page info with cursors coerced to ISO8601 dates
   """
-  pageInfo: PageInfoDateCursor
+  pageInfo: PageInfo
 
   """
   A list of edges.
@@ -2417,7 +2397,7 @@ type JiraServerIssueEdge {
   The item at the end of the edge
   """
   node: JiraServerIssue!
-  cursor: DateTime
+  cursor: String
 }
 
 """
@@ -2837,10 +2817,6 @@ type AzureDevOpsIntegration {
   """The user that the access token is attached to"""
   userId: ID!
 
-  """
-  A list of work items coming straight from the azure dev ops integration for a specific team member
-  """
-  workItems: [AzureDevOpsWorkItem!]!
 
   """
   The cloud provider the team member may choose to integrate with. Nullable based on env vars
@@ -4387,6 +4363,7 @@ enum TimelineEventEnum {
   joinedParabol
   createdTeam
   POKER_COMPLETE
+  TEAM_PROMPT_COMPLETE
 }
 
 """
@@ -7863,17 +7840,8 @@ type LoginSAMLPayload {
   authToken: ID
 }
 
-"""
-Return object for EnableSAMLForDomainPayload
-"""
-union EnableSAMLForDomainPayload = ErrorPayload | EnableSAMLForDomainSuccess
-
 type ErrorPayload {
   error: StandardMutationError!
-}
-
-type EnableSAMLForDomainSuccess {
-  success: Boolean!
 }
 
 """

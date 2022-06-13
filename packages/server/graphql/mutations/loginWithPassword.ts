@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import LoginWithPasswordPayload from '../types/LoginWithPasswordPayload'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
-import rateLimit from '../rateLimit'
-import attemptLogin from './helpers/attemptLogin'
 import encodeAuthToken from '../../utils/encodeAuthToken'
+import rateLimit from '../rateLimit'
+import LoginWithPasswordPayload from '../types/LoginWithPasswordPayload'
+import attemptLogin from './helpers/attemptLogin'
 
 const loginWithPassword = {
   type: new GraphQLNonNull(LoginWithPasswordPayload),

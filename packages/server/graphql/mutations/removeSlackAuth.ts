@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import RemoveSlackAuthPayload from '../types/RemoveSlackAuthPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeSlackAuths from './helpers/removeSlackAuths'
 import {GQLContext} from '../graphql'
+import RemoveSlackAuthPayload from '../types/RemoveSlackAuthPayload'
+import removeSlackAuths from './helpers/removeSlackAuths'
 
 export default {
   name: 'RemoveSlackAuth',
@@ -38,6 +39,7 @@ export default {
     }
     const authId = res.authIds[0]
 
+    analytics.integrationRemoved(viewerId, teamId, 'slack')
     const data = {authId, teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveSlackAuthPayload', data, subOptions)
     return data

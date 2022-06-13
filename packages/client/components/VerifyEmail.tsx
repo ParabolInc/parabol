@@ -27,7 +27,7 @@ const VerifyEmail = (props: Props) => {
     submitMutation()
     VerifyEmailMutation(
       atmosphere,
-      {verificationToken, invitationToken},
+      {verificationToken, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
       {onCompleted, onError, history}
     )
   }, [])

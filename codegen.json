@@ -9,6 +9,7 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
+          "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
@@ -16,6 +17,7 @@
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
+          "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
           "User": "../../postgres/types/IUser#default as IUser"
@@ -28,13 +30,24 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
+          "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
+          "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
-          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
-          "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
-          "Organization": "../../database/types/Organization#default as Organization",
-          "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
+          "Organization": "../../database/types/Organization#default as Organization",
+          "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
+          "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
+          "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
+          "Team": "../../postgres/queries/getTeamsByIds#Team",
+          "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
+          "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
+          "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
+          "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
+          "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
+          "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
+          "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },
@@ -42,17 +55,13 @@
       "schema": "packages/server/graphql/public/schema.graphql"
     },
     "packages/server/types/githubTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": "packages/server/utils/githubQueries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/utils/githubSchema.graphql"
     },
     "packages/server/types/gitlabTypes.ts": {
-      "config": {
-        "assumeValidSDL": true
-      },
+      "config": {"assumeValidSDL": true},
       "documents": [
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"

@@ -4,11 +4,14 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
@@ -155,18 +158,21 @@ const setTaskEstimate = {
 
       const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
 
-      // TODO: only comment field implemented for now
-      // const jiraDimensionFields = team?.jiraServerDimensionFields || []
-      // const dimensionField = jiraServerDimensionFields.find(
-      //   (dimensionField) =>
-      //     dimensionField.dimensionName === dimensionName &&
-      //     dimensionField.cloudId === cloudId &&
-      //     dimensionField.projectKey === projectKey
-      // )
-      // const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
-      const fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT
+      const {providerId, repositoryId: projectId} = integration as TaskIntegrationJiraServer
+      const jiraServerIssue = await dataLoader
+        .get('jiraServerIssue')
+        .load({providerId, teamId, userId: accessUserId, issueId})
+      if (!jiraServerIssue) {
+        return {error: {message: 'Issue not found'}}
+      }
+      const {issueType} = jiraServerIssue
+      const existingDimensionField = await dataLoader
+        .get('jiraServerDimensionFieldMap')
+        .load({providerId, projectId, teamId, dimensionName, issueType})
 
-      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+      const fieldId = existingDimensionField?.fieldId ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+
+      if (fieldId === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         const res = await manager.addScoreComment(
           dimensionName,
           value || '<None>',
@@ -178,6 +184,13 @@ const setTaskEstimate = {
         if (res instanceof Error) {
           return {error: {message: res.message}}
         }
+      } else if (fieldId !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+        const updatedStoryPoints =
+          existingDimensionField?.fieldType === 'number' ? Number(value) : value
+        const res = await manager.setField(issueId, fieldId, updatedStoryPoints)
+        if (res instanceof Error) {
+          return {error: {message: res.message}}
+        }
       }
     } else if (service === 'github') {
       const githubPushRes = await pushEstimateToGitHub(taskEstimate, context, info, stageId)
@@ -186,6 +199,63 @@ const setTaskEstimate = {
         return {error: {message}}
       }
       githubLabelName = githubPushRes
+    } else if (service === 'azureDevOps') {
+      const {accessUserId, instanceId, issueKey, projectKey} = integration!
+      const [auth, azureDevOpsDimensionFieldMapEntry, azureDevOpsWorkItem] = await Promise.all([
+        dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
+        dataLoader
+          .get('azureDevOpsDimensionFieldMap')
+          .load({teamId, dimensionName, instanceId, projectKey}),
+        dataLoader.get('azureDevOpsWorkItem').load({
+          teamId,
+          userId: accessUserId,
+          instanceId,
+          projectId: projectKey,
+          viewerId: accessUserId,
+          workItemId: issueKey
+        })
+      ])
+
+      if (!auth) {
+        return {error: {message: 'User no longer has access to Azure DevOps'}}
+      }
+
+      if (!azureDevOpsDimensionFieldMapEntry) {
+        return {error: {message: 'Cannot find the correct field to push changes to.'}}
+      }
+
+      if (!azureDevOpsWorkItem) {
+        return {error: {message: 'Cannot find the correct work item to push changes to.'}}
+      }
+
+      const fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
+      const fieldType = azureDevOpsDimensionFieldMapEntry.fieldType
+
+      const manager = new AzureDevOpsServerManager(auth, null)
+
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+        const res = await manager.addScoreComment(
+          instanceId,
+          dimensionName,
+          value,
+          meetingName,
+          discussionURL,
+          issueKey,
+          projectKey
+        )
+        if ('message' in res) {
+          return {error: {message: res.message}}
+        }
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+        const fieldId = fieldTypeToId[azureDevOpsWorkItem.type]
+        try {
+          const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
+          await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)
+        } catch (e) {
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
+        }
+      }
     } else if (service === 'gitlab') {
       const gitlabPushRes = await pushEstimateToGitLab(taskEstimate, context, info, stageId)
       if (gitlabPushRes instanceof Error) {
