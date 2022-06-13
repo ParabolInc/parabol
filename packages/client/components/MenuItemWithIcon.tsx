@@ -3,29 +3,21 @@ import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import Icon from './Icon'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  paddingLeft: 8,
-  paddingRight: 8,
-  width: '100%'
-})
+import MenuItemLabel from './MenuItemLabel'
 
 const ItemIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24,
-  padding: 8
+  marginRight: 8
 })
 
-const Label = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 14,
-  lineHeight: '32px'
+const IconWrapper = styled('span')({
+  opacity: 0.7,
+  height: ICON_SIZE.MD24,
+  marginRight: 8
 })
-
 interface Props {
-  icon: string
+  icon: string | React.ReactElement
   label: string
   dataCy: string
 }
@@ -33,10 +25,10 @@ interface Props {
 const MenuItemWithIcon = (props: Props) => {
   const {icon, label, dataCy} = props
   return (
-    <Wrapper data-cy={`${dataCy}`}>
-      <ItemIcon>{icon}</ItemIcon>
-      <Label>{label}</Label>
-    </Wrapper>
+    <MenuItemLabel data-cy={dataCy}>
+      {typeof icon === 'string' ? <ItemIcon>{icon}</ItemIcon> : <IconWrapper>{icon}</IconWrapper>}
+      <span>{label}</span>
+    </MenuItemLabel>
   )
 }
 
