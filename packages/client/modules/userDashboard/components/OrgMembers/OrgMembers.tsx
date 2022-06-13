@@ -16,9 +16,8 @@ const OrgMembers = (props: Props) => {
   const {
     viewer: {organization}
   } = props
-  console.log('🚀  ~ organization', organization)
   if (!organization) return null
-  const {organizationUsers} = organization
+  const {organizationUsers, name: orgName} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
     (count, {node}) => (node.role === 'BILLING_LEADER' ? count + 1 : count),
     0
@@ -35,9 +34,6 @@ const OrgMembers = (props: Props) => {
         'Billing Lead': node.role === 'BILLING_LEADER'
       }
     })
-    console.log('🚀  ~ rows', rows)
-    const teamName = 'hurrah'
-    const label = 'whatALabel'
     const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date()
@@ -48,10 +44,9 @@ const OrgMembers = (props: Props) => {
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `Parabol${label}_${teamName}_${numDate}.csv`)
+    link.setAttribute('download', `Parabol_${orgName}_${numDate}.csv`)
     document.body.appendChild(link) // Required for FF
     link.click()
-    console.log('🚀  ~ link', link)
     document.body.removeChild(link)
   }
 
@@ -81,6 +76,7 @@ export default createPaginationContainer<Props>(
       fragment OrgMembers_viewer on User {
         organization(orgId: $orgId) {
           ...OrgMemberRow_organization
+          name
           organizationUsers(first: $first, after: $after)
             @connection(key: "OrgMembers_organizationUsers") {
             edges {
