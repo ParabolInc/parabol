@@ -4,9 +4,9 @@ extend type Mutation {
   """
   toggleAllowInsights(
     """
-    true to set, false to unset
+    The tier we are squeezing the user to upgrade to. If null, will unset previous value
     """
-    value: Boolean!
+    suggestedTier: TierEnum
     """
     The domain (e.g. parabol.co) that the user should be able to view insights on
     """

@@ -4,7 +4,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
   _source,
-  {value, domain, emails},
+  {suggestedTier, domain, emails},
   {dataLoader}
 ) => {
   const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
@@ -18,8 +18,10 @@ const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
     return {error: {message: 'Must include at least 1 email'}}
   }
   const users = await getUsersByEmails(emails)
+  if (users.length === 0) {
+    return {error: {message: 'No users found using supplied emails'}}
+  }
   const userIds = users.map(({id}) => id)
-  // add them
   const recordsReplaced = await Promise.all(
     userIds.map(async (userId) => {
       return r
@@ -29,7 +31,7 @@ const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
           userId
         })
         .filter((row) => row('removedAt').default(null).eq(null))
-        .update({allowInsights: value})('replaced')
+        .update({suggestedTier})('replaced')
         .run()
     })
   )
