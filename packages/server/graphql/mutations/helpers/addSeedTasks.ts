@@ -8,29 +8,25 @@ import {TaskStatusEnum} from '../../../database/types/Task'
 import generateUID from '../../../generateUID'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 
-const CONTENT_STRING = `
-  This is a task card. They can be created here, in a meeting, or via an integration`
+const NORMAL_TASK_STRING = `This is a task card. They can be created here, in a meeting, or via an integration`
+const INTEGRATIONS_TASK_STRING = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on Settings > Integrations.`
 
 function getSeedTasks(teamId: string) {
   const integrationURL = makeAppURL(appOrigin, `team/${teamId}/settings`)
-
-  const taskContent = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on Settings > Integrations.`
-  const taskContentHTML = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on <a href="${integrationURL}">Settings > Integrations</a>.`
-
-  const content = convertHtmlToTaskContent(taskContentHTML)
+  const integrationTaskHTML = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on <a href="${integrationURL}">Settings > Integrations</a>.`
 
   return [
     {
       status: 'active' as TaskStatusEnum,
       sortOrder: 1,
-      content: convertToTaskContent(CONTENT_STRING),
-      plaintextContent: CONTENT_STRING
+      content: convertToTaskContent(NORMAL_TASK_STRING),
+      plaintextContent: NORMAL_TASK_STRING
     },
     {
       status: 'active' as TaskStatusEnum,
       sortOrder: 0,
-      content: content,
-      plaintextContent: taskContent
+      content: convertHtmlToTaskContent(integrationTaskHTML),
+      plaintextContent: INTEGRATIONS_TASK_STRING
     }
   ]
 }
