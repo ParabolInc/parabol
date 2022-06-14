@@ -5,5 +5,5 @@
 
 UPDATE "User" SET email =
 CONCAT(LEFT(email, POSITION('@' in email)), :newDomain::VARCHAR)
-WHERE id in (:userIds)
+WHERE id in :userIds
 RETURNING id;
