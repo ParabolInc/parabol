@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
 import React, {ReactNode, useRef} from 'react'
-import {MenuPosition} from '~/hooks/useCoords'
-import useTooltip from '~/hooks/useTooltip'
 import useScrollIntoView from '../hooks/useScrollIntoVIew'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
@@ -90,12 +88,6 @@ const MeetingSubnavItem = (props: Props) => {
   } = props
   const ref = useRef(null)
   useScrollIntoView(ref, isActive)
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
   return (
     <ItemRoot
       ref={ref}
@@ -106,17 +98,8 @@ const MeetingSubnavItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <ItemLabel
-        isComplete={isComplete}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        onClick={closeTooltip}
-        ref={tipRef}
-      >
-        {children}
-      </ItemLabel>
+      <ItemLabel isComplete={isComplete}>{children}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
-      {tooltipPortal(children)}
     </ItemRoot>
   )
 }
