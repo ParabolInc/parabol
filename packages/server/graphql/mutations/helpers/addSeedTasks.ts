@@ -1,12 +1,12 @@
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import {convertHtmlToTaskContent} from '~/utils/draftjs/convertHtmlToTaskContent'
 import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import {TaskStatusEnum} from '../../../database/types/Task'
 import generateUID from '../../../generateUID'
+import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 
 const CONTENT_STRING = `
   This is a task card. They can be created here, in a meeting, or via an integration`

@@ -1,5 +1,5 @@
 import {ContentState, convertFromHTML} from 'draft-js'
-import {convertStateToRaw, removeSpaces} from './convertToTaskContent'
+import {convertStateToRaw, removeSpaces} from 'parabol-client/utils/draftjs/convertToTaskContent'
 import simpleDOMBuilder from './simpleDOMBuilder'
 
 export const convertHtmlToTaskContent = (spacedHtml: string) => {
