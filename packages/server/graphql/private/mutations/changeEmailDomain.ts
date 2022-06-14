@@ -19,28 +19,18 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     getUsersbyDomain(normalizedOldDomain),
     getUsersbyDomain(normalizedNewDomain)
   ])
-
-  if (!oldDomainUsers.length) {
-    throw new Error(`No users found with oldDomain: ${oldDomain}`)
-  }
-
-  const makeNewEmail = (email: string) => `${email.split('@')[0]}@${newDomain}`
-  const newDomainUserEmails = newDomainUsers.map((user) => user.email)
-  const proposedNewUserEmails = oldDomainUsers.map((user) => makeNewEmail(user.email))
-  const duplicateUserEmails = proposedNewUserEmails.filter((userEmail) =>
-    newDomainUserEmails.includes(userEmail)
-  )
-  const duplicateUserIds = [] as string[]
-  const filteredUserIdsByOldDomain = [] as string[]
-  for (const user of oldDomainUsers) {
-    const {id: userId, email} = user
-    const newEmail = makeNewEmail(email)
-    if (duplicateUserEmails.includes(newEmail)) duplicateUserIds.push(userId)
-    else filteredUserIdsByOldDomain.push(userId)
-  }
+  const filteredUserIdsByOldDomain = oldDomainUsers
+    .filter((user) => {
+      const emailName = user.email.split('@')[0]
+      const nameExistsInNewDomain = newDomainUsers.find(
+        (user) => user.email.split('@')[0] === emailName
+      )
+      return !nameExistsInNewDomain
+    })
+    .map(({id}) => id)
 
   // RESOLUTION
-  const [updatedUserRes] = await Promise.all([
+  const [updatedUserIds] = await Promise.all([
     updateUserEmailDomainsToPG(normalizedNewDomain, filteredUserIdsByOldDomain),
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
     r
@@ -81,8 +71,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       .run()
   ])
 
-  const updatedUserIds = updatedUserRes.map(({id}) => id)
-  const data = {updatedUserIds, duplicateUserIds}
+  const data = {userIds: updatedUserIds.map(({id}) => id)}
   return data
 }
 

@@ -24,10 +24,5 @@ type ChangeEmailDomainSuccess {
   """
   The users whose domains were changed
   """
-  updatedUsers: [User!]!
-
-  """
-  Users whose domains were not changed as they were already in the new domain
-  """
-  duplicateUsers: [User!]!
+  users: [User!]!
 }
