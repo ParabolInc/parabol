@@ -1,23 +1,15 @@
-import base64url from 'base64url'
-import crypto from 'crypto'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
-import util from 'util'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
 import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
-import PasswordResetRequest from '../../database/types/PasswordResetRequest'
-import getMailManager from '../../email/getMailManager'
-import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
-import updateUser from '../../postgres/queries/updateUser'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
-
-const randomBytes = util.promisify(crypto.randomBytes)
+import processEmailPasswordReset from './helpers/processEmailPasswordReset'
 
 const emailPasswordReset = {
   type: new GraphQLNonNull(EmailPassWordResetPayload),
@@ -73,32 +65,7 @@ const emailPasswordReset = {
       ) as AuthIdentityLocal
       if (!localIdentity) return {error: {message: AuthenticationError.IDENTITY_NOT_FOUND}}
       // seems legit, make a record of it create a reset code
-      const tokenBuffer = await randomBytes(48)
-      const resetPasswordToken = base64url.encode(tokenBuffer)
-      // invalidate all other tokens for this email
-      await r
-        .table('PasswordResetRequest')
-        .getAll(email, {index: 'email'})
-        .filter({isValid: true})
-        .update({isValid: false})
-        .run()
-      await r
-        .table('PasswordResetRequest')
-        .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
-        .run()
-
-      await updateUser({identities}, userId)
-
-      const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
-      const success = await getMailManager().sendEmail({
-        to: email,
-        subject,
-        body,
-        html,
-        tags: ['type:resetPassword']
-      })
-      if (!success) return {error: {message: AuthenticationError.FAILED_TO_SEND}}
-      return {success}
+      return await processEmailPasswordReset(ip, email, identities, userId)
     }
   )
 }

@@ -18,6 +18,7 @@ export interface GQLContext {
 export interface InternalContext {
   dataLoader: DataLoaderWorker
   authToken: AuthToken
+  ip: string
   // not present if called ad-hoc
   socketId?: string
 }
