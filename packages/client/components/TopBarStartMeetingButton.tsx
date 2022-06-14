@@ -17,8 +17,7 @@ const Button = styled(FloatingActionButton)({
 
 const MeetingLabel = styled('div')({
   fontSize: 16,
-  fontWeight: 600,
-  paddingTop: 4
+  fontWeight: 600
 })
 
 const TopBarStartMeetingButton = () => {
