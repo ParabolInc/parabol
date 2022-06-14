@@ -31,8 +31,7 @@ const StaticValue = styled('div')({
 
 const Error = styled('div')({
   color: PALETTE.TOMATO_500,
-  fontSize: 14,
-  whiteSpace: 'break-spaces'
+  fontSize: 14
 })
 
 const StyledIcon = styled(Icon)({
@@ -89,20 +88,7 @@ interface Props {
 }
 
 const EditableText = forwardRef((props: Props, ref: any) => {
-  const {
-    initialValue,
-    error,
-    handleSubmit,
-    maxLength,
-    placeholder,
-    validate,
-    autoFocus: autoFocusProp,
-    className,
-    disabled,
-    hideIcon,
-    isWrap,
-    onEditingChange
-  } = props
+  const {initialValue, error, handleSubmit, maxLength, placeholder, validate, autoFocus: autoFocusProp, className, disabled, hideIcon, isWrap, onEditingChange} = props
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
