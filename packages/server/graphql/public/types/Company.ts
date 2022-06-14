@@ -84,12 +84,12 @@ const Company: CompanyResolvers = {
   },
 
   activeUserCount: async ({id: domain}, {after}, {dataLoader}) => {
+    // number of users on an active organization that has logged in within the last 30 days
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
-    const organizationUsersByOrgId = (
-      await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)
-    ).filter(errorFilter)
-    const organizationUsers = organizationUsersByOrgId.flat()
+    const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
+      .filter(isValid)
+      .flat()
     const activeOrganizationUsers = organizationUsers.filter((organizationUser) => {
       const isActive = !organizationUser.inactive
       const joinedAfter = after ? organizationUser.joinedAt > new Date(after) : true
@@ -172,6 +172,7 @@ const Company: CompanyResolvers = {
   },
 
   meetingCount: async ({id: domain}, {after}, {dataLoader}) => {
+    // number of meetings created by teams on organizations assigned to the domain
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
