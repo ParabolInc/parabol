@@ -113,7 +113,7 @@ const DemoMeetingCard = () => {
         </MeetingImgWrapper>
         <MeetingInfo>
           <TopLine>
-            <Name>Demo</Name>
+            <Name>Retrospective Demo</Name>
           </TopLine>
           <Meta>Demo team • Reflect</Meta>
         </MeetingInfo>

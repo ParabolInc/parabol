@@ -36,8 +36,8 @@ const MeetingsDashNewUser = (props: Props) => {
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
       <Copy>
-        It looks like you don't have a running meeting yet! Here are a few tips and tricks to get
-        you started.
+        Looks like you have no upcoming meetings 😎 Start one now or check out these tips and
+        tricks.
       </Copy>
     </Section>
   )
