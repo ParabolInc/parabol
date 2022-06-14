@@ -24,38 +24,63 @@ const getTeamsByOrgIds = async (
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {
     // teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an updatedAt newer than 30 days ago
-
-    // get the organizations
-    // get unarchivedTeams
-    // for each team, get the team members
-    // for each team member, get the user
-    // join the user to the team member
-    // group team members by teamId
-    // filter to teams with at least 2 teamMembers where !teamMember.user.inactive
-    // for each filtered team, find a meeting with an updatedAt newer than metAfter (default 30 days)
-    // filter out teams without a meeting that has been updated within the last 30 days
-    // return length of filtered teams
     const metAfter = after ? new Date(after) : new Date(Date.now() - THIRTY_DAYS)
+    // get the organizations
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    // get unarchivedTeams
     const orgIds = organizations.map(({id}) => id)
-    const teams = await getTeamsByOrgIds(orgIds, dataLoader, false)
-    const teamIds = teams.map(({id}) => id)
-
-    const areTeamsActive = await Promise.all(
-      teamIds.map(async (teamId) => {
-        const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-        if (activeMeetings.length > 0) {
-          return true
-        } else {
-          const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-          const completedMeetingsSinceAfter = completedMeetings.filter(
-            ({endedAt}) => endedAt! > metAfter
-          )
-          return completedMeetingsSinceAfter.length > 0
+    const unarchivedTeams = await getTeamsByOrgIds(orgIds, dataLoader, false)
+    // for each team, get the team members
+    const teamIds = unarchivedTeams.map(({id}) => id)
+    const teamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
+      .filter(isValid)
+      .flat()
+    // for each team member, get the user
+    const userIds = [...new Set(teamMembers.map(({userId}) => userId))]
+    const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
+    // join the user to the team member
+    const activeTeamMembers = teamMembers.filter((teamMember) => {
+      // coercion on purpose. if this throws an error, our data model is bad & we want to know about it
+      return !users.find((user) => user.id === teamMember.userId)!.inactive
+    })
+    // group team members by teamId
+    const teamMembersByTeamId = activeTeamMembers.reduce((obj, teamMember) => {
+      if (obj[teamMember.teamId]) {
+        obj[teamMember.teamId]!.push(teamMember)
+      } else {
+        obj[teamMember.teamId] = [teamMember]
+      }
+      return obj
+    }, {} as Record<string, [TeamMember, ...TeamMember[]]>)
+    // filter to teams with at least 2 teamMembers where !teamMember.user.inactive
+    const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)
+      .map((teamMembers) => {
+        return {
+          count: teamMembers.length,
+          team: unarchivedTeams.find((team) => team.id === teamMembers[0].teamId)!
         }
       })
-    )
-    return areTeamsActive.filter(Boolean).length
+      .filter((agg) => agg.count >= 2)
+      .map((agg) => agg.team)
+    // for each filtered team, find a meeting with an updatedAt newer than metAfter (default 30 days)
+    const r = await getRethink()
+    const lastMetAt = (await Promise.all(
+      teamsWithSufficientTeamMembers.map((team) => {
+        return r
+          .table('NewMeeting')
+          .getAll(team.id, {index: 'teamId'})
+          .filter((meeting) => meeting('updatedAt').ge(metAfter))
+          .limit(1)
+          .nth(0)('updatedAt')
+          .default(null)
+      })
+    )) as unknown as (Date | null)[]
+
+    // filter out teams without a meeting that has been updated within the last 30 days
+    const recentlyMetTeams = teamsWithSufficientTeamMembers.filter((_team, idx) => !!lastMetAt[idx])
+
+    // return length of filtered teams
+    return recentlyMetTeams.length
   },
 
   activeUserCount: async ({id: domain}, {after}, {dataLoader}) => {
