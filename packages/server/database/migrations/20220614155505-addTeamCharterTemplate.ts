@@ -82,7 +82,6 @@ const makePrompt = (promptInfo: PromptInput, idx: number) => {
   const paletteIdx = idx > promptColors.length - 1 ? idx % promptColors.length : idx
   const groupColor = promptColor ? promptColor : promptColors[paletteIdx]
   const id = promptId ? promptId : nameToId(`${templateId}:${question}`, false)
-
   return {
     createdAt,
     description,
