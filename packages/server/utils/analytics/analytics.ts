@@ -9,7 +9,7 @@ import segment from '../segmentIo'
 import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
-export type UpgradeEventProperties = {
+export type OrgTierChangeEventProperties = {
   orgId: string
   domain?: string
   orgName: string
@@ -28,6 +28,7 @@ export type AnalyticsEvent =
   | 'Integration Removed'
   // org
   | 'Organization Upgraded'
+  | 'Organization Downgraded'
   // task
   | 'Task Created'
   | 'Task Published'
@@ -184,8 +185,15 @@ class Analytics {
     })
   }
 
-  organizationUpgraded = (userId: string, upgradeEventProperties: UpgradeEventProperties) => {
+  organizationUpgraded = (userId: string, upgradeEventProperties: OrgTierChangeEventProperties) => {
     this.track(userId, 'Organization Upgraded', upgradeEventProperties)
+  }
+
+  organizationDowngraded = (
+    userId: string,
+    downgradeEventProperties: OrgTierChangeEventProperties
+  ) => {
+    this.track(userId, 'Organization Downgraded', downgradeEventProperties)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>

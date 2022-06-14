@@ -168,7 +168,7 @@ query ArchiveTeam($userId: ID!) {
     }
   }
 }`,
-  'Upgrade to Pro': `
+  'Organization Upgraded': `
   query UpgradeToPro($userId: ID!) {
     company(userId: $userId) {
       tier
@@ -186,25 +186,7 @@ query ArchiveTeam($userId: ID!) {
       }
     }
   }`,
-  'Enterprise invoice drafted': `
-  query UpgradeToPro($userId: ID!) {
-    company(userId: $userId) {
-      tier
-      organizations {
-        organizationUsers {
-          edges {
-            node {
-              user {
-                email
-                tier
-              }
-            }
-          }
-        }
-      }
-    }
-  }`,
-  'Downgrade to personal': `
+  'Organization Downgraded': `
   query UpgradeToPro($userId: ID!) {
     company(userId: $userId) {
       tier
@@ -224,7 +206,7 @@ query ArchiveTeam($userId: ID!) {
   }`
 } as const
 
-const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
+const tierChanges = ['Organization Upgraded', 'Organization Downgraded']
 const hapiKey = process.env.HUBSPOT_API_KEY
 
 const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
