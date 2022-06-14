@@ -34,17 +34,12 @@ const EditorLinkChangerTipTap = (props: Props) => {
       .run()
   }
 
-  const handleEscape = () => {
-    /* noop */
-  }
-
   return (
     <EditorLinkChangerModal
       text={text}
       link={link}
       removeModal={removeModal}
       handleSubmit={handleSubmit}
-      handleEscape={handleEscape}
       originCoords={originCoords}
     />
   )

@@ -8,7 +8,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {BBox} from '~/types/animations'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
-import {createEditorExtensions} from './tiptapConfig'
+import {createEditorExtensions, getLinkProps} from './tiptapConfig'
 
 const StyledEditor = styled('div')`
   .ProseMirror {
@@ -44,7 +44,7 @@ interface Props {
 
 const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
-  const [_isEditing, setIsEditing] = useState(autoFocusProp ?? false)
+  const [_isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
   const [linkMenuProps, setLinkMenuProps] = useState<{text: string; href: string} | undefined>()
   const [selectedHref, setSelectedHref] = useState<string | null>(null)
@@ -136,20 +136,8 @@ const PromptResponseEditor = (props: Props) => {
         return
       }
 
-      const href: string | undefined = editor.getAttributes('link').href
-      editor.commands.extendMarkRange('link')
-
-      let {from, to} = editor.view.state.selection
-      if (to === from) {
-        editor.commands.setTextSelection({to: to - 1, from: from - 1})
-        editor.commands.extendMarkRange('link')
-        const selection = editor.view.state.selection
-        to = selection.to
-        from = selection.from
-      }
-      const text = editor.state.doc.textBetween(from, to, '')
       setSelectedHref(null)
-      setLinkMenuProps({text, href: href ?? ''})
+      setLinkMenuProps(getLinkProps(editor))
     }
 
     return (

@@ -50,7 +50,7 @@ interface Props {
   removeModal(allowFocus: boolean): void
 
   handleSubmit({text, href}: {text: string; href: string}): void
-  handleEscape(): void
+  handleEscape?(): void
 
   text: string | null
 }
@@ -103,7 +103,7 @@ const EditorLinkChangerModal = (props: Props) => {
   const handleKeyDown = (e) => {
     if (e.key === 'Escape') {
       removeModal(true)
-      handleEscape()
+      handleEscape && handleEscape()
     }
   }
 
