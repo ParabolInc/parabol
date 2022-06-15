@@ -20,6 +20,7 @@ const getSelectionBoundingBox = (editor: Editor) => {
 
 export const getLinkProps = (editor: Editor) => {
   const href: string | undefined = editor.getAttributes('link').href
+  editor.commands.extendMarkRange('link')
   let {from, to} = editor.view.state.selection
   if (to === from && editor.isActive('link')) {
     // If the cursor is on a link, but hasn't selected any specific part of the link text, expand the selection

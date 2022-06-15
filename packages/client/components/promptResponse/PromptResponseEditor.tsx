@@ -127,7 +127,7 @@ const PromptResponseEditor = (props: Props) => {
           }}
         />
       )}
-      {editor && linkPreviewProps && (
+      {editor && linkPreviewProps && !linkMenuProps && (
         <EditorLinkViewerTipTap
           href={linkPreviewProps.href}
           tiptapEditor={editor}

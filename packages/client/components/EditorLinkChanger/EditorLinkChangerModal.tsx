@@ -12,7 +12,7 @@ import RaisedButton from '../RaisedButton'
 
 const ModalBoundary = styled('div')({
   color: PALETTE.SLATE_700,
-  padding: '.5rem .5rem .5rem 1rem',
+  padding: '.5rem 1rem .5rem 1rem',
   minWidth: '20rem',
   outline: 0
 })
