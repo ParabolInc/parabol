@@ -6398,10 +6398,10 @@ camelcase@^6.2.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.3.0.tgz#5685b95eb209ac9c0c177467778c9c84df58ba9a"
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
-caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001317:
-  version "1.0.30001352"
-  resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001352.tgz"
-  integrity sha512-GUgH8w6YergqPQDGWhJGt8GDRnY0L/iJVQcU3eJ46GYf52R8tk0Wxp0PymuFVZboJYXGiCqwozAYZNRjVj6IcA==
+caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001317, caniuse-lite@~1.0.0:
+  version "1.0.30001354"
+  resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001354.tgz#95c5efdb64148bb4870771749b9a619304755ce5"
+  integrity sha512-mImKeCkyGDAHNywYFA4bqnLAzTUvVkqPvhY4DV47X+Gl2c5Z8c3KNETnXp14GQt11LvxE8AwjzGxJ+rsikiOzg==
 
 capital-case@^1.0.4:
   version "1.0.4"
