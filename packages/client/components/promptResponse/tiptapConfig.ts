@@ -1,7 +1,22 @@
-import {Editor} from '@tiptap/core'
+import {Editor, isNodeSelection, posToDOMRect} from '@tiptap/core'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import StarterKit from '@tiptap/starter-kit'
+
+const getSelectionBoundingBox = (editor: Editor) => {
+  const selection = editor.view.state.selection
+  const {from, to} = selection
+
+  if (isNodeSelection(selection)) {
+    const node = editor.view.nodeDOM(from) as HTMLElement
+
+    if (node) {
+      return node.getBoundingClientRect()
+    }
+  }
+
+  return posToDOMRect(editor?.view, from, to)
+}
 
 export const getLinkProps = (editor: Editor) => {
   const href: string | undefined = editor.getAttributes('link').href
@@ -16,8 +31,9 @@ export const getLinkProps = (editor: Editor) => {
     from = selection.from
   }
   const text = editor.state.doc.textBetween(from, to, '')
+  const originCoords = getSelectionBoundingBox(editor)
 
-  return {text, href: href ?? ''}
+  return {text, href: href ?? '', originCoords}
 }
 
 /**
@@ -28,7 +44,7 @@ export const getLinkProps = (editor: Editor) => {
 export const createEditorExtensions = (
   isReadOnly?: boolean,
   setLinkMenuProps?,
-  setSelectedHref?,
+  setLinkPreviewProps?,
   placeholder?: string
 ) => [
   StarterKit,
@@ -47,10 +63,10 @@ export const createEditorExtensions = (
     },
     onSelectionUpdate() {
       const href = this.editor.getAttributes('link').href
-      if (href && setSelectedHref) {
-        setSelectedHref(href)
+      if (href && setLinkPreviewProps) {
+        setLinkPreviewProps({href, originCoords: getSelectionBoundingBox(this.editor)})
       } else {
-        setSelectedHref(undefined)
+        setLinkPreviewProps(undefined)
       }
     }
   }).configure({

@@ -3,7 +3,6 @@ import {Editor as EditorState} from '@tiptap/core'
 import {EditorContent, EditorEvents, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useRef, useState} from 'react'
-import useForceUpdate from '~/hooks/useForceUpdate'
 import {PALETTE} from '~/styles/paletteV3'
 import {BBox} from '~/types/animations'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
@@ -46,10 +45,14 @@ const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
   const [_isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
-  const [linkMenuProps, setLinkMenuProps] = useState<{text: string; href: string} | undefined>()
-  const [selectedHref, setSelectedHref] = useState<string | null>(null)
+  const [linkMenuProps, setLinkMenuProps] = useState<
+    {text: string; href: string; originCoords: BBox} | undefined
+  >()
+  const [linkPreviewProps, setLinkPreviewProps] = useState<{
+    href: string
+    originCoords: BBox
+  } | null>(null)
   const editorRef = useRef<PureEditorContent>(null)
-  const forceUpdate = useForceUpdate()
 
   const setEditing = (isEditing: boolean) => {
     setIsEditing(isEditing)
@@ -72,9 +75,17 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit?.(newEditorState)
   }
 
-  const handleOpenLinkChanger = ({text, href}: {text: string; href: string}) => {
-    setSelectedHref(null)
-    setLinkMenuProps({text, href})
+  const handleOpenLinkChanger = ({
+    text,
+    href,
+    originCoords
+  }: {
+    text: string
+    href: string
+    originCoords: BBox
+  }) => {
+    setLinkPreviewProps(null)
+    setLinkMenuProps({text, href, originCoords})
   }
 
   const editor = useEditor(
@@ -83,7 +94,7 @@ const PromptResponseEditor = (props: Props) => {
       extensions: createEditorExtensions(
         readOnly,
         handleOpenLinkChanger,
-        setSelectedHref,
+        setLinkPreviewProps,
         placeholder
       ),
       autofocus: autoFocus,
@@ -94,72 +105,39 @@ const PromptResponseEditor = (props: Props) => {
     [content, readOnly, setLinkMenuProps]
   )
 
-  const cachedCoordsRef = useRef<BBox | null>(null)
-  // Note that this gets the bounding box for the entire textbox, which causes the link viewer + changer to render below
-  // the input regardless of cursor position.
-  // :TODO: (jmtaber129): Get a bounding box that will render the menus closer to the cursor.
-  const originCoords = editorRef.current?.editorContentRef.current.getBoundingClientRect()
-  if (originCoords) {
-    cachedCoordsRef.current = originCoords
-  }
-
-  const renderLinkChanger = () => {
-    if (!cachedCoordsRef.current) {
-      setTimeout(forceUpdate)
-      return null
+  const onAddHyperlink = () => {
+    if (!editor) {
+      return
     }
 
-    return (
-      editor &&
-      linkMenuProps && (
-        <EditorLinkChangerTipTap
-          text={linkMenuProps.text}
-          link={linkMenuProps.href}
-          tiptapEditor={editor}
-          originCoords={originCoords}
-          removeModal={() => {
-            setLinkMenuProps(undefined)
-          }}
-        />
-      )
-    )
-  }
-
-  const renderLinkViewer = () => {
-    if (!cachedCoordsRef.current) {
-      setTimeout(forceUpdate)
-      return null
-    }
-
-    const onAddHyperlink = () => {
-      if (!editor) {
-        return
-      }
-
-      setSelectedHref(null)
-      setLinkMenuProps(getLinkProps(editor))
-    }
-
-    return (
-      editor &&
-      selectedHref && (
-        <EditorLinkViewerTipTap
-          href={selectedHref}
-          tiptapEditor={editor}
-          addHyperlink={onAddHyperlink}
-          originCoords={originCoords}
-          removeModal={() => {
-            setSelectedHref(null)
-          }}
-        />
-      )
-    )
+    setLinkPreviewProps(null)
+    setLinkMenuProps(getLinkProps(editor))
   }
 
   return (
     <StyledEditor>
-      {renderLinkChanger()}
-      {renderLinkViewer()}
+      {editor && linkMenuProps && (
+        <EditorLinkChangerTipTap
+          text={linkMenuProps.text}
+          link={linkMenuProps.href}
+          tiptapEditor={editor}
+          originCoords={linkMenuProps.originCoords}
+          removeModal={() => {
+            setLinkMenuProps(undefined)
+          }}
+        />
+      )}
+      {editor && linkPreviewProps && (
+        <EditorLinkViewerTipTap
+          href={linkPreviewProps.href}
+          tiptapEditor={editor}
+          addHyperlink={onAddHyperlink}
+          originCoords={linkPreviewProps.originCoords}
+          removeModal={() => {
+            setLinkPreviewProps(null)
+          }}
+        />
+      )}
       <EditorContent ref={editorRef} editor={editor} />
     </StyledEditor>
   )
