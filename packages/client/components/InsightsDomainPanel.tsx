@@ -2,12 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
+import InsightsDomainNudge from './InsightsDomainNudge'
 import Panel from './Panel/Panel'
 
 const StatsPanel = styled(Panel)({
+  boxShadow: Elevation.Z3,
   maxWidth: 520
 })
 
@@ -55,6 +58,7 @@ const StatBlockLabel = styled('div')({
   lineHeight: '16px',
   textTransform: 'uppercase'
 })
+
 interface Props {
   domainRef: InsightsDomainPanel_domain$key
 }
@@ -64,11 +68,14 @@ const InsightsDomainPanel = (props: Props) => {
   const domain = useFragment(
     graphql`
       fragment InsightsDomainPanel_domain on Company {
+        ...InsightsDomainNudge_domain
         id
         activeOrganizationCount
         activeTeamCount
         activeUserCount
         meetingCount
+        suggestedTier
+        tier
       }
     `,
     domainRef
@@ -102,6 +109,7 @@ const InsightsDomainPanel = (props: Props) => {
             <StatBlockLabel>{plural(meetingCount, 'Meeting')}</StatBlockLabel>
           </StatBlock>
         </StatBlocks>
+        <InsightsDomainNudge domainRef={domain} />
       </StatsPanel>
     </Wrapper>
   )

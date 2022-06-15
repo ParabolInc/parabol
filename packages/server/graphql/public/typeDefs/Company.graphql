@@ -54,6 +54,11 @@ type Company {
   organizations: [Organization!]!
 
   """
+  The highest tier than an organization user is being squeezed to upgrade to, "personal" if not squeezed
+  """
+  suggestedTier: TierEnum
+
+  """
   The highest tier for any organization within the company
   """
   tier: TierEnum!

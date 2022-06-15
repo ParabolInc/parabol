@@ -245,6 +245,20 @@ const Company: CompanyResolvers = {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     return organizations
   },
+  suggestedTier: async ({id: domain}, _args, {dataLoader}) => {
+    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const orgIds = organizations.map(({id}) => id)
+    const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
+      .filter(isValid)
+      .flat()
+
+    const tiers = [
+      ...new Set(organizationUsers.map(({suggestedTier}) => suggestedTier).filter(isValid))
+    ]
+    if (tiers.includes('enterprise')) return 'enterprise'
+    if (tiers.includes('pro')) return 'pro'
+    return 'personal'
+  },
 
   tier: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
