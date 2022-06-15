@@ -1,5 +1,6 @@
 import {RTable, TableSchema} from '../../database/stricterR'
 import getPg from '../getPg'
+import {dropUndefined} from './dropUndefined'
 
 export function areEqual(a, b): boolean {
   if (a === b) return true
@@ -142,6 +143,12 @@ function getPairNeFields(
   )) {
     const [rethinkValue, pgValue] = [rethinkRow[maybeUndefinedField], pgRow[maybeUndefinedField]]
 
+    if (Array.isArray(pgValue)) {
+      pgValue.map(dropUndefined)
+    } else if (typeof pgValue === 'object') {
+      dropUndefined(pgValue)
+    }
+
     if (rethinkValue === undefined) {
       if (areEqual(pgValue, defaultValueForUndefinedField)) {
         continue
@@ -156,7 +163,6 @@ function getPairNeFields(
     } else if (areEqual(pgValue, rethinkValue)) {
       continue
     }
-
     neFields.push(maybeUndefinedField)
   }
   return neFields

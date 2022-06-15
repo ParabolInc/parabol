@@ -115,11 +115,13 @@ export async function up(): Promise<void> {
 
   // Handle RethinkDB Updates
   // wipe the jira dimension fields since we can no longer use dimensionId
-  await r
-    .table('Team')
-    .filter((row) => row('jiraDimensionFields').default(null).ne(null))
-    .update({jiraDimensionFields: []})
-    .run()
+  if (await r.tableList().contains('Team').run()) {
+    await r
+      .table('Team')
+      .filter((row) => row('jiraDimensionFields').default(null).ne(null))
+      .update({jiraDimensionFields: []})
+      .run()
+  }
 
   // add a templateRefId to each meeting
   await r(templateIdToTemplateRefId)

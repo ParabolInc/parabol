@@ -115,12 +115,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
           stripeSubscriptionId: subscription.id,
           tier: 'enterprise',
           updatedAt: now
-        }),
-      teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
-        isPaid: true,
-        tier: 'enterprise',
-        updatedAt: now
-      })
+        })
     }).run(),
     updateTeamByOrgId(
       {

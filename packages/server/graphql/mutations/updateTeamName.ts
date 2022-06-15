@@ -1,5 +1,4 @@
 import {GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
 import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -24,7 +23,6 @@ export default {
     {updatedTeam}: {updatedTeam: UpdatedTeamInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -54,10 +52,7 @@ export default {
       name,
       updatedAt: now
     }
-    await Promise.all([
-      r.table('Team').get(teamId).update(dbUpdate).run(),
-      updateTeamByTeamId(dbUpdate, teamId)
-    ])
+    await updateTeamByTeamId(dbUpdate, teamId)
 
     const data = {teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateTeamNamePayload', data, subOptions)

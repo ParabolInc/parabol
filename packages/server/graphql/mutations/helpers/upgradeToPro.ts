@@ -47,12 +47,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
           tier: 'pro',
           stripeId: customer.id,
           updatedAt: now
-        }),
-      teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
-        isPaid: true,
-        tier: 'pro',
-        updatedAt: now
-      })
+        })
     }).run(),
     updateTeamByOrgId(
       {
