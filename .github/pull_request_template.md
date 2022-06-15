@@ -22,6 +22,7 @@ Fixes/Partially Fixes #[issue number]
 ## Final checklist
 
 - [ ] I checked the [code review guidelines](../docs/codeReview.md)
+- [ ] I have added @tianrunhe and/or @tghanken as reviewers if my PR invovles metric related changes
 - [ ] I have performed a self-review of my code, the same way I'd do it for any other team member
 - [ ] I have tested all cases I listed in the testing scenarios and I haven't found any issues or regressions
 - [ ] Whenever I took a non-obvious choice I added a comment explaining why I did it this way
