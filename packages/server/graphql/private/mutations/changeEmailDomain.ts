@@ -11,8 +11,12 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   // VALIDATION
   const normalizedNewDomain = newDomain.toLowerCase().trim()
   const normalizedOldDomain = oldDomain.toLowerCase().trim()
-  if (oldDomain === newDomain) {
+  if (normalizedOldDomain === normalizedNewDomain) {
     throw new Error('New domain is the same as the old one')
+  }
+
+  if (normalizedOldDomain.includes('@') || normalizedNewDomain.includes('@')) {
+    throw new Error('Domains should include everything after the @')
   }
 
   const [oldDomainUsers, newDomainUsers] = await Promise.all([
@@ -24,24 +28,22 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
     throw new Error(`No users found with oldDomain: ${oldDomain}`)
   }
 
-  const makeNewEmail = (email: string) => `${email.split('@')[0]}@${newDomain}`
-  const newDomainUserEmails = newDomainUsers.map((user) => user.email)
-  const proposedNewUserEmails = oldDomainUsers.map((user) => makeNewEmail(user.email))
-  const duplicateUserEmails = proposedNewUserEmails.filter((userEmail) =>
-    newDomainUserEmails.includes(userEmail)
-  )
-  const usersNotUpdatedIds = [] as string[]
-  const filteredUserIdsByOldDomain = [] as string[]
-  for (const user of oldDomainUsers) {
-    const {id: userId, email} = user
-    const newEmail = makeNewEmail(email)
-    if (duplicateUserEmails.includes(newEmail)) usersNotUpdatedIds.push(userId)
-    else filteredUserIdsByOldDomain.push(userId)
-  }
+  const newDomainUserEmails = newDomainUsers.map(({email}) => email)
+  const usersNotUpdatedIds = oldDomainUsers
+    .filter(({email}) => {
+      const emailUsername = email.split('@')[0]
+      const proposedNewEmail = `${emailUsername}@${newDomain}`
+      return newDomainUserEmails.includes(proposedNewEmail)
+    })
+    .map(({id}) => id)
+
+  const userIdsToUpdate = oldDomainUsers
+    .filter(({id}) => !usersNotUpdatedIds.includes(id))
+    .map(({id}) => id)
 
   // RESOLUTION
   const [updatedUserRes] = await Promise.all([
-    updateUserEmailDomainsToPG(normalizedNewDomain, filteredUserIdsByOldDomain),
+    updateUserEmailDomainsToPG(normalizedNewDomain, userIdsToUpdate),
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
     r
       .table('Organization')
