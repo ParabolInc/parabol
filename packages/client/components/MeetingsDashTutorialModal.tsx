@@ -32,9 +32,9 @@ const StyledDialogContent = styled(DialogContent)({
   }
 })
 
-const URL = 'https://www.loom.com/embed/<SOME_ID>'
+const URL = 'https://www.youtube.com/embed/X_i60AMxPBU?modestbranding=1&rel=0'
 
-const LoomEmbed = styled('iframe')({
+const VideoEmbed = styled('iframe')({
   border: 'none',
   aspectRatio: '16/9',
   width: '100%',
@@ -44,9 +44,9 @@ const LoomEmbed = styled('iframe')({
 const MeetingsDashTutorialModal = () => {
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>How to start a meeting</StyledDialogTitle>
+      <StyledDialogTitle>Starting a Sprint Poker Meeting</StyledDialogTitle>
       <StyledDialogContent>
-        <LoomEmbed src={URL} />
+        <VideoEmbed src={URL} allow='fullscreen' />
       </StyledDialogContent>
     </StyledDialogContainer>
   )

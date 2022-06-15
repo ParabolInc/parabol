@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useCallback} from 'react'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useModal from '../hooks/useModal'
 import {Elevation} from '../styles/elevation'
@@ -95,11 +97,25 @@ const TopLine = styled('div')({
   display: 'flex'
 })
 
-const THUMBNAIL = 'https://cdn.loom.com/sessions/thumbnails/SOME_ID-with-play.gif'
+const THUMBNAIL = 'http://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
 
 const TutorialMeetingCard = () => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const {togglePortal: toggleModal, modalPortal} = useModal()
+  const atmospehere = useAtmosphere()
+  const {viewerId} = atmospehere
+
+  const onOpen = useCallback(() => {
+    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Opened', {
+      viewerId
+    })
+  }, [])
+  const onClose = useCallback(() => {
+    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Closed', {
+      viewerId
+    })
+  }, [])
+
+  const {togglePortal: toggleModal, modalPortal} = useModal({onOpen, onClose})
 
   return (
     <>
@@ -111,7 +127,7 @@ const TutorialMeetingCard = () => {
         </MeetingImgWrapper>
         <MeetingInfo>
           <TopLine>
-            <Name>How to start a meeting</Name>
+            <Name>Starting a Sprint Poker Meeting</Name>
           </TopLine>
           <Meta>Video tutorial</Meta>
         </MeetingInfo>
