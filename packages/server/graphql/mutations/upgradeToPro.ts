@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpgradeToProPayload from '../types/UpgradeToProPayload'
@@ -36,7 +36,11 @@ export default {
     const viewerId = getUserId(authToken)
 
     // VALIDATION
-    const {stripeSubscriptionId: startingSubId} = await r.table('Organization').get(orgId).run()
+    const {
+      stripeSubscriptionId: startingSubId,
+      name: orgName,
+      activeDomain: domain
+    } = await r.table('Organization').get(orgId).run()
 
     if (startingSubId) {
       return standardError(new Error('Already a pro organization'), {userId: viewerId})
@@ -66,12 +70,13 @@ export default {
 
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Upgrade to Pro',
-      properties: {
-        orgId
-      }
+    analytics.organizationUpgraded(viewerId, {
+      orgId,
+      domain,
+      orgName,
+      oldTier: 'personal',
+      newTier: 'pro',
+      billingLeaderEmail: viewer!.email
     })
     const data = {orgId, teamIds, meetingIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToProPayload', data, subOptions)

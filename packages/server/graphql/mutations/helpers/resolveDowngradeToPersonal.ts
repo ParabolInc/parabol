@@ -1,6 +1,8 @@
 import getRethink from '../../../database/rethinkDriver'
+import Organization from '../../../database/types/Organization'
+import User from '../../../database/types/User'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
-import segmentIo from '../../../utils/segmentIo'
+import {analytics} from '../../../utils/analytics/analytics'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import StripeManager from '../../../utils/StripeManager'
@@ -19,9 +21,11 @@ const resolveDowngradeToPersonal = async (
     console.log(e)
   }
 
-  await Promise.all([
+  const [org, user] = await Promise.all([
+    r.table('Organization').get(orgId).run() as unknown as Organization,
+    r.table('User').get(userId).run() as unknown as User,
     r({
-      org: r.table('Organization').get(orgId).update({
+      orgUpdate: r.table('Organization').get(orgId).update({
         tier: 'personal',
         periodEnd: now,
         stripeSubscriptionId: null,
@@ -38,12 +42,13 @@ const resolveDowngradeToPersonal = async (
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
-  segmentIo.track({
-    userId,
-    event: 'Downgrade to personal',
-    properties: {
-      orgId
-    }
+  analytics.organizationDowngraded(userId, {
+    orgId,
+    domain: org.activeDomain,
+    orgName: org.name,
+    oldTier: 'pro',
+    newTier: 'personal',
+    billingLeaderEmail: user.email
   })
 }
 
