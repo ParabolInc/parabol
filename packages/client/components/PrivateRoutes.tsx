@@ -42,7 +42,7 @@ const PrivateRoutes = () => {
   useNoIndex()
   return (
     <Switch>
-      <Route path='(/meetings|/me|/newteam|/team|/insights)' component={DashboardRoot} />
+      <Route path='(/meetings|/me|/newteam|/team|/usage)' component={DashboardRoot} />
       <Route path='/meet/:meetingId' component={MeetingRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />
       <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />

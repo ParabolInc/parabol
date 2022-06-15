@@ -3,42 +3,56 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
-import {Layout} from '../types/constEnums'
+import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
 import Panel from './Panel/Panel'
 
 const StatsPanel = styled(Panel)({
-  maxWidth: 800
+  maxWidth: 520
 })
 
 const Wrapper = styled('div')({
-  maxWidth: Layout.SETTINGS_MAX_WIDTH,
-  margin: '0 auto',
-  width: '100%'
+  paddingLeft: 16
 })
 
 const DomainName = styled('div')({
   fontSize: 32,
   fontWeight: 600,
+  lineHeight: '48px',
   padding: 16
 })
 
 const StatBlocks = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  borderTop: `1px solid ${PALETTE.SLATE_400}`,
+  width: '100%'
 })
 
 const StatBlock = styled('div')({
-  borderTop: '1px solid gray',
-  borderBottom: '1px solid gray'
+  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
+  ':first-child': {
+    border: 'none'
+  },
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '25%',
+  paddingTop: 14,
+  paddingBottom: 14
 })
 
 const StatBlockNumber = styled('div')({
-  fontColor: PALETTE.SLATE_400,
-  fontSize: 28
+  color: PALETTE.SLATE_600,
+  fontSize: 40,
+  lineHeight: '60px'
 })
 
 const StatBlockLabel = styled('div')({
-  fontColor: PALETTE.SLATE_800,
+  color: PALETTE.SLATE_800,
+  fontSize: 12,
+  fontWeight: 600,
+  lineHeight: '16px',
   textTransform: 'uppercase'
 })
 interface Props {
@@ -60,20 +74,32 @@ const InsightsDomainPanel = (props: Props) => {
     domainRef
   )
   const {
-    id: domainId
-    // activeOrganizationCount,
-    // activeTeamCount,
-    // activeUserCount,
-    // meetingCount
+    id: domainId,
+    activeOrganizationCount,
+    activeTeamCount,
+    activeUserCount,
+    meetingCount
   } = domain
   return (
     <Wrapper>
-      <StatsPanel label={'Domain Stats'}>
+      <StatsPanel>
         <DomainName>{domainId}</DomainName>
         <StatBlocks>
           <StatBlock>
-            <StatBlockNumber>4</StatBlockNumber>
-            <StatBlockLabel>Organizations</StatBlockLabel>
+            <StatBlockNumber>{activeOrganizationCount}</StatBlockNumber>
+            <StatBlockLabel>{plural(activeOrganizationCount, 'Organization')}</StatBlockLabel>
+          </StatBlock>
+          <StatBlock>
+            <StatBlockNumber>{activeTeamCount}</StatBlockNumber>
+            <StatBlockLabel>{plural(activeOrganizationCount, 'Active Team')}</StatBlockLabel>
+          </StatBlock>
+          <StatBlock>
+            <StatBlockNumber>{activeUserCount}</StatBlockNumber>
+            <StatBlockLabel>{plural(activeUserCount, 'Active Member')}</StatBlockLabel>
+          </StatBlock>
+          <StatBlock>
+            <StatBlockNumber>{meetingCount}</StatBlockNumber>
+            <StatBlockLabel>{plural(meetingCount, 'Meeting')}</StatBlockLabel>
           </StatBlock>
         </StatBlocks>
       </StatsPanel>

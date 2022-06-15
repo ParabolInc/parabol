@@ -150,7 +150,7 @@ const Dashboard = (props: Props) => {
             <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-            <Route path='/insights' component={InsightsRoot} />
+            <Route path='/usage' component={InsightsRoot} />
           </Switch>
         </DashMain>
       </DashPanel>

@@ -6,9 +6,9 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
 import {TopBarAvatar_viewer} from '~/__generated__/TopBarAvatar_viewer.graphql'
+import {PALETTE} from '../styles/paletteV3'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import Avatar from './Avatar/Avatar'
-import {PALETTE} from '../styles/paletteV3'
 
 const AvatarWrapper = styled('button')({
   background: 'transparent',
@@ -26,8 +26,8 @@ const AvatarWrapper = styled('button')({
   }
 })
 
-const StandardHubUserMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'StandardHubUserMenu' */ './StandardHubUserMenu')
+const StandardHubUserMenu = lazyPreload(
+  () => import(/* webpackChunkName: 'StandardHubUserMenu' */ './StandardHubUserMenu')
 )
 
 interface Props {
@@ -50,7 +50,7 @@ const TopBarAvatar = (props: Props) => {
           picture={userAvatar}
           size={40}
         />
-        {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
+        {viewer && menuPortal(<StandardHubUserMenu menuProps={menuProps} viewerRef={viewer} />)}
       </AvatarWrapper>
     </>
   )
