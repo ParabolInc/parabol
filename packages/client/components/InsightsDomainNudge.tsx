@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
@@ -48,6 +50,7 @@ interface Props {
 
 const InsightsDomainNudge = (props: Props) => {
   const {domainRef} = props
+  const atmosphere = useAtmosphere()
   const domain = useFragment(
     graphql`
       fragment InsightsDomainNudge_domain on Company {
@@ -77,6 +80,11 @@ const InsightsDomainNudge = (props: Props) => {
   const showNudge = suggestPro || suggestEnterprise
   const CTACopy = suggestPro ? `Upgrade ${organizationName} to Pro` : 'Contact Us'
   const onClickCTA = () => {
+    const ctaType = suggestPro ? 'pro' : suggestEnterprise ? 'enterprise' : 'personal'
+    SendClientSegmentEventMutation(atmosphere, 'Clicked Domain Stats CTA', {
+      ctaType,
+      domainId
+    })
     if (suggestPro) {
       togglePortal()
     } else if (suggestEnterprise) {

@@ -8,7 +8,7 @@ type Options = {
   phase?: NewMeetingPhaseTypeEnum
   actionType?: CreditCardModalActionType
   viewerId?: string
-  companyId?: string
+  domainId?: string
 }
 
 // certain users keep sending this non-stop. not sure why.

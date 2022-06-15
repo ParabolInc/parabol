@@ -24,7 +24,6 @@ const Insights = (props: Props) => {
     graphql`
       query InsightsQuery {
         viewer {
-          id
           company {
             id
           }
@@ -39,8 +38,8 @@ const Insights = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
   const {viewer} = data
-  const {id: viewerId, domains, company} = viewer
-  useSegmentTrack('Viewed domain stats', {viewerId, companyId: company?.id})
+  const {domains, company} = viewer
+  useSegmentTrack('Viewed domain stats', {domainId: company?.id})
 
   return (
     <div>

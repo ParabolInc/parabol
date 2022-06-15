@@ -8,6 +8,7 @@ import {
 } from 'graphql'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import TaskServiceEnum from './TaskServiceEnum'
+import TierEnum from './TierEnum'
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
   name: 'SegmentEventTrackOptions',
@@ -28,7 +29,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     searchQueryFilters: {type: GraphQLList(GraphQLID)},
     projectId: {type: GraphQLID},
     selectedAll: {type: GraphQLBoolean},
-    companyId: {type: GraphQLID}
+    domainId: {type: GraphQLID},
+    ctaType: {type: TierEnum}
   })
 })
 
