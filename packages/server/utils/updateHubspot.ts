@@ -63,6 +63,7 @@ query ChangedName($userId: ID!) {
   'Meeting Completed': `
 query MeetingCompleted($userIds: [ID!]!, $userId: ID!) {
   company(userId: $userId) {
+    tier
     lastMetAt
     meetingCount
     monthlyTeamStreakMax
@@ -89,6 +90,7 @@ query NewOrg($userId: ID!) {
     email
     isAnyBillingLeader
     company {
+      tier
       activeTeamCount
     }
   }
@@ -155,6 +157,7 @@ query NewTeam($userId: ID!) {
   user(userId: $userId) {
     email
     company {
+      tier
       activeTeamCount
     }
   }
@@ -164,6 +167,7 @@ query ArchiveTeam($userId: ID!) {
   user(userId: $userId) {
     email
     company {
+      tier
       activeTeamCount
     }
   }
