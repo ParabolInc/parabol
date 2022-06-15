@@ -1,12 +1,14 @@
 import {useEffect, useRef} from 'react'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
-import useAtmosphere from './useAtmosphere'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {CreditCardModalActionType} from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import useAtmosphere from './useAtmosphere'
 
 type Options = {
   phase?: NewMeetingPhaseTypeEnum
   actionType?: CreditCardModalActionType
+  viewerId?: string
+  companyId?: string
 }
 
 // certain users keep sending this non-stop. not sure why.

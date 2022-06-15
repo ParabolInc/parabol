@@ -27,7 +27,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     service: {type: TaskServiceEnum},
     searchQueryFilters: {type: GraphQLList(GraphQLID)},
     projectId: {type: GraphQLID},
-    selectedAll: {type: GraphQLBoolean}
+    selectedAll: {type: GraphQLBoolean},
+    companyId: {type: GraphQLID}
   })
 })
 

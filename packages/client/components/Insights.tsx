@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useSegmentTrack from '~/hooks/useSegmentTrack'
 import {PALETTE} from '../styles/paletteV3'
 import {InsightsQuery} from '../__generated__/InsightsQuery.graphql'
 import InsightsDomainPanel from './InsightsDomainPanel'
@@ -23,6 +24,10 @@ const Insights = (props: Props) => {
     graphql`
       query InsightsQuery {
         viewer {
+          id
+          company {
+            id
+          }
           domains {
             id
             ...InsightsDomainPanel_domain
@@ -34,7 +39,8 @@ const Insights = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
   const {viewer} = data
-  const {domains} = viewer
+  const {id: viewerId, domains, company} = viewer
+  useSegmentTrack('Viewed domain stats', {viewerId, companyId: company?.id})
 
   return (
     <div>
