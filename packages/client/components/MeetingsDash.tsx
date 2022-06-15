@@ -12,6 +12,7 @@ import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import StartMeetingFAB from './StartMeetingFAB'
+import TutorialMeetingCard from './TutorialMeetingCard'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -78,6 +79,7 @@ const MeetingsDash = (props: Props) => {
           <MeetingsDashEmpty name={preferredName} />
           <Wrapper maybeTabletPlus={maybeTabletPlus}>
             <DemoMeetingCard />
+            <TutorialMeetingCard />
           </Wrapper>
         </EmptyContainer>
       )}
