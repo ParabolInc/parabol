@@ -62,6 +62,10 @@ module.exports = {
       // SIGINT won't kill this process in fork mode >:-(
       // instances: 1 forces cluster mode
       instances: 1
+    },
+    {
+      name: 'PG Typed',
+      script: 'yarn pg:build -w'
     }
   ].map((app) => ({
     env_production: {

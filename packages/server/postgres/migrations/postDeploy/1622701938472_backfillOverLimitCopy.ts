@@ -1,6 +1,6 @@
-import {MigrationBuilder, ColumnDefinitions} from 'node-pg-migrate'
-import updateUser from '../../../postgres/queries/updateUser'
+import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import getRethink from '../../../database/rethinkDriver'
+import {updateUser} from '../../generatedMigrationHelpers'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 

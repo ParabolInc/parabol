@@ -29,7 +29,6 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  height: '100%',
   justifyContent: 'stretch',
   overflow: 'hidden',
   position: isDesktop ? 'fixed' : 'static',
@@ -40,7 +39,11 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   userSelect: 'none',
   transform: `translateX(${isOpen ? 0 : DiscussionThreadEnum.WIDTH}px)`,
   width: DiscussionThreadEnum.WIDTH,
-  zIndex: ZIndex.SIDEBAR
+  zIndex: ZIndex.SIDEBAR,
+  height: '100%',
+  '@supports (height: 1svh) and (height: 1lvh)': {
+    height: isDesktop ? '100lvh' : '100svh'
+  }
 }))
 
 const ThreadColumn = styled('div')({

@@ -95,11 +95,11 @@ const Dashboard = (props: Props) => {
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
       query DashboardQuery($first: Int!, $after: DateTime) {
+        ...DashTopBar_query
+        ...MobileDashTopBar_query
         viewer {
           ...MeetingsDash_viewer
           ...MobileDashSidebar_viewer
-          ...MobileDashTopBar_viewer
-          ...DashTopBar_viewer
           ...DashSidebar_viewer
           overLimitCopy
           teams {
@@ -127,9 +127,9 @@ const Dashboard = (props: Props) => {
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
-        <DashTopBar viewer={viewer} toggle={toggle} />
+        <DashTopBar queryRef={data} toggle={toggle} />
       ) : (
-        <MobileDashTopBar viewer={viewer} toggle={toggle} />
+        <MobileDashTopBar queryRef={data} toggle={toggle} />
       )}
       <DashPanel>
         {isDesktop ? (
