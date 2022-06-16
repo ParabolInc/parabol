@@ -46,7 +46,8 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId),
     r.table('TimelineEvent').insert(timelineEvent).run(),
-    addTeamIdToTMS(userId, teamId),
-    addTeamTasks(userId, teamId)
+    addTeamIdToTMS(userId, teamId)
   ])
+  // after team created
+  await addTeamTasks(userId, teamId)
 }
