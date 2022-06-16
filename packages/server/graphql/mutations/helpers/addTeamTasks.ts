@@ -13,7 +13,7 @@ const addTeamTasks = async (userId: string, teamId: string) => {
       invite: 'true'
     }
   })
-  const inviteTeamTaskHTML = `Congratulations on your new team! You can now start <a href="${inviteURL}">inviting your teammates</a>`
+  const inviteTeamTaskHTML = `Congratulations on your new team! You can now start <a href="${inviteURL}" target="_self">inviting your teammates</a>`
 
   const newMeetingURL = makeAppURL(appOrigin, `/new-meeting/${teamId}`, {
     searchParams: {
