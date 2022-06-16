@@ -99,7 +99,9 @@ const addMissingJiraField = {
       return standardError(screensResponse)
     }
 
-    console.log(`Total screens count: ${screensResponse.total}, batch size: ${batchSize}, isLast: ${screensResponse.isLast}`)
+    console.log(
+      `Total screens count: ${screensResponse.total}, batch size: ${batchSize}, isLast: ${screensResponse.isLast}`
+    )
 
     screens.push(...screensResponse.values)
 

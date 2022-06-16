@@ -49,9 +49,14 @@ type Company {
   monthlyTeamStreakMax: Int!
 
   """
-  Get the list of all organizations that belong to the company
+  Get the list of all organizations the viewer is in that belong to the company
   """
   organizations: [Organization!]!
+
+  """
+  The highest tier than an organization user is being squeezed to upgrade to, "personal" if not squeezed
+  """
+  suggestedTier: TierEnum
 
   """
   The highest tier for any organization within the company

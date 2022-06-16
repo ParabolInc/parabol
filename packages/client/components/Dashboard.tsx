@@ -16,6 +16,9 @@ import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
+const InsightsRoot = lazy(
+  () => import(/* webpackChunkName: 'Insights' */ '../components/InsightsRoot')
+)
 const MeetingsDash = lazy(
   () => import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
 )
@@ -146,6 +149,7 @@ const Dashboard = (props: Props) => {
             <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+            <Route path='/usage' component={InsightsRoot} />
           </Switch>
         </DashMain>
       </DashPanel>
