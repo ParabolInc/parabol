@@ -84,6 +84,7 @@ const InsightsDomainNudge = (props: Props) => {
     }
   }
   const {togglePortal, closePortal, modalPortal} = useModal()
+  console.log({showNudge, suggestEnterprise, suggestPro, tier})
   if (!showNudge) return null
   return (
     <NudgeBlock>

@@ -33,7 +33,7 @@ const StatBlocks = styled('div')({
 
 const StatBlock = styled('div')({
   borderLeft: `1px solid ${PALETTE.SLATE_400}`,
-  ':first-child': {
+  ':first-of-type': {
     border: 'none'
   },
   display: 'flex',

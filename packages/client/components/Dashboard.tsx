@@ -122,7 +122,6 @@ const Dashboard = (props: Props) => {
   const meetingsDashRef = useRef<HTMLDivElement>(null)
   useSnackNag(overLimitCopy)
   useSnacksForNewMeetings(activeMeetings)
-  console.log('dashboard')
   return (
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>

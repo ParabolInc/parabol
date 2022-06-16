@@ -2,6 +2,7 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import TeamMember from '../../../database/types/TeamMember'
+import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -241,9 +242,20 @@ const Company: CompanyResolvers = {
     )
   },
 
-  organizations: async ({id: domain}, _args, {dataLoader}) => {
+  organizations: async ({id: domain}, _args, {authToken, dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    return organizations
+    // only superusers can see across ALL organizations.
+    // users can only see the organizations they are apart of
+    if (isSuperUser(authToken)) return organizations
+    const orgIds = organizations.map(({id}) => id)
+    const viewerId = getUserId(authToken)
+    const allOrganizationUsers = await Promise.all(
+      orgIds.map((orgId) => {
+        return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
+      })
+    )
+    const allowedOrgIds = allOrganizationUsers.filter(isValid).map(({orgId}) => orgId)
+    return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
   },
   suggestedTier: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
