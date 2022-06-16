@@ -12,10 +12,10 @@ import getMailManager from '../../email/getMailManager'
 import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import getIsEmailApprovedByOrg from '../public/mutations/helpers/getIsEmailApprovedByOrg'
@@ -53,6 +53,7 @@ export default {
     ) => {
       const operationId = dataLoader.share()
       const r = await getRethink()
+      const inviteTo = meetingId ? 'meeting' : 'team'
 
       // AUTH
       const viewerId = getUserId(authToken)
@@ -67,6 +68,7 @@ export default {
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
+      const parabolUserEmails = users.map(({email}) => email)
       if (!inviter) {
         return standardError(new Error('User not found'), {userId: viewerId})
       }
@@ -170,6 +172,17 @@ export default {
         })
       )
 
+      newAllowedInvitees.forEach(async (inviteeEmail, idx) => {
+        const isInviteeParabolUser = parabolUserEmails.includes(inviteeEmail)
+        analytics.inviteEmailSent(
+          viewerId,
+          teamId,
+          inviteeEmail,
+          isInviteeParabolUser,
+          inviteTo,
+          !!emailResults[idx]
+        )
+      })
       const successfulInvitees = newAllowedInvitees.filter((_email, idx) => emailResults[idx])
       const data = {
         removedSuggestedActionId,
@@ -191,22 +204,6 @@ export default {
           subscriberData,
           subOptions
         )
-      })
-      segmentIo.track({
-        userId: viewerId,
-        event: 'Invite Email Sent',
-        properties: {
-          teamId,
-          invitees: successfulInvitees
-        }
-      })
-      const inviteTo = meetingId ? 'meeting' : 'team'
-      successfulInvitees.forEach((invitee) => {
-        segmentIo.track({
-          userId: viewerId,
-          event: 'Invite Non-Parabol User',
-          properties: {invitee, inviteTo}
-        })
       })
       return data
     }
