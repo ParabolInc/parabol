@@ -486,3 +486,28 @@ const updateUserTiersQueryIR: any = {
  * ```
  */
 export const updateUserTiersQuery = new PreparedQuery(updateUserTiersQueryIR)
+
+const getTeamsByIdsQueryIR: any = {
+  name: 'getTeamsByIdsQuery',
+  params: [
+    {
+      name: 'ids',
+      codeRefs: {
+        defined: {a: 39, b: 41, line: 3, col: 9},
+        used: [{a: 89, b: 91, line: 6, col: 13}]
+      },
+      transform: {type: 'array_spread'}
+    }
+  ],
+  usedParamSet: {ids: true},
+  statement: {body: 'SELECT * FROM "Team"\nWHERE id IN :ids', loc: {a: 55, b: 91, line: 5, col: 0}}
+}
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT * FROM "Team"
+ * WHERE id IN :ids
+ * ```
+ */
+export const getTeamsByIdsQuery = new PreparedQuery(getTeamsByIdsQueryIR)
