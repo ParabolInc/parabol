@@ -1,39 +1,19 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
+import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {GitHubScopingSearchHistoryToggle_meeting$key} from '../__generated__/GitHubScopingSearchHistoryToggle_meeting.graphql'
-import GitHubScopingSearchHistoryMenu from './GitHubScopingSearchHistoryMenu'
-import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
+import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
-})
-
-const DropdownIcon = styled(Icon)({
-  color: PALETTE.SLATE_700,
-  fontSize: ICON_SIZE.MD18,
-  marginLeft: -8
-})
-
-const Toggle = styled(PlainButton)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingRight: 8
-})
 interface Props {
   meetingRef: GitHubScopingSearchHistoryToggle_meeting$key
 }
 
 const GitHubScopingSearchHistoryToggle = (props: Props) => {
   const {meetingRef} = props
+  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment GitHubScopingSearchHistoryToggle_meeting on PokerMeeting {
@@ -41,7 +21,15 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
         teamId
         viewerMeetingMember {
           teamMember {
-            ...GitHubScopingSearchHistoryMenu_teamMember
+            teamId
+            integrations {
+              github {
+                githubSearchQueries {
+                  id
+                  queryString
+                }
+              }
+            }
           }
         }
       }
@@ -49,27 +37,41 @@ const GitHubScopingSearchHistoryToggle = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, viewerMeetingMember} = meeting!
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
-    loadingWidth: 200,
-    noClose: true
-  })
   if (!viewerMeetingMember) return null
   const {teamMember} = viewerMeetingMember
-  return (
-    <>
-      <Toggle onClick={togglePortal} ref={originRef}>
-        <SearchIcon>search</SearchIcon>
-        <DropdownIcon>expand_more</DropdownIcon>
-      </Toggle>
-      {menuPortal(
-        <GitHubScopingSearchHistoryMenu
-          meetingId={meetingId}
-          menuProps={menuProps}
-          teamMemberRef={teamMember}
-        />
-      )}
-    </>
-  )
+  const {teamId, integrations} = teamMember
+  const githubSearchQueries = integrations.github?.githubSearchQueries
+
+  const searchQueries =
+    githubSearchQueries?.map((githubSearchQuery) => {
+      const {id, queryString} = githubSearchQuery
+
+      const selectQuery = () => {
+        commitLocalUpdate(atmosphere, (store) => {
+          const searchQueryId = SearchQueryId.join('github', meetingId)
+          const githubSearchQuery = store.get(searchQueryId)!
+          githubSearchQuery.setValue(queryString, 'queryString')
+        })
+      }
+
+      const deleteQuery = () => {
+        const normalizedQueryString = queryString.toLowerCase().trim()
+        PersistGitHubSearchQueryMutation(atmosphere, {
+          teamId,
+          queryString: normalizedQueryString,
+          isRemove: true
+        })
+      }
+
+      return {
+        id,
+        labelFirstLine: queryString,
+        onClick: selectQuery,
+        onDelete: deleteQuery
+      }
+    }) ?? []
+
+  return <ScopingSearchHistoryToggle searchQueries={searchQueries} />
 }
 
 export default GitHubScopingSearchHistoryToggle
