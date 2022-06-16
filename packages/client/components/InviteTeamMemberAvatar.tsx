@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import useModal from '../hooks/useModal'
-import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import {PALETTE} from '~/styles/paletteV3'
+import useModal from '../hooks/useModal'
+import useRouter from '../hooks/useRouter'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import AddTeamMemberModal from './AddTeamMemberModal'
 import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
 
 const Label = styled('div')({
   fontSize: 12,
@@ -55,7 +56,21 @@ const InviteTeamMemberAvatar = (props: Props) => {
     `,
     props.teamMembers
   )
-  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
+  const {
+    togglePortal: toggleModal,
+    openPortal: openModal,
+    closePortal: closeModal,
+    modalPortal
+  } = useModal()
+
+  const {location} = useRouter()
+  const params = new URLSearchParams(location.search)
+  const invite = params.get('invite')
+
+  useEffect(() => {
+    invite && openModal()
+  }, [invite])
+
   return (
     <>
       <Wrapper onClick={toggleModal}>
