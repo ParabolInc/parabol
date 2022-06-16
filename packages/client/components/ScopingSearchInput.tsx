@@ -37,10 +37,13 @@ interface Props {
   meetingId: string
   linkedRecordName: string
   defaultInput?: string
+  onChange?: () => void
+  onClear?: () => void
 }
 
 const ScopingSearchInput = (props: Props) => {
-  const {placeholder, queryString, meetingId, linkedRecordName, defaultInput} = props
+  const {placeholder, queryString, meetingId, linkedRecordName, defaultInput, onChange, onClear} =
+    props
   const atmosphere = useAtmosphere()
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
@@ -60,13 +63,15 @@ const ScopingSearchInput = (props: Props) => {
     }
   }, [])
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(meetingId, value)
+    onChange && onChange()
   }
   const clearSearch = () => {
     setSearch(meetingId, '')
     inputRef.current?.focus()
+    onClear && onClear()
   }
 
   return (
@@ -74,7 +79,7 @@ const ScopingSearchInput = (props: Props) => {
       <SearchInput
         value={queryString}
         placeholder={placeholder}
-        onChange={onChange}
+        onChange={handleOnChange}
         ref={inputRef}
       />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>

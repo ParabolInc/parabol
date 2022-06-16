@@ -1,35 +1,13 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
-import GitLabScopingSearchCurrentFilters from './GitLabScopingSearchCurrentFilters'
 import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
-import GitLabScopingSearchInput from './GitLabScopingSearchInput'
-import Icon from './Icon'
-
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
-  padding: 3,
-  marginRight: 12
-})
-
-const SearchBar = styled('div')({
-  padding: 16
-})
-
-const SearchBarWrapper = styled('div')({
-  alignItems: 'center',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: '40px',
-  display: 'flex',
-  height: 44,
-  padding: '0 16px',
-  width: '100%'
-})
+import ScopingSearchBar from './ScopingSearchBar'
+import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
+import ScopingSearchInput from './ScopingSearchInput'
 
 interface Props {
   meetingRef: GitLabScopingSearchBar_meeting$key
@@ -37,27 +15,75 @@ interface Props {
 
 const GitLabScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
 
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchBar_meeting on PokerMeeting {
-        ...GitLabScopingSearchInput_meeting
         ...GitLabScopingSearchFilterToggle_meeting
-        ...GitLabScopingSearchCurrentFilters_meeting
+        id
+        gitlabSearchQuery {
+          selectedProjectsIds
+          queryString
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              gitlab {
+                projects {
+                  ... on _xGitLabProject {
+                    id
+                    fullPath
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
 
+  const {gitlabSearchQuery, viewerMeetingMember, id: meetingId} = meeting
+  const {selectedProjectsIds, queryString} = gitlabSearchQuery
+  const projects = viewerMeetingMember?.teamMember.integrations.gitlab.projects
+
+  const selectedProjectsPaths = [] as string[]
+  selectedProjectsIds?.forEach((projectId) => {
+    const selectedProjectPath = projects?.find((project) => project.id === projectId)?.fullPath
+    if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
+  })
+  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+
+  const trackEvent = (eventTitle: string) => {
+    SendClientSegmentEventMutation(atmosphere, eventTitle, {
+      viewerId,
+      meetingId,
+      service: 'gitlab'
+    })
+  }
+
   return (
-    <SearchBar>
-      <SearchBarWrapper>
-        <SearchIcon>search</SearchIcon>
-        <GitLabScopingSearchInput meetingRef={meeting} />
-        <GitLabScopingSearchFilterToggle meetingRef={meeting} />
-      </SearchBarWrapper>
-      <GitLabScopingSearchCurrentFilters meetingRef={meeting} />
-    </SearchBar>
+    <ScopingSearchBar currentFilters={currentFilters}>
+      <ScopingSearchHistoryToggle />
+      <ScopingSearchInput
+        placeholder={'Search GitLab issues...'}
+        queryString={queryString}
+        meetingId={meetingId}
+        linkedRecordName={'gitlabSearchQuery'}
+        onChange={() => {
+          if (!queryString) {
+            trackEvent('Started Poker Scope Search')
+          }
+        }}
+        onClear={() => {
+          trackEvent('Cleared Poker Scope Search')
+        }}
+      />
+      <GitLabScopingSearchFilterToggle meetingRef={meeting} />
+    </ScopingSearchBar>
   )
 }
 
