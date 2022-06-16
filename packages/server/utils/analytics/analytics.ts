@@ -27,6 +27,7 @@ export type AnalyticsEvent =
   | 'Integration Added'
   | 'Integration Removed'
   | 'Invite Email Sent'
+  | 'Invite Accepted'
   // org
   | 'Organization Upgraded'
   | 'Organization Downgraded'
@@ -158,6 +159,19 @@ class Analytics {
       isInviteeParabolUser,
       inviteTo,
       success
+    })
+  }
+
+  inviteAccepted = (
+    userId: string,
+    teamId: string,
+    isNewUser: boolean,
+    acceptAt: 'meeting' | 'team'
+  ) => {
+    this.track(userId, 'Invite Accepted', {
+      teamId,
+      isNewUser,
+      acceptAt
     })
   }
 
