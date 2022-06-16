@@ -84,30 +84,32 @@ const InsightsDomainNudge = (props: Props) => {
     }
   }
   const {togglePortal, closePortal, modalPortal} = useModal()
-  console.log({showNudge, suggestEnterprise, suggestPro, tier})
-  if (!showNudge) return null
   return (
-    <NudgeBlock>
-      <OverLimitBlock>
-        <OverLimitCopy>
-          <b>{domainId}</b> is over the limit of <b>2 Free Teams</b>
-        </OverLimitCopy>
-      </OverLimitBlock>
-      <ButtonBlock>
-        <CTA size={'large'} onClick={onClickCTA}>
-          {CTACopy}
-        </CTA>
-      </ButtonBlock>
-      {biggestOrganization &&
-        modalPortal(
-          <CreditCardModal
-            activeUserCount={biggestOrganization.orgUserCount.activeUserCount}
-            orgId={biggestOrganization.id}
-            actionType={'upgrade'}
-            closePortal={closePortal}
-          />
-        )}
-    </NudgeBlock>
+    <>
+      {modalPortal(
+        <CreditCardModal
+          // will be null if they successfully upgraded their last free org
+          activeUserCount={biggestOrganization?.orgUserCount?.activeUserCount ?? 0}
+          orgId={biggestOrganization?.id ?? ''}
+          actionType={'upgrade'}
+          closePortal={closePortal}
+        />
+      )}
+      {showNudge && (
+        <NudgeBlock>
+          <OverLimitBlock>
+            <OverLimitCopy>
+              <b>{domainId}</b> is over the limit of <b>2 Free Teams</b>
+            </OverLimitCopy>
+          </OverLimitBlock>
+          <ButtonBlock>
+            <CTA size={'large'} onClick={onClickCTA}>
+              {CTACopy}
+            </CTA>
+          </ButtonBlock>
+        </NudgeBlock>
+      )}
+    </>
   )
 }
 
