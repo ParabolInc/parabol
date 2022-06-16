@@ -10,6 +10,18 @@ const StyledEditor = styled('div')`
   .ProseMirror {
     min-height: 40px;
   }
+
+  .ProseMirror :is(ul, ol) {
+    list-style-position: outside;
+    padding-inline-start: 16px;
+    margin-block-start: 16px;
+    margin-block-end: 16px;
+  }
+
+  .ProseMirror :is(ol) {
+    margin-inline-start: 2px;
+  }
+
   .ProseMirror p.is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);
@@ -17,6 +29,7 @@ const StyledEditor = styled('div')`
     height: 0;
     pointer-events: none;
   }
+
   .ProseMirror-focused:focus {
     outline: none;
   }
