@@ -94,6 +94,10 @@ const StyledReactjis = styled(ReactjiSection)({
   paddingTop: '16px'
 })
 
+const DiscussionHeaderWrapper = styled('div')({
+  padding: '0px 12px 20px 12px'
+})
+
 interface Props {
   meetingRef: TeamPromptDiscussionDrawer_meeting$key
   isDesktop: boolean
@@ -207,14 +211,18 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>
           </Header>
-          <PromptResponseEditor content={contentJSON} readOnly={true} />
-          <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
         </DiscussionResponseCard>
         <ThreadColumn>
           <DiscussionThreadRoot
             discussionId={discussionId}
             allowedThreadables={['comment', 'task']}
             width={'100%'}
+            header={
+              <DiscussionHeaderWrapper>
+                <PromptResponseEditor content={contentJSON} readOnly={true} />
+                <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+              </DiscussionHeaderWrapper>
+            }
           />
         </ThreadColumn>
       </Drawer>
