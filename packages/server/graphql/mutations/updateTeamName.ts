@@ -1,15 +1,14 @@
 import {GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
-import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import teamNameValidation from 'parabol-client/validation/teamNameValidation'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import {GQLContext} from '../graphql'
+import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
+import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -24,7 +23,6 @@ export default {
     {updatedTeam}: {updatedTeam: UpdatedTeamInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -54,10 +52,7 @@ export default {
       name,
       updatedAt: now
     }
-    await Promise.all([
-      r.table('Team').get(teamId).update(dbUpdate).run(),
-      updateTeamByTeamId(dbUpdate, teamId)
-    ])
+    await updateTeamByTeamId(dbUpdate, teamId)
 
     const data = {teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateTeamNamePayload', data, subOptions)

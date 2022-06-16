@@ -40,12 +40,6 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
 
   await Promise.all([
     catchAndLog(() => insertTeamQuery.run(verifiedTeam, getPg())),
-    // insert team
-    r
-      .table('Team')
-      .insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val')
-      .default(null)
-      .run(),
     // add meeting settings
     r.table('MeetingSettings').insert(meetingSettings).run(),
     // denormalize common fields to team member

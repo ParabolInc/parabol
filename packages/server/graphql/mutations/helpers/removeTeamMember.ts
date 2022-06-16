@@ -1,10 +1,11 @@
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
+import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import CheckInStage from '../../../database/types/CheckInStage'
+import EstimateStage from '../../../database/types/EstimateStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import EstimateStage from '../../../database/types/EstimateStage'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
@@ -12,7 +13,6 @@ import {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
-import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 
 interface Options {
   evictorUserId?: string
@@ -44,7 +44,6 @@ const removeTeamMember = async (
     }
     await Promise.all([
       // archive single-person teams
-      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId),
       // delete all tasks belonging to a 1-person team
       r.table('Task').getAll(teamId, {index: 'teamId'}).delete()

@@ -1,7 +1,10 @@
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
+import TeamMember from '../../../database/types/TeamMember'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import {CompanyResolvers} from '../resolverTypes'
 
 export type CompanySource = {id: string}
@@ -20,37 +23,73 @@ const getTeamsByOrgIds = async (
 
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {
-    // by default, active is defined as having met within 30 days
+    // teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an updatedAt newer than 30 days ago
     const metAfter = after ? new Date(after) : new Date(Date.now() - THIRTY_DAYS)
+    // get the organizations
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    // get unarchivedTeams
     const orgIds = organizations.map(({id}) => id)
-    const teams = await getTeamsByOrgIds(orgIds, dataLoader, false)
-    const teamIds = teams.map(({id}) => id)
-
-    const areTeamsActive = await Promise.all(
-      teamIds.map(async (teamId) => {
-        const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-        if (activeMeetings.length > 0) {
-          return true
-        } else {
-          const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-          const completedMeetingsSinceAfter = completedMeetings.filter(
-            ({endedAt}) => endedAt! > metAfter
-          )
-          return completedMeetingsSinceAfter.length > 0
+    const unarchivedTeams = await getTeamsByOrgIds(orgIds, dataLoader, false)
+    // for each team, get the team members
+    const teamIds = unarchivedTeams.map(({id}) => id)
+    const teamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
+      .filter(isValid)
+      .flat()
+    // for each team member, get the user
+    const userIds = [...new Set(teamMembers.map(({userId}) => userId))]
+    const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
+    // join the user to the team member
+    const activeTeamMembers = teamMembers.filter((teamMember) => {
+      // coercion on purpose. if this throws an error, our data model is bad & we want to know about it
+      return !users.find((user) => user.id === teamMember.userId)!.inactive
+    })
+    // group team members by teamId
+    const teamMembersByTeamId = activeTeamMembers.reduce((obj, teamMember) => {
+      if (obj[teamMember.teamId]) {
+        obj[teamMember.teamId]!.push(teamMember)
+      } else {
+        obj[teamMember.teamId] = [teamMember]
+      }
+      return obj
+    }, {} as Record<string, [TeamMember, ...TeamMember[]]>)
+    // filter to teams with at least 2 teamMembers where !teamMember.user.inactive
+    const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)
+      .map((teamMembers) => {
+        return {
+          count: teamMembers.length,
+          team: unarchivedTeams.find((team) => team.id === teamMembers[0].teamId)!
         }
       })
-    )
-    return areTeamsActive.filter(Boolean).length
+      .filter((agg) => agg.count >= 2)
+      .map((agg) => agg.team)
+    // for each filtered team, find a meeting with an updatedAt newer than metAfter (default 30 days)
+    const r = await getRethink()
+    const lastMetAt = (await Promise.all(
+      teamsWithSufficientTeamMembers.map((team) => {
+        return r
+          .table('NewMeeting')
+          .getAll(team.id, {index: 'teamId'})
+          .filter((meeting) => meeting('updatedAt').ge(metAfter))
+          .limit(1)
+          .nth(0)('updatedAt')
+          .default(null)
+      })
+    )) as unknown as (Date | null)[]
+
+    // filter out teams without a meeting that has been updated within the last 30 days
+    const recentlyMetTeams = teamsWithSufficientTeamMembers.filter((_team, idx) => !!lastMetAt[idx])
+
+    // return length of filtered teams
+    return recentlyMetTeams.length
   },
 
   activeUserCount: async ({id: domain}, {after}, {dataLoader}) => {
+    // number of users on an active organization that has logged in within the last 30 days
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
-    const organizationUsersByOrgId = (
-      await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)
-    ).filter(errorFilter)
-    const organizationUsers = organizationUsersByOrgId.flat()
+    const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
+      .filter(isValid)
+      .flat()
     const activeOrganizationUsers = organizationUsers.filter((organizationUser) => {
       const isActive = !organizationUser.inactive
       const joinedAfter = after ? organizationUser.joinedAt > new Date(after) : true
@@ -61,29 +100,60 @@ const Company: CompanyResolvers = {
     return uniqueUserIds.size
   },
   activeOrganizationCount: async ({id: domain}, _args, {dataLoader}) => {
+    // organizations with at least 1 unarchived team on it, which has at least 2 team members who have logged in within the last 30 days
+
+    // get the organizations
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const allOrgIds = organizations.map(({id}) => id)
-    // get the organizations with at least 1 unarchived team (when moveTeamsToOrg is called it can leave empty orgs behind)
-    const teams = await getTeamsByOrgIds(allOrgIds, dataLoader, false)
-    const orgIdsWithManyTeamsSet = new Set<string>()
-    teams.forEach((team) => {
-      orgIdsWithManyTeamsSet.add(team.orgId)
-    })
-    const orgIdsWithManyTeams = [...orgIdsWithManyTeamsSet]
-
-    // get the number of org users for each org
-    const organizationUsersByOrgId = (
-      await dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsWithManyTeams)
-    ).filter(errorFilter)
-    const organizationUsers = organizationUsersByOrgId.flat()
+    // get the organizationUsers
+    const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(allOrgIds))
+      .flat()
+      .filter(isValid)
     const activeOrganizationUsers = organizationUsers.filter(
       (organizationUser) => !organizationUser.inactive
     )
-    // filter out orgs with only 1 org user
-    const activeOrganizations = orgIdsWithManyTeams.filter((orgId) => {
-      return activeOrganizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
-    })
-    return activeOrganizations.length
+    // if there aren't 2 active users, abort
+    if (activeOrganizationUsers.length < 2) return 0
+    // get the unarchived teams
+    const unarchivedTeams = await getTeamsByOrgIds(allOrgIds, dataLoader, false)
+    // if there aren't any unarchived teams, abort
+    if (unarchivedTeams.length === 0) return 0
+    // create teamMemberIds
+    const teamIds = unarchivedTeams.map(({id}) => id)
+    const userIds = [...new Set(organizationUsers.map(({userId}) => userId))]
+    const teamMemberIds = userIds
+      .map((userId) => teamIds.map((teamId) => TeamMemberId.join(teamId, userId)))
+      .flat()
+    // get the teamMembers by teamId, userId
+    const teamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds)).filter(
+      isValid
+    )
+    // group by teamId
+    const teamMembersByTeamId = teamMembers.reduce((obj, teamMember) => {
+      if (obj[teamMember.teamId]) {
+        obj[teamMember.teamId]!.push(teamMember)
+      } else {
+        obj[teamMember.teamId] = [teamMember]
+      }
+      return obj
+    }, {} as Record<string, [TeamMember, ...TeamMember[]]>)
+
+    // filter out teams that have less than 2 unremoved team members
+    const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)
+      .map((teamMembers) => {
+        return {
+          count: teamMembers.length,
+          team: unarchivedTeams.find((team) => team.id === teamMembers[0].teamId)!
+        }
+      })
+      .filter((agg) => agg.count >= 2)
+      .map((agg) => agg.team)
+    // for each remaining teamId, get the orgId
+    // make a set of the orgIds
+    const orgsIdsWithSufficientTeamMembers = [
+      ...new Set(teamsWithSufficientTeamMembers.map((team) => team.orgId))
+    ]
+    return orgsIdsWithSufficientTeamMembers.length
   },
   lastMetAt: async ({id: domain}, _args, {dataLoader}) => {
     const r = await getRethink()
@@ -102,6 +172,7 @@ const Company: CompanyResolvers = {
   },
 
   meetingCount: async ({id: domain}, {after}, {dataLoader}) => {
+    // number of meetings created by teams on organizations assigned to the domain
     const r = await getRethink()
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)

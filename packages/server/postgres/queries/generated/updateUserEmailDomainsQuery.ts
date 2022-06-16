@@ -3,8 +3,8 @@ import { PreparedQuery } from '@pgtyped/query';
 
 /** 'UpdateUserEmailDomainsQuery' parameters type */
 export interface IUpdateUserEmailDomainsQueryParams {
+  userIds: readonly (string | null | void)[];
   newDomain: string | null | void;
-  oldDomain: string | null | void;
 }
 
 /** 'UpdateUserEmailDomainsQuery' return type */
@@ -18,14 +18,14 @@ export interface IUpdateUserEmailDomainsQueryQuery {
   result: IUpdateUserEmailDomainsQueryResult;
 }
 
-const updateUserEmailDomainsQueryIR: any = {"name":"updateUserEmailDomainsQuery","params":[{"name":"newDomain","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":114,"b":122,"line":6,"col":45}]}},{"name":"oldDomain","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":150,"b":158,"line":7,"col":16}]}}],"usedParamSet":{"newDomain":true,"oldDomain":true},"statement":{"body":"UPDATE \"User\" SET email =\nCONCAT(LEFT(email, POSITION('@' in email)), :newDomain::VARCHAR)\nWHERE domain = :oldDomain\nRETURNING id","loc":{"a":43,"b":171,"line":5,"col":0}}};
+const updateUserEmailDomainsQueryIR: any = {"name":"updateUserEmailDomainsQuery","params":[{"name":"userIds","codeRefs":{"defined":{"a":48,"b":54,"line":3,"col":9},"used":[{"a":173,"b":179,"line":8,"col":13}]},"transform":{"type":"array_spread"}},{"name":"newDomain","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":140,"b":148,"line":7,"col":45}]}}],"usedParamSet":{"newDomain":true,"userIds":true},"statement":{"body":"UPDATE \"User\" SET email =\nCONCAT(LEFT(email, POSITION('@' in email)), :newDomain::VARCHAR)\nWHERE id in :userIds\nRETURNING id","loc":{"a":69,"b":192,"line":6,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "User" SET email =
  * CONCAT(LEFT(email, POSITION('@' in email)), :newDomain::VARCHAR)
- * WHERE domain = :oldDomain
+ * WHERE id in :userIds
  * RETURNING id
  * ```
  */
