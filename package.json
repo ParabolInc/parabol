@@ -64,7 +64,8 @@
     "nanoid": "^3.1.31",
     "@xmldom/xmldom": "^0.7.0",
     "node-gyp": "^8.4.1",
-    "simple-get": "^4.0.1"
+    "simple-get": "^4.0.1",
+    "caniuse-lite": "~1.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "7.16.0",
