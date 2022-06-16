@@ -10,6 +10,7 @@ import IUser from '../../../postgres/types/IUser'
 import catchAndLog from '../../../postgres/utils/catchAndLog'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
+import addTeamTasks from './addTeamTasks'
 
 interface ValidNewTeam {
   id: string
@@ -45,6 +46,7 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId),
     r.table('TimelineEvent').insert(timelineEvent).run(),
-    addTeamIdToTMS(userId, teamId)
+    addTeamIdToTMS(userId, teamId),
+    addTeamTasks(userId, teamId)
   ])
 }
