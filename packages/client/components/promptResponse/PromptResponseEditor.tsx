@@ -6,7 +6,8 @@ import StarterKit from '@tiptap/starter-kit'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import RaisedButton from '../RaisedButton'
+import {Radius} from '~/types/constEnums'
+import BaseButton from '../BaseButton'
 
 const SubmissionButtonWrapper = styled('div')({
   display: 'flex',
@@ -14,15 +15,21 @@ const SubmissionButtonWrapper = styled('div')({
   alignItems: 'center'
 })
 
-const SubmitButton = styled(RaisedButton)({
+const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
+  backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
+  opacity: 1,
+  borderRadius: Radius.BUTTON_PILL,
+  color: disabled ? PALETTE.SLATE_600 : '#FFFFFF',
+  outline: 0,
   marginTop: 12,
   padding: '4px 12px 4px 12px',
   fontSize: 14,
   lineHeight: '20px',
   fontWeight: 400
-})
+}))
 
 const CancelButton = styled(SubmitButton)({
+  backgroundColor: PALETTE.SLATE_200,
   marginRight: 12,
   color: PALETTE.SLATE_700
 })
@@ -124,7 +131,7 @@ const PromptResponseEditor = (props: Props) => {
       </StyledEditor>
       <SubmissionButtonWrapper>
         {!!content && _isEditing && (
-          <CancelButton onClick={() => editor && onCancel(editor)} size='medium' palette={'gray'}>
+          <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
             Cancel
           </CancelButton>
         )}
@@ -132,7 +139,6 @@ const PromptResponseEditor = (props: Props) => {
           <SubmitButton
             onClick={() => editor && onSubmit(editor)}
             size='medium'
-            palette={!editor?.isEmpty ? 'blue' : 'gray'}
             disabled={!editor || editor.isEmpty}
           >
             {!content ? 'Submit' : 'Update'}
