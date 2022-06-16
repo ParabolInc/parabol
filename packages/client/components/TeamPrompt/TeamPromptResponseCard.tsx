@@ -258,19 +258,21 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            <ResponseCardFooter>
-              <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
-              <ReplyButton onClick={() => onSelectDiscussion()}>
-                {replyCount > 0 ? (
-                  <>
-                    <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
-                    {replyCount} {plural(replyCount, 'Reply', 'Replies')}
-                  </>
-                ) : (
-                  'Reply'
-                )}
-              </ReplyButton>
-            </ResponseCardFooter>
+            {!!contentJSON && (
+              <ResponseCardFooter>
+                <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+                <ReplyButton onClick={() => onSelectDiscussion()}>
+                  {replyCount > 0 ? (
+                    <>
+                      <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
+                      {replyCount} {plural(replyCount, 'Reply', 'Replies')}
+                    </>
+                  ) : (
+                    'Reply'
+                  )}
+                </ReplyButton>
+              </ResponseCardFooter>
+            )}
           </>
         )}
       </ResponseCard>

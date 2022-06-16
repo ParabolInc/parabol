@@ -1,10 +1,31 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
-import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
+import {EditorContent, JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useState} from 'react'
+import {PALETTE} from '~/styles/paletteV3'
+import RaisedButton from '../RaisedButton'
+
+const SubmissionButtonWrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center'
+})
+
+const SubmitButton = styled(RaisedButton)({
+  marginTop: 12,
+  padding: '4px 12px 4px 12px',
+  fontSize: 14,
+  lineHeight: '20px',
+  fontWeight: 400
+})
+
+const CancelButton = styled(SubmitButton)({
+  marginRight: 12,
+  color: PALETTE.SLATE_700
+})
 
 const StyledEditor = styled('div')`
   .ProseMirror {
@@ -68,7 +89,7 @@ const PromptResponseEditor = (props: Props) => {
     setEditing(true)
   }
 
-  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
+  const onSubmit = (newEditorState: EditorState) => {
     setEditing(false)
     const newContent = newEditorState.getJSON()
 
@@ -80,22 +101,45 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit?.(newEditorState)
   }
 
+  const onCancel = (editor: EditorState) => {
+    setEditing(false)
+    editor?.commands.setContent(content)
+  }
+
   const editor = useEditor(
     {
       content,
       extensions: createEditorExtensions(placeholder),
       autofocus: autoFocus,
       onUpdate,
-      onBlur: onSubmit,
       editable: !readOnly
     },
     [content]
   )
 
   return (
-    <StyledEditor>
-      <EditorContent editor={editor} />
-    </StyledEditor>
+    <>
+      <StyledEditor>
+        <EditorContent editor={editor} />
+      </StyledEditor>
+      <SubmissionButtonWrapper>
+        {!!content && _isEditing && (
+          <CancelButton onClick={() => editor && onCancel(editor)} size='medium' palette={'gray'}>
+            Cancel
+          </CancelButton>
+        )}
+        {(!content || _isEditing) && (
+          <SubmitButton
+            onClick={() => editor && onSubmit(editor)}
+            size='medium'
+            palette={!editor?.isEmpty ? 'blue' : 'gray'}
+            disabled={!editor || editor.isEmpty}
+          >
+            {!content ? 'Submit' : 'Update'}
+          </SubmitButton>
+        )}
+      </SubmissionButtonWrapper>
+    </>
   )
 }
 export default PromptResponseEditor
