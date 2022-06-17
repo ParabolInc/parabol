@@ -139,19 +139,19 @@ const query = graphql`
 `
 
 const NewMeeting = (props: Props) => {
-  const {teamId} = props
-  const {queryRef} = props
+  const {teamId, queryRef} = props
   const data = usePreloadedQuery<NewMeetingQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
   const {teams, featureFlags} = viewer
+  const {insights} = featureFlags
   const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
 
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
-  useUsageSnackNag(featureFlags.insights)
+  useUsageSnackNag(insights)
   const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
