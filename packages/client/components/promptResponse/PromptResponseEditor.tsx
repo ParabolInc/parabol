@@ -129,22 +129,26 @@ const PromptResponseEditor = (props: Props) => {
       <StyledEditor>
         <EditorContent editor={editor} />
       </StyledEditor>
-      <SubmissionButtonWrapper>
-        {!!content && isEditing && (
-          <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
-            Cancel
-          </CancelButton>
-        )}
-        {(!content || isEditing) && (
-          <SubmitButton
-            onClick={() => editor && onSubmit(editor)}
-            size='medium'
-            disabled={!editor || editor.isEmpty}
-          >
-            {!content ? 'Submit' : 'Update'}
-          </SubmitButton>
-        )}
-      </SubmissionButtonWrapper>
+      {!readOnly && (
+        // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
+        // about it.
+        <SubmissionButtonWrapper>
+          {!!content && isEditing && (
+            <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
+              Cancel
+            </CancelButton>
+          )}
+          {(!content || isEditing) && (
+            <SubmitButton
+              onClick={() => editor && onSubmit(editor)}
+              size='medium'
+              disabled={!editor || editor.isEmpty}
+            >
+              {!content ? 'Submit' : 'Update'}
+            </SubmitButton>
+          )}
+        </SubmissionButtonWrapper>
+      )}
     </>
   )
 }
