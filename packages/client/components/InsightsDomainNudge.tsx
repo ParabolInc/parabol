@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
@@ -85,10 +86,10 @@ const InsightsDomainNudge = (props: Props) => {
     } else if (suggestEnterprise) {
       window.open('mailto:love@parabol.co?subject=Increase Usage Limits')
     }
-    // SendClientSegmentEventMutation(atmosphere, 'Clicked Domain Stats CTA', {
-    //   CTAType,
-    //   domainId
-    // })
+    SendClientSegmentEventMutation(atmosphere, 'Clicked Domain Stats CTA', {
+      CTAType,
+      domainId
+    })
   }
   const {togglePortal, closePortal, modalPortal} = useModal()
   return (
