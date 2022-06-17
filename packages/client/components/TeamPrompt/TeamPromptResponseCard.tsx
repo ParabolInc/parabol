@@ -72,7 +72,6 @@ const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
     color: isEmpty ? PALETTE.SLATE_600 : undefined,
     padding: Card.PADDING,
     minHeight: ResponseCardDimensions.MIN_CARD_HEIGHT,
-    userSelect: 'none',
     outline: isHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none'
   })
 )

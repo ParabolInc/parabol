@@ -577,6 +577,11 @@ type User {
   createdAt: DateTime
 
   """
+  The domains the user is a lead of
+  """
+  domains: [Company!]!
+
+  """
   The user email
   """
   email: Email!

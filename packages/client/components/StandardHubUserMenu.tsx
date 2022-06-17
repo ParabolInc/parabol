@@ -1,19 +1,19 @@
-import {StandardHubUserMenu_viewer} from '../__generated__/StandardHubUserMenu_viewer.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {Link} from 'react-router-dom'
+import {MenuProps} from '../hooks/useMenu'
+import {PALETTE} from '../styles/paletteV3'
+import {TierLabel} from '../types/constEnums'
+import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
+import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemIcon from './MenuItemIcon'
 import MenuItemLabel from './MenuItemLabel'
-import {MenuProps} from '../hooks/useMenu'
-import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
-import {PALETTE} from '../styles/paletteV3'
-import {TierLabel} from '../types/constEnums'
 
 const UpgradeIcon = styled(MenuItemIcon)({
   color: PALETTE.SKY_500
@@ -30,92 +30,90 @@ const TallMenu = styled(Menu)({
   maxHeight: 256
 })
 
-interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
+const MenuItemLink = MenuItemLabel.withComponent(Link)
+
+interface Props {
   menuProps: MenuProps
-  viewer: StandardHubUserMenu_viewer | null
+  viewerRef: StandardHubUserMenu_viewer$key
 }
 
 const StandardHubUserMenu = (props: Props) => {
-  const {menuProps, history, viewer} = props
-  if (!viewer) return null
-  const {email, organizations} = viewer
-  // nav menu routes
-  const goToProfile = () => {
-    history.push('/me/profile')
-  }
-  const goToOrganizations = () => {
-    history.push('/me/organizations')
-  }
-  const signOut = () => {
-    history.push(`/${SIGNOUT_SLUG}`)
-  }
-
+  const {menuProps, viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment StandardHubUserMenu_viewer on User {
+        email
+        featureFlags {
+          insights
+        }
+        organizations {
+          id
+          tier
+        }
+      }
+    `,
+    viewerRef
+  )
+  const {email, featureFlags, organizations} = viewer
+  const {insights} = featureFlags
   const ownedFreeOrgs = organizations.filter((org) => org.tier === 'personal')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
-
-  const handleUpgradeClick = () => {
-    const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
-    history.push(`/me/organizations${routeSuffix}`)
-  }
+  const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 
   return (
     <TallMenu ariaLabel={'Select your settings'} {...menuProps}>
       <DropdownMenuLabel>{email}</DropdownMenuLabel>
       <MenuItem
         label={
-          <MenuItemLabel>
+          <MenuItemLink to={'/me/profile'}>
             <MenuItemIcon>account_box</MenuItemIcon>
             {'Profile'}
-          </MenuItemLabel>
+          </MenuItemLink>
         }
-        onClick={goToProfile}
       />
       <MenuItem
         label={
-          <MenuItemLabel>
+          <MenuItemLink to={'/me/organizations'}>
             <MenuItemIcon>account_balance</MenuItemIcon>
             {'Organizations'}
-          </MenuItemLabel>
+          </MenuItemLink>
         }
-        onClick={goToOrganizations}
       />
+      {insights && (
+        <MenuItem
+          label={
+            <MenuItemLink to={'/usage'}>
+              <MenuItemIcon>bar_chart</MenuItemIcon>
+              {'Usage'}
+            </MenuItemLink>
+          }
+        />
+      )}
       {showUpgradeCTA && <MenuItemHR key='HR0' />}
       {showUpgradeCTA && (
         <MenuItem
           label={
-            <MenuItemLabel>
+            <MenuItemLink to={`/me/organizations${routeSuffix}`}>
               <UpgradeIcon>star</UpgradeIcon>
               <UpgradeCTA>
                 {'Upgrade to '}
                 <b>{TierLabel.PRO}</b>
               </UpgradeCTA>
-            </MenuItemLabel>
+            </MenuItemLink>
           }
-          onClick={handleUpgradeClick}
         />
       )}
       <MenuItemHR key='HR1' />
       <MenuItem
         label={
-          <MenuItemLabel>
+          <MenuItemLink to={`/${SIGNOUT_SLUG}`}>
             <MenuItemIcon>exit_to_app</MenuItemIcon>
             {SIGNOUT_LABEL}
-          </MenuItemLabel>
+          </MenuItemLink>
         }
-        onClick={signOut}
       />
     </TallMenu>
   )
 }
 
-export default createFragmentContainer(withRouter(StandardHubUserMenu), {
-  viewer: graphql`
-    fragment StandardHubUserMenu_viewer on User {
-      email
-      organizations {
-        id
-        tier
-      }
-    }
-  `
-})
+export default StandardHubUserMenu

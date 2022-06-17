@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 import {UpgradeToProMutation as TUpgradeToProMutation} from '../__generated__/UpgradeToProMutation.graphql'
 
@@ -10,6 +10,9 @@ graphql`
         brand
         last4
         expiry
+      }
+      company {
+        tier
       }
       tier
       periodEnd
