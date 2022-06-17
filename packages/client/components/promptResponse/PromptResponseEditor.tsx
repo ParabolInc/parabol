@@ -84,11 +84,11 @@ interface Props {
 
 const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
-  const [_isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
-  const setEditing = (isEditing: boolean) => {
-    setIsEditing(isEditing)
+  const setEditing = (newIsEditing: boolean) => {
+    setIsEditing(newIsEditing)
     setAutoFocus(false)
   }
 
@@ -130,12 +130,12 @@ const PromptResponseEditor = (props: Props) => {
         <EditorContent editor={editor} />
       </StyledEditor>
       <SubmissionButtonWrapper>
-        {!!content && _isEditing && (
+        {!!content && isEditing && (
           <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
             Cancel
           </CancelButton>
         )}
-        {(!content || _isEditing) && (
+        {(!content || isEditing) && (
           <SubmitButton
             onClick={() => editor && onSubmit(editor)}
             size='medium'
