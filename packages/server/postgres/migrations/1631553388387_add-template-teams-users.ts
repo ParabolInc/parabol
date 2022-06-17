@@ -1,8 +1,7 @@
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
+import {backupTeamQuery, backupUserQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
-import {backupTeamQuery} from '../queries/generated/backupTeamQuery'
-import {backupUserQuery} from '../queries/generated/backupUserQuery'
 
 const connectRethinkDB = async () => {
   const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL)
@@ -19,10 +18,20 @@ export async function up() {
   await connectRethinkDB()
   const pgGhostTeam = await client.query(`SELECT 1 FROM "Team" WHERE id = 'aGhostTeam';`)
   if (pgGhostTeam.rowCount === 0) {
-    const ghostTeam = await r
-      .table('Team')
-      .get('aGhostTeam')
-      .run()
+    const ghostTeam = (await r.tableList().contains('Team').run())
+      ? await r.table('Team').get('aGhostTeam').run()
+      : {
+          id: 'aGhostTeam',
+          name: 'Parabol',
+          createdAt: new Date('2016-06-01'),
+          createdBy: 'aGhostUser',
+          isArchived: false,
+          isPaid: true,
+          tier: 'enterprise',
+          orgId: 'aGhostOrg',
+          isOnboardTeam: true,
+          updatedAt: new Date('2016-06-01')
+        }
     const fixedGhostTeam = {
       ...ghostTeam,
       lastMeetingType: 'retrospective',

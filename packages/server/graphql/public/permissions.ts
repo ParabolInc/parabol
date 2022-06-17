@@ -5,6 +5,7 @@ import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import isOrgTier from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
+import isUserViewer from './rules/isUserViewer'
 import isViewerBillingLeader from './rules/isViewerBillingLeader'
 import rateLimit from './rules/rateLimit'
 type Wildcard = {
@@ -41,6 +42,9 @@ const permissionMap: PermissionMap<Resolvers> = {
   Query: {
     '*': isAuthenticated,
     getDemoEntities: rateLimit({perMinute: 5, perHour: 50})
+  },
+  User: {
+    domains: or(isSuperUser, isUserViewer)
   }
 }
 

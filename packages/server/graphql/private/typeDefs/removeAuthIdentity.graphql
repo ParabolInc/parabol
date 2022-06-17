@@ -1,0 +1,33 @@
+extend type Mutation {
+  """
+  Remove the auth identity for users with a specific domain. Example use case: signed up with Gmail but they're deleting their Google account
+  """
+  removeAuthIdentity(
+    """
+    Change the auth identity for users with this domain
+    """
+    domain: String!
+
+    """
+    The type of auth to remove
+    """
+    identityType: AuthIdentityTypeEnum!
+
+    """
+    Add a local auth with a dummy hashed password
+    """
+    addLocal: Boolean!
+  ): RemoveAuthIdentityPayload!
+}
+
+"""
+Return value for removeAuthIdentity, which could be an error
+"""
+union RemoveAuthIdentityPayload = ErrorPayload | RemoveAuthIdentitySuccess
+
+type RemoveAuthIdentitySuccess {
+  """
+  The users who had their auth identity removed
+  """
+  users: [User!]!
+}

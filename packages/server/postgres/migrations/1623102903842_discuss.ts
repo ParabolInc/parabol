@@ -6,8 +6,8 @@ import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import generateUID from '../../generateUID'
+import {insertDiscussionsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
-import {insertDiscussionsQuery} from '../queries/generated/insertDiscussionsQuery'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
@@ -55,14 +55,8 @@ export async function up(): Promise<void> {
   } as const
 
   try {
-    await r
-      .table('NewMeeting')
-      .indexCreate('createdAt')
-      .run()
-    await r
-      .table('NewMeeting')
-      .indexWait('createdAt')
-      .run()
+    await r.table('NewMeeting').indexCreate('createdAt').run()
+    await r.table('NewMeeting').indexWait('createdAt').run()
   } catch (e) {
     console.log('failed to create new meeting index createdAt')
   }
@@ -161,14 +155,8 @@ export async function up(): Promise<void> {
     const threadableUpdates = threadIdToDiscussionId.map((item) => {
       const [threadId, discussionId] = item
       return r({
-        comment: r
-          .table('Comment')
-          .getAll(threadId, {index: 'threadId'})
-          .update({discussionId}),
-        task: r
-          .table('Task')
-          .getAll(threadId, {index: 'threadId'})
-          .update({discussionId})
+        comment: r.table('Comment').getAll(threadId, {index: 'threadId'}).update({discussionId}),
+        task: r.table('Task').getAll(threadId, {index: 'threadId'}).update({discussionId})
       }).run()
     })
 
@@ -212,14 +200,8 @@ export async function down(pgm: MigrationBuilder): Promise<void> {
   })
   try {
     await Promise.all([
-      r
-        .table('Comment')
-        .indexDrop('discussionId')
-        .run(),
-      r
-        .table('Task')
-        .indexDrop('discussionId')
-        .run()
+      r.table('Comment').indexDrop('discussionId').run(),
+      r.table('Task').indexDrop('discussionId').run()
     ])
   } catch (e) {
     // nope

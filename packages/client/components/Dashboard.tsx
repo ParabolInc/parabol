@@ -6,6 +6,7 @@ import {Route, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
 import {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
@@ -14,23 +15,27 @@ import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
-import {PALETTE} from '~/styles/paletteV3'
 
-const MeetingsDash = lazy(() =>
-  import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
+const InsightsRoot = lazy(
+  () => import(/* webpackChunkName: 'Insights' */ '../components/InsightsRoot')
 )
-const UserDashboard = lazy(() =>
-  import(
-    /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
-  )
+const MeetingsDash = lazy(
+  () => import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
 )
-const TeamRoot = lazy(() =>
-  import(/* webpackChunkName: 'TeamRoot' */ '../modules/teamDashboard/components/TeamRoot')
+const UserDashboard = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
+    )
 )
-const NewTeam = lazy(() =>
-  import(
-    /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
-  )
+const TeamRoot = lazy(
+  () => import(/* webpackChunkName: 'TeamRoot' */ '../modules/teamDashboard/components/TeamRoot')
+)
+const NewTeam = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
+    )
 )
 
 interface Props {
@@ -90,11 +95,11 @@ const Dashboard = (props: Props) => {
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
       query DashboardQuery($first: Int!, $after: DateTime) {
+        ...DashTopBar_query
+        ...MobileDashTopBar_query
         viewer {
           ...MeetingsDash_viewer
           ...MobileDashSidebar_viewer
-          ...MobileDashTopBar_viewer
-          ...DashTopBar_viewer
           ...DashSidebar_viewer
           overLimitCopy
           teams {
@@ -121,9 +126,9 @@ const Dashboard = (props: Props) => {
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
-        <DashTopBar viewer={viewer} toggle={toggle} />
+        <DashTopBar queryRef={data} toggle={toggle} />
       ) : (
-        <MobileDashTopBar viewer={viewer} toggle={toggle} />
+        <MobileDashTopBar queryRef={data} toggle={toggle} />
       )}
       <DashPanel>
         {isDesktop ? (
@@ -144,6 +149,7 @@ const Dashboard = (props: Props) => {
             <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+            <Route path='/usage' component={InsightsRoot} />
           </Switch>
         </DashMain>
       </DashPanel>

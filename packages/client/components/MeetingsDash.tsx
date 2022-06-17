@@ -3,16 +3,16 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
-import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
-import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-line.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
 import {Breakpoint, Layout} from '../types/constEnums'
+import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import StartMeetingFAB from './StartMeetingFAB'
+import TutorialMeetingCard from './TutorialMeetingCard'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -29,30 +29,16 @@ const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) =>
 const EmptyContainer = styled('div')({
   display: 'flex',
   flex: 1,
+  flexDirection: 'column',
   height: '100%',
-  margin: '0 auto',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   padding: 16,
   position: 'relative'
 })
 
-const Squiggle = styled('img')({
-  bottom: 80,
-  display: 'block',
-  position: 'absolute',
-  right: 160
-})
-
-const Flash = styled('img')({
-  bottom: 56,
-  display: 'block',
-  position: 'absolute',
-  right: -32
-})
-
 const MeetingsDash = (props: Props) => {
   const {meetingsDashRef, viewer} = props
-  const teams = viewer?.teams ?? []
+  const {teams = [], preferredName = ''} = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const meetings = teams
       .flatMap((team) => team.activeMeetings)
@@ -65,7 +51,6 @@ const MeetingsDash = (props: Props) => {
     }))
   }, [teams])
   const transitioningMeetings = useTransition(activeMeetings)
-  const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
@@ -91,13 +76,11 @@ const MeetingsDash = (props: Props) => {
         </Wrapper>
       ) : (
         <EmptyContainer>
-          <MeetingsDashEmpty />
-          {maybeBigDisplay ? (
-            <>
-              <Squiggle src={blueSquiggle} />
-              <Flash src={yellowFlashLine} />
-            </>
-          ) : null}
+          <MeetingsDashEmpty name={preferredName} />
+          <Wrapper maybeTabletPlus={maybeTabletPlus}>
+            <DemoMeetingCard />
+            <TutorialMeetingCard />
+          </Wrapper>
         </EmptyContainer>
       )}
       <StartMeetingFAB />
@@ -126,6 +109,7 @@ export default createFragmentContainer(MeetingsDash, {
   viewer: graphql`
     fragment MeetingsDash_viewer on User {
       id
+      preferredName
       teams {
         ...MeetingsDashActiveMeetings @relay(mask: false)
       }

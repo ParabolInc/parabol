@@ -100,7 +100,7 @@ interface Props {
 
 const TeamArchive = (props: Props) => {
   const {returnToTeamId, queryRef, teamRef} = props
-  const viewerRef = usePreloadedQuery<TeamArchiveQuery>(
+  const queryData = usePreloadedQuery<TeamArchiveQuery>(
     graphql`
       query TeamArchiveQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
         ...TeamArchive_query
@@ -144,7 +144,7 @@ const TeamArchive = (props: Props) => {
         }
       }
     `,
-    viewerRef
+    queryData
   )
 
   const {viewer} = data

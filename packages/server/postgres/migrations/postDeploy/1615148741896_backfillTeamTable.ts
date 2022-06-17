@@ -3,15 +3,15 @@ import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import Team from '../../../database/types/Team'
 import {TEAM_NAME_LIMIT} from '../../constants'
+import {backupTeamQuery} from '../../generatedMigrationHelpers'
 import getPg from '../../getPg'
-import {backupTeamQuery, IBackupTeamQueryParams} from '../../queries/generated/backupTeamQuery'
 
 const undefinedTeamFieldsAndTheirDefaultValues = {
   jiraDimensionFields: [],
   isOnboardTeam: false
 }
 
-const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
+const cleanTeams = (teams: Team[]) => {
   const cleanedTeams = []
   teams.forEach((team) => {
     const cleanedTeam = Object.assign({}, undefinedTeamFieldsAndTheirDefaultValues, team, {
@@ -22,13 +22,17 @@ const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
     })
     cleanedTeams.push(cleanedTeam)
   })
-  return cleanedTeams as IBackupTeamQueryParams['teams']
+  return cleanedTeams as any
 }
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
+
+  // no backfill if Team table was dropped already
+  if (!(await r.tableList().contains('Team').run())) return
+
   const batchSize = 3000 // doing 4000 or 5000 results in error relating to size of parameterized query
   // todo: make `doBackfill` generic and reusable
   const doBackfill = async (teamsAfterTs?: Date) => {

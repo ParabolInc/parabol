@@ -82,7 +82,7 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    history.push(`/new-meeting/${teamId}`)
+    history.push(`/new-meeting/${teamId}?source=BottomFAB`)
   }
   return (
     <Block className={className}>

@@ -2,13 +2,17 @@
   "config": {
     "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
     "defaultScalarType": "string",
-    "enumsAsTypes": true
+    "enumsAsTypes": true,
+    "scalars": {
+      "DateTime": "Date"
+    }
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
+          "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
@@ -16,6 +20,7 @@
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
+          "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
           "User": "../../postgres/types/IUser#default as IUser"
