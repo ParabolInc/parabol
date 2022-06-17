@@ -1,4 +1,5 @@
 import {r} from 'rethinkdb-ts'
+import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import updateDomainsInOrganizationApprovedDomainToPG from '../../../postgres/queries/updateDomainsInOrganizationApprovedDomainToPG'
 import updateUserEmailDomainsToPG from '../../../postgres/queries/updateUserEmailDomainsToPG'
 import {MutationResolvers} from '../../private/resolverTypes'
@@ -10,13 +11,39 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   // VALIDATION
   const normalizedNewDomain = newDomain.toLowerCase().trim()
   const normalizedOldDomain = oldDomain.toLowerCase().trim()
-  if (oldDomain === newDomain) {
+  if (normalizedOldDomain === normalizedNewDomain) {
     throw new Error('New domain is the same as the old one')
   }
 
+  if (normalizedOldDomain.includes('@') || normalizedNewDomain.includes('@')) {
+    throw new Error('Domains should include everything after the @')
+  }
+
+  const [oldDomainUsers, newDomainUsers] = await Promise.all([
+    getUsersbyDomain(normalizedOldDomain),
+    getUsersbyDomain(normalizedNewDomain)
+  ])
+
+  if (!oldDomainUsers.length) {
+    throw new Error(`No users found with oldDomain: ${oldDomain}`)
+  }
+
+  const newDomainUserEmails = newDomainUsers.map(({email}) => email)
+  const usersNotUpdatedIds = oldDomainUsers
+    .filter(({email}) => {
+      const emailUsername = email.split('@')[0]
+      const proposedNewEmail = `${emailUsername}@${newDomain}`
+      return newDomainUserEmails.includes(proposedNewEmail)
+    })
+    .map(({id}) => id)
+
+  const userIdsToUpdate = oldDomainUsers
+    .filter(({id}) => !usersNotUpdatedIds.includes(id))
+    .map(({id}) => id)
+
   // RESOLUTION
-  const [updatedUserIds] = await Promise.all([
-    updateUserEmailDomainsToPG(normalizedOldDomain, normalizedNewDomain),
+  const [updatedUserRes] = await Promise.all([
+    updateUserEmailDomainsToPG(normalizedNewDomain, userIdsToUpdate),
     updateDomainsInOrganizationApprovedDomainToPG(normalizedOldDomain, normalizedNewDomain),
     r
       .table('Organization')
@@ -56,7 +83,8 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       .run()
   ])
 
-  const data = {userIds: updatedUserIds.map(({id}) => id)}
+  const usersUpdatedIds = updatedUserRes.map(({id}) => id)
+  const data = {usersUpdatedIds, usersNotUpdatedIds}
   return data
 }
 

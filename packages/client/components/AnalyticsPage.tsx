@@ -25,6 +25,11 @@ const query = graphql`
 declare global {
   interface Window {
     analytics: SegmentAnalytics.AnalyticsJS
+    HubSpotConversations?: {
+      widget?: {
+        refresh?: () => void
+      }
+    }
   }
 }
 
@@ -144,6 +149,11 @@ const AnalyticsPage = () => {
       )
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
+
+  // We need to refresh the chat widget so it can recheck the URL
+  useEffect(() => {
+    window.HubSpotConversations?.widget?.refresh?.()
+  }, [pathname])
 
   useEffect(() => {
     if (!datadogEnabled) {

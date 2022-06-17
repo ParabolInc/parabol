@@ -2,10 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import useSegmentTrack from '~/hooks/useSegmentTrack'
+import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {InsightsQuery} from '../__generated__/InsightsQuery.graphql'
 import InsightsDomainPanel from './InsightsDomainPanel'
+import Panel from './Panel/Panel'
 
 interface Props {
   queryRef: PreloadedQuery<InsightsQuery>
@@ -18,15 +19,19 @@ const DashSectionHeader = styled('h1')({
   paddingLeft: 32
 })
 
+const StatsPanel = styled(Panel)({
+  boxShadow: Elevation.Z3,
+  maxWidth: 520,
+  marginLeft: 16,
+  padding: 16
+})
+
 const Insights = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<InsightsQuery>(
     graphql`
       query InsightsQuery {
         viewer {
-          company {
-            id
-          }
           domains {
             id
             ...InsightsDomainPanel_domain
@@ -38,12 +43,14 @@ const Insights = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
   const {viewer} = data
-  const {domains, company} = viewer
-  useSegmentTrack('Viewed domain stats', {domainId: company?.id})
+  const {domains} = viewer
 
   return (
     <div>
       <DashSectionHeader>Usage</DashSectionHeader>
+      {domains.length === 0 && (
+        <StatsPanel>Usage stats are only available for qualified customers</StatsPanel>
+      )}
       {domains.map((domain) => {
         return <InsightsDomainPanel key={domain.id} domainRef={domain} />
       })}

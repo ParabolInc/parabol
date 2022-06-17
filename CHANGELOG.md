@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.63.0 2022-June-16
+
+### Added
+
+- feat: add integrations task for first-time users, use jsdom to attach…
+- feat: add team charter template (#6745)
+- feat(Onboarding): Added demo link to empty meeting dash (#6704)
+- feat(insights): toggle insights (#6672)
+- feat(Onboarding): Added video tutorial to empty meetings dash (#6705)
+- feat(metrics): merge 'Upgrade to Pro' and 'Enterprise invoice draft'
+- feat(standups): Make response in discussion drawer scrollable (#6753)
+- feat(insights): Add /usage route (#6687)
+
+### Fixed
+
+- fix(poker): Fix wrong controls when estimating Parabol tasks (#6716)
+- fix: center add/start meeting button content (#6732)
+- fix: handle duplicates in changeEmailDomain (#6725)
+- fix: updates caniuse-lite version in yarn lock file (#6736)
+- fix(standups): reduced list padding in standups response (#6754)
+- fix(standups): removed user select none property from standup respons
+
+### Changed
+
+- chore: update release_test.md (#6717)
+- refactor: update createFragmentContainer to usePaginationFragment (#6431)
+- chore(dx): delete remaining generated pg queries (#6752)
+- refactor: Stop writes to RethinkDB Team table (#6239)
+- chore: fix delete team migration (#6763)
+- chore: Refresh HubSpot chat widget on page changes (#6759)
+
 ## 6.62.2 2022-June-12
 
 ### Added

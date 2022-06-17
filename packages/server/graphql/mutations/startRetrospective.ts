@@ -113,7 +113,6 @@ export default {
           new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
         )
         .run(),
-      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
 

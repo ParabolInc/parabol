@@ -2,8 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
@@ -50,7 +48,6 @@ interface Props {
 
 const InsightsDomainNudge = (props: Props) => {
   const {domainRef} = props
-  const atmosphere = useAtmosphere()
   const domain = useFragment(
     graphql`
       fragment InsightsDomainNudge_domain on Company {
@@ -80,11 +77,6 @@ const InsightsDomainNudge = (props: Props) => {
   const showNudge = suggestPro || suggestEnterprise
   const CTACopy = suggestPro ? `Upgrade ${organizationName} to Pro` : 'Contact Us'
   const onClickCTA = () => {
-    const ctaType = suggestPro ? 'pro' : suggestEnterprise ? 'enterprise' : 'personal'
-    SendClientSegmentEventMutation(atmosphere, 'Clicked Domain Stats CTA', {
-      ctaType,
-      domainId
-    })
     if (suggestPro) {
       togglePortal()
     } else if (suggestEnterprise) {
@@ -92,29 +84,32 @@ const InsightsDomainNudge = (props: Props) => {
     }
   }
   const {togglePortal, closePortal, modalPortal} = useModal()
-  if (!showNudge) return null
   return (
-    <NudgeBlock>
-      <OverLimitBlock>
-        <OverLimitCopy>
-          <b>{domainId}</b> is over the limit of <b>2 Free Teams</b>
-        </OverLimitCopy>
-      </OverLimitBlock>
-      <ButtonBlock>
-        <CTA size={'large'} onClick={onClickCTA}>
-          {CTACopy}
-        </CTA>
-      </ButtonBlock>
-      {biggestOrganization &&
-        modalPortal(
-          <CreditCardModal
-            activeUserCount={biggestOrganization.orgUserCount.activeUserCount}
-            orgId={biggestOrganization.id}
-            actionType={'upgrade'}
-            closePortal={closePortal}
-          />
-        )}
-    </NudgeBlock>
+    <>
+      {modalPortal(
+        <CreditCardModal
+          // will be null if they successfully upgraded their last free org
+          activeUserCount={biggestOrganization?.orgUserCount?.activeUserCount ?? 0}
+          orgId={biggestOrganization?.id ?? ''}
+          actionType={'upgrade'}
+          closePortal={closePortal}
+        />
+      )}
+      {showNudge && (
+        <NudgeBlock>
+          <OverLimitBlock>
+            <OverLimitCopy>
+              <b>{domainId}</b> is over the limit of <b>2 Free Teams</b>
+            </OverLimitCopy>
+          </OverLimitBlock>
+          <ButtonBlock>
+            <CTA size={'large'} onClick={onClickCTA}>
+              {CTACopy}
+            </CTA>
+          </ButtonBlock>
+        </NudgeBlock>
+      )}
+    </>
   )
 }
 

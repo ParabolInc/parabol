@@ -13,10 +13,7 @@ const lockTeams: MutationResolvers['lockTeams'] = async (_source, {message, team
     lockMessageHTML,
     updatedAt: new Date()
   }
-  await Promise.all([
-    r.table('Team').getAll(r.args(teamIds)).update(updates).run(),
-    updateTeamByTeamId(updates, teamIds)
-  ])
+  await updateTeamByTeamId(updates, teamIds)
   return true
 }
 

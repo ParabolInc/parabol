@@ -49,7 +49,6 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
         paidAt: now,
         status: 'PAID'
       }),
-      teams: r.table('Team').getAll(orgId, {index: 'orgId'}).update(teamUpdates),
       org: r
         .table('Organization')
         .get(orgId)
