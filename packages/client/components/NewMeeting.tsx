@@ -4,6 +4,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {mod} from 'react-swipeable-views-core'
 import WaveSVG from 'static/images/wave.svg'
+import useUsageSnackNag from '~/hooks/useUsageSnackNag'
 import {NonEmptyArray} from '~/types/generics'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -121,6 +122,7 @@ const query = graphql`
     viewer {
       featureFlags {
         standups
+        insights
       }
       teams {
         ...NewMeetingTeamPicker_selectedTeam
@@ -149,6 +151,7 @@ const NewMeeting = (props: Props) => {
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
+  useUsageSnackNag(featureFlags.insights)
   const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
