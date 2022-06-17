@@ -574,7 +574,7 @@ type User {
   """
   The timestamp the user was created
   """
-  createdAt: DateTime
+  createdAt: DateTime!
 
   """
   The domains the user is a lead of

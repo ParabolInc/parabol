@@ -21,6 +21,7 @@ import {Line} from 'react-chartjs-2'
 import {useFragment} from 'react-relay'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
+import {FONT_FAMILY} from '../styles/typographyV2'
 import {InsightsCharts_domain$key} from '../__generated__/InsightsCharts_domain.graphql'
 
 ChartJS.register(
@@ -35,13 +36,34 @@ ChartJS.register(
   Title,
   Tooltip
 )
+ChartJS.defaults.font.family = FONT_FAMILY.SANS_SERIF
 
-const Wrapper = styled('div')({
+const ChartBlock = styled('div')({
+  display: 'flex',
+  flexWrap: 'wrap',
+  width: '100%'
+})
+
+const HalfChartBlock = styled('div')({
+  display: 'flex',
+  flexWrap: 'wrap',
+  width: '100%'
+})
+
+const HalfChartWrapper = styled('div')({
+  margin: 8,
   marginLeft: 16,
   maxWidth: 476,
   backgroundColor: '#fff',
   boxShadow: Elevation.Z3,
-  borderRadius: 4
+  borderRadius: 4,
+  width: '50%'
+})
+
+const FullChartWrapper = styled(HalfChartWrapper)({
+  maxHeight: 312,
+  maxWidth: 976,
+  width: '100%'
 })
 
 const dummyDates = [
@@ -525,31 +547,10 @@ interface Props {
   domainRef: InsightsCharts_domain$key
 }
 
-const InsightsCharts = (props: Props) => {
-  const {domainRef} = props
-  const domain = useFragment(
-    graphql`
-      fragment InsightsCharts_domain on Company {
-        organizations {
-          teams {
-            createdAt
-          }
-        }
-      }
-    `,
-    domainRef
-  )
-  const {organizations} = domain
-  const teams = organizations.map(({teams}) => teams).flat()
-  const createdAts = teams.map(({createdAt}) => createdAt).sort()
-  const cumulativeCreatedAts = dummyDates.map((createdAt, idx) => ({
-    x: new Date(createdAt).getTime(),
-    y: idx + 1
-  }))
-
-  console.log({createdAts, cumulativeCreatedAts})
+const makeOptions = (title: string) => {
   const options: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
     elements: {
       point: {
         // point will clip on hover when radius is 0
@@ -594,36 +595,101 @@ const InsightsCharts = (props: Props) => {
       },
       title: {
         display: true,
-        text: 'Members'
-      },
-      subtitle: {
-        color: PALETTE.FOREST_400,
-        display: true,
+        text: title,
         font: {
-          weight: '600'
-        },
-        text: '3.21% in the last month'
+          size: 20,
+          weight: '400'
+          // lineHeight: '28px'
+        }
       }
+      // subtitle: {
+      //   color: PALETTE.FOREST_400,
+      //   font: {
+      //     weight: '600'
+      //   },
+      //   display: true,
+      //   text: '3.21% in the last month'
+      // }
     }
   }
-  const data: ChartData<'line'> = {
-    // labels,
+  return options
+}
+
+const makeData = (data: any, borderColor: string, fillColor: string) => {
+  const result: ChartData<'line'> = {
     datasets: [
       {
-        data: cumulativeCreatedAts,
-        borderColor: PALETTE.GRAPE_500,
+        data,
+        borderColor,
         fill: {
           target: 'origin',
-          above: PALETTE.GRAPE_500_30
+          above: fillColor
         }
       }
     ]
   }
+  return result
+}
+
+const InsightsCharts = (props: Props) => {
+  const {domainRef} = props
+  const domain = useFragment(
+    graphql`
+      fragment InsightsCharts_domain on Company {
+        organizations {
+          teams {
+            createdAt
+          }
+          organizationUsers {
+            edges {
+              node {
+                user {
+                  createdAt
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    domainRef
+  )
+  const {organizations} = domain
+  const userCreatedAts = organizations
+    .map(({organizationUsers}) =>
+      organizationUsers.edges.map((edge) => new Date(edge.node.user.createdAt).getTime())
+    )
+    .flat()
+    .sort()
+  const teams = organizations.map(({teams}) => teams).flat()
+  const createdAts = teams.map(({createdAt}) => new Date(createdAt).getTime()).sort()
+
+  const cumulativeCreatedAts = dummyDates.map((createdAt, idx) => ({
+    x: new Date(createdAt).getTime(),
+    y: idx + 1
+  }))
+  console.log({createdAts, cumulativeCreatedAts, userCreatedAts})
+  const membersOptions = makeOptions('Members')
+  const teamsOptions = makeOptions('Teams')
+  const meetingsOptions = makeOptions('Meetings')
+  const membersData = makeData(cumulativeCreatedAts, PALETTE.GRAPE_500, PALETTE.GRAPE_500_30)
+  const teamsData = makeData(cumulativeCreatedAts, PALETTE.JADE_400, PALETTE.JADE_400_30)
+  const meetingsData = makeData(cumulativeCreatedAts, PALETTE.SKY_500, PALETTE.SKY_500_30)
 
   return (
-    <Wrapper>
-      <Line options={options} data={data} />
-    </Wrapper>
+    <ChartBlock>
+      <FullChartWrapper>
+        <Line height={312} options={meetingsOptions} data={meetingsData} />
+      </FullChartWrapper>
+      <HalfChartBlock>
+        <HalfChartWrapper>
+          <Line height={312} options={membersOptions} data={membersData} />
+        </HalfChartWrapper>
+        <HalfChartWrapper>
+          <Line height={312} options={teamsOptions} data={teamsData} />
+        </HalfChartWrapper>
+      </HalfChartBlock>
+    </ChartBlock>
   )
 }
 

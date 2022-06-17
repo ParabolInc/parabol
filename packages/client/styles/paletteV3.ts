@@ -35,6 +35,8 @@ export const enum PALETTE {
 
   GRASS_300 = '#C4CF66',
 
+  JADE_400_30 = '#66BC8C4D',
+
   JADE_400 = '#66BC8C',
   JADE_300 = '#91E8B7',
 
@@ -44,6 +46,7 @@ export const enum PALETTE {
 
   SKY_300 = '#8EC7F1',
   SKY_400 = '#61B1EB',
+  SKY_500_30 = '#329AE54D',
   SKY_500 = '#329AE5',
   SKY_600 = '#14649E',
 
