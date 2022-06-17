@@ -26,6 +26,8 @@ export const enum PALETTE {
   GRADIENT_TOMATO_700_ROSE_600 = 'linear-gradient(to right, #D5211A 0, #EB195F 100%)', // hover: TOMATO_700 to ROSE_600
   GRADIENT_TOMATO_400_ROSE_300 = 'linear-gradient(to right, #FD7F77 0, #F099BF 100%)', // disabled: TOMATO_400 to ROSE_300
 
+  GRAPE_500_30 = '#A06BD64D',
+
   GRAPE_500 = '#A06BD6',
   GRAPE_600 = '#7340B5',
   GRAPE_700 = '#493272',

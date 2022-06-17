@@ -5,6 +5,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {InsightsQuery} from '../__generated__/InsightsQuery.graphql'
+import InsightsCharts from './InsightsCharts'
 import InsightsDomainPanel from './InsightsDomainPanel'
 import Panel from './Panel/Panel'
 
@@ -35,6 +36,7 @@ const Insights = (props: Props) => {
           domains {
             id
             ...InsightsDomainPanel_domain
+            ...InsightsCharts_domain
           }
         }
       }
@@ -52,7 +54,12 @@ const Insights = (props: Props) => {
         <StatsPanel>Usage stats are only available for qualified customers</StatsPanel>
       )}
       {domains.map((domain) => {
-        return <InsightsDomainPanel key={domain.id} domainRef={domain} />
+        return (
+          <React.Fragment key={domain.id}>
+            <InsightsDomainPanel domainRef={domain} />
+            <InsightsCharts domainRef={domain} />
+          </React.Fragment>
+        )
       })}
     </div>
   )
