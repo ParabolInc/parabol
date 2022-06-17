@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
@@ -66,6 +67,7 @@ const InsightsDomainNudge = (props: Props) => {
     `,
     domainRef
   )
+  const atmosphere = useAtmosphere()
   const {id: domainId, suggestedTier, tier, organizations} = domain
   const personalOrganizations = organizations
     .filter((org) => org.tier === 'personal')
@@ -76,12 +78,17 @@ const InsightsDomainNudge = (props: Props) => {
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
   const showNudge = suggestPro || suggestEnterprise
   const CTACopy = suggestPro ? `Upgrade ${organizationName} to Pro` : 'Contact Us'
+  const CTAType = suggestPro ? 'pro' : 'enterprise'
   const onClickCTA = () => {
     if (suggestPro) {
       togglePortal()
     } else if (suggestEnterprise) {
       window.open('mailto:love@parabol.co?subject=Increase Usage Limits')
     }
+    // SendClientSegmentEventMutation(atmosphere, 'Clicked Domain Stats CTA', {
+    //   CTAType,
+    //   domainId
+    // })
   }
   const {togglePortal, closePortal, modalPortal} = useModal()
   return (
