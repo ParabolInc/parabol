@@ -19,12 +19,11 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import mediaQueryforPoker from './mediaQueryforPoker'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
     width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
-    [mediaQueryforPoker(Breakpoint.POKER_DISCUSSION_DRAWER)]: {
+    [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
       width: '100%'
     }
   })

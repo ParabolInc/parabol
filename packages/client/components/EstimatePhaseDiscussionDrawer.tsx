@@ -13,7 +13,6 @@ import DiscussionThreadRoot from './DiscussionThreadRoot'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
-import mediaQueryforPoker from './mediaQueryforPoker'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -31,10 +30,10 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   userSelect: 'none',
   width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
   zIndex: ZIndex.SIDEBAR,
-  [mediaQueryforPoker(Breakpoint.POKER_DISCUSSION_DRAWER)]: {
+  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
     width: '100vw',
     position: 'fixed',
-    right: isOpen ? '-360px' : '-100vw'
+    right: isOpen ? `-${DiscussionThreadEnum.WIDTH}px` : '-100vw'
   }
 }))
 
