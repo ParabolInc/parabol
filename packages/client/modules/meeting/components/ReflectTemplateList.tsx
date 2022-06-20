@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {ChangeEvent, useEffect, useRef} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -84,10 +85,11 @@ const useReadyToSmoothScroll = (activeTemplateId: string) => {
 
 const ReflectTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
-  const {team, teamTemplates} = settings
+  const {id: settingsId, team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
+  const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
 
   const gotoTeamTemplates = () => {
@@ -101,6 +103,14 @@ const ReflectTemplateList = (props: Props) => {
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
+  }
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const settings = store.get(settingsId)
+      if (!settings) return
+      const normalizedSearch = e.target.value.toLowerCase().trim()
+      settings.setValue(normalizedSearch, 'templateSearchQuery')
+    })
   }
   return (
     <TemplateSidebar>
@@ -131,6 +141,7 @@ const ReflectTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
+      <input placeholder='Search templates...' onChange={onChange} />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}

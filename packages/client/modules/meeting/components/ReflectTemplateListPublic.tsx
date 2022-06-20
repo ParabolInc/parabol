@@ -24,12 +24,14 @@ const query = graphql`
         id
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
+            templateSearchQuery
             publicTemplates(first: 50)
               @connection(key: "ReflectTemplateListPublic_publicTemplates") {
               edges {
                 node {
                   ...ReflectTemplateItem_template
                   id
+                  name
                 }
               }
             }
@@ -51,13 +53,16 @@ const ReflectTemplateListPublic = (props: Props) => {
   const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const publicTemplates = meetingSettings.publicTemplates!
-  const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
-  const {edges} = publicTemplates
+  const {templateSearchQuery, publicTemplates, activeTemplate} = meetingSettings
+  const activeTemplateId = activeTemplate?.id ?? '-tmp'
+  const {edges} = publicTemplates!
+  const filteredEdges = edges.filter(({node}) =>
+    node.name.toLowerCase().includes(templateSearchQuery ?? '')
+  )
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
   return (
     <TemplateList>
-      {edges.map(({node: template}) => {
+      {filteredEdges.map(({node: template}) => {
         return (
           <ReflectTemplateItem
             key={template.id}
