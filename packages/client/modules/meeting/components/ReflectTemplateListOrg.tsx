@@ -35,12 +35,14 @@ const query = graphql`
         id
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
+            templateSearchQuery
             organizationTemplates(first: 20)
               @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
               edges {
                 node {
                   ...ReflectTemplateItem_template
                   id
+                  name
                 }
               }
             }
@@ -62,17 +64,25 @@ const ReflectTemplateListOrg = (props: Props) => {
   const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
-  const organizationTemplates = meetingSettings.organizationTemplates!
-  const {edges} = organizationTemplates
+  const {templateSearchQuery, organizationTemplates, activeTemplate} = meetingSettings
+  const activeTemplateId = activeTemplate?.id ?? '-tmp'
+  const {edges} = organizationTemplates!
+  const filteredEdges = edges.filter(({node}) =>
+    node.name.toLowerCase().includes(templateSearchQuery ?? '')
+  )
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>
   }
+  if (filteredEdges.length === 0) {
+    return (
+      <Message>{`No template names in your organization match your search query "${templateSearchQuery}"`}</Message>
+    )
+  }
   return (
     <TemplateList>
-      {edges.map(({node: template}) => {
+      {filteredEdges.map(({node: template}) => {
         return (
           <ReflectTemplateItem
             key={template.id}

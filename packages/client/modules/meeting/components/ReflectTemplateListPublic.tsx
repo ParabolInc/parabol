@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {PALETTE} from '~/styles/paletteV3'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {ReflectTemplateListPublicQuery} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -10,6 +11,17 @@ const TemplateList = styled('ul')({
   listStyle: 'none',
   paddingLeft: 0,
   marginTop: 0
+})
+
+const Message = styled('div')({
+  border: `1px dashed ${PALETTE.SLATE_400}`,
+  borderRadius: 4,
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  fontStyle: 'italic',
+  lineHeight: '20px',
+  margin: 'auto 32px',
+  padding: '8px 16px'
 })
 
 interface Props {
@@ -60,6 +72,11 @@ const ReflectTemplateListPublic = (props: Props) => {
     node.name.toLowerCase().includes(templateSearchQuery ?? '')
   )
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
+  if (filteredEdges.length === 0) {
+    return (
+      <Message>{`No public templates match your search query "${templateSearchQuery}"`}</Message>
+    )
+  }
   return (
     <TemplateList>
       {filteredEdges.map(({node: template}) => {
