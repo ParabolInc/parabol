@@ -91,7 +91,7 @@ jobs:
           command: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
       - run:
           name: Run server tests
-          command: npm run test:server -- --reporters=default --reporters=jest-junit
+          command: yarn test:server -- --reporters=default --reporters=jest-junit
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit
       - store_test_results:
