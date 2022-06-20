@@ -6,7 +6,7 @@ import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
@@ -29,7 +29,12 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   transition: `all 200ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
   width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
-  zIndex: ZIndex.SIDEBAR
+  zIndex: ZIndex.SIDEBAR,
+  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
+    width: '100vw',
+    position: 'fixed',
+    right: isOpen ? `-${DiscussionThreadEnum.WIDTH}px` : '-100vw'
+  }
 }))
 
 const ThreadColumn = styled('div')({
@@ -98,7 +103,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         <DiscussionThreadRoot
           allowedThreadables={allowedThreadables}
           discussionId={discussionId!}
-          width={'calc(100% - 16px)'}
+          width={'100%'}
           emptyState={
             <DiscussionThreadListEmptyState
               allowTasks={false}
