@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, useRef} from 'react'
-import {commitLocalUpdate} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import {ReflectTemplateSearchBar_settings$key} from '~/__generated__/ReflectTemplateSearchBar_settings.graphql'
 import Atmosphere from '../../../Atmosphere'
 import Icon from '../../../components/Icon'
 import MenuItemComponentAvatar from '../../../components/MenuItemComponentAvatar'
@@ -52,12 +54,22 @@ const setTemplateSearch = (atmosphere: Atmosphere, settingsId: string, value: st
 }
 
 interface Props {
-  settingsId: string
+  settingsRef: ReflectTemplateSearchBar_settings$key
 }
 
-const SpotlightSearchBar = (props: Props) => {
-  const {settingsId} = props
+const ReflectTemplateSearchBar = (props: Props) => {
+  const {settingsRef} = props
   const atmosphere = useAtmosphere()
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateSearchBar_settings on RetrospectiveMeetingSettings {
+        id
+        templateSearchQuery
+      }
+    `,
+    settingsRef
+  )
+  const {id: settingsId, templateSearchQuery} = settings
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTemplateSearch(atmosphere, settingsId, e.currentTarget.value)
@@ -85,9 +97,10 @@ const SpotlightSearchBar = (props: Props) => {
         type='text'
         onChange={onChange}
         ref={inputRef}
+        value={templateSearchQuery ?? ''}
       />
     </Search>
   )
 }
 
-export default SpotlightSearchBar
+export default ReflectTemplateSearchBar

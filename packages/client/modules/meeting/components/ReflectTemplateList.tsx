@@ -89,6 +89,7 @@ const ReflectTemplateList = (props: Props) => {
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
+  // const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
 
   const gotoTeamTemplates = () => {
@@ -97,11 +98,16 @@ const ReflectTemplateList = (props: Props) => {
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
-  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+  const onChangeIdx = (idx: number, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
+    // commitLocalUpdate(atmosphere, (store) => {
+    //   const settings = store.get(settingsId)
+    //   if (!settings) return
+    //   settings.setValue('', 'templateSearchQuery')
+    // })
   }
 
   return (
@@ -133,7 +139,7 @@ const ReflectTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
-      <ReflectTemplateSearchBar settingsId={settingsId} />
+      <ReflectTemplateSearchBar settingsRef={settings} />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
@@ -171,6 +177,7 @@ const ReflectTemplateList = (props: Props) => {
 export default createFragmentContainer(ReflectTemplateList, {
   settings: graphql`
     fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
+      ...ReflectTemplateSearchBar_settings
       id
       team {
         id
