@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ChangeEvent, useEffect, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import React, {useEffect, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -14,6 +13,7 @@ import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
 import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
 import ReflectTemplateListTeam from './ReflectTemplateListTeam'
+import ReflectTemplateSearchBar from './ReflectTemplateSearchBar'
 
 const WIDTH = 360
 const TemplateSidebar = styled('div')({
@@ -36,7 +36,7 @@ const Label = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
+  // boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   flexShrink: 0
 })
 
@@ -89,7 +89,6 @@ const ReflectTemplateList = (props: Props) => {
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
-  const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
 
   const gotoTeamTemplates = () => {
@@ -104,14 +103,7 @@ const ReflectTemplateList = (props: Props) => {
     if (props.reason === 'focus') return
     setActiveIdx(idx)
   }
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const settings = store.get(settingsId)
-      if (!settings) return
-      const normalizedSearch = e.target.value.toLowerCase().trim()
-      settings.setValue(normalizedSearch, 'templateSearchQuery')
-    })
-  }
+
   return (
     <TemplateSidebar>
       <Label>Retro Templates</Label>
@@ -141,7 +133,7 @@ const ReflectTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
-      <input placeholder='Search templates...' onChange={onChange} />
+      <ReflectTemplateSearchBar settingsId={settingsId} />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
