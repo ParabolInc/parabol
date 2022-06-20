@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
 import ProviderActions from '../../../../components/ProviderActions'
@@ -10,7 +9,7 @@ import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Providers} from '../../../../types/constEnums'
+import {Breakpoint} from '../../../../types/constEnums'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -77,18 +76,29 @@ interface Props {
   // TODO: make generic menu component
   togglePortal: () => void
   originRef: React.MutableRefObject<HTMLButtonElement | null>
-  // menuElement: React.ElementType
+  providerName: string
+  providerDescription: string
+  providerLogo: React.ReactElement
 }
 
 const ProviderRow = (props: Props) => {
-  const {connected, onConnectClick, submitting, togglePortal, originRef} = props
+  const {
+    connected,
+    onConnectClick,
+    submitting,
+    togglePortal,
+    originRef,
+    providerName,
+    providerDescription,
+    providerLogo
+  } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ProviderCard>
-      <AtlassianProviderLogo />
+      {providerLogo}
       <RowInfo>
-        <ProviderName>{Providers.ATLASSIAN_NAME}</ProviderName>
-        <RowInfoCopy>{Providers.ATLASSIAN_DESC}</RowInfoCopy>
+        <ProviderName>{providerName}</ProviderName>
+        <RowInfoCopy>{providerDescription}</RowInfoCopy>
       </RowInfo>
       <ProviderActions>
         {!connected && (
