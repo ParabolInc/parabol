@@ -191,9 +191,15 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         const {orgId} = team
         const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
         const orgTeamIds = orgTeams.map(({id}) => id)
-        return dataLoader
+        const sharedProviders = await dataLoader
           .get('sharedIntegrationProviders')
           .load({service: 'azureDevOps', orgTeamIds, teamIds: [teamId]})
+        if (sharedProviders.length) {
+          return sharedProviders
+        }
+        return await dataLoader
+          .get('sharedIntegrationProviders')
+          .load({service: 'azureDevOps', orgTeamIds: ['aGhostTeam'], teamIds: []})
       }
     },
     azureDevOpsSearchQueries: {

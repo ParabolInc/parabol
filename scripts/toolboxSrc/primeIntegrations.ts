@@ -11,6 +11,16 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       serverBaseUrl: 'https://gitlab.com',
       clientId: process.env.GITLAB_CLIENT_ID,
       clientSecret: process.env.GITLAB_CLIENT_SECRET
+    },
+    {
+      service: 'azureDevOps',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      teamId: 'aGhostTeam',
+      serverBaseUrl: 'https://dev.azure.com',
+      clientId: process.env.AZURE_DEVOPS_CLIENT_ID,
+      clientSecret: process.env.AZURE_DEVOPS_CLIENT_SECRET,
+      tenantId: 'common'
     }
   ] as const
 
