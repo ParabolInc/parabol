@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -83,31 +85,40 @@ const useReadyToSmoothScroll = (activeTemplateId: string) => {
   return oldActiveTemplateId !== activeTemplateId && oldActiveTemplateId !== '-tmp'
 }
 
+const templateIdxs = {
+  TEAM: 0,
+  ORGANIZATION: 1,
+  PUBLIC: 2
+} as const
+
 const ReflectTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
   const {id: settingsId, team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
-  // const atmosphere = useAtmosphere()
+  const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
 
-  const gotoTeamTemplates = () => {
-    setActiveIdx(0)
+  const clearSearch = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const settings = store.get(settingsId)
+      if (!settings) return
+      settings.setValue('', 'templateSearchQuery')
+    })
   }
-  const gotoPublicTemplates = () => {
-    setActiveIdx(2)
+
+  const goToTab = (templateType: SharingScopeEnum) => {
+    setActiveIdx(templateIdxs[templateType])
+    clearSearch()
   }
-  const onChangeIdx = (idx: number, _fromIdx, props: {reason: string}) => {
+
+  const onChangeIdx = (idx: number, _fromIdx: unknown, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
-    // commitLocalUpdate(atmosphere, (store) => {
-    //   const settings = store.get(settingsId)
-    //   if (!settings) return
-    //   settings.setValue('', 'templateSearchQuery')
-    // })
+    clearSearch()
   }
 
   return (
@@ -120,7 +131,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>{'group'}</TabIcon> Team
             </TabLabel>
           }
-          onClick={gotoTeamTemplates}
+          onClick={() => goToTab('TEAM')}
         />
         <WideTab
           label={
@@ -128,7 +139,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>{'business'}</TabIcon> Organization
             </TabLabel>
           }
-          onClick={() => setActiveIdx(1)}
+          onClick={() => goToTab('ORGANIZATION')}
         />
         <FullTab
           label={
@@ -136,14 +147,14 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>{'public'}</TabIcon> Public
             </TabLabel>
           }
-          onClick={gotoPublicTemplates}
+          onClick={() => goToTab('PUBLIC')}
         />
       </StyledTabsBar>
       <ReflectTemplateSearchBar settingsRef={settings} />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
-        gotoTeamTemplates={gotoTeamTemplates}
+        gotoTeamTemplates={() => goToTab('TEAM')}
       />
       <SwipeableViews
         enableMouseEvents
@@ -156,7 +167,7 @@ const ReflectTemplateList = (props: Props) => {
         <TabContents>
           <ReflectTemplateListTeam
             activeTemplateId={activeTemplateId}
-            showPublicTemplates={gotoPublicTemplates}
+            showPublicTemplates={() => goToTab('PUBLIC')}
             teamTemplates={teamTemplates}
             teamId={teamId}
             isActive={activeIdx === 0}
