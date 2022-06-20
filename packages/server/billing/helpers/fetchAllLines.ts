@@ -1,5 +1,5 @@
-import StripeManager from '../../utils/StripeManager'
 import * as Stripe from 'stripe'
+import {getStripeManager} from '../../utils/stripe'
 import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
 
 export default async function fetchAllLines(invoiceId: string, customerId?: string) {
@@ -9,7 +9,7 @@ export default async function fetchAllLines(invoiceId: string, customerId?: stri
   if (customerId) {
     options.customer = customerId
   }
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   for (let i = 0; i < 100; i++) {
     if (i > 0) {
       options.starting_after = stripeLineItems[stripeLineItems.length - 1]!.id

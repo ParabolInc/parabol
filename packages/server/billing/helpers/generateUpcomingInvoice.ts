@@ -1,9 +1,9 @@
+import getRethink from '../../database/rethinkDriver'
+import {DataLoaderWorker} from '../../graphql/graphql'
+import getUpcomingInvoiceId from '../../utils/getUpcomingInvoiceId'
+import {getStripeManager} from '../../utils/stripe'
 import fetchAllLines from './fetchAllLines'
 import generateInvoice from './generateInvoice'
-import getRethink from '../../database/rethinkDriver'
-import getUpcomingInvoiceId from '../../utils/getUpcomingInvoiceId'
-import StripeManager from '../../utils/StripeManager'
-import {DataLoaderWorker} from '../../graphql/graphql'
 
 const generateUpcomingInvoice = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
@@ -13,7 +13,7 @@ const generateUpcomingInvoice = async (orgId: string, dataLoader: DataLoaderWork
     .get(orgId)
     .pluck('stripeId', 'stripeSubscriptionId')
     .run()
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const [stripeLineItems, upcomingInvoice] = await Promise.all([
     fetchAllLines('upcoming', stripeId),
     manager.retrieveUpcomingInvoice(stripeId!, stripeSubscriptionId!)
