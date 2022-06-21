@@ -177,14 +177,13 @@ const JiraServerProviderRow = (props: Props) => {
               <Form
                 method='get'
                 target='_blank'
-                action={ExternalLinks.CONTACT}
+                action={ExternalLinks.INTEGRATIONS_JIRASERVER}
                 onSubmit={() => {
                   SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button', {
                     viewerId
                   })
                 }}
               >
-                <input type='hidden' name='subject' value='[Jira Server] Add Request' />
                 <StyledButton key='request' palette='warm' waiting={submitting}>
                   {isDesktop ? 'Contact Us' : <IconOutlined>mail</IconOutlined>}
                 </StyledButton>
