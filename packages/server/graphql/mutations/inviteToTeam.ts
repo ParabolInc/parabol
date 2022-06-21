@@ -68,7 +68,6 @@ export default {
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
-      const parabolUserEmails = users.map(({email}) => email)
       if (!inviter) {
         return standardError(new Error('User not found'), {userId: viewerId})
       }
@@ -172,15 +171,17 @@ export default {
         })
       )
 
+      const parabolUserEmails = users.map(({email}) => email)
       newAllowedInvitees.forEach(async (inviteeEmail, idx) => {
         const isInviteeParabolUser = parabolUserEmails.includes(inviteeEmail)
+        const success = !!emailResults[idx]
         analytics.inviteEmailSent(
           viewerId,
           teamId,
           inviteeEmail,
           isInviteeParabolUser,
           inviteTo,
-          !!emailResults[idx]
+          success
         )
       })
       const successfulInvitees = newAllowedInvitees.filter((_email, idx) => emailResults[idx])
