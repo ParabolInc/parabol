@@ -38,7 +38,7 @@ const GitHubProviderRow = (props: Props) => {
         onConnectClick={openOAuth}
         submitting={submitting}
         togglePortal={togglePortal}
-        originRef={originRef}
+        menuRef={originRef}
         providerName={Providers.GITHUB_NAME}
         providerDescription={Providers.GITHUB_DESC}
         providerLogo={<GitHubProviderLogo />}

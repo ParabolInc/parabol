@@ -59,7 +59,7 @@ const AtlassianProviderRow = (props: Props) => {
         onConnectClick={openOAuth}
         submitting={submitting}
         togglePortal={togglePortal}
-        originRef={originRef}
+        menuRef={originRef}
         providerName={Providers.ATLASSIAN_NAME}
         providerDescription={Providers.ATLASSIAN_DESC}
         providerLogo={<AtlassianProviderLogo />}

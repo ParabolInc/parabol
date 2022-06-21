@@ -75,7 +75,7 @@ interface Props {
   submitting: boolean
   // TODO: make generic menu component
   togglePortal: () => void
-  originRef: React.MutableRefObject<HTMLButtonElement | null>
+  menuRef: React.MutableRefObject<HTMLButtonElement | null>
   providerName: string
   providerDescription: string
   providerLogo: React.ReactElement
@@ -87,7 +87,7 @@ const ProviderRow = (props: Props) => {
     onConnectClick,
     submitting,
     togglePortal,
-    originRef,
+    menuRef,
     providerName,
     providerDescription,
     providerLogo
@@ -119,12 +119,12 @@ const ProviderRow = (props: Props) => {
                   <StatusIcon>done</StatusIcon>
                   <StatusLabel>Connected</StatusLabel>
                 </StatusWrapper>
-                <SmallMenuButton onClick={togglePortal} ref={originRef}>
+                <SmallMenuButton onClick={togglePortal} ref={menuRef}>
                   <MenuSmallIcon>more_vert</MenuSmallIcon>
                 </SmallMenuButton>
               </>
             ) : (
-              <MenuButton onClick={togglePortal} ref={originRef}>
+              <MenuButton onClick={togglePortal} ref={menuRef}>
                 <Icon>more_vert</Icon>
               </MenuButton>
             )}
