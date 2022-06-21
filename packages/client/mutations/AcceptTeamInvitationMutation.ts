@@ -175,10 +175,6 @@ const AcceptTeamInvitationMutation: StandardMutation<
         onCompleted(data, errors)
       }
       const {acceptTeamInvitation} = data
-      const isOK = ignoreApproval
-        ? true
-        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!isOK) return
       const {authToken, team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
@@ -191,6 +187,10 @@ const AcceptTeamInvitationMutation: StandardMutation<
         }
         return
       }
+      const isOK = ignoreApproval
+        ? true
+        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
+      if (!isOK) return
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team
