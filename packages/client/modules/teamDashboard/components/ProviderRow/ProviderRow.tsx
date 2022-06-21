@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import React from 'react'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
+import IconOutlined from '../../../../components/IconOutlined'
 import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -69,6 +70,11 @@ const ProviderName = styled('div')({
   verticalAlign: 'middle'
 })
 
+const Form = styled('form')({
+  display: 'flex',
+  flex: 1
+})
+
 interface Props {
   connected: boolean
   onConnectClick: () => void
@@ -79,6 +85,11 @@ interface Props {
   providerName: string
   providerDescription: string
   providerLogo: React.ReactElement
+  contactUsProps?: {
+    url: string
+    subject: string
+    onSubmit: () => void
+  }
 }
 
 const ProviderRow = (props: Props) => {
@@ -90,7 +101,8 @@ const ProviderRow = (props: Props) => {
     menuRef,
     providerName,
     providerDescription,
-    providerLogo
+    providerLogo,
+    contactUsProps
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
@@ -101,7 +113,7 @@ const ProviderRow = (props: Props) => {
         <RowInfoCopy>{providerDescription}</RowInfoCopy>
       </RowInfo>
       <ProviderActions>
-        {!connected && (
+        {!connected && !contactUsProps && (
           <StyledButton
             key='linkAccount'
             onClick={onConnectClick}
@@ -110,6 +122,19 @@ const ProviderRow = (props: Props) => {
           >
             {isDesktop ? 'Connect' : <Icon>add</Icon>}
           </StyledButton>
+        )}
+        {!connected && contactUsProps && (
+          <Form
+            method='get'
+            target='_blank'
+            action={contactUsProps.url}
+            onSubmit={contactUsProps.onSubmit}
+          >
+            <input type='hidden' name='subject' value={contactUsProps.subject} />
+            <StyledButton key='request' palette='warm'>
+              {isDesktop ? 'Contact Us' : <IconOutlined>mail</IconOutlined>}
+            </StyledButton>
+          </Form>
         )}
         {connected && (
           <>
