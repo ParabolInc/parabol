@@ -5,7 +5,8 @@ const JiraServerProviderLogo = styled('div')({
   background: `url("${logo}")`,
   height: 48,
   width: 48,
-  backgroundSize: 'contain'
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat'
 })
 
 export default JiraServerProviderLogo
