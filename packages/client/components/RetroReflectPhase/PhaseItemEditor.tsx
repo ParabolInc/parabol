@@ -27,15 +27,20 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
   })
 )
 
-const EnterHint = styled('div')({
+const EnterHint = styled('div')<{visible: boolean}>(({visible}) => ({
   color: PALETTE.SLATE_600,
   fontSize: 14,
   fontStyle: 'italic',
   fontWeight: 400,
   lineHeight: '20px',
   paddingLeft: 16,
-  cursor: 'pointer'
-})
+  cursor: 'pointer',
+  visibility: visible ? undefined : 'hidden',
+  opacity: visible ? 1 : 0,
+  height: visible ? 28 : 0,
+  overflow: 'hidden',
+  transition: 'height 300ms, opacity 300ms'
+}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -65,6 +70,7 @@ const PhaseItemEditor = (props: Props) => {
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const [editorState, setEditorState] = useState(EditorState.createEmpty)
   const [isEditing, setIsEditing] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
   const idleTimerIdRef = useRef<number>()
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
   useEffect(() => {
@@ -155,6 +161,14 @@ const PhaseItemEditor = (props: Props) => {
       setIsEditing(false)
     }, 5000)
   }
+  const onFocus = () => {
+    setIsFocused(true)
+    ensureEditing()
+  }
+  const onBlur = () => {
+    setIsFocused(false)
+    ensureNotEditing()
+  }
 
   const handleReturn = (e: React.KeyboardEvent) => {
     if (e.shiftKey) return 'not-handled'
@@ -185,20 +199,21 @@ const PhaseItemEditor = (props: Props) => {
           ariaLabel='Edit this reflection'
           editorState={editorState}
           editorRef={editorRef}
-          onBlur={ensureNotEditing}
-          onFocus={ensureEditing}
+          onBlur={onBlur}
+          onFocus={onFocus}
           handleReturn={handleReturn}
           handleKeyDownFallback={handleKeyDownFallback}
-          keyBindingFn={ensureEditing}
+          keyBindingFn={onFocus}
           placeholder='My reflection… (press enter to add)'
           setEditorState={setEditorState}
           readOnly={readOnly}
         />
-        {!isEditing && editorState.getCurrentContent().hasText() && (
-          <EnterHint onClick={handleKeydown}>
-            press enter after writing or click here to add
-          </EnterHint>
-        )}
+        <EnterHint
+          visible={!isEditing && editorState.getCurrentContent().hasText()}
+          onClick={handleKeydown}
+        >
+          {isFocused ? 'Press enter to add' : 'Forgot to press enter? Click here to add 👆'}
+        </EnterHint>
       </ReflectionCardRoot>
       {portal(
         <>
