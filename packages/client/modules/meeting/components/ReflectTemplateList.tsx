@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
@@ -10,7 +10,7 @@ import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
+import {ReflectTemplateList_settings$key} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
 import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
@@ -72,7 +72,7 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
-  settings: ReflectTemplateList_settings
+  settingsRef: ReflectTemplateList_settings$key
 }
 
 const useReadyToSmoothScroll = (activeTemplateId: string) => {
@@ -92,7 +92,30 @@ const templateIdxs = {
 } as const
 
 const ReflectTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settings} = props
+  const {activeIdx, setActiveIdx, settingsRef} = props
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
+        ...ReflectTemplateSearchBar_settings
+        id
+        team {
+          id
+        }
+        activeTemplate {
+          ...getTemplateList_template
+          id
+          teamId
+          orgId
+        }
+        teamTemplates {
+          ...ReflectTemplateListTeam_teamTemplates
+          ...AddNewReflectTemplate_reflectTemplates
+          id
+        }
+      }
+    `,
+    settingsRef
+  )
   const {id: settingsId, team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
@@ -185,25 +208,4 @@ const ReflectTemplateList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateList, {
-  settings: graphql`
-    fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
-      ...ReflectTemplateSearchBar_settings
-      id
-      team {
-        id
-      }
-      activeTemplate {
-        ...getTemplateList_template
-        id
-        teamId
-        orgId
-      }
-      teamTemplates {
-        ...ReflectTemplateListTeam_teamTemplates
-        ...AddNewReflectTemplate_reflectTemplates
-        id
-      }
-    }
-  `
-})
+export default ReflectTemplateList
