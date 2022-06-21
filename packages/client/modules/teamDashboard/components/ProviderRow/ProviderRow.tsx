@@ -10,7 +10,7 @@ import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint} from '../../../../types/constEnums'
+import {Breakpoint, Layout} from '../../../../types/constEnums'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -75,6 +75,17 @@ const Form = styled('form')({
   flex: 1
 })
 
+const ExtraProviderCard = styled(ProviderCard)({
+  flexDirection: 'column',
+  padding: 0
+})
+
+const CardTop = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  padding: Layout.ROW_GUTTER
+})
+
 interface Props {
   connected: boolean
   onConnectClick: () => void
@@ -85,6 +96,7 @@ interface Props {
   providerName: string
   providerDescription: string
   providerLogo: React.ReactElement
+  children?: React.ReactElement | false
   contactUsProps?: {
     url: string
     subject: string
@@ -102,61 +114,65 @@ const ProviderRow = (props: Props) => {
     providerName,
     providerDescription,
     providerLogo,
-    contactUsProps
+    contactUsProps,
+    children
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <ProviderCard>
-      {providerLogo}
-      <RowInfo>
-        <ProviderName>{providerName}</ProviderName>
-        <RowInfoCopy>{providerDescription}</RowInfoCopy>
-      </RowInfo>
-      <ProviderActions>
-        {!connected && !contactUsProps && (
-          <StyledButton
-            key='linkAccount'
-            onClick={onConnectClick}
-            palette='warm'
-            waiting={submitting}
-          >
-            {isDesktop ? 'Connect' : <Icon>add</Icon>}
-          </StyledButton>
-        )}
-        {!connected && contactUsProps && (
-          <Form
-            method='get'
-            target='_blank'
-            action={contactUsProps.url}
-            onSubmit={contactUsProps.onSubmit}
-          >
-            <input type='hidden' name='subject' value={contactUsProps.subject} />
-            <StyledButton key='request' palette='warm'>
-              {isDesktop ? 'Contact Us' : <IconOutlined>mail</IconOutlined>}
+    <ExtraProviderCard>
+      <CardTop>
+        {providerLogo}
+        <RowInfo>
+          <ProviderName>{providerName}</ProviderName>
+          <RowInfoCopy>{providerDescription}</RowInfoCopy>
+        </RowInfo>
+        <ProviderActions>
+          {!connected && !contactUsProps && (
+            <StyledButton
+              key='linkAccount'
+              onClick={onConnectClick}
+              palette='warm'
+              waiting={submitting}
+            >
+              {isDesktop ? 'Connect' : <Icon>add</Icon>}
             </StyledButton>
-          </Form>
-        )}
-        {connected && (
-          <>
-            {isDesktop ? (
-              <>
-                <StatusWrapper>
-                  <StatusIcon>done</StatusIcon>
-                  <StatusLabel>Connected</StatusLabel>
-                </StatusWrapper>
-                <SmallMenuButton onClick={togglePortal} ref={menuRef}>
-                  <MenuSmallIcon>more_vert</MenuSmallIcon>
-                </SmallMenuButton>
-              </>
-            ) : (
-              <MenuButton onClick={togglePortal} ref={menuRef}>
-                <Icon>more_vert</Icon>
-              </MenuButton>
-            )}
-          </>
-        )}
-      </ProviderActions>
-    </ProviderCard>
+          )}
+          {!connected && contactUsProps && (
+            <Form
+              method='get'
+              target='_blank'
+              action={contactUsProps.url}
+              onSubmit={contactUsProps.onSubmit}
+            >
+              <input type='hidden' name='subject' value={contactUsProps.subject} />
+              <StyledButton key='request' palette='warm'>
+                {isDesktop ? 'Contact Us' : <IconOutlined>mail</IconOutlined>}
+              </StyledButton>
+            </Form>
+          )}
+          {connected && (
+            <>
+              {isDesktop ? (
+                <>
+                  <StatusWrapper>
+                    <StatusIcon>done</StatusIcon>
+                    <StatusLabel>Connected</StatusLabel>
+                  </StatusWrapper>
+                  <SmallMenuButton onClick={togglePortal} ref={menuRef}>
+                    <MenuSmallIcon>more_vert</MenuSmallIcon>
+                  </SmallMenuButton>
+                </>
+              ) : (
+                <MenuButton onClick={togglePortal} ref={menuRef}>
+                  <Icon>more_vert</Icon>
+                </MenuButton>
+              )}
+            </>
+          )}
+        </ProviderActions>
+      </CardTop>
+      {children}
+    </ExtraProviderCard>
   )
 }
 
