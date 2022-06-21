@@ -85,7 +85,7 @@ const useReadyToSmoothScroll = (activeTemplateId: string) => {
   return oldActiveTemplateId !== activeTemplateId && oldActiveTemplateId !== '-tmp'
 }
 
-const templateIdxs = {
+export const templateIdxs = {
   TEAM: 0,
   ORGANIZATION: 1,
   PUBLIC: 2
@@ -173,7 +173,11 @@ const ReflectTemplateList = (props: Props) => {
           onClick={() => goToTab('PUBLIC')}
         />
       </StyledTabsBar>
-      <ReflectTemplateSearchBar clearSearch={clearSearch} settingsRef={settings} />
+      <ReflectTemplateSearchBar
+        activeIdx={activeIdx}
+        clearSearch={clearSearch}
+        settingsRef={settings}
+      />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}

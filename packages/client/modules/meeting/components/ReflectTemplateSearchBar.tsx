@@ -10,6 +10,7 @@ import MenuItemLabel from '../../../components/MenuItemLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
+import {templateIdxs} from './ReflectTemplateList'
 
 const SearchBarWrapper = styled('div')({
   padding: '16px 16px 0 16px'
@@ -42,7 +43,7 @@ const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
   color: PALETTE.SLATE_500,
   cursor: 'pointer',
   padding: 8,
-  visibility: isEmpty ? 'hidden' : undefined
+  display: isEmpty ? 'none' : 'flex'
 }))
 
 const InputWrapper = styled('div')({
@@ -76,12 +77,13 @@ const setTemplateSearch = (atmosphere: Atmosphere, settingsId: string, value: st
 }
 
 interface Props {
-  settingsRef: ReflectTemplateSearchBar_settings$key
+  activeIdx: number
   clearSearch: () => void
+  settingsRef: ReflectTemplateSearchBar_settings$key
 }
 
 const ReflectTemplateSearchBar = (props: Props) => {
-  const {clearSearch, settingsRef} = props
+  const {activeIdx, clearSearch, settingsRef} = props
   const atmosphere = useAtmosphere()
   const settings = useFragment(
     graphql`
@@ -93,6 +95,8 @@ const ReflectTemplateSearchBar = (props: Props) => {
     settingsRef
   )
   const {id: settingsId, templateSearchQuery} = settings
+  const templateType = Object.keys(templateIdxs).find((key) => templateIdxs[key] === activeIdx)
+  const normalizedTempType = templateType === 'ORGANIZATION' ? 'org' : templateType?.toLowerCase()
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTemplateSearch(atmosphere, settingsId, e.currentTarget.value)
@@ -118,7 +122,7 @@ const ReflectTemplateSearchBar = (props: Props) => {
             onKeyDown={onKeyDown}
             autoComplete='off'
             name='search'
-            placeholder='Search templates...'
+            placeholder={`Search ${normalizedTempType} templates...`}
             type='text'
             onChange={onChange}
             ref={inputRef}
