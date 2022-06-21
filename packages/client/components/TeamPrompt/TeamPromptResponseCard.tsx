@@ -258,7 +258,7 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            {!!contentJSON && (
+            {!!plaintextContent && (
               <ResponseCardFooter>
                 <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
                 <ReplyButton onClick={() => onSelectDiscussion()}>
