@@ -7,6 +7,7 @@ import usePortal from '../../hooks/usePortal'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
+import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
@@ -25,6 +26,16 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
     zIndex: ZIndex.REFLECTION_IN_FLIGHT
   })
 )
+
+const EnterHint = styled('div')({
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  fontStyle: 'italic',
+  fontWeight: 400,
+  lineHeight: '20px',
+  paddingLeft: 16,
+  cursor: 'pointer'
+})
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -183,6 +194,11 @@ const PhaseItemEditor = (props: Props) => {
           setEditorState={setEditorState}
           readOnly={readOnly}
         />
+        {!isEditing && editorState.getCurrentContent().hasText() && (
+          <EnterHint onClick={handleKeydown}>
+            press enter after writing or click here to add
+          </EnterHint>
+        )}
       </ReflectionCardRoot>
       {portal(
         <>
