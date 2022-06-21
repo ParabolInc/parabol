@@ -38,7 +38,6 @@ const Label = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
-  // boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   flexShrink: 0
 })
 
@@ -97,6 +96,7 @@ const ReflectTemplateList = (props: Props) => {
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
         ...ReflectTemplateSearchBar_settings
+        ...ReflectTemplateListTeam_settings
         id
         team {
           id
@@ -108,7 +108,6 @@ const ReflectTemplateList = (props: Props) => {
           orgId
         }
         teamTemplates {
-          ...ReflectTemplateListTeam_teamTemplates
           ...AddNewReflectTemplate_reflectTemplates
           id
         }
@@ -191,7 +190,7 @@ const ReflectTemplateList = (props: Props) => {
           <ReflectTemplateListTeam
             activeTemplateId={activeTemplateId}
             showPublicTemplates={() => goToTab('PUBLIC')}
-            teamTemplates={teamTemplates}
+            settingsRef={settings}
             teamId={teamId}
             isActive={activeIdx === 0}
           />

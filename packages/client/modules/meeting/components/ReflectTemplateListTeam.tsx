@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ReflectTemplateListTeam_teamTemplates} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
+import {ReflectTemplateListTeam_settings$key} from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({
@@ -38,13 +38,30 @@ interface Props {
   activeTemplateId: string
   showPublicTemplates: () => void
   teamId: string
-  teamTemplates: ReflectTemplateListTeam_teamTemplates
+  settingsRef: ReflectTemplateListTeam_settings$key
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
+  const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef} = props
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateListTeam_settings on RetrospectiveMeetingSettings {
+        templateSearchQuery
+        teamTemplates {
+          ...ReflectTemplateItem_template
+          id
+          name
+        }
+      }
+    `,
+    settingsRef
+  )
+  const {teamTemplates, templateSearchQuery} = settings
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
+  const filteredTemplates = teamTemplates.filter(({name}) =>
+    name.toLowerCase().includes(templateSearchQuery ?? '')
+  )
   if (teamTemplates.length === 0) {
     return (
       <Message>
@@ -53,9 +70,12 @@ const ReflectTemplateListTeam = (props: Props) => {
       </Message>
     )
   }
+  if (filteredTemplates.length === 0) {
+    return <Message>{`No team templates match your search query "${templateSearchQuery}"`}</Message>
+  }
   return (
     <TemplateList>
-      {teamTemplates.map((template) => {
+      {filteredTemplates.map((template) => {
         return (
           <ReflectTemplateItem
             key={template.id}
@@ -70,11 +90,4 @@ const ReflectTemplateListTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateListTeam, {
-  teamTemplates: graphql`
-    fragment ReflectTemplateListTeam_teamTemplates on ReflectTemplate @relay(plural: true) {
-      id
-      ...ReflectTemplateItem_template
-    }
-  `
-})
+export default ReflectTemplateListTeam
