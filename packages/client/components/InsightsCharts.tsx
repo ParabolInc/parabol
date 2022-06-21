@@ -631,6 +631,13 @@ const makeData = (data: any, borderColor: string, fillColor: string) => {
   return result
 }
 
+const toDataSet = (time: (number | Date | string)[]) => {
+  return time.map((time, idx) => ({
+    x: new Date(time).getTime(),
+    y: idx + 1
+  }))
+}
+
 const InsightsCharts = (props: Props) => {
   const {domainRef} = props
   const domain = useFragment(
@@ -661,14 +668,13 @@ const InsightsCharts = (props: Props) => {
     )
     .flat()
     .sort()
+  const cumulativeUserCreatedAts = toDataSet(userCreatedAts)
   const teams = organizations.map(({teams}) => teams).flat()
-  const createdAts = teams.map(({createdAt}) => new Date(createdAt).getTime()).sort()
+  const teamCreatedAts = teams.map(({createdAt}) => new Date(createdAt).getTime()).sort()
+  const cumulativeTeamCreatedAts = toDataSet(teamCreatedAts)
 
-  const cumulativeCreatedAts = dummyDates.map((createdAt, idx) => ({
-    x: new Date(createdAt).getTime(),
-    y: idx + 1
-  }))
-  console.log({createdAts, cumulativeCreatedAts, userCreatedAts})
+  const cumulativeCreatedAts = toDataSet(dummyDates)
+  console.log({cumulativeCreatedAts, cumulativeTeamCreatedAts, cumulativeUserCreatedAts})
   const membersOptions = makeOptions('Members')
   const teamsOptions = makeOptions('Teams')
   const meetingsOptions = makeOptions('Meetings')

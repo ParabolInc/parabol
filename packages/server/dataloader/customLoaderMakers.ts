@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import {RValue} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
@@ -414,6 +415,45 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+type MeetingStat = {
+  id: string
+  meetingType: MeetingTypeEnum
+  createdAt: Date
+}
+export const meetingStatsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, MeetingStat[], string>(
+    async (orgIds) => {
+      const r = await getRethink()
+      const meetingStatsByOrgId = await Promise.all(
+        orgIds.map(async (orgId) => {
+          const rawStats = await r
+            .table('Team')
+            .getAll(orgId, {index: 'orgId'})('id')
+            .coerceTo('array')
+            .do((teamIds: RValue) => {
+              return r
+                .table('NewMeeting')
+                .getAll(r.args(teamIds), {index: 'teamId'})
+                .pluck('createdAt', 'meetingType')
+                .orderBy('createdAt')
+                .coerceTo('array')
+            })
+            .run()
+          return rawStats.map((stat) => ({
+            createdAt: stat.createdAt,
+            meetingType: stat.meetingType,
+            id: `${stat.meetingType}:${stat.createdAt}`
+          }))
+        })
+      )
+      return meetingStatsByOrgId
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
