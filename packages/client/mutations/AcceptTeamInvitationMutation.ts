@@ -36,6 +36,7 @@ graphql`
     }
   }
 `
+
 graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
     # this is just for the user that accepted the invitation
