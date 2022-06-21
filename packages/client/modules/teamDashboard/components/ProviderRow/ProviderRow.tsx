@@ -89,10 +89,11 @@ const CardTop = styled('div')({
 interface Props {
   connected: boolean
   onConnectClick: () => void
+  connectButtonText?: string
+  connectButtonIcon?: React.ReactElement
   submitting: boolean
-  // TODO: make generic menu component
   togglePortal: () => void
-  menuRef: React.MutableRefObject<HTMLButtonElement | null>
+  menuRef: React.MutableRefObject<HTMLButtonElement | null> // TODO: make generic menu component
   providerName: string
   providerDescription: string
   providerLogo: React.ReactElement
@@ -108,6 +109,8 @@ const ProviderRow = (props: Props) => {
   const {
     connected,
     onConnectClick,
+    connectButtonText = 'Connect',
+    connectButtonIcon = <Icon>add</Icon>,
     submitting,
     togglePortal,
     menuRef,
@@ -134,7 +137,7 @@ const ProviderRow = (props: Props) => {
               palette='warm'
               waiting={submitting}
             >
-              {isDesktop ? 'Connect' : <Icon>add</Icon>}
+              {isDesktop ? connectButtonText : connectButtonIcon}
             </StyledButton>
           )}
           {!connected && contactUsProps && (
