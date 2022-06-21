@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import {JiraServerProviderRow_viewer$key} from '~/__generated__/JiraServerProviderRow_viewer.graphql'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
+import IconOutlined from '../../../../components/IconOutlined'
 import JiraServerConfigMenu from '../../../../components/JiraServerConfigMenu'
 import JiraServerProviderLogo from '../../../../components/JiraServerProviderLogo'
 import JiraServerSVG from '../../../../components/JiraServerSVG'
@@ -17,9 +18,10 @@ import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
+import {Breakpoint, ExternalLinks, Layout, Providers} from '../../../../types/constEnums'
 import JiraServerClientManager from '../../../../utils/JiraServerClientManager'
 
 const StyledButton = styled(FlatButton)({
@@ -31,6 +33,11 @@ const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
+})
+
+const Form = styled('form')({
+  display: 'flex',
+  flex: 1
 })
 
 interface Props {
@@ -105,6 +112,7 @@ const JiraServerProviderRow = (props: Props) => {
     graphql`
       fragment JiraServerProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
+          id
           ...JiraServerProviderRowTeamMember @relay(mask: false)
         }
       }
@@ -112,6 +120,7 @@ const JiraServerProviderRow = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
@@ -122,10 +131,10 @@ const JiraServerProviderRow = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const provider = jiraServer?.sharedProviders[0]
 
-  if (!provider) return null
-
   const openOAuth = () => {
-    JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
+    if (provider) {
+      JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
+    }
   }
 
   return (
@@ -136,7 +145,7 @@ const JiraServerProviderRow = (props: Props) => {
           <ProviderName>{Providers.JIRA_SERVER_NAME}</ProviderName>
           <RowInfoCopy>{Providers.JIRA_SERVER_DESC}</RowInfoCopy>
         </RowInfo>
-        {isActive ? (
+        {isActive && provider ? (
           <ListAndMenu>
             <JiraServerLogin title='JiraServer'>
               <JiraServerSVG />
@@ -155,9 +164,31 @@ const JiraServerProviderRow = (props: Props) => {
           </ListAndMenu>
         ) : (
           <ProviderActions>
-            <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
-              {isDesktop ? 'Connect' : <Icon>add</Icon>}
-            </StyledButton>
+            {provider ? (
+              <StyledButton
+                key='linkAccount'
+                onClick={openOAuth}
+                palette='warm'
+                waiting={submitting}
+              >
+                {isDesktop ? 'Connect' : <Icon>add</Icon>}
+              </StyledButton>
+            ) : (
+              <Form
+                method='get'
+                target='_blank'
+                action={ExternalLinks.INTEGRATIONS_JIRASERVER}
+                onSubmit={() => {
+                  SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button', {
+                    viewerId
+                  })
+                }}
+              >
+                <StyledButton key='request' palette='warm' waiting={submitting}>
+                  {isDesktop ? 'Contact Us' : <IconOutlined>mail</IconOutlined>}
+                </StyledButton>
+              </Form>
+            )}
           </ProviderActions>
         )}
       </CardTop>

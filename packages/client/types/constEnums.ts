@@ -130,10 +130,11 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
-  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jiraserver',
+  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jira-server',
   INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
+  CONTACT = 'https://www.parabol.co/contact',
   TEAM = 'https://www.parabol.co/team/',
   LANDING_PAGE = 'https://www.parabol.co/'
 }
