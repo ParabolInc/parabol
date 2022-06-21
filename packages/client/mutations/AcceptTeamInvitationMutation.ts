@@ -143,6 +143,7 @@ export const handleAcceptTeamInvitationErrors = (
 ) => {
   if (acceptTeamInvitation?.error) {
     const {message} = acceptTeamInvitation.error
+    if (message === InvitationTokenError.ALREADY_ACCEPTED) return true
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 0,
       key: `acceptTeamInvitation:${message}`,
@@ -175,10 +176,6 @@ const AcceptTeamInvitationMutation: StandardMutation<
         onCompleted(data, errors)
       }
       const {acceptTeamInvitation} = data
-      const isOK = ignoreApproval
-        ? true
-        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!isOK) return
       const {authToken, team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
@@ -191,6 +188,10 @@ const AcceptTeamInvitationMutation: StandardMutation<
         }
         return
       }
+      const isOK = ignoreApproval
+        ? true
+        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
+      if (!isOK) return
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team
