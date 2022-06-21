@@ -11,16 +11,25 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 
+const SearchBarWrapper = styled('div')({
+  padding: '16px 16px 0 16px'
+})
+
 const Search = styled(MenuItemLabel)({
-  overflow: 'visible',
-  padding: 0,
+  alignItems: 'center',
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  borderRadius: '40px',
   display: 'flex',
-  position: 'relative'
+  height: 40,
+  overflow: 'visible',
+  paddingLeft: 20,
+  position: 'relative',
+  width: '100%'
 })
 
 const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   position: 'absolute',
-  left: 8,
+  left: 10,
   top: 8
 })
 
@@ -29,19 +38,32 @@ const SearchIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD24
 })
 
+const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
+  color: PALETTE.SLATE_500,
+  cursor: 'pointer',
+  padding: 8,
+  visibility: isEmpty ? 'hidden' : undefined
+}))
+
+const InputWrapper = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1,
+  paddingLeft: 18
+})
+
 const SearchInput = styled('input')({
-  border: `1px solid ${PALETTE.SKY_500}`,
-  boxShadow: `inset 0px 0px 1px ${PALETTE.SKY_500}`,
+  appearance: 'none',
+  border: 'none',
+  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 14,
-  lineHeight: '24px',
-  outline: 'none',
-  padding: '6px 0 6px 40px',
-  width: '100%',
-  '::placeholder': {
-    color: PALETTE.SLATE_600
-  }
+  fontSize: 16,
+  margin: 0,
+  padding: 12,
+  height: 40,
+  outline: 0,
+  backgroundColor: 'transparent',
+  width: '100%'
 })
 
 const setTemplateSearch = (atmosphere: Atmosphere, settingsId: string, value: string) => {
@@ -55,10 +77,11 @@ const setTemplateSearch = (atmosphere: Atmosphere, settingsId: string, value: st
 
 interface Props {
   settingsRef: ReflectTemplateSearchBar_settings$key
+  clearSearch: () => void
 }
 
 const ReflectTemplateSearchBar = (props: Props) => {
-  const {settingsRef} = props
+  const {clearSearch, settingsRef} = props
   const atmosphere = useAtmosphere()
   const settings = useFragment(
     graphql`
@@ -85,21 +108,28 @@ const ReflectTemplateSearchBar = (props: Props) => {
   }
 
   return (
-    <Search>
-      <StyledMenuItemIcon>
-        <SearchIcon>search</SearchIcon>
-      </StyledMenuItemIcon>
-      <SearchInput
-        onKeyDown={onKeyDown}
-        autoComplete='off'
-        name='search'
-        placeholder='Search templates...'
-        type='text'
-        onChange={onChange}
-        ref={inputRef}
-        value={templateSearchQuery ?? ''}
-      />
-    </Search>
+    <SearchBarWrapper>
+      <Search>
+        <StyledMenuItemIcon>
+          <SearchIcon>search</SearchIcon>
+        </StyledMenuItemIcon>
+        <InputWrapper>
+          <SearchInput
+            onKeyDown={onKeyDown}
+            autoComplete='off'
+            name='search'
+            placeholder='Search templates...'
+            type='text'
+            onChange={onChange}
+            ref={inputRef}
+            value={templateSearchQuery ?? ''}
+          />
+        </InputWrapper>
+        <ClearSearchIcon isEmpty={!templateSearchQuery} onClick={clearSearch}>
+          close
+        </ClearSearchIcon>
+      </Search>
+    </SearchBarWrapper>
   )
 }
 

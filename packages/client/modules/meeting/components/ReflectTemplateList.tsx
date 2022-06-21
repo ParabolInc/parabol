@@ -38,6 +38,7 @@ const Label = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
+  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   flexShrink: 0
 })
 
@@ -172,7 +173,7 @@ const ReflectTemplateList = (props: Props) => {
           onClick={() => goToTab('PUBLIC')}
         />
       </StyledTabsBar>
-      <ReflectTemplateSearchBar settingsRef={settings} />
+      <ReflectTemplateSearchBar clearSearch={clearSearch} settingsRef={settings} />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
