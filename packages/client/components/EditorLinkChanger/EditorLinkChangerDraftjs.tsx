@@ -36,7 +36,7 @@ const EditorLinkChangerDraftjs = (props: Props) => {
     useTaskChild
   } = props
   useTaskChild('editor-link-changer')
-  const handleSubmit = ({text, href}) => {
+  const handleSubmit = ({text, href}: {text: string; href: string}) => {
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
     const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, text, {
       keepSelection: true

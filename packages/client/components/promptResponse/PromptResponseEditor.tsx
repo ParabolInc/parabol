@@ -2,12 +2,11 @@ import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
 import {EditorContent, EditorEvents, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
-import React, {useRef, useState} from 'react'
+import React, {useCallback, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import {BBox} from '~/types/animations'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
-import {createEditorExtensions, getLinkProps} from './tiptapConfig'
+import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
 
 const StyledEditor = styled('div')`
   .ProseMirror {
@@ -45,56 +44,69 @@ const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
   const [_isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
-  const [linkMenuProps, setLinkMenuProps] = useState<
-    {text: string; href: string; originCoords: BBox} | undefined
+
+  const [linkOverlayProps, setLinkOverlayProps] = useState<
+    | {
+        linkMenuProps: LinkMenuProps
+        linkPreviewProps: undefined
+      }
+    | {
+        linkMenuProps: undefined
+        linkPreviewProps: LinkPreviewProps
+      }
+    | undefined
   >()
-  const [linkPreviewProps, setLinkPreviewProps] = useState<{
-    href: string
-    originCoords: BBox
-  } | null>(null)
+
+  const setLinkMenuProps = useCallback(
+    (props: LinkMenuProps) => {
+      setLinkOverlayProps({linkMenuProps: props, linkPreviewProps: undefined})
+    },
+    [setLinkOverlayProps]
+  )
+  const setLinkPreviewProps = useCallback(
+    (props: LinkPreviewProps) => {
+      setLinkOverlayProps({linkPreviewProps: props, linkMenuProps: undefined})
+    },
+    [setLinkOverlayProps]
+  )
+
   const editorRef = useRef<PureEditorContent>(null)
 
-  const setEditing = (isEditing: boolean) => {
-    setIsEditing(isEditing)
-    setAutoFocus(false)
-  }
+  const setEditing = useCallback(
+    (isEditing: boolean) => {
+      setIsEditing(isEditing)
+      setAutoFocus(false)
+    },
+    [setIsEditing, setAutoFocus]
+  )
 
-  const onUpdate = () => {
+  const onUpdate = useCallback(() => {
     setEditing(true)
-  }
+  }, [setEditing])
 
-  const onSubmit = ({editor: newEditorState}: EditorEvents['blur']) => {
-    setEditing(false)
-    const newContent = newEditorState.getJSON()
+  const onSubmit = useCallback(
+    ({editor: newEditorState}: EditorEvents['blur']) => {
+      setEditing(false)
+      const newContent = newEditorState.getJSON()
 
-    // to avoid creating an empty post on first blur
-    if (!content && newEditorState.isEmpty) return
+      // to avoid creating an empty post on first blur
+      if (!content && newEditorState.isEmpty) return
 
-    if (areEqual(content, newContent)) return
+      if (areEqual(content, newContent)) return
 
-    handleSubmit?.(newEditorState)
-  }
-
-  const handleOpenLinkChanger = ({
-    text,
-    href,
-    originCoords
-  }: {
-    text: string
-    href: string
-    originCoords: BBox
-  }) => {
-    setLinkPreviewProps(null)
-    setLinkMenuProps({text, href, originCoords})
-  }
+      handleSubmit?.(newEditorState)
+    },
+    [setEditing, content, handleSubmit]
+  )
 
   const editor = useEditor(
     {
       content,
       extensions: createEditorExtensions(
         readOnly,
-        handleOpenLinkChanger,
+        setLinkMenuProps,
         setLinkPreviewProps,
+        setLinkOverlayProps,
         placeholder
       ),
       autofocus: autoFocus,
@@ -102,7 +114,15 @@ const PromptResponseEditor = (props: Props) => {
       onBlur: onSubmit,
       editable: !readOnly
     },
-    [content, readOnly, setLinkMenuProps]
+    [
+      content,
+      readOnly,
+      setLinkMenuProps,
+      setLinkPreviewProps,
+      setLinkOverlayProps,
+      onSubmit,
+      onUpdate
+    ]
   )
 
   const onAddHyperlink = () => {
@@ -110,31 +130,30 @@ const PromptResponseEditor = (props: Props) => {
       return
     }
 
-    setLinkPreviewProps(null)
     setLinkMenuProps(getLinkProps(editor))
   }
 
   return (
     <StyledEditor>
-      {editor && linkMenuProps && (
+      {editor && linkOverlayProps?.linkMenuProps && (
         <EditorLinkChangerTipTap
-          text={linkMenuProps.text}
-          link={linkMenuProps.href}
+          text={linkOverlayProps.linkMenuProps.text}
+          link={linkOverlayProps.linkMenuProps.href}
           tiptapEditor={editor}
-          originCoords={linkMenuProps.originCoords}
+          originCoords={linkOverlayProps.linkMenuProps.originCoords}
           removeModal={() => {
-            setLinkMenuProps(undefined)
+            setLinkOverlayProps(undefined)
           }}
         />
       )}
-      {editor && linkPreviewProps && !linkMenuProps && (
+      {editor && linkOverlayProps?.linkPreviewProps && (
         <EditorLinkViewerTipTap
-          href={linkPreviewProps.href}
+          href={linkOverlayProps.linkPreviewProps.href}
           tiptapEditor={editor}
           addHyperlink={onAddHyperlink}
-          originCoords={linkPreviewProps.originCoords}
+          originCoords={linkOverlayProps.linkPreviewProps.originCoords}
           removeModal={() => {
-            setLinkPreviewProps(null)
+            setLinkOverlayProps(undefined)
           }}
         />
       )}

@@ -2,6 +2,27 @@ import {Editor, isNodeSelection, posToDOMRect} from '@tiptap/core'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import StarterKit from '@tiptap/starter-kit'
+import {BBox} from '~/types/animations'
+
+export interface LinkMenuProps {
+  text: string
+  href: string
+  originCoords: BBox
+}
+export interface LinkPreviewProps {
+  href: string
+  originCoords: BBox
+}
+export type LinkOverlayProps =
+  | {
+      linkMenuProps: LinkMenuProps
+      linkPreviewProps: undefined
+    }
+  | {
+      linkMenuProps: undefined
+      linkPreviewProps: LinkPreviewProps
+    }
+  | undefined
 
 const getSelectionBoundingBox = (editor: Editor) => {
   const selection = editor.view.state.selection
@@ -44,8 +65,9 @@ export const getLinkProps = (editor: Editor) => {
  */
 export const createEditorExtensions = (
   isReadOnly?: boolean,
-  setLinkMenuProps?,
-  setLinkPreviewProps?,
+  setLinkMenuProps?: (props: LinkMenuProps) => void,
+  setLinkPreviewProps?: (props: LinkPreviewProps) => void,
+  setLinkOverlayProps?: (props: LinkOverlayProps) => void,
   placeholder?: string
 ) => [
   StarterKit,
@@ -66,8 +88,8 @@ export const createEditorExtensions = (
       const href = this.editor.getAttributes('link').href
       if (href && setLinkPreviewProps) {
         setLinkPreviewProps({href, originCoords: getSelectionBoundingBox(this.editor)})
-      } else {
-        setLinkPreviewProps(undefined)
+      } else if (setLinkOverlayProps) {
+        setLinkOverlayProps(undefined)
       }
     }
   }).configure({

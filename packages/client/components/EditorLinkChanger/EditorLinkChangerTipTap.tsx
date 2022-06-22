@@ -17,7 +17,7 @@ interface Props {
 const EditorLinkChangerTipTap = (props: Props) => {
   const {text, link, removeModal, originCoords, tiptapEditor} = props
   const [selection] = useState(tiptapEditor.view.state.selection)
-  const handleSubmit = ({text: newText, href}) => {
+  const handleSubmit = ({text: newText, href}: {text: string; href: string}) => {
     tiptapEditor
       .chain()
       .focus()
