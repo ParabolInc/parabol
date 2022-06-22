@@ -7,6 +7,8 @@ import {PALETTE} from '../styles/paletteV3'
 import {Radius, ZIndex} from '../types/constEnums'
 import {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
+import Icon from './Icon'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 interface Props {
   onTransitionEnd: () => void
@@ -38,12 +40,27 @@ const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
   padding: 8,
   transition: `all 300ms ${DECELERATE}`,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  transform: `translateY(${status === TransitionStatus.MOUNTED ? 20 : status === TransitionStatus.EXITING ? -20 : 0
-    }px)`,
+  transform: `translateY(${
+    status === TransitionStatus.MOUNTED ? 20 : status === TransitionStatus.EXITING ? -20 : 0
+  }px)`,
   pointerEvents: 'auto',
   userSelect: 'none',
   zIndex: ZIndex.SNACKBAR
 }))
+
+const DismissButton = styled('button')({
+  border: 'none',
+  backgroundColor: 'inherit',
+  marginLeft: '8px',
+  cursor: 'pointer',
+  padding: 5,
+})
+
+const StyledIcon = styled(Icon)({
+  color: 'white',
+  opacity: '54%',
+  fontSize: ICON_SIZE.MD18
+})
 
 const useTransitionEnd = (
   timeout: number,
@@ -69,15 +86,13 @@ const SnackbarMessage = (props: Props) => {
   useTransitionEnd(300, status, onTransitionEnd)
   return (
     <Space>
-      <MessageStyles
-        status={status}
-        onClick={dismissSnack}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-      >
+      <MessageStyles status={status} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <Text>{message}</Text>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />
+        <DismissButton onClick={dismissSnack}>
+          <StyledIcon>close</StyledIcon>
+        </DismissButton>
       </MessageStyles>
     </Space>
   )
