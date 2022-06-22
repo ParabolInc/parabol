@@ -14,10 +14,10 @@ import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterInteg
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import GitHubMenuItem from './GitHubMenuItem'
 import GitLabMenuItem from './GitLabMenuItem'
+import RepoIntegrationJiraMenuItem from './JiraMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
-import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
 import RepoIntegrationJiraServerMenuItem from './RepoIntegrationJiraServerMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 

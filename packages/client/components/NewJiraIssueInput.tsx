@@ -112,13 +112,13 @@ const NewJiraIssueInput = (props: Props) => {
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const {repoIntegrations} = teamMember!
+  const {integrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {items} = repoIntegrations
-  const repoIntegration = items?.find((item) => item.key)
-  const cloudId = repoIntegration?.cloudId
-  const projectKey = repoIntegration?.key
+  const projects = integrations.atlassian?.projects
+  const firstProject = projects?.find((project) => project.key)
+  const cloudId = firstProject?.cloudId
+  const projectKey = firstProject?.key
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
     MenuPosition.UPPER_LEFT,
@@ -223,7 +223,7 @@ const NewJiraIssueInput = (props: Props) => {
         <NewJiraIssueMenu
           handleSelectProjectKey={handleSelectProjectKey}
           menuProps={menuProps}
-          repoIntegrations={repoIntegrations}
+          projectsRef={projects}
           teamId={teamId}
           userId={userId}
         />
@@ -246,13 +246,13 @@ export default createFragmentContainer(NewJiraIssueInput, {
       }
       teamMember(teamId: $teamId) {
         ... on TeamMember {
-          repoIntegrations {
-            ...NewJiraIssueMenu_repoIntegrations
-            items {
-              ... on JiraRemoteProject {
-                key
-                cloudId
+          integrations {
+            atlassian {
+              projects {
+                ...NewJiraIssueMenu_JiraRemoteProjects
                 id
+                cloudId
+                key
               }
             }
           }

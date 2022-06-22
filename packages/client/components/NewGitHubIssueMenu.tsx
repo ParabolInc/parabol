@@ -24,7 +24,7 @@ const NewGitHubIssueMenu = (props: Props) => {
 
   const {
     query,
-    filteredItems: filteredIntegrations,
+    filteredItems: filteredRepos,
     onQueryChange
   } = useSearchFilter(repos ?? [], getValue)
 
@@ -33,13 +33,13 @@ const NewGitHubIssueMenu = (props: Props) => {
       ariaLabel='Select GitHub project'
       keepParentFocus
       {...menuProps}
-      resetActiveOnChanges={[filteredIntegrations]}
+      resetActiveOnChanges={[filteredRepos]}
     >
       <SearchMenuItem placeholder='Search GitHub' onChange={onQueryChange} value={query} />
-      {query && filteredIntegrations.length === 0 && (
+      {query && filteredRepos.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No repos found!</EmptyDropdownMenuItemLabel>
       )}
-      {filteredIntegrations.slice(0, 10).map((repo) => {
+      {filteredRepos.slice(0, 10).map((repo) => {
         const {nameWithOwner} = repo
         if (!nameWithOwner) return null
         const onClick = () => {
