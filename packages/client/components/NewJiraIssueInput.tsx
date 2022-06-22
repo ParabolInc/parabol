@@ -1,14 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import {NewJiraIssueInput_meeting} from '~/__generated__/NewJiraIssueInput_meeting.graphql'
-import {NewJiraIssueInput_viewer} from '~/__generated__/NewJiraIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
@@ -18,6 +16,8 @@ import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {CompletedHandler} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
+import {NewJiraIssueInput_meeting$key} from '../__generated__/NewJiraIssueInput_meeting.graphql'
+import {NewJiraIssueInput_viewer$key} from '../__generated__/NewJiraIssueInput_viewer.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
@@ -98,9 +98,9 @@ const Error = styled(StyledError)({
 
 interface Props {
   isEditing: boolean
-  meeting: NewJiraIssueInput_meeting
+  meetingRef: NewJiraIssueInput_meeting$key
   setIsEditing: (isEditing: boolean) => void
-  viewer: NewJiraIssueInput_viewer
+  viewerRef: NewJiraIssueInput_viewer$key
 }
 
 const validateIssue = (issue: string) => {
@@ -108,7 +108,40 @@ const validateIssue = (issue: string) => {
 }
 
 const NewJiraIssueInput = (props: Props) => {
-  const {isEditing, meeting, setIsEditing, viewer} = props
+  const {isEditing, meetingRef, setIsEditing, viewerRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment NewJiraIssueInput_meeting on PokerMeeting {
+        id
+      }
+    `,
+    meetingRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment NewJiraIssueInput_viewer on User {
+        id
+        team(teamId: $teamId) {
+          id
+        }
+        teamMember(teamId: $teamId) {
+          ... on TeamMember {
+            integrations {
+              atlassian {
+                projects {
+                  ...NewJiraIssueMenu_JiraRemoteProjects
+                  id
+                  cloudId
+                  key
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
@@ -233,32 +266,4 @@ const NewJiraIssueInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewJiraIssueInput, {
-  meeting: graphql`
-    fragment NewJiraIssueInput_meeting on PokerMeeting {
-      id
-    }
-  `,
-  viewer: graphql`
-    fragment NewJiraIssueInput_viewer on User {
-      id
-      team(teamId: $teamId) {
-        id
-      }
-      teamMember(teamId: $teamId) {
-        ... on TeamMember {
-          integrations {
-            atlassian {
-              projects {
-                ...NewJiraIssueMenu_JiraRemoteProjects
-                id
-                cloudId
-                key
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default NewJiraIssueInput
