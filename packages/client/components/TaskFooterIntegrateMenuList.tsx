@@ -14,7 +14,7 @@ import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterInteg
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import GitHubMenuItem from './GitHubMenuItem'
 import GitLabMenuItem from './GitLabMenuItem'
-import RepoIntegrationJiraMenuItem from './JiraMenuItem'
+import JiraMenuItem from './JiraMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
@@ -97,12 +97,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <RepoIntegrationJiraMenuItem
-              key={id}
-              query={query}
-              repoIntegration={repoIntegration}
-              onClick={onClick}
-            />
+            <JiraMenuItem key={id} query={query} name={repoIntegration.name} onClick={onClick} />
           )
         }
         if (__typename === 'JiraServerRemoteProject') {
@@ -182,7 +177,6 @@ graphql`
     ... on _xGitLabProject {
       fullPath
     }
-    ...RepoIntegrationJiraMenuItem_repoIntegration
     ...RepoIntegrationJiraServerMenuItem_repoIntegration
   }
 `

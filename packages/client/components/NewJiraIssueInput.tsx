@@ -219,15 +219,16 @@ const NewJiraIssueInput = (props: Props) => {
           </StyledButton>
         </Issue>
       </Item>
-      {menuPortal(
-        <NewJiraIssueMenu
-          handleSelectProjectKey={handleSelectProjectKey}
-          menuProps={menuProps}
-          projectsRef={projects}
-          teamId={teamId}
-          userId={userId}
-        />
-      )}
+      {projects &&
+        menuPortal(
+          <NewJiraIssueMenu
+            handleSelectProjectKey={handleSelectProjectKey}
+            menuProps={menuProps}
+            projectsRef={projects}
+            teamId={teamId}
+            userId={userId}
+          />
+        )}
     </>
   )
 }
