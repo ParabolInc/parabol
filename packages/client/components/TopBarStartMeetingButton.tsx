@@ -29,7 +29,7 @@ const TopBarStartMeetingButton = () => {
   }
   return (
     <Button onClick={onClick}>
-      <MeetingLabel>Start Meeting</MeetingLabel>
+      <MeetingLabel>Add Meeting</MeetingLabel>
     </Button>
   )
 }
