@@ -27,6 +27,15 @@ const UpvoteRow = styled('div')({
   justifyContent: 'flex-end'
 })
 
+const ThumbUpIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18,
+  height: 24,
+  lineHeight: '24px',
+  textAlign: 'center',
+  userSelect: 'none',
+  width: 24
+})
+
 const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
   ({isExpanded, isEnabled}) => ({
     color: isExpanded
@@ -57,6 +66,8 @@ const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
       : PALETTE.SKY_500,
     fontWeight: 600,
     padding: '0 4px',
+    display: 'flex',
+    alignItems: 'center',
     userSelect: 'none'
   })
 )
@@ -123,13 +134,14 @@ const ReflectionGroupVoting = (props: Props) => {
           color={isExpanded ? PALETTE.SKY_400 : PALETTE.SKY_500}
           onClick={downvote}
         >
-          {'thumb_down'}
+          {'remove'}
         </UpvoteIcon>
         <VoteCount
           isExpanded={isExpanded}
           voteCount={viewerVoteCount}
           data-cy={`completed-vote-count`}
         >
+          <ThumbUpIcon>{'thumb_up'}</ThumbUpIcon>
           {viewerVoteCount}
         </VoteCount>
         <UpvoteIcon
@@ -139,7 +151,7 @@ const ReflectionGroupVoting = (props: Props) => {
           color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.SLATE_600}
           onClick={vote}
         >
-          {'thumb_up'}
+          {'add'}
         </UpvoteIcon>
       </UpvoteRow>
     </UpvoteColumn>
