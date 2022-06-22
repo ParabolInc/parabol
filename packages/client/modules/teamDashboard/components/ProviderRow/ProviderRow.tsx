@@ -100,7 +100,6 @@ interface Props {
   children?: React.ReactElement | false
   contactUsProps?: {
     url: string
-    subject: string
     onSubmit: () => void
   }
 }
@@ -147,7 +146,6 @@ const ProviderRow = (props: Props) => {
               action={contactUsProps.url}
               onSubmit={contactUsProps.onSubmit}
             >
-              <input type='hidden' name='subject' value={contactUsProps.subject} />
               <StyledButton key='request' palette='warm'>
                 {isDesktop ? 'Contact Us' : <IconOutlined>mail</IconOutlined>}
               </StyledButton>

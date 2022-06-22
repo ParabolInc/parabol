@@ -78,8 +78,7 @@ const JiraServerProviderRow = (props: Props) => {
         contactUsProps={
           !provider
             ? {
-                subject: '[Jira Server] Add Request',
-                url: ExternalLinks.CONTACT,
+                url: ExternalLinks.INTEGRATIONS_JIRASERVER,
                 onSubmit: () => {
                   SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button', {
                     viewerId
