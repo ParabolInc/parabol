@@ -37,6 +37,7 @@ export const enum Breakpoint {
   SIDEBAR_LEFT = 1024,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,
+  POKER_DISCUSSION_FULLSCREEN_DRAWER = 660,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   VOTE_PHASE = 800,
@@ -129,7 +130,7 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
-  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jiraserver',
+  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jira-server',
   INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',

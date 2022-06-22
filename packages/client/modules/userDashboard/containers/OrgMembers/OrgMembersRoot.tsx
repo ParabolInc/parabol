@@ -1,8 +1,8 @@
 import React, {Suspense} from 'react'
+import orgMembersQuery, {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../../types/constEnums'
 import {renderLoader} from '../../../../utils/relay/renderLoader'
-import orgMembersQuery, {OrgMembersQuery} from '../../../../__generated__/OrgMembersQuery.graphql'
 import OrgMembers from '../../components/OrgMembers/OrgMembers'
 
 interface Props {

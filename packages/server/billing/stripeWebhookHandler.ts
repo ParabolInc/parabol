@@ -2,7 +2,7 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
-import StripeManager from '../utils/StripeManager'
+import {getStripeManager} from '../utils/stripe'
 
 interface InvoiceEventCallBackArg {
   id: string
@@ -86,7 +86,7 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   res.end()
 
   if (!str) return
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const verifiedBody = manager.constructEvent(str, stripeSignature)
   if (!verifiedBody) return
 
