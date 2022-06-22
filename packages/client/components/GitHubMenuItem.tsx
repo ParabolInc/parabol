@@ -11,7 +11,7 @@ interface Props {
   query: string
 }
 
-const RepoIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) => {
+const GitHubMenuItem = forwardRef((props: Props, ref: any) => {
   const {query, onClick, nameWithOwner} = props
   return (
     <MenuItem
@@ -29,4 +29,4 @@ const RepoIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default RepoIntegrationGitHubMenuItem
+export default GitHubMenuItem

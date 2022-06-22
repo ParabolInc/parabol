@@ -12,11 +12,11 @@ import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import GitHubMenuItem from './GitHubMenuItem'
+import GitLabMenuItem from './GitLabMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
-import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
-import RepoIntegrationGitLabMenuItem from './RepoIntegrationGitLabMenuItem'
 import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
 import RepoIntegrationJiraServerMenuItem from './RepoIntegrationJiraServerMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
@@ -136,7 +136,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <RepoIntegrationGitHubMenuItem
+            <GitHubMenuItem
               key={id}
               query={query}
               nameWithOwner={repoIntegration.nameWithOwner}
@@ -155,14 +155,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
-          return (
-            <RepoIntegrationGitLabMenuItem
-              key={id}
-              query={query}
-              fullPath={fullPath}
-              onClick={onClick}
-            />
-          )
+          return <GitLabMenuItem key={id} query={query} fullPath={fullPath} onClick={onClick} />
         }
         return null
       })}

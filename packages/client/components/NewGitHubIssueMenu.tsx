@@ -3,8 +3,8 @@ import {Repo} from '~/hooks/useGetRepoContributions'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import GitHubMenuItem from './GitHubMenuItem'
 import Menu from './Menu'
-import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
@@ -46,7 +46,7 @@ const NewGitHubIssueMenu = (props: Props) => {
           handleSelectNameWithOwner(nameWithOwner)
         }
         return (
-          <RepoIntegrationGitHubMenuItem
+          <GitHubMenuItem
             key={nameWithOwner}
             query={query}
             nameWithOwner={nameWithOwner}

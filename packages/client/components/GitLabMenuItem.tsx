@@ -11,7 +11,7 @@ interface Props {
   query: string
 }
 
-const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
+const GitLabMenuItem = forwardRef((props: Props, ref: any) => {
   const {query, fullPath, onClick} = props
 
   const handleClick = () => {
@@ -34,4 +34,4 @@ const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default RepoIntegrationGitLabMenuItem
+export default GitLabMenuItem
