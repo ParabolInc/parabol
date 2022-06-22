@@ -4,10 +4,10 @@ import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
 import IconOutlined from '../../../../components/IconOutlined'
 import ProviderActions from '../../../../components/ProviderActions'
-import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout} from '../../../../types/constEnums'
@@ -75,9 +75,18 @@ const Form = styled('form')({
   flex: 1
 })
 
-const ExtraProviderCard = styled(ProviderCard)({
+const ProviderCard = styled('div')({
+  display: 'flex',
   flexDirection: 'column',
-  padding: 0
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: cardShadow,
+  flexShrink: 0,
+  justifyContent: 'flex-start',
+  margin: '16px 0',
+  padding: 0,
+  position: 'relative',
+  width: '100%'
 })
 
 const CardTop = styled('div')({
@@ -121,7 +130,7 @@ const ProviderRow = (props: Props) => {
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <ExtraProviderCard>
+    <ProviderCard>
       <CardTop>
         {providerLogo}
         <RowInfo>
@@ -173,7 +182,7 @@ const ProviderRow = (props: Props) => {
         </ProviderActions>
       </CardTop>
       {children}
-    </ExtraProviderCard>
+    </ProviderCard>
   )
 }
 
