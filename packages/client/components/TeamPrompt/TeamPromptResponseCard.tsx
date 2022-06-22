@@ -21,15 +21,14 @@ import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
+import {ResponseCardDimensions, ResponsesGridBreakpoints} from './TeamPromptGridDimensions'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 
-const MIN_CARD_HEIGHT = 100
-
-const Dimensions = {
-  RESPONSE_WIDTH: 296,
-  RESPONSE_MIN_HEIGHT: 100
-}
+const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
+const threeColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.THREE_RESPONSE_COLUMNS}px)`
+const fourColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.FOUR_RESPONSE_COLUMNS}px)`
+const fiveColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.FIVE_RESPONSE_COLUMNS}px)`
 
 const ResponseWrapper = styled('div')<{
   status: TransitionStatus
@@ -38,8 +37,19 @@ const ResponseWrapper = styled('div')<{
   transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
   display: 'flex',
   flexDirection: 'column',
-  width: Dimensions.RESPONSE_WIDTH,
-  flexShrink: 0
+  width: '100%',
+  [twoColumnResponseMediaQuery]: {
+    width: `calc(100% / 2 - ${ResponseCardDimensions.GAP}px)`
+  },
+  [threeColumnResponseMediaQuery]: {
+    width: `calc(100% / 3 - ${ResponseCardDimensions.GAP}px)`
+  },
+  [fourColumnResponseMediaQuery]: {
+    width: `calc(100% / 4 - ${ResponseCardDimensions.GAP}px)`
+  },
+  [fiveColumnResponseMediaQuery]: {
+    width: `calc(100% / 5 - ${ResponseCardDimensions.GAP}px)`
+  }
 }))
 
 const ResponseHeader = styled('div')({
@@ -61,8 +71,7 @@ const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
     justifyContent: 'space-between',
     color: isEmpty ? PALETTE.SLATE_600 : undefined,
     padding: Card.PADDING,
-    minHeight: MIN_CARD_HEIGHT,
-    userSelect: 'none',
+    minHeight: ResponseCardDimensions.MIN_CARD_HEIGHT,
     outline: isHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none'
   })
 )
@@ -106,7 +115,6 @@ interface Props {
 
 const TeamPromptResponseCard = (props: Props) => {
   const {stageRef, status, onTransitionEnd, displayIdx} = props
-
   const responseStage = useFragment(
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
@@ -177,7 +185,7 @@ const TeamPromptResponseCard = (props: Props) => {
     [response]
   )
   const plaintextContent = response?.plaintextContent ?? ''
-  const reactjis = response?.reactjis
+  const reactjis = response?.reactjis ?? []
 
   const discussionEdges = discussion.thread.edges
   const replyCount = discussionEdges.length
@@ -201,7 +209,7 @@ const TeamPromptResponseCard = (props: Props) => {
   })
 
   const onToggleReactji = (emojiId: string) => {
-    if (submitting || !reactjis) return
+    if (submitting || !response) return
     const isRemove = !!reactjis.find((reactji) => {
       return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
     })
@@ -250,19 +258,21 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            <ResponseCardFooter>
-              <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
-              <ReplyButton onClick={() => onSelectDiscussion()}>
-                {replyCount > 0 ? (
-                  <>
-                    <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
-                    {replyCount} {plural(replyCount, 'Reply', 'Replies')}
-                  </>
-                ) : (
-                  'Reply'
-                )}
-              </ReplyButton>
-            </ResponseCardFooter>
+            {!!plaintextContent && (
+              <ResponseCardFooter>
+                <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+                <ReplyButton onClick={() => onSelectDiscussion()}>
+                  {replyCount > 0 ? (
+                    <>
+                      <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
+                      {replyCount} {plural(replyCount, 'Reply', 'Replies')}
+                    </>
+                  ) : (
+                    'Reply'
+                  )}
+                </ReplyButton>
+              </ResponseCardFooter>
+            )}
           </>
         )}
       </ResponseCard>

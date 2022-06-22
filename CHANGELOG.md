@@ -5,6 +5,81 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.63.0 2022-June-16
+
+### Added
+
+- feat: add integrations task for first-time users, use jsdom to attach…
+- feat: add team charter template (#6745)
+- feat(Onboarding): Added demo link to empty meeting dash (#6704)
+- feat(insights): toggle insights (#6672)
+- feat(Onboarding): Added video tutorial to empty meetings dash (#6705)
+- feat(metrics): merge 'Upgrade to Pro' and 'Enterprise invoice draft'
+- feat(standups): Make response in discussion drawer scrollable (#6753)
+- feat(insights): Add /usage route (#6687)
+
+### Fixed
+
+- fix(poker): Fix wrong controls when estimating Parabol tasks (#6716)
+- fix: center add/start meeting button content (#6732)
+- fix: handle duplicates in changeEmailDomain (#6725)
+- fix: updates caniuse-lite version in yarn lock file (#6736)
+- fix(standups): reduced list padding in standups response (#6754)
+- fix(standups): removed user select none property from standup respons
+
+### Changed
+
+- chore: update release_test.md (#6717)
+- refactor: update createFragmentContainer to usePaginationFragment (#6431)
+- chore(dx): delete remaining generated pg queries (#6752)
+- refactor: Stop writes to RethinkDB Team table (#6239)
+- chore: fix delete team migration (#6763)
+- chore: Refresh HubSpot chat widget on page changes (#6759)
+
+## 6.62.2 2022-June-12
+
+### Added
+
+- feat: Add start meeting button to top bar (#6707)
+- feat: change email domain (#6708)
+- feat: remove auth identity (#6713)
+
+### Fixed
+
+- fix(jira): Fix add missing jira field new algorithm (#6722)
+
+## 6.62.1 2022-June-10
+
+### Fixed
+
+- Fixed some retrospective prompts for existing meetings
+
+## 6.62.0 2022-June-9
+
+### Added
+
+- feat(restrictDomains): Add table and mutations (#6476)
+- feat(standups): Update relative createdAt automatically (#6658)
+- feat(domainStats): Support querying domain stat fields (#6664)
+- feat(integration-tests): add more testing to the 2-minute demo (#6183)
+- feat(restrictDomains): Add restriction to acceptTeamInvitation (#6487)
+
+### Fixed
+
+- fix: github repos filter menu shows limited selection (#6627)
+- fix(sprint-poker): Prevent kicking facilitator off the meeting while modifying the scope (#6667)
+- fix(jira): Show meaningful field update error for team-managed projects (#6656)
+- fix bad merge on Organization.ts (#6682)
+- fix(Retro Templates): Added missing prompts (#6671)
+- fix(jira): Handle a case with a huge number of Jira projects and avoid timeout error when trying to fix Jira field automatically (#6676)
+- fix(standups): Discussion thread drawer is cut off on mobile (#6695)
+
+### Changed
+
+- chore(deps): bump protobufjs from 6.11.2 to 6.11.3 (#6669)
+- chore(deps): bump sharp from 0.30.3 to 0.30.5 (#6665)
+- chore(dx): remove generated pg files from git (#6519)
+
 ## 6.61.0 2022-June-1
 
 ### Added

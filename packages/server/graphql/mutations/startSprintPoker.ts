@@ -163,7 +163,6 @@ export default {
           })
         )
         .run(),
-      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)

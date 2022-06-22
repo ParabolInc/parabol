@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
-import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
-import {TimelineFeedList_viewer} from '../__generated__/TimelineFeedList_viewer.graphql'
+import {usePaginationFragment} from 'react-relay'
+import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
+import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
+import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
 
 const ResultScroller = styled('div')({
@@ -11,14 +12,45 @@ const ResultScroller = styled('div')({
 })
 
 interface Props {
-  viewer: TimelineFeedList_viewer
-  relay: RelayPaginationProp
+  queryRef: TimelineFeedList_query$key
 }
 
 const TimelineFeedList = (props: Props) => {
-  const {relay, viewer} = props
+  const {queryRef} = props
+  const paginationRes = usePaginationFragment<
+    TimelineFeedListPaginationQuery,
+    TimelineFeedList_query$key
+  >(
+    // TODO: can't `on User` directly because not implements Node (i.e. a type that has an id).
+    // https://relay.dev/docs/api-reference/use-refetchable-fragment/#arguments
+    graphql`
+      fragment TimelineFeedList_query on Query
+      @refetchable(queryName: "TimelineFeedListPaginationQuery") {
+        viewer {
+          timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
+            edges {
+              cursor
+              node {
+                ...TimelineEvent_timelineEvent
+                __typename
+                id
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+
+  const {data} = paginationRes
+  const {viewer} = data
   const {timeline} = viewer
-  const lastItem = useLoadMoreOnScrollBottom(relay, {}, 10)
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 10)
   return (
     <ResultScroller>
       {timeline.edges.map(({node: timelineEvent}) => (
@@ -29,53 +61,4 @@ const TimelineFeedList = (props: Props) => {
   )
 }
 
-export default createPaginationContainer(
-  TimelineFeedList,
-  {
-    viewer: graphql`
-      fragment TimelineFeedList_viewer on User {
-        timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
-          edges {
-            cursor
-            node {
-              ...TimelineEvent_timelineEvent
-              __typename
-              id
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps(props: any) {
-      const {viewer} = props
-      return viewer && viewer.timeline
-    },
-    getFragmentVariables(prevVars, totalCount) {
-      return {
-        ...prevVars,
-        first: totalCount
-      }
-    },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: count,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query TimelineFeedListPaginationQuery($first: Int!, $after: DateTime) {
-        viewer {
-          ...TimelineFeedList_viewer
-        }
-      }
-    `
-  }
-)
+export default TimelineFeedList

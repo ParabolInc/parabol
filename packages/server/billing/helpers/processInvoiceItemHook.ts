@@ -14,11 +14,11 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import sleep from '../../../client/utils/sleep'
 import getRethink from '../../database/rethinkDriver'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
+import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import {toEpochSeconds} from '../../utils/epochTime'
 import RedisLock from '../../utils/RedisLock'
 import sendToSentry from '../../utils/sendToSentry'
-import StripeManager from '../../utils/StripeManager'
-import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
+import {getStripeManager} from '../../utils/stripe'
 
 const getTypeDelta = (type: InvoiceItemType) => {
   return [InvoiceItemType.ADD_USER, InvoiceItemType.UNPAUSE_USER].includes(type) ? 1 : -1
@@ -54,13 +54,13 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
   // we have lock, that means we're free to send 1 item to stripe
   const r = await getRethink()
 
-  const hook = ((await r
+  const hook = (await r
     .table('InvoiceItemHook')
     .getAll(stripeSubscriptionId, {index: 'stripeSubscriptionId'})
     .filter({isPending: true})
     .orderBy('createdAt')
     .nth(0)
-    .run()) as unknown) as InvoiceItemHook
+    .run()) as unknown as InvoiceItemHook
 
   if (!hook) {
     sendToSentry(new Error('Stripe Hook Not Found'), {
@@ -73,7 +73,7 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     ? prorationDate ?? toEpochSeconds(new Date())
     : undefined
 
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const [safeProrationDate, stripeSubscription] = await Promise.all([
     getSafeProrationDate(stripeSubscriptionId, tentativeProrationDate),
     manager.retrieveSubscription(stripeSubscriptionId)

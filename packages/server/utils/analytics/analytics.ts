@@ -9,6 +9,15 @@ import segment from '../segmentIo'
 import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
+export type OrgTierChangeEventProperties = {
+  orgId: string
+  domain?: string
+  orgName: string
+  oldTier: string
+  newTier: string
+  billingLeaderEmail: string
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -17,6 +26,11 @@ export type AnalyticsEvent =
   // team
   | 'Integration Added'
   | 'Integration Removed'
+  | 'Invite Email Sent'
+  | 'Invite Accepted'
+  // org
+  | 'Organization Upgraded'
+  | 'Organization Downgraded'
   // task
   | 'Task Created'
   | 'Task Published'
@@ -31,6 +45,7 @@ class Analytics {
     this.segmentAnalytics = new SegmentAnalytics(segment)
   }
 
+  // meeting
   teamPromptEnd = (
     completedMeeting: Meeting,
     meetingMembers: MeetingMember[],
@@ -107,6 +122,7 @@ class Analytics {
     })
   }
 
+  // team
   integrationAdded = (
     userId: string,
     teamId: string,
@@ -129,6 +145,49 @@ class Analytics {
     })
   }
 
+  inviteEmailSent = (
+    userId: string,
+    teamId: string,
+    inviteeEmail: string,
+    isInviteeParabolUser: boolean,
+    inviteTo: 'meeting' | 'team',
+    success: boolean
+  ) => {
+    this.track(userId, 'Invite Email Sent', {
+      teamId,
+      inviteeEmail,
+      isInviteeParabolUser,
+      inviteTo,
+      success
+    })
+  }
+
+  inviteAccepted = (
+    userId: string,
+    teamId: string,
+    isNewUser: boolean,
+    acceptAt: 'meeting' | 'team'
+  ) => {
+    this.track(userId, 'Invite Accepted', {
+      teamId,
+      isNewUser,
+      acceptAt
+    })
+  }
+
+  //org
+  organizationUpgraded = (userId: string, upgradeEventProperties: OrgTierChangeEventProperties) => {
+    this.track(userId, 'Organization Upgraded', upgradeEventProperties)
+  }
+
+  organizationDowngraded = (
+    userId: string,
+    downgradeEventProperties: OrgTierChangeEventProperties
+  ) => {
+    this.track(userId, 'Organization Downgraded', downgradeEventProperties)
+  }
+
+  // task
   taskPublished = (
     userId: string,
     teamId: string,

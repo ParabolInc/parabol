@@ -1,19 +1,20 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {AppBar} from '~/types/constEnums'
+import {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
+import TopBarHelp from './TopBarHelp'
 import TopBarIcon from './TopBarIcon'
 import TopBarNotifications from './TopBarNotifications'
-import TopBarHelp from './TopBarHelp'
 
 interface Props {
   toggle: () => void
-  viewer: any
+  queryRef: MobileDashTopBar_query$key
 }
 
 const Wrapper = styled('header')({
@@ -55,7 +56,19 @@ const Title = styled('div')({
 })
 
 const MobileDashTopBar = (props: Props) => {
-  const {toggle, viewer} = props
+  const {toggle, queryRef} = props
+  const data = useFragment(
+    graphql`
+      fragment MobileDashTopBar_query on Query {
+        ...TopBarNotifications_query
+        viewer {
+          pageName
+        }
+      }
+    `,
+    queryRef
+  )
+  const {viewer} = data
   const pageName = viewer?.pageName ?? 'Parabol'
   return (
     <Wrapper>
@@ -69,17 +82,10 @@ const MobileDashTopBar = (props: Props) => {
         {/* Disable search in mobile for now */}
         {false && <TopBarIcon icon={'search'} ariaLabel={'Search'} />}
         <TopBarHelp />
-        <TopBarNotifications viewer={viewer || null} />
+        <TopBarNotifications queryRef={data || null} />
       </TopBarIcons>
     </Wrapper>
   )
 }
 
-export default createFragmentContainer(MobileDashTopBar, {
-  viewer: graphql`
-    fragment MobileDashTopBar_viewer on User {
-      ...TopBarNotifications_viewer
-      pageName
-    }
-  `
-})
+export default MobileDashTopBar

@@ -1,17 +1,15 @@
-import stringify from 'fast-json-stable-stringify'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import {JiraDimensionField} from '../postgres/queries/getTeamsByIds'
-import getRethink from '../database/rethinkDriver'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import {DataLoaderWorker} from '../graphql/graphql'
+import isValid from '../graphql/isValid'
 import getPg from '../postgres/getPg'
 import {
   IMergeTeamJiraDimensionFieldsQueryParams,
   mergeTeamJiraDimensionFieldsQuery
 } from '../postgres/queries/generated/mergeTeamJiraDimensionFieldsQuery'
+import {JiraDimensionField} from '../postgres/queries/getTeamsByIds'
 import catchAndLog from '../postgres/utils/catchAndLog'
-import isValid from '../graphql/isValid'
 import AtlassianServerManager from './AtlassianServerManager'
-import {isNotNull} from 'parabol-client/utils/predicates'
 
 const hashMapper = (mapper: JiraDimensionField) => {
   const {cloudId, projectKey, dimensionName} = mapper
@@ -84,28 +82,15 @@ const ensureJiraDimensionField = async (
   )
   const fieldsToAdd = newJiraDimensionFields.filter(Boolean).filter(isNotNull)
   if (fieldsToAdd.length === 0) return
-  const sortedJiraDimensionFields = [...currentMappers, ...fieldsToAdd].sort((a, b) =>
-    stringify(a) < stringify(b) ? -1 : 1
-  )
-  const r = await getRethink()
-  await Promise.all([
-    r
-      .table('Team')
-      .get(teamId)
-      .update({
-        jiraDimensionFields: sortedJiraDimensionFields
-      })
-      .run(),
-    catchAndLog(() =>
-      mergeTeamJiraDimensionFieldsQuery.run(
-        {
-          jiraDimensionFields: fieldsToAdd,
-          id: teamId
-        } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
-        getPg()
-      )
+  await catchAndLog(() =>
+    mergeTeamJiraDimensionFieldsQuery.run(
+      {
+        jiraDimensionFields: fieldsToAdd,
+        id: teamId
+      } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
+      getPg()
     )
-  ])
+  )
 }
 
 export default ensureJiraDimensionField

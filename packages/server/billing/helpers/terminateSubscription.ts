@@ -1,6 +1,6 @@
 import getRethink from '../../database/rethinkDriver'
 import updateTeamByOrgId from '../../postgres/queries/updateTeamByOrgId'
-import StripeManager from '../../utils/StripeManager'
+import {getStripeManager} from '../../utils/stripe'
 
 const terminateSubscription = async (orgId: string) => {
   const r = await getRethink()
@@ -8,9 +8,6 @@ const terminateSubscription = async (orgId: string) => {
   // flag teams as unpaid
   const [rethinkResult] = await Promise.all([
     r({
-      updateTeam: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
-        isPaid: false
-      }),
       stripeSubscriptionId: r
         .table('Organization')
         .get(orgId)
@@ -31,7 +28,7 @@ const terminateSubscription = async (orgId: string) => {
   // stripe already does this for us (per account settings) but we do it here so we don't have to wait an hour
   // if this function is called by a paymentFailed hook, then the sub may not exist, so catch and release
   if (stripeSubscriptionId) {
-    const manager = new StripeManager()
+    const manager = getStripeManager()
     try {
       await manager.deleteSubscription(stripeSubscriptionId)
     } catch (e) {

@@ -3,7 +3,7 @@ import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from './getCCFromCustomer'
 
 const upgradeToPro = async (orgId: string, source: string, email: string) => {
@@ -21,7 +21,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
     .count()
     .run()
 
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const customer = stripeId
     ? await manager.updatePayment(stripeId, source)
     : await manager.createCustomer(orgId, email, source)
@@ -47,12 +47,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
           tier: 'pro',
           stripeId: customer.id,
           updatedAt: now
-        }),
-      teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
-        isPaid: true,
-        tier: 'pro',
-        updatedAt: now
-      })
+        })
     }).run(),
     updateTeamByOrgId(
       {

@@ -5,7 +5,7 @@ import getRethink from '../../../database/rethinkDriver'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
 export type StripeFailPaymentPayloadSource =
@@ -26,7 +26,7 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   }
 
   const r = await getRethink()
-  const manager = new StripeManager()
+  const manager = getStripeManager()
 
   // VALIDATION
   const invoice = await manager.retrieveInvoice(invoiceId)

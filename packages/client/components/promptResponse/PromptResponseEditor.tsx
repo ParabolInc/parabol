@@ -1,17 +1,56 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
-import {EditorContent, EditorEvents, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
+import {EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import {Radius} from '~/types/constEnums'
+import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
+
+const SubmissionButtonWrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center'
+})
+
+const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
+  backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
+  opacity: 1,
+  borderRadius: Radius.BUTTON_PILL,
+  color: disabled ? PALETTE.SLATE_600 : '#FFFFFF',
+  outline: 0,
+  marginTop: 12,
+  padding: '4px 12px 4px 12px',
+  fontSize: 14,
+  lineHeight: '20px',
+  fontWeight: 400
+}))
+
+const CancelButton = styled(SubmitButton)({
+  backgroundColor: PALETTE.SLATE_200,
+  marginRight: 12,
+  color: PALETTE.SLATE_700
+})
 
 const StyledEditor = styled('div')`
   .ProseMirror {
     min-height: 40px;
   }
+
+  .ProseMirror :is(ul, ol) {
+    list-style-position: outside;
+    padding-inline-start: 16px;
+    margin-block-start: 16px;
+    margin-block-end: 16px;
+  }
+
+  .ProseMirror :is(ol) {
+    margin-inline-start: 2px;
+  }
+
   .ProseMirror p.is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);
@@ -19,6 +58,7 @@ const StyledEditor = styled('div')`
     height: 0;
     pointer-events: none;
   }
+
   .ProseMirror-focused:focus {
     outline: none;
   }
@@ -42,7 +82,7 @@ interface Props {
 
 const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
-  const [_isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
   const [linkOverlayProps, setLinkOverlayProps] = useState<
@@ -73,8 +113,8 @@ const PromptResponseEditor = (props: Props) => {
   const editorRef = useRef<PureEditorContent>(null)
 
   const setEditing = useCallback(
-    (isEditing: boolean) => {
-      setIsEditing(isEditing)
+    (newIsEditing: boolean) => {
+      setIsEditing(newIsEditing)
       setAutoFocus(false)
     },
     [setIsEditing, setAutoFocus]
@@ -85,7 +125,7 @@ const PromptResponseEditor = (props: Props) => {
   }, [setEditing])
 
   const onSubmit = useCallback(
-    ({editor: newEditorState}: EditorEvents['blur']) => {
+    (newEditorState: EditorState) => {
       setEditing(false)
       const newContent = newEditorState.getJSON()
 
@@ -99,6 +139,11 @@ const PromptResponseEditor = (props: Props) => {
     [setEditing, content, handleSubmit]
   )
 
+  const onCancel = (editor: EditorState) => {
+    setEditing(false)
+    editor?.commands.setContent(content)
+  }
+
   const editor = useEditor(
     {
       content,
@@ -111,7 +156,6 @@ const PromptResponseEditor = (props: Props) => {
       ),
       autofocus: autoFocus,
       onUpdate,
-      onBlur: onSubmit,
       editable: !readOnly
     },
     [
@@ -134,31 +178,53 @@ const PromptResponseEditor = (props: Props) => {
   }
 
   return (
-    <StyledEditor>
-      {editor && linkOverlayProps?.linkMenuProps && (
-        <EditorLinkChangerTipTap
-          text={linkOverlayProps.linkMenuProps.text}
-          link={linkOverlayProps.linkMenuProps.href}
-          tiptapEditor={editor}
-          originCoords={linkOverlayProps.linkMenuProps.originCoords}
-          removeModal={() => {
-            setLinkOverlayProps(undefined)
-          }}
-        />
+    <>
+      <StyledEditor>
+        {editor && linkOverlayProps?.linkMenuProps && (
+          <EditorLinkChangerTipTap
+            text={linkOverlayProps.linkMenuProps.text}
+            link={linkOverlayProps.linkMenuProps.href}
+            tiptapEditor={editor}
+            originCoords={linkOverlayProps.linkMenuProps.originCoords}
+            removeModal={() => {
+              setLinkOverlayProps(undefined)
+            }}
+          />
+        )}
+        {editor && linkOverlayProps?.linkPreviewProps && (
+          <EditorLinkViewerTipTap
+            href={linkOverlayProps.linkPreviewProps.href}
+            tiptapEditor={editor}
+            addHyperlink={onAddHyperlink}
+            originCoords={linkOverlayProps.linkPreviewProps.originCoords}
+            removeModal={() => {
+              setLinkOverlayProps(undefined)
+            }}
+          />
+        )}
+        <EditorContent ref={editorRef} editor={editor} />
+      </StyledEditor>
+      {!readOnly && (
+        // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
+        // about it.
+        <SubmissionButtonWrapper>
+          {!!content && isEditing && (
+            <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
+              Cancel
+            </CancelButton>
+          )}
+          {(!content || isEditing) && (
+            <SubmitButton
+              onClick={() => editor && onSubmit(editor)}
+              size='medium'
+              disabled={!editor || editor.isEmpty}
+            >
+              {!content ? 'Submit' : 'Update'}
+            </SubmitButton>
+          )}
+        </SubmissionButtonWrapper>
       )}
-      {editor && linkOverlayProps?.linkPreviewProps && (
-        <EditorLinkViewerTipTap
-          href={linkOverlayProps.linkPreviewProps.href}
-          tiptapEditor={editor}
-          addHyperlink={onAddHyperlink}
-          originCoords={linkOverlayProps.linkPreviewProps.originCoords}
-          removeModal={() => {
-            setLinkOverlayProps(undefined)
-          }}
-        />
-      )}
-      <EditorContent ref={editorRef} editor={editor} />
-    </StyledEditor>
+    </>
   )
 }
 export default PromptResponseEditor
