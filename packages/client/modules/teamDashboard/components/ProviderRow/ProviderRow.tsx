@@ -107,6 +107,7 @@ interface Props {
   providerDescription: string
   providerLogo: React.ReactElement
   children?: React.ReactElement | false
+  seeHowItWorksUrl: string
   contactUsProps?: {
     url: string
     onSubmit: () => void
@@ -126,6 +127,7 @@ const ProviderRow = (props: Props) => {
     providerDescription,
     providerLogo,
     contactUsProps,
+    seeHowItWorksUrl,
     children
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -135,7 +137,13 @@ const ProviderRow = (props: Props) => {
         {providerLogo}
         <RowInfo>
           <ProviderName>{providerName}</ProviderName>
-          <RowInfoCopy>{providerDescription}</RowInfoCopy>
+          <RowInfoCopy>
+            {providerDescription}.{' '}
+            <a href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
+              See how it works
+            </a>
+            .
+          </RowInfoCopy>
         </RowInfo>
         <ProviderActions>
           {!connected && !contactUsProps && (

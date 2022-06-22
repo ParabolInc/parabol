@@ -7,7 +7,7 @@ import MattermostProviderLogo from '../../../../components/MattermostProviderLog
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {Providers} from '../../../../types/constEnums'
+import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import MattermostConfigMenu from './MattermostConfigMenu'
 import MattermostPanel from './MattermostPanel'
 import ProviderRow from './ProviderRow'
@@ -65,6 +65,7 @@ const MattermostProviderRow = (props: Props) => {
         providerLogo={<MattermostProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
         connectButtonIcon={!isConnectClicked ? <Icon>add</Icon> : <Icon>close</Icon>}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_MATTERMOST}
       >
         {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

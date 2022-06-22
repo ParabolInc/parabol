@@ -7,7 +7,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {Providers} from '../../../../types/constEnums'
+import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import SlackClientManager from '../../../../utils/SlackClientManager'
 import {SlackProviderRow_viewer} from '../../../../__generated__/SlackProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
@@ -43,6 +43,7 @@ const SlackProviderRow = (props: Props) => {
         providerName={Providers.SLACK_NAME}
         providerDescription={Providers.SLACK_DESC}
         providerLogo={<SlackProviderLogo />}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SLACK}
       >
         {isActive && <SlackNotificationList teamId={teamId} viewer={viewer} />}
       </ProviderRow>

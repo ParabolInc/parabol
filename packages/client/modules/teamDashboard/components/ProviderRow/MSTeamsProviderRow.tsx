@@ -7,7 +7,7 @@ import MSTeamsProviderLogo from '../../../../components/MSTeamsProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {Providers} from '../../../../types/constEnums'
+import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import MSTeamsConfigMenu from './MSTeamsConfigMenu'
 import MSTeamsPanel from './MSTeamsPanel'
 import ProviderRow from './ProviderRow'
@@ -64,6 +64,7 @@ const MSTeamsProviderRow = (props: Props) => {
         providerLogo={<MSTeamsProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
         connectButtonIcon={!isConnectClicked ? <Icon>add</Icon> : <Icon>close</Icon>}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_MSTEAMS}
       >
         {(auth || isConnectClicked) && <MSTeamsPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

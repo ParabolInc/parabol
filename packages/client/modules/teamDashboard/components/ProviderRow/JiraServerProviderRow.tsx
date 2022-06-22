@@ -87,6 +87,7 @@ const JiraServerProviderRow = (props: Props) => {
               }
             : undefined
         }
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_JIRASERVER}
       />
       {provider &&
         menuPortal(
