@@ -5,18 +5,14 @@ import MenuItemLabel from './MenuItemLabel'
 import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
-type TempRepo = {
-  nameWithOwner: string
-}
 interface Props {
-  repo: TempRepo
+  nameWithOwner: string
   onClick: () => void
   query: string
 }
 
 const RepoIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) => {
-  const {query, onClick, repo} = props
-  const {nameWithOwner} = repo
+  const {query, onClick, nameWithOwner} = props
   return (
     <MenuItem
       ref={ref}

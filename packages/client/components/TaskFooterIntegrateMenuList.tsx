@@ -139,7 +139,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             <RepoIntegrationGitHubMenuItem
               key={id}
               query={query}
-              repo={repoIntegration}
+              nameWithOwner={repoIntegration.nameWithOwner}
               onClick={onClick}
             />
           )

@@ -49,7 +49,7 @@ const NewGitHubIssueMenu = (props: Props) => {
           <RepoIntegrationGitHubMenuItem
             key={nameWithOwner}
             query={query}
-            repo={repo}
+            nameWithOwner={nameWithOwner}
             onClick={onClick}
           />
         )
