@@ -189,7 +189,7 @@ const MattermostPanel = (props: Props) => {
             error=''
             onChange={onChange}
             name='webhookUrl'
-            placeholder='https://my.mattermost.com:8065/hooks/abc123'
+            placeholder='Enter your webhook URL here...'
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             Update

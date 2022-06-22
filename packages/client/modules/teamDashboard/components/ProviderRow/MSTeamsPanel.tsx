@@ -191,7 +191,7 @@ const MSTeamsPanel = (props: Props) => {
             error=''
             onChange={onChange}
             name='webhookUrl'
-            placeholder='https://microsoft.webhook.office.com/webhookb2/0@0/IncomingWebhook/0/0'
+            placeholder='Enter your webhook URL here...'
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             Update
