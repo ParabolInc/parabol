@@ -25,7 +25,7 @@ const StyledWrapper = styled(SettingsWrapper)({
 })
 
 const Note = styled('div')({
-  padding: '16px 0',
+  padding: '28px 0',
   fontSize: 13
 })
 
@@ -33,6 +33,10 @@ const Heading = styled('div')({
   color: PALETTE.SLATE_700,
   fontSize: 16,
   fontWeight: 600
+})
+
+const AvailableHeading = styled(Heading)({
+  paddingTop: 13
 })
 
 const query = graphql`
@@ -183,7 +187,7 @@ const ProviderList = (props: Props) => {
 
       {connectedIntegrations}
 
-      {availableIntegrations.length > 0 && <Heading>Available</Heading>}
+      {availableIntegrations.length > 0 && <AvailableHeading>Available</AvailableHeading>}
 
       {availableIntegrations}
     </StyledWrapper>
