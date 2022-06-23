@@ -25,7 +25,8 @@ const StyledWrapper = styled(SettingsWrapper)({
 })
 
 const Note = styled('div')({
-  padding: '28px 0',
+  paddingTop: 29,
+  paddingBottom: 25,
   fontSize: 13
 })
 
@@ -36,7 +37,7 @@ const Heading = styled('div')({
 })
 
 const AvailableHeading = styled(Heading)({
-  paddingTop: 13
+  paddingTop: 16
 })
 
 const query = graphql`
