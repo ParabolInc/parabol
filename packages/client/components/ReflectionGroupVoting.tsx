@@ -51,7 +51,7 @@ const UpvoteButton = styled(FlatButton)<{isExpanded: boolean; disabled: boolean}
   })
 )
 
-const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
+const Votes = styled('span')<{voteCount: number; isExpanded: boolean}>(
   ({voteCount, isExpanded}) => ({
     color: isExpanded
       ? voteCount === 0
@@ -132,14 +132,10 @@ const ReflectionGroupVoting = (props: Props) => {
         >
           <Icon>remove</Icon>
         </UpvoteButton>
-        <VoteCount
-          isExpanded={isExpanded}
-          voteCount={viewerVoteCount}
-          data-cy={`completed-vote-count`}
-        >
+        <Votes isExpanded={isExpanded} voteCount={viewerVoteCount}>
           <ThumbUpIcon>{'thumb_up'}</ThumbUpIcon>
-          {viewerVoteCount}
-        </VoteCount>
+          <span data-cy={`completed-vote-count`}>{viewerVoteCount}</span>
+        </Votes>
         <UpvoteButton
           aria-label={`Add vote`}
           isExpanded={isExpanded}
