@@ -50,13 +50,12 @@ const InputWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  paddingLeft: 18
+  paddingLeft: 8
 })
 
 const SearchInput = styled('input')({
   appearance: 'none',
   border: 'none',
-  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
@@ -71,7 +70,7 @@ const setTemplateSearch = (atmosphere: Atmosphere, settingsId: string, value: st
   commitLocalUpdate(atmosphere, (store) => {
     const settings = store.get(settingsId)
     if (!settings) return
-    const normalizedSearch = value.toLowerCase().trim()
+    const normalizedSearch = value.toLowerCase()
     settings.setValue(normalizedSearch, 'templateSearchQuery')
   })
 }
