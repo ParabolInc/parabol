@@ -180,7 +180,11 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     atmosphere.setAuthToken(token)
     if (invitationToken) {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
-      AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
+      AcceptTeamInvitationMutation(
+        atmosphere,
+        {invitationToken},
+        {history, onCompleted, onError, ignoreApproval: true}
+      )
     } else {
       const nextUrl = getValidRedirectParam() || '/meetings'
       history.push(nextUrl)
@@ -206,14 +210,20 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     if (isSignin) {
       LoginWithPasswordMutation(
         atmosphere,
-        {email, password, invitationToken},
+        {email, password, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
         {onError, onCompleted, history}
       )
     } else {
       const segmentId = getAnonymousId()
       SignUpWithPasswordMutation(
         atmosphere,
-        {email, password, invitationToken, segmentId},
+        {
+          email,
+          password,
+          invitationToken: invitationToken || '',
+          isInvitation: !!invitationToken,
+          segmentId
+        },
         {
           onError,
           onCompleted,
@@ -239,8 +249,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
               onBlur={handleBlur}
             />
           </FieldBlock>
-          {
-            isInternalAuthEnabled &&
+          {isInternalAuthEnabled && (
             <FieldBlock isSSO={isSSO}>
               <PasswordInputField
                 autoFocus={hasEmail}
@@ -249,17 +258,18 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
                 onBlur={handleBlur}
               />
             </FieldBlock>
-          }
+          )}
         </FieldGroup>
         <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{signInWithSSOOnly ? " with SSO" : ""}
+          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
+          {signInWithSSOOnly ? ' with SSO' : ''}
         </Button>
       </Form>
-      {isSSOAuthEnabled && isInternalAuthEnabled &&
+      {isSSOAuthEnabled && isInternalAuthEnabled && (
         <UseSSO onClick={toggleSSO}>
           {`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}
         </UseSSO>
-      }
+      )}
     </>
   )
 })

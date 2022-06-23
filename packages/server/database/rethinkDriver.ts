@@ -148,10 +148,6 @@ export type RethinkSchema = {
     type: ScheduledJobUnion
     index: 'runAt' | 'type'
   }
-  SecureDomain: {
-    type: any
-    index: 'domain'
-  }
   SlackAuth: {
     type: SlackAuth
     index: 'teamId' | 'userId'
@@ -232,6 +228,15 @@ const getRethink = async () => {
   // this is important because pm2 will restart the process & for whatever reason r isn't always healthy
   await r.waitForHealthy()
   return r as unknown as ParabolR
+}
+
+export const closeRethink = async () => {
+  if (promise) {
+    await (await promise).drain()
+    isLoaded = false
+    isLoading = false
+    promise = undefined
+  }
 }
 
 export default getRethink

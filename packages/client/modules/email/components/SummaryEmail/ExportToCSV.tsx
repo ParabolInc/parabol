@@ -1,20 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
-import Parser from 'json2csv/lib/JSON2CSVParser'; // only grab the sync parser
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
+import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
-import React, {Component} from 'react'
+import React, {useEffect} from 'react'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props extends WithMutationProps {
   meetingId: string
   urlAction?: 'csv' | undefined
   emailCSVUrl: string
@@ -162,20 +160,15 @@ const imageStyle = {
   verticalAlign: 'middle'
 }
 
-class ExportToCSV extends Component<Props> {
-  componentDidMount() {
-    if (this.props.urlAction === 'csv') {
-      this.exportToCSV().catch()
+const ExportToCSV = (props: Props) => {
+  useEffect(() => {
+    if (props.urlAction === 'csv') {
+      exportToCSV().catch()
     }
-  }
+  }, [props.urlAction])
+  const atmosphere = useAtmosphere()
 
-  componentDidUpdate(prevProps: Readonly<Props>): void {
-    if (this.props.urlAction === 'csv' && prevProps.urlAction !== 'csv') {
-      this.exportToCSV().catch()
-    }
-  }
-
-  handlePokerMeeting(meeting: Meeting) {
+  const handlePokerMeeting = (meeting: Meeting) => {
     const rows = [] as CSVPokerRow[]
     const {phases} = meeting
     const estimatePhase = phases!.find((phase) => phase.phaseType === 'ESTIMATE')!
@@ -202,7 +195,7 @@ class ExportToCSV extends Component<Props> {
     })
     return rows
   }
-  handleRetroMeeting(newMeeting: Meeting) {
+  const handleRetroMeeting = (newMeeting: Meeting) => {
     const {phases, reflectionGroups} = newMeeting
     const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')!
     const {stages} = discussPhase
@@ -268,7 +261,7 @@ class ExportToCSV extends Component<Props> {
     return rows
   }
 
-  handleActionMeeting(newMeeting: Meeting) {
+  const handleActionMeeting = (newMeeting: Meeting) => {
     const {phases} = newMeeting
     const agendaItemPhase = phases!.find((phase) => phase.phaseType === 'agendaitems')!
     const {stages} = agendaItemPhase
@@ -311,21 +304,21 @@ class ExportToCSV extends Component<Props> {
     return rows
   }
 
-  getRows(newMeeting: Meeting) {
+  const getRows = (newMeeting: Meeting) => {
     switch (newMeeting.meetingType) {
       case 'action':
-        return this.handleActionMeeting(newMeeting)
+        return handleActionMeeting(newMeeting)
       case 'retrospective':
-        return this.handleRetroMeeting(newMeeting)
+        return handleRetroMeeting(newMeeting)
       case 'poker':
-        return this.handlePokerMeeting(newMeeting)
+        return handlePokerMeeting(newMeeting)
       default:
         return []
     }
   }
 
-  exportToCSV = async () => {
-    const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
+  const exportToCSV = async () => {
+    const {meetingId, submitMutation, submitting, onCompleted} = props
     if (submitting) return
     submitMutation()
     const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
@@ -334,7 +327,7 @@ class ExportToCSV extends Component<Props> {
     const {viewer} = data
     const {newMeeting} = viewer
     if (!newMeeting) return
-    const rows = this.getRows(newMeeting)
+    const rows = getRows(newMeeting)
     if (rows.length === 0) return
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
@@ -355,27 +348,25 @@ class ExportToCSV extends Component<Props> {
     document.body.removeChild(link)
   }
 
-  render() {
-    const {emailCSVUrl, referrer} = this.props
-    return (
-      <>
-        <tr>
-          <td align='center' style={iconLinkLabel} width='100%'>
-            <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
-              <img
-                crossOrigin=''
-                alt={label}
-                src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
-                style={imageStyle}
-              />
-              <span style={labelStyle}>{label}</span>
-            </AnchorIfEmail>
-          </td>
-        </tr>
-        <EmailBorderBottom />
-      </>
-    )
-  }
+  const {emailCSVUrl, referrer} = props
+  return (
+    <>
+      <tr>
+        <td align='center' style={iconLinkLabel} width='100%'>
+          <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
+            <img
+              crossOrigin=''
+              alt={label}
+              src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
+              style={imageStyle}
+            />
+            <span style={labelStyle}>{label}</span>
+          </AnchorIfEmail>
+        </td>
+      </tr>
+      <EmailBorderBottom />
+    </>
+  )
 }
 
-export default withAtmosphere(withMutationProps(ExportToCSV))
+export default withMutationProps(ExportToCSV)

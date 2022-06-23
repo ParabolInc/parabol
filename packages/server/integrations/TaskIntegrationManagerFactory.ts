@@ -62,9 +62,7 @@ export default class TaskIntegrationManagerFactory {
     }
 
     if (service === 'gitlab') {
-      const auth = await dataLoader
-        .get('teamMemberIntegrationAuths')
-        .load({service: 'gitlab', teamId, userId})
+      const auth = await dataLoader.get('freshGitlabAuth').load({teamId, userId})
       if (!auth) return null
       const {providerId} = auth
       const provider = await dataLoader.get('integrationProviders').load(providerId)
@@ -81,10 +79,6 @@ export default class TaskIntegrationManagerFactory {
         return null
       }
       const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-
-      if (!provider) {
-        return null
-      }
 
       return new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
     }

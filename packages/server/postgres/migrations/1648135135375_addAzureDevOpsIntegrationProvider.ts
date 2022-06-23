@@ -7,7 +7,7 @@ export async function up() {
   await client.query(`
   DO $$
   BEGIN
-    ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE 'azureDevOps';
+    ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE IF NOT EXISTS 'azureDevOps';
 
     ALTER TABLE "IntegrationProvider"
       ADD COLUMN IF NOT EXISTS "tenantId" VARCHAR(255);

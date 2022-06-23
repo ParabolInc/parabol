@@ -228,7 +228,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
     task: (r.table('Task').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('Task').insert(items)),
-    team: r.db(DESTINATION).table('Team').insert(teams),
     teamInvitation: (r.table('TeamInvitation').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('TeamInvitation').insert(items)),
@@ -284,10 +283,7 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
         return r({
           SAML: (r.table('SAML').getAll(r.args(domains), {index: 'domains'}) as any)
             .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('SAML').insert(items)),
-          secureDomain: (r.table('SecureDomain').getAll(r.args(domains), {index: 'domain'}) as any)
-            .coerceTo('array')
-            .do((items: RValue) => r.db(DESTINATION).table('SecureDomain').insert(items))
+            .do((items: RValue) => r.db(DESTINATION).table('SAML').insert(items))
         })
       }),
     meetingIds: r

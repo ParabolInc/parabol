@@ -1,6 +1,5 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
-import AddFeatureFlagPayload from './AddFeatureFlagPayload'
 import AddNewFeaturePayload from './addNewFeaturePayload'
 import AddOrgPayload from './AddOrgPayload'
 import AddTeamPayload from './AddTeamPayload'
@@ -26,7 +25,6 @@ import User from './User'
 
 const types = [
   AcceptTeamInvitationPayload,
-  AddFeatureFlagPayload,
   AddNewFeaturePayload,
   AddOrgPayload,
   AddTeamPayload,

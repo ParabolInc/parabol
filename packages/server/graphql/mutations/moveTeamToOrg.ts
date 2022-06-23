@@ -3,7 +3,6 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Notification from '../../database/types/Notification'
-import Team from '../../database/types/Team'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
@@ -83,7 +82,6 @@ const moveToOrg = async (
       templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
         orgId
       }),
-      team: r.table('Team').get(teamId).update(updates) as unknown as Team,
       newToOrgUserIds: r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})

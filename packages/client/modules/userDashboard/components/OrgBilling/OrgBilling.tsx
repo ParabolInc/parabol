@@ -1,53 +1,60 @@
-import React from 'react'
-import {createRefetchContainer, RelayRefetchProp} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {OrgBilling_viewer} from '../../../../__generated__/OrgBilling_viewer.graphql'
-import {OrgBilling_organization} from '../../../../__generated__/OrgBilling_organization.graphql'
+import React from 'react'
+import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
+import {OrgBillingQuery} from '../../../../__generated__/OrgBillingQuery.graphql'
+import {OrgBillingRefetchQuery} from '../../../../__generated__/OrgBillingRefetchQuery.graphql'
+import {OrgBilling_organization$key} from '../../../../__generated__/OrgBilling_organization.graphql'
+import {OrgBilling_query$key} from '../../../../__generated__/OrgBilling_query.graphql'
 import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
-import OrgBillingInvoices from './OrgBillingInvoices'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
+import OrgBillingInvoices from './OrgBillingInvoices'
 import OrgBillingUpgrade from './OrgBillingUpgrade'
 
 interface Props {
-  viewer: OrgBilling_viewer
-  organization: OrgBilling_organization
-  relay: RelayRefetchProp
+  queryRef: PreloadedQuery<OrgBillingQuery>
+  organizationRef: OrgBilling_organization$key
 }
 
 const OrgBilling = (props: Props) => {
-  const {organization, viewer, relay} = props
-  return (
-    <div>
-      <OrgBillingUpgrade organization={organization} invoiceListRefetch={relay && relay.refetch} />
-      <OrgBillingCreditCardInfo organization={organization} />
-      <OrgBillingInvoices viewer={viewer} />
-      <OrgBillingDangerZone organization={organization} />
-    </div>
-  )
-}
-
-export default createRefetchContainer(
-  OrgBilling,
-  {
-    viewer: graphql`
-      fragment OrgBilling_viewer on User {
-        ...OrgBillingInvoices_viewer
+  const {queryRef, organizationRef} = props
+  const data = usePreloadedQuery<OrgBillingQuery>(
+    graphql`
+      query OrgBillingQuery($orgId: ID!, $first: Int!, $after: DateTime) {
+        ...OrgBilling_query
       }
     `,
-    organization: graphql`
+    queryRef,
+    {
+      UNSTABLE_renderPolicy: 'full'
+    }
+  )
+  const [queryData, refetch] = useRefetchableFragment<OrgBillingRefetchQuery, OrgBilling_query$key>(
+    graphql`
+      fragment OrgBilling_query on Query @refetchable(queryName: "OrgBillingRefetchQuery") {
+        ...OrgBillingInvoices_query
+      }
+    `,
+    data
+  )
+  const organization = useFragment(
+    graphql`
       fragment OrgBilling_organization on Organization {
         ...OrgBillingCreditCardInfo_organization
         ...OrgBillingUpgrade_organization
         ...OrgBillingDangerZone_organization
         id
       }
-    `
-  },
-  graphql`
-    query OrgBillingQuery($first: Int!, $after: DateTime, $orgId: ID!) {
-      viewer {
-        ...OrgBillingInvoices_viewer
-      }
-    }
-  `
-)
+    `,
+    organizationRef
+  )
+  return (
+    <div>
+      <OrgBillingUpgrade organization={organization} invoiceListRefetch={refetch} />
+      <OrgBillingCreditCardInfo organization={organization} />
+      <OrgBillingInvoices queryRef={queryData} />
+      <OrgBillingDangerZone organization={organization} />
+    </div>
+  )
+}
+
+export default OrgBilling

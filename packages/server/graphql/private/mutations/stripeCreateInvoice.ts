@@ -1,7 +1,7 @@
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import {isSuperUser} from '../../../utils/authorization'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
 const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
@@ -15,7 +15,7 @@ const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
   }
 
   // RESOLUTION
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const stripeLineItems = await fetchAllLines(invoiceId)
   const invoice = await manager.retrieveInvoice(invoiceId)
   const {

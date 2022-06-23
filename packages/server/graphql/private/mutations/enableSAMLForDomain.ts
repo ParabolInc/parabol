@@ -100,7 +100,12 @@ const enableSAMLForDomain: MutationResolvers['enableSAMLForDomain'] = async (
     if (!metadata || !signOnURL) return {error: {message: 'Invalid metadata'}}
     await r
       .table('SAML')
-      .insert({id: slugName, domains: normalizedDomains, metadata: metadata, signOnURL})
+      .insert({
+        id: slugName,
+        domains: normalizedDomains,
+        metadata: metadata,
+        url: signOnURL
+      })
       .run()
   }
 

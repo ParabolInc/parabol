@@ -30,9 +30,7 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
     return {error: {message: 'Invalid dimension name'}}
   }
   const viewerId = getUserId(authToken)
-  const gitlabAuth = await dataLoader
-    .get('teamMemberIntegrationAuths')
-    .load({service: 'gitlab', teamId, userId: viewerId})
+  const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: viewerId})
   if (!gitlabAuth.providerId) return {error: {message: 'Invalid dimension name'}}
 
   // TODO validate labelTemplate

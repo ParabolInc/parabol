@@ -28,7 +28,7 @@ jobs:
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
     working_directory: ~/action
-    resource_class: medium+
+    resource_class: large
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -63,16 +63,24 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
-          name: Build Assets
-          command: |
-            cp $DEVOPS_WORKDIR/environments/staging .env
-            yarn build --deploy
-      - run:
-          name: Migration Testing DBs
+          name: Build Databases
+          # Use the test env so the ports match up (NODE_ENV=testing)
           command: |
             cp $DEVOPS_WORKDIR/environments/test .env
             yarn db:migrate
             yarn pg:migrate up
+            yarn pg:build
+      - run:
+          name: Build Assets
+          # Use the staging env to run webpack (NODE_ENV=production)
+          command: |
+            cp $DEVOPS_WORKDIR/environments/staging .env
+            yarn build --deploy
+      - run:
+          name: Push Assets to Databases
+          # Use the test env so the ports match up (NODE_ENV=testing)
+          command: |
+            cp $DEVOPS_WORKDIR/environments/test .env
             yarn postdeploy
       - run:
           name: Start Testing Server
@@ -83,7 +91,7 @@ jobs:
           command: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
       - run:
           name: Run server tests
-          command: yarn workspace parabol-server test --runInBand --reporters=default --reporters=jest-junit
+          command: yarn test:server -- --reporters=default --reporters=jest-junit
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit
       - store_test_results:
@@ -126,7 +134,7 @@ jobs:
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
-              git add queryMap.json build dist packages/client/__generated__ scripts/toolbox -f
+              git add queryMap.json build dist packages/client/__generated__ scripts/toolbox packages/server/postgres/queries/generated -f
               git commit -m "build $ACTION_VERSION"
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)

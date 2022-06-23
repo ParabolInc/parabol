@@ -76,7 +76,10 @@ const TimelineEventCard = (props: Props) => {
             <TimelineEventDate createdAt={createdAt} />
           </HeaderText>
         </CardTitleBlock>
-        {type === 'retroComplete' || type === 'actionComplete' || type === 'POKER_COMPLETE' ? (
+        {type === 'retroComplete' ||
+        type === 'actionComplete' ||
+        type === 'POKER_COMPLETE' ||
+        type === 'TEAM_PROMPT_COMPLETE' ? (
           <TimelineEventHeaderMenuToggle timelineEventId={timelineEventId} />
         ) : null}
       </CardHeader>

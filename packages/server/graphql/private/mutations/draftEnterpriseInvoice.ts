@@ -2,11 +2,11 @@ import getRethink from '../../../database/rethinkDriver'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import IUser from '../../../postgres/types/IUser'
+import {analytics} from '../../../utils/analytics/analytics'
 import {fromEpochSeconds} from '../../../utils/epochTime'
-import segmentIo from '../../../utils/segmentIo'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
@@ -91,7 +91,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   if (!user) {
     return {error: {message: 'User not found'}}
   }
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   let customerId
   if (!stripeId) {
     // create the customer
@@ -115,12 +115,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
           stripeSubscriptionId: subscription.id,
           tier: 'enterprise',
           updatedAt: now
-        }),
-      teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
-        isPaid: true,
-        tier: 'enterprise',
-        updatedAt: now
-      })
+        })
     }).run(),
     updateTeamByOrgId(
       {
@@ -137,10 +132,13 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     setTierForOrgUsers(orgId),
     hideConversionModal(orgId, dataLoader)
   ])
-  segmentIo.track({
-    userId: user.id,
-    event: 'Enterprise invoice drafted',
-    properties: {orgId}
+  analytics.organizationUpgraded(user.id, {
+    orgId,
+    domain: org.activeDomain,
+    orgName: org.name,
+    oldTier: 'personal',
+    newTier: 'enterprise',
+    billingLeaderEmail: user.email
   })
   dataLoader.get('organizations').clear(orgId)
   return {orgId}

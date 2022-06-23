@@ -124,6 +124,7 @@ const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
         <td style={buttonCellStyle}>
           <a
             data-cy='create-account'
+            role='button'
             href={primaryActionLink}
             style={primaryButtonStyle}
             title={primaryActionLabel}

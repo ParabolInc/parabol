@@ -37,6 +37,7 @@ export const enum Breakpoint {
   SIDEBAR_LEFT = 1024,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,
+  POKER_DISCUSSION_FULLSCREEN_DRAWER = 660,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   VOTE_PHASE = 800,
@@ -129,9 +130,11 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
-  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jiraserver',
+  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jira-server',
+  INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
+  CONTACT = 'https://www.parabol.co/contact',
   TEAM = 'https://www.parabol.co/team/',
   LANDING_PAGE = 'https://www.parabol.co/'
 }
@@ -274,7 +277,9 @@ export const enum Providers {
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack',
   AZUREDEVOPS_NAME = 'Azure DevOps',
-  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol'
+  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol',
+  MSTEAMS_NAME = 'Microsoft Teams',
+  MSTEAMS_DESC = 'Push notifications to Microsoft Teams'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
@@ -369,7 +374,6 @@ export const enum Threshold {
   MAX_POKER_DIMENSION_NAME = 50,
   MAX_REACTJIS = 12,
   MAX_POKER_STORIES = 50,
-  MAX_GITLAB_POKER_STORIES = 15,
   MAX_INTEGRATION_FETCH_TIME = 10000,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
@@ -440,7 +444,9 @@ export const enum SprintPokerDefaults {
   SERVICE_FIELD_NULL = '',
   SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
-  JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error'
+  JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error',
+  JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
+  JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type'
 }
 
 export const enum AriaLabels {

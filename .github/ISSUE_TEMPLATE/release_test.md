@@ -20,6 +20,8 @@ Run through this list at least once at [staging](https://action-staging.parabol.
 - [ ] Added Mattermost, verified meeting notifications (check the test webhook in [Parabol Mattermost](https://mattermost.parabol.co/product/integrations/incoming_webhooks))
 - [ ] Added GitHub, verified issue created (use `ParabolInc/publictestrepo`)
 - [ ] Added Jira, verified issue created (use `parabol-2`)
+- [ ] Added GitLab, verified issue created
+- [ ] Added JiraServer, verified issue created
 - [ ] Smoke tested the Retro meeting with 2 players
 - [ ] Smoke tested the Sprint Poker meeting with 2 players
 - [ ] Smoke tested the Action meeting with 2 players
@@ -28,6 +30,7 @@ Run through this list at least once at [staging](https://action-staging.parabol.
 - [ ] Created a 2nd organization
 - [ ] Upgraded to Pro (Credit card number: `4242 4242 4242 4242`, expiration date: any month in the future, CVC: `123`)
 - [ ] Smoke tested the app on a mobile device (e.g. navigate between views, smoke test a Retro meeting, etc.)
+- [ ] Test previously existed meetings to make sure that existing data is not corrupted
 
 ## What’s changed
 At your discretion, complete the tests for any merged PRs:

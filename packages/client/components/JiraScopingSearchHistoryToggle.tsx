@@ -1,11 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
-import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
-import SearchQueryId from '../shared/gqlIds/SearchQueryId'
+import {useFragment} from 'react-relay'
 import {JiraScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraScopingSearchHistoryToggle_meeting.graphql'
-import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
+import JiraUniversalScopingSearchHistoryToggle from './JiraUniversalScopingSearchHistoryToggle'
 
 interface Props {
   meetingRef: JiraScopingSearchHistoryToggle_meeting$key
@@ -13,7 +10,6 @@ interface Props {
 
 const JiraScopingSearchHistoryToggle = (props: Props) => {
   const {meetingRef} = props
-  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment JiraScopingSearchHistoryToggle_meeting on PokerMeeting {
@@ -41,46 +37,14 @@ const JiraScopingSearchHistoryToggle = (props: Props) => {
   const {id: meetingId, teamId} = meeting
   const {jiraSearchQueries} = meeting.viewerMeetingMember?.teamMember.integrations?.atlassian ?? {}
 
-  const searchQueries =
-    jiraSearchQueries?.map((jiraSearchQuery) => {
-      const {id, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
-
-      const selectQuery = () => {
-        commitLocalUpdate(atmosphere, (store) => {
-          const searchQueryId = SearchQueryId.join('jira', meetingId)
-          const jiraSearchQuery = store.get(searchQueryId)!
-          jiraSearchQuery.setValue(isJQL, 'isJQL')
-          jiraSearchQuery.setValue(queryString, 'queryString')
-          jiraSearchQuery.setValue(projectKeyFilters as string[], 'projectKeyFilters')
-        })
-      }
-      const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-      const projectFilters = projectKeyFilters
-        .map((filter) => filter.slice(filter.indexOf(':') + 1))
-        .join(', ')
-
-      const deleteQuery = () => {
-        PersistJiraSearchQueryMutation(atmosphere, {
-          teamId,
-          input: {
-            queryString,
-            isJQL,
-            projectKeyFilters: projectKeyFilters as string[],
-            isRemove: true
-          }
-        })
-      }
-
-      return {
-        id,
-        labelFirstLine: queryStringLabel,
-        labelSecondLine: projectFilters && `in ${projectFilters}`,
-        onClick: selectQuery,
-        onDelete: deleteQuery
-      }
-    }) ?? []
-
-  return <ScopingSearchHistoryToggle searchQueries={searchQueries} />
+  return (
+    <JiraUniversalScopingSearchHistoryToggle
+      service={'jira'}
+      jiraSearchQueries={jiraSearchQueries}
+      meetingId={meetingId}
+      teamId={teamId}
+    />
+  )
 }
 
 export default JiraScopingSearchHistoryToggle

@@ -77,6 +77,19 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
                             }
                           }
                         }
+                        issueContributionsByRepository(maxRepositories: 100) {
+                          contributions(orderBy: {direction: DESC}, first: 1) {
+                            edges {
+                              node {
+                                occurredAt
+                              }
+                            }
+                          }
+                          repository {
+                            id
+                            nameWithOwner
+                          }
+                        }
                       }
                     }
                   }
@@ -96,21 +109,31 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const githubSearchQuery = meeting?.githubSearchQuery
   const queryString = githubSearchQuery?.queryString ?? null
   const atmosphere = useAtmosphere()
-  const contributionsByRepo =
+  const contributionsCollection =
     query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
-      ?.commitContributionsByRepository ?? []
   const repoContributions = useMemo(() => {
-    const contributions = contributionsByRepo.map((contributionByRepo) =>
-      contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
-    )
-    return contributions
+    const commitContributions =
+      contributionsCollection?.commitContributionsByRepository?.map((contributionByRepo) =>
+        contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
+      ) ?? []
+    const issueContributions =
+      contributionsCollection?.issueContributionsByRepository.map((contributionByRepo) => {
+        const {repository, contributions} = contributionByRepo
+        const edges = contributions.edges ?? []
+        const occurredAt = edges[0]?.node?.occurredAt
+        return {
+          repository,
+          occurredAt
+        }
+      }) ?? []
+    return [...commitContributions, ...issueContributions]
       .filter(isNotNull)
       .sort(
         (a, b) =>
           new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
       )
       .map((sortedContributions) => sortedContributions?.repository)
-  }, [contributionsByRepo])
+  }, [contributionsCollection])
 
   const {
     query: searchQuery,

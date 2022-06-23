@@ -2,7 +2,6 @@ import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
-import getRethink from '../../database/rethinkDriver'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -76,7 +75,6 @@ const updateJiraDimensionField = {
     },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const viewerId = getUserId(authToken)
     const subOptions = {mutatorId, operationId}
@@ -141,10 +139,7 @@ const updateJiraDimensionField = {
       jiraDimensionFields: sortedJiraDimensionFields,
       updatedAt: new Date()
     }
-    await Promise.all([
-      r.table('Team').get(teamId).update(updates).run(),
-      updateTeamByTeamId(updates, teamId)
-    ])
+    await updateTeamByTeamId(updates, teamId)
 
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateJiraDimensionFieldSuccess', data, subOptions)
     return data

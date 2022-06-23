@@ -12,6 +12,7 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
 import sendToSentry from '../../utils/sendToSentry'
@@ -97,6 +98,32 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
+        if (service === 'jiraServer') {
+          const {
+            providerId,
+            repositoryId: projectId,
+            issueId,
+            accessUserId
+          } = integration as TaskIntegrationJiraServer
+          const dimensionName = await getDimensionName(meetingId)
+
+          const jiraServerIssue = await dataLoader
+            .get('jiraServerIssue')
+            .load({providerId, teamId, userId: accessUserId, issueId})
+          if (!jiraServerIssue) return null
+          const {issueType} = jiraServerIssue
+
+          const existingDimensionField = await dataLoader
+            .get('jiraServerDimensionFieldMap')
+            .load({providerId, projectId, issueType, teamId, dimensionName})
+          if (existingDimensionField) {
+            return {
+              name: existingDimensionField.fieldName,
+              type: existingDimensionField.fieldType
+            }
+          }
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
         if (service === 'azureDevOps') {
           const {instanceId, projectKey} = integration
           const dimensionName = await getDimensionName(meetingId)
@@ -132,8 +159,8 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         if (service === 'gitlab') {
           const {gid, accessUserId} = integration
           const gitlabAuth = await dataLoader
-            .get('teamMemberIntegrationAuths')
-            .load({service: 'gitlab', teamId, userId: accessUserId})
+            .get('freshGitlabAuth')
+            .load({teamId, userId: accessUserId})
           if (!gitlabAuth?.accessToken) return NULL_FIELD
           const {providerId} = gitlabAuth
           const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)

@@ -1,21 +1,29 @@
-import Team from '../../database/types/Team'
 import getRethink from '../../database/rethinkDriver'
+import Team from '../../database/types/Team'
+import {getTeamsByIdsQuery} from '../generatedMigrationHelpers'
+import getPg from '../getPg'
 import {checkTableEq} from './checkEqBase'
-import getTeamsByIds from '../queries/getTeamsByIds'
 
-const alwaysDefinedFields: (keyof Partial<Team>)[] = [
+const alwaysDefinedFields: (keyof Team)[] = [
   'name',
   'createdAt',
   'isArchived',
   'isPaid',
   'tier',
-  'orgId',
-  'updatedAt'
+  'orgId'
 ]
+const ignoredFields: (keyof Team)[] = ['updatedAt']
 
-const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: any} = {
+const getTeamsByIds = async (teamIds: string[] | readonly string[]): Promise<any[]> => {
+  const teams = await getTeamsByIdsQuery.run({ids: teamIds} as any, getPg())
+  return teams
+}
+
+const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: unknown} = {
   jiraDimensionFields: [],
-  lastMeetingType: 'retrospective'
+  lastMeetingType: 'retrospective',
+  createdBy: null,
+  isOnboardTeam: false
 }
 
 const checkTeamEq = async (maxErrors = 10) => {
@@ -25,7 +33,7 @@ const checkTeamEq = async (maxErrors = 10) => {
     'Team',
     rethinkQuery,
     getTeamsByIds,
-    alwaysDefinedFields,
+    alwaysDefinedFields.filter((field) => !ignoredFields.includes(field)),
     maybeUndefinedFieldsDefaultValues,
     {},
     maxErrors

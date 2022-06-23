@@ -64,9 +64,10 @@ const ScopingSearchHistoryMenu = (props: Props) => {
       )}
       {searchQueries.map(({id, labelFirstLine, labelSecondLine, onClick, onDelete}) => {
         const handleDelete = (event: MouseEvent) => {
-          if (searchQueries.length > 1) {
-            event.stopPropagation() // prevents closing the menu when remove button is clicked
+          if (searchQueries.length === 1) {
+            closePortal()
           }
+          event.stopPropagation()
           onDelete()
         }
 

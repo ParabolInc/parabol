@@ -1,45 +1,39 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useMemo} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import useMeeting from '~/hooks/useMeeting'
-import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+import useTransition from '~/hooks/useTransition'
+import {DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
+import sortByISO8601Date from '~/utils/sortByISO8601Date'
 import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
-import logoMarkPurple from '../styles/theme/images/brand/mark-color.svg'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
 import ErrorBoundary from './ErrorBoundary'
-import LinkButton from './LinkButton'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
-import PhaseWrapper from './PhaseWrapper'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
+import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
+import {
+  GRID_PADDING_LEFT_RIGHT_PERCENT,
+  ResponsesGridBreakpoints
+} from './TeamPrompt/TeamPromptGridDimensions'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
-const Dimensions = {
-  RESPONSE_WIDTH: 296,
-  RESPONSE_MIN_HEIGHT: 100
-}
+const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
 
-const Prompt = styled('h1')({
-  textAlign: 'center',
-  margin: 16,
-  fontSize: 20,
-  lineHeight: '32px',
-  fontWeight: 400
-})
-
-const ResponsesGridContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+const ResponsesGridContainer = styled('div')({
   height: '100%',
   overflow: 'auto',
-  padding: maybeTabletPlus ? '32px 10%' : 16
-}))
+  padding: 16,
+  [twoColumnResponseMediaQuery]: {
+    padding: `32px ${GRID_PADDING_LEFT_RIGHT_PERCENT * 100}%`
+  }
+})
 
 const ResponsesGrid = styled('div')({
   flex: 1,
@@ -48,17 +42,6 @@ const ResponsesGrid = styled('div')({
   position: 'relative',
   gap: 32
 })
-
-const TeamMemberResponse = styled('div')<{
-  status: TransitionStatus
-}>(({status}) => ({
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
-  display: 'flex',
-  flexDirection: 'column',
-  width: Dimensions.RESPONSE_WIDTH,
-  flexShrink: 0
-}))
 
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
@@ -72,24 +55,27 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 
 const TeamPromptMeeting = (props: Props) => {
   const {meeting: meetingRef} = props
-  const atmosphere = useAtmosphere()
   const meeting = useFragment(
     graphql`
       fragment TeamPromptMeeting_meeting on TeamPromptMeeting {
         ...useMeeting_meeting
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
-        id
+        ...TeamPromptEditablePrompt_meeting
         isRightDrawerOpen
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
             stages {
               id
-              ...TeamPromptResponseCard_stage
-              ... on TeamPromptResponseStage {
-                discussionId
+              teamMember {
+                userId
               }
+              response {
+                plaintextContent
+                createdAt
+              }
+              ...TeamPromptResponseCard_stage
             }
           }
         }
@@ -98,38 +84,42 @@ const TeamPromptMeeting = (props: Props) => {
     meetingRef
   )
   const {phases} = meeting
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
 
   const phase = getPhaseByTypename(phases, 'TeamPromptResponsesPhase')
   const stages = useMemo(() => {
-    return phase.stages
-      .map((stage) => {
-        return {
-          ...stage,
-          key: stage.id
-        }
-      })
-      .filter(isNotNull)
+    const allStages = phase.stages.filter(isNotNull)
+
+    const nonViewerStages = allStages.filter((stage) => stage.teamMember.userId !== viewerId)
+    const orderedNonEmptyStages = nonViewerStages
+      .filter((stage) => !!stage.response?.plaintextContent)
+      .sort((stageA, stageB) =>
+        sortByISO8601Date(stageA.response!.createdAt, stageB.response!.createdAt)
+      )
+    // Empty stages are implicitly ordered by stage creation time on the backend.
+    const orderedEmptyStages = nonViewerStages.filter((stage) => !stage.response?.plaintextContent)
+    let orderedStages = [...orderedNonEmptyStages, ...orderedEmptyStages]
+
+    // Add the viewer's card to the front.
+    const viewerCard = allStages.find((stage) => stage.teamMember.userId === viewerId)
+    if (viewerCard) {
+      orderedStages = [viewerCard, ...orderedStages]
+    }
+
+    return orderedStages.map((stage, displayIdx) => {
+      return {
+        ...stage,
+        key: stage.id,
+        displayIdx
+      }
+    })
   }, [phase])
   const transitioningStages = useTransition(stages)
 
   const {safeRoute, isDesktop} = useMeeting(meeting)
 
   const {isRightDrawerOpen} = meeting
-
-  const selectDiscussion = () => {
-    // :TODO: (jmtaber129): Get the discussionId from the response card that was clicked.
-    const {id: meetingId} = meeting
-    const stage = stages[0]
-    const {discussionId} = stage!
-
-    commitLocalUpdate(atmosphere, (store) => {
-      const meetingProxy = store.get(meetingId)
-      if (!meetingProxy) return
-      meetingProxy.setValue(discussionId, 'localDiscussionId')
-      meetingProxy.setValue(true, 'isRightDrawerOpen')
-    })
-  }
 
   if (!safeRoute) return null
 
@@ -143,32 +133,27 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} />
-              <Prompt>What are you working on today? Stuck on anything?</Prompt>
+              <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
-                <ResponsesGridContainer maybeTabletPlus={maybeTabletPlus}>
+                <ResponsesGridContainer>
                   <ResponsesGrid>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
-                      const {key} = stage
+                      const {key, displayIdx} = stage
 
                       return (
-                        <TeamMemberResponse
+                        <TeamPromptResponseCard
                           key={key}
                           status={status}
                           onTransitionEnd={onTransitionEnd}
-                        >
-                          <TeamPromptResponseCard stageRef={stage} />
-                        </TeamMemberResponse>
+                          displayIdx={displayIdx}
+                          stageRef={stage}
+                        />
                       )
                     })}
                   </ResponsesGrid>
                 </ResponsesGridContainer>
               </ErrorBoundary>
-              <PhaseWrapper>
-                <LinkButton>
-                  <img onClick={selectDiscussion} alt='Parabol' src={logoMarkPurple} />
-                </LinkButton>
-              </PhaseWrapper>
             </StyledMeetingHeaderAndPhase>
             <TeamPromptDiscussionDrawer meetingRef={meeting} isDesktop={isDesktop} />
           </MeetingContent>

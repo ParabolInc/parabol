@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import GraphiQL from 'graphiql'
 import {Fetcher} from '@graphiql/toolkit'
+import GraphiQL from 'graphiql'
 import {ToolbarSelect, ToolbarSelectOption} from 'graphiql/dist/components/ToolbarSelect'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
@@ -45,7 +45,7 @@ const GraphqlContainer = () => {
 
   return (
     <GQL>
-      <GraphiQL fetcher={fetcher} ref={graphiql}>
+      <GraphiQL fetcher={fetcher} ref={graphiql} tabs>
         <GraphiQL.Logo>
           <img crossOrigin='' alt='Parabol' src={logoMarkPrimary} />
         </GraphiQL.Logo>

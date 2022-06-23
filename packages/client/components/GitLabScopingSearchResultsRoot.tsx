@@ -14,8 +14,6 @@ interface Props {
 }
 
 export const gitlabIssueArgs = {
-  first: 25,
-  includeSubepics: true,
   sort: 'UPDATED_DESC',
   state: 'opened'
 } as const

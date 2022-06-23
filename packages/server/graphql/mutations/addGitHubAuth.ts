@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {GetProfileQuery} from '../../types/githubTypes'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import getProfile from '../../utils/githubQueries/getProfile.graphql'
 import GitHubServerManager from '../../utils/GitHubServerManager'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
@@ -53,14 +53,8 @@ export default {
     const {login} = viewer
 
     await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes})
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Added Integration',
-      properties: {
-        teamId,
-        service: 'GitHub'
-      }
-    })
+    analytics.integrationAdded(viewerId, teamId, 'github')
+
     return {teamId, userId: viewerId}
   }
 }

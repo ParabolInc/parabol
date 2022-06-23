@@ -1,23 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
-import orgBillingRootQuery, {
-  OrgBillingRootQuery
-} from '../../../../__generated__/OrgBillingRootQuery.graphql'
-import {
-  OrgBillingRoot_organization,
-  OrgBillingRoot_organization$key
-} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
+import orgBillingQuery, {OrgBillingQuery} from '../../../../__generated__/OrgBillingQuery.graphql'
+import {OrgBillingRoot_organization$key} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
 import OrgBilling from '../../components/OrgBilling/OrgBilling'
-
-const query = graphql`
-  query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {
-    viewer {
-      ...OrgBilling_viewer
-    }
-  }
-`
 
 interface Props {
   organization: OrgBillingRoot_organization$key
@@ -33,29 +20,15 @@ const OrgBillingRoot = ({organization: organizationRef}: Props) => {
     `,
     organizationRef
   )
-  const queryRef = useQueryLoaderNow<OrgBillingRootQuery>(orgBillingRootQuery, {
+  const queryRef = useQueryLoaderNow<OrgBillingQuery>(orgBillingQuery, {
     orgId: organization.id,
     first: 3
   })
   return (
     <Suspense fallback={''}>
-      {queryRef && <OrgBillingContainer queryRef={queryRef} organization={organization} />}
+      {queryRef && <OrgBilling queryRef={queryRef} organizationRef={organization} />}
     </Suspense>
   )
-}
-
-interface OrgBillingContainerProps {
-  queryRef: PreloadedQuery<OrgBillingRootQuery>
-  organization: OrgBillingRoot_organization
-}
-
-function OrgBillingContainer(props: OrgBillingContainerProps) {
-  const {queryRef, organization} = props
-  const data = usePreloadedQuery<OrgBillingRootQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
-  const {viewer} = data
-  return <OrgBilling viewer={viewer} organization={organization} />
 }
 
 export default OrgBillingRoot

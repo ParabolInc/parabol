@@ -6,7 +6,11 @@ import {VerifyEmailMutation as TSignUpWithPasswordMutation} from '../__generated
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
-  mutation VerifyEmailMutation($verificationToken: ID!, $invitationToken: ID) {
+  mutation VerifyEmailMutation(
+    $verificationToken: ID!
+    $invitationToken: ID! = ""
+    $isInvitation: Boolean!
+  ) {
     verifyEmail(verificationToken: $verificationToken) {
       error {
         message
@@ -18,7 +22,7 @@ const mutation = graphql`
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
-    acceptTeamInvitation(invitationToken: $invitationToken) {
+    acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
@@ -30,11 +34,11 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, History
 ) => {
   return commitMutation<TSignUpWithPasswordMutation>(atmosphere, {
     mutation,
-    variables,
+    variables: {...variables, isInvitation: !!variables.invitationToken},
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, verifyEmail} = res
-      const authToken = acceptTeamInvitation.authToken || verifyEmail.authToken
+      const authToken = acceptTeamInvitation?.authToken ?? verifyEmail.authToken
       onCompleted({verifyEmail}, errors)
       if (authToken) {
         handleSuccessfulLogin(verifyEmail)

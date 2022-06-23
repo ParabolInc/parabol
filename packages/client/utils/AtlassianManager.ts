@@ -1,5 +1,6 @@
 import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+import JiraProjectKeyId from '../shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../types/constEnums'
 import composeJQL from './composeJQL'
 
@@ -743,14 +744,28 @@ export default abstract class AtlassianManager {
       res.message.startsWith(timeTrackingFieldName ? timeTrackingFieldId : fieldId) &&
       res.message.includes('is not on the appropriate screen')
     ) {
+      const projectKey = JiraProjectKeyId.join(issueKey)
+      const project = await this.getProject(cloudId, projectKey)
+
+      if (project instanceof RateLimitError || project instanceof Error) {
+        throw project
+      }
+
+      if (project.simplified) {
+        if (timeTrackingFieldName) {
+          throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING)
+        }
+        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR_ESTIMATION)
+      }
+
       throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
     }
     throw res
   }
 
-  async getScreens(cloudId: string) {
+  async getScreens(cloudId: string, maxResults: number, startAt = 0) {
     return this.get<JiraScreensResponse>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens?maxResults=${maxResults}&startAt=${startAt}`
     )
   }
 

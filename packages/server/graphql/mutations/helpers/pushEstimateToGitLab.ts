@@ -27,11 +27,7 @@ const pushEstimateToGitLab = async (
   >
   const {teamId} = task
   const {accessUserId, gid} = gitlabIntegration
-  const auth = await dataLoader.get('teamMemberIntegrationAuths').load({
-    service: 'gitlab',
-    teamId,
-    userId: accessUserId
-  })
+  const auth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
   if (!auth) return new Error('User no longer has access to GitLab')
   const {providerId} = auth
   const provider = await dataLoader.get('integrationProviders').loadNonNull(providerId)
