@@ -75,6 +75,7 @@ const VoteSettingsMenu = (props: Props) => {
       <VoteOption>
         <Label>Votes per participant</Label>
         <VoteStepper
+          aria-label='Votes per participant'
           value={totalVotes}
           increase={increaseTotalVotes}
           decrease={decreaseTotalVotes}
@@ -84,6 +85,7 @@ const VoteSettingsMenu = (props: Props) => {
       <VoteOption>
         <Label>Votes per topic</Label>
         <VoteStepper
+          aria-label='Votes per topic'
           value={maxVotesPerGroup}
           increase={increaseMaxVotesPerGroup}
           decrease={decreaseMaxVotesPerGroup}
