@@ -42,8 +42,8 @@ const StyledEditor = styled('div')`
   .ProseMirror :is(ul, ol) {
     list-style-position: outside;
     padding-inline-start: 16px;
-    margin-block-start: 16px;
-    margin-block-end: 16px;
+    margin-block-start: 4px;
+    margin-block-end: 4px;
   }
 
   .ProseMirror :is(ol) {
