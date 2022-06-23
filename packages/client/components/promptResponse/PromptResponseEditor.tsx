@@ -4,11 +4,17 @@ import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} fr
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import {ICON_SIZE} from '~/styles/typographyV2'
 import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
+import Icon from '../Icon'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
+
+const LinkIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18
+})
 
 const BubbleMenuWrapper = styled('div')({
   display: 'flex',
@@ -221,6 +227,9 @@ const PromptResponseEditor = (props: Props) => {
                 isActive={editor.isActive('strike')}
               >
                 <s>S</s>
+              </BubbleMenuButton>
+              <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
+                <LinkIcon>link</LinkIcon>
               </BubbleMenuButton>
             </BubbleMenuWrapper>
           </BubbleMenu>
