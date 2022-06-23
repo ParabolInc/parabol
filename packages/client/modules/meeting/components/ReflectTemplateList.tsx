@@ -6,8 +6,10 @@ import SwipeableViews from 'react-swipeable-views'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
+import useBreakpoint from '../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
+import {Breakpoint} from '../../../types/constEnums'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
@@ -15,14 +17,14 @@ import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
 import ReflectTemplateListTeam from './ReflectTemplateListTeam'
 
 const WIDTH = 360
-const TemplateSidebar = styled('div')({
+const TemplateSidebar = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   boxShadow: desktopSidebarShadow,
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
-  width: WIDTH,
+  width: !isDesktop ? '100%' : WIDTH,
   zIndex: 1 // show above template details to show box-shadow
-})
+}))
 
 const Label = styled('div')({
   color: PALETTE.SLATE_700,
@@ -102,8 +104,10 @@ const ReflectTemplateList = (props: Props) => {
     if (props.reason === 'focus') return
     setActiveIdx(idx)
   }
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
+
   return (
-    <TemplateSidebar>
+    <TemplateSidebar isDesktop={isDesktop}>
       <Label>Retro Templates</Label>
       <StyledTabsBar activeIdx={activeIdx}>
         <FullTab
