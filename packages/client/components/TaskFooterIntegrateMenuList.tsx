@@ -15,10 +15,10 @@ import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import GitHubMenuItem from './GitHubMenuItem'
 import GitLabMenuItem from './GitLabMenuItem'
 import JiraMenuItem from './JiraMenuItem'
+import JiraServerMenuItem from './JiraServerMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
-import RepoIntegrationJiraServerMenuItem from './RepoIntegrationJiraServerMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
@@ -111,7 +111,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <RepoIntegrationJiraServerMenuItem
+            <JiraServerMenuItem
               key={id}
               query={query}
               repoIntegration={repoIntegration}
@@ -177,7 +177,7 @@ graphql`
     ... on _xGitLabProject {
       fullPath
     }
-    ...RepoIntegrationJiraServerMenuItem_repoIntegration
+    ...JiraServerMenuItem_repoIntegration
   }
 `
 
