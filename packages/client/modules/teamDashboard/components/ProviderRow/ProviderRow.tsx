@@ -95,6 +95,15 @@ const CardTop = styled('div')({
   padding: Layout.ROW_GUTTER
 })
 
+const HowItWorksLink = styled('a')({
+  color: PALETTE.SKY_500,
+  cursor: 'pointer',
+  textDecoration: 'underline',
+  ':hover, :focus, :active': {
+    color: PALETTE.SKY_600
+  }
+})
+
 interface Props {
   connected: boolean
   onConnectClick: () => void
@@ -139,9 +148,9 @@ const ProviderRow = (props: Props) => {
           <ProviderName>{providerName}</ProviderName>
           <RowInfoCopy>
             {providerDescription}.{' '}
-            <a href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
+            <HowItWorksLink href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
               See how it works
-            </a>
+            </HowItWorksLink>
             .
           </RowInfoCopy>
         </RowInfo>
