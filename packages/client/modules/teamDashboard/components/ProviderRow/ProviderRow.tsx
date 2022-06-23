@@ -52,7 +52,7 @@ const StatusLabel = styled('div')({
 
 const StatusIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
-  color: '#2db553'
+  color: PALETTE.SUCCESS_LIGHT
 })
 
 const MenuSmallIcon = styled(Icon)({
