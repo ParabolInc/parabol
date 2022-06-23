@@ -1,6 +1,5 @@
 import DataLoader from 'dataloader'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
-import {RValue} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
@@ -26,6 +25,7 @@ import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
+
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -430,27 +430,43 @@ export const meetingStatsByOrgId = (parent: RootDataLoader) => {
       const r = await getRethink()
       const meetingStatsByOrgId = await Promise.all(
         orgIds.map(async (orgId) => {
-          const rawStats = await r
-            .table('Team')
-            .getAll(orgId, {index: 'orgId'})('id')
-            .coerceTo('array')
-            .do((teamIds: RValue) => {
-              return r
-                .table('NewMeeting')
-                .getAll(r.args(teamIds), {index: 'teamId'})
-                .pluck('createdAt', 'meetingType')
-                .orderBy('createdAt')
-                .coerceTo('array')
-            })
+          // note: does not include archived teams!
+          const teams = await parent.get('teamsByOrgIds').load(orgId)
+          const teamIds = teams.map(({id}) => id)
+          const stats = await r
+            .table('NewMeeting')
+            .getAll(r.args(teamIds), {index: 'teamId'})
+            .pluck('createdAt', 'meetingType')
+            .orderBy('createdAt')
             .run()
-          return rawStats.map((stat) => ({
-            createdAt: stat.createdAt,
-            meetingType: stat.meetingType,
-            id: `${stat.meetingType}:${stat.createdAt}`
+          return stats.map((stat) => ({
+            createdAt: stat.createdAt!,
+            meetingType: stat.meetingType as MeetingTypeEnum,
+            id: `${stat.createdAt}:${stat.meetingType}`
           }))
         })
       )
       return meetingStatsByOrgId
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const teamStatsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, {id: string; createdAt: Date}[], string>(
+    async (orgIds) => {
+      const teamStatsByOrgId = await Promise.all(
+        orgIds.map(async (orgId) => {
+          const teams = await parent.get('teamsByOrgIds').load(orgId)
+          return teams.map((team) => ({
+            id: `ts:${team.createdAt}`,
+            createdAt: team.createdAt
+          }))
+        })
+      )
+      return teamStatsByOrgId
     },
     {
       ...parent.dataLoaderOptions
