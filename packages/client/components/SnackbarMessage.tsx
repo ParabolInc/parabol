@@ -4,11 +4,11 @@ import {TransitionStatus} from '../hooks/useTransition'
 import {DECELERATE} from '../styles/animation'
 import {snackbarShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
+import {ICON_SIZE} from '../styles/typographyV2'
 import {Radius, ZIndex} from '../types/constEnums'
+import Icon from './Icon'
 import {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
-import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
 
 interface Props {
   onTransitionEnd: () => void
@@ -53,13 +53,15 @@ const DismissButton = styled('button')({
   backgroundColor: 'inherit',
   marginLeft: '8px',
   cursor: 'pointer',
-  padding: 5,
+  padding: 5
 })
 
 const StyledIcon = styled(Icon)({
-  color: 'white',
-  opacity: '54%',
-  fontSize: ICON_SIZE.MD18
+  color: PALETTE.SLATE_500,
+  fontSize: ICON_SIZE.MD18,
+  '&:hover': {
+    opacity: 0.5
+  }
 })
 
 const useTransitionEnd = (
