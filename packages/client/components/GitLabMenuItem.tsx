@@ -1,8 +1,8 @@
 import React, {forwardRef} from 'react'
 import GitLabSVG from './GitLabSVG'
 import MenuItem from './MenuItem'
+import MenuItemAvatar from './MenuItemAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
@@ -23,9 +23,9 @@ const GitLabMenuItem = forwardRef((props: Props, ref: any) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <RepoIntegrationMenuItemAvatar>
+          <MenuItemAvatar>
             <GitLabSVG />
-          </RepoIntegrationMenuItemAvatar>
+          </MenuItemAvatar>
           <TypeAheadLabel query={query} label={fullPath} />
         </MenuItemLabel>
       }

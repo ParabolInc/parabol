@@ -1,8 +1,8 @@
 import React, {forwardRef} from 'react'
 import GitHubSVG from './GitHubSVG'
 import MenuItem from './MenuItem'
+import MenuItemAvatar from './MenuItemAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
@@ -18,9 +18,9 @@ const GitHubMenuItem = forwardRef((props: Props, ref: any) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <RepoIntegrationMenuItemAvatar>
+          <MenuItemAvatar>
             <GitHubSVG />
-          </RepoIntegrationMenuItemAvatar>
+          </MenuItemAvatar>
           <TypeAheadLabel query={query} label={nameWithOwner} />
         </MenuItemLabel>
       }

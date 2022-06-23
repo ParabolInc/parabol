@@ -4,8 +4,8 @@ import {useFragment} from 'react-relay'
 import {JiraServerMenuItem_repoIntegration$key} from '../__generated__/JiraServerMenuItem_repoIntegration.graphql'
 import JiraServerSVG from './JiraServerSVG'
 import MenuItem from './MenuItem'
+import MenuItemAvatar from './MenuItemAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
@@ -31,9 +31,9 @@ const JiraServerMenuItem = forwardRef((props: Props, ref: any) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <RepoIntegrationMenuItemAvatar>
+          <MenuItemAvatar>
             <JiraServerSVG />
-          </RepoIntegrationMenuItemAvatar>
+          </MenuItemAvatar>
           <TypeAheadLabel query={query} label={name} />
         </MenuItemLabel>
       }

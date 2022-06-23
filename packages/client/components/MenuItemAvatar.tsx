@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import {ICON_SIZE} from '../styles/typographyV2'
+import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
-const RepoIntegrationMenuItemAvatar = styled(MenuItemComponentAvatar)({
+const MenuItemAvatar = styled(MenuItemComponentAvatar)({
   '& svg': {
     display: 'block',
     height: ICON_SIZE.MD18,
@@ -10,4 +10,4 @@ const RepoIntegrationMenuItemAvatar = styled(MenuItemComponentAvatar)({
   }
 })
 
-export default RepoIntegrationMenuItemAvatar
+export default MenuItemAvatar
