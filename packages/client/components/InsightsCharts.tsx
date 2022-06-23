@@ -297,8 +297,8 @@ const makeMeetingData = (flatMeetingStats: {createdAt: string; meetingType: Meet
   return {datasets} as ChartData<'bar'>
 }
 
-const membersOptions = makeOptions('Members')
-const teamsOptions = makeOptions('Teams')
+const membersOptions = makeOptions('Total Members')
+const teamsOptions = makeOptions('Total Teams')
 
 const InsightsCharts = (props: Props) => {
   const {domainRef} = props
@@ -336,7 +336,7 @@ const InsightsCharts = (props: Props) => {
       .flat()
       .sort()
     const teamCreatedAts = organizations
-      .map(({teamStats}) => teamStats.map(({createdAt}) => new Date(createdAt)))
+      .map(({teamStats}) => teamStats.map(({createdAt}) => new Date(createdAt).getTime()))
       .flat()
       .sort()
 

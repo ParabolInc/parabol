@@ -433,16 +433,17 @@ export const meetingStatsByOrgId = (parent: RootDataLoader) => {
           // note: does not include archived teams!
           const teams = await parent.get('teamsByOrgIds').load(orgId)
           const teamIds = teams.map(({id}) => id)
-          const stats = await r
+          const stats = (await r
             .table('NewMeeting')
             .getAll(r.args(teamIds), {index: 'teamId'})
             .pluck('createdAt', 'meetingType')
-            .orderBy('createdAt')
-            .run()
+            // DO NOT CALL orderBy, it makes the query 10x more expensive!
+            // .orderBy('createdAt')
+            .run()) as {createdAt: Date; meetingType: MeetingTypeEnum}[]
           return stats.map((stat) => ({
-            createdAt: stat.createdAt!,
-            meetingType: stat.meetingType as MeetingTypeEnum,
-            id: `${stat.createdAt}:${stat.meetingType}`
+            createdAt: stat.createdAt,
+            meetingType: stat.meetingType,
+            id: `ms${stat.createdAt.getTime()}`
           }))
         })
       )
@@ -461,7 +462,7 @@ export const teamStatsByOrgId = (parent: RootDataLoader) => {
         orgIds.map(async (orgId) => {
           const teams = await parent.get('teamsByOrgIds').load(orgId)
           return teams.map((team) => ({
-            id: `ts:${team.createdAt}`,
+            id: `ts:${team.createdAt.getTime()}`,
             createdAt: team.createdAt
           }))
         })
