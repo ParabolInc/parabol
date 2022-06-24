@@ -70,7 +70,6 @@ const PhaseItemEditor = (props: Props) => {
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const [editorState, setEditorState] = useState(EditorState.createEmpty)
   const [isEditing, setIsEditing] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const idleTimerIdRef = useRef<number>()
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
   useEffect(() => {
@@ -78,6 +77,27 @@ const PhaseItemEditor = (props: Props) => {
       window.clearTimeout(idleTimerIdRef.current)
     }
   }, [idleTimerIdRef])
+
+  const [isFocused, setIsFocused] = useState(false)
+  const [enterHint, setEnterHint] = useState('')
+  const hindTimerRef = useRef<number>()
+  // delay setting the enterHint slightly, so when someone presses on the inFocus hint, it doesn't
+  // change to the !inFocus one during the transition
+  useEffect(() => {
+    const visible = !isEditing && editorState.getCurrentContent().hasText()
+    if (visible) {
+      const newEnterHint = isFocused
+        ? 'Press enter to add'
+        : 'Forgot to press enter? Click here to add 👆'
+      hindTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 500)
+      return () => {
+        window.clearTimeout(hindTimerRef.current)
+      }
+    } else {
+      setEnterHint('')
+      return undefined
+    }
+  }, [isFocused, isEditing, editorState.getCurrentContent().hasText()])
 
   const handleSubmit = (content) => {
     const input = {
@@ -208,11 +228,8 @@ const PhaseItemEditor = (props: Props) => {
           setEditorState={setEditorState}
           readOnly={readOnly}
         />
-        <EnterHint
-          visible={!isEditing && editorState.getCurrentContent().hasText()}
-          onClick={handleKeydown}
-        >
-          {isFocused ? 'Press enter to add' : 'Forgot to press enter? Click here to add 👆'}
+        <EnterHint visible={!!enterHint} onClick={handleKeydown}>
+          {enterHint}
         </EnterHint>
       </ReflectionCardRoot>
       {portal(
