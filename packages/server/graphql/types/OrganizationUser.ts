@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
-import OrgUserRole from './OrgUserRole'
-import User from './User'
-import Organization from './Organization'
-import {resolveOrganization, resolveUser} from '../resolvers'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import {resolveOrganization} from '../resolvers'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import Organization from './Organization'
+import OrgUserRole from './OrgUserRole'
 import TierEnum from './TierEnum'
+import User from './User'
 
 const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
   name: 'OrganizationUser',
@@ -54,7 +54,9 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user attached to the organization',
-      resolve: resolveUser
+      resolve: async ({userId}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(userId)
+      }
     },
     tier: {
       type: TierEnum,

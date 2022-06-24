@@ -61,8 +61,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
     createdAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the user was created'
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The timestamp the user was created',
+      resolve: ({createdAt}) => createdAt || new Date('2016-06-01')
     },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
