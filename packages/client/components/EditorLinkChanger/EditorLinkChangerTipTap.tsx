@@ -34,12 +34,17 @@ const EditorLinkChangerTipTap = (props: Props) => {
       .run()
   }
 
+  const handleEscape = () => {
+    setTimeout(() => tiptapEditor.commands.focus(), 0)
+  }
+
   return (
     <EditorLinkChangerModal
       text={text}
       link={link}
       removeModal={removeModal}
       handleSubmit={handleSubmit}
+      handleEscape={handleEscape}
       originCoords={originCoords}
     />
   )
