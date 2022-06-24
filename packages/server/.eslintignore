@@ -7,3 +7,4 @@ githubSchema.graphql
 gitlabSchema.graphql
 _legacy.graphql
 migrationTemplate.ts
+billing/debug.ts

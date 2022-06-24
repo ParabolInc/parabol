@@ -185,7 +185,7 @@ const TeamPromptResponseCard = (props: Props) => {
     [response]
   )
   const plaintextContent = response?.plaintextContent ?? ''
-  const reactjis = response?.reactjis
+  const reactjis = response?.reactjis ?? []
 
   const discussionEdges = discussion.thread.edges
   const replyCount = discussionEdges.length
@@ -209,7 +209,7 @@ const TeamPromptResponseCard = (props: Props) => {
   })
 
   const onToggleReactji = (emojiId: string) => {
-    if (submitting || !reactjis) return
+    if (submitting || !response) return
     const isRemove = !!reactjis.find((reactji) => {
       return reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
     })
@@ -258,19 +258,21 @@ const TeamPromptResponseCard = (props: Props) => {
               readOnly={!isCurrentViewer}
               placeholder={'Share your response...'}
             />
-            <ResponseCardFooter>
-              <StyledReactjis reactjis={reactjis || []} onToggle={onToggleReactji} />
-              <ReplyButton onClick={() => onSelectDiscussion()}>
-                {replyCount > 0 ? (
-                  <>
-                    <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
-                    {replyCount} {plural(replyCount, 'Reply', 'Replies')}
-                  </>
-                ) : (
-                  'Reply'
-                )}
-              </ReplyButton>
-            </ResponseCardFooter>
+            {!!plaintextContent && (
+              <ResponseCardFooter>
+                <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
+                <ReplyButton onClick={() => onSelectDiscussion()}>
+                  {replyCount > 0 ? (
+                    <>
+                      <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
+                      {replyCount} {plural(replyCount, 'Reply', 'Replies')}
+                    </>
+                  ) : (
+                    'Reply'
+                  )}
+                </ReplyButton>
+              </ResponseCardFooter>
+            )}
           </>
         )}
       </ResponseCard>

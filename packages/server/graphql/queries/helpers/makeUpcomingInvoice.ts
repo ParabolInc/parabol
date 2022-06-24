@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 
 export default async function makeUpcomingInvoice(
   orgId: string,
@@ -9,7 +9,7 @@ export default async function makeUpcomingInvoice(
   stripeSubscriptionId?: string | null
 ) {
   if (!stripeId || !stripeSubscriptionId) return undefined
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   let stripeInvoice: Stripe.invoices.IInvoice
   try {
     stripeInvoice = await manager.retrieveUpcomingInvoice(stripeId, stripeSubscriptionId)

@@ -85,6 +85,10 @@ const StartMeetingFAB = (props: Props) => {
   const onClick = () => {
     history.push(`/new-meeting/${teamId}?source=BottomFAB`)
   }
+  // We use the TopBarStartMeetingButton in this case
+  if (isDesktop) {
+    return null
+  }
   return (
     <Block className={className}>
       <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
