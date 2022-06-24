@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateListOrgQuery} from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
@@ -27,6 +28,10 @@ interface Props {
   queryRef: PreloadedQuery<ReflectTemplateListOrgQuery>
 }
 
+const getValue = (item: {node: {id: string; name: string}}) => {
+  return item.node.name.toLowerCase()
+}
+
 const query = graphql`
   query ReflectTemplateListOrgQuery($teamId: ID!) {
     viewer {
@@ -35,12 +40,14 @@ const query = graphql`
         id
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
+            templateSearchQuery
             organizationTemplates(first: 20)
               @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
               edges {
                 node {
                   ...ReflectTemplateItem_template
                   id
+                  name
                 }
               }
             }
@@ -62,17 +69,24 @@ const ReflectTemplateListOrg = (props: Props) => {
   const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
-  const organizationTemplates = meetingSettings.organizationTemplates!
-  const {edges} = organizationTemplates
+  const {templateSearchQuery, organizationTemplates, activeTemplate} = meetingSettings
+  const searchQuery = templateSearchQuery ?? ''
+  const activeTemplateId = activeTemplate?.id ?? '-tmp'
+  const {edges} = organizationTemplates!
+  const filteredEdges = useFilteredItems(searchQuery, edges, getValue)
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>
   }
+  if (filteredEdges.length === 0) {
+    return (
+      <Message>{`No template names in your organization match your search query "${searchQuery}"`}</Message>
+    )
+  }
   return (
     <TemplateList>
-      {edges.map(({node: template}) => {
+      {filteredEdges.map(({node: template}) => {
         return (
           <ReflectTemplateItem
             key={template.id}
@@ -80,6 +94,7 @@ const ReflectTemplateListOrg = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
+            templateSearchQuery={searchQuery}
           />
         )
       })}
