@@ -1,15 +1,15 @@
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
-import {JiraDimensionField} from '../postgres/queries/getTeamsByIds'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import {DataLoaderWorker} from '../graphql/graphql'
+import isValid from '../graphql/isValid'
 import getPg from '../postgres/getPg'
 import {
   IMergeTeamJiraDimensionFieldsQueryParams,
   mergeTeamJiraDimensionFieldsQuery
 } from '../postgres/queries/generated/mergeTeamJiraDimensionFieldsQuery'
+import {JiraDimensionField} from '../postgres/queries/getTeamsByIds'
 import catchAndLog from '../postgres/utils/catchAndLog'
-import isValid from '../graphql/isValid'
 import AtlassianServerManager from './AtlassianServerManager'
-import {isNotNull} from 'parabol-client/utils/predicates'
 
 const hashMapper = (mapper: JiraDimensionField) => {
   const {cloudId, projectKey, dimensionName} = mapper

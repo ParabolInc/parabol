@@ -64,6 +64,7 @@
     "@mattkrick/trebuchet-client": "^3.0.1",
     "@sentry/browser": "^5.8.0",
     "@tiptap/extension-character-count": "^2.0.0-beta.25",
+    "@tiptap/extension-link": "^2.0.0-beta.38",
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
     "@tiptap/react": "^2.0.0-beta.109",
     "@tiptap/starter-kit": "^2.0.0-beta.185",
