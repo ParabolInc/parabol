@@ -40,7 +40,6 @@ const getSelectionBoundingBox = (editor: Editor) => {
 }
 
 export const getLinkProps = (editor: Editor) => {
-  const href: string | undefined = editor.getAttributes('link').href
   editor.commands.extendMarkRange('link')
   let {from, to} = editor.view.state.selection
   if (to === from && editor.isActive('link')) {
@@ -52,6 +51,7 @@ export const getLinkProps = (editor: Editor) => {
     to = selection.to
     from = selection.from
   }
+  const href: string | undefined = editor.getAttributes('link').href
   const text = editor.state.doc.textBetween(from, to, '')
   const originCoords = getSelectionBoundingBox(editor)
 
@@ -72,6 +72,7 @@ export const createEditorExtensions = (
 ) => [
   StarterKit,
   Link.extend({
+    inclusive: false,
     addKeyboardShortcuts() {
       return {
         'Mod-k': () => {
