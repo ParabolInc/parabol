@@ -13,6 +13,7 @@ import isTempId from '../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
+import FlatButton from './FlatButton'
 import Icon from './Icon'
 
 interface Props extends WithMutationProps {
@@ -27,26 +28,30 @@ const UpvoteRow = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
-  ({isExpanded, isEnabled}) => ({
-    color: isExpanded
-      ? isEnabled
-        ? '#fff'
-        : 'rgba(255, 255, 255, .25)'
-      : isEnabled
-      ? PALETTE.SLATE_600
-      : PALETTE.SLATE_400,
-    cursor: isEnabled ? 'pointer' : undefined,
-    fontSize: ICON_SIZE.MD18,
+const ThumbUpIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18,
+  height: 24,
+  lineHeight: '24px',
+  textAlign: 'center',
+  userSelect: 'none',
+  width: 24
+})
+
+const UpvoteButton = styled(FlatButton)<{isExpanded: boolean; disabled: boolean}>(
+  ({isExpanded, disabled}) => ({
+    color: isExpanded ? '#fff' : PALETTE.SLATE_600,
     height: 24,
     lineHeight: '24px',
-    textAlign: 'center',
-    userSelect: 'none',
-    width: 24
+    padding: 0,
+    width: 24,
+    ':hover,:focus,:active': {
+      backgroundColor: !disabled ? (isExpanded ? PALETTE.SLATE_500 : PALETTE.SLATE_200) : undefined,
+      boxShadow: 'none'
+    }
   })
 )
 
-const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
+const Votes = styled('span')<{voteCount: number; isExpanded: boolean}>(
   ({voteCount, isExpanded}) => ({
     color: isExpanded
       ? voteCount === 0
@@ -57,6 +62,8 @@ const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
       : PALETTE.SKY_500,
     fontWeight: 600,
     padding: '0 4px',
+    display: 'flex',
+    alignItems: 'center',
     userSelect: 'none'
   })
 )
@@ -116,31 +123,28 @@ const ReflectionGroupVoting = (props: Props) => {
   return (
     <UpvoteColumn>
       <UpvoteRow data-cy='reflection-vote-row'>
-        <UpvoteIcon
+        <UpvoteButton
           aria-label={`Remove vote`}
           isExpanded={isExpanded}
-          isEnabled={canDownvote}
+          disabled={!canDownvote}
           color={isExpanded ? PALETTE.SKY_400 : PALETTE.SKY_500}
           onClick={downvote}
         >
-          {'thumb_down'}
-        </UpvoteIcon>
-        <VoteCount
-          isExpanded={isExpanded}
-          voteCount={viewerVoteCount}
-          data-cy={`completed-vote-count`}
-        >
-          {viewerVoteCount}
-        </VoteCount>
-        <UpvoteIcon
+          <Icon>remove</Icon>
+        </UpvoteButton>
+        <Votes isExpanded={isExpanded} voteCount={viewerVoteCount}>
+          <ThumbUpIcon>{'thumb_up'}</ThumbUpIcon>
+          <span data-cy={`completed-vote-count`}>{viewerVoteCount}</span>
+        </Votes>
+        <UpvoteButton
           aria-label={`Add vote`}
           isExpanded={isExpanded}
-          isEnabled={canUpvote}
+          disabled={!canUpvote}
           color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.SLATE_600}
           onClick={vote}
         >
-          {'thumb_up'}
-        </UpvoteIcon>
+          <Icon>add</Icon>
+        </UpvoteButton>
       </UpvoteRow>
     </UpvoteColumn>
   )

@@ -10,6 +10,7 @@ interface Props {
   increase(): void
   decrease(): void
   value: number
+  'aria-label'?: string
 }
 
 const Wrapper = styled('div')({
@@ -48,7 +49,7 @@ const VoteStepper = (props: Props) => {
       <Stepper isDisabled={!canDecrease} aria-label={'Decrease'} onClick={decrease}>
         <StyledIcon>remove</StyledIcon>
       </Stepper>
-      <Value>{value}</Value>
+      <Value aria-label={props['aria-label']}>{value}</Value>
       <Stepper isDisabled={!canIncrease} aria-label={'Increase'} onClick={increase}>
         <StyledIcon>add</StyledIcon>
       </Stepper>
