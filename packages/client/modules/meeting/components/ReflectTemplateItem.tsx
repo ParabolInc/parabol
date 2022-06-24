@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import TypeAheadLabel from '~/components/TypeAheadLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import {DECELERATE} from '../../../styles/animation'
@@ -54,10 +55,11 @@ interface Props {
   teamId: string
   template: ReflectTemplateItem_template
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
+  templateSearchQuery: string
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, template} = props
+  const {lowestScope, isActive, teamId, template, templateSearchQuery} = props
   const {id: templateId, name: templateName} = template
   const description = makeTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
@@ -69,7 +71,9 @@ const ReflectTemplateItem = (props: Props) => {
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>
       <TemplateItemDetails>
-        <TemplateTitle>{templateName}</TemplateTitle>
+        <TemplateTitle>
+          <TypeAheadLabel highlight query={templateSearchQuery} label={templateName} />
+        </TemplateTitle>
         <TemplateDescription>{description}</TemplateDescription>
       </TemplateItemDetails>
       <TemplateItemAction></TemplateItemAction>

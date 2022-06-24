@@ -70,9 +70,10 @@ const ReflectTemplateListOrg = (props: Props) => {
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const {templateSearchQuery, organizationTemplates, activeTemplate} = meetingSettings
+  const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
   const {edges} = organizationTemplates!
-  const filteredEdges = useFilteredItems(templateSearchQuery ?? '', edges, getValue)
+  const filteredEdges = useFilteredItems(searchQuery, edges, getValue)
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
@@ -80,7 +81,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   }
   if (filteredEdges.length === 0) {
     return (
-      <Message>{`No template names in your organization match your search query "${templateSearchQuery}"`}</Message>
+      <Message>{`No template names in your organization match your search query "${searchQuery}"`}</Message>
     )
   }
   return (
@@ -93,6 +94,7 @@ const ReflectTemplateListOrg = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
+            templateSearchQuery={searchQuery}
           />
         )
       })}

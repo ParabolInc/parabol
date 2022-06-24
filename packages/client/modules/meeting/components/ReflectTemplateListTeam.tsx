@@ -65,9 +65,10 @@ const ReflectTemplateListTeam = (props: Props) => {
     settingsRef
   )
   const {teamTemplates, templateSearchQuery} = settings
+  const searchQuery = templateSearchQuery ?? ''
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
-  const filteredTemplates = useFilteredItems(templateSearchQuery ?? '', teamTemplates, getValue)
+  const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
     return (
       <Message>
@@ -77,7 +78,7 @@ const ReflectTemplateListTeam = (props: Props) => {
     )
   }
   if (filteredTemplates.length === 0) {
-    return <Message>{`No team templates match your search query "${templateSearchQuery}"`}</Message>
+    return <Message>{`No team templates match your search query "${searchQuery}"`}</Message>
   }
   return (
     <TemplateList>
@@ -89,6 +90,7 @@ const ReflectTemplateListTeam = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
+            templateSearchQuery={searchQuery}
           />
         )
       })}
