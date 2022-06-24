@@ -82,7 +82,7 @@ const ScopingSearchResultItem = (props: Props) => {
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [summary]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
-      persistQuery && persistQuery()
+      persistQuery?.()
     }
   }
   return (

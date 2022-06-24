@@ -36,7 +36,6 @@ const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   fontSize: 16,
   fontWeight: 600,
   textAlign: 'start',
-  paddingTop: 4,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   transform: `translateX(${isExpanded ? -4 : ElementWidth.NEW_MEETING_FAB}px)`,
   width: isExpanded ? ElementWidth.NEW_MEETING_FAB : 0
