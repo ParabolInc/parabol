@@ -122,6 +122,9 @@ const ReflectTemplateList = (props: Props) => {
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
   const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
+  const templateType = Object.keys(templateIdxs).find(
+    (key) => templateIdxs[key] === activeIdx
+  ) as SharingScopeEnum
 
   const clearSearch = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -174,7 +177,7 @@ const ReflectTemplateList = (props: Props) => {
         />
       </StyledTabsBar>
       <ReflectTemplateSearchBar
-        activeIdx={activeIdx}
+        templateType={templateType}
         clearSearch={clearSearch}
         settingsRef={settings}
       />

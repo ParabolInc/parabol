@@ -2,9 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ReflectTemplateListTeam_settings$key} from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
+import {
+  ReflectTemplateListTeam_settings,
+  ReflectTemplateListTeam_settings$key
+} from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({
@@ -41,6 +45,10 @@ interface Props {
   settingsRef: ReflectTemplateListTeam_settings$key
 }
 
+const getValue = (item: ReflectTemplateListTeam_settings['teamTemplates'][0]) => {
+  return item.name.toLowerCase()
+}
+
 const ReflectTemplateListTeam = (props: Props) => {
   const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef} = props
   const settings = useFragment(
@@ -59,9 +67,7 @@ const ReflectTemplateListTeam = (props: Props) => {
   const {teamTemplates, templateSearchQuery} = settings
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
-  const filteredTemplates = teamTemplates.filter(({name}) =>
-    name.toLowerCase().includes(templateSearchQuery ?? '')
-  )
+  const filteredTemplates = useFilteredItems(templateSearchQuery ?? '', teamTemplates, getValue)
   if (teamTemplates.length === 0) {
     return (
       <Message>
