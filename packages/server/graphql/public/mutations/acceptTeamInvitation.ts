@@ -2,11 +2,11 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {InvitationTokenError, SubscriptionChannel} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
-import segmentIo from '../../../utils/segmentIo'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
@@ -27,6 +27,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const viewerId = getUserId(authToken)
 
   // VALIDATION
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const invitationRes = await handleInvitationToken(
     invitationToken,
     viewerId,
@@ -43,6 +44,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
 
   const {invitation} = invitationRes
   const {meetingId, teamId} = invitation
+  const acceptAt = invitation.meetingId ? 'meeting' : 'team'
   const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
   const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
   const team = await dataLoader.get('teams').loadNonNull(teamId)
@@ -113,11 +115,8 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       subOptions
     )
   }
-  segmentIo.track({
-    userId: viewerId,
-    event: 'Invite Accepted',
-    properties: {teamId}
-  })
+  const isNewUser = viewer.createdAt.getDate() === viewer.lastSeenAt.getDate()
+  analytics.inviteAccepted(viewerId, teamId, isNewUser, acceptAt)
   return {
     ...data,
     authToken: encodedAuthToken
