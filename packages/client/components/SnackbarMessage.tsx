@@ -7,6 +7,8 @@ import {PALETTE} from '../styles/paletteV3'
 import {Radius, ZIndex} from '../types/constEnums'
 import {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
+import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
 
 interface Props {
   onTransitionEnd: () => void
@@ -45,6 +47,22 @@ const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
   zIndex: ZIndex.SNACKBAR
 }))
 
+const DismissButton = styled('button')({
+  border: 'none',
+  backgroundColor: 'inherit',
+  marginLeft: '8px',
+  cursor: 'pointer',
+  padding: 5
+
+})
+
+const StyledIcon = styled (Icon)({
+  color: PALETTE.SLATE_500,
+  fontSize: ICON_SIZE.MD18,
+  '&:hover': {
+    opacity: 0.5
+  }
+})
 const useTransitionEnd = (
   timeout: number,
   status: TransitionStatus,
@@ -71,13 +89,15 @@ const SnackbarMessage = (props: Props) => {
     <Space>
       <MessageStyles
         status={status}
-        onClick={dismissSnack}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
         <Text>{message}</Text>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />
+        <DismissButton onClick={dismissSnack}>
+          <StyledIcon>close</StyledIcon>
+        </DismissButton>
       </MessageStyles>
     </Space>
   )
