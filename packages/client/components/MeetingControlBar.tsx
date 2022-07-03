@@ -127,7 +127,7 @@ const MeetingControlBar = (props: Props) => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
+    if (isFacilitating && (isRetro || isPoker) && !isCheckIn && !isComplete) buttons.push('timer')
     if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
@@ -200,7 +200,8 @@ const MeetingControlBar = (props: Props) => {
                 <StageTimerControl
                   {...tranProps}
                   cancelConfirm={cancelConfirm}
-                  defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType]}
+                  //default time limit of Poker is 3
+                  defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType] || 3}
                   meeting={meeting}
                 />
               )
