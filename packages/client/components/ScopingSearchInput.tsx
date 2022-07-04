@@ -38,7 +38,7 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
-  service: IntegrationProviderServiceEnum | 'parabol'
+  service: IntegrationProviderServiceEnum | 'PARABOL'
   defaultInput?: string
 }
 
