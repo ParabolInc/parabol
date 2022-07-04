@@ -1,8 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
 import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
 import ScopingSearchBar from './ScopingSearchBar'
@@ -15,8 +13,6 @@ interface Props {
 
 const GitLabScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
 
   const meeting = useFragment(
     graphql`
@@ -57,14 +53,6 @@ const GitLabScopingSearchBar = (props: Props) => {
   })
   const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
 
-  const trackEvent = (eventTitle: string) => {
-    SendClientSegmentEventMutation(atmosphere, eventTitle, {
-      viewerId,
-      meetingId,
-      service: 'gitlab'
-    })
-  }
-
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
       <ScopingSearchHistoryToggle />
@@ -73,14 +61,7 @@ const GitLabScopingSearchBar = (props: Props) => {
         queryString={queryString}
         meetingId={meetingId}
         linkedRecordName={'gitlabSearchQuery'}
-        onChange={() => {
-          if (!queryString) {
-            trackEvent('Started Poker Scope Search')
-          }
-        }}
-        onClear={() => {
-          trackEvent('Cleared Poker Scope Search')
-        }}
+        service={'gitlab'}
       />
       <GitLabScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

@@ -62,6 +62,7 @@ const GitHubScopingSearchBar = (props: Props) => {
         meetingId={meeting.id}
         linkedRecordName={'githubSearchQuery'}
         defaultInput={defaultInput}
+        service={'github'}
       />
       <GitHubScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

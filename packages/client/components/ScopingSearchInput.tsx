@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
+import {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import Icon from './Icon'
 
 const SearchInput = styled('input')({
@@ -36,15 +38,14 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
+  service: IntegrationProviderServiceEnum | 'parabol'
   defaultInput?: string
-  onChange?: () => void
-  onClear?: () => void
 }
 
 const ScopingSearchInput = (props: Props) => {
-  const {placeholder, queryString, meetingId, linkedRecordName, defaultInput, onChange, onClear} =
-    props
+  const {placeholder, queryString, meetingId, linkedRecordName, defaultInput, service} = props
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
 
@@ -63,15 +64,25 @@ const ScopingSearchInput = (props: Props) => {
     }
   }, [])
 
+  const trackEvent = (eventTitle: string) => {
+    SendClientSegmentEventMutation(atmosphere, eventTitle, {
+      viewerId,
+      meetingId,
+      service
+    })
+  }
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(meetingId, value)
-    onChange && onChange()
+    if (isEmpty) {
+      trackEvent('Started Poker Scope Search')
+    }
   }
   const clearSearch = () => {
     setSearch(meetingId, '')
     inputRef.current?.focus()
-    onClear && onClear()
+    trackEvent('Cleared Poker Scope Search')
   }
 
   return (
