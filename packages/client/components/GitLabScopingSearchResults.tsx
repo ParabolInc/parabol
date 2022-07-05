@@ -5,17 +5,19 @@ import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} f
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import getNonNullEdges from '../utils/getNonNullEdges'
+import {parseWebPath} from '../utils/parseWebPath'
 import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
 import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
 import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 import Ellipsis from './Ellipsis/Ellipsis'
-import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitLabIssueInput from './NewGitLabIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import ScopingSearchResultItem from './ScopingSearchResultItem'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -93,10 +95,12 @@ const GitLabScopingSearchResults = (props: Props) => {
                   edges {
                     node {
                       ... on _xGitLabIssue {
-                        ...GitLabScopingSearchResultItem_issue
                         ...GitLabScopingSelectAllIssues_issues
                         id
+                        iid
                         title
+                        webPath
+                        webUrl
                       }
                     }
                   }
@@ -166,15 +170,25 @@ const GitLabScopingSearchResults = (props: Props) => {
             viewerRef={viewer}
           />
         )}
-        {issues.map((issue) => (
-          <GitLabScopingSearchResultItem
-            key={issue.id}
-            issueRef={issue}
-            meetingId={meetingId}
-            usedServiceTaskIds={usedServiceTaskIds}
-            providerId={providerId}
-          />
-        ))}
+        {issues.map((issue) => {
+          const {id, iid, title, webUrl, webPath} = issue
+          const {fullPath} = parseWebPath(webPath ?? '')
+          const linkText = `#${iid} ${fullPath}`
+
+          return (
+            <ScopingSearchResultItem
+              key={id}
+              service={'gitlab'}
+              usedServiceTaskIds={usedServiceTaskIds}
+              serviceTaskId={GitLabIssueId.join(providerId, id ?? '')}
+              meetingId={meetingId}
+              summary={title ?? ''}
+              url={webUrl ?? ''}
+              linkText={linkText}
+              linkTitle={linkText}
+            />
+          )
+        })}
         {lastItem}
         {hasNext && (
           <LoadingNext key={'loadingNext'}>
