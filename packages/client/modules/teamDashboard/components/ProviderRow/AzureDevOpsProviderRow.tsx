@@ -74,7 +74,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
         providerName={Providers.AZUREDEVOPS_NAME}
         providerDescription={Providers.AZUREDEVOPS_DESC}
         providerLogo={<AzureDevOpsProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_AZUREDEVOPS}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_AZUREDEVOPS}
       />
       {menuPortal(
         <AzureDevOpsConfigMenu

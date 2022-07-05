@@ -43,7 +43,7 @@ const SlackProviderRow = (props: Props) => {
         providerName={Providers.SLACK_NAME}
         providerDescription={Providers.SLACK_DESC}
         providerLogo={<SlackProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SLACK}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_SLACK}
       >
         {isActive && <SlackNotificationList teamId={teamId} viewer={viewer} />}
       </ProviderRow>

@@ -86,7 +86,7 @@ const GitLabProviderRow = (props: Props) => {
         providerName={'GitLab'}
         providerDescription={'Use GitLab Issues from within Parabol'}
         providerLogo={<GitLabProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_GITLAB}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_GITLAB}
       />
       {menuPortal(
         <GitLabConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />

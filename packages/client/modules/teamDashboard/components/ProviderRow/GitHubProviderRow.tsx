@@ -42,7 +42,7 @@ const GitHubProviderRow = (props: Props) => {
         providerName={Providers.GITHUB_NAME}
         providerDescription={Providers.GITHUB_DESC}
         providerLogo={<GitHubProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_GITHUB}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_GITHUB}
       />
       {menuPortal(
         <GitHubConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />

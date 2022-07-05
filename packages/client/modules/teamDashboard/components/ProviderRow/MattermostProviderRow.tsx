@@ -65,7 +65,7 @@ const MattermostProviderRow = (props: Props) => {
         providerLogo={<MattermostProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
         connectButtonIcon={!isConnectClicked ? <Icon>add</Icon> : <Icon>close</Icon>}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_MATTERMOST}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_MATTERMOST}
       >
         {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

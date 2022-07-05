@@ -64,7 +64,7 @@ const MSTeamsProviderRow = (props: Props) => {
         providerLogo={<MSTeamsProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
         connectButtonIcon={!isConnectClicked ? <Icon>add</Icon> : <Icon>close</Icon>}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_MSTEAMS}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_MSTEAMS}
       >
         {(auth || isConnectClicked) && <MSTeamsPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

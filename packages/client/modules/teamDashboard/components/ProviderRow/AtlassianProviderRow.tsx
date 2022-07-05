@@ -63,7 +63,7 @@ const AtlassianProviderRow = (props: Props) => {
         providerName={Providers.ATLASSIAN_NAME}
         providerDescription={Providers.ATLASSIAN_DESC}
         providerLogo={<AtlassianProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_JIRA}
+        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_JIRA}
       />
       {menuPortal(
         <AtlassianConfigMenu mutationProps={mutationProps} menuProps={menuProps} teamId={teamId} />
