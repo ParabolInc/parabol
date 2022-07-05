@@ -11,7 +11,7 @@ import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutation
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import JiraServerClientManager from '../../../../utils/JiraServerClientManager'
-import ProviderRow from './ProviderRow'
+import ProviderRowContactUs from './ProviderRowContactUs'
 
 interface Props {
   teamId: string
@@ -66,7 +66,7 @@ const JiraServerProviderRow = (props: Props) => {
 
   return (
     <>
-      <ProviderRow
+      <ProviderRowContactUs
         connected={!!(isActive && provider)}
         onConnectClick={openOAuth}
         submitting={submitting}
@@ -75,18 +75,13 @@ const JiraServerProviderRow = (props: Props) => {
         providerName={Providers.JIRA_SERVER_NAME}
         providerDescription={Providers.JIRA_SERVER_DESC}
         providerLogo={<JiraServerProviderLogo />}
-        contactUsProps={
-          !provider
-            ? {
-                url: ExternalLinks.INTEGRATIONS_JIRASERVER,
-                onSubmit: () => {
-                  SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button', {
-                    viewerId
-                  })
-                }
-              }
-            : undefined
-        }
+        contactUsUrl={ExternalLinks.INTEGRATIONS_JIRASERVER}
+        onContactUsSubmit={() => {
+          SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button', {
+            viewerId
+          })
+        }}
+        hasProvider={!!provider}
         seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_JIRASERVER}
       />
       {provider &&
