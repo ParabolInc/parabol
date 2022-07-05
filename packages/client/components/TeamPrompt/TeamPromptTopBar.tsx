@@ -3,10 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
+import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import RenameMeetingMutation from '~/mutations/RenameMeetingMutation'
-import Legitity from '~/validation/Legitity'
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
@@ -69,27 +67,7 @@ const TeamPromptTopBar = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, name: meetingName, facilitatorUserId} = meeting
   const isFacilitator = viewerId === facilitatorUserId
-  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
-
-  const handleSubmit = (name: string) => {
-    if (submitting || error) return
-    submitMutation()
-    RenameMeetingMutation(atmosphere, {meetingId, name}, {onCompleted, onError})
-  }
-  const validate = (rawMeetingName: string) => {
-    const res = new Legitity(rawMeetingName)
-      .trim()
-      .required('Meetings need names')
-      .min(2, 'Meetings need good names')
-      .max(50, 'Meetings need short names')
-
-    if (res.error) {
-      onError(new Error(res.error))
-    } else if (error) {
-      onCompleted()
-    }
-    return res
-  }
+  const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
 
   return (
     <MeetingTopBarStyles>
