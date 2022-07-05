@@ -40,7 +40,8 @@ test.describe('retrospective-demo / vote page', () => {
     await expect(voteCount).toHaveText('2')
     await addVote.click()
     await expect(voteCount).toHaveText('3')
-    await addVote.click()
+    // button should be disabled, force click anyways in case this changes in the future
+    await addVote.click({force: true})
     await expect(voteCount).toHaveText('3') // 3 is the default maximum per-topic
   })
 
@@ -66,7 +67,8 @@ test.describe('retrospective-demo / vote page', () => {
     const group1AddVote = page.locator(`[data-cy="Start-group-1"] [aria-label="Add vote"]`)
     await group1AddVote.click()
     await group1AddVote.click()
-    await group1AddVote.click()
+    // button should be disabled, force click anyways in case this changes in the future
+    await group1AddVote.click({force: true})
     await expect(group1VoteCount).toHaveText('2') // Even though you clicked 3 times, you're out of votes
   })
 
@@ -75,7 +77,8 @@ test.describe('retrospective-demo / vote page', () => {
     const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
     await expect(voteCount).toHaveText('0')
     const removeVote = page.locator(`[data-cy="Start-group-0"] [aria-label="Remove vote"]`)
-    await removeVote.click()
+    // button should be disabled, force click anyways in case this changes in the future
+    await removeVote.click({force: true})
     await expect(voteCount).toHaveText('0')
   })
 
@@ -136,7 +139,7 @@ test.describe('retrospective-demo / vote page', () => {
     await page.locator('text=Vote Settings').click()
 
     // Increase the maximum from 3 to 4
-    const votesPerTopic = page.locator('span:right-of(:text("Votes per topic")) >> nth=0')
+    const votesPerTopic = page.locator('[aria-label="Votes per topic"]')
     await expect(votesPerTopic).toHaveText('3')
     await page
       .locator('[aria-label="Increase"]:right-of(:text("Votes per topic")) >> nth=0')
@@ -156,7 +159,7 @@ test.describe('retrospective-demo / vote page', () => {
     await expect(voteCount).toHaveText('3')
     await addVote.click()
     await expect(voteCount).toHaveText('4')
-    await addVote.click()
+    await addVote.click({force: true})
     await expect(voteCount).toHaveText('4') // 4 is the new maximum
   })
 

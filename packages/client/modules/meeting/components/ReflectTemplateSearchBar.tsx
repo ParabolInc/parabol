@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
 import {ReflectTemplateSearchBar_settings$key} from '~/__generated__/ReflectTemplateSearchBar_settings.graphql'
 import Atmosphere from '../../../Atmosphere'
 import Icon from '../../../components/Icon'
@@ -10,7 +11,6 @@ import MenuItemLabel from '../../../components/MenuItemLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import {templateIdxs} from './ReflectTemplateList'
 
 const SearchBarWrapper = styled('div')({
   padding: '16px 16px 0 16px'
@@ -50,13 +50,12 @@ const InputWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  paddingLeft: 18
+  paddingLeft: 8
 })
 
 const SearchInput = styled('input')({
   appearance: 'none',
   border: 'none',
-  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
@@ -71,19 +70,19 @@ const setTemplateSearch = (atmosphere: Atmosphere, settingsId: string, value: st
   commitLocalUpdate(atmosphere, (store) => {
     const settings = store.get(settingsId)
     if (!settings) return
-    const normalizedSearch = value.toLowerCase().trim()
+    const normalizedSearch = value.toLowerCase()
     settings.setValue(normalizedSearch, 'templateSearchQuery')
   })
 }
 
 interface Props {
-  activeIdx: number
+  templateType: SharingScopeEnum
   clearSearch: () => void
   settingsRef: ReflectTemplateSearchBar_settings$key
 }
 
 const ReflectTemplateSearchBar = (props: Props) => {
-  const {activeIdx, clearSearch, settingsRef} = props
+  const {templateType, clearSearch, settingsRef} = props
   const atmosphere = useAtmosphere()
   const settings = useFragment(
     graphql`
@@ -95,7 +94,6 @@ const ReflectTemplateSearchBar = (props: Props) => {
     settingsRef
   )
   const {id: settingsId, templateSearchQuery} = settings
-  const templateType = Object.keys(templateIdxs).find((key) => templateIdxs[key] === activeIdx)
   const normalizedTempType = templateType === 'ORGANIZATION' ? 'org' : templateType?.toLowerCase()
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +107,11 @@ const ReflectTemplateSearchBar = (props: Props) => {
       e.preventDefault()
       inputRef.current.blur()
     }
+  }
+
+  const handleClear = () => {
+    inputRef.current?.focus()
+    clearSearch()
   }
 
   return (
@@ -129,7 +132,7 @@ const ReflectTemplateSearchBar = (props: Props) => {
             value={templateSearchQuery ?? ''}
           />
         </InputWrapper>
-        <ClearSearchIcon isEmpty={!templateSearchQuery} onClick={clearSearch}>
+        <ClearSearchIcon isEmpty={!templateSearchQuery} onClick={handleClear}>
           close
         </ClearSearchIcon>
       </Search>

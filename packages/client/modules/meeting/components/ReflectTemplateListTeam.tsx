@@ -2,9 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ReflectTemplateListTeam_settings$key} from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
+import {
+  ReflectTemplateListTeam_settings,
+  ReflectTemplateListTeam_settings$key
+} from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({
@@ -41,6 +45,10 @@ interface Props {
   settingsRef: ReflectTemplateListTeam_settings$key
 }
 
+const getValue = (item: ReflectTemplateListTeam_settings['teamTemplates'][0]) => {
+  return item.name.toLowerCase()
+}
+
 const ReflectTemplateListTeam = (props: Props) => {
   const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef} = props
   const settings = useFragment(
@@ -57,11 +65,10 @@ const ReflectTemplateListTeam = (props: Props) => {
     settingsRef
   )
   const {teamTemplates, templateSearchQuery} = settings
+  const searchQuery = templateSearchQuery ?? ''
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
-  const filteredTemplates = teamTemplates.filter(({name}) =>
-    name.toLowerCase().includes(templateSearchQuery ?? '')
-  )
+  const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
     return (
       <Message>
@@ -71,7 +78,7 @@ const ReflectTemplateListTeam = (props: Props) => {
     )
   }
   if (filteredTemplates.length === 0) {
-    return <Message>{`No team templates match your search query "${templateSearchQuery}"`}</Message>
+    return <Message>{`No team templates match your search query "${searchQuery}"`}</Message>
   }
   return (
     <TemplateList>
@@ -83,6 +90,7 @@ const ReflectTemplateListTeam = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
+            templateSearchQuery={searchQuery}
           />
         )
       })}

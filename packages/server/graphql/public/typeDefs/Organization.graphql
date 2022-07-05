@@ -1,0 +1,140 @@
+"""
+An organization
+"""
+type Organization {
+  """
+  The unique organization ID
+  """
+  id: ID!
+
+  """
+  The top level domain this organization is linked to, null if only generic emails used
+  """
+  activeDomain: String
+
+  """
+  false if the activeDomain is null or was set automatically via a heuristic, true if set manually
+  """
+  isActiveDomainTouched: Boolean!
+
+  """
+  The datetime the organization was created
+  """
+  createdAt: DateTime!
+
+  """
+  The safe credit card details
+  """
+  creditCard: CreditCard
+
+  """
+  The assumed company this organizaiton belongs to
+  """
+  company: Company
+
+  """
+  true if the viewer is the billing leader for the org
+  """
+  isBillingLeader: Boolean!
+
+  """
+  Basic meeting metadata for aggregated stats across the entire organization.
+  Includes metadata on teams the viewer is not apart of
+  """
+  meetingStats: [MeetingStat!]!
+  """
+  The name of the organization
+  """
+  name: String!
+
+  """
+  The org avatar
+  """
+  picture: URL
+
+  """
+  all the teams the viewer is on in the organization
+  """
+  teams: [Team!]!
+
+  """
+  The level of access to features on the parabol site
+  """
+  tier: TierEnum!
+
+  """
+  THe datetime the current billing cycle ends
+  """
+  periodEnd: DateTime
+
+  """
+  The datetime the current billing cycle starts
+  """
+  periodStart: DateTime
+
+  """
+  The total number of retroMeetings given to the team
+  """
+  retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
+
+  """
+  Number of retro meetings that can be run (if not pro)
+  """
+  retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
+
+  """
+  true if should show the org the conversion modal, else false
+  """
+  showConversionModal: Boolean!
+
+  """
+  The customerId from stripe
+  """
+  stripeId: ID
+
+  """
+  The subscriptionId from stripe
+  """
+  stripeSubscriptionId: ID
+
+  """
+  The last upcoming invoice email that was sent, null if never sent
+  """
+  upcomingInvoiceEmailSentAt: DateTime
+
+  """
+  The datetime the organization was last updated
+  """
+  updatedAt: DateTime
+
+  """
+  The users that are apart of the organization
+  """
+  organizationUsers(after: String, first: Int): OrganizationUserConnection!
+
+  """
+  The count of active & inactive users
+  """
+  orgUserCount: OrgUserCount!
+
+  """
+  The leaders of the org
+  """
+  billingLeaders: [User!]!
+
+  """
+  Minimal details about all teams in the organization
+  """
+  teamStats: [TeamStat!]!
+}
+
+type MeetingStat {
+  id: ID!
+  meetingType: MeetingTypeEnum!
+  createdAt: DateTime!
+}
+
+type TeamStat {
+  id: ID!
+  createdAt: DateTime!
+}

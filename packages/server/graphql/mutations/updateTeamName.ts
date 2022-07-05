@@ -1,14 +1,14 @@
 import {GraphQLNonNull} from 'graphql'
-import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
-import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import teamNameValidation from 'parabol-client/validation/teamNameValidation'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import {GQLContext} from '../graphql'
+import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
+import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 
 export default {
   type: UpdateTeamNamePayload,

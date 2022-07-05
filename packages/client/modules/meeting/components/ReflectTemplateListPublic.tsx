@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useFilteredItems from '~/hooks/useFilteredItems'
 import {PALETTE} from '~/styles/paletteV3'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {ReflectTemplateListPublicQuery} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
@@ -26,6 +27,10 @@ const Message = styled('div')({
 
 interface Props {
   queryRef: PreloadedQuery<ReflectTemplateListPublicQuery>
+}
+
+const getValue = (item: {node: {id: string; name: string}}) => {
+  return item.node.name.toLowerCase()
 }
 
 const query = graphql`
@@ -66,16 +71,13 @@ const ReflectTemplateListPublic = (props: Props) => {
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const {templateSearchQuery, publicTemplates, activeTemplate} = meetingSettings
+  const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
   const {edges} = publicTemplates!
-  const filteredEdges = edges.filter(({node}) =>
-    node.name.toLowerCase().includes(templateSearchQuery ?? '')
-  )
+  const filteredEdges = useFilteredItems(searchQuery, edges, getValue)
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
   if (filteredEdges.length === 0) {
-    return (
-      <Message>{`No public templates match your search query "${templateSearchQuery}"`}</Message>
-    )
+    return <Message>{`No public templates match your search query "${searchQuery}"`}</Message>
   }
   return (
     <TemplateList>
@@ -87,6 +89,7 @@ const ReflectTemplateListPublic = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
+            templateSearchQuery={searchQuery}
           />
         )
       })}

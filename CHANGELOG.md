@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.64.0 2022-June-22
+
+### Added
+
+- **Jira Server**: Always show provider row with contact us button (#6683)
+- **Standups**: Response submission UX redesign (#6778)
+- **Metrics**: invitation related events refactor (#6779)
+- **Insights**: usage stats analytics (#6786)
+- **Insights**: usage snack nag (#6785)
+- Export admin data (#6733)
+
+### Fixed
+
+- **Standups**: Allow reactjis to be added after initial response submission (#6768)
+- Reuse invite link (#6795)
+- Write to url field (#6800)
+- **Sprint Poker**: Remove padding in Discussion Drawer (#6700)
+
+### Changed
+
+- **DX**: integration tests can be run locally (#6696)
+- Hide bottom start meeting FAB on desktop (#6802) 
+
 ## 6.63.0 2022-June-16
 
 ### Added
@@ -490,6 +513,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - enforce server side lock (#5840)
 - SECURITY: bump react-refresh-webpack-plugin #5896
 - Security/bump graphql jit #5897
+
 -
 
 ### Fixed
@@ -4554,7 +4578,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 
 ### Fixed
 
-- Add/remove rethinkdb entity from cache problem, see: https://github.com/mattkrick/cashay/issues/125
+- Add/remove rethinkdb entity from cache problem, see: <https://github.com/mattkrick/cashay/issues/125>
 - Editors multiplayer field regression
 
 ## v0.6.1 - 2016-Sep-23
