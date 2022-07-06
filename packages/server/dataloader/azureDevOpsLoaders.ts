@@ -177,7 +177,6 @@ export const azureDevOpsAllWorkItems = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, queryString, projectKeyFilters, isWIQL}) => {
-          const returnedWorkItems = [] as WorkItem[]
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return undefined
@@ -195,14 +194,13 @@ export const azureDevOpsAllWorkItems = (
           )
 
           const {error, workItems} = restResult
-
           if (error !== undefined || workItems === undefined) {
             console.log(error)
-          } else {
-            returnedWorkItems.push(...workItems)
+            return [] as AzureDevOpsWorkItem[]
           }
+
           const mappedWorkItems: AzureDevOpsWorkItem[] = await Promise.all(
-            returnedWorkItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
+            workItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
               const instanceId = getInstanceId(new URL(returnedWorkItem.url))
               const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
                 manager,
