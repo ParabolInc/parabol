@@ -6,7 +6,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import momentumPng from '../../../static/images/illustrations/illus-momentum.png'
+import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
@@ -33,9 +33,14 @@ const INVITE_DIALOG_MEDIA_QUERY = `@media (min-width: ${INVITE_DIALOG_BREAKPOINT
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 480,
+  flexDirection: 'row',
   [INVITE_DIALOG_MEDIA_QUERY]: {
     width: 816
   }
+})
+
+const StyledDialogRightColumn = styled('div')({
+  width: '100%'
 })
 
 const StyledDialogTitle = styled(DialogTitle)({
@@ -57,23 +62,21 @@ const StyledDialogContent = styled(DialogContent)({
 })
 
 const Fields = styled('div')({
-  [INVITE_DIALOG_MEDIA_QUERY]: {
-    maxWidth: 320
-  }
+  width: '100%'
 })
 
-const Illustration = styled('img')({
-  display: 'block',
-  flex: 1,
-  marginLeft: 32,
-  marginTop: -60,
-  maxWidth: 400
+const Illustration = styled('div')({
+  width: '100%',
+  margin: '24px 0px 24px 24px',
+  backgroundImage: `url(${modalTeamInvitePng})`,
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat'
 })
 
 const ButtonGroup = styled('div')({
   marginTop: '24px',
   display: 'flex',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-start'
 })
 
 const StyledHeading = styled('h2')({
@@ -114,7 +117,7 @@ const Label = styled('div')({
 
 const IllustrationBlock = () => {
   const showIllustration = useBreakpoint(INVITE_DIALOG_BREAKPOINT)
-  return showIllustration ? <Illustration alt='' src={momentumPng} /> : null
+  return showIllustration ? <Illustration /> : null
 }
 
 const AddTeamMemberModal = (props: Props) => {
@@ -215,43 +218,45 @@ const AddTeamMemberModal = (props: Props) => {
   const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>{'Invite to Team'}</StyledDialogTitle>
-      <StyledDialogContent>
-        <Fields>
-          <StyledHeading>{'Share this link'}</StyledHeading>
-          <StyledTip>{'This link expires in 30 days.'}</StyledTip>
-          <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
+      <IllustrationBlock />
+      <StyledDialogRightColumn>
+        <StyledDialogTitle>{'Invite to Team'}</StyledDialogTitle>
+        <StyledDialogContent>
+          <Fields>
+            <StyledHeading>{'Share this link'}</StyledHeading>
+            <StyledTip>{'This link expires in 30 days.'}</StyledTip>
+            <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
-          <StyledHeading>{'Or, send invites by email'}</StyledHeading>
-          <StyledTip>{'Email invitations expire in 30 days.'}</StyledTip>
-          <BasicTextArea
-            autoFocus
-            name='rawInvitees'
-            onChange={onChange}
-            placeholder='email@example.co, another@example.co'
-            value={rawInvitees}
-          />
-          {error && (
-            <ErrorWrapper isWarning={!isSubmitted}>
-              <StyledIcon isWarning={!isSubmitted}>
-                <Icon>{isSubmitted ? 'error' : 'warning'}</Icon>
-              </StyledIcon>
-              <Label>{error.message}</Label>
-            </ErrorWrapper>
-          )}
-          <ButtonGroup>
-            <PrimaryButton
-              onClick={sendInvitations}
-              disabled={invitees.length === 0}
-              size='medium'
-              waiting={submitting}
-            >
-              {title}
-            </PrimaryButton>
-          </ButtonGroup>
-        </Fields>
-        <IllustrationBlock />
-      </StyledDialogContent>
+            <StyledHeading>{'Or, send invites by email'}</StyledHeading>
+            <StyledTip>{'Email invitations expire in 30 days.'}</StyledTip>
+            <BasicTextArea
+              autoFocus
+              name='rawInvitees'
+              onChange={onChange}
+              placeholder='email@example.co, another@example.co'
+              value={rawInvitees}
+            />
+            {error && (
+              <ErrorWrapper isWarning={!isSubmitted}>
+                <StyledIcon isWarning={!isSubmitted}>
+                  <Icon>{isSubmitted ? 'error' : 'warning'}</Icon>
+                </StyledIcon>
+                <Label>{error.message}</Label>
+              </ErrorWrapper>
+            )}
+            <ButtonGroup>
+              <PrimaryButton
+                onClick={sendInvitations}
+                disabled={invitees.length === 0}
+                size='medium'
+                waiting={submitting}
+              >
+                {title}
+              </PrimaryButton>
+            </ButtonGroup>
+          </Fields>
+        </StyledDialogContent>
+      </StyledDialogRightColumn>
     </StyledDialogContainer>
   )
 }
