@@ -11,12 +11,13 @@ const getAzureDevOpsDimensionFieldMaps = async (
   teamId: string,
   dimensionName: string,
   instanceId: string,
-  projectKey: string
+  projectKey: string,
+  workItemType: string
 ) => {
   // pg-typed doesnt' support records, so we can't use multiple composite keys
   // https://github.com/adelsz/pgtyped/issues/317
   const res = await getAzureDevOpsDimensionFieldMapsQuery.run(
-    {teamId, dimensionName, instanceId, projectKey},
+    {teamId, dimensionName, instanceId, projectKey, workItemType},
     getPg()
   )
   return res[0] as AzureDevOpsDimensionFieldMap

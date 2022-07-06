@@ -201,11 +201,9 @@ const setTaskEstimate = {
       githubLabelName = githubPushRes
     } else if (service === 'azureDevOps') {
       const {accessUserId, instanceId, issueKey, projectKey} = integration!
-      const [auth, azureDevOpsDimensionFieldMapEntry, azureDevOpsWorkItem] = await Promise.all([
+
+      const [auth, azureDevOpsWorkItem] = await Promise.all([
         dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
-        dataLoader
-          .get('azureDevOpsDimensionFieldMap')
-          .load({teamId, dimensionName, instanceId, projectKey}),
         dataLoader.get('azureDevOpsWorkItem').load({
           teamId,
           userId: accessUserId,
@@ -219,6 +217,12 @@ const setTaskEstimate = {
       if (!auth) {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
+
+      const workItemType = azureDevOpsWorkItem?.type ? azureDevOpsWorkItem?.type : ''
+
+      const azureDevOpsDimensionFieldMapEntry = await dataLoader
+        .get('azureDevOpsDimensionFieldMap')
+        .load({teamId, dimensionName, instanceId, projectKey, workItemType})
 
       const fieldName = azureDevOpsDimensionFieldMapEntry
         ? azureDevOpsDimensionFieldMapEntry.fieldName

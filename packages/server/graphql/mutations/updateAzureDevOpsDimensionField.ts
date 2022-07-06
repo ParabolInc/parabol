@@ -32,6 +32,10 @@ const updateAzureDevOpsDimensionField = {
       type: new GraphQLNonNull(GraphQLID),
       description:
         'The meeting the update happend in. Returns a meeting object with updated serviceField'
+    },
+    workItemType: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The work item type in Azure DevOps'
     }
   },
   resolve: async (
@@ -41,16 +45,19 @@ const updateAzureDevOpsDimensionField = {
       fieldName,
       meetingId,
       instanceId,
-      projectKey
+      projectKey,
+      workItemType
     }: {
       dimensionName: string
       fieldName: string
       instanceId: string
       projectKey: string
       meetingId: string
+      workItemType: string
     },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    //console.log(`Inside updateAzureDevOpsDimensionField`)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -79,14 +86,17 @@ const updateAzureDevOpsDimensionField = {
         fieldId: fieldName,
         instanceId,
         fieldType: 'string',
-        projectKey
+        projectKey,
+        workItemType
       } as AzureDevOpsFieldMapProps
+      console.log(`Prior to calling upsertAzureDevOpsDimensionFieldMap`)
       await upsertAzureDevOpsDimensionFieldMap(props)
     } catch (e) {
       console.log(e)
     }
 
     const data = {teamId, meetingId}
+    console.log(`data - ${JSON.stringify(data)}`)
     publish(
       SubscriptionChannel.TEAM,
       teamId,

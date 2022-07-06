@@ -74,7 +74,8 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           instanceId: AzureDevOpsClientManager.getInstanceId(new URL(url)),
           dimensionName,
           fieldName,
-          projectKey: teamProject
+          projectKey: teamProject,
+          workItemType
         },
         {
           onCompleted: submitScore,

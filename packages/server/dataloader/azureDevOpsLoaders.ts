@@ -77,6 +77,7 @@ export interface AzureDevOpsDimensionFieldMapKey {
   dimensionName: string
   instanceId: string
   projectKey: string
+  workItemType: string
 }
 
 export interface AzureDevOpsDimensionFieldMapEntry {
@@ -87,6 +88,7 @@ export interface AzureDevOpsDimensionFieldMapEntry {
   instanceId: string
   fieldType: string
   projectKey: string
+  workItemType: string
 }
 
 export interface AzureDevOpsWorkItem {
@@ -355,21 +357,28 @@ export const azureDevOpsDimensionFieldMap = (
   >(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, instanceId, projectKey}) => {
-          const azureDevOpsDimensionFieldMap = getAzureDevOpsDimensionFieldMaps(
+        keys.map(async ({teamId, dimensionName, instanceId, projectKey, workItemType}) => {
+          const azureDevOpsDimensionFieldMap = await getAzureDevOpsDimensionFieldMaps(
             teamId,
             dimensionName,
             instanceId,
-            projectKey
+            projectKey,
+            workItemType
           )
-          return azureDevOpsDimensionFieldMap
+          if (!azureDevOpsDimensionFieldMap) {
+            return null
+          }
+          return {
+            ...azureDevOpsDimensionFieldMap
+          } as AzureDevOpsDimensionFieldMapEntry
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}`
+      cacheKeyFn: (key) =>
+        `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}:${key.workItemType}`
     }
   )
 }
