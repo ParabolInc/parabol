@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.65.0 2022-July-6
+
+### Added
+
+- **Retrospective**: Add more prominent enter to submit hint (#6794)
+- **Retrospective**: Updated voting buttons to be clearer (#6818)
+- retro template search filter (#6798)
+- **Insights**: Charts (#6799)
+- **Standups**: Links (#6701)
+- **Metrics**: Add Segment event to track when onboarding user clicks the Demo Meeting Card (#6834)
+- decrease top/bottom list margins in standup response editor (#6823)
+
+### Fixed
+
+- **Lockfile**: re-add security fixes (#6831)
+
+### Changed
+
+- **Poker**: use generic components for GitHub and GitLab (#6782)
+
 ## 6.64.0 2022-June-22
 
 ### Added
