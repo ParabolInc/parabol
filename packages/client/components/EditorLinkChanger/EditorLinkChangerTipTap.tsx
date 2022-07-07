@@ -22,7 +22,6 @@ const EditorLinkChangerTipTap = (props: Props) => {
       .chain()
       .focus()
       .setTextSelection(selection)
-      .setLink({href})
       .command(({tr}) => {
         if (text !== newText) {
           // Replace the existing text iff it was changed.
@@ -31,7 +30,18 @@ const EditorLinkChangerTipTap = (props: Props) => {
 
         return true
       })
+      // Something weird happens with the selection when the Link extension's 'inclusive' attribute is 'false' and we
+      // change the text, so manually update the selection with what it should be based on the change in text length.
+      .setTextSelection({
+        from: selection.from,
+        to: selection.to + newText.length - (text?.length ?? 0)
+      })
+      .setLink({href})
       .run()
+  }
+
+  const handleEscape = () => {
+    setTimeout(() => tiptapEditor.commands.focus(), 0)
   }
 
   return (
@@ -40,6 +50,7 @@ const EditorLinkChangerTipTap = (props: Props) => {
       link={link}
       removeModal={removeModal}
       handleSubmit={handleSubmit}
+      handleEscape={handleEscape}
       originCoords={originCoords}
     />
   )

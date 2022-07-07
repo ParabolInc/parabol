@@ -15,7 +15,8 @@ const StatsPanel = styled(Panel)({
 })
 
 const Wrapper = styled('div')({
-  paddingLeft: 16
+  paddingLeft: 16,
+  paddingRight: 16
 })
 
 const DomainName = styled('div')({
@@ -39,7 +40,7 @@ const StatBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
   width: '25%',
   paddingTop: 14,
   paddingBottom: 14
@@ -56,7 +57,8 @@ const StatBlockLabel = styled('div')({
   fontSize: 12,
   fontWeight: 600,
   lineHeight: '16px',
-  textTransform: 'uppercase'
+  textTransform: 'uppercase',
+  textAlign: 'center'
 })
 
 interface Props {
@@ -98,7 +100,7 @@ const InsightsDomainPanel = (props: Props) => {
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{activeTeamCount}</StatBlockNumber>
-            <StatBlockLabel>{plural(activeOrganizationCount, 'Active Team')}</StatBlockLabel>
+            <StatBlockLabel>{plural(activeTeamCount, 'Active Team')}</StatBlockLabel>
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{activeUserCount}</StatBlockNumber>
