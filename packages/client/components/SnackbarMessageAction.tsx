@@ -1,9 +1,10 @@
-import React from 'react'
-import {SnackAction} from './Snackbar'
 import styled from '@emotion/styled'
-import PlainButton from './PlainButton/PlainButton'
+import React from 'react'
+import {DECELERATE} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'
+import PlainButton from './PlainButton/PlainButton'
+import {SnackAction} from './Snackbar'
 
 interface Props {
   action: SnackAction | null | undefined
@@ -16,7 +17,10 @@ const Action = styled(PlainButton)({
   fontWeight: 600,
   marginLeft: 8,
   padding: 8,
-  backgroundColor: '#ffffff0e'
+  transition: `background 100ms ${DECELERATE}`,
+  ':hover,:focus,:active': {
+    backgroundColor: '#ffffff0e'
+  }
 })
 
 const SnackbarMessageAction = (props: Props) => {
