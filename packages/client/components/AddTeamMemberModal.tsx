@@ -67,7 +67,7 @@ const Fields = styled('div')({
 
 const Illustration = styled('div')({
   width: '100%',
-  margin: '30px 27px 50px 37px',
+  margin: '44px 24px 44px 44px',
   backgroundImage: `url(${modalTeamInvitePng})`,
   backgroundSize: 'contain',
   backgroundRepeat: 'no-repeat',
