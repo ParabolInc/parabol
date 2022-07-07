@@ -1,13 +1,13 @@
-import React, {ReactElement, ReactPortal, Ref, Suspense, useEffect} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactElement, ReactPortal, Ref, Suspense, useEffect} from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import ModalError from '../components/ModalError'
-import {LoadingDelayRef} from './useLoadingDelay'
-import usePortal, {PortalStatus} from './usePortal'
 import {DECELERATE} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV3'
 import {Duration, ZIndex} from '../types/constEnums'
+import {LoadingDelayRef} from './useLoadingDelay'
+import usePortal, {PortalStatus} from './usePortal'
 
 const ModalBlock = styled('div')({
   alignItems: 'center',
@@ -19,7 +19,8 @@ const ModalBlock = styled('div')({
   position: 'absolute',
   top: 0,
   width: '100%',
-  zIndex: ZIndex.DIALOG
+  zIndex: ZIndex.DIALOG,
+  overflow: 'scroll'
 })
 
 const backdropStyles = {
@@ -80,6 +81,8 @@ const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus
   flex: '0 1 auto',
   flexDirection: 'column',
   position: 'relative',
+  marginTop: 'auto',
+  marginBottom: 'auto',
   ...modalStyles[portalStatus]
 }))
 

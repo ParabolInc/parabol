@@ -29,9 +29,6 @@ const Signout = lazy(
 )
 const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
 const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot'))
-const NewMeetingRoot = lazy(
-  () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
-)
 const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
 const ViewerNotOnTeamRoot = lazy(
   () => import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
@@ -42,10 +39,9 @@ const PrivateRoutes = () => {
   useNoIndex()
   return (
     <Switch>
-      <Route path='(/meetings|/me|/newteam|/team|/usage)' component={DashboardRoot} />
+      <Route path='(/meetings|/me|/newteam|/team|/usage|/new-meeting)' component={DashboardRoot} />
       <Route path='/meet/:meetingId' component={MeetingRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />
-      <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
       <Route path='/admin/impersonate' component={Impersonate} />

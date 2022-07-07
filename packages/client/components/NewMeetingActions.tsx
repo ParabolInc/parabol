@@ -8,61 +8,76 @@ import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {NewMeetingActions_team} from '~/__generated__/NewMeetingActions_team.graphql'
 import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useBreakpoint from '../hooks/useBreakpoint'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import StartSprintPokerMutation from '../mutations/StartSprintPokerMutation'
 import {Breakpoint} from '../types/constEnums'
-import Icon from './Icon'
+import FlatButton from './FlatButton'
+import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
-import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
 
-const newMeetingGridMediaQuery = `@media screen and (min-width: ${Breakpoint.NEW_MEETING_GRID}px)`
+const narrowScreenMediaQuery = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
 
-const ButtonBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const ActionRow = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  justifyContent: isDesktop ? 'flex-start' : 'flex-end',
-  gridArea: 'actions',
-  padding: '24px 8px',
-  width: '100%',
-  [newMeetingGridMediaQuery]: {
-    padding: '32px 8px'
-  }
-}))
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  padding: 24,
+  paddingBottom: 16
+})
 
-const StartButton = styled(PrimaryButton)({
-  fontSize: 18,
-  width: 320,
-  maxWidth: '100%',
-  [newMeetingGridMediaQuery]: {
-    fontSize: 24,
-    height: 64
+const ActiveMeetingsBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  flexGrow: 10,
+  paddingBottom: 8
+})
+
+const ButtonBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  justifyContent: 'space-between',
+  flexGrow: 1,
+  paddingBottom: 8
+})
+
+const StartButton = styled(FlatPrimaryButton)({
+  fontSize: 20,
+  height: 50,
+  [narrowScreenMediaQuery]: {
+    paddingLeft: '1em',
+    paddingRight: '1em'
   }
 })
 
-const ForwardIcon = styled(Icon)({
-  paddingLeft: 16,
-  [newMeetingGridMediaQuery]: {
-    fontSize: 36 // MD 1.5x
+const CancelButton = styled(FlatButton)({
+  fontSize: 20,
+  height: 50,
+  [narrowScreenMediaQuery]: {
+    paddingLeft: '1em',
+    paddingRight: '1em'
   }
 })
 
 interface Props {
   meetingType: MeetingTypeEnum
   team: NewMeetingActions_team
+  onClose: () => void
 }
 
 const NewMeetingActions = (props: Props) => {
-  const {team, meetingType} = props
+  const {team, meetingType, onClose} = props
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, error, submitting, onError, onCompleted} = useMutationProps()
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
@@ -78,14 +93,18 @@ const NewMeetingActions = (props: Props) => {
   }
 
   return (
-    <ButtonBlock isDesktop={isDesktop}>
-      <NewMeetingActionsCurrentMeetings team={team} />
-      {error && <StyledError>{error.message}</StyledError>}
-      <StartButton size={'large'} onClick={onStartMeetingClick} waiting={submitting}>
-        Start Meeting
-        <ForwardIcon>arrow_forward</ForwardIcon>
-      </StartButton>
-    </ButtonBlock>
+    <ActionRow>
+      <ActiveMeetingsBlock>
+        <NewMeetingActionsCurrentMeetings team={team} />
+        {error && <StyledError>{error.message}</StyledError>}
+      </ActiveMeetingsBlock>
+      <ButtonBlock>
+        <CancelButton onClick={onClose}>Cancel</CancelButton>
+        <StartButton onClick={onStartMeetingClick} waiting={submitting}>
+          Start Meeting
+        </StartButton>
+      </ButtonBlock>
+    </ActionRow>
   )
 }
 

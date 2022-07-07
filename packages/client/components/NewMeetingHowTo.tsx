@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import React, {useRef, useState} from 'react'
 import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {BezierCurve, Breakpoint, NewMeeting} from '../types/constEnums'
+import {BezierCurve, Breakpoint} from '../types/constEnums'
 import ExpansionPanelSummary from './ExpansionPanelSummary'
 import NewMeetingHowToSteps from './NewMeetingHowToSteps'
 
@@ -12,8 +12,6 @@ interface Props {
 
 const Parent = styled('div')<{isDesktop?: boolean}>(({isDesktop}) => ({
   gridArea: 'howto',
-  // make it wider than any child so there's no movement between changes
-  minWidth: isDesktop ? NewMeeting.ILLUSTRATION_WIDTH : undefined,
   maxWidth: isDesktop ? undefined : 424,
   margin: isDesktop ? undefined : '0 auto'
 }))

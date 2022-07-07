@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
@@ -21,11 +22,12 @@ const MeetingLabel = styled('div')({
 })
 
 const TopBarStartMeetingButton = () => {
+  const location = useLocation()
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
 
   const onClick = () => {
-    history.push(`/new-meeting/${teamId}?source=TopBar`)
+    history.push(`/new-meeting/${teamId}?source=TopBar`, {backgroundLocation: location})
   }
   return (
     <Button onClick={onClick}>

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useEffect, useRef, useState} from 'react'
+import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
@@ -46,6 +47,7 @@ interface Props {
 }
 
 const StartMeetingFAB = (props: Props) => {
+  const location = useLocation()
   const {className} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const teamId = getTeamIdFromPathname()
@@ -82,7 +84,7 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    history.push(`/new-meeting/${teamId}?source=BottomFAB`)
+    history.push(`/new-meeting/${teamId}?source=BottomFAB`, {backgroundLocation: location})
   }
   // We use the TopBarStartMeetingButton in this case
   if (isDesktop) {

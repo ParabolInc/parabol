@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {Elevation} from '~/styles/elevation'
+import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import plural from '~/utils/plural'
@@ -13,18 +13,12 @@ import {NewMeetingActionsCurrentMeetings_team} from '~/__generated__/NewMeetingA
 import FlatButton from './FlatButton'
 import Icon from './Icon'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
-import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 
 const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
   color: PALETTE.ROSE_500,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: 600,
-  padding: '4px 16px',
-  marginBottom: 24,
-  ':hover': {
-    backgroundColor: '#fff',
-    boxShadow: Elevation.BUTTON_RAISED
-  },
+  height: 50,
   visibility: hasMeetings ? undefined : 'hidden'
 }))
 
