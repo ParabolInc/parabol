@@ -55,7 +55,9 @@ const DEFAULT_TIME_LIMIT = {
   reflect: 5,
   group: 5,
   vote: 3,
-  discuss: 5
+  discuss: 5,
+  ESTIMATE: 5,
+  SCOPE: 3
 } as Record<NewMeetingPhaseTypeEnum, number>
 
 interface Props {
@@ -200,8 +202,7 @@ const MeetingControlBar = (props: Props) => {
                 <StageTimerControl
                   {...tranProps}
                   cancelConfirm={cancelConfirm}
-                  //default time limit of Poker is 3
-                  defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType] || 3}
+                  defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType]}
                   meeting={meeting}
                 />
               )
