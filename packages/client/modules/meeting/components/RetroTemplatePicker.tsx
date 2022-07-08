@@ -11,11 +11,12 @@ interface Props {
   settings: RetroTemplatePicker_settings
 }
 
-const ReflectTemplateModal = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'ReflectTemplateModal' */
-    './ReflectTemplateModal'
-  )
+const ReflectTemplateModal = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'ReflectTemplateModal' */
+      './ReflectTemplateModal'
+    )
 )
 
 const Dropdown = styled(NewMeetingDropdown)({
@@ -27,7 +28,10 @@ const RetroTemplatePicker = (props: Props) => {
   const {settings} = props
   const {selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
-  const {togglePortal, modalPortal, closePortal} = useModal({id: 'templateModal'})
+  const {togglePortal, modalPortal, closePortal} = useModal({
+    id: 'templateModal',
+    parentId: 'newMeetingRoot'
+  })
 
   return (
     <>
@@ -38,7 +42,9 @@ const RetroTemplatePicker = (props: Props) => {
         onClick={togglePortal}
         onMouseEnter={ReflectTemplateModal.preload}
       />
-      {modalPortal(<ReflectTemplateModal closePortal={closePortal} retroMeetingSettings={settings} />)}
+      {modalPortal(
+        <ReflectTemplateModal closePortal={closePortal} retroMeetingSettings={settings} />
+      )}
     </>
   )
 }

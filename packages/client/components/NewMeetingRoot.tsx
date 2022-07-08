@@ -30,7 +30,10 @@ const NewMeetingRoot = () => {
     history.push(state?.backgroundLocation ?? '/meetings')
   }, [location])
 
-  const {openPortal, closePortal, modalPortal} = useModal({onClose})
+  const {openPortal, closePortal, modalPortal} = useModal({
+    id: 'newMeetingRoot',
+    onClose
+  })
 
   useEffect(() => {
     openPortal()

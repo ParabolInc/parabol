@@ -26,7 +26,7 @@ const ActionRow = styled('div')({
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   padding: 24,
-  paddingBottom: 16
+  paddingTop: 16
 })
 
 const ActiveMeetingsBlock = styled('div')({
@@ -35,7 +35,7 @@ const ActiveMeetingsBlock = styled('div')({
   flexDirection: 'row',
   flexWrap: 'nowrap',
   flexGrow: 10,
-  paddingBottom: 8
+  paddingTop: 8
 })
 
 const ButtonBlock = styled('div')({
@@ -45,7 +45,7 @@ const ButtonBlock = styled('div')({
   flexWrap: 'nowrap',
   justifyContent: 'space-between',
   flexGrow: 1,
-  paddingBottom: 8
+  paddingTop: 8
 })
 
 const StartButton = styled(FlatPrimaryButton)({
