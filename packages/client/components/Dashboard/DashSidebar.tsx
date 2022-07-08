@@ -38,14 +38,6 @@ const DashHR = styled('div')({
   width: '100%'
 })
 
-const NavItem = styled(LeftDashNavItem)({
-  paddingLeft: 16
-})
-
-const NavList = styled(DashNavList)({
-  paddingLeft: 16
-})
-
 const NavItemsWrap = styled('div')({
   paddingRight: 8
 })
@@ -56,17 +48,17 @@ const DashSidebar = (props: Props) => {
     <Nav isOpen={isOpen}>
       <Contents>
         <NavItemsWrap>
-          <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-          <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
-          <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
+          <LeftDashNavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
+          <LeftDashNavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
+          <LeftDashNavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
         </NavItemsWrap>
         <DashHR />
         <NavMain>
-          <NavList viewer={viewer} />
+          <DashNavList viewer={viewer} />
         </NavMain>
         <DashHR />
         <NavItemsWrap>
-          <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+          <LeftDashNavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
         </NavItemsWrap>
       </Contents>
     </Nav>

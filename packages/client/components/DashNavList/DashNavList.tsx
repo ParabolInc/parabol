@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, Fragment} from 'react'
+import React, {Fragment, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
-import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
+import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
 const DashNavListStyles = styled('div')({
   paddingRight: 8,
@@ -44,7 +44,7 @@ interface Props {
 }
 
 const DashNavList = (props: Props) => {
-  const {className, onClick, viewer} = props
+  const {onClick, viewer} = props
   const teams = viewer?.teams
 
   const teamsByOrgKey = useMemo(() => {
@@ -74,13 +74,21 @@ const DashNavList = (props: Props) => {
       {isSingleOrg
         ? teams.map((team) => (
             <LeftDashNavItem
-              className={className}
               onClick={onClick}
               key={team.id}
               icon={team.isPaid ? 'group' : 'warning'}
               href={`/team/${team.id}`}
               label={team.name}
-            />
+            >
+              <LeftDashNavItem
+                onClick={onClick}
+                key={team.id}
+                icon={'power'}
+                href={`/team/${team.id}/settings/integrations`}
+                label={'Integrations'}
+                paddingLeft={24}
+              />
+            </LeftDashNavItem>
           ))
         : teamsByOrgKey.map((entry, idx) => {
             const [key, teams] = entry
@@ -90,13 +98,21 @@ const DashNavList = (props: Props) => {
                 <OrgName>{name}</OrgName>
                 {teams.map((team) => (
                   <LeftDashNavItem
-                    className={className}
                     onClick={onClick}
                     key={team.id}
                     icon={team.isPaid ? 'group' : 'warning'}
                     href={`/team/${team.id}`}
                     label={team.name}
-                  />
+                  >
+                    <LeftDashNavItem
+                      onClick={onClick}
+                      key={team.id}
+                      icon={'power'}
+                      href={`/team/${team.id}/settings/integrations`}
+                      label={'Integrations'}
+                      paddingLeft={24}
+                    />
+                  </LeftDashNavItem>
                 ))}
                 {idx !== teamsByOrgKey.length - 1 && <DashHR />}
               </Fragment>
