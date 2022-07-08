@@ -1,5 +1,5 @@
 import {generateText, JSONContent} from '@tiptap/core'
-import {createEditorExtensions} from 'parabol-client/components/promptResponse/PromptResponseEditor'
+import {createEditorExtensions} from 'parabol-client/components/promptResponse/tiptapConfig'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'

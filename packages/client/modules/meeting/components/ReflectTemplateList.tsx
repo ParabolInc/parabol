@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -10,11 +12,12 @@ import useBreakpoint from '../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
-import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
+import {ReflectTemplateList_settings$key} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
 import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
 import ReflectTemplateListTeam from './ReflectTemplateListTeam'
+import ReflectTemplateSearchBar from './ReflectTemplateSearchBar'
 
 const WIDTH = 360
 const TemplateSidebar = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -71,7 +74,7 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
-  settings: ReflectTemplateList_settings
+  settingsRef: ReflectTemplateList_settings$key
 }
 
 const useReadyToSmoothScroll = (activeTemplateId: string) => {
@@ -84,25 +87,66 @@ const useReadyToSmoothScroll = (activeTemplateId: string) => {
   return oldActiveTemplateId !== activeTemplateId && oldActiveTemplateId !== '-tmp'
 }
 
+export const templateIdxs = {
+  TEAM: 0,
+  ORGANIZATION: 1,
+  PUBLIC: 2
+} as const
+
 const ReflectTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settings} = props
-  const {team, teamTemplates} = settings
+  const {activeIdx, setActiveIdx, settingsRef} = props
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
+        ...ReflectTemplateSearchBar_settings
+        ...ReflectTemplateListTeam_settings
+        id
+        team {
+          id
+        }
+        activeTemplate {
+          ...getTemplateList_template
+          id
+          teamId
+          orgId
+        }
+        teamTemplates {
+          ...AddNewReflectTemplate_reflectTemplates
+          id
+        }
+      }
+    `,
+    settingsRef
+  )
+  const {id: settingsId, team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
   const readyToScrollSmooth = useReadyToSmoothScroll(activeTemplateId)
+  const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
+  const templateType = Object.keys(templateIdxs).find(
+    (key) => templateIdxs[key] === activeIdx
+  ) as SharingScopeEnum
 
-  const gotoTeamTemplates = () => {
-    setActiveIdx(0)
+  const clearSearch = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const settings = store.get(settingsId)
+      if (!settings) return
+      settings.setValue('', 'templateSearchQuery')
+    })
   }
-  const gotoPublicTemplates = () => {
-    setActiveIdx(2)
+
+  const goToTab = (templateType: SharingScopeEnum) => {
+    setActiveIdx(templateIdxs[templateType])
+    clearSearch()
   }
-  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+
+  const onChangeIdx = (idx: number, _fromIdx: unknown, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
+    clearSearch()
   }
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
 
@@ -116,7 +160,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>{'group'}</TabIcon> Team
             </TabLabel>
           }
-          onClick={gotoTeamTemplates}
+          onClick={() => goToTab('TEAM')}
         />
         <WideTab
           label={
@@ -124,7 +168,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>{'business'}</TabIcon> Organization
             </TabLabel>
           }
-          onClick={() => setActiveIdx(1)}
+          onClick={() => goToTab('ORGANIZATION')}
         />
         <FullTab
           label={
@@ -132,13 +176,18 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>{'public'}</TabIcon> Public
             </TabLabel>
           }
-          onClick={gotoPublicTemplates}
+          onClick={() => goToTab('PUBLIC')}
         />
       </StyledTabsBar>
+      <ReflectTemplateSearchBar
+        templateType={templateType}
+        clearSearch={clearSearch}
+        settingsRef={settings}
+      />
       <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
-        gotoTeamTemplates={gotoTeamTemplates}
+        gotoTeamTemplates={() => goToTab('TEAM')}
       />
       <SwipeableViews
         enableMouseEvents
@@ -151,8 +200,8 @@ const ReflectTemplateList = (props: Props) => {
         <TabContents>
           <ReflectTemplateListTeam
             activeTemplateId={activeTemplateId}
-            showPublicTemplates={gotoPublicTemplates}
-            teamTemplates={teamTemplates}
+            showPublicTemplates={() => goToTab('PUBLIC')}
+            settingsRef={settings}
             teamId={teamId}
             isActive={activeIdx === 0}
           />
@@ -169,24 +218,4 @@ const ReflectTemplateList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateList, {
-  settings: graphql`
-    fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
-      id
-      team {
-        id
-      }
-      activeTemplate {
-        ...getTemplateList_template
-        id
-        teamId
-        orgId
-      }
-      teamTemplates {
-        ...ReflectTemplateListTeam_teamTemplates
-        ...AddNewReflectTemplate_reflectTemplates
-        id
-      }
-    }
-  `
-})
+export default ReflectTemplateList

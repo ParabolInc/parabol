@@ -249,12 +249,21 @@ const Company: CompanyResolvers = {
     if (isSuperUser(authToken)) return organizations
     const orgIds = organizations.map(({id}) => id)
     const viewerId = getUserId(authToken)
-    const allOrganizationUsers = await Promise.all(
-      orgIds.map((orgId) => {
-        return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
-      })
+    const allOrganizationUsers = (
+      await Promise.all(
+        orgIds.map((orgId) => {
+          return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
+        })
+      )
+    ).filter(isValid)
+    // If suggestedTier === enterprise, that means the user is allowed to see across
+    // all organizations, even the ones they are not a member of!
+    const isViewerAllowedToSeeAll = allOrganizationUsers.some(
+      ({suggestedTier}) => suggestedTier === 'enterprise'
     )
-    const allowedOrgIds = allOrganizationUsers.filter(isValid).map(({orgId}) => orgId)
+    if (isViewerAllowedToSeeAll) return organizations
+    // Pro-qualified or unqualified users can only see orgs that they are apart of
+    const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
     return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
   },
   suggestedTier: async ({id: domain}, _args, {dataLoader}) => {

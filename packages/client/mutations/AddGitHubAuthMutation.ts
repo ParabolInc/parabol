@@ -11,7 +11,7 @@ graphql`
         github {
           ...TaskFooterIntegrateMenuViewerGitHubIntegration
           ...GitHubProviderRowGitHubIntegration
-          ...GitHubScopingSearchInputGitHubIntegration
+          ...GitHubScopingSearchBarGitHubIntegration
         }
       }
       # after adding, check for new integrations (populates the menu)

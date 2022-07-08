@@ -1,21 +1,18 @@
-import {EditorState, SelectionState} from 'draft-js'
-import React, {RefObject, useEffect} from 'react'
 import styled from '@emotion/styled'
-import RaisedButton from '../RaisedButton'
+import React, {useEffect} from 'react'
+import {MenuPosition} from '../../hooks/useCoords'
+import useForm from '../../hooks/useForm'
+import useMenu from '../../hooks/useMenu'
 import {PALETTE} from '../../styles/paletteV3'
-import completeEntity from '../../utils/draftjs/completeEntity'
+import {BBox} from '../../types/animations'
 import linkify from '../../utils/linkify'
-import withForm, {WithFormProps} from '../../utils/relay/withForm'
 import Legitity from '../../validation/Legitity'
 import BasicInput from '../InputField/BasicInput'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import {BBox} from '../../types/animations'
-import {MenuPosition} from '../../hooks/useCoords'
-import useMenu from '../../hooks/useMenu'
+import RaisedButton from '../RaisedButton'
 
 const ModalBoundary = styled('div')({
   color: PALETTE.SLATE_700,
-  padding: '.5rem .5rem .5rem 1rem',
+  padding: '.5rem 1rem .5rem 1rem',
   minWidth: '20rem',
   outline: 0
 })
@@ -46,44 +43,43 @@ const ButtonBlock = styled('div')({
   justifyContent: 'flex-end'
 })
 
-interface Props extends WithFormProps<'link' | 'text'> {
-  editorState: EditorState
-  editorRef: RefObject<HTMLTextAreaElement>
-
+interface Props {
   link: string | null
 
   originCoords: BBox
   removeModal(allowFocus: boolean): void
 
-  selectionState: SelectionState
-
-  setEditorState(editorState: EditorState): void
+  handleSubmit({text, href}: {text: string; href: string}): void
+  handleEscape?(): void
 
   text: string | null
-
-  useTaskChild: UseTaskChild
 }
 
-const EditorLinkChanger = (props: Props) => {
-  const {
-    editorState,
-    editorRef,
-    originCoords,
-    removeModal,
-    selectionState,
-    setEditorState,
-    setDirtyField,
-    validateField,
-    link,
-    fields,
-    onChange,
-    text,
-    useTaskChild
-  } = props
-  useTaskChild('editor-link-changer')
+const EditorLinkChangerModal = (props: Props) => {
+  const {originCoords, removeModal, link, text, handleSubmit, handleEscape} = props
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
     isDropdown: true,
     originCoords
+  })
+  const {setDirtyField, onChange, validateField, fields} = useForm({
+    text: {
+      getDefault: () => text,
+      validate: (value) =>
+        new Legitity(value)
+          .trim()
+          .required()
+          .min(1, 'Maybe give it a name?')
+          .max(100, 'That name is looking pretty long')
+    },
+    link: {
+      getDefault: () => link,
+      validate: (value) =>
+        new Legitity(value).test((maybeUrl) => {
+          if (!maybeUrl) return 'No link provided'
+          const links = linkify.match(maybeUrl)
+          return !links ? 'Not looking too linky' : undefined
+        })
+    }
   })
   useEffect(openPortal, [])
   const onSubmit = (e: React.FormEvent) => {
@@ -95,12 +91,7 @@ const EditorLinkChanger = (props: Props) => {
     const text = textRes.value as string
     const href = linkify.match(link)![0]!.url
     removeModal(true)
-    const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
-    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, text, {
-      keepSelection: true
-    })
-    setEditorState(nextEditorState)
-    setTimeout(() => editorRef.current && editorRef.current.focus(), 0)
+    handleSubmit({text, href})
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
@@ -112,7 +103,7 @@ const EditorLinkChanger = (props: Props) => {
   const handleKeyDown = (e) => {
     if (e.key === 'Escape') {
       removeModal(true)
-      setTimeout(() => editorRef.current && editorRef.current.focus(), 0)
+      handleEscape && handleEscape()
     }
   }
 
@@ -152,25 +143,4 @@ const EditorLinkChanger = (props: Props) => {
   )
 }
 
-const form = withForm({
-  text: {
-    getDefault: ({text}) => text,
-    validate: (value) =>
-      new Legitity(value)
-        .trim()
-        .required()
-        .min(1, 'Maybe give it a name?')
-        .max(100, 'That name is looking pretty long')
-  },
-  link: {
-    getDefault: ({link}) => link,
-    validate: (value) =>
-      new Legitity(value).test((maybeUrl) => {
-        if (!maybeUrl) return 'No link provided'
-        const links = linkify.match(maybeUrl)
-        return !links ? 'Not looking too linky' : undefined
-      })
-  }
-})
-
-export default form(EditorLinkChanger)
+export default EditorLinkChangerModal
