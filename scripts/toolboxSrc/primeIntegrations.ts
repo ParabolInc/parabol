@@ -20,6 +20,7 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       serverBaseUrl: 'https://dev.azure.com',
       clientId: process.env.AZURE_DEVOPS_CLIENT_ID,
       clientSecret: process.env.AZURE_DEVOPS_CLIENT_SECRET,
+      // tenantId needs to be 'common' for apps shared with multiple tenants
       tenantId: 'common'
     }
   ] as const
