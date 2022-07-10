@@ -89,7 +89,6 @@ const updateAzureDevOpsDimensionField = {
         projectKey,
         workItemType
       } as AzureDevOpsFieldMapProps
-      console.log(`Prior to calling upsertAzureDevOpsDimensionFieldMap`)
       await upsertAzureDevOpsDimensionFieldMap(props)
     } catch (e) {
       console.log(e)
