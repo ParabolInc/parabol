@@ -95,7 +95,6 @@ const updateAzureDevOpsDimensionField = {
     }
 
     const data = {teamId, meetingId}
-    console.log(`data - ${JSON.stringify(data)}`)
     publish(
       SubscriptionChannel.TEAM,
       teamId,
