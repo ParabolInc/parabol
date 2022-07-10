@@ -4,7 +4,6 @@ const storyPointsField = '/fields/Microsoft.VSTS.Scheduling.StoryPoints'
 const originalEstimateField = '/fields/Microsoft.VSTS.Scheduling.OriginalEstimate'
 const sizeField = '/fields/Microsoft.VSTS.Scheduling.Size'
 
-// Agile fields in map, TODO add Scrum and CMMI fields
 export const fieldTypeToId = {
   'Basic:Issue': effortField,
   'Basic:Task': remainingWorkField,
