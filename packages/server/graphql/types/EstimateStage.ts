@@ -129,19 +129,17 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           const {instanceId, projectKey, issueKey, accessUserId} =
             integration as TaskIntegrationAzureDevOps
 
-          const azureDevOpsWorkItem = await dataLoader
-            .get('azureDevOpsWorkItem')
-            .load({
-              teamId,
-              userId: accessUserId,
-              taskId,
-              instanceId,
-              projectId: projectKey,
-              viewerId: accessUserId,
-              workItemId: issueKey
-            })
+          const azureDevOpsWorkItem = await dataLoader.get('azureDevOpsWorkItem').load({
+            teamId,
+            userId: accessUserId,
+            taskId,
+            instanceId,
+            projectId: projectKey,
+            viewerId: accessUserId,
+            workItemId: issueKey
+          })
 
-          const workItemType = azureDevOpsWorkItem?.type ? azureDevOpsWorkItem?.type : ''
+          const workItemType = azureDevOpsWorkItem?.type ?? ''
           const dimensionName = await getDimensionName(meetingId)
 
           const azureDevOpsDimensionFieldMapEntry = await dataLoader
