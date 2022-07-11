@@ -2,7 +2,7 @@ import React from 'react'
 import Icon from '../../../../components/Icon'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
-import StyledButton from './StyledButton'
+import ProviderRowActionButton from './ProviderRowActionButton'
 
 interface Props {
   onConnectClick: () => void
@@ -22,9 +22,14 @@ const ConnectButton = (props: Props) => {
   } = props
 
   return (
-    <StyledButton key='linkAccount' onClick={onConnectClick} palette='warm' waiting={submitting}>
+    <ProviderRowActionButton
+      key='linkAccount'
+      onClick={onConnectClick}
+      palette='warm'
+      waiting={submitting}
+    >
       {isDesktop ? connectButtonText : connectButtonIcon}
-    </StyledButton>
+    </ProviderRowActionButton>
   )
 }
 

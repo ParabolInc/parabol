@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import FlatButton from '../../../../components/FlatButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const StyledButton = styled(FlatButton)({
+const ProviderRowActionButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
   color: PALETTE.SLATE_700,
   fontSize: 14,
@@ -13,4 +13,4 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-export default StyledButton
+export default ProviderRowActionButton
