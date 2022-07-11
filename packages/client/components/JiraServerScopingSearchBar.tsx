@@ -64,6 +64,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
         queryString={queryString}
         meetingId={meetingId}
         linkedRecordName={'jiraServerSearchQuery'}
+        service={'jiraServer'}
       />
       <JiraServerScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

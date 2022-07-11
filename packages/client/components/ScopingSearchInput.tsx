@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
-import React, {useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
+import {TaskServiceEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
 import Icon from './Icon'
 
 const SearchInput = styled('input')({
@@ -36,11 +38,14 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
+  service: TaskServiceEnum
+  defaultInput?: string
 }
 
 const ScopingSearchInput = (props: Props) => {
-  const {placeholder, queryString, meetingId, linkedRecordName} = props
+  const {placeholder, queryString, meetingId, linkedRecordName, defaultInput, service} = props
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
 
@@ -53,13 +58,31 @@ const ScopingSearchInput = (props: Props) => {
     })
   }
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (defaultInput) {
+      setSearch(meetingId, defaultInput)
+    }
+  }, [])
+
+  const trackEvent = (eventTitle: string) => {
+    SendClientSegmentEventMutation(atmosphere, eventTitle, {
+      viewerId,
+      meetingId,
+      service
+    })
+  }
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(meetingId, value)
+    if (isEmpty) {
+      trackEvent('Started Poker Scope Search')
+    }
   }
   const clearSearch = () => {
     setSearch(meetingId, '')
     inputRef.current?.focus()
+    trackEvent('Cleared Poker Scope Search')
   }
 
   return (
@@ -67,7 +90,7 @@ const ScopingSearchInput = (props: Props) => {
       <SearchInput
         value={queryString}
         placeholder={placeholder}
-        onChange={onChange}
+        onChange={handleOnChange}
         ref={inputRef}
       />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>

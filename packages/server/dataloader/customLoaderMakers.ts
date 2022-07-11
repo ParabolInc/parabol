@@ -25,6 +25,7 @@ import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
+
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -414,6 +415,62 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+type MeetingStat = {
+  id: string
+  meetingType: MeetingTypeEnum
+  createdAt: Date
+}
+export const meetingStatsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, MeetingStat[], string>(
+    async (orgIds) => {
+      const r = await getRethink()
+      const meetingStatsByOrgId = await Promise.all(
+        orgIds.map(async (orgId) => {
+          // note: does not include archived teams!
+          const teams = await parent.get('teamsByOrgIds').load(orgId)
+          const teamIds = teams.map(({id}) => id)
+          const stats = (await r
+            .table('NewMeeting')
+            .getAll(r.args(teamIds), {index: 'teamId'})
+            .pluck('createdAt', 'meetingType')
+            // DO NOT CALL orderBy, it makes the query 10x more expensive!
+            // .orderBy('createdAt')
+            .run()) as {createdAt: Date; meetingType: MeetingTypeEnum}[]
+          return stats.map((stat) => ({
+            createdAt: stat.createdAt,
+            meetingType: stat.meetingType,
+            id: `ms${stat.createdAt.getTime()}`
+          }))
+        })
+      )
+      return meetingStatsByOrgId
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const teamStatsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, {id: string; createdAt: Date}[], string>(
+    async (orgIds) => {
+      const teamStatsByOrgId = await Promise.all(
+        orgIds.map(async (orgId) => {
+          const teams = await parent.get('teamsByOrgIds').load(orgId)
+          return teams.map((team) => ({
+            id: `ts:${team.createdAt.getTime()}`,
+            createdAt: team.createdAt
+          }))
+        })
+      )
+      return teamStatsByOrgId
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
