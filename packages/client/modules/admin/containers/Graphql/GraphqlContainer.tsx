@@ -51,12 +51,12 @@ const GraphqlContainer = () => {
         </GraphiQL.Logo>
         <GraphiQL.Toolbar>
           <GraphiQL.ToolbarButton
-            onClick={() => graphiql.current!.handlePrettifyQuery()}
+            onClick={() => graphiql.current!.ref?.props.prettify()}
             title='Prettify Query (Shift-Ctrl-P)'
             label='Prettify'
           />
           <GraphiQL.ToolbarButton
-            onClick={() => graphiql.current!.handleToggleHistory()}
+            onClick={() => graphiql.current!.ref?.props.historyContext?.toggle()}
             title='Show History'
             label='History'
           />
