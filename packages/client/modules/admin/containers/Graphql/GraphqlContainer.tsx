@@ -48,16 +48,21 @@ const GraphqlContainer = () => {
   const [currentSchema, setCurrentSchema] = useState<SchemaType>(() => {
     return (window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) as SchemaType) || 'Public'
   })
-
+  const introspectionResultRef = useRef({Public: '', Private: ''})
   const graphiql = useRef<GraphiQL>(null)
   const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
   const changeSchema = (value: SchemaType) => () => {
     setCurrentSchema(value)
     window.localStorage.setItem(LocalStorageKey.GRAPHIQL_SCHEMA, value)
+    persistSchemaForTab(value)
   }
   const fetcher: Fetcher = async ({query, variables}) => {
-    persistSchemaForTab(currentSchema)
+    const introspectionResult = introspectionResultRef.current
+    const isIntrospectionQuery = query.includes('IntrospectionQuery')
+    if (isIntrospectionQuery && introspectionResult[currentSchema]) {
+      return introspectionResult[currentSchema]
+    }
     const res = await fetch('/intranet-graphql', {
       method: 'POST',
       headers: {
@@ -66,7 +71,11 @@ const GraphqlContainer = () => {
       },
       body: JSON.stringify({query, variables, isPrivate: currentSchema === 'Private'})
     })
-    return res.json()
+    const resJSON = await res.json()
+    if (isIntrospectionQuery) {
+      introspectionResult[currentSchema] = resJSON
+    }
+    return resJSON
   }
 
   const onTabChange: Exclude<GraphiQLProps['tabs'], boolean | undefined>['onTabChange'] = (tab) => {
