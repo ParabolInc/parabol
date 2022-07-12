@@ -100,7 +100,7 @@
     "bcrypt": "^5.0.0",
     "cheerio": "^1.0.0-rc.10",
     "dataloader": "^2.0.0",
-    "dd-trace": "^2.2.0",
+    "dd-trace": "^2.10.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
