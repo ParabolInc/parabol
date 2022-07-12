@@ -19,7 +19,7 @@ const Action = styled(PlainButton)({
   padding: 8,
   transition: `background 100ms ${DECELERATE}`,
   ':hover,:focus,:active': {
-    backgroundColor: '#ffffff0e'
+    backgroundColor: '#ffffff1a'
   }
 })
 
