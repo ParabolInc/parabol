@@ -66,15 +66,16 @@
     "@xmldom/xmldom": "^0.7.0",
     "node-gyp": "^8.4.1",
     "simple-get": "^4.0.1",
-    "caniuse-lite": "~1.0.0"
+    "caniuse-lite": "~1.0.0",
+    "git-url-parse": "12.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "7.16.0",
-    "@graphql-codegen/add": "^3.1.0",
-    "@graphql-codegen/cli": "^2.3.1",
-    "@graphql-codegen/typescript": "^2.4.0",
-    "@graphql-codegen/typescript-operations": "^2.2.0",
-    "@graphql-codegen/typescript-resolvers": "^2.5.2",
+    "@graphql-codegen/add": "^3.2.0",
+    "@graphql-codegen/cli": "^2.8.0",
+    "@graphql-codegen/typescript": "^2.7.1",
+    "@graphql-codegen/typescript-operations": "^2.5.1",
+    "@graphql-codegen/typescript-resolvers": "^2.7.1",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.17.0",
