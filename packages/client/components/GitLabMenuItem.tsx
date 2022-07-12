@@ -1,8 +1,8 @@
 import React, {forwardRef} from 'react'
 import GitLabSVG from './GitLabSVG'
 import MenuItem from './MenuItem'
+import MenuItemAvatar from './MenuItemAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   query: string
 }
 
-const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
+const GitLabMenuItem = forwardRef((props: Props, ref: any) => {
   const {query, fullPath, onClick} = props
 
   const handleClick = () => {
@@ -23,9 +23,9 @@ const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <RepoIntegrationMenuItemAvatar>
+          <MenuItemAvatar>
             <GitLabSVG />
-          </RepoIntegrationMenuItemAvatar>
+          </MenuItemAvatar>
           <TypeAheadLabel query={query} label={fullPath} />
         </MenuItemLabel>
       }
@@ -34,4 +34,4 @@ const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default RepoIntegrationGitLabMenuItem
+export default GitLabMenuItem

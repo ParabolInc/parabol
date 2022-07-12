@@ -9,6 +9,7 @@ import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
+import useUsageSnackNag from '../hooks/useUsageSnackNag'
 import {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
@@ -102,6 +103,9 @@ const Dashboard = (props: Props) => {
           ...MobileDashSidebar_viewer
           ...DashSidebar_viewer
           overLimitCopy
+          featureFlags {
+            insights
+          }
           teams {
             activeMeetings {
               ...useSnacksForNewMeetings_meetings
@@ -114,13 +118,15 @@ const Dashboard = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
   const {viewer} = data
-  const {teams} = viewer
+  const {teams, featureFlags} = viewer
+  const {insights} = featureFlags
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
   useSnackNag(overLimitCopy)
+  useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
   return (
     <DashLayout>

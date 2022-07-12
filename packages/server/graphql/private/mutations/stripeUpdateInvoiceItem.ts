@@ -4,7 +4,7 @@ import {RValue} from '../../../database/stricterR'
 import InvoiceItemHook from '../../../database/types/InvoiceItemHook'
 import {isSuperUser} from '../../../utils/authorization'
 import sendToSentry from '../../../utils/sendToSentry'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
 const MAX_STRIPE_DELAY = 3 // seconds
@@ -81,7 +81,7 @@ const tagInvoiceItemWithHook = async (
     return tagInvoiceItemWithHook(invoiceItem)
   }
 
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   await manager.updateInvoiceItem(invoiceItemId, type, userId, hookId)
   return true
 }
@@ -95,7 +95,7 @@ const stripeUpdateInvoiceItem: MutationResolvers['stripeUpdateInvoiceItem'] = as
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
   }
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const invoiceItem = await manager.retrieveInvoiceItem(invoiceItemId)
   return tagInvoiceItemWithHook(invoiceItem)
 }

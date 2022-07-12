@@ -100,7 +100,7 @@ const InsightsDomainPanel = (props: Props) => {
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{activeTeamCount}</StatBlockNumber>
-            <StatBlockLabel>{plural(activeOrganizationCount, 'Active Team')}</StatBlockLabel>
+            <StatBlockLabel>{plural(activeTeamCount, 'Active Team')}</StatBlockLabel>
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{activeUserCount}</StatBlockNumber>

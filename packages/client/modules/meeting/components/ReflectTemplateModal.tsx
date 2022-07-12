@@ -46,7 +46,7 @@ const ReflectTemplateModal = (props: Props) => {
   return (
     <StyledDialogContainer>
       <ReflectTemplateList
-        settings={retroMeetingSettings}
+        settingsRef={retroMeetingSettings}
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
       />

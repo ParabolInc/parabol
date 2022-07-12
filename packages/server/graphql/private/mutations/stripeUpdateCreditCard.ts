@@ -1,6 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import {isSuperUser} from '../../../utils/authorization'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -14,7 +14,7 @@ const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = asyn
     throw new Error('Don’t be rude.')
   }
   const r = await getRethink()
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const customer = await manager.retrieveCustomer(customerId)
   const creditCard = getCCFromCustomer(customer)
   const {

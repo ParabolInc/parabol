@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useCallback} from 'react'
 import {Link} from 'react-router-dom'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
@@ -102,9 +104,17 @@ const TopLine = styled('div')({
 
 const DemoMeetingCard = () => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const atmospehere = useAtmosphere()
+  const {viewerId} = atmospehere
+
+  const onOpen = useCallback(() => {
+    SendClientSegmentEventMutation(atmospehere, 'Demo Meeting Card Clicked', {
+      viewerId
+    })
+  }, [])
 
   return (
-    <CardWrapper maybeTabletPlus={maybeTabletPlus}>
+    <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={onOpen}>
       <Link to={`/retrospective-demo`}>
         <MeetingImgWrapper>
           <MeetingImgBackground meetingType='retrospective' />

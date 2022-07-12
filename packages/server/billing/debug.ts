@@ -1,9 +1,9 @@
 // call with yarn sucrase-node billing/debug.ts
 import '../../../scripts/webpack/utils/dotenv'
-import StripeManager from '../utils/StripeManager'
+import {getStripeManager} from '../utils/stripe'
 
 const doDebugStuff = async () => {
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const res = await manager.updateSubscriptionQuantity('foo', 39, 1597966749)
   console.log('res', {res})
 }

@@ -1,7 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {isSuperUser} from '../../../utils/authorization'
-import StripeManager from '../../../utils/StripeManager'
+import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
 
 const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
@@ -18,7 +18,7 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   }
 
   // VALIDATION
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const invoice = await manager.retrieveInvoice(invoiceId)
   const customerId = invoice.customer as string
 

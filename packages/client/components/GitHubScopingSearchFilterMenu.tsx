@@ -4,10 +4,10 @@ import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useGetRepoContributions from '../hooks/useGetRepoContributions'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
-import {isNotNull} from '../utils/predicates'
 import {
   GitHubScopingSearchFilterMenuQuery,
   GitHubScopingSearchFilterMenuQueryResponse
@@ -60,42 +60,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             }
           }
           teamMember(teamId: $teamId) {
-            integrations {
-              github {
-                api {
-                  query {
-                    viewer {
-                      contributionsCollection {
-                        commitContributionsByRepository(maxRepositories: 100) {
-                          contributions(orderBy: {field: OCCURRED_AT, direction: DESC}, first: 1) {
-                            nodes {
-                              occurredAt
-                              repository {
-                                id
-                                nameWithOwner
-                              }
-                            }
-                          }
-                        }
-                        issueContributionsByRepository(maxRepositories: 100) {
-                          contributions(orderBy: {direction: DESC}, first: 1) {
-                            edges {
-                              node {
-                                occurredAt
-                              }
-                            }
-                          }
-                          repository {
-                            id
-                            nameWithOwner
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            ...useGetRepoContributions_teamMember
           }
         }
       }
@@ -104,36 +69,12 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
+  const repoContributions = useGetRepoContributions(query.viewer.teamMember!)
   const meeting = query?.viewer?.meeting
   const meetingId = meeting?.id ?? ''
   const githubSearchQuery = meeting?.githubSearchQuery
   const queryString = githubSearchQuery?.queryString ?? null
   const atmosphere = useAtmosphere()
-  const contributionsCollection =
-    query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
-  const repoContributions = useMemo(() => {
-    const commitContributions =
-      contributionsCollection?.commitContributionsByRepository?.map((contributionByRepo) =>
-        contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
-      ) ?? []
-    const issueContributions =
-      contributionsCollection?.issueContributionsByRepository.map((contributionByRepo) => {
-        const {repository, contributions} = contributionByRepo
-        const edges = contributions.edges ?? []
-        const occurredAt = edges[0]?.node?.occurredAt
-        return {
-          repository,
-          occurredAt
-        }
-      }) ?? []
-    return [...commitContributions, ...issueContributions]
-      .filter(isNotNull)
-      .sort(
-        (a, b) =>
-          new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
-      )
-      .map((sortedContributions) => sortedContributions?.repository)
-  }, [contributionsCollection])
 
   const {
     query: searchQuery,

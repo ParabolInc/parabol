@@ -106,6 +106,10 @@ type Organization {
   The datetime the organization was last updated
   """
   updatedAt: DateTime
+
+  """
+  The users that are apart of the organization
+  """
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
 
   """
@@ -117,10 +121,20 @@ type Organization {
   The leaders of the org
   """
   billingLeaders: [User!]!
+
+  """
+  Minimal details about all teams in the organization
+  """
+  teamStats: [TeamStat!]!
 }
 
 type MeetingStat {
   id: ID!
   meetingType: MeetingTypeEnum!
+  createdAt: DateTime!
+}
+
+type TeamStat {
+  id: ID!
   createdAt: DateTime!
 }

@@ -1,11 +1,11 @@
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
 import segmentIo from '../../utils/segmentIo'
-import StripeManager from '../../utils/StripeManager'
+import {getStripeManager} from '../../utils/stripe'
 
 const sendEnterpriseOverageToSegment = async (organization: Organization) => {
   const r = await getRethink()
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
   if (!stripeSubscriptionId) return
   const [orgUserCount, subscription] = await Promise.all([

@@ -8,7 +8,6 @@ import '../server/initSentry'
 import RedisStream from './RedisStream'
 
 tracer.init({
-  enabled: process.env.DD_TRACE_ENABLED === 'true',
   service: `GQLExecutor ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false

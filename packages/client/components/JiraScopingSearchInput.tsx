@@ -34,6 +34,7 @@ const JiraScopingSearchInput = (props: Props) => {
       queryString={queryString}
       meetingId={meetingId}
       linkedRecordName={'jiraSearchQuery'}
+      service={'jira'}
     />
   )
 }

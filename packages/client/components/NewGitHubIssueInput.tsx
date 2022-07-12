@@ -4,6 +4,7 @@ import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
+import useGetRepoContributions from '~/hooks/useGetRepoContributions'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
@@ -118,15 +119,7 @@ const NewGitHubIssueInput = (props: Props) => {
         }
         teamMember(teamId: $teamId) {
           ... on TeamMember {
-            repoIntegrations {
-              ...NewGitHubIssueMenu_repoIntegrations
-              items {
-                ... on _xGitHubRepository {
-                  id
-                  nameWithOwner
-                }
-              }
-            }
+            ...useGetRepoContributions_teamMember
           }
         }
       }
@@ -143,13 +136,11 @@ const NewGitHubIssueInput = (props: Props) => {
   )
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
+  const repos = useGetRepoContributions(teamMember!)
   const {id: teamId} = team!
-  const {repoIntegrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {items} = repoIntegrations
-  const repoIntegration = items?.find((item) => item.nameWithOwner)
-  const nameWithOwner = repoIntegration?.nameWithOwner
+  const nameWithOwner = repos.find((repo) => repo.nameWithOwner)?.nameWithOwner
   const [selectedNameWithOwner, setSelectedNameWithOwner] = useState(nameWithOwner)
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -250,7 +241,7 @@ const NewGitHubIssueInput = (props: Props) => {
         <NewGitHubIssueMenu
           handleSelectNameWithOwner={setSelectedNameWithOwner}
           menuProps={menuProps}
-          repoIntegrations={repoIntegrations}
+          repos={repos}
           teamId={teamId}
           userId={userId}
         />
