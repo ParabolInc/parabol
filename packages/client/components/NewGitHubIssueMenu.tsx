@@ -15,9 +15,7 @@ interface Props {
   userId: string
 }
 
-const getValue = (item: {nameWithOwner?: string}) => {
-  return item.nameWithOwner || 'Unknown repo'
-}
+const getValue = (item: Repo) => item.nameWithOwner
 
 const NewGitHubIssueMenu = (props: Props) => {
   const {handleSelectNameWithOwner, menuProps, repos} = props

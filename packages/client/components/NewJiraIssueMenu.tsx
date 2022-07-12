@@ -20,9 +20,7 @@ interface Props {
   projectsRef: NewJiraIssueMenu_JiraRemoteProjects$key
 }
 
-const getValue = (project?: NewJiraIssueMenu_JiraRemoteProjects[0]) => {
-  return project?.name ?? 'Unknown Project'
-}
+const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.name
 
 const NewJiraIssueMenu = (props: Props) => {
   const {handleSelectProjectKey, menuProps, projectsRef} = props
