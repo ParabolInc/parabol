@@ -13,7 +13,8 @@ interface Props {
 const Parent = styled('div')<{isDesktop?: boolean}>(({isDesktop}) => ({
   gridArea: 'howto',
   maxWidth: isDesktop ? undefined : 424,
-  margin: isDesktop ? undefined : '0 auto'
+  margin: isDesktop ? undefined : '0 auto',
+  paddingLeft: isDesktop ? '32px' : undefined
 }))
 
 const ExpansionPanelBody = styled('div')<{bodyHeight: number}>(({bodyHeight}) => ({

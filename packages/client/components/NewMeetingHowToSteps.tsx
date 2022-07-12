@@ -65,9 +65,9 @@ const HowToBlock = styled('div')({
 const HowToTitle = styled('div')({
   color: PALETTE.SLATE_700,
   gridColumnStart: 2,
-  fontSize: 24,
+  fontSize: 18,
   fontWeight: 600,
-  paddingBottom: 4
+  paddingBottom: 24
 })
 
 interface Props {
@@ -81,15 +81,20 @@ const NewMeetingHowToSteps = (props: Props) => {
   const learnMore = LINKS[meetingType]
 
   return (
-    <HowToBlock>
+    <>
       {showTitle && <HowToTitle>{TITLES[meetingType]}</HowToTitle>}
-      {steps.map((step, idx) => {
-        return <HowToStepItem key={idx} number={idx + 1} step={step} />
-      })}
-      <LearnMoreLink palette='blue' onClick={() => window.open(learnMore, '_blank', 'noreferrer')}>
-        <IconLabel icon='open_in_new' iconAfter label='Learn More' />
-      </LearnMoreLink>
-    </HowToBlock>
+      <HowToBlock>
+        {steps.map((step, idx) => {
+          return <HowToStepItem key={idx} number={idx + 1} step={step} />
+        })}
+        <LearnMoreLink
+          palette='blue'
+          onClick={() => window.open(learnMore, '_blank', 'noreferrer')}
+        >
+          <IconLabel icon='open_in_new' iconAfter label='Learn More' />
+        </LearnMoreLink>
+      </HowToBlock>
+    </>
   )
 }
 

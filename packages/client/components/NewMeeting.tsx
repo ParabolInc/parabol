@@ -42,9 +42,7 @@ const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
   flexDirection: 'column',
   gridArea: 'settings',
   marginTop: isDesktop ? 32 : undefined,
-  [MEDIA_QUERY_VERTICAL_CENTERING]: {
-    minHeight: isDesktop ? undefined : 166
-  }
+  minHeight: 166
 }))
 
 const TeamAndSettingsInner = styled('div')({
@@ -63,7 +61,7 @@ const Title = styled(DialogTitle)({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingBottom: 16
+  paddingBottom: 24
 })
 
 const CloseButton = styled(FlatButton)({
@@ -90,7 +88,7 @@ const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
       margin: 'auto',
       maxHeight: 640,
       maxWidth: 1400,
-      padding: '0 32px 16px 64px'
+      padding: '0 64px 16px 64px'
     }
 )
 
