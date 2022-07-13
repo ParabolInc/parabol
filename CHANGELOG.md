@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.66.0 2022-July-13
+
+### Changed
+
+- chore(poker): use generic components for GitHub and GitLab (#6782)
+- feat(standups): Decrease top/bottom list margins in standup response editor (#6823)
+- feat(standups): Changed standups default title to contain a date, not seq number (#6857)
+- refactor: new GitHub & Jira issue queries (#6819)
+- chore: update invite modal illustration (#6859)
+
+### Fixed
+
+- chore(deps): bump parse-url from 6.0.0 to 6.0.2 (#6853)
+- fix(standups): Do not show active standup as completed on meeting dashboard (#6816)
+- fix(demo): fix timer of demo meeting (#6865)
+- chore(deps): bump moment from 2.29.3 to 2.29.4 (#6860)
+- fix(security): package bumps for dependabot fixes (#6874)
+- fix(dd-trace): enabled comes from env var (#6876)
+- feat(standups): Display standups as active instead of started (#6878)
+
+### Added
+
+- feat(standups): Basic editor bubble menu (#6812)
+- feat(standups): Allow facilitator to update the standup meeting title (#6821)
+- feat(Poker): Add a timer to Sprint Poker (#6846)
+
 ## 6.65.0 2022-July-6
 
 ### Added
@@ -46,7 +72,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Changed
 
 - **DX**: integration tests can be run locally (#6696)
-- Hide bottom start meeting FAB on desktop (#6802) 
+- Hide bottom start meeting FAB on desktop (#6802)
 
 ## 6.63.0 2022-June-16
 
