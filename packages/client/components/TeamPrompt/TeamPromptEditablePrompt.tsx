@@ -58,7 +58,7 @@ const TeamPromptEditablePrompt = (props: Props) => {
   const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
 
-  const handleUpdatePrompt = (newPrompt) => {
+  const handleUpdatePrompt = (newPrompt: string) => {
     if (submitting) return
     submitMutation()
 
