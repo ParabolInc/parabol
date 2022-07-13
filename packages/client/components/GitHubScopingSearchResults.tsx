@@ -48,7 +48,7 @@ const GitHubScopingSearchResults = (props: Props) => {
         viewer {
           ...NewGitHubIssueInput_viewer
           teamMember(teamId: $teamId) {
-            repoIntegrations {
+            repoIntegrations(first: 10) {
               items {
                 ... on _xGitHubRepository {
                   id
