@@ -55,7 +55,9 @@ const DEFAULT_TIME_LIMIT = {
   reflect: 5,
   group: 5,
   vote: 3,
-  discuss: 5
+  discuss: 5,
+  ESTIMATE: 5,
+  SCOPE: 3
 } as Record<NewMeetingPhaseTypeEnum, number>
 
 interface Props {
@@ -127,7 +129,7 @@ const MeetingControlBar = (props: Props) => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
+    if (isFacilitating && (isRetro || isPoker) && !isCheckIn && !isComplete) buttons.push('timer')
     if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
