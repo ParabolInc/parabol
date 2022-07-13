@@ -7,7 +7,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {ExternalLinks, Providers} from '../../../../types/constEnums'
+import {Providers} from '../../../../types/constEnums'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
 import {GitHubProviderRow_viewer} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
@@ -42,7 +42,6 @@ const GitHubProviderRow = (props: Props) => {
         providerName={Providers.GITHUB_NAME}
         providerDescription={Providers.GITHUB_DESC}
         providerLogo={<GitHubProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_GITHUB}
       />
       {menuPortal(
         <GitHubConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />

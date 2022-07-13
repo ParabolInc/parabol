@@ -7,7 +7,7 @@ import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderL
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {ExternalLinks, Providers} from '../../../../types/constEnums'
+import {Providers} from '../../../../types/constEnums'
 import AzureDevOpsClientManager from '../../../../utils/AzureDevOpsClientManager'
 import {AzureDevOpsProviderRow_viewer$key} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
@@ -74,7 +74,6 @@ const AzureDevOpsProviderRow = (props: Props) => {
         providerName={Providers.AZUREDEVOPS_NAME}
         providerDescription={Providers.AZUREDEVOPS_DESC}
         providerLogo={<AzureDevOpsProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_AZUREDEVOPS}
       />
       {menuPortal(
         <AzureDevOpsConfigMenu

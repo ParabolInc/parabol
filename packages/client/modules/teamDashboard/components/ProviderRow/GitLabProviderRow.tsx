@@ -6,7 +6,6 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import {ExternalLinks} from '../../../../types/constEnums'
 import GitLabClientManager from '../../../../utils/GitLabClientManager'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
 import GitLabConfigMenu from './GitLabConfigMenu'
@@ -86,7 +85,6 @@ const GitLabProviderRow = (props: Props) => {
         providerName={'GitLab'}
         providerDescription={'Use GitLab Issues from within Parabol'}
         providerLogo={<GitLabProviderLogo />}
-        seeHowItWorksUrl={ExternalLinks.INTEGRATIONS_SUPPORT_GITLAB}
       />
       {menuPortal(
         <GitLabConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />

@@ -95,7 +95,7 @@ export interface ProviderRowBaseProps {
   providerDescription: string
   providerLogo: React.ReactElement
   children?: React.ReactElement | false
-  seeHowItWorksUrl: string
+  seeHowItWorksUrl?: string
   connectButton: React.ReactElement
 }
 
@@ -120,10 +120,14 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
           <ProviderName>{providerName}</ProviderName>
           <RowInfoCopy>
             {providerDescription}.{' '}
-            <HowItWorksLink href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
-              See how it works
-            </HowItWorksLink>
-            .
+            {seeHowItWorksUrl && (
+              <>
+                <HowItWorksLink href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
+                  See how it works
+                </HowItWorksLink>
+                .
+              </>
+            )}
           </RowInfoCopy>
         </RowInfo>
         <ProviderActions>
