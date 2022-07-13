@@ -69,8 +69,8 @@ const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) =
   width: '100%'
 })) as any
 
-const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback')
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback')
 )
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
@@ -210,7 +210,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       removeModal()
     }
   }
-
+  //TODO investigate component why EmojiMenuContainer is initially on the top left of the dashbaord
   render() {
     const {
       isClipped,
