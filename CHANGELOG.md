@@ -29,7 +29,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - feat(standups): Basic editor bubble menu (#6812)
 - feat(standups): Allow facilitator to update the standup meeting title (#6821)
-- feat(Poker): Add a timer to Sprint Poker (#6846)
 
 ## 6.65.0 2022-July-6
 
