@@ -317,7 +317,7 @@ export default async function generateInvoice(
         new InvoiceLineItemOtherAdjustments({
           amount: item.amount,
           description: item.description,
-          quantity: item.quantity
+          quantity: item.quantity ?? 0
         })
     ),
     ...quantityChangeLineItems
@@ -359,7 +359,9 @@ export default async function generateInvoice(
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 
   const coupon =
-    (couponDetails &&
+    (couponDetails?.amount_off &&
+      couponDetails?.name &&
+      couponDetails?.percent_off &&
       new Coupon({
         id: couponDetails.id,
         amountOff: couponDetails.amount_off,
@@ -377,7 +379,8 @@ export default async function generateInvoice(
     billingLeaderEmails,
     creditCard: organization.creditCard,
     endAt: fromEpochSeconds(invoice.period_end),
-    invoiceDate: fromEpochSeconds(invoice.date!),
+    // invoiceDate: fromEpochSeconds(invoice.date!),
+    invoiceDate: fromEpochSeconds(invoice.due_date!),
     lines: invoiceLineItems,
     nextPeriodCharges,
     orgId,
@@ -389,6 +392,7 @@ export default async function generateInvoice(
     status,
     tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'pro'
   })
+  console.log('🚀 ~ invoice__', {invoice, dbInvoice})
 
   return r
     .table('Invoice')
