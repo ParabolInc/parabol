@@ -227,19 +227,19 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
       metadata,
       period: {end},
       proration,
-      quantity
+      quantity,
+      description
     } = lineItem
-    // This has apparently changed in the new API (cannot be null). we need to fix this if we upgrade to the latest stripe API
-    const description = lineItem.description as string | null
-    if (description === null && proration === false) {
+    // TODO: check This has apparently changed in the new API (cannot be null). we need to fix this if we upgrade to the latest stripe API
+    if (description === null && proration === false && quantity !== null) {
       if (!nextPeriodCharges) {
         // this must be the next month's charge
         nextPeriodCharges = new NextPeriodCharges({
           amount,
           quantity,
           nextPeriodEnd: fromEpochSeconds(end),
-          unitPrice: lineItem.plan.amount || undefined,
-          interval: lineItem.plan.interval
+          unitPrice: lineItem.plan?.amount || undefined,
+          interval: lineItem.plan?.interval || 'month'
         })
       } else {
         //merge the quantity & price line for enterprise
@@ -257,12 +257,12 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
 }
 
 const maybeReduceUnknowns = async (
-  unknownLineItems: Stripe.invoices.IInvoiceLineItem[],
+  unknownLineItems: Stripe.InvoiceLineItem[],
   itemDict: ItemDict,
   stripeSubscriptionId: string
 ) => {
   const r = await getRethink()
-  const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
+  const unknowns = [] as Stripe.InvoiceLineItem[]
   const manager = getStripeManager()
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]!
