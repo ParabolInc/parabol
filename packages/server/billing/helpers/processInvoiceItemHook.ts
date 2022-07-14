@@ -79,7 +79,8 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     manager.retrieveSubscription(stripeSubscriptionId)
   ])
   if (!stripeSubscription) return
-  const stripeQty = stripeSubscription.quantity || 0
+  const stripeQty = stripeSubscription.items.data.find((item) => item.quantity)?.quantity || 0
+  // const stripeQty = stripeSubscription.quantity || 0
   const nextQuantity = stripeQty + getTypeDelta(type)
   await Promise.all([
     r

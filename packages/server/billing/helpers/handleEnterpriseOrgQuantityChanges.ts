@@ -18,7 +18,8 @@ const sendEnterpriseOverageToSegment = async (organization: Organization) => {
     manager.retrieveSubscription(stripeSubscriptionId)
   ])
   if (!subscription) return
-  const {quantity} = subscription
+  const quantity = subscription.items.data.find((item) => item.quantity)?.quantity
+  console.log('🚀 ~ quantity', quantity)
   if (!quantity) return
   if (orgUserCount > quantity) {
     const billingLeaderOrgUser = await r

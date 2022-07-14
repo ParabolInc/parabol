@@ -339,7 +339,10 @@ export default async function generateInvoice(
   const isUpcoming = type === 'upcoming'
 
   let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
-  if (status === 'PENDING' && invoice.closed === true) {
+
+  // TODO: update below
+  // if (status === 'PENDING' && invoice.closed === true) {
+  if (status === 'PENDING') {
     status = invoice.paid ? 'PAID' : 'FAILED'
   }
   const paidAt = status === 'PAID' ? now : undefined

@@ -1,12 +1,11 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
-import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
 
 export default class StripeManager {
   static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
 
   constructEvent(rawBody: string, signature: string) {
     try {
@@ -96,6 +95,10 @@ export default class StripeManager {
     return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId, hookId}})
   }
 
+  async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {
+    return this.stripe.invoices.listLineItems(invoiceId, options)
+  }
+
   async retrieveCustomer(customerId: string) {
     return this.stripe.customers.retrieve(customerId)
   }
@@ -106,10 +109,6 @@ export default class StripeManager {
 
   async retrieveInvoiceItem(invoiceItemId: string) {
     return this.stripe.invoiceItems.retrieve(invoiceItemId)
-  }
-
-  async retrieveInvoiceLines(invoiceId: string, options: IInvoiceLineItemRetrievalOptions) {
-    return this.stripe.invoices.retrieveLines(invoiceId, options)
   }
 
   async retrieveSubscription(subscriptionId: string) {
