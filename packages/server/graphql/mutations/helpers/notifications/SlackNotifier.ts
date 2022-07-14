@@ -20,6 +20,11 @@ import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper, NotifyResponse} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
 
+type SlackNotification = {
+  title: string
+  blocks: string | Array<{type: string}>
+}
+
 const notifySlack = async (
   notificationChannel: SlackNotificationAuth,
   event: SlackNotificationEvent,
@@ -102,10 +107,18 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
-type SlackNotification = {
-  title: string
-  blocks: string | Array<{type: string}>
+const createLinkSectionContent = (
+  meetingId: string,
+  meetingUrl: string,
+  meetingShortLink?: string
+) => {
+  const shortLink = meetingShortLink || `https:/prbl.in/${meetingId}`
+  return `*Link:*\n<${meetingUrl}|${shortLink}>`
 }
+
+const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
+
+const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
 
 const makeTeamPromptStartMeetingNotification = (
   team: Team,
@@ -115,8 +128,8 @@ const makeTeamPromptStartMeetingNotification = (
   const title = `*${meeting.name}* is open :speech_balloon: `
   const blocks = [
     makeSection(title),
-    makeSections([`*Team:*\n${team.name}`]), // TODO: add end date once we have it implemented
-    makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meeting.id}>`),
+    makeSection(createTeamSectionContent(team)), // TODO: add end date once we have it implemented
+    makeSection(createLinkSectionContent(meeting.id, meetingUrl)),
     makeButtons([{text: 'Submit Response', url: meetingUrl, type: 'primary'}])
   ]
 
@@ -128,13 +141,12 @@ const makeGenericStartMeetingNotification = (
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
-  const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
   const title = 'Meeting started :wave: '
   const blocks = [
     makeSection(title),
-    makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
-    makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meeting.id}>`),
-    makeButtons([button])
+    makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
+    makeSection(createLinkSectionContent(meeting.id, meetingUrl)),
+    makeButtons([{text: 'Join meeting', url: meetingUrl, type: 'primary'}])
   ]
 
   return {title, blocks}
@@ -172,12 +184,10 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
 
   async endMeeting(meeting, team) {
     const summaryText = getSummaryText(meeting)
-    const {name: teamName} = team
-    const {name: meetingName} = meeting
     const title = 'Meeting completed :tada:'
     const blocks = [
       makeSection(title),
-      makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+      makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
       makeSection(summaryText),
       makeEndMeetingButtons(meeting)
     ]
@@ -185,8 +195,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   },
 
   async startTimeLimit(scheduledEndTime, meeting, team) {
-    const {name: meetingName, phases, facilitatorStageId} = meeting
-    const {name: teamName} = team
+    const {phases, facilitatorStageId} = meeting
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
     const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meeting.id}`)
@@ -205,9 +214,9 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const title = `The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`
     const blocks = [
       makeSection(title),
-      makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+      makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
       makeSection(constraint),
-      makeSection(`*Link:*\n<${meetingUrl}|${maybeMeetingShortLink}>`),
+      makeSection(createLinkSectionContent(meeting.id, meetingUrl, maybeMeetingShortLink)),
       makeButtons([button])
     ]
     return notifySlack(
