@@ -76,6 +76,8 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         {'.'}
         <br />
         <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
+        {' or '}
+        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
       </TimelineEventBody>
     </TimelineEventCard>
   )
