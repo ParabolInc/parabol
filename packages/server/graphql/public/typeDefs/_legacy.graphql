@@ -6621,6 +6621,16 @@ type TeamPromptMeeting implements NewMeeting {
   The tasks created within the meeting
   """
   responses: [TeamPromptResponse!]!
+
+  """
+  The number of tasks generated in the meeting
+  """
+  taskCount: Int!
+
+  """
+  The number of comments generated in the meeting
+  """
+  commenCount: Int!
 }
 
 """
