@@ -61,6 +61,8 @@ const BottomControlBarReady = (props: Props) => {
     graphql`
       fragment BottomControlBarReady_meeting on NewMeeting {
         ... on RetrospectiveMeeting {
+          totalVotes
+          votesRemaining
           reflectionGroups {
             id
           }
@@ -86,7 +88,15 @@ const BottomControlBarReady = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, localPhase, localStage, meetingMembers, reflectionGroups} = meeting
+  const {
+    id: meetingId,
+    localPhase,
+    localStage,
+    meetingMembers,
+    reflectionGroups,
+    totalVotes,
+    votesRemaining
+  } = meeting
   const stages = localPhase.stages || []
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
@@ -98,6 +108,14 @@ const BottomControlBarReady = (props: Props) => {
       delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
     }
   )
+  const {
+    openTooltip: openErrorTooltip,
+    closeTooltip: closeErrorTooltip,
+    tooltipPortal: errorTooltipPortal,
+    originRef: errorTooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {
+    delay: 0
+  })
   const atmosphere = useAtmosphere()
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
@@ -108,6 +126,7 @@ const BottomControlBarReady = (props: Props) => {
     readyCount < activeCount - 1 &&
     activeCount > 1
 
+  const hasVotes = activeCount * (totalVotes ?? 0) > (votesRemaining ?? 0)
   const onClick = () => {
     if (!isNext) {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
@@ -132,29 +151,45 @@ const BottomControlBarReady = (props: Props) => {
     if (phaseType === 'reflect') {
       return reflectionGroups?.length === 0 ?? true
     }
+
+    if (phaseType === 'vote') {
+      return !hasVotes
+    }
+
     return false
   }
   const disabled = getDisabled()
   return (
     <>
-      <BottomNavControl
-        dataCy={`next-phase`}
-        disabled={disabled}
-        confirming={!!cancelConfirm}
-        onClick={cancelConfirm || onClick}
-        status={status}
-        onTransitionEnd={onTransitionEnd}
-        onKeyDown={onKeyDown}
-        ref={ref}
+      <div
+        onMouseOver={() => {
+          if (phaseType === 'vote' && disabled) {
+            openErrorTooltip()
+          }
+        }}
+        onMouseLeave={closeErrorTooltip}
+        ref={errorTooltipRef}
       >
-        <BottomControlBarProgress isNext={isNext} progress={progress} />
-        <BottomNavIconLabel label={label} ref={originRef}>
-          <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-            {icon}
-          </CheckIcon>
-        </BottomNavIconLabel>
-      </BottomNavControl>
+        <BottomNavControl
+          dataCy={`next-phase`}
+          disabled={disabled}
+          confirming={!!cancelConfirm}
+          onClick={cancelConfirm || onClick}
+          status={status}
+          onTransitionEnd={onTransitionEnd}
+          onKeyDown={onKeyDown}
+          ref={ref}
+        >
+          <BottomControlBarProgress isNext={isNext} progress={progress} />
+          <BottomNavIconLabel label={label} ref={originRef}>
+            <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
+              {icon}
+            </CheckIcon>
+          </BottomNavIconLabel>
+        </BottomNavControl>
+      </div>
       {tooltipPortal(`Tap 'Next' again to Confirm`)}
+      {errorTooltipPortal(`At least one vote required`)}
     </>
   )
 }
