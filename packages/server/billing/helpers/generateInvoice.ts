@@ -17,8 +17,8 @@ import {getStripeManager} from '../../utils/stripe'
 
 interface InvoicesByStartTime {
   [start: string]: {
-    unusedTime?: Stripe.invoices.IInvoiceLineItem
-    remainingTime?: Stripe.invoices.IInvoiceLineItem
+    unusedTime?: Stripe.InvoiceLineItem
+    remainingTime?: Stripe.InvoiceLineItem
   }
 }
 
@@ -197,7 +197,7 @@ const makeDetailedLineItems = async (itemDict: ItemDict, dataLoader: DataLoaderW
   return detailedLineItems
 }
 
-const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineItem) => {
+const addToDict = (itemDict: ItemDict, lineItem: Stripe.InvoiceLineItem) => {
   const {
     metadata,
     period: {start}
@@ -216,9 +216,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
   startTimeItems[bucket] = lineItem
 }
 
-const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
+const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
   const itemDict = {} as ItemDict
-  const unknownLineItems = [] as Stripe.invoices.IInvoiceLineItem[]
+  const unknownLineItems = [] as Stripe.InvoiceLineItem[]
   let nextPeriodCharges!: NextPeriodCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i]!
@@ -293,8 +293,8 @@ const maybeReduceUnknowns = async (
 }
 
 export default async function generateInvoice(
-  invoice: Stripe.invoices.IInvoice,
-  stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
+  invoice: Stripe.Invoice,
+  stripeLineItems: Stripe.InvoiceLineItem[],
   orgId: string,
   invoiceId: string,
   dataLoader: DataLoaderWorker
