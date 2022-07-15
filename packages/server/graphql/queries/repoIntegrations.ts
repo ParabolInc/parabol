@@ -1,16 +1,26 @@
-import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLInt, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import RepoIntegrationQueryPayload from '../types/RepoIntegrationQueryPayload'
 import fetchAllRepoIntegrations from './helpers/fetchAllRepoIntegrations'
 
 export default {
   description: 'The integrations that the user would probably like to use',
   type: new GraphQLNonNull(RepoIntegrationQueryPayload),
+  args: {
+    first: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'the number of repo integrations to return'
+    },
+    after: {
+      type: GraphQLISO8601Type
+    }
+  },
   resolve: async (
     {teamId, userId}: {teamId: string; userId: string},
-    {first = 10}: {first?: number},
+    {first}: {first: number},
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
