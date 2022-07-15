@@ -19,6 +19,7 @@ interface Props {
   secondaryAction?: SnackAction
   onMouseEnter: () => void
   onMouseLeave: () => void
+  showDismissButton?: boolean
 }
 
 const Space = styled('div')({
@@ -85,23 +86,22 @@ const SnackbarMessage = (props: Props) => {
     onTransitionEnd,
     dismissSnack,
     onMouseEnter,
-    onMouseLeave
+    onMouseLeave,
+    showDismissButton
   } = props
   useTransitionEnd(300, status, onTransitionEnd)
-  //Currently do not need dismiss button
-  const displayDismissButton = false
   return (
     <Space>
       <MessageStyles
         status={status}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        onClick={displayDismissButton ? undefined : dismissSnack}
+        onClick={dismissSnack}
       >
         <Text>{message}</Text>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />
-        {displayDismissButton && (
+        {showDismissButton && (
           <DismissButton onClick={dismissSnack}>
             <StyledIcon>close</StyledIcon>
           </DismissButton>
