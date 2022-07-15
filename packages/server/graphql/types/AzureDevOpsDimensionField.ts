@@ -34,6 +34,10 @@ const AzureDevOpsDimensionField = new GraphQLObjectType<any, GQLContext>({
     fieldType: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'the type of field, e.g. number, string, any'
+    },
+    workItemType: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The AzureDevOps work item type'
     }
   })
 })

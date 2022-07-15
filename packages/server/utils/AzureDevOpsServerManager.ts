@@ -35,6 +35,32 @@ export interface AccessibleResources {
   value: Resource[]
 }
 
+export interface ProjectProperty {
+  name: string
+  value: string
+}
+
+export interface ProjectProperties {
+  count: number
+  value: ProjectProperty[]
+}
+
+export interface ProcessType {
+  custom: string
+  inherited: string
+  system: string
+}
+
+export interface Process {
+  _links: ReferenceLinks
+  description: string
+  id: string
+  isDefault: boolean
+  name: string
+  type: ProcessType
+  url: string
+}
+
 export interface WorkItemQueryResult {
   asOf: string
   columns: WorkItemFieldReference[]
@@ -167,7 +193,7 @@ interface WorkItemAddFieldResponse {
   url: string
 }
 
-const MAX_REQUEST_TIME = 5000
+const MAX_REQUEST_TIME = 8000
 
 class AzureDevOpsServerManager {
   accessToken = ''
@@ -440,6 +466,53 @@ class AzureDevOpsServerManager {
       }
     }
     return {error: undefined, projects: teamProjectReferences}
+  }
+
+  async getProjectProperties(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
+    const result = await this.get<ProjectProperties>(uri)
+    if (result instanceof Error) {
+      firstError = result
+    }
+    const requestedProperties = result as ProjectProperties
+    return {error: firstError, projectProperties: requestedProperties}
+  }
+
+  async getProjectProcessTemplate(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const result = await this.getProjectProperties(instanceId, projectId)
+    if (result.error) {
+      firstError = result.error
+    }
+    const processTemplateProperty = result.projectProperties.value[0]
+    if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
+      return {error: firstError, projectTemplate: ''}
+    }
+    const processTemplateDetailsResult = await this.getProcessTemplate(
+      instanceId,
+      processTemplateProperty?.value
+    )
+    if (processTemplateDetailsResult.error) {
+      if (!firstError) {
+        firstError = processTemplateDetailsResult.error
+      }
+    }
+    return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+  }
+
+  async getProcessTemplate(instanceId: string, processId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
+    const result = await this.get<Process>(uri)
+    const unknownProcessErrorCode = 'VS402362'
+    if (result instanceof Error) {
+      if (result.message.includes(unknownProcessErrorCode, 0)) {
+        return {error: firstError, process: 'Basic'}
+      }
+      firstError = result
+    }
+    return {error: firstError, process: result.name}
   }
 
   async getAccountProjects(accountName: string) {

@@ -444,6 +444,8 @@ export const enum SprintPokerDefaults {
   AZURE_DEVOPS_USERSTORY_FIELD_LABEL = 'Story point estimate',
   AZURE_DEVOPS_TASK_FIELD = '__origEst',
   AZURE_DEVOPS_TASK_FIELD_LABEL = 'Original Estimate',
+  AZURE_DEVOPS_REMAINING_WORK_FIELD = '__remainingWork',
+  AZURE_DEVOPS_REMAINING_WORK_LABEL = 'Remaining Work',
   AZURE_DEVOPS_EFFORT_FIELD = '__effort',
   AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
   SERVICE_FIELD_COMMENT = '__comment',
