@@ -230,13 +230,13 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
       quantity,
       description
     } = lineItem
-    // TODO: check This has apparently changed in the new API (cannot be null). we need to fix this if we upgrade to the latest stripe API
-    if (description === null && proration === false && quantity !== null) {
+    const lineItemQuantity = quantity ?? 0
+    if (description === null && proration === false) {
       if (!nextPeriodCharges) {
         // this must be the next month's charge
         nextPeriodCharges = new NextPeriodCharges({
           amount,
-          quantity,
+          quantity: lineItemQuantity,
           nextPeriodEnd: fromEpochSeconds(end),
           unitPrice: lineItem.plan?.amount || undefined,
           interval: lineItem.plan?.interval || 'month'
@@ -244,7 +244,7 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
       } else {
         //merge the quantity & price line for enterprise
         nextPeriodCharges.amount = nextPeriodCharges.amount || amount
-        nextPeriodCharges.quantity = nextPeriodCharges.quantity || quantity
+        nextPeriodCharges.quantity = nextPeriodCharges.quantity || lineItemQuantity
       }
     } else if (!metadata.type) {
       unknownLineItems.push(lineItem)
