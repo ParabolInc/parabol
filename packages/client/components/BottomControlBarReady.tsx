@@ -159,17 +159,15 @@ const BottomControlBarReady = (props: Props) => {
     return false
   }
   const disabled = getDisabled()
+  const onMouseOver = () => {
+    if (phaseType === 'vote' && disabled) {
+      openErrorTooltip()
+    }
+  }
+
   return (
     <>
-      <div
-        onMouseOver={() => {
-          if (phaseType === 'vote' && disabled) {
-            openErrorTooltip()
-          }
-        }}
-        onMouseLeave={closeErrorTooltip}
-        ref={errorTooltipRef}
-      >
+      <div onMouseOver={onMouseOver} onMouseLeave={closeErrorTooltip} ref={errorTooltipRef}>
         <BottomNavControl
           dataCy={`next-phase`}
           disabled={disabled}
