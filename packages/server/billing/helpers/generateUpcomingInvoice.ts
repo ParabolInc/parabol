@@ -15,7 +15,7 @@ const generateUpcomingInvoice = async (orgId: string, dataLoader: DataLoaderWork
     .run()
   const manager = getStripeManager()
   const [stripeLineItems, upcomingInvoice] = await Promise.all([
-    fetchAllLines('upcoming', stripeId),
+    fetchAllLines('upcoming'),
     manager.retrieveUpcomingInvoice(stripeId!, stripeSubscriptionId!)
   ])
   return generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId, dataLoader)

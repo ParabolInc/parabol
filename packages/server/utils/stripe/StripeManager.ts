@@ -112,7 +112,7 @@ export default class StripeManager {
   }
 
   async updateAccountBalance(customerId: string, newBalance: number) {
-    return this.stripe.customers.update(customerId, {account_balance: newBalance})
+    return this.stripe.customers.update(customerId, {balance: newBalance})
   }
 
   async updateInvoice(invoiceId: string, orgId: string) {
