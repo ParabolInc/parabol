@@ -84,30 +84,6 @@ export default class StripeManager {
     return allSubscriptionItems.data[0]
   }
 
-  async updateSubscriptionQuantity(
-    stripeSubscriptionId: string,
-    quantity: number,
-    prorationDate?: number
-  ) {
-    return this.stripe.subscriptions.update(stripeSubscriptionId, {
-      quantity,
-      proration_date: prorationDate
-    })
-  }
-
-  async updateInvoice(invoiceId: string, orgId: string) {
-    return this.stripe.invoices.update(invoiceId, {metadata: {orgId}})
-  }
-
-  async updateInvoiceItem(
-    invoiceItemId: string,
-    type: InvoiceItemType,
-    userId: string,
-    hookId: string
-  ) {
-    return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId, hookId}})
-  }
-
   async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {
     return this.stripe.invoices.listLineItems(invoiceId, options)
   }
@@ -139,7 +115,31 @@ export default class StripeManager {
     return this.stripe.customers.update(customerId, {account_balance: newBalance})
   }
 
+  async updateInvoice(invoiceId: string, orgId: string) {
+    return this.stripe.invoices.update(invoiceId, {metadata: {orgId}})
+  }
+
+  async updateInvoiceItem(
+    invoiceItemId: string,
+    type: InvoiceItemType,
+    userId: string,
+    hookId: string
+  ) {
+    return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId, hookId}})
+  }
+
   async updatePayment(customerId: string, source: string) {
     return this.stripe.customers.update(customerId, {source})
+  }
+
+  async updateSubscriptionItemQuantity(
+    stripeSubscriptionItemId: string,
+    quantity: number,
+    prorationDate?: number
+  ) {
+    return this.stripe.subscriptionItems.update(stripeSubscriptionItemId, {
+      quantity,
+      proration_date: prorationDate
+    })
   }
 }

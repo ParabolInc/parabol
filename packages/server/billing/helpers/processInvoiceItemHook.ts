@@ -92,7 +92,11 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
         previousQuantity: stripeQty
       })
       .run(),
-    manager.updateSubscriptionQuantity(stripeSubscriptionId, nextQuantity, safeProrationDate)
+    manager.updateSubscriptionItemQuantity(
+      stripeSubscriptionItem.id,
+      nextQuantity,
+      safeProrationDate
+    )
   ])
 
   const isFlushed = await r
