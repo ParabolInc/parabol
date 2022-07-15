@@ -1,5 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
+import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
   static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
@@ -69,6 +70,18 @@ export default class StripeManager {
 
   async deleteSubscription(stripeSubscriptionId: string) {
     return this.stripe.subscriptions.del(stripeSubscriptionId)
+  }
+
+  async getSubscriptionItem(subscriptionId: string) {
+    const allSubscriptionItems = await this.stripe.subscriptionItems.list({
+      subscription: subscriptionId
+    })
+    // we only include one subscription item in our subscriptions
+    if (allSubscriptionItems.data.length > 1) {
+      // sanity check
+      sendToSentry(new Error(`${subscriptionId} contains more than one subscription item`))
+    }
+    return allSubscriptionItems.data[0]
   }
 
   async updateSubscriptionQuantity(
