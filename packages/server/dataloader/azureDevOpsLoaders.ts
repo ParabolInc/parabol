@@ -520,11 +520,14 @@ export const getMappedAzureDevOpsWorkItem = async (
   instanceId: string,
   returnedWorkItem: WorkItem
 ) => {
+  const mappedUrl = returnedWorkItem._links['html']
+    ? returnedWorkItem._links['html'].href
+    : returnedWorkItem.url
   const azureDevOpsWorkItem = {
     id: returnedWorkItem.id.toString(),
     title: returnedWorkItem.fields['System.Title'],
     teamProject: getProjectId(new URL(returnedWorkItem.url)),
-    url: returnedWorkItem.url,
+    url: mappedUrl,
     state: returnedWorkItem.fields['System.State'],
     type: returnedWorkItem.fields['System.WorkItemType'],
     descriptionHTML: returnedWorkItem.fields['System.Description']
