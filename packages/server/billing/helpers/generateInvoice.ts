@@ -246,11 +246,22 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
         nextPeriodCharges.amount = nextPeriodCharges.amount || amount
         nextPeriodCharges.quantity = nextPeriodCharges.quantity || lineItemQuantity
       }
-    } else if (!metadata.type) {
-      unknownLineItems.push(lineItem)
     } else {
-      // at this point, we don't care whether it's an auto pause or manual
-      addToDict(itemDict, lineItem)
+      if (!nextPeriodCharges) {
+        nextPeriodCharges = new NextPeriodCharges({
+          amount,
+          quantity: lineItemQuantity,
+          nextPeriodEnd: fromEpochSeconds(end),
+          unitPrice: lineItem.plan?.amount || undefined,
+          interval: lineItem.plan?.interval || 'month'
+        })
+      }
+      if (!metadata.type) {
+        unknownLineItems.push(lineItem)
+      } else {
+        // at this point, we don't care whether it's an auto pause or manual
+        addToDict(itemDict, lineItem)
+      }
     }
   }
   return {itemDict, nextPeriodCharges, unknownLineItems}
@@ -324,21 +335,22 @@ export default async function generateInvoice(
   ].sort((a, b) => (a.type > b.type ? 1 : -1))
 
   // sanity check
-  const calculatedTotal =
-    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
-  if (calculatedTotal !== invoice.total) {
-    console.warn(
-      'Calculated invoice does not match stripe invoice',
-      invoiceId,
-      calculatedTotal,
-      invoice.total
-    )
-  }
+  // const calculatedTotal =
+  //   invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
+  // if (calculatedTotal !== invoice.total) {
+  //   console.warn(
+  //     'Calculated invoice does not match stripe invoice',
+  //     invoiceId,
+  //     calculatedTotal,
+  //     invoice.total
+  //   )
+  // }
 
   const [type] = invoiceId.split('_')
   const isUpcoming = type === 'upcoming'
 
   let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
+  console.log('🚀 ~ invoice', {invoice, status, isUpcoming})
 
   if (status === 'PENDING') {
     status = invoice.paid ? 'PAID' : 'FAILED'
@@ -390,7 +402,7 @@ export default async function generateInvoice(
     startAt: fromEpochSeconds(invoice.period_start),
     startingBalance: invoice.starting_balance,
     status,
-    tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'pro'
+    tier: nextPeriodCharges?.interval === 'year' ? 'enterprise' : 'pro'
   })
 
   return r

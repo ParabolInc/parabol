@@ -104,10 +104,9 @@ export default class StripeManager {
     return this.stripe.subscriptions.retrieve(subscriptionId)
   }
 
-  async retrieveUpcomingInvoice(stripeId: string, stripeSubscriptionId: string) {
+  async retrieveUpcomingInvoice(stripeId: string) {
     return this.stripe.invoices.retrieveUpcoming({
-      customer: stripeId,
-      subscription: stripeSubscriptionId
+      customer: stripeId
     })
   }
 

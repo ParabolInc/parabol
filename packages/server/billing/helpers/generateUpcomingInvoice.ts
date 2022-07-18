@@ -8,15 +8,11 @@ import generateInvoice from './generateInvoice'
 const generateUpcomingInvoice = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const invoiceId = getUpcomingInvoiceId(orgId)
-  const {stripeId, stripeSubscriptionId} = await r
-    .table('Organization')
-    .get(orgId)
-    .pluck('stripeId', 'stripeSubscriptionId')
-    .run()
+  const {stripeId} = await r.table('Organization').get(orgId).pluck('stripeId').run()
   const manager = getStripeManager()
   const [stripeLineItems, upcomingInvoice] = await Promise.all([
-    fetchAllLines('upcoming'),
-    manager.retrieveUpcomingInvoice(stripeId!, stripeSubscriptionId!)
+    fetchAllLines('upcoming', stripeId),
+    manager.retrieveUpcomingInvoice(stripeId!)
   ])
   return generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId, dataLoader)
 }
