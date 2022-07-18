@@ -25,6 +25,11 @@ graphql`
         auth {
           accessToken
         }
+        cloudProvider {
+          id
+          tenantId
+          clientId
+        }
         sharedProviders {
           id
           tenantId
@@ -53,7 +58,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {azureDevOps} = integrations
-  const provider = azureDevOps?.sharedProviders[0]
+  const provider = azureDevOps?.sharedProviders[0] ?? azureDevOps?.cloudProvider
   const accessToken = azureDevOps?.auth?.accessToken ?? undefined
 
   if (!provider) return null

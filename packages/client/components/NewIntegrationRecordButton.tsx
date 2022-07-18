@@ -1,13 +1,13 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React from 'react'
 import {ZIndex} from '~/types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
+import Icon from './Icon'
 
 const Button = styled(FloatingActionButton)({
   color: '#fff',
   padding: '10px 12px',
-  width: '150px',
+  minWidth: '150px',
   bottom: 16,
   right: 16,
   position: 'absolute',

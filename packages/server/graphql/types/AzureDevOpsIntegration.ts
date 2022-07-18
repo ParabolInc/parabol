@@ -135,6 +135,17 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
       }
     },
+    cloudProvider: {
+      description:
+        'The cloud provider the team member may choose to integrate with. Nullable based on env vars',
+      type: IntegrationProviderOAuth2,
+      resolve: async (_source: unknown, _args: unknown, {dataLoader}) => {
+        const [globalProvider] = await dataLoader
+          .get('sharedIntegrationProviders')
+          .load({service: 'azureDevOps', orgTeamIds: ['aGhostTeam'], teamIds: []})
+        return globalProvider
+      }
+    },
     sharedProviders: {
       description: 'The non-global providers shared with the team or organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderOAuth2))),

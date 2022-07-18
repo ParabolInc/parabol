@@ -563,7 +563,7 @@ class AzureDevOpsServerManager {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
       scope: '499b84ac-1321-427f-aa17-267ca6975798/.default',
-      redirect_uri: 'http://localhost:8081/'
+      redirect_uri: makeAppURL(appOrigin, 'auth/ado')
     })
   }
 
@@ -580,7 +580,7 @@ class AzureDevOpsServerManager {
     }
 
     const additonalHeaders = {
-      Origin: 'http://localhost:8081'
+      Origin: appOrigin
     }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
