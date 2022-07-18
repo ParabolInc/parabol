@@ -340,8 +340,6 @@ export default async function generateInvoice(
 
   let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
 
-  // TODO: update below
-  // if (status === 'PENDING' && invoice.closed === true) {
   if (status === 'PENDING') {
     status = invoice.paid ? 'PAID' : 'FAILED'
   }
@@ -382,7 +380,6 @@ export default async function generateInvoice(
     billingLeaderEmails,
     creditCard: organization.creditCard,
     endAt: fromEpochSeconds(invoice.period_end),
-    // invoiceDate: fromEpochSeconds(invoice.date!),
     invoiceDate: fromEpochSeconds(invoice.due_date!),
     lines: invoiceLineItems,
     nextPeriodCharges,
@@ -395,7 +392,6 @@ export default async function generateInvoice(
     status,
     tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'pro'
   })
-  console.log('🚀 ~ invoice__', {invoice, dbInvoice})
 
   return r
     .table('Invoice')
