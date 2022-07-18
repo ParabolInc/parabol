@@ -52,8 +52,8 @@ const StartButton = styled(FlatPrimaryButton)({
   fontSize: 20,
   height: 50,
   [narrowScreenMediaQuery]: {
-    paddingLeft: '1em',
-    paddingRight: '1em'
+    paddingLeft: 16,
+    paddingRight: 16
   }
 })
 
@@ -61,8 +61,8 @@ const CancelButton = styled(FlatButton)({
   fontSize: 20,
   height: 50,
   [narrowScreenMediaQuery]: {
-    paddingLeft: '1em',
-    paddingRight: '1em'
+    paddingLeft: 16,
+    paddingRight: 16
   }
 })
 

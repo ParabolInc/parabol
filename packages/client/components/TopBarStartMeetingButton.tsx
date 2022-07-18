@@ -24,7 +24,7 @@ const TopBarStartMeetingButton = () => {
   const {history} = useRouter()
 
   const onClick = () => {
-    history.push(`/new-meeting/${teamId}?source=TopBar`, {backgroundLocation: location})
+    history.replace(`/new-meeting/${teamId}?source=TopBar`, {backgroundLocation: location})
   }
   return (
     <Button onClick={onClick}>

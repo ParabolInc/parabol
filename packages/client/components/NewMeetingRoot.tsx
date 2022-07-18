@@ -27,7 +27,7 @@ const NewMeetingRoot = () => {
 
   const onClose = useCallback(() => {
     const state = location.state
-    history.push(state?.backgroundLocation ?? '/meetings')
+    history.replace(state?.backgroundLocation ?? '/meetings')
   }, [location])
 
   const {openPortal, closePortal, modalPortal} = useModal({
