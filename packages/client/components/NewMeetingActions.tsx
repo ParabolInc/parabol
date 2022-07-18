@@ -12,7 +12,6 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import StartSprintPokerMutation from '../mutations/StartSprintPokerMutation'
 import {Breakpoint} from '../types/constEnums'
-import FlatButton from './FlatButton'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import StyledError from './StyledError'
@@ -53,16 +52,8 @@ const StartButton = styled(FlatPrimaryButton)({
   height: 50,
   [narrowScreenMediaQuery]: {
     paddingLeft: 16,
-    paddingRight: 16
-  }
-})
-
-const CancelButton = styled(FlatButton)({
-  fontSize: 20,
-  height: 50,
-  [narrowScreenMediaQuery]: {
-    paddingLeft: 16,
-    paddingRight: 16
+    paddingRight: 16,
+    marginLeft: 'auto'
   }
 })
 
@@ -73,7 +64,7 @@ interface Props {
 }
 
 const NewMeetingActions = (props: Props) => {
-  const {team, meetingType, onClose} = props
+  const {team, meetingType} = props
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -99,7 +90,6 @@ const NewMeetingActions = (props: Props) => {
         {error && <StyledError>{error.message}</StyledError>}
       </ActiveMeetingsBlock>
       <ButtonBlock>
-        <CancelButton onClick={onClose}>Cancel</CancelButton>
         <StartButton onClick={onStartMeetingClick} waiting={submitting}>
           Start Meeting
         </StartButton>
