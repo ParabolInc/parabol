@@ -100,6 +100,10 @@ export default class StripeManager {
     return this.stripe.invoiceItems.retrieve(invoiceItemId)
   }
 
+  async retrieveSource(customerId: string, cardId: string) {
+    return this.stripe.customers.retrieveSource(customerId, cardId)
+  }
+
   async retrieveSubscription(subscriptionId: string) {
     return this.stripe.subscriptions.retrieve(subscriptionId)
   }
