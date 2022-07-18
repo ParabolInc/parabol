@@ -47,8 +47,8 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
   - If there are only +2 comments, the PR can be merged directly by the maintainer.
 
 ## Metrics Representative
-- Metrics Representative ensures any analytics related changes work well with downstream data related services
-- This role is currently filed by @tianrunhe
+- Metrics Representative ensures any analytics related changes work well with downstream data services
+- This role is currently filled by @tianrunhe
 
 ## Author
 
