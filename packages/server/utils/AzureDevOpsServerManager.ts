@@ -393,7 +393,6 @@ class AzureDevOpsServerManager {
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
     if (!!accessibleError) return {error: accessibleError, projects: null}
 
-    // this forEach is not returning
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
