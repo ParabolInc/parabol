@@ -46,12 +46,12 @@ export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: stri
 
 const createTeamPromptMeetingTitle = (meeting: Meeting) => `*${meeting.name}* is open 💬`
 
-const genericMeetingTitle = `Meeting Started 👋`
+const GENERIC_MEETING_TITLE = `Meeting Started 👋`
 
 const MeetingTypeTitleLookup: Record<MeetingTypeEnum, ((meeting: Meeting) => string) | string> = {
-  action: genericMeetingTitle,
-  poker: genericMeetingTitle,
-  retrospective: genericMeetingTitle,
+  action: GENERIC_MEETING_TITLE,
+  poker: GENERIC_MEETING_TITLE,
+  retrospective: GENERIC_MEETING_TITLE,
   teamPrompt: createTeamPromptMeetingTitle
 }
 

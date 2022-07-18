@@ -18,7 +18,7 @@ export function isMeetingTeamPrompt(meeting: Meeting): meeting is MeetingTeamPro
   return meeting.meetingType === 'teamPrompt'
 }
 
-export function createTeamPromptDefaultTitle() {
+function createTeamPromptDefaultTitle() {
   const formattedDate = new Date().toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
