@@ -11,7 +11,7 @@ const isStartMeetingLocked = async (teamId: string, dataLoader: DataLoaderWorker
     // if this team was manually locked, be mean because they called this by hiding the modal
     return lockMessageHTML
       ? 'Wow, you’re determined to use Parabol! That’s awesome! Do you want to keep sneaking over the gate, or walk through the door with our Sales team?'
-      : 'Sorry! We are unable to start your meeting because one or more of the teams in your org has an overdue payment'
+      : 'Sorry! We are unable to start your meeting because your organization has an overdue payment'
   }
   // if this team wasn't manually locked, see if any of its members are on locked teams
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
