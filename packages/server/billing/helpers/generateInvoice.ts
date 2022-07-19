@@ -335,23 +335,21 @@ export default async function generateInvoice(
   ].sort((a, b) => (a.type > b.type ? 1 : -1))
 
   // sanity check
-  // const calculatedTotal =
-  //   invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
-  // if (calculatedTotal !== invoice.total) {
-  //   console.warn(
-  //     'Calculated invoice does not match stripe invoice',
-  //     invoiceId,
-  //     calculatedTotal,
-  //     invoice.total
-  //   )
-  // }
+  const calculatedTotal =
+    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
+  if (calculatedTotal !== invoice.total) {
+    console.warn(
+      'Calculated invoice does not match stripe invoice',
+      invoiceId,
+      calculatedTotal,
+      invoice.total
+    )
+  }
 
   const [type] = invoiceId.split('_')
   const isUpcoming = type === 'upcoming'
 
   let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
-  console.log('🚀 ~ invoice', {invoice, status, isUpcoming})
-
   if (status === 'PENDING') {
     status = invoice.paid ? 'PAID' : 'FAILED'
   }

@@ -35,7 +35,6 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   let maybeOrgId = metadata?.orgId
   if (!maybeOrgId) {
     const customer = await manager.retrieveCustomer(customerId)
-    console.log('🚀 ~ customer', customer)
     if ('metadata' in customer) {
       maybeOrgId = customer.metadata.orgId
     }
