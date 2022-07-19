@@ -364,7 +364,6 @@ export default class Atmosphere extends Environment {
     const {exp, sub: viewerId, rol, iat} = this.authObj
     if (rol === 'impersonate') {
       this.viewerId = viewerId
-
       return this.validateImpersonation(iat)
     }
     // impersonation token must be < 10 seconds old (ie log them out automatically)
