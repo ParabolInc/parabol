@@ -65,8 +65,11 @@ const Title = styled(DialogTitle)({
 })
 
 const CloseButton = styled(FlatButton)({
-  padding: 8,
-  color: PALETTE.SLATE_600
+  position: 'absolute',
+  top: 8,
+  right: 8,
+  color: PALETTE.SLATE_600,
+  padding: 0
 })
 
 const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
