@@ -370,14 +370,12 @@ export default async function generateInvoice(
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 
   const coupon =
-    (couponDetails?.amount_off &&
-      couponDetails?.name &&
-      couponDetails?.percent_off &&
+    (couponDetails?.name &&
       new Coupon({
         id: couponDetails.id,
-        amountOff: couponDetails.amount_off,
+        amountOff: couponDetails.amount_off ?? 0,
         name: couponDetails.name,
-        percentOff: couponDetails.percent_off
+        percentOff: couponDetails.percent_off ?? 0
       })) ||
     null
 
