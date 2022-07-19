@@ -53,7 +53,7 @@ const ImageWithPadding = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS
   ({meetingType}) => ({
     background: BACKGROUND_COLORS[meetingType],
     boxShadow: Elevation.Z12,
-    borderRadius: '12px',
+    borderRadius: '4px',
     display: 'flex',
     height: 300,
     padding: '0 64px'
