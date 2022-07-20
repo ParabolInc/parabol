@@ -307,7 +307,7 @@ class AzureDevOpsServerManager {
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
     const payload = !!fields
       ? {ids: workItemIds, fields: fields}
-      : {ids: workItemIds, $expand: 'All'}
+      : {ids: workItemIds, $expand: 'Links'}
     const res = await this.post<WorkItemBatchResponse>(uri, payload)
     if (res instanceof Error) {
       if (!firstError) {
