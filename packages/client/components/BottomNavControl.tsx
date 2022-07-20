@@ -23,12 +23,11 @@ const BottomNavControl = styled(FlatButton)<Props>((props) => {
       status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
         ? 0
         : ElementWidth.CONTROL_BAR_BUTTON,
-    opacity:
-      confirming || disabled
-        ? 0.5
-        : status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
-        ? 0
-        : 1,
+    opacity: confirming
+      ? 0.5
+      : status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
+      ? 0
+      : 1,
     padding: 0,
     transformOrigin: 'center bottom',
     transition: `all 300ms ${BezierCurve.DECELERATE}`,

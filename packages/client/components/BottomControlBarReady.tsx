@@ -44,6 +44,26 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
   })
 )
 
+// Disabled button does not fire mouse events, this is a workaround for showing a tooltip
+// `pointer-events: none` required to be set on underlying button
+const BottomNavContorlWrapper = styled('div')<{
+  disabled?: boolean
+}>((props) => {
+  const {disabled} = props
+
+  if (disabled)
+    return {
+      cursor: 'not-allowed',
+      opacity: 1,
+      transition: `all 300ms ${BezierCurve.DECELERATE}`,
+      ':hover': {
+        opacity: 0.5
+      }
+    }
+
+  return {}
+})
+
 const PHASE_REQUIRES_CONFIRM = new Set<NewMeetingPhaseTypeEnum>(['reflect', 'group', 'vote'])
 
 const BottomControlBarReady = (props: Props) => {
@@ -167,10 +187,8 @@ const BottomControlBarReady = (props: Props) => {
 
   return (
     <>
-      <div
-        style={{
-          cursor: disabled ? 'not-allowed' : undefined
-        }}
+      <BottomNavContorlWrapper
+        disabled={disabled}
         onMouseOver={onMouseOver}
         onMouseLeave={closeErrorTooltip}
         ref={errorTooltipRef}
@@ -192,7 +210,7 @@ const BottomControlBarReady = (props: Props) => {
             </CheckIcon>
           </BottomNavIconLabel>
         </BottomNavControl>
-      </div>
+      </BottomNavContorlWrapper>
       {tooltipPortal(`Tap 'Next' again to Confirm`)}
       {errorTooltipPortal(`At least one vote required`)}
     </>
