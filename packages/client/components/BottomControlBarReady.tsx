@@ -167,7 +167,14 @@ const BottomControlBarReady = (props: Props) => {
 
   return (
     <>
-      <div onMouseOver={onMouseOver} onMouseLeave={closeErrorTooltip} ref={errorTooltipRef}>
+      <div
+        style={{
+          cursor: disabled ? 'not-allowed' : undefined
+        }}
+        onMouseOver={onMouseOver}
+        onMouseLeave={closeErrorTooltip}
+        ref={errorTooltipRef}
+      >
         <BottomNavControl
           dataCy={`next-phase`}
           disabled={disabled}
