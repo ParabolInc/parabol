@@ -23,6 +23,7 @@ export type AnalyticsEvent =
   | 'Meeting Started'
   | 'Meeting Joined'
   | 'Meeting Completed'
+  | 'Comment Added'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -119,6 +120,17 @@ class Analytics {
       teamMembersPresentCount: meetingMembers.length,
       teamId,
       ...meetingSpecificProperties
+    })
+  }
+
+  commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {
+    this.track(userId, 'Comment Added', {
+      meetingId: meeting.id,
+      meetingType: meeting.meetingType,
+      teamId: meeting.teamId,
+      isAnonymous,
+      isAsync,
+      isReply
     })
   }
 

@@ -8,9 +8,9 @@ import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
@@ -70,7 +70,7 @@ const addComment = {
     await r.table('Comment').insert(dbComment).run()
 
     const data = {commentId, meetingId}
-    const {phases, teamId} = meeting!
+    const {phases} = meeting!
     const threadablePhases = [
       'discuss',
       'agendaitems',
@@ -82,17 +82,7 @@ const addComment = {
     )!
     const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage: GenericMeetingStage) => stage.isAsync)
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Comment added',
-      properties: {
-        meetingId,
-        teamId,
-        isAnonymous,
-        isAsync,
-        isReply: !!threadParentId
-      }
-    })
+    analytics.commentAdded(viewerId, meeting, isAnonymous, isAsync, !!threadParentId)
     publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
     return data
   }
