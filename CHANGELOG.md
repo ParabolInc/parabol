@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.67.0 2022-July-20
+
+### Added
+
+- feat(Azure DevOps): Adding additional project types (#6593)
+- feat(Azure DevOps): Add global provider (#6808)
+
+### Fixed
+
+- fix: access more than 10 Jira projects in task footer (#6881)
+
+### Changed
+
+- feat: Improve clarity of Integrations page (#6804)
+
 ## 6.66.0 2022-July-13
 
 ### Changed
