@@ -24,6 +24,7 @@ export type AnalyticsEvent =
   | 'Meeting Joined'
   | 'Meeting Completed'
   | 'Comment Added'
+  | 'Response Added'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -131,6 +132,19 @@ class Analytics {
       isAnonymous,
       isAsync,
       isReply
+    })
+  }
+
+  responseAdded = (
+    userId: string,
+    meetingId: string,
+    teamPromptResponseId: string,
+    isUpdate: boolean
+  ) => {
+    this.track(userId, 'Response Added', {
+      meetingId,
+      teamPromptResponseId,
+      isUpdate
     })
   }
 
