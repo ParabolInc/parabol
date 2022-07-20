@@ -76,16 +76,20 @@ const withEmojis = (ComposedComponent) => {
     renderModal = () => {
       const {query} = this.state
       const {editorState} = this.props
-      this.cachedCoords = getDraftCoords() || this.cachedCoords
+      this.cachedCoords = getDraftCoords()
       return (
-        <EmojiMenuContainer
-          removeModal={this.removeModal}
-          menuItemClickFactory={this.menuItemClickFactory}
-          query={query}
-          menuRef={this.menuRef}
-          editorState={editorState}
-          originCoords={this.cachedCoords}
-        />
+        <>
+          {this.cachedCoords && (
+            <EmojiMenuContainer
+              removeModal={this.removeModal}
+              menuItemClickFactory={this.menuItemClickFactory}
+              query={query}
+              menuRef={this.menuRef}
+              editorState={editorState}
+              originCoords={this.cachedCoords}
+            />
+          )}
+        </>
       )
     }
 
