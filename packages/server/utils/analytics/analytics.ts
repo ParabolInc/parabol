@@ -2,9 +2,10 @@ import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import {ReactableEnum} from '../../database/types/Reactable'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
-import {AnyMeeting} from '../../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum} from '../../postgres/types/Meeting'
 import segment from '../segmentIo'
 import {createMeetingTemplateAnalyticsParams} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
@@ -25,6 +26,7 @@ export type AnalyticsEvent =
   | 'Meeting Completed'
   | 'Comment Added'
   | 'Response Added'
+  | 'Reactji Interacted'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -145,6 +147,23 @@ class Analytics {
       meetingId,
       teamPromptResponseId,
       isUpdate
+    })
+  }
+
+  reactjiInteracted = (
+    userId: string,
+    meetingId: string,
+    meetingType: MeetingTypeEnum,
+    reactableId: string,
+    reactableType: ReactableEnum,
+    isRemove: boolean
+  ) => {
+    this.track(userId, 'Reactji Interacted', {
+      meetingId,
+      meetingType,
+      reactableId,
+      reactableType,
+      isRemove
     })
   }
 
