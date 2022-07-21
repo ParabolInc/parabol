@@ -61,8 +61,8 @@ const Label = styled('span')({
   marginRight: 16,
   width: '100%',
   position: 'relative',
-  display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
+  display: 'flex'
 })
 
 const StyledButton = styled(FlatButton)({
