@@ -32,7 +32,7 @@ const ReflectionCardRoot = styled('div')<{shouldAnimate?: () => boolean}>(({shou
   position: 'relative',
   transition: `box-shadow 2000ms ${DECELERATE}`,
   width: ElementWidth.REFLECTION_CARD,
-  animation: shouldAnimate && shouldAnimate() ? `${dragPrompt}  60s 2s infinite` : undefined
+  animation: shouldAnimate && shouldAnimate() ? `${dragPrompt}  60s 30s infinite` : undefined
 }))
 
 export default ReflectionCardRoot
