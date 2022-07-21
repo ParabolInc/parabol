@@ -350,9 +350,16 @@ export default async function generateInvoice(
   const isUpcoming = type === 'upcoming'
 
   let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
-  if (status === 'PENDING') {
-    status = invoice.paid ? 'PAID' : 'FAILED'
+  if (status === 'PENDING' && typeof invoice.charge === 'string') {
+    const manager = getStripeManager()
+    const charge = await manager.retrieveCharge(invoice.charge)
+    if (charge.status === 'failed') {
+      status = 'FAILED'
+    } else if (charge.status === 'succeeded') {
+      status = 'PAID'
+    }
   }
+
   const paidAt = status === 'PAID' ? now : undefined
 
   const {organization, billingLeaderIds} = await r({

@@ -88,6 +88,10 @@ export default class StripeManager {
     return this.stripe.invoices.listLineItems(invoiceId, options)
   }
 
+  async retrieveCharge(chargeId: string) {
+    return this.stripe.charges.retrieve(chargeId)
+  }
+
   async retrieveCustomer(customerId: string) {
     return this.stripe.customers.retrieve(customerId)
   }
