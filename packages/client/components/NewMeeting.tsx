@@ -10,7 +10,7 @@ import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
 import {Elevation} from '../styles/elevation'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, Radius} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
@@ -30,6 +30,8 @@ interface Props {
 }
 
 const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
+
+const MEDIA_QUERY_MEDIUM_SCREEN = `@media screen and (max-width: ${Breakpoint.NEW_MEETING_GRID}px)`
 
 const IllustrationAndSelector = styled('div')({
   gridArea: 'picker',
@@ -52,7 +54,8 @@ const TeamAndSettingsInner = styled('div')({
 
 const NewMeetingDialog = styled(DialogContainer)({
   width: '800px',
-  maxHeight: 'unset'
+  maxHeight: 'unset',
+  borderRadius: Radius.FIELD
 })
 
 const Title = styled(DialogTitle)({
@@ -61,39 +64,40 @@ const Title = styled(DialogTitle)({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingBottom: 24
+  padding: '16px 16px 24px 24px',
+  [MEDIA_QUERY_MEDIUM_SCREEN]: {
+    padding: '8px 8px 16px 16px'
+  }
 })
 
 const CloseButton = styled(FlatButton)({
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  color: PALETTE.SLATE_600,
-  padding: 0
+  padding: 8,
+  color: PALETTE.SLATE_600
 })
 
-const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
-  {
-    alignItems: 'flex-start',
-    justifyItems: 'center',
-    margin: '0 auto auto',
-    [MEDIA_QUERY_VERTICAL_CENTERING]: {
-      marginTop: 'auto'
-    }
+const NewMeetingInner = styled('div')({
+  alignItems: 'flex-start',
+  justifyItems: 'center',
+  margin: '0 auto auto',
+  display: 'grid',
+  gridTemplateAreas: `'picker howto' 'settings actions'`,
+  gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
+  gridTemplateRows: 'auto 3fr',
+  height: '100%',
+  maxHeight: 640,
+  maxWidth: 1400,
+  padding: '0 64px 16px 64px',
+
+  [MEDIA_QUERY_VERTICAL_CENTERING]: {
+    marginTop: 'auto'
   },
-  ({isDesktop}) =>
-    isDesktop && {
-      display: 'grid',
-      gridTemplateAreas: `'picker howto' 'settings actions'`,
-      gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
-      gridTemplateRows: 'auto 3fr',
-      height: '100%',
-      margin: 'auto',
-      maxHeight: 640,
-      maxWidth: 1400,
-      padding: '0 64px 16px 64px'
-    }
-)
+
+  [MEDIA_QUERY_MEDIUM_SCREEN]: {
+    display: 'block',
+    margin: 'auto',
+    padding: 0
+  }
+})
 
 const createMeetingOrder = ({standups}: {standups: boolean}) => {
   const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['poker', 'retrospective', 'action']
@@ -166,7 +170,7 @@ const NewMeeting = (props: Props) => {
           <IconLabel icon='close' iconLarge />
         </CloseButton>
       </Title>
-      <NewMeetingInner isDesktop={isDesktop}>
+      <NewMeetingInner>
         <IllustrationAndSelector>
           <NewMeetingIllustration idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
           <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />

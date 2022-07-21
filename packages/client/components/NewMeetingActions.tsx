@@ -25,7 +25,10 @@ const ActionRow = styled('div')({
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   padding: 24,
-  paddingTop: 16
+  paddingTop: 16,
+  [narrowScreenMediaQuery]: {
+    flexDirection: 'column'
+  }
 })
 
 const ActiveMeetingsBlock = styled('div')({
@@ -34,27 +37,21 @@ const ActiveMeetingsBlock = styled('div')({
   flexDirection: 'row',
   flexWrap: 'nowrap',
   flexGrow: 10,
-  paddingTop: 8
+  [narrowScreenMediaQuery]: {
+    padding: '50px 0px'
+  }
 })
 
 const ButtonBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'row',
-  flexWrap: 'nowrap',
-  justifyContent: 'space-between',
-  flexGrow: 1,
-  paddingTop: 8
+  flexWrap: 'nowrap'
 })
 
 const StartButton = styled(FlatPrimaryButton)({
   fontSize: 20,
-  height: 50,
-  [narrowScreenMediaQuery]: {
-    paddingLeft: 16,
-    paddingRight: 16,
-    marginLeft: 'auto'
-  }
+  height: 50
 })
 
 interface Props {
