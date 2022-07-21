@@ -1,11 +1,10 @@
 import isValid from '../../../graphql/isValid'
-import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {DataLoaderWorker} from '../../graphql'
 
 const isStartMeetingLocked = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {lockMessageHTML, orgId, tier} = team
-  const orgTeams = await getTeamsByOrgIds([orgId])
+  const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const anyOrgTeamIsLocked = orgTeams.some((team) => !team.isPaid)
   if (tier !== 'personal' && anyOrgTeamIsLocked) {
     // if this team was manually locked, be mean because they called this by hiding the modal
