@@ -4,37 +4,37 @@ import {convertToRaw} from 'draft-js'
 import React, {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import isDemoRoute from '~/utils/isDemoRoute'
 import {
   NewMeetingPhaseTypeEnum,
   ReflectionCard_meeting
 } from '~/__generated__/ReflectionCard_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import {MenuPosition} from '../../hooks/useCoords'
 import useEditorState from '../../hooks/useEditorState'
 import useMutationProps from '../../hooks/useMutationProps'
+import useTooltip from '../../hooks/useTooltip'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import {PALETTE} from '../../styles/paletteV3'
+import {Breakpoint, ZIndex} from '../../types/constEnums'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../utils/draftjs/isAndroid'
+import remountDecorators from '../../utils/draftjs/remountDecorators'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
 import CardButton from '../CardButton'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
+import IconLabel from '../IconLabel'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
-import IconLabel from '../IconLabel'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {Breakpoint, ZIndex} from '../../types/constEnums'
-import {MenuPosition} from '../../hooks/useCoords'
-import useTooltip from '../../hooks/useTooltip'
-import {OpenSpotlight} from '../GroupingKanbanColumn'
-import isDemoRoute from '~/utils/isDemoRoute'
-import remountDecorators from '../../utils/draftjs/remountDecorators'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -96,7 +96,8 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery} = meeting
+  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery, reflectionGroups} =
+    meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -254,11 +255,25 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
+
+  const reflectionCount = reflectionGroups.reduce(
+    (sum, {reflections}) => sum + reflections.length,
+    0
+  )
+
+  const shouldAnimate = () => {
+    if (phaseType !== 'group') return false
+    if (reflectionCount !== reflectionGroups.length) return false
+    if (reflectionId !== reflectionGroups[0]?.reflections[0]?.id) return false
+    return true
+  }
+
   return (
     <ReflectionCardRoot
       data-cy={`${dataCy}-root`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      shouldAnimate={() => shouldAnimate()}
       ref={reflectionRef}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
@@ -339,6 +354,17 @@ export default createFragmentContainer(ReflectionCard, {
         id
       }
       spotlightSearchQuery
+      reflectionGroups {
+        id
+        reflections {
+          id
+          isEditing
+          isDropping
+          remoteDrag {
+            id
+          }
+        }
+      }
     }
   `
 })
