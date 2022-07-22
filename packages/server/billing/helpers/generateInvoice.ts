@@ -1,4 +1,5 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import sendToSentry from 'server/utils/sendToSentry'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
 import Coupon from '../../database/types/Coupon'
@@ -338,12 +339,9 @@ export default async function generateInvoice(
   const calculatedTotal =
     invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
   if (calculatedTotal !== invoice.total) {
-    console.warn(
-      'Calculated invoice does not match stripe invoice',
-      invoiceId,
-      calculatedTotal,
-      invoice.total
-    )
+    sendToSentry(new Error('Calculated invoice does not match stripe invoice'), {
+      tags: {invoiceId, calculatedTotal, invoiceTotal: invoice.total}
+    })
   }
 
   const [type] = invoiceId.split('_')
