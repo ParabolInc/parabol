@@ -22,7 +22,7 @@ const isStartMeetingLocked = async (teamId: string, dataLoader: DataLoaderWorker
     .flat()
   const teamIds = [...new Set(allTeamMembers.map(({teamId}) => teamId))]
   const allRelatedTeams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-  const anyTeamIsLocked = allRelatedTeams.some((team) => team.isPaid === false)
+  const anyTeamIsLocked = allRelatedTeams.some((team) => team.isPaid === false && !team.isArchived)
   return anyTeamIsLocked
     ? 'One or more of your team members is over the usage limit. Please contact sales'
     : null
