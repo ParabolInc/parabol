@@ -305,7 +305,9 @@ class AzureDevOpsServerManager {
     const workItems = [] as WorkItem[]
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
-    const payload = !!fields ? {ids: workItemIds, fields: fields} : {ids: workItemIds}
+    const payload = !!fields
+      ? {ids: workItemIds, fields: fields}
+      : {ids: workItemIds, $expand: 'Links'}
     const res = await this.post<WorkItemBatchResponse>(uri, payload)
     if (res instanceof Error) {
       if (!firstError) {
@@ -391,7 +393,6 @@ class AzureDevOpsServerManager {
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
     if (!!accessibleError) return {error: accessibleError, projects: null}
 
-    // this forEach is not returning
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
