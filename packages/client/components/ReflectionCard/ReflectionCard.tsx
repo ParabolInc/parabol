@@ -263,6 +263,7 @@ const ReflectionCard = (props: Props) => {
     reflectionGroups.find((group) =>
       group.reflections.find((reflection) => reflection.isViewerDragging || reflection.remoteDrag)
     ))()
+
   const shouldAnimate = (() => {
     if (phaseType !== 'group' || isComplete) return false
     if (primaryCondition) return false
@@ -358,13 +359,11 @@ export default createFragmentContainer(ReflectionCard, {
         id
       }
       spotlightSearchQuery
-      isViewerDragInProgress
       reflectionGroups {
         id
         reflections {
           id
           isEditing
-          isDropping
           isViewerDragging
           remoteDrag {
             id
