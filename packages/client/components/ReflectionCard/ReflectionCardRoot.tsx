@@ -22,7 +22,7 @@ const dragPrompt = keyframes`
   }
 `
 
-const ReflectionCardRoot = styled('div')<{shouldAnimate?: () => boolean}>(({shouldAnimate}) => ({
+const ReflectionCardRoot = styled('div')<{shouldAnimate?: boolean}>(({shouldAnimate}) => ({
   background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
@@ -32,7 +32,7 @@ const ReflectionCardRoot = styled('div')<{shouldAnimate?: () => boolean}>(({shou
   position: 'relative',
   transition: `box-shadow 2000ms ${DECELERATE}`,
   width: ElementWidth.REFLECTION_CARD,
-  animation: shouldAnimate && shouldAnimate() ? `${dragPrompt}  60s 30s infinite` : undefined
+  animation: shouldAnimate ? `${dragPrompt}  60s 30s infinite` : undefined
 }))
 
 export default ReflectionCardRoot

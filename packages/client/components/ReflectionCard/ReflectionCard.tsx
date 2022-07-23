@@ -256,24 +256,28 @@ const ReflectionCard = (props: Props) => {
     !isDemoRoute() &&
     (isHovering || !isDesktop)
 
-  const reflectionCount = reflectionGroups.reduce(
-    (sum, {reflections}) => sum + reflections.length,
-    0
-  )
-
-  const shouldAnimate = () => {
-    if (phaseType !== 'group') return false
-    if (reflectionCount !== reflectionGroups.length) return false
-    if (reflectionId !== reflectionGroups[0]?.reflections[0]?.id) return false
+  const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
+  //reflectionCount === reflectionGroups.length showing the weird behavior on reload, that's why calculated like this
+  const primaryCondition = reflectionGroups.find((group) => group.reflections.length > 1)
+  const draggingHappening = (() =>
+    reflectionGroups.find((group) =>
+      group.reflections.find((reflection) => reflection.isViewerDragging || reflection.remoteDrag)
+    ))()
+  const shouldAnimate = (() => {
+    if (phaseType !== 'group' || isComplete) return false
+    if (primaryCondition) return false
+    if (reflectionId !== firstReflection?.id) return false
+    if (firstReflection?.isEditing) return false
+    if (draggingHappening) return false
     return true
-  }
+  })()
 
   return (
     <ReflectionCardRoot
       data-cy={`${dataCy}-root`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      shouldAnimate={() => shouldAnimate()}
+      shouldAnimate={shouldAnimate}
       ref={reflectionRef}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
@@ -354,12 +358,14 @@ export default createFragmentContainer(ReflectionCard, {
         id
       }
       spotlightSearchQuery
+      isViewerDragInProgress
       reflectionGroups {
         id
         reflections {
           id
           isEditing
           isDropping
+          isViewerDragging
           remoteDrag {
             id
           }
