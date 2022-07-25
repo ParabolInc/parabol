@@ -1,5 +1,7 @@
-import React, {Suspense} from 'react'
+import React, {Suspense, useCallback, useEffect} from 'react'
+import {useHistory, useLocation} from 'react-router'
 import newMeetingQuery, {NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
+import useModal from '../hooks/useModal'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
@@ -19,9 +21,30 @@ const NewMeetingRoot = () => {
   useSubscription('NewMeetingRoot', TaskSubscription)
   useSubscription('NewMeetingRoot', TeamSubscription)
   const queryRef = useQueryLoaderNow<NewMeetingQuery>(newMeetingQuery, {teamId})
-  return (
+
+  const location = useLocation<{backgroundLocation?: Location}>()
+  const history = useHistory()
+
+  const onClose = useCallback(() => {
+    const state = location.state
+    history.replace(state?.backgroundLocation ?? '/meetings')
+  }, [location])
+
+  const {openPortal, closePortal, modalPortal} = useModal({
+    id: 'newMeetingRoot',
+    onClose
+  })
+
+  useEffect(() => {
+    openPortal()
+    return () => {
+      closePortal()
+    }
+  }, [])
+
+  return modalPortal(
     <Suspense fallback={renderLoader()}>
-      {queryRef && <NewMeeting teamId={teamId} queryRef={queryRef} />}
+      {queryRef && <NewMeeting teamId={teamId} queryRef={queryRef} onClose={closePortal} />}
     </Suspense>
   )
 }

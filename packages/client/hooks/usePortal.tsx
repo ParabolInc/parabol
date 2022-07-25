@@ -31,6 +31,7 @@ export type PortalId =
   | 'StageTimerMinutePicker'
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
+  | 'newMeetingRoot'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

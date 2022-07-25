@@ -1,20 +1,21 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import lazyPreload from '../utils/lazyPreload'
+import {NewMeetingTeamPicker_selectedTeam} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
+import {NewMeetingTeamPicker_teams} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import useRouter from '../hooks/useRouter'
-import {NewMeetingTeamPicker_teams} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
-import {NewMeetingTeamPicker_selectedTeam} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
+import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
-import styled from '@emotion/styled'
 
-const SelectTeamDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'SelectTeamDropdown' */
-    './SelectTeamDropdown'
-  )
+const SelectTeamDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'SelectTeamDropdown' */
+      './SelectTeamDropdown'
+    )
 )
 
 interface Props {
@@ -32,6 +33,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
+      parentId: 'newMeetingRoot',
       isDropdown: true
     }
   )
