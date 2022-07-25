@@ -31,10 +31,11 @@ interface Props {
 
 const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
 
-const IllustrationAndSelector = styled('div')({
+const IllustrationAndSelector = styled('div')<{isDesktop}>(({isDesktop}) => ({
   gridArea: 'picker',
-  width: '100%'
-})
+  width: '100%',
+  paddingBottom: isDesktop ? 0 : 32
+}))
 
 const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
   alignItems: 'center',
@@ -167,7 +168,7 @@ const NewMeeting = (props: Props) => {
         </CloseButton>
       </Title>
       <NewMeetingInner isDesktop={isDesktop}>
-        <IllustrationAndSelector>
+        <IllustrationAndSelector isDesktop={isDesktop}>
           <NewMeetingIllustration idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
           <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
         </IllustrationAndSelector>
