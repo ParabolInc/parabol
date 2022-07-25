@@ -51,15 +51,15 @@ const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, que
   const {isInvited} = relayState
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
-  const caseInsensitiveAtttributes = {} as Record<Lowercase<string>, Lowercase<string>>
+  const caseInsensitiveAtttributes = {} as Record<Lowercase<string>, string | undefined>
   Object.keys(attributes).forEach((key) => {
     const lowercaseKey = key.toLowerCase()
     const value = attributes[key]
-    const lowercaseValue = String(value).toLowerCase()
-    caseInsensitiveAtttributes[lowercaseKey] = lowercaseValue
+    caseInsensitiveAtttributes[lowercaseKey] = String(value)
   })
-  const {email: inputEmail, emailaddress} = caseInsensitiveAtttributes
-  const email = inputEmail || emailaddress
+  const {email: inputEmail, emailaddress, preferredname} = caseInsensitiveAtttributes
+  const preferredName = preferredname || name
+  const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return {error: {message: 'Email attribute was not included in SAML response'}}
   }
@@ -83,7 +83,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, que
   const newUser = new User({
     id: userId,
     email,
-    preferredName: name,
+    preferredName,
     tier: 'enterprise'
   })
 
