@@ -1,5 +1,4 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import sendToSentry from 'server/utils/sendToSentry'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
 import Coupon from '../../database/types/Coupon'
@@ -14,6 +13,7 @@ import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
+import sendToSentry from '../../utils/sendToSentry'
 import {getStripeManager} from '../../utils/stripe'
 
 interface InvoicesByStartTime {
