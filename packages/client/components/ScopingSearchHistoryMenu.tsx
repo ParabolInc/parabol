@@ -35,7 +35,7 @@ const DeleteIconButton = styled(IconButton)({
 export interface SearchQueries {
   id: string
   labelFirstLine: string
-  labelSecondLine: string
+  labelSecondLine?: string
   onClick: () => void
   onDelete: () => void
 }

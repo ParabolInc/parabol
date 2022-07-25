@@ -26,12 +26,16 @@ export const enum PALETTE {
   GRADIENT_TOMATO_700_ROSE_600 = 'linear-gradient(to right, #D5211A 0, #EB195F 100%)', // hover: TOMATO_700 to ROSE_600
   GRADIENT_TOMATO_400_ROSE_300 = 'linear-gradient(to right, #FD7F77 0, #F099BF 100%)', // disabled: TOMATO_400 to ROSE_300
 
+  GRAPE_500_30 = '#A06BD64D',
+
   GRAPE_500 = '#A06BD6',
   GRAPE_600 = '#7340B5',
   GRAPE_700 = '#493272',
   GRAPE_800 = '#2D1D53',
 
   GRASS_300 = '#C4CF66',
+
+  JADE_400_30 = '#66BC8C4D',
 
   JADE_400 = '#66BC8C',
   JADE_300 = '#91E8B7',
@@ -42,6 +46,7 @@ export const enum PALETTE {
 
   SKY_300 = '#8EC7F1',
   SKY_400 = '#61B1EB',
+  SKY_500_30 = '#329AE54D',
   SKY_500 = '#329AE5',
   SKY_600 = '#14649E',
 
@@ -70,5 +75,7 @@ export const enum PALETTE {
   TOMATO_700 = '#D5211A',
   TOMATO_800 = '#9F201E',
 
-  WHITE = '#FFFFFF'
+  WHITE = '#FFFFFF',
+
+  SUCCESS_LIGHT = '#2db553'
 }

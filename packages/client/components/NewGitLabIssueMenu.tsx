@@ -2,8 +2,8 @@ import React from 'react'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import GitLabMenuItem from './GitLabMenuItem'
 import Menu from './Menu'
-import RepoIntegrationGitLabMenuItem from './RepoIntegrationGitLabMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
@@ -37,12 +37,7 @@ const NewGitLabIssueMenu = (props: Props) => {
           handleSelectFullPath(fullPath)
         }
         return (
-          <RepoIntegrationGitLabMenuItem
-            key={projectId}
-            fullPath={fullPath}
-            onClick={onClick}
-            query={query}
-          />
+          <GitLabMenuItem key={projectId} fullPath={fullPath} onClick={onClick} query={query} />
         )
       })}
     </Menu>

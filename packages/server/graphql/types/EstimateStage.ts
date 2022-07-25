@@ -12,6 +12,7 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import TaskIntegrationAzureDevOps from '../../database/types/TaskIntegrationAzureDevOps'
 import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 import getRedis from '../../utils/getRedis'
@@ -125,18 +126,36 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'azureDevOps') {
-          const {instanceId, projectKey} = integration
+          const {instanceId, projectKey, issueKey, accessUserId} =
+            integration as TaskIntegrationAzureDevOps
+
+          const azureDevOpsWorkItem = await dataLoader.get('azureDevOpsWorkItem').load({
+            teamId,
+            userId: accessUserId,
+            taskId,
+            instanceId,
+            projectId: projectKey,
+            viewerId: accessUserId,
+            workItemId: issueKey
+          })
+
+          const workItemType = azureDevOpsWorkItem?.type ?? ''
           const dimensionName = await getDimensionName(meetingId)
+
           const azureDevOpsDimensionFieldMapEntry = await dataLoader
             .get('azureDevOpsDimensionFieldMap')
-            .load({teamId, dimensionName, instanceId, projectKey})
+            .load({teamId, dimensionName, instanceId, projectKey, workItemType})
+
           if (azureDevOpsDimensionFieldMapEntry) {
             return {
               name: azureDevOpsDimensionFieldMapEntry.fieldName,
               type: azureDevOpsDimensionFieldMapEntry.fieldType
             }
           }
-          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+          return {
+            name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            type: 'string'
+          }
         }
 
         if (service === 'github') {

@@ -1,6 +1,7 @@
 import getRethink from '../../database/rethinkDriver'
 import Team from '../../database/types/Team'
-import getTeamsByIds from '../queries/getTeamsByIds'
+import {getTeamsByIdsQuery} from '../generatedMigrationHelpers'
+import getPg from '../getPg'
 import {checkTableEq} from './checkEqBase'
 
 const alwaysDefinedFields: (keyof Team)[] = [
@@ -12,6 +13,11 @@ const alwaysDefinedFields: (keyof Team)[] = [
   'orgId'
 ]
 const ignoredFields: (keyof Team)[] = ['updatedAt']
+
+const getTeamsByIds = async (teamIds: string[] | readonly string[]): Promise<any[]> => {
+  const teams = await getTeamsByIdsQuery.run({ids: teamIds} as any, getPg())
+  return teams
+}
 
 const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: unknown} = {
   jiraDimensionFields: [],

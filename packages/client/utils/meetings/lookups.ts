@@ -19,7 +19,8 @@ export const phaseLabelLookup = {
   lastcall: 'Last Call',
   SUMMARY: 'Summary',
   SCOPE: 'Scope',
-  ESTIMATE: 'Estimate'
+  ESTIMATE: 'Estimate',
+  RESPONSES: 'Active'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseIconLookup = {

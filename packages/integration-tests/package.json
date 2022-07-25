@@ -2,7 +2,7 @@
   "name": "integration-tests",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.62.2",
+  "version": "6.66.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.19.2",
+    "@playwright/test": "^1.23.2",
     "@types/node": "16",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",

@@ -1,3 +1,4 @@
+import {isNotNull} from 'parabol-client/utils/predicates'
 import {isSuperUser} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
@@ -8,6 +9,18 @@ const User: UserResolvers = {
     const domain = getDomainFromEmail(email)
     if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
     return {id: domain}
+  },
+  domains: async ({id: userId}, _args, {dataLoader}) => {
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    const orgIds = organizationUsers
+      .filter(({suggestedTier}) => suggestedTier && suggestedTier !== 'personal')
+      .map(({orgId}) => orgId)
+
+    const organizations = await Promise.all(
+      orgIds.map((orgId) => dataLoader.get('organizations').load(orgId))
+    )
+    const approvedDomains = organizations.map(({activeDomain}) => activeDomain).filter(isNotNull)
+    return [...new Set(approvedDomains)].map((id) => ({id}))
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))

@@ -5,6 +5,120 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.67.0 2022-July-20
+
+### Added
+
+- feat(Azure DevOps): Adding additional project types (#6593)
+- feat(Azure DevOps): Add global provider (#6808)
+
+### Fixed
+
+- fix: access more than 10 Jira projects in task footer (#6881)
+
+### Changed
+
+- feat: Improve clarity of Integrations page (#6804)
+
+## 6.66.0 2022-July-13
+
+### Changed
+
+- chore(poker): use generic components for GitHub and GitLab (#6782)
+- feat(standups): Decrease top/bottom list margins in standup response editor (#6823)
+- feat(standups): Changed standups default title to contain a date, not seq number (#6857)
+- refactor: new GitHub & Jira issue queries (#6819)
+- chore: update invite modal illustration (#6859)
+
+### Fixed
+
+- chore(deps): bump parse-url from 6.0.0 to 6.0.2 (#6853)
+- fix(standups): Do not show active standup as completed on meeting dashboard (#6816)
+- fix(demo): fix timer of demo meeting (#6865)
+- chore(deps): bump moment from 2.29.3 to 2.29.4 (#6860)
+- fix(security): package bumps for dependabot fixes (#6874)
+- fix(dd-trace): enabled comes from env var (#6876)
+- feat(standups): Display standups as active instead of started (#6878)
+
+### Added
+
+- feat(standups): Basic editor bubble menu (#6812)
+- feat(standups): Allow facilitator to update the standup meeting title (#6821)
+
+## 6.65.0 2022-July-6
+
+### Added
+
+- **Retrospective**: Add more prominent enter to submit hint (#6794)
+- **Retrospective**: Updated voting buttons to be clearer (#6818)
+- retro template search filter (#6798)
+- **Insights**: Charts (#6799)
+- **Standups**: Links (#6701)
+- **Metrics**: Add Segment event to track when onboarding user clicks the Demo Meeting Card (#6834)
+- decrease top/bottom list margins in standup response editor (#6823)
+
+### Fixed
+
+- **Lockfile**: re-add security fixes (#6831)
+
+### Changed
+
+- **Poker**: use generic components for GitHub and GitLab (#6782)
+
+## 6.64.0 2022-June-22
+
+### Added
+
+- **Jira Server**: Always show provider row with contact us button (#6683)
+- **Standups**: Response submission UX redesign (#6778)
+- **Metrics**: invitation related events refactor (#6779)
+- **Insights**: usage stats analytics (#6786)
+- **Insights**: usage snack nag (#6785)
+- Export admin data (#6733)
+
+### Fixed
+
+- **Standups**: Allow reactjis to be added after initial response submission (#6768)
+- Reuse invite link (#6795)
+- Write to url field (#6800)
+- **Sprint Poker**: Remove padding in Discussion Drawer (#6700)
+
+### Changed
+
+- **DX**: integration tests can be run locally (#6696)
+- Hide bottom start meeting FAB on desktop (#6802)
+
+## 6.63.0 2022-June-16
+
+### Added
+
+- feat: add integrations task for first-time users, use jsdom to attach…
+- feat: add team charter template (#6745)
+- feat(Onboarding): Added demo link to empty meeting dash (#6704)
+- feat(insights): toggle insights (#6672)
+- feat(Onboarding): Added video tutorial to empty meetings dash (#6705)
+- feat(metrics): merge 'Upgrade to Pro' and 'Enterprise invoice draft'
+- feat(standups): Make response in discussion drawer scrollable (#6753)
+- feat(insights): Add /usage route (#6687)
+
+### Fixed
+
+- fix(poker): Fix wrong controls when estimating Parabol tasks (#6716)
+- fix: center add/start meeting button content (#6732)
+- fix: handle duplicates in changeEmailDomain (#6725)
+- fix: updates caniuse-lite version in yarn lock file (#6736)
+- fix(standups): reduced list padding in standups response (#6754)
+- fix(standups): removed user select none property from standup respons
+
+### Changed
+
+- chore: update release_test.md (#6717)
+- refactor: update createFragmentContainer to usePaginationFragment (#6431)
+- chore(dx): delete remaining generated pg queries (#6752)
+- refactor: Stop writes to RethinkDB Team table (#6239)
+- chore: fix delete team migration (#6763)
+- chore: Refresh HubSpot chat widget on page changes (#6759)
+
 ## 6.62.2 2022-June-12
 
 ### Added
@@ -459,6 +573,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - enforce server side lock (#5840)
 - SECURITY: bump react-refresh-webpack-plugin #5896
 - Security/bump graphql jit #5897
+
 -
 
 ### Fixed
@@ -4523,7 +4638,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 
 ### Fixed
 
-- Add/remove rethinkdb entity from cache problem, see: https://github.com/mattkrick/cashay/issues/125
+- Add/remove rethinkdb entity from cache problem, see: <https://github.com/mattkrick/cashay/issues/125>
 - Editors multiplayer field regression
 
 ## v0.6.1 - 2016-Sep-23

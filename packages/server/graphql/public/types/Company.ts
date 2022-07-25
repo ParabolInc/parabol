@@ -2,6 +2,7 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import TeamMember from '../../../database/types/TeamMember'
+import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -241,9 +242,43 @@ const Company: CompanyResolvers = {
     )
   },
 
-  organizations: async ({id: domain}, _args, {dataLoader}) => {
+  organizations: async ({id: domain}, _args, {authToken, dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-    return organizations
+    // only superusers can see across ALL organizations.
+    // users can only see the organizations they are apart of
+    if (isSuperUser(authToken)) return organizations
+    const orgIds = organizations.map(({id}) => id)
+    const viewerId = getUserId(authToken)
+    const allOrganizationUsers = (
+      await Promise.all(
+        orgIds.map((orgId) => {
+          return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
+        })
+      )
+    ).filter(isValid)
+    // If suggestedTier === enterprise, that means the user is allowed to see across
+    // all organizations, even the ones they are not a member of!
+    const isViewerAllowedToSeeAll = allOrganizationUsers.some(
+      ({suggestedTier}) => suggestedTier === 'enterprise'
+    )
+    if (isViewerAllowedToSeeAll) return organizations
+    // Pro-qualified or unqualified users can only see orgs that they are apart of
+    const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
+    return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
+  },
+  suggestedTier: async ({id: domain}, _args, {dataLoader}) => {
+    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const orgIds = organizations.map(({id}) => id)
+    const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
+      .filter(isValid)
+      .flat()
+
+    const tiers = [
+      ...new Set(organizationUsers.map(({suggestedTier}) => suggestedTier).filter(isValid))
+    ]
+    if (tiers.includes('enterprise')) return 'enterprise'
+    if (tiers.includes('pro')) return 'pro'
+    return 'personal'
   },
 
   tier: async ({id: domain}, _args, {dataLoader}) => {

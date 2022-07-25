@@ -24,7 +24,6 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 
 tracer.init({
-  enabled: process.env.DD_TRACE_ENABLED === 'true',
   service: `Web ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false

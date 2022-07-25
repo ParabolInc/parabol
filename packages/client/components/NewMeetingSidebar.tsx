@@ -4,9 +4,7 @@ import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useMutationProps from '~/hooks/useMutationProps'
-import RenameMeetingMutation from '~/mutations/RenameMeetingMutation'
-import Legitity from '~/validation/Legitity'
+import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import {NewMeetingSidebar_meeting} from '~/__generated__/NewMeetingSidebar_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
@@ -79,32 +77,13 @@ interface Props {
 
 const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, toggleSidebar, meeting} = props
-  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
   const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
   const {id: teamId, name: teamName} = team
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
+  const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
-  const handleSubmit = (name: string) => {
-    if (submitting || error) return
-    submitMutation()
-    RenameMeetingMutation(atmosphere, {meetingId, name}, {onCompleted, onError})
-  }
-  const validate = (rawMeetingName: string) => {
-    const res = new Legitity(rawMeetingName)
-      .trim()
-      .required('Meetings need names')
-      .min(2, 'Meetings need good names')
-      .max(50, 'Meetings need short names')
-
-    if (res.error) {
-      onError(new Error(res.error))
-    } else if (error) {
-      onCompleted()
-    }
-    return res
-  }
 
   return (
     <SidebarParent data-cy='sidebar'>

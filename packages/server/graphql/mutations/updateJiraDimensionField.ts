@@ -2,15 +2,15 @@ import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import MeetingPoker from '../../database/types/MeetingPoker'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
-import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
-import MeetingPoker from '../../database/types/MeetingPoker'
 
 const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
   // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled

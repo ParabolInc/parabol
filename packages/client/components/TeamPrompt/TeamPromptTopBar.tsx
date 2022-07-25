@@ -2,10 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
+import EditableText from '../EditableText'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import TeamPromptOptions from './TeamPromptOptions'
 
@@ -13,8 +16,11 @@ const TeamPromptHeaderTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
   margin: 0,
-  padding: 0
+  padding: 0,
+  fontWeight: 600
 })
+
+const EditableTeamPromptHeaderTitle = TeamPromptHeaderTitle.withComponent(EditableText)
 
 const TeamPromptHeader = styled('div')({
   margin: 'auto 0',
@@ -48,21 +54,38 @@ const TeamPromptTopBar = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
+        id
         name
+        facilitatorUserId
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
       }
     `,
     meetingRef
   )
-
-  const {name: meetingName} = meeting
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const {id: meetingId, name: meetingName, facilitatorUserId} = meeting
+  const isFacilitator = viewerId === facilitatorUserId
+  const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
 
   return (
     <MeetingTopBarStyles>
       <TeamPromptHeader>
         <BackButton ariaLabel='Back to Meetings' to='/meetings' />
-        <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+        {isFacilitator ? (
+          <EditableTeamPromptHeaderTitle
+            error={error?.message}
+            handleSubmit={handleSubmit}
+            initialValue={meetingName}
+            isWrap
+            maxLength={50}
+            validate={validate}
+            placeholder={'Best Meeting Ever!'}
+          />
+        ) : (
+          <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+        )}
       </TeamPromptHeader>
       <IconGroupBlock>
         <NewMeetingAvatarGroup meeting={meeting} />

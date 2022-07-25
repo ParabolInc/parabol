@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
 import {useFragment} from 'react-relay'
+import Icon from '~/components/Icon'
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
 import useTooltip from '~/hooks/useTooltip'
@@ -25,6 +26,14 @@ interface Props {
   viewerRef: MattermostPanel_viewer$key
   teamId: string
 }
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.SLATE_600,
+  paddingLeft: '4px',
+  ':hover': {
+    cursor: 'pointer'
+  }
+})
 
 const MattermostPanelStyles = styled('div')({
   borderTop: `1px solid ${PALETTE.SLATE_300}`,
@@ -50,7 +59,10 @@ const Row = styled('div')({
 const Label = styled('span')({
   fontSize: 14,
   marginRight: 16,
-  width: '100%'
+  width: '100%',
+  position: 'relative',
+  alignItems: 'center',
+  display: 'flex'
 })
 
 const StyledButton = styled(FlatButton)({
@@ -170,7 +182,7 @@ const MattermostPanel = (props: Props) => {
   }
 
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT
+    MenuPosition.LOWER_CENTER
   )
 
   return (
@@ -180,8 +192,11 @@ const MattermostPanel = (props: Props) => {
       </ConnectionGroup>
       <form onSubmit={onSubmit}>
         <Row>
-          <Label onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
+          <Label>
             Mattermost Webhook
+            <StyledIcon onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
+              {'info'}
+            </StyledIcon>
           </Label>
           {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}
           <BasicInput
@@ -189,7 +204,7 @@ const MattermostPanel = (props: Props) => {
             error=''
             onChange={onChange}
             name='webhookUrl'
-            placeholder='https://my.mattermost.com:8065/hooks/abc123'
+            placeholder='Enter your webhook URL here...'
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             Update

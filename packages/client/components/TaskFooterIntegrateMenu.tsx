@@ -181,7 +181,7 @@ graphql`
 `
 graphql`
   fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
-    repoIntegrations {
+    repoIntegrations(first: 50) {
       ...TaskFooterIntegrateMenuList_repoIntegrations
     }
   }

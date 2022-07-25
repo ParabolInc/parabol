@@ -13,7 +13,7 @@ import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
-import StripeManager from '../../utils/StripeManager'
+import {getStripeManager} from '../../utils/stripe'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -263,7 +263,7 @@ const maybeReduceUnknowns = async (
 ) => {
   const r = await getRethink()
   const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
-  const manager = new StripeManager()
+  const manager = getStripeManager()
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]!
     // this could be inefficient but if all goes as planned, we'll never use this function

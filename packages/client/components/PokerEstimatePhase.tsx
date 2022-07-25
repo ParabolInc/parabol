@@ -22,7 +22,10 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
-    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
+    [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
+      width: '100%'
+    }
   })
 )
 

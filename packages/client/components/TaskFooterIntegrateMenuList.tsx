@@ -12,13 +12,13 @@ import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import GitHubMenuItem from './GitHubMenuItem'
+import GitLabMenuItem from './GitLabMenuItem'
+import JiraMenuItem from './JiraMenuItem'
+import JiraServerMenuItem from './JiraServerMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
-import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
-import RepoIntegrationGitLabMenuItem from './RepoIntegrationGitLabMenuItem'
-import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
-import RepoIntegrationJiraServerMenuItem from './RepoIntegrationJiraServerMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
@@ -97,12 +97,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <RepoIntegrationJiraMenuItem
-              key={id}
-              query={query}
-              repoIntegration={repoIntegration}
-              onClick={onClick}
-            />
+            <JiraMenuItem key={id} query={query} name={repoIntegration.name} onClick={onClick} />
           )
         }
         if (__typename === 'JiraServerRemoteProject') {
@@ -116,7 +111,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <RepoIntegrationJiraServerMenuItem
+            <JiraServerMenuItem
               key={id}
               query={query}
               repoIntegration={repoIntegration}
@@ -136,10 +131,10 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <RepoIntegrationGitHubMenuItem
+            <GitHubMenuItem
               key={id}
               query={query}
-              repoIntegration={repoIntegration}
+              nameWithOwner={repoIntegration.nameWithOwner}
               onClick={onClick}
             />
           )
@@ -155,14 +150,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
-          return (
-            <RepoIntegrationGitLabMenuItem
-              key={id}
-              query={query}
-              fullPath={fullPath}
-              onClick={onClick}
-            />
-          )
+          return <GitLabMenuItem key={id} query={query} fullPath={fullPath} onClick={onClick} />
         }
         return null
       })}
@@ -189,9 +177,7 @@ graphql`
     ... on _xGitLabProject {
       fullPath
     }
-    ...RepoIntegrationJiraMenuItem_repoIntegration
-    ...RepoIntegrationJiraServerMenuItem_repoIntegration
-    ...RepoIntegrationGitHubMenuItem_repoIntegration
+    ...JiraServerMenuItem_repoIntegration
   }
 `
 

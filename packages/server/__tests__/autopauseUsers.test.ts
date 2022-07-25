@@ -1,8 +1,10 @@
 import {sendIntranet, signUp} from './common'
 
+// TODO: use https://jestjs.io/docs/jest-object#fake-timers when server will be running in process or adopt approach similar to https://stripe.com/docs/billing/testing/test-clocks
 // As of 2022-01-11, this test is not testing the AutoPauseUsers mutation
 // because there is no easy way to set the lastSeenAt field to a date in the past
-test('Autopause users who where never active', async () => {
+
+test.skip('Autopause users who where never active', async () => {
   const {userId} = await signUp()
   const paused = await sendIntranet({
     query: `

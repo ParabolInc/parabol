@@ -1,8 +1,8 @@
-import {MigrationBuilder, ColumnDefinitions} from 'node-pg-migrate'
+import stringify from 'fast-json-stable-stringify'
+import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import Team from '../../database/types/Team'
-import stringify from 'fast-json-stable-stringify'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
