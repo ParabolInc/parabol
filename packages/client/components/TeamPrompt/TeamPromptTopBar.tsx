@@ -58,10 +58,11 @@ const BetaBadge = styled('div')({
 
 interface Props {
   meetingRef: TeamPromptTopBar_meeting$key
+  isDesktop: boolean
 }
 
 const TeamPromptTopBar = (props: Props) => {
-  const {meetingRef} = props
+  const {meetingRef, isDesktop} = props
 
   const meeting = useFragment(
     graphql`
@@ -100,7 +101,7 @@ const TeamPromptTopBar = (props: Props) => {
         )}
       </TeamPromptHeader>
       <IconGroupBlock>
-        <BetaBadge>BETA</BetaBadge>
+        {isDesktop && <BetaBadge>BETA</BetaBadge>}
         <NewMeetingAvatarGroup meeting={meeting} />
         <ButtonContainer>
           <TeamPromptOptions meetingRef={meeting} />
