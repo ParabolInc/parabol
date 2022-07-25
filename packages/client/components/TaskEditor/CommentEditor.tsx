@@ -7,7 +7,7 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useRef} from 'react'
+import React, {RefObject, Suspense, useRef, useEffect} from 'react'
 import completeEntity from '../../utils/draftjs/completeEntity'
 import linkify from '../../utils/linkify'
 import {AriaLabels, Card} from '../../types/constEnums'
@@ -189,6 +189,12 @@ const CommentEditor = (props: Props) => {
     if (renderModal || !onBlur) return
     onBlur(e)
   }
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+  }, []);
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
