@@ -6,6 +6,8 @@ import {useFragment} from 'react-relay'
 import {BottomNavHelpButton_meeting$key} from '~/__generated__/BottomNavHelpButton_meeting.graphql'
 import BottomNavIconLabel, {paletteColors} from './BottomNavIconLabel'
 
+const DEFAULT_DELAY_MILLISECOND = 30000
+
 interface Props {
   icon?: string | undefined
   iconColor?: keyof typeof paletteColors
@@ -57,14 +59,8 @@ const BottomNavHelpButton = (props: Props) => {
           phaseType
         }
         ... on RetrospectiveMeeting {
-          reflectionGroups {
-            id
-            reflections {
-              id
-              isEditing
-              isViewerDragging
-            }
-          }
+          endedAt
+          facilitatorUserId
           localPhase {
             ... on ReflectPhase {
               reflectPrompts {
@@ -73,6 +69,18 @@ const BottomNavHelpButton = (props: Props) => {
               }
             }
           }
+          reflectionGroups {
+            id
+            reflections {
+              id
+              isEditing
+              isViewerDragging
+            }
+          }
+          viewerMeetingMember {
+            votesRemaining
+          }
+          votesRemaining
         }
       }
     `,
@@ -83,29 +91,38 @@ const BottomNavHelpButton = (props: Props) => {
   const [delay, setDelay] = useState(2000)
   const [shouldAnimate, setShouldAnimate] = useState(false)
   useEffect(() => {
+    // only enable for facilitatorUser
     // if the ready button is "full" before these conditions are met, the animation should start after 5s
-    // 1. reflect
     if (localPhase.phaseType === 'reflect') {
       const reflectPrompts = localPhase!.reflectPrompts
       const hasNoEditing = !!reflectPrompts?.every(
         (prompts) => !prompts.editorIds || prompts.editorIds.length === 0
       )
       const isNotFocus = true
-      console.log({meeting}, hasNoEditing)
 
+      console.log({meeting}, hasNoEditing)
       setShouldAnimate(isNotFocus && hasNoEditing)
-    } else if (localPhase.phaseType === 'group') {
-      const isNotDragging = reflectionGroups?.every((group) =>
-        group.reflections.every((reflection) => !reflection.isViewerDragging)
-      )
-      console.log({meeting}, isNotDragging)
-      setDelay(30000)
-      setShouldAnimate(!!isNotDragging)
-    } else if (localPhase.phaseType === 'vote') {
-      setDelay(30000)
-      setShouldAnimate(false)
-    } else if (localPhase.phaseType === 'discuss') {
-      setShouldAnimate(false)
+    } else {
+      if (localPhase.phaseType === 'group') {
+        const isNotDragging = reflectionGroups?.every((group) =>
+          group.reflections.every((reflection) => !reflection.isViewerDragging)
+        )
+
+        console.log({meeting}, isNotDragging)
+        setDelay(DEFAULT_DELAY_MILLISECOND)
+        setShouldAnimate(!!isNotDragging)
+      } else if (localPhase.phaseType === 'vote') {
+        const teamVotesRemaining = meeting.votesRemaining || 0
+        const myVotesRemaining = meeting.viewerMeetingMember?.votesRemaining || 0
+        const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
+
+        console.log({meeting}, isNotVoting)
+        setDelay(DEFAULT_DELAY_MILLISECOND)
+        setShouldAnimate(isNotVoting)
+      } else if (localPhase.phaseType === 'discuss') {
+        setDelay(5 * 60 * 1000)
+        setShouldAnimate(true)
+      }
     }
   }, [localPhase, reflectionGroups])
 
