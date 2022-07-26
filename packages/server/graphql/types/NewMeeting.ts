@@ -29,6 +29,10 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'The unique meeting id. shortid.'
   },
+  meetingSeriesId: {
+    type: GraphQLID,
+    description: 'The meeting series id this meeting is associated with if the meeting is recurring'
+  },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the meeting was created'

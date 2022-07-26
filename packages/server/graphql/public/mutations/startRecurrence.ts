@@ -1,5 +1,6 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import {getUserId} from '../../../utils/authorization'
@@ -18,6 +19,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
+  // VALIDATION
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
@@ -28,10 +30,20 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     return standardError(new Error('Meeting already has meeting series'), {userId: viewerId})
   }
 
+  // Next meeting start is tomorrow at 9a UTC
+  const startDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9)
+  )
+  const recurrenceRule = new RRule({
+    freq: RRule.WEEKLY,
+    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR],
+    dtstart: startDate
+  })
+
   const newMeetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',
     title: 'Async Standup',
-    recurrenceRule: 'TODO',
+    recurrenceRule: recurrenceRule.toString(),
     duration: 24 * 60 // 24 hours
   })
 
@@ -49,8 +61,6 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     .run()
 
   dataLoader.get('newMeetings').clear(meetingId)
-
-  // VALIDATION
 
   // RESOLUTION
 

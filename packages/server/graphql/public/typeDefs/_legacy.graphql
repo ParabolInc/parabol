@@ -447,6 +447,11 @@ interface NewMeeting {
   id: ID!
 
   """
+  The meeting series id this meeting is associated with if the meeting is recurring
+  """
+  meetingSeriesId: ID
+
+  """
   The timestamp the meeting was created
   """
   createdAt: DateTime!

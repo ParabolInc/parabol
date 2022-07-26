@@ -7,6 +7,13 @@ graphql`
   fragment StartRecurrenceMutation_team on StartRecurrenceSuccess {
     meeting {
       id
+      meetingSeriesId
+      scheduledEndTime
+    }
+    meetingSeries {
+      id
+      recurrenceRule
+      duration
     }
   }
 `

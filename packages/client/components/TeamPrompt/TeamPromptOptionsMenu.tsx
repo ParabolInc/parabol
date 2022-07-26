@@ -38,13 +38,14 @@ const TeamPromptOptionsMenu = (props: Props) => {
     graphql`
       fragment TeamPromptOptionsMenu_meeting on TeamPromptMeeting {
         id
+        meetingSeriesId
         endedAt
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, endedAt} = meeting
+  const {id: meetingId, meetingSeriesId, endedAt} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
 
@@ -66,7 +67,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
       />
       <MenuItem
         key='copy'
-        isDisabled={!!endedAt}
+        isDisabled={!!endedAt || !!meetingSeriesId}
         label={
           <OptionMenuItem>
             <StyledIcon>flag</StyledIcon>
