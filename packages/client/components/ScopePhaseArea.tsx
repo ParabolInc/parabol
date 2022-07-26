@@ -77,7 +77,8 @@ const ScopePhaseArea = (props: Props) => {
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
   const allowAzureDevOps =
-    !!azureDevOpsIntegration?.sharedProviders.length && featureFlags?.azureDevOps
+    (!!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider) &&
+    featureFlags?.azureDevOps
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
@@ -223,6 +224,9 @@ export default createFragmentContainer(ScopePhaseArea, {
               }
             }
             azureDevOps {
+              cloudProvider {
+                id
+              }
               sharedProviders {
                 id
               }

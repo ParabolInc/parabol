@@ -12,7 +12,7 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 - It should be a reviewer’s goal to do the code review within 1 business day. If you’re unable to do it, leave a comment.
 - If you’re busy it’s ok to assign someone else as a reviewer.
 - When submitting a PR, provide context. What's the task? What's changed? Why? If you can, record a Loom to share why things are done that way. It'll be easier for a reviewer to understand what decision you've made and why.
-- When reviewing a PR and requesting changes, be mindful that the PR author won't always have the right background to understand what are you requesting. Make your comments meaningful, and record a Loom if needed. 
+- When reviewing a PR and requesting changes, be mindful that the PR author won't always have the right background to understand what are you requesting. Make your comments meaningful, and record a Loom if needed.
 - [The right balance](https://docs.gitlab.com/ee/development/code_review.html#the-right-balance)
 
 ## Sprint Board
@@ -45,6 +45,10 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 - Approved by the maintainer?
   - If there are +1 comments, the issue the PR belongs to goes back to self-review to give the author a chance to react to the comments.
   - If there are only +2 comments, the PR can be merged directly by the maintainer.
+
+## Metrics Representative
+- Metrics Representative ensures any analytics related changes work well with downstream data services
+- This role is currently filled by @tianrunhe
 
 ## Author
 
