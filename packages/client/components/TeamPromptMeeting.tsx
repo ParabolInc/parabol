@@ -132,7 +132,7 @@ const TeamPromptMeeting = (props: Props) => {
               isOpen={isRightDrawerOpen && isDesktop}
               hideBottomBar={true}
             >
-              <TeamPromptTopBar meetingRef={meeting} />
+              <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
