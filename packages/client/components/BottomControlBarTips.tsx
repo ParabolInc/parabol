@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useTimeout from '~/hooks/useTimeout'
 import {TransitionStatus} from '~/hooks/useTransition'
 import LocalAtmosphere from '~/modules/demo/LocalAtmosphere'
 import lazyPreload, {LazyExoticPreload} from '~/utils/lazyPreload'
-import {BottomControlBarTips_meeting} from '~/__generated__/BottomControlBarTips_meeting.graphql'
+import {BottomControlBarTips_meeting$key} from '~/__generated__/BottomControlBarTips_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
@@ -104,12 +104,41 @@ const helps = {
 
 interface Props {
   cancelConfirm: (() => void) | undefined
-  meeting: BottomControlBarTips_meeting
+  meeting: BottomControlBarTips_meeting$key
   status: TransitionStatus
   onTransitionEnd: () => void
 }
 const BottomControlBarTips = (props: Props) => {
-  const {cancelConfirm, meeting, status, onTransitionEnd} = props
+  const {cancelConfirm, meeting: meetingRef, status, onTransitionEnd} = props
+  const meeting = useFragment(
+    graphql`
+      fragment BottomControlBarTips_meeting on NewMeeting {
+        ... on RetrospectiveMeeting {
+          reflectionGroups {
+            id
+          }
+          localPhase {
+            ... on ReflectPhase {
+              reflectPrompts {
+                id
+                editorIds
+              }
+            }
+          }
+        }
+        id
+        meetingType
+        localPhase {
+          phaseType
+        }
+        phases {
+          phaseType
+        }
+      }
+    `,
+    meetingRef
+  )
+
   const {localPhase, meetingType} = meeting
   const {phaseType} = localPhase
   const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
@@ -118,6 +147,11 @@ const BottomControlBarTips = (props: Props) => {
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   const menus = isDemoRoute() ? demoHelps : helps
+  // different condition for each phase
+  // 1. reflect
+  const reflectPrompts = localPhase!.reflectPrompts
+  const hasNoEditing = reflectPrompts?.every((prompts) => prompts.editorIds?.length === 0)
+  console.log('========no editorIds========', meeting, hasNoEditing)
   const MenuContent = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
@@ -153,17 +187,4 @@ const BottomControlBarTips = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(BottomControlBarTips, {
-  meeting: graphql`
-    fragment BottomControlBarTips_meeting on NewMeeting {
-      id
-      meetingType
-      localPhase {
-        phaseType
-      }
-      phases {
-        phaseType
-      }
-    }
-  `
-})
+export default BottomControlBarTips
