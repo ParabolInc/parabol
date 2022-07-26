@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
@@ -23,6 +24,22 @@ const StyledWrapper = styled(SettingsWrapper)({
   display: 'block'
 })
 
+const Note = styled('div')({
+  paddingTop: 29,
+  paddingBottom: 25,
+  fontSize: 13
+})
+
+const Heading = styled('div')({
+  color: PALETTE.SLATE_700,
+  fontSize: 16,
+  fontWeight: 600
+})
+
+const AvailableHeading = styled(Heading)({
+  paddingTop: 16
+})
+
 const query = graphql`
   query ProviderListQuery($teamId: ID!) {
     viewer {
@@ -34,6 +51,55 @@ const query = graphql`
       ...SlackProviderRow_viewer
       ...AzureDevOpsProviderRow_viewer
       ...MSTeamsProviderRow_viewer
+
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            accessToken
+          }
+          jiraServer {
+            auth {
+              id
+              isActive
+            }
+            sharedProviders {
+              id
+            }
+          }
+          github {
+            accessToken
+          }
+          gitlab {
+            auth {
+              provider {
+                scope
+              }
+            }
+          }
+          mattermost {
+            auth {
+              provider {
+                id
+              }
+            }
+          }
+          slack {
+            isActive
+          }
+          azureDevOps {
+            auth {
+              accessToken
+            }
+          }
+          msTeams {
+            auth {
+              provider {
+                id
+              }
+            }
+          }
+        }
+      }
 
       featureFlags {
         azureDevOps
@@ -52,16 +118,79 @@ const ProviderList = (props: Props) => {
   const {
     featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
   } = viewer
+
+  const integrations = viewer.teamMember?.integrations
+
+  const allIntegrations = [
+    {
+      name: 'Atlassian',
+      connected: !!integrations?.atlassian?.accessToken,
+      component: <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
+    },
+    {
+      name: 'Jira Server',
+      connected:
+        !!integrations?.jiraServer?.auth?.isActive && integrations.jiraServer?.sharedProviders[0],
+      component: <JiraServerProviderRow teamId={teamId} viewerRef={viewer} />
+    },
+    {
+      name: 'GitHub',
+      connected: !!integrations?.github?.accessToken,
+      component: <GitHubProviderRow teamId={teamId} viewer={viewer} />
+    },
+    {
+      name: 'GitLab',
+      connected: !!integrations?.gitlab.auth,
+      component: <GitLabProviderRow teamId={teamId} viewerRef={viewer} />
+    },
+    {
+      name: 'Mattermost',
+      connected: !!integrations?.mattermost.auth,
+      component: <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
+    },
+    {
+      name: 'Slack',
+      connected: integrations?.slack?.isActive,
+      component: <SlackProviderRow teamId={teamId} viewer={viewer} />
+    },
+    {
+      name: 'Azure DevOps',
+      connected: !!integrations?.azureDevOps.auth?.accessToken,
+      component: <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />,
+      hidden: !allowAzureDevOps
+    },
+    {
+      name: 'MS Teams',
+      connected: !!integrations?.msTeams.auth,
+      component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />,
+      hidden: !allowMSTeams
+    }
+  ]
+
+  const connectedIntegrations = allIntegrations
+    .filter((integration) => integration.connected && !integration.hidden)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((integration) => integration.component)
+
+  const availableIntegrations = allIntegrations
+    .filter((integration) => !integration.connected && !integration.hidden)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((integration) => integration.component)
+
   return (
     <StyledWrapper>
-      <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
-      <JiraServerProviderRow teamId={teamId} viewerRef={viewer} />
-      <GitHubProviderRow teamId={teamId} viewer={viewer} />
-      <GitLabProviderRow teamId={teamId} viewerRef={viewer} />
-      <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
-      <SlackProviderRow teamId={teamId} viewer={viewer} />
-      {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />}
-      {allowMSTeams && <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />}
+      <Note>
+        Each team member must add the integrations they want to use. Integrations are scoped to the
+        team where you add them.
+      </Note>
+
+      {connectedIntegrations.length > 0 && <Heading>Connected</Heading>}
+
+      {connectedIntegrations}
+
+      {availableIntegrations.length > 0 && <AvailableHeading>Available</AvailableHeading>}
+
+      {availableIntegrations}
     </StyledWrapper>
   )
 }

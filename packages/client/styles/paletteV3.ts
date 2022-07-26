@@ -75,5 +75,7 @@ export const enum PALETTE {
   TOMATO_700 = '#D5211A',
   TOMATO_800 = '#9F201E',
 
-  WHITE = '#FFFFFF'
+  WHITE = '#FFFFFF',
+
+  SUCCESS_LIGHT = '#2db553'
 }

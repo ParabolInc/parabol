@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
+import hasToken from '../utils/hasToken'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
 import DialogContainer from './DialogContainer'
-import hasToken from '../utils/hasToken'
-import momentumPng from '../../../static/images/illustrations/illus-momentum.png'
 
 const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',
@@ -34,7 +34,7 @@ const AddTeamMemberModalDemo = () => {
     : 'Sign up, invite your teammates, and kick off a real Retro!'
   return (
     <StyledDialogContainer>
-      <Illustration alt='' src={momentumPng} />
+      <Illustration alt='' src={modalTeamInvitePng} />
       <StyledCopy>{copy}</StyledCopy>
       <DemoCreateAccountPrimaryButton />
     </StyledDialogContainer>

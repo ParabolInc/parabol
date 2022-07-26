@@ -1,14 +1,41 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
-import {EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
+import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import {ICON_SIZE} from '~/styles/typographyV2'
 import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
+import Icon from '../Icon'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
+
+const LinkIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18
+})
+
+const BubbleMenuWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  background: '#FFFFFF',
+  border: '1px solid',
+  borderRadius: '4px',
+  borderColor: PALETTE.SLATE_600,
+  padding: '4px'
+})
+
+const BubbleMenuButton = styled(BaseButton)<{isActive: boolean}>(({isActive}) => ({
+  height: '20px',
+  width: '22px',
+  padding: '4px 0px 4px 0px',
+  borderRadius: '2px',
+  background: isActive ? PALETTE.SLATE_300 : undefined,
+  ':hover': {
+    background: PALETTE.SLATE_300
+  }
+}))
 
 const SubmissionButtonWrapper = styled('div')({
   display: 'flex',
@@ -43,8 +70,8 @@ const StyledEditor = styled('div')`
   .ProseMirror :is(ul, ol) {
     list-style-position: outside;
     padding-inline-start: 16px;
-    margin-block-start: 16px;
-    margin-block-end: 16px;
+    margin-block-start: 4px;
+    margin-block-end: 4px;
   }
 
   .ProseMirror :is(ol) {
@@ -180,6 +207,33 @@ const PromptResponseEditor = (props: Props) => {
   return (
     <>
       <StyledEditor>
+        {editor && (
+          <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
+            <BubbleMenuWrapper>
+              <BubbleMenuButton
+                onClick={() => editor.chain().focus().toggleBold().run()}
+                isActive={editor.isActive('bold')}
+              >
+                <b>B</b>
+              </BubbleMenuButton>
+              <BubbleMenuButton
+                onClick={() => editor.chain().focus().toggleItalic().run()}
+                isActive={editor.isActive('italic')}
+              >
+                <i>I</i>
+              </BubbleMenuButton>
+              <BubbleMenuButton
+                onClick={() => editor.chain().focus().toggleStrike().run()}
+                isActive={editor.isActive('strike')}
+              >
+                <s>S</s>
+              </BubbleMenuButton>
+              <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
+                <LinkIcon>link</LinkIcon>
+              </BubbleMenuButton>
+            </BubbleMenuWrapper>
+          </BubbleMenu>
+        )}
         {editor && linkOverlayProps?.linkMenuProps && (
           <EditorLinkChangerTipTap
             text={linkOverlayProps.linkMenuProps.text}

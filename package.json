@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.64.0",
+  "version": "6.67.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -66,15 +66,17 @@
     "@xmldom/xmldom": "^0.7.0",
     "node-gyp": "^8.4.1",
     "simple-get": "^4.0.1",
-    "caniuse-lite": "~1.0.0"
+    "caniuse-lite": "~1.0.0",
+    "git-url-parse": "12.0.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "7.16.0",
-    "@graphql-codegen/add": "^3.1.0",
-    "@graphql-codegen/cli": "^2.3.1",
-    "@graphql-codegen/typescript": "^2.4.0",
-    "@graphql-codegen/typescript-operations": "^2.2.0",
-    "@graphql-codegen/typescript-resolvers": "^2.5.2",
+    "@babel/core": "7.18.6",
+    "@babel/preset-env": "7.18.6",
+    "@graphql-codegen/add": "^3.2.0",
+    "@graphql-codegen/cli": "^2.8.0",
+    "@graphql-codegen/typescript": "^2.7.1",
+    "@graphql-codegen/typescript-operations": "^2.5.1",
+    "@graphql-codegen/typescript-resolvers": "^2.7.1",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.17.0",
@@ -92,6 +94,7 @@
     "relay-compiler": "^12.0.0",
     "relay-compiler-language-typescript": "^15.0.1",
     "relay-config": "^12.0.0",
+    "sucrase": "^3.23.0",
     "ts-loader": "9.2.6",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "5.64.1",

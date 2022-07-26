@@ -35,6 +35,32 @@ export interface AccessibleResources {
   value: Resource[]
 }
 
+export interface ProjectProperty {
+  name: string
+  value: string
+}
+
+export interface ProjectProperties {
+  count: number
+  value: ProjectProperty[]
+}
+
+export interface ProcessType {
+  custom: string
+  inherited: string
+  system: string
+}
+
+export interface Process {
+  _links: ReferenceLinks
+  description: string
+  id: string
+  isDefault: boolean
+  name: string
+  type: ProcessType
+  url: string
+}
+
 export interface WorkItemQueryResult {
   asOf: string
   columns: WorkItemFieldReference[]
@@ -167,7 +193,7 @@ interface WorkItemAddFieldResponse {
   url: string
 }
 
-const MAX_REQUEST_TIME = 5000
+const MAX_REQUEST_TIME = 8000
 
 class AzureDevOpsServerManager {
   accessToken = ''
@@ -279,7 +305,9 @@ class AzureDevOpsServerManager {
     const workItems = [] as WorkItem[]
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
-    const payload = !!fields ? {ids: workItemIds, fields: fields} : {ids: workItemIds}
+    const payload = !!fields
+      ? {ids: workItemIds, fields: fields}
+      : {ids: workItemIds, $expand: 'Links'}
     const res = await this.post<WorkItemBatchResponse>(uri, payload)
     if (res instanceof Error) {
       if (!firstError) {
@@ -365,7 +393,6 @@ class AzureDevOpsServerManager {
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
     if (!!accessibleError) return {error: accessibleError, projects: null}
 
-    // this forEach is not returning
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
@@ -442,6 +469,53 @@ class AzureDevOpsServerManager {
     return {error: undefined, projects: teamProjectReferences}
   }
 
+  async getProjectProperties(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
+    const result = await this.get<ProjectProperties>(uri)
+    if (result instanceof Error) {
+      firstError = result
+    }
+    const requestedProperties = result as ProjectProperties
+    return {error: firstError, projectProperties: requestedProperties}
+  }
+
+  async getProjectProcessTemplate(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const result = await this.getProjectProperties(instanceId, projectId)
+    if (result.error) {
+      firstError = result.error
+    }
+    const processTemplateProperty = result.projectProperties.value[0]
+    if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
+      return {error: firstError, projectTemplate: ''}
+    }
+    const processTemplateDetailsResult = await this.getProcessTemplate(
+      instanceId,
+      processTemplateProperty?.value
+    )
+    if (processTemplateDetailsResult.error) {
+      if (!firstError) {
+        firstError = processTemplateDetailsResult.error
+      }
+    }
+    return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+  }
+
+  async getProcessTemplate(instanceId: string, processId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
+    const result = await this.get<Process>(uri)
+    const unknownProcessErrorCode = 'VS402362'
+    if (result instanceof Error) {
+      if (result.message.includes(unknownProcessErrorCode, 0)) {
+        return {error: firstError, process: 'Basic'}
+      }
+      firstError = result
+    }
+    return {error: firstError, process: result.name}
+  }
+
   async getAccountProjects(accountName: string) {
     const teamProjectReferences = [] as TeamProjectReference[]
     let firstError: Error | undefined
@@ -490,7 +564,7 @@ class AzureDevOpsServerManager {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
       scope: '499b84ac-1321-427f-aa17-267ca6975798/.default',
-      redirect_uri: 'http://localhost:8081/'
+      redirect_uri: makeAppURL(appOrigin, 'auth/ado')
     })
   }
 
@@ -507,7 +581,7 @@ class AzureDevOpsServerManager {
     }
 
     const additonalHeaders = {
-      Origin: 'http://localhost:8081'
+      Origin: appOrigin
     }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`

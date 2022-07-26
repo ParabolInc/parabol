@@ -5,6 +5,66 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.67.0 2022-July-20
+
+### Added
+
+- feat(Azure DevOps): Adding additional project types (#6593)
+- feat(Azure DevOps): Add global provider (#6808)
+
+### Fixed
+
+- fix: access more than 10 Jira projects in task footer (#6881)
+
+### Changed
+
+- feat: Improve clarity of Integrations page (#6804)
+
+## 6.66.0 2022-July-13
+
+### Changed
+
+- chore(poker): use generic components for GitHub and GitLab (#6782)
+- feat(standups): Decrease top/bottom list margins in standup response editor (#6823)
+- feat(standups): Changed standups default title to contain a date, not seq number (#6857)
+- refactor: new GitHub & Jira issue queries (#6819)
+- chore: update invite modal illustration (#6859)
+
+### Fixed
+
+- chore(deps): bump parse-url from 6.0.0 to 6.0.2 (#6853)
+- fix(standups): Do not show active standup as completed on meeting dashboard (#6816)
+- fix(demo): fix timer of demo meeting (#6865)
+- chore(deps): bump moment from 2.29.3 to 2.29.4 (#6860)
+- fix(security): package bumps for dependabot fixes (#6874)
+- fix(dd-trace): enabled comes from env var (#6876)
+- feat(standups): Display standups as active instead of started (#6878)
+
+### Added
+
+- feat(standups): Basic editor bubble menu (#6812)
+- feat(standups): Allow facilitator to update the standup meeting title (#6821)
+
+## 6.65.0 2022-July-6
+
+### Added
+
+- **Retrospective**: Add more prominent enter to submit hint (#6794)
+- **Retrospective**: Updated voting buttons to be clearer (#6818)
+- retro template search filter (#6798)
+- **Insights**: Charts (#6799)
+- **Standups**: Links (#6701)
+- **Metrics**: Add Segment event to track when onboarding user clicks the Demo Meeting Card (#6834)
+- decrease top/bottom list margins in standup response editor (#6823)
+
+### Fixed
+
+- **Lockfile**: re-add security fixes (#6831)
+
+### Changed
+
+- **Poker**: use generic components for GitHub and GitLab (#6782)
+
 ## 6.64.0 2022-June-22
 
 ### Added
@@ -26,7 +86,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Changed
 
 - **DX**: integration tests can be run locally (#6696)
-- Hide bottom start meeting FAB on desktop (#6802) 
+- Hide bottom start meeting FAB on desktop (#6802)
 
 ## 6.63.0 2022-June-16
 

@@ -9,11 +9,33 @@ export interface AzureDevOpsFieldMapProps {
   instanceId: string
   fieldType: string
   projectKey: string
+  workItemType: string
 }
 const upsertAzureDevOpsDimensionFieldMap = async (props: AzureDevOpsFieldMapProps) => {
-  const {teamId, dimensionName, fieldName, fieldId, instanceId, fieldType, projectKey} = props
+  const {
+    teamId,
+    dimensionName,
+    fieldName,
+    fieldId,
+    instanceId,
+    fieldType,
+    projectKey,
+    workItemType
+  } = props
+  console.log(`Inside upsertAzureDevOpsDimensionFieldMap - props:${JSON.stringify(props)}`)
   return upsertAzureDevOpsDimensionFieldMapQuery.run(
-    {fieldMap: {teamId, dimensionName, fieldName, fieldId, instanceId, fieldType, projectKey}},
+    {
+      fieldMap: {
+        teamId,
+        dimensionName,
+        fieldName,
+        fieldId,
+        instanceId,
+        fieldType,
+        projectKey,
+        workItemType
+      }
+    },
     getPg()
   )
 }

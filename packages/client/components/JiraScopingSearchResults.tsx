@@ -125,9 +125,9 @@ const JiraScopingSearchResults = (props: Props) => {
         {viewer && (
           <NewJiraIssueInput
             isEditing={isEditing}
-            meeting={meeting}
+            meetingRef={meeting}
             setIsEditing={setIsEditing}
-            viewer={viewer}
+            viewerRef={viewer}
           />
         )}
         {edges.map(({node}) => {

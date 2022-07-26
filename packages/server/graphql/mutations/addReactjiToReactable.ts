@@ -11,6 +11,7 @@ import Reflection from '../../database/types/Reflection'
 import getPg from '../../postgres/getPg'
 import {appendTeamResponseReactji} from '../../postgres/queries/generated/appendTeamResponseReactjiQuery'
 import {removeTeamResponseReactji} from '../../postgres/queries/generated/removeTeamResponseReactjiQuery'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
@@ -39,7 +40,7 @@ const addReactjiToReactable = {
     },
     reactableType: {
       type: new GraphQLNonNull(ReactableEnum),
-      description: 'the type of the'
+      description: 'the type of the reactable'
     },
     reactji: {
       type: new GraphQLNonNull(GraphQLString),
@@ -162,6 +163,15 @@ const addReactjiToReactable = {
     }
 
     const data = {reactableId, reactableType}
+    const {meetingType} = await dataLoader.get('newMeetings').load(meetingId)
+    analytics.reactjiInteracted(
+      viewerId,
+      meetingId,
+      meetingType,
+      reactableId,
+      reactableType,
+      !!isRemove
+    )
     if (meetingId) {
       publish(
         SubscriptionChannel.MEETING,

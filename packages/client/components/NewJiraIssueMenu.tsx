@@ -1,99 +1,67 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import useAllIntegrations from '~/hooks/useAllIntegrations'
-import useAtmosphere from '~/hooks/useAtmosphere'
+import {useFragment} from 'react-relay'
 import {MenuProps} from '~/hooks/useMenu'
-import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
-import {NewJiraIssueMenu_repoIntegrations} from '~/__generated__/NewJiraIssueMenu_repoIntegrations.graphql'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import {
+  NewJiraIssueMenu_JiraRemoteProjects,
+  NewJiraIssueMenu_JiraRemoteProjects$key
+} from '../__generated__/NewJiraIssueMenu_JiraRemoteProjects.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
+import JiraMenuItem from './JiraMenuItem'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   handleSelectProjectKey: (key: string) => void
   menuProps: MenuProps
-  repoIntegrations: NewJiraIssueMenu_repoIntegrations
   teamId: string
   userId: string
+  projectsRef: NewJiraIssueMenu_JiraRemoteProjects$key
 }
 
-const getValue = (item: {remoteProject?: any; nameWithOwner?: string}) => {
-  return item.remoteProject?.name ?? item.nameWithOwner ?? 'Unknown Project'
-}
+const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.name
 
 const NewJiraIssueMenu = (props: Props) => {
-  const {handleSelectProjectKey, menuProps, repoIntegrations, teamId, userId} = props
-  const {hasMore, items} = repoIntegrations
-  const {query, filteredItems: filteredIntegrations, onQueryChange} = useSearchFilter(
-    items ?? [],
-    getValue
-  )
+  const {handleSelectProjectKey, menuProps, projectsRef} = props
 
-  const atmosphere = useAtmosphere()
-  const {allItems, status} = useAllIntegrations(
-    atmosphere,
-    query,
-    filteredIntegrations,
-    !!hasMore,
-    teamId,
-    userId
+  const projects = useFragment(
+    graphql`
+      fragment NewJiraIssueMenu_JiraRemoteProjects on JiraRemoteProject @relay(plural: true) {
+        id
+        name
+        key
+      }
+    `,
+    projectsRef
   )
+  const {
+    query,
+    filteredItems: filteredProjects,
+    onQueryChange
+  } = useSearchFilter(projects ?? [], getValue)
 
   return (
     <Menu
       ariaLabel='Select Jira project'
       keepParentFocus
       {...menuProps}
-      resetActiveOnChanges={[allItems]}
+      resetActiveOnChanges={[projects]}
     >
       <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
-      {(query && allItems.length === 0 && status !== 'loading' && (
-        <EmptyDropdownMenuItemLabel key='no-results'>
-          No integrations found!
-        </EmptyDropdownMenuItemLabel>
-      )) ||
-        null}
+      {query && projects.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
+      )}
 
-      {allItems.slice(0, 10).map((repoIntegration) => {
-        const {id, __typename} = repoIntegration
-        if (__typename === 'JiraRemoteProject') {
-          const {key} = repoIntegration
-          const onClick = () => {
-            handleSelectProjectKey(key)
-          }
-          return (
-            <RepoIntegrationJiraMenuItem
-              key={id}
-              query={query}
-              repoIntegration={repoIntegration}
-              onClick={onClick}
-            />
-          )
+      {filteredProjects.slice(0, 10).map((project) => {
+        const {id, name, key} = project
+        const onClick = () => {
+          handleSelectProjectKey(key)
         }
-        return null
+        return <JiraMenuItem key={id} query={query} name={name} onClick={onClick} />
       })}
     </Menu>
   )
 }
 
-export default createFragmentContainer(NewJiraIssueMenu, {
-  repoIntegrations: graphql`
-    fragment NewJiraIssueMenu_repoIntegrations on RepoIntegrationQueryPayload {
-      hasMore
-      items {
-        ... on JiraRemoteProject {
-          __typename
-          id
-          name
-          key
-        }
-        ... on _xGitHubRepository {
-          nameWithOwner
-        }
-        ...RepoIntegrationJiraMenuItem_repoIntegration
-      }
-    }
-  `
-})
+export default NewJiraIssueMenu

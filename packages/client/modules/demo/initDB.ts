@@ -181,7 +181,21 @@ class DemoMattermostProvider {
   webhookUrl = ExternalLinks.INTEGRATIONS_MATTERMOST
 }
 
+class DemoMsTeamsProvider {
+  id = 'demoMsTeamsProvider'
+
+  teamId = demoTeamId
+  createdAt = new Date().toJSON()
+  updatedAt = new Date().toJSON()
+  service = 'msTeams'
+  authStrategy = 'webhook'
+  scope = 'team'
+  isActive = true
+  webhookUrl = ExternalLinks.INTEGRATIONS_MSTEAMS
+}
+
 const demoMattermostProvider = new DemoMattermostProvider()
+const demoMsTeamsProvider = new DemoMsTeamsProvider()
 
 const initDemoTeamMember = (
   {id: userId, preferredName, picture}: {id: string; preferredName: string; picture: string},
@@ -231,6 +245,14 @@ const initDemoTeamMember = (
           provider: demoMattermostProvider
         },
         sharedProviders: []
+      },
+      msTeams: {
+        id: 'demoMsTeamsIntegration',
+        auth: {
+          id: 'demoMsTeamsAuth',
+          isActive: true,
+          provider: demoMsTeamsProvider
+        }
       },
       slack: initSlackAuth(userId)
     },
