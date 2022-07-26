@@ -17,9 +17,7 @@ import DialogTitle from './DialogTitle'
 import FlatButton from './FlatButton'
 import IconLabel from './IconLabel'
 import NewMeetingActions from './NewMeetingActions'
-import NewMeetingHowTo from './NewMeetingHowTo'
-import NewMeetingIllustration from './NewMeetingIllustration'
-import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
+import NewMeetingCarousel from './NewMeetingCarousel'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
 
@@ -29,21 +27,14 @@ interface Props {
   onClose: () => void
 }
 
-const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
-
-const MEDIA_QUERY_MEDIUM_SCREEN = `@media screen and (max-width: ${Breakpoint.NEW_MEETING_GRID}px)`
-
-const IllustrationAndSelector = styled('div')({
-  gridArea: 'picker',
-  width: '100%'
-})
+const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
 
 const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   gridArea: 'settings',
-  marginTop: isDesktop ? 32 : undefined,
+  marginTop: isDesktop ? 32 : 16,
   minHeight: 166
 }))
 
@@ -53,7 +44,7 @@ const TeamAndSettingsInner = styled('div')({
 })
 
 const NewMeetingDialog = styled(DialogContainer)({
-  width: '800px',
+  width: '860px',
   maxHeight: 'unset',
   borderRadius: Radius.FIELD
 })
@@ -64,9 +55,9 @@ const Title = styled(DialogTitle)({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '16px 16px 24px 24px',
-  [MEDIA_QUERY_MEDIUM_SCREEN]: {
-    padding: '8px 8px 16px 16px'
+  padding: '16px 16px 16px 24px',
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    padding: '8px 8px 7px 16px'
   }
 })
 
@@ -76,25 +67,13 @@ const CloseButton = styled(FlatButton)({
 })
 
 const NewMeetingInner = styled('div')({
-  alignItems: 'flex-start',
-  justifyItems: 'center',
-  margin: '0 auto auto',
-  display: 'grid',
-  gridTemplateAreas: `'picker howto' 'settings actions'`,
-  gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
-  gridTemplateRows: 'auto 3fr',
   height: '100%',
   maxHeight: 640,
   maxWidth: 1400,
-  padding: '0 64px 16px 64px',
+  padding: 0,
 
-  [MEDIA_QUERY_VERTICAL_CENTERING]: {
-    marginTop: 'auto'
-  },
-
-  [MEDIA_QUERY_MEDIUM_SCREEN]: {
+  [MEDIA_QUERY_FUZZY_TABLET]: {
     display: 'block',
-    margin: 'auto',
     padding: 0
   }
 })
@@ -171,11 +150,7 @@ const NewMeeting = (props: Props) => {
         </CloseButton>
       </Title>
       <NewMeetingInner>
-        <IllustrationAndSelector>
-          <NewMeetingIllustration idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
-          <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
-        </IllustrationAndSelector>
-        <NewMeetingHowTo meetingType={meetingType} />
+        <NewMeetingCarousel idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
         <TeamAndSettings isDesktop={isDesktop}>
           <TeamAndSettingsInner>
             <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
