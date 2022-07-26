@@ -1,5 +1,5 @@
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 interface Input {
@@ -12,6 +12,8 @@ interface Input {
   phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
+  meetingSeriesId?: number
+  scheduledEndTime?: Date
 }
 
 const namePrefix = {
@@ -35,6 +37,8 @@ export default abstract class Meeting {
   meetingType: MeetingTypeEnum
   phases: GenericMeetingPhase[]
   showConversionModal?: boolean
+  meetingSeriesId?: number
+  scheduledEndTime?: Date
 
   constructor(input: Input) {
     const {
@@ -45,7 +49,9 @@ export default abstract class Meeting {
       meetingType,
       name,
       phases,
-      showConversionModal
+      showConversionModal,
+      meetingSeriesId,
+      scheduledEndTime
     } = input
     this.id = id ?? generateUID()
     this.createdBy = facilitatorUserId
@@ -58,5 +64,7 @@ export default abstract class Meeting {
     this.phases = phases
     this.teamId = teamId
     this.showConversionModal = showConversionModal
+    this.meetingSeriesId = meetingSeriesId
+    this.scheduledEndTime = scheduledEndTime
   }
 }

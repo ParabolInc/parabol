@@ -1,4 +1,5 @@
 import {getDiscussionsByIds} from '../postgres/queries/getDiscussionsByIds'
+import getMeetingSeriesByIds from '../postgres/queries/getMeetingSeriesByIds'
 import {getTeamPromptResponsesByIds} from '../postgres/queries/getTeamPromptResponsesByIds'
 import getTeamsByIds from '../postgres/queries/getTeamsByIds'
 import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
@@ -12,3 +13,4 @@ export const discussions = primaryKeyLoaderMaker(getDiscussionsByIds)
 export const templateRefs = primaryKeyLoaderMaker(getTemplateRefsByIds)
 export const templateScaleRefs = primaryKeyLoaderMaker(getTemplateScaleRefsByIds)
 export const teamPromptResponses = primaryKeyLoaderMaker(getTeamPromptResponsesByIds)
+export const meetingSeries = primaryKeyLoaderMaker(getMeetingSeriesByIds)

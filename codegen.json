@@ -3,9 +3,7 @@
     "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
-    "scalars": {
-      "DateTime": "Date"
-    }
+    "scalars": {"DateTime": "Date"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -43,6 +41,7 @@
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
+          "StartRecurrenceSuccess": "./types/StartRecurrenceSuccess#StartRecurrenceSuccessSource",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",

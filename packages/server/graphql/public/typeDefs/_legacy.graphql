@@ -452,6 +452,11 @@ interface NewMeeting {
   createdAt: DateTime!
 
   """
+  The timestamp the meeting is scheduled to end
+  """
+  scheduledEndTime: DateTime
+
+  """
   The id of the user that created the meeting
   """
   createdBy: ID!

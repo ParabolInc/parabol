@@ -6,6 +6,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
+import StartRecurrenceMutation from '~/mutations/StartRecurrenceMutation'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import {PALETTE} from '../../styles/paletteV3'
@@ -61,6 +62,20 @@ const TeamPromptOptionsMenu = (props: Props) => {
         onClick={() => {
           menuProps.closePortal()
           EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError})
+        }}
+      />
+      <MenuItem
+        key='copy'
+        isDisabled={!!endedAt}
+        label={
+          <OptionMenuItem>
+            <StyledIcon>flag</StyledIcon>
+            <span>{'Repeat M-F'}</span>
+          </OptionMenuItem>
+        }
+        onClick={() => {
+          menuProps.closePortal()
+          StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
         }}
       />
     </Menu>

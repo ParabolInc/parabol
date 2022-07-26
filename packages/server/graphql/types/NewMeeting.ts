@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum as MeetingTypeEnumType} from '../../postgres/types/Meeting'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
@@ -21,7 +22,6 @@ import PokerMeeting from './PokerMeeting'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 import TeamMember from './TeamMember'
-import {MeetingTypeEnum as MeetingTypeEnumType} from '../../postgres/types/Meeting'
 import TeamPromptMeeting from './TeamPromptMeeting'
 
 export const newMeetingFields = () => ({
@@ -32,6 +32,10 @@ export const newMeetingFields = () => ({
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the meeting was created'
+  },
+  scheduledEndTime: {
+    type: GraphQLISO8601Type,
+    description: 'The timestamp the meeting is scheduled to end'
   },
   createdBy: {
     type: new GraphQLNonNull(GraphQLID),
