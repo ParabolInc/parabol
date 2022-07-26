@@ -7,72 +7,77 @@ import useMenu from '~/hooks/useMenu'
 import useTimeout from '~/hooks/useTimeout'
 import {TransitionStatus} from '~/hooks/useTransition'
 import LocalAtmosphere from '~/modules/demo/LocalAtmosphere'
-import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
 import lazyPreload, {LazyExoticPreload} from '~/utils/lazyPreload'
 import {BottomControlBarTips_meeting} from '~/__generated__/BottomControlBarTips_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
 import BottomNavControl from './BottomNavControl'
-import BottomNavIconLabel from './BottomNavIconLabel'
+import BottomNavHelpButton from './BottomNavHelpButton'
 import Menu from './Menu'
 
 const TallMenu = styled(Menu)({
   maxHeight: 320
 })
 
-const CheckInHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
+const CheckInHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
 )
 
-const ReflectHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'ReflectHelpMenu' */ './MeetingHelp/ReflectHelpMenu')
+const ReflectHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'ReflectHelpMenu' */ './MeetingHelp/ReflectHelpMenu')
 )
-const DemoReflectHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoReflectHelpMenu' */ './MeetingHelp/DemoReflectHelpMenu')
+const DemoReflectHelpMenu = lazyPreload(
+  async () =>
+    import(/* webpackChunkName: 'DemoReflectHelpMenu' */ './MeetingHelp/DemoReflectHelpMenu')
 )
-const GroupHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'GroupHelpMenu' */ './MeetingHelp/GroupHelpMenu')
+const GroupHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'GroupHelpMenu' */ './MeetingHelp/GroupHelpMenu')
 )
-const DemoGroupHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoGroupHelpMenu' */ './MeetingHelp/DemoGroupHelpMenu')
+const DemoGroupHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'DemoGroupHelpMenu' */ './MeetingHelp/DemoGroupHelpMenu')
 )
-const VoteHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'VoteHelpMenu' */ './MeetingHelp/VoteHelpMenu')
+const VoteHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'VoteHelpMenu' */ './MeetingHelp/VoteHelpMenu')
 )
-const DemoVoteHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoVoteHelpMenu' */ './MeetingHelp/DemoVoteHelpMenu')
+const DemoVoteHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'DemoVoteHelpMenu' */ './MeetingHelp/DemoVoteHelpMenu')
 )
-const DiscussHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu')
+const DiscussHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu')
 )
-const DemoDiscussHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu')
+const DemoDiscussHelpMenu = lazyPreload(
+  async () =>
+    import(/* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu')
 )
-const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ './MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
-  )
+const ActionMeetingAgendaItemsHelpMenu = lazyPreload(
+  async () =>
+    import(
+      /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ './MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
+    )
 )
-const ActionMeetingFirstCallHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'ActionMeetingFirstCallHelpMenu' */ './MeetingHelp/ActionMeetingFirstCallHelpMenu'
-  )
+const ActionMeetingFirstCallHelpMenu = lazyPreload(
+  async () =>
+    import(
+      /* webpackChunkName: 'ActionMeetingFirstCallHelpMenu' */ './MeetingHelp/ActionMeetingFirstCallHelpMenu'
+    )
 )
-const ActionMeetingLastCallHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'ActionMeetingLastCallHelpMenu' */ './MeetingHelp/ActionMeetingLastCallHelpMenu'
-  )
+const ActionMeetingLastCallHelpMenu = lazyPreload(
+  async () =>
+    import(
+      /* webpackChunkName: 'ActionMeetingLastCallHelpMenu' */ './MeetingHelp/ActionMeetingLastCallHelpMenu'
+    )
 )
-const UpdatesHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu')
+const UpdatesHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu')
 )
 
-const ScopeHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'ScopeHelpMenu' */ './MeetingHelp/ScopeHelpMenu')
+const ScopeHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'ScopeHelpMenu' */ './MeetingHelp/ScopeHelpMenu')
 )
 
-const EstimateHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'EstimateHelpMenu' */ './MeetingHelp/EstimateHelpMenu')
+const EstimateHelpMenu = lazyPreload(
+  async () => import(/* webpackChunkName: 'EstimateHelpMenu' */ './MeetingHelp/EstimateHelpMenu')
 )
 
 const demoHelps = {
@@ -116,7 +121,7 @@ const BottomControlBarTips = (props: Props) => {
   const MenuContent = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
-      const {clientGraphQLServer} = (atmosphere as unknown) as LocalAtmosphere
+      const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
       const {isNew} = clientGraphQLServer
       if (!isNew) {
         openPortal()
@@ -138,7 +143,7 @@ const BottomControlBarTips = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
+      <BottomNavHelpButton icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
           <MenuContent meetingType={meetingType} />
