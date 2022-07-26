@@ -10,6 +10,7 @@ import RedisLock from '../../../utils/RedisLock'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
+import getIsAnyViewerTeamLocked from './helpers/getIsAnyViewerTeamLocked'
 import getIsUserIdApprovedByOrg from './helpers/getIsUserIdApprovedByOrg'
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
@@ -59,10 +60,21 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
     }
   }
-  const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken)
+
+  const [approvalError, isAnyViewerTeamLocked] = await Promise.all([
+    getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken),
+    getIsAnyViewerTeamLocked(viewer.tms, dataLoader)
+  ])
   if (approvalError instanceof Error) {
     await redisLock.unlock()
     return {error: {message: approvalError.message}}
+  }
+  if (isAnyViewerTeamLocked) {
+    return {
+      error: {
+        message: `Sorry! You're unable to join this team because one of your teams has an overdue payment`
+      }
+    }
   }
 
   // RESOLUTION
