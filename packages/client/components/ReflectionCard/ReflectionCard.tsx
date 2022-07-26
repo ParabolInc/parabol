@@ -255,22 +255,23 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
-
-  const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
-  //reflectionCount === reflectionGroups.length showing the weird behavior on reload, that's why calculated like this
-  const primaryCondition = reflectionGroups.find((group) => group.reflections.length > 1)
-  const draggingHappening = (() =>
-    reflectionGroups.find((group) =>
-      group.reflections.find((reflection) => reflection.isViewerDragging || reflection.remoteDrag)
-    ))()
+  
+  const isGroupPhase = !isComplete && phaseType === 'group'
+  const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
 
   const shouldAnimate = (() => {
-    if (phaseType !== 'group' || isComplete) return false
-    if (primaryCondition) return false
-    if (reflectionId !== firstReflection?.id) return false
-    if (firstReflection?.isEditing) return false
-    if (draggingHappening) return false
-    return true
+    if(isGroupPhase && hasNoGroup) {
+      const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
+      const isFirst = reflectionId === firstReflection?.id
+      const isNotEditing = !firstReflection?.isEditing
+      const isNotDragging = !reflectionGroups.some(
+        (group) => group.reflections.some(
+          (reflection) => reflection.isViewerDragging
+        )
+      )
+      return isFirst && isNotEditing && isNotDragging
+    }
+    return false
   })()
 
   return (
@@ -365,9 +366,6 @@ export default createFragmentContainer(ReflectionCard, {
           id
           isEditing
           isViewerDragging
-          remoteDrag {
-            id
-          }
         }
       }
     }
