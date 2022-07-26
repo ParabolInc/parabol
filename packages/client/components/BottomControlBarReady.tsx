@@ -101,7 +101,6 @@ const BottomControlBarReady = (props: Props) => {
   const atmosphere = useAtmosphere()
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
-  console.log('========activeCount========', {progress, readyCount, activeCount})
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
   const isConfirmRequired =
     isLastStageInPhase &&
