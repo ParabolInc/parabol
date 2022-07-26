@@ -113,19 +113,7 @@ const BottomControlBarTips = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
-        ... on RetrospectiveMeeting {
-          reflectionGroups {
-            id
-          }
-          localPhase {
-            ... on ReflectPhase {
-              reflectPrompts {
-                id
-                editorIds
-              }
-            }
-          }
-        }
+        ...BottomNavHelpButton_meeting
         id
         meetingType
         localPhase {
@@ -147,11 +135,6 @@ const BottomControlBarTips = (props: Props) => {
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   const menus = isDemoRoute() ? demoHelps : helps
-  // different condition for each phase
-  // 1. reflect
-  const reflectPrompts = localPhase!.reflectPrompts
-  const hasNoEditing = reflectPrompts?.every((prompts) => prompts.editorIds?.length === 0)
-  console.log('========no editorIds========', meeting, hasNoEditing)
   const MenuContent = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
@@ -177,7 +160,12 @@ const BottomControlBarTips = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <BottomNavHelpButton icon='help_outline' iconColor='midGray' label={'Tips'} />
+      <BottomNavHelpButton
+        icon='help_outline'
+        iconColor='midGray'
+        label={'Tips'}
+        meetingRef={meeting}
+      />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
           <MenuContent meetingType={meetingType} />
