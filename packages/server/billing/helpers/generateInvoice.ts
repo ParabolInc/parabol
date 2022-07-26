@@ -228,11 +228,10 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
       metadata,
       period: {end},
       proration,
-      quantity,
-      description
+      quantity
     } = lineItem
     const lineItemQuantity = quantity ?? 0
-    if (description === null && proration === false) {
+    if (proration === false) {
       if (!nextPeriodCharges) {
         // this must be the next month's charge
         nextPeriodCharges = new NextPeriodCharges({
@@ -247,22 +246,11 @@ const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
         nextPeriodCharges.amount = nextPeriodCharges.amount || amount
         nextPeriodCharges.quantity = nextPeriodCharges.quantity || lineItemQuantity
       }
+    } else if (!metadata.type) {
+      unknownLineItems.push(lineItem)
     } else {
-      if (!nextPeriodCharges) {
-        nextPeriodCharges = new NextPeriodCharges({
-          amount,
-          quantity: lineItemQuantity,
-          nextPeriodEnd: fromEpochSeconds(end),
-          unitPrice: lineItem.plan?.amount || undefined,
-          interval: lineItem.plan?.interval || 'month'
-        })
-      }
-      if (!metadata.type) {
-        unknownLineItems.push(lineItem)
-      } else {
-        // at this point, we don't care whether it's an auto pause or manual
-        addToDict(itemDict, lineItem)
-      }
+      // at this point, we don't care whether it's an auto pause or manual
+      addToDict(itemDict, lineItem)
     }
   }
   return {itemDict, nextPeriodCharges, unknownLineItems}
@@ -290,7 +278,9 @@ const maybeReduceUnknowns = async (
     if (hook) {
       const {id: hookId, type, userId} = hook
       // push it back to stripe for posterity
-      manager.updateInvoiceItem(unknownLineItem.id, type, userId, hookId).catch()
+      if (unknownLineItem.invoice_item) {
+        manager.updateInvoiceItem(unknownLineItem.invoice_item, type, userId, hookId).catch()
+      }
       // mutate the original line item
       unknownLineItem.metadata = {
         type,
