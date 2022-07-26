@@ -4,9 +4,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {BottomNavHelpButton_meeting$key} from '~/__generated__/BottomNavHelpButton_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import BottomNavIconLabel, {paletteColors} from './BottomNavIconLabel'
-
-const DEFAULT_DELAY_MILLISECOND = 30000
 
 interface Props {
   icon?: string | undefined
@@ -58,6 +57,13 @@ const BottomNavHelpButton = (props: Props) => {
         localPhase {
           phaseType
         }
+        localStage {
+          readyCount
+          isViewerReady
+        }
+        meetingMembers {
+          id
+        }
         ... on RetrospectiveMeeting {
           endedAt
           facilitatorUserId
@@ -87,12 +93,28 @@ const BottomNavHelpButton = (props: Props) => {
     meetingRef
   )
   const {localPhase, reflectionGroups} = meeting
-  // different condition for each phase
   const [delay, setDelay] = useState(2000)
   const [shouldAnimate, setShouldAnimate] = useState(false)
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+
   useEffect(() => {
     // only enable for facilitatorUser
+    const {facilitatorUserId, endedAt} = meeting
+    const isFacilitator = viewerId === facilitatorUserId && !endedAt
+    if (!isFacilitator) return
+
     // if the ready button is "full" before these conditions are met, the animation should start after 5s
+    const {localStage, meetingMembers} = meeting
+    const activeCount = meetingMembers.length
+    const readyCount = localStage.readyCount || 0
+    const progress = readyCount / Math.max(1, activeCount - 1)
+
+    if (progress === 1) {
+      setDelay(5000)
+      setShouldAnimate(true)
+      return
+    }
     if (localPhase.phaseType === 'reflect') {
       const reflectPrompts = localPhase!.reflectPrompts
       const hasNoEditing = !!reflectPrompts?.every(
@@ -100,7 +122,6 @@ const BottomNavHelpButton = (props: Props) => {
       )
       const isNotFocus = true
 
-      console.log({meeting}, hasNoEditing)
       setShouldAnimate(isNotFocus && hasNoEditing)
     } else {
       if (localPhase.phaseType === 'group') {
@@ -108,18 +129,17 @@ const BottomNavHelpButton = (props: Props) => {
           group.reflections.every((reflection) => !reflection.isViewerDragging)
         )
 
-        console.log({meeting}, isNotDragging)
-        setDelay(DEFAULT_DELAY_MILLISECOND)
+        setDelay(30000)
         setShouldAnimate(!!isNotDragging)
       } else if (localPhase.phaseType === 'vote') {
         const teamVotesRemaining = meeting.votesRemaining || 0
         const myVotesRemaining = meeting.viewerMeetingMember?.votesRemaining || 0
         const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
 
-        console.log({meeting}, isNotVoting)
-        setDelay(DEFAULT_DELAY_MILLISECOND)
+        setDelay(30000)
         setShouldAnimate(isNotVoting)
       } else if (localPhase.phaseType === 'discuss') {
+        // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
         setDelay(5 * 60 * 1000)
         setShouldAnimate(true)
       }
