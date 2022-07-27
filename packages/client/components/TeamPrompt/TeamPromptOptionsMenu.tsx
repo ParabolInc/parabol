@@ -40,17 +40,41 @@ const TeamPromptOptionsMenu = (props: Props) => {
         id
         meetingSeriesId
         endedAt
+        viewerMeetingMember {
+          user {
+            featureFlags {
+              recurrence
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, meetingSeriesId, endedAt} = meeting
+  const {id: meetingId, meetingSeriesId, endedAt, viewerMeetingMember} = meeting
+  const recurrence = viewerMeetingMember?.user.featureFlags.recurrence
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+      {recurrence && (
+        <MenuItem
+          key='copy'
+          isDisabled={!!endedAt || !!meetingSeriesId}
+          label={
+            <OptionMenuItem>
+              <StyledIcon>replay</StyledIcon>
+              <span>{'Repeat M-F'}</span>
+            </OptionMenuItem>
+          }
+          onClick={() => {
+            menuProps.closePortal()
+            StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+          }}
+        />
+      )}
       <MenuItem
         key='copy'
         isDisabled={!!endedAt}
@@ -63,20 +87,6 @@ const TeamPromptOptionsMenu = (props: Props) => {
         onClick={() => {
           menuProps.closePortal()
           EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError})
-        }}
-      />
-      <MenuItem
-        key='copy'
-        isDisabled={!!endedAt || !!meetingSeriesId}
-        label={
-          <OptionMenuItem>
-            <StyledIcon>flag</StyledIcon>
-            <span>{'Repeat M-F'}</span>
-          </OptionMenuItem>
-        }
-        onClick={() => {
-          menuProps.closePortal()
-          StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
         }}
       />
     </Menu>
