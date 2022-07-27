@@ -13,14 +13,11 @@ import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, NewMeeting} from '../types/constEnums'
 import {MeetingTypeEnum} from '../__generated__/NewMeetingQuery.graphql'
 
-const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
-
 const Container = styled('div')({
   '.swiper-wrapper': {
     alignItems: 'center',
     padding: '20px 0'
-  },
-  marginTop: -12
+  }
 })
 
 const Title = styled('div')<{isActive: boolean}>(({isActive}) => ({
@@ -33,10 +30,7 @@ const Description = styled('div')<{isActive: boolean}>(({isActive}) => ({
   display: isActive ? 'block' : 'none',
   overflow: 'hidden',
   color: PALETTE.WHITE,
-  fontSize: 12,
-  [MEDIA_QUERY_FUZZY_TABLET]: {
-    fontSize: 11
-  }
+  fontSize: 12
 }))
 
 const MeetingImage = styled('img')({
@@ -74,7 +68,7 @@ const TITLES = {
   retrospective: 'Retrospective',
   action: 'Team Check-in',
   poker: 'Sprint Poker',
-  teamPrompt: 'Stand-Up'
+  teamPrompt: 'Async Standup'
 } as Record<MeetingTypeEnum, string>
 
 const DESCRIPTIONS = {
