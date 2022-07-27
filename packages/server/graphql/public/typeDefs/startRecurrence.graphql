@@ -17,14 +17,10 @@ union StartRecurrencePayload = StartRecurrenceSuccess | ErrorPayload
 
 type StartRecurrenceSuccess {
   """
-  The meeting series associated with the meeting
-  """
-  meetingSeries: MeetingSeries!
-
-  """
   The updated meeting
+  :TODO: (jmtaber129): Change this to be any NewMeeting.
   """
-  meeting: NewMeeting!
+  meeting: TeamPromptMeeting!
 }
 
 extend union TeamSubscriptionPayload = StartRecurrenceSuccess

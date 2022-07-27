@@ -8,12 +8,12 @@ graphql`
     meeting {
       id
       meetingSeriesId
+      meetingSeries {
+        id
+        recurrenceRule
+        duration
+      }
       scheduledEndTime
-    }
-    meetingSeries {
-      id
-      recurrenceRule
-      duration
     }
   }
 `

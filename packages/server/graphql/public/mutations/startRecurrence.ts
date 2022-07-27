@@ -25,6 +25,10 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
+  if (meeting.meetingType !== 'teamPrompt') {
+    return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
+  }
+
   const {teamId, meetingSeriesId} = meeting
   if (meetingSeriesId) {
     return standardError(new Error('Meeting already has meeting series'), {userId: viewerId})

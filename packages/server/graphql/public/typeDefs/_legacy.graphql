@@ -447,19 +447,9 @@ interface NewMeeting {
   id: ID!
 
   """
-  The meeting series id this meeting is associated with if the meeting is recurring
-  """
-  meetingSeriesId: ID
-
-  """
   The timestamp the meeting was created
   """
   createdAt: DateTime!
-
-  """
-  The timestamp the meeting is scheduled to end
-  """
-  scheduledEndTime: DateTime
 
   """
   The id of the user that created the meeting
@@ -6530,6 +6520,21 @@ type TeamPromptMeeting implements NewMeeting {
   The unique meeting id. shortid.
   """
   id: ID!
+
+  """
+  The meeting series id this meeting is associated with if the meeting is recurring
+  """
+  meetingSeriesId: ID
+
+  """
+  The meeting series this meeting is associated with if the meeting is recurring
+  """
+  meetingSeries: MeetingSeries
+
+  """
+  The timestamp the meeting is scheduled to end
+  """
+  scheduledEndTime: DateTime
 
   """
   The timestamp the meeting was created

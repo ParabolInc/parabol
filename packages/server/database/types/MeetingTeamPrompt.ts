@@ -12,6 +12,8 @@ interface Input {
   name?: string
   phases: [TeamPromptPhase, ...TeamPromptPhase[]]
   facilitatorUserId: string
+  meetingSeriesId?: number
+  scheduledEndTime?: Date
 }
 
 export function isMeetingTeamPrompt(meeting: Meeting): meeting is MeetingTeamPrompt {
@@ -30,9 +32,21 @@ function createTeamPromptDefaultTitle() {
 export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
   meetingPrompt: string
+  meetingSeriesId?: number
+  scheduledEndTime?: Date
 
   constructor(input: Input) {
-    const {id, teamId, meetingCount, meetingPrompt, name, phases, facilitatorUserId} = input
+    const {
+      id,
+      teamId,
+      meetingCount,
+      meetingPrompt,
+      name,
+      phases,
+      facilitatorUserId,
+      meetingSeriesId,
+      scheduledEndTime
+    } = input
     super({
       id,
       teamId,
@@ -43,5 +57,7 @@ export default class MeetingTeamPrompt extends Meeting {
       name: name ?? createTeamPromptDefaultTitle()
     })
     this.meetingPrompt = meetingPrompt
+    this.meetingSeriesId = meetingSeriesId
+    this.scheduledEndTime = scheduledEndTime
   }
 }

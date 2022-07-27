@@ -1,3 +1,4 @@
+import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {StartRecurrenceSuccessResolvers} from '../resolverTypes'
 
 export type StartRecurrenceSuccessSource = {
@@ -8,11 +9,7 @@ export type StartRecurrenceSuccessSource = {
 const StartRecurrenceSuccess: StartRecurrenceSuccessResolvers = {
   meeting: async (source, _args, {dataLoader}) => {
     const {meetingId} = source
-    return dataLoader.get('newMeetings').load(meetingId)
-  },
-  meetingSeries: async (source, _args, {dataLoader}) => {
-    const {meetingSeriesId} = source
-    return dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
+    return dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingTeamPrompt>
   }
 }
 
