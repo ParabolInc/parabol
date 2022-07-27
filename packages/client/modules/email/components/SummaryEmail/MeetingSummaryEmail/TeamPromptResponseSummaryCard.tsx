@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {TeamPromptResponseSummaryCard_stage$key} from 'parabol-client/__generated__/TeamPromptResponseSummaryCard_stage.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import Avatar from '~/components/Avatar/Avatar'
@@ -34,7 +35,11 @@ export const TeamMemberName = styled('h3')({
   margin: 0
 })
 
-const TeamPromptResponseSummaryCard = (props) => {
+interface Props {
+  stageRef: TeamPromptResponseSummaryCard_stage$key
+}
+
+const TeamPromptResponseSummaryCard = (props: Props) => {
   const {stageRef} = props
   const stage = useFragment(
     graphql`

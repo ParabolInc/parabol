@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {TeamPromptResponseSummary_meeting$key} from 'parabol-client/__generated__/TeamPromptResponseSummary_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -51,9 +52,11 @@ const TeamPromptResponseSummary = (props: Props) => {
       sortByISO8601Date(stageA.response!.createdAt, stageB.response!.createdAt)
     )
 
+  const grid = useEmailItemGrid(orderedNonEmptyStages, 2)
+
   return (
     <ResponseSummaryGrid>
-      {orderedNonEmptyStages.map((stage) => {
+      {grid((stage) => {
         return <TeamPromptResponseSummaryCard key={stage.id} stageRef={stage} />
       })}
     </ResponseSummaryGrid>
