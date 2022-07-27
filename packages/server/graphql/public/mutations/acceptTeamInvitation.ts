@@ -8,7 +8,6 @@ import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
-import segmentIo from '../../../utils/segmentIo'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
@@ -72,11 +71,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     return {error: {message: approvalError.message}}
   }
   if (isAnyViewerTeamLocked) {
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Locked user attempted to join a team',
-      properties: {invitingOrgId: orgId}
-    })
     return {
       error: {
         message: LOCKED_OVERDUE_MSG
