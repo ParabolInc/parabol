@@ -144,15 +144,13 @@ export const handleAcceptTeamInvitationErrors = (
 ) => {
   if (acceptTeamInvitation?.error) {
     const {message} = acceptTeamInvitation.error
-    if (message === InvitationTokenError.ALREADY_ACCEPTED) return true
+    if (message === InvitationTokenError.ALREADY_ACCEPTED) return
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 0,
       key: `acceptTeamInvitation:${message}`,
       message
     })
-    return false
   }
-  return true
 }
 
 const AcceptTeamInvitationMutation: StandardMutation<
