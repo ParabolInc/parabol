@@ -75,7 +75,7 @@ const DESCRIPTIONS = {
   retrospective: 'Improve how you work',
   action: 'Sync up, unblock each other',
   poker: 'Estimate effort, de-risk execution',
-  teamPrompt: 'Stand-Up'
+  teamPrompt: 'Share updates, on your time'
 } as Record<MeetingTypeEnum, string>
 
 interface Props {
