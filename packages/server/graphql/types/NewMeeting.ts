@@ -33,10 +33,6 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the meeting was created'
   },
-  scheduledEndTime: {
-    type: GraphQLISO8601Type,
-    description: 'The timestamp the meeting is scheduled to end'
-  },
   createdBy: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'The id of the user that created the meeting'
