@@ -11,7 +11,6 @@ import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, NewMeeting} from '../types/constEnums'
-import {NonEmptyArray} from '../types/generics'
 import {MeetingTypeEnum} from '../__generated__/NewMeetingQuery.graphql'
 
 const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
@@ -88,14 +87,14 @@ const DESCRIPTIONS = {
 interface Props {
   idx: number
   setIdx: (idx: number) => void
-  newMeetingOrder: Readonly<NonEmptyArray<MeetingTypeEnum>>
+  meetingOrder: MeetingTypeEnum[]
 }
 
 const NewMeetingCarousel = (props: Props) => {
-  const {idx, setIdx, newMeetingOrder} = props
+  const {idx, setIdx, meetingOrder} = props
 
   // TODO: remove when standups feature flag removed
-  const moreThanThreeSlides = newMeetingOrder.length > 3
+  const moreThanThreeSlides = meetingOrder.length > 3
 
   return (
     <Container>
@@ -116,12 +115,11 @@ const NewMeetingCarousel = (props: Props) => {
             slidesOffsetAfter: 16
           }
         }}
-        onSwiper={(swiper) => console.log(swiper)}
         freeMode={{
           enabled: true
         }}
       >
-        {newMeetingOrder.map((meetingType, index) => {
+        {meetingOrder.map((meetingType, index) => {
           const src = ILLUSTRATIONS[meetingType]
           const title = TITLES[meetingType]
           const description = DESCRIPTIONS[meetingType]

@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {mod} from 'react-swipeable-views-core'
 import useUsageSnackNag from '~/hooks/useUsageSnackNag'
 import {PALETTE} from '~/styles/paletteV3'
 import {NonEmptyArray} from '~/types/generics'
@@ -117,12 +116,14 @@ const NewMeeting = (props: Props) => {
   const {viewer} = data
   const {teams, featureFlags} = viewer
   const {insights} = featureFlags
-  const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
+  const [meetingOrder, setMeetingOrder] = useState<MeetingTypeEnum[]>(
+    createMeetingOrder(featureFlags)
+  )
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
   useUsageSnackNag(insights)
-  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
+  const meetingType = meetingOrder[idx] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {
@@ -137,8 +138,11 @@ const NewMeeting = (props: Props) => {
   useEffect(() => {
     if (!selectedTeam) return
     const {lastMeetingType} = selectedTeam
-    const meetingIdx = newMeetingOrder.indexOf(lastMeetingType)
-    setIdx(meetingIdx)
+    const meetingIdx = meetingOrder.indexOf(lastMeetingType)
+    const newMeetingOrder = [...meetingOrder]
+    const firstMeeting = newMeetingOrder.splice(meetingIdx, 1)[0] as MeetingTypeEnum
+    newMeetingOrder.unshift(firstMeeting)
+    setMeetingOrder(newMeetingOrder)
   }, [])
   if (!teamId || !selectedTeam) return null
   return (
@@ -150,7 +154,7 @@ const NewMeeting = (props: Props) => {
         </CloseButton>
       </Title>
       <NewMeetingInner>
-        <NewMeetingCarousel idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
+        <NewMeetingCarousel idx={idx} setIdx={setIdx} meetingOrder={meetingOrder} />
         <TeamAndSettings isDesktop={isDesktop}>
           <TeamAndSettingsInner>
             <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
