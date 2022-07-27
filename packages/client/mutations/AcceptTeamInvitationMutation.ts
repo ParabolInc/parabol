@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {InvitationTokenError} from '~/types/constEnums'
+import {InvitationTokenError, LOCKED_MESSAGE} from '~/types/constEnums'
 import {AcceptTeamInvitationMutation_notification} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
 import Atmosphere from '../Atmosphere'
 import {
@@ -16,8 +16,6 @@ import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvi
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
-
-export const LOCKED_OVERDUE_MSG = `Sorry! You're unable to join this team because one of your teams has an overdue payment`
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -193,7 +191,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
             key: `acceptTeamInvitation:${message}`,
             message,
             action:
-              message === LOCKED_OVERDUE_MSG
+              message === LOCKED_MESSAGE.TEAM_INVITE
                 ? {
                     label: 'Contact Sales',
                     callback: () => window.open('mailto:love@parabol.co?subject=Overdue Payment')

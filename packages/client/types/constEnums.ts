@@ -198,6 +198,10 @@ export const enum LocalStorageKey {
   ERROR_PRONE_AT = 'errorProneAt'
 }
 
+export const enum LOCKED_MESSAGE {
+  TEAM_INVITE = `Sorry! You're unable to join this team because one of your teams has an overdue payment`
+}
+
 export const enum AuthenticationError {
   FAILED_TO_SEND = 'failedToSend',
   MISSING_HASH = 'missingHash',
