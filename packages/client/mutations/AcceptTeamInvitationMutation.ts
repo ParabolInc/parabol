@@ -17,6 +17,8 @@ import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
+export const LOCKED_OVERDUE_MSG = `Sorry! You're unable to join this team because one of your teams has an overdue payment`
+
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
     teamMember {
@@ -190,10 +192,13 @@ const AcceptTeamInvitationMutation: StandardMutation<
             autoDismiss: 0,
             key: `acceptTeamInvitation:${message}`,
             message,
-            action: {
-              label: 'OK',
-              callback: () => history.push(`/me`)
-            }
+            action:
+              message === LOCKED_OVERDUE_MSG
+                ? {
+                    label: 'Contact Sales',
+                    callback: () => window.open('mailto:love@parabol.co?subject=Overdue Payment')
+                  }
+                : undefined
           })
         }
         if (!ignoreApproval) return

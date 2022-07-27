@@ -1,4 +1,5 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {LOCKED_OVERDUE_MSG} from '../../../../client/mutations/AcceptTeamInvitationMutation'
 import {InvitationTokenError, SubscriptionChannel} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
@@ -78,7 +79,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     })
     return {
       error: {
-        message: `Sorry! You're unable to join this team because one of your teams has an overdue payment`
+        message: LOCKED_OVERDUE_MSG
       }
     }
   }
