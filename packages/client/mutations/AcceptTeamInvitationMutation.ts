@@ -180,19 +180,26 @@ const AcceptTeamInvitationMutation: StandardMutation<
       const {authToken, team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
-        if (serverError.message === InvitationTokenError.ALREADY_ACCEPTED) {
+        const message = serverError.message
+        if (message === InvitationTokenError.ALREADY_ACCEPTED) {
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
             history,
             meetingId: locallyRequestedMeetingId
           })
+        } else if (!ignoreApproval) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            autoDismiss: 0,
+            key: `acceptTeamInvitation:${message}`,
+            message,
+            action: {
+              label: 'OK',
+              callback: () => history.push(`/me`)
+            }
+          })
         }
-        return
+        if (!ignoreApproval) return
       }
-      const isOK = ignoreApproval
-        ? true
-        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!isOK) return
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team
