@@ -56,7 +56,7 @@ const Title = styled(DialogTitle)({
   justifyContent: 'space-between',
   padding: '16px 16px 16px 24px',
   [MEDIA_QUERY_FUZZY_TABLET]: {
-    padding: '8px 8px 7px 16px'
+    padding: '8px 8px 8px 16px'
   }
 })
 
