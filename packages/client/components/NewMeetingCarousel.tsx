@@ -104,7 +104,6 @@ const NewMeetingCarousel = (props: Props) => {
         breakpoints={{
           [Breakpoint.FUZZY_TABLET]: {
             slidesPerView: moreThanThreeSlides ? 3.5 : 3.15,
-            slideToClickedSlide: false,
             slidesOffsetBefore: 24,
             slidesOffsetAfter: 16
           }
