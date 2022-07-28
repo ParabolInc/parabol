@@ -58,6 +58,12 @@ module.exports = {
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
     }),
+    new webpack.IgnorePlugin({resourceRegExp: /^mock-aws-s3$/, contextRegExp: /@mapbox\/node-pre-gyp$/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^nock$/, contextRegExp: /@mapbox\/node-pre-gyp$/}),
+    // if we need canvas for SSR we can just install it to our own package.json
+    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    // native bindings might be faster, but abandonware & not currently used
+    new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/ })
   ],
   module: {
     rules: [
@@ -79,6 +85,24 @@ module.exports = {
         use: [
           {
             loader: 'file-loader'
+          }
+        ]
+      },
+      {
+        include: [/node_modules/],
+        test: /\.(html)$/,
+        use: [
+          {
+            loader: 'raw-loader'
+          }
+        ]
+      },
+      {
+        include: [/node_modules/],
+        test: /\.node$/,
+        use: [
+          {
+            loader: 'node-loader'
           }
         ]
       }

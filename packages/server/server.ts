@@ -36,7 +36,7 @@ if (!PROD) {
     process.exit()
   })
 }
-
+console.log('server read')
 uws
   .App()
   .get('/favicon.ico', PWAHandler)
