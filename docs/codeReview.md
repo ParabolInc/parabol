@@ -47,6 +47,7 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
   - If there are only +2 comments, the PR can be merged directly by the maintainer.
 
 ## Metrics Representative
+
 - Metrics Representative ensures any analytics related changes work well with downstream data services
 - This role is currently filled by @tianrunhe
 
@@ -58,14 +59,12 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 - If you need to clarify parts of the code, check if it can be done by adding comments or improve naming of variables/functions/classes
 - When you replied or resolved all comments, move issue back to reviewer- or maintainer-review
 
-## Experiment
+## One Review Required
 
-We want to run an experiment for two months. During the experiment, all PRs will still require a Reviewer Review and a Maintainer Review. However, if the developer creating the PR feels that only one review is required, they can add a label: “One Review Required”. The Reviewer Reviewer then adds a comment saying whether they agree that the PR could be merged once they’ve approved it.
+If the developer creating the PR feels that maintainer review isn't necessary, they can add a label: “One Review Required”. The Reviewer Reviewer then adds a comment saying whether they agree that the PR could be merged once they’ve approved it.
 
 Examples of PRs that could be safe to merge that way
 
 - Minor changes, e.g. [remove octokit](https://github.com/ParabolInc/parabol/pull/6479)
 - Small, non-architectural changes that happen behind a feature flag, e.g. [show GitLab issues in the Estimate phase](https://github.com/ParabolInc/parabol/pull/6355). It's the PR author's responsibility to keep track of the scenarios that need testing before removing the feature flag.
 - Work that is related to new features which are hidden after a feature flag and do not touch existing functionality (any work related to the architecture of the new feature is an exception and should go through the full review process) e.g [added end team prompt mutation](https://github.com/ParabolInc/parabol/pull/6250)
-
-After the two month experiment, we’ll review the PRs where the creator and Reviewer Reviewer agreed that they could be merged after one review. If the Maintainer Reviews don’t find critical issues, a Product team member may wish to create a governance proposal to implement a process where a PR can be merged if the creator and the Reviewer agree that a Maintainer Review isn’t necessary.
