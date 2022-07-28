@@ -10,7 +10,7 @@ import retrospective from '../../../static/images/illustrations/retrospective.pn
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, NewMeeting} from '../types/constEnums'
+import {BezierCurve, Breakpoint} from '../types/constEnums'
 import {MeetingTypeEnum} from '../__generated__/NewMeetingQuery.graphql'
 
 const Container = styled('div')({
@@ -30,12 +30,14 @@ const Description = styled('div')<{isActive: boolean}>(({isActive}) => ({
   display: isActive ? 'block' : 'none',
   overflow: 'hidden',
   color: PALETTE.WHITE,
-  fontSize: 12
+  fontSize: 12,
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis'
 }))
 
 const MeetingImage = styled('img')({
-  width: NewMeeting.ILLUSTRATION_WIDTH,
-  objectFit: 'contain'
+  objectFit: 'contain',
+  height: 108
 })
 
 const BACKGROUND_COLORS = {
@@ -53,7 +55,9 @@ const Card = styled('div')<{isActive: boolean; meetingType: keyof typeof BACKGRO
     marginRight: 10,
     padding: 16,
     transition: `all 200ms ${BezierCurve.DECELERATE}`,
-    transform: isActive ? `scale(1.1)` : 'scale(1)'
+    transform: isActive ? `scale(1.1)` : 'scale(1)',
+    display: 'flex',
+    flexDirection: 'column'
   })
 )
 
@@ -105,7 +109,8 @@ const NewMeetingCarousel = (props: Props) => {
           [Breakpoint.FUZZY_TABLET]: {
             slidesPerView: moreThanThreeSlides ? 3.5 : 3.15,
             slidesOffsetBefore: 24,
-            slidesOffsetAfter: 16
+            slidesOffsetAfter: 16,
+            slideToClickedSlide: moreThanThreeSlides
           }
         }}
         freeMode={{
