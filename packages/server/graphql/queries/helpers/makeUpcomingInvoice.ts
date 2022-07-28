@@ -28,6 +28,7 @@ export default async function makeUpcomingInvoice(orgId: string, stripeId?: stri
         expiry: toMMYY(cardSource.exp_month, cardSource.exp_year)
       }
     : undefined
+
   return {
     id: getUpcomingInvoiceId(orgId),
     amountDue: stripeInvoice.amount_due,
