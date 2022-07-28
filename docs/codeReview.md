@@ -61,7 +61,7 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 
 ## One Review Required
 
-If the developer creating the PR feels that maintainer review isn't necessary, they can add a label: “One Review Required”. The Reviewer Reviewer then adds a comment saying whether they agree that the PR could be merged once they’ve approved it.
+If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. If the Reviewer thinks it's not safe to have just one review, it's their responsiblity to add a comment saying that Maintainer review is required to merge the PR.
 
 Examples of PRs that could be safe to merge that way
 
