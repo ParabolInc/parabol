@@ -38,7 +38,7 @@ const ActiveMeetingsBlock = styled('div')({
   flexWrap: 'nowrap',
   flexGrow: 10,
   [narrowScreenMediaQuery]: {
-    padding: '50px 0px'
+    paddingBottom: 24
   }
 })
 
