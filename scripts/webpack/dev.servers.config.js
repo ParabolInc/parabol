@@ -50,22 +50,14 @@ module.exports = {
   },
   target: 'node',
   externals: [
-    // nodeExternals({
-    //   allowlist: [/parabol-client/, /parabol-server/]
-    // })
+    nodeExternals({
+      allowlist: [/parabol-client/, /parabol-server/]
+    })
   ],
   plugins: [
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
-      // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
-      'process.platform': JSON.stringify(process.platform),
-      'process.arch': JSON.stringify(process.arch),
-      'process.versions.modules': JSON.stringify(process.versions.modules)
     }),
-    // if we need canvas for SSR we can just install it to our own package.json
-    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
-    // native bindings might be faster, but abandonware & not currently used
-    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
 
   ],
   module: {
@@ -91,18 +83,6 @@ module.exports = {
             options: {
               publicPath: `http://localhost:${process.env.PORT}/static/`
             }
-          }
-        ]
-      },
-      {
-        include: [/node_modules/],
-        test: /\.node$/,
-        use: [
-          {
-            loader: 'node-loader',
-            options: {
-              name: "[name].[ext]",
-            },
           }
         ]
       }
