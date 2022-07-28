@@ -1,4 +1,3 @@
-import AbortController from 'abort-controller'
 import fetch, {RequestInit} from 'node-fetch'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'

@@ -31,8 +31,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs',
-    publicPath: `http://localhost:${process.env.PORT}/static/`
+    libraryTarget: 'commonjs'
   },
   resolve: {
     alias: {
@@ -40,7 +39,8 @@ module.exports = {
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
+    // .mjs required for a single instance of graphql
+    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
     unsafeCache: true,
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]
@@ -50,20 +50,23 @@ module.exports = {
   },
   target: 'node',
   externals: [
-    nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
-    })
+    // nodeExternals({
+    //   allowlist: [/parabol-client/, /parabol-server/]
+    // })
   ],
   plugins: [
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
+      'process.platform': JSON.stringify(process.platform),
+      'process.arch': JSON.stringify(process.arch),
+      'process.versions.modules': JSON.stringify(process.versions.modules)
     }),
-    new webpack.IgnorePlugin({resourceRegExp: /^mock-aws-s3$/, contextRegExp: /@mapbox\/node-pre-gyp$/}),
-    new webpack.IgnorePlugin({resourceRegExp: /^nock$/, contextRegExp: /@mapbox\/node-pre-gyp$/}),
     // if we need canvas for SSR we can just install it to our own package.json
     new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
     // native bindings might be faster, but abandonware & not currently used
-    new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/ })
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
+
   ],
   module: {
     rules: [
@@ -84,7 +87,10 @@ module.exports = {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader'
+            loader: 'file-loader',
+            options: {
+              publicPath: `http://localhost:${process.env.PORT}/static/`
+            }
           }
         ]
       },
@@ -102,7 +108,10 @@ module.exports = {
         test: /\.node$/,
         use: [
           {
-            loader: 'node-loader'
+            loader: 'node-loader',
+            options: {
+              name: "[path][name].[ext]",
+            },
           }
         ]
       }
