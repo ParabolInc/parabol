@@ -78,11 +78,13 @@ const NewMeetingInner = styled('div')({
 })
 
 const createMeetingOrder = ({standups}: {standups: boolean}) => {
-  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['poker', 'retrospective', 'action']
+  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['retrospective']
 
   if (standups) {
     meetingOrder.push('teamPrompt')
   }
+
+  meetingOrder.push('poker', 'action')
 
   return meetingOrder
 }
