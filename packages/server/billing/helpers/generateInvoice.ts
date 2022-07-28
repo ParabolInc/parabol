@@ -23,10 +23,10 @@ interface InvoicesByStartTime {
 }
 
 interface TypesDict {
-  pauseUser: InvoicesByStartTime
-  unpauseUser: InvoicesByStartTime
-  addUser: InvoicesByStartTime
-  removeUser: InvoicesByStartTime
+  [InvoiceItemType.AUTO_PAUSE_USER]: InvoicesByStartTime
+  [InvoiceItemType.UNPAUSE_USER]: InvoicesByStartTime
+  [InvoiceItemType.ADD_USER]: InvoicesByStartTime
+  [InvoiceItemType.REMOVE_USER]: InvoicesByStartTime
 }
 
 interface ItemDict {
@@ -57,10 +57,10 @@ interface ReducedItem extends ReducedItemBase {
 }
 
 interface ReducedItemsByType {
-  addUser: ReducedStandardPartial[]
-  removeUser: ReducedStandardPartial[]
-  pauseUser: ReducedStandardPartial[]
-  unpauseUser: ReducedUnpausePartial[]
+  [InvoiceItemType.ADD_USER]: ReducedStandardPartial[]
+  [InvoiceItemType.REMOVE_USER]: ReducedStandardPartial[]
+  [InvoiceItemType.AUTO_PAUSE_USER]: ReducedStandardPartial[]
+  [InvoiceItemType.UNPAUSE_USER]: ReducedUnpausePartial[]
 }
 
 interface DetailedLineItemDict {
@@ -84,7 +84,7 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
   const reducedItemsByType: ReducedItemsByType = {
     addUser: [] as ReducedStandardPartial[],
     removeUser: [] as ReducedStandardPartial[],
-    pauseUser: [] as ReducedStandardPartial[],
+    autoPauseUser: [] as ReducedStandardPartial[],
     unpauseUser: [] as ReducedUnpausePartial[]
   }
   for (let j = 0; j < userTypes.length; j++) {
@@ -115,7 +115,7 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
 }
 
 const makeDetailedPauseEvents = (
-  pausedItems: ReducedStandardPartial[],
+  autoPausedItems: ReducedStandardPartial[],
   unpausedItems: ReducedUnpausePartial[]
 ) => {
   const inactivityDetails: ReducedItem[] = []
@@ -123,7 +123,7 @@ const makeDetailedPauseEvents = (
   // really this should be an if clause, but there are some errors cases where multiple unpause events were sent for the same user
   while (
     unpausedItems.length > 0 &&
-    (pausedItems.length === 0 || unpausedItems[0]!.endAt < pausedItems[0]!.startAt)
+    (autoPausedItems.length === 0 || unpausedItems[0]!.endAt < autoPausedItems[0]!.startAt)
   ) {
     // mutative
     const firstUnpausedItem = unpausedItems.shift()!
@@ -132,18 +132,18 @@ const makeDetailedPauseEvents = (
   // match up every pause with an unpause so it's clear that Foo was paused for 5 days
   for (let j = 0; j < unpausedItems.length; j++) {
     const unpausedItem = unpausedItems[j]!
-    const pausedItem = pausedItems[j]!
+    const autoPausedItem = autoPausedItems[j]!
     inactivityDetails.push({
-      ...pausedItem,
-      amount: unpausedItem.amount + pausedItem.amount,
+      ...autoPausedItem,
+      amount: unpausedItem.amount + autoPausedItem.amount,
       endAt: unpausedItem.endAt
     })
   }
 
   // if there is an extra pause, then it's because they are still on pause while we're invoicing.
-  if (pausedItems.length > unpausedItems.length) {
-    const lastPausedItem = pausedItems[pausedItems.length - 1]!
-    inactivityDetails.push(lastPausedItem)
+  if (autoPausedItems.length > unpausedItems.length) {
+    const lastAutoPausedItem = autoPausedItems[autoPausedItems.length - 1]!
+    inactivityDetails.push(lastAutoPausedItem)
   }
   return inactivityDetails
 }
@@ -186,12 +186,12 @@ const makeDetailedLineItems = async (itemDict: ItemDict, dataLoader: DataLoaderW
     const email = emailLookup[userId]!
     const typesDict = itemDict[userId]!
     const reducedItemsByType = reduceItemsByType(typesDict, email)
-    const pausedItems = reducedItemsByType.pauseUser
+    const autoPausedItems = reducedItemsByType.autoPauseUser
     const unpausedItems = reducedItemsByType.unpauseUser
     detailedLineItems.ADDED_USERS.push(...reducedItemsByType.addUser)
     detailedLineItems.REMOVED_USERS.push(...reducedItemsByType.removeUser)
     detailedLineItems.INACTIVITY_ADJUSTMENTS.push(
-      ...makeDetailedPauseEvents(pausedItems, unpausedItems)
+      ...makeDetailedPauseEvents(autoPausedItems, unpausedItems)
     )
   }
   return detailedLineItems
@@ -204,12 +204,11 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
   } = lineItem
   const userId = metadata.userId!
   const type = metadata.type as InvoiceItemType
-  const safeType = type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
   itemDict[userId] = itemDict[userId] || ({} as TypesDict)
   const userItemDict = itemDict[userId]!
-  userItemDict[safeType] = userItemDict[safeType] || {}
-  userItemDict[safeType][start] = userItemDict[safeType][start] || {}
-  const startTimeItems = userItemDict[safeType][start] as InvoicesByStartTime['start']
+  userItemDict[type] = userItemDict[type] || {}
+  userItemDict[type][start] = userItemDict[type][start] || {}
+  const startTimeItems = userItemDict[type][start] as InvoicesByStartTime['start']
   const bucket = lineItem.amount < 0 ? 'unusedTime' : 'remainingTime'
   // an identical line item may already exist in the bucket, e.g. a user was removed & prorated to the exact same timestamp (subscription start)
   // since the start time is the same, we know the amount will be the same, so we do this to avoid a duplicate line item on the invoice
@@ -249,7 +248,6 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
     } else if (!metadata.type) {
       unknownLineItems.push(lineItem)
     } else {
-      // at this point, we don't care whether it's an auto pause or manual
       addToDict(itemDict, lineItem)
     }
   }

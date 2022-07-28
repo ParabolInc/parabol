@@ -167,7 +167,6 @@ export const enum InvitationTokenError {
 }
 export const enum InvoiceItemType {
   ADD_USER = 'addUser',
-  PAUSE_USER = 'pauseUser',
   AUTO_PAUSE_USER = 'autoPauseUser',
   REMOVE_USER = 'removeUser',
   UNPAUSE_USER = 'unpauseUser'
