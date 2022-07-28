@@ -96,21 +96,12 @@ module.exports = {
       },
       {
         include: [/node_modules/],
-        test: /\.(html)$/,
-        use: [
-          {
-            loader: 'raw-loader'
-          }
-        ]
-      },
-      {
-        include: [/node_modules/],
         test: /\.node$/,
         use: [
           {
             loader: 'node-loader',
             options: {
-              name: "[path][name].[ext]",
+              name: "[name].[ext]",
             },
           }
         ]

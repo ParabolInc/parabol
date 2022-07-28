@@ -20,7 +20,6 @@ const buildServers = async () => {
     if (errors.length > 0) {
       console.log('COMPILATION ERRORS:', errors)
     }
-    console.log('DONE')
     /* servers finished rebuilding */
   })
 }
