@@ -5,6 +5,7 @@ import 'swiper/css'
 import 'swiper/css/free-mode'
 import 'swiper/css/mousewheel'
 import {Swiper, SwiperSlide} from 'swiper/react'
+import useHotkey from '~/hooks/useHotkey'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -86,13 +87,24 @@ interface Props {
   idx: number
   setIdx: (idx: number) => void
   meetingOrder: MeetingTypeEnum[]
+  onStartMeetingClick: () => void
 }
 
 const NewMeetingCarousel = (props: Props) => {
-  const {idx, setIdx, meetingOrder} = props
+  const {idx, setIdx, meetingOrder, onStartMeetingClick} = props
 
   // TODO: remove when standups feature flag removed
   const moreThanThreeSlides = meetingOrder.length > 3
+
+  useHotkey('left', () => {
+    const newIdx = idx === 0 ? meetingOrder.length - 1 : idx - 1
+    setIdx(newIdx)
+  })
+  useHotkey('right', () => {
+    const newIdx = idx === meetingOrder.length - 1 ? 0 : idx + 1
+    setIdx(newIdx)
+  })
+  useHotkey('enter', () => onStartMeetingClick())
 
   return (
     <Container>
