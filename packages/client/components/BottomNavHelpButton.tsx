@@ -113,16 +113,6 @@ const BottomNavHelpButton = (props: Props) => {
     const isFacilitator = viewerId === facilitatorUserId && !endedAt
     if (!isFacilitator) return
 
-    // if the ready button is "full" before these conditions are met, the animation should start after 5s
-    const activeCount = meetingMembers.length
-    const readyCount = localStage.readyCount || 0
-    const progress = readyCount / Math.max(1, activeCount - 1)
-
-    if (progress === 1) {
-      setDelaySeconds(5)
-      setShouldAnimate(true)
-      return
-    }
     switch (localPhase.phaseType) {
       case 'reflect':
         const reflectPrompts = localPhase.reflectPrompts!
@@ -152,6 +142,14 @@ const BottomNavHelpButton = (props: Props) => {
         setDelaySeconds(5 * 60)
         setShouldAnimate(true)
         break
+    }
+
+    // if the ready button is "full" before these conditions are met, the animation should start after 5s
+    const activeCount = meetingMembers.length
+    const readyCount = localStage.readyCount || 0
+    if (readyCount === Math.max(1, activeCount - 1)) {
+      setDelaySeconds(5)
+      setShouldAnimate(true)
     }
   }, [
     localPhase.phaseType,
