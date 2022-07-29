@@ -44,14 +44,13 @@ const notifyMSTeams = async (
 }
 export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string}
 
-const createTeamPromptMeetingTitle = (meeting: Meeting) => `*${meeting.name}* is open 💬`
+const createTeamPromptMeetingTitle = (meetingName: string) => `*${meetingName}* is open 💬`
+const createGenericMeetingTitle = () => `Meeting Started 👋`
 
-const GENERIC_MEETING_TITLE = `Meeting Started 👋`
-
-const MeetingTypeTitleLookup: Record<MeetingTypeEnum, ((meeting: Meeting) => string) | string> = {
-  action: GENERIC_MEETING_TITLE,
-  poker: GENERIC_MEETING_TITLE,
-  retrospective: GENERIC_MEETING_TITLE,
+const meetingTypeTitleLookup: Record<MeetingTypeEnum, (meetingName: string) => string> = {
+  action: createGenericMeetingTitle,
+  poker: createGenericMeetingTitle,
+  retrospective: createGenericMeetingTitle,
   teamPrompt: createTeamPromptMeetingTitle
 }
 
@@ -101,11 +100,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const card = new AdaptiveCards.AdaptiveCard()
     card.version = new AdaptiveCards.Version(1.2, 0)
 
-    const meetingTitleLookupResult = MeetingTypeTitleLookup[meeting.meetingType]
-    const meetingTitle =
-      typeof meetingTitleLookupResult === 'function'
-        ? meetingTitleLookupResult(meeting)
-        : meetingTitleLookupResult
+    const meetingTitle = meetingTypeTitleLookup[meeting.meetingType](meeting.name)
     const titleTextBlock = GenerateACMeetingTitle(meetingTitle)
     card.addItem(titleTextBlock)
 
