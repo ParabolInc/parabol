@@ -9,6 +9,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 - feat: New meeting dialog is now a modal (#6866)
+- feat: New meeting type carousel (#6950)
 - feat: mattermost info icon (#6911)
 - feat(standups): Beta badge within meeting (#6928)
 - feat(metrics): Add more Segment events to Standups (#6908)
@@ -17,6 +18,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - fix: impersonate user bug (#6901)
 - fix: Added dismiss button to snackbar messages (#6847)
+- fix: add query parameter to identify the page source (#6967)
 - chore: Fix browser translation (#6927)
 
 ### Changed
