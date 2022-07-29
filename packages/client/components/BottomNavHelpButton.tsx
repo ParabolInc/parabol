@@ -15,23 +15,24 @@ interface Props {
 }
 
 const shake = keyframes`
-  from, to {
-    //padding: 12px;
+  20%, 40%, 60% {
+    padding: 12px;
+    overflow: hidden;
     background: #a06bd6;
     color: white;
     border-radius: 4px;
     box-shadow: 0px 9px 12px rgba(68, 66, 88, 0.14), 0px 3px 16px rgba(68, 66, 88, 0.12), 0px 5px 6px rgba(68, 66, 88, 0.2);
   }
   0% {
-    transform: rotate(4deg);
+    transform: rotate(0deg);
   }
-  25% {
+  20% {
     transform: rotate(-7deg);
   }
-  50% {
+  40% {
     transform: rotate(4deg);
   }
-  75% {
+  60% {
     transform: rotate(-7deg);
   }
   100% {
@@ -44,7 +45,7 @@ const BottomNavButton = styled(BottomNavIconLabel)<{shouldAnimate?: boolean; del
     if (!shouldAnimate) return
 
     return {
-      animation: `1s ease-in-out ${delay}ms 3 ${shake}`
+      animation: `1s ease-in-out ${delay}s 3 ${shake}`
     }
   }
 )
@@ -92,64 +93,80 @@ const BottomNavHelpButton = (props: Props) => {
     `,
     meetingRef
   )
-  const {localPhase, reflectionGroups} = meeting
-  const [delay, setDelay] = useState(2000)
+  const {
+    endedAt,
+    facilitatorUserId,
+    localPhase,
+    localStage,
+    meetingMembers,
+    reflectionGroups,
+    viewerMeetingMember,
+    votesRemaining
+  } = meeting
+  const [delaySeconds, setDelaySeconds] = useState(2)
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
   useEffect(() => {
     // only enable for facilitatorUser
-    const {facilitatorUserId, endedAt} = meeting
     const isFacilitator = viewerId === facilitatorUserId && !endedAt
     if (!isFacilitator) return
 
     // if the ready button is "full" before these conditions are met, the animation should start after 5s
-    const {localStage, meetingMembers} = meeting
     const activeCount = meetingMembers.length
     const readyCount = localStage.readyCount || 0
     const progress = readyCount / Math.max(1, activeCount - 1)
 
     if (progress === 1) {
-      setDelay(5000)
+      setDelaySeconds(5)
       setShouldAnimate(true)
       return
     }
-    if (localPhase.phaseType === 'reflect') {
-      const reflectPrompts = localPhase!.reflectPrompts
-      const hasNoEditing = !!reflectPrompts?.every(
-        (prompts) => !prompts.editorIds || prompts.editorIds.length === 0
-      )
-      const isNotFocus = true
+    switch (localPhase.phaseType) {
+      case 'reflect':
+        const reflectPrompts = localPhase.reflectPrompts!
+        const beforeDemoStart = reflectPrompts.every((prompts) => !Array.isArray(prompts.editorIds))
+        const hasAnyoneEditing = reflectPrompts.some((prompts) => prompts.editorIds?.length !== 0)
 
-      setShouldAnimate(isNotFocus && hasNoEditing)
-    } else {
-      if (localPhase.phaseType === 'group') {
+        setShouldAnimate(!beforeDemoStart && !hasAnyoneEditing)
+        break
+      case 'group':
         const isNotDragging = reflectionGroups?.every((group) =>
           group.reflections.every((reflection) => !reflection.isViewerDragging)
         )
 
-        setDelay(30000)
+        setDelaySeconds(30)
         setShouldAnimate(!!isNotDragging)
-      } else if (localPhase.phaseType === 'vote') {
-        const teamVotesRemaining = meeting.votesRemaining || 0
-        const myVotesRemaining = meeting.viewerMeetingMember?.votesRemaining || 0
+        break
+      case 'vote':
+        const teamVotesRemaining = votesRemaining || 0
+        const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
         const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
 
-        setDelay(30000)
+        setDelaySeconds(30)
         setShouldAnimate(isNotVoting)
-      } else if (localPhase.phaseType === 'discuss') {
+        break
+      case 'discuss':
         // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
-        setDelay(5 * 60 * 1000)
+        setDelaySeconds(5 * 60)
         setShouldAnimate(true)
-      }
+        break
     }
-  }, [localPhase, reflectionGroups])
+  }, [
+    localPhase.phaseType,
+    localPhase.reflectPrompts,
+    localStage.readyCount,
+    reflectionGroups,
+    meetingMembers,
+    viewerMeetingMember,
+    votesRemaining
+  ])
 
   return (
     <BottomNavButton
       label={label}
-      delay={delay}
+      delay={delaySeconds}
       shouldAnimate={shouldAnimate}
       icon={icon}
       iconColor={!shouldAnimate ? iconColor : undefined}
