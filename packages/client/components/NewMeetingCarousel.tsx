@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {FreeMode, Mousewheel} from 'swiper'
+import {FreeMode, Keyboard, Mousewheel} from 'swiper'
 import 'swiper/css'
 import 'swiper/css/free-mode'
 import 'swiper/css/mousewheel'
@@ -104,18 +104,32 @@ const NewMeetingCarousel = (props: Props) => {
     const newIdx = idx === meetingOrder.length - 1 ? 0 : idx + 1
     setIdx(newIdx)
   })
-  useHotkey('enter', () => onStartMeetingClick())
+
+  // keycode is a number but package thinks it's a string
+  const onKeyPress = (_swiper: unknown, keycode: string) => {
+    if (parseInt(keycode, 10) === 13) {
+      // inefficient, but only happens on enter
+      const isModalOpen =
+        document.querySelector(`div[id='templateModal']`) ||
+        document.querySelector(`div[id='portal']`)
+      if (!isModalOpen) {
+        onStartMeetingClick()
+      }
+    }
+  }
 
   return (
     <Container>
       <Swiper
-        modules={[Mousewheel, FreeMode]}
+        modules={[Mousewheel, FreeMode, Keyboard]}
         mousewheel={true}
         slidesOffsetBefore={24}
         slidesOffsetAfter={16}
         slideToClickedSlide={true}
         spaceBetween={16}
         threshold={10}
+        keyboard={true}
+        onKeyPress={onKeyPress}
         slidesPerView={1.5}
         breakpoints={{
           [Breakpoint.FUZZY_TABLET]: {
