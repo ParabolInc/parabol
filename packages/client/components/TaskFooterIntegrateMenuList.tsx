@@ -11,6 +11,7 @@ import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMut
 import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import AzureDevOpsMenuItem from './AzureDevOpsMenuItem'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import GitHubMenuItem from './GitHubMenuItem'
 import GitLabMenuItem from './GitLabMenuItem'
@@ -46,6 +47,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const {mutationProps, menuProps, placeholder, repoIntegrations, task, label} = props
   const {hasMore} = repoIntegrations
   const items = repoIntegrations.items || []
+  console.log('🚀 ~ repoIntegrations', repoIntegrations)
   const {id: taskId, teamId, userId} = task
 
   const {
@@ -152,6 +154,20 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return <GitLabMenuItem key={id} query={query} fullPath={fullPath} onClick={onClick} />
         }
+        if (__typename === 'AzureDevOpsRemoteProject') {
+          const {name} = repoIntegration
+          console.log('🚀 ~ teamProject', name)
+          const onClick = () => {
+            const variables = {
+              integrationRepoId: name,
+              taskId,
+              integrationProviderService: 'gitlab' as const
+            }
+            submitMutation()
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+          }
+          return <AzureDevOpsMenuItem key={id} query={query} fullPath={name} onClick={onClick} />
+        }
         return null
       })}
       {status === 'loading' && (
@@ -176,6 +192,9 @@ graphql`
     }
     ... on _xGitLabProject {
       fullPath
+    }
+    ... on AzureDevOpsRemoteProject {
+      name
     }
     ...JiraServerMenuItem_repoIntegration
   }
