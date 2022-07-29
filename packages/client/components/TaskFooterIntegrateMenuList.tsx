@@ -156,7 +156,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         if (__typename === 'AzureDevOpsRemoteProject') {
           const {name} = repoIntegration
-          console.log('🚀 ~ teamProject', name)
           const onClick = () => {
             const variables = {
               integrationRepoId: name,
@@ -166,7 +165,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
-          return <AzureDevOpsMenuItem key={id} query={query} fullPath={name} onClick={onClick} />
+          return <AzureDevOpsMenuItem key={id} query={query} name={name} onClick={onClick} />
         }
         return null
       })}

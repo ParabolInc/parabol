@@ -6,16 +6,16 @@ import MenuItemLabel from './MenuItemLabel'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
-  fullPath: string
-  onClick: (fullPath: string) => void
+  name: string
+  onClick: (name: string) => void
   query: string
 }
 
 const AzureDevOpsMenuItem = forwardRef((props: Props, ref: any) => {
-  const {query, fullPath, onClick} = props
+  const {query, name, onClick} = props
 
   const handleClick = () => {
-    onClick(fullPath)
+    onClick(name)
   }
 
   return (
@@ -26,7 +26,7 @@ const AzureDevOpsMenuItem = forwardRef((props: Props, ref: any) => {
           <MenuItemAvatar>
             <AzureDevOpsSVG />
           </MenuItemAvatar>
-          <TypeAheadLabel query={query} label={fullPath} />
+          <TypeAheadLabel query={query} label={name} />
         </MenuItemLabel>
       }
       onClick={handleClick}
