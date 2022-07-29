@@ -16,7 +16,6 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {
-  FieldAttachment,
   makeFieldsAttachment,
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
@@ -147,7 +146,7 @@ const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meeti
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: Team, meeting: Meeting, meetingUrl: string) => FieldAttachment[]
+  (team: Team, meeting: Meeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,

@@ -23,7 +23,7 @@ export interface FieldAttachmentHeader {
   author_icon?: string
 }
 
-export interface FieldAttachment extends FieldAttachmentHeader {
+interface FieldAttachment extends FieldAttachmentHeader {
   fields: Array<Field>
 }
 
