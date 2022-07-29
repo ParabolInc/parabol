@@ -54,6 +54,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            curl -o- -L https://yarnpkg.com/install.sh | bash
+            echo 'export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"' >> $BASH_ENV
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
       - save_cache:
