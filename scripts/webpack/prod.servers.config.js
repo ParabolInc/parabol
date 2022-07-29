@@ -39,7 +39,7 @@ module.exports = ({isDeploy}) => ({
     path: path.join(PROJECT_ROOT, 'dist')
   },
   // all those node_modules make circleCI run out of memory, can remove when we're no on the free tier
-  parallelism: isDeploy ? 10 : 100,
+  parallelism: isDeploy ? 1 : 100,
   resolve: {
     alias: {
       '~': CLIENT_ROOT,
