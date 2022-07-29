@@ -27,7 +27,7 @@ jobs:
       SENTRY_PROJECT: "action-production"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
-      NODE_OPTIONS: "--max-old-space-size=8192"
+      NODE_OPTIONS: "--max-old-space-size=4000"
     working_directory: ~/action
     resource_class: large
     steps:
@@ -76,7 +76,7 @@ jobs:
           # Use the staging env to run webpack (NODE_ENV=production)
           command: |
             cp $DEVOPS_WORKDIR/environments/staging .env
-            yarn build --deploy
+            yarn build --deploy --max-old-space-size=4000
       - run:
           name: Push Assets to Databases
           # Use the test env so the ports match up (NODE_ENV=testing)
