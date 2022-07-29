@@ -1,11 +1,9 @@
 interface Options {
-  searchParams?:
-    | {
-        utm_source: string
-        utm_medium: string
-        utm_campaign: string
-      }
-    | {[key: string]: string}
+  searchParams?: {
+    utm_source: string
+    utm_medium: string
+    utm_campaign: string
+  }
 }
 
 const makeAppURL = (appOrigin: string, pathname: string, options?: Options) => {
