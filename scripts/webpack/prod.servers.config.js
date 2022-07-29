@@ -27,6 +27,8 @@ const getNormalizedWebpackPublicPath = () => {
 
 module.exports = ({isDeploy}) => ({
   mode: 'production',
+  // should already be false
+  cache: false,
   node: {
     __dirname: false
   },
