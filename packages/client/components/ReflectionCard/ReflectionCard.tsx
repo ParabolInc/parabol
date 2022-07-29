@@ -255,19 +255,17 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
-  
+
   const isGroupPhase = !isComplete && phaseType === 'group'
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
 
   const shouldAnimate = (() => {
-    if(isGroupPhase && hasNoGroup) {
+    if (isGroupPhase && hasNoGroup) {
       const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
       const isFirst = reflectionId === firstReflection?.id
       const isNotEditing = !firstReflection?.isEditing
-      const isNotDragging = !reflectionGroups.some(
-        (group) => group.reflections.some(
-          (reflection) => reflection.isViewerDragging
-        )
+      const isNotDragging = reflectionGroups.every((group) =>
+        group.reflections.every((reflection) => !reflection.isViewerDragging)
       )
       return isFirst && isNotEditing && isNotDragging
     }

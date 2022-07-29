@@ -8,17 +8,17 @@ const dragPrompt = keyframes`
   0%, 1.5%, 2%, 3.5%, 100% {
     left: 0px;
     top: 0px;
-    box-shadow: rgba(0,0,0,.08) 0px 1px 3px 0px;
+    box-shadow: ${Elevation.CARD_SHADOW};
   }
   1% {
     left: 10px;
     top: -5px;
-    box-shadow: rgba(0,0,0,.2) 0px 5px 5px -3px, rgba(0,0,0,.14) 0px 8px 10px 1px, rgba(0,0,0,.12) 0px 3px 14px 2px;
+    box-shadow: ${Elevation.CARD_DRAGGING};
   }
   3% {
     left: 10px;
     top: -5px;
-    box-shadow: rgba(0,0,0,.2) 0px 5px 5px -3px, rgba(0,0,0,.14) 0px 8px 10px 1px, rgba(0,0,0,.12) 0px 3px 14px 2px;
+    box-shadow: ${Elevation.CARD_DRAGGING};
   }
 `
 
