@@ -11,6 +11,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {AzureDevOpsScopingSelectAllIssues_workItems} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 
 import Checkbox from './Checkbox'
 
@@ -50,13 +51,10 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
     const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
     return url.pathname.substring(firstIndex + 1, seconedIndex)
   }
-  const getInstanceId = (url: URL) => {
-    const firstIndex = url.pathname.indexOf('/', 1)
-    return url.host + '/' + url.pathname.substring(1, firstIndex)
-  }
+
   const serviceTaskIds = workItems.map((userStory) => {
     const url = new URL(userStory.node.url)
-    return AzureDevOpsIssueId.join(getInstanceId(url), getProjectId(url), userStory.node.id)
+    return AzureDevOpsIssueId.join(AzureDevOpsClientManager.getInstanceId(url), getProjectId(url), userStory.node.id)
   })
 
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)

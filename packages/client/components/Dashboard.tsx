@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {Location} from 'history'
 import React, {lazy, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Switch} from 'react-router'
+import {Route, Switch, useLocation} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
@@ -37,6 +38,9 @@ const NewTeam = lazy(
     import(
       /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
     )
+)
+const NewMeetingRoot = lazy(
+  () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
 )
 
 interface Props {
@@ -128,6 +132,10 @@ const Dashboard = (props: Props) => {
   useSnackNag(overLimitCopy)
   useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
+
+  const location = useLocation<{backgroundLocation?: Location}>()
+  const state = location.state
+
   return (
     <DashLayout>
       <SkipLink href='#main'>Skip to content</SkipLink>
@@ -145,9 +153,9 @@ const Dashboard = (props: Props) => {
           </SwipeableDashSidebar>
         )}
         <DashMain id='main' ref={meetingsDashRef}>
-          <Switch>
+          <Switch location={state?.backgroundLocation || location}>
             <Route
-              path='/meetings'
+              path='(/meetings|/new-meeting)'
               render={(routeProps) => (
                 <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
               )}
@@ -156,6 +164,9 @@ const Dashboard = (props: Props) => {
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
             <Route path='/usage' component={InsightsRoot} />
+          </Switch>
+          <Switch>
+            <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
           </Switch>
         </DashMain>
       </DashPanel>

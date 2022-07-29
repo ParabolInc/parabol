@@ -4,6 +4,7 @@ import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptRespons
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -75,6 +76,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     meetingId,
     teamPromptResponseId
   }
+  analytics.responseAdded(viewerId, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
   publish(
     SubscriptionChannel.MEETING,
     meetingId,
