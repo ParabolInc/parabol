@@ -12,7 +12,7 @@ const NORMAL_TASK_STRING = `This is a task card. They can be created here, in a 
 const INTEGRATIONS_TASK_STRING = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on Settings > Integrations.`
 
 function getSeedTasks(teamId: string) {
-  const integrationURL = makeAppURL(appOrigin, `team/${teamId}/settings/integrations`)
+  const integrationURL = makeAppURL(appOrigin, `team/${teamId}/settings/integrations?from=TeamTask`)
   const integrationTaskHTML = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on <a href="${integrationURL}">Settings > Integrations</a>.`
 
   return [
