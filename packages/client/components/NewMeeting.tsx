@@ -192,7 +192,7 @@ const NewMeeting = (props: Props) => {
         </TeamAndSettings>
       </NewMeetingInner>
       <NewMeetingActions
-        team={selectedTeam}
+        teamRef={selectedTeam}
         onStartMeetingClick={onStartMeetingClick}
         submitting={submitting}
         error={error}
