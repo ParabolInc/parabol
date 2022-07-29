@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {mod} from 'react-swipeable-views-core'
 import useUsageSnackNag from '~/hooks/useUsageSnackNag'
 import {PALETTE} from '~/styles/paletteV3'
 import {NonEmptyArray} from '~/types/generics'
@@ -10,16 +9,14 @@ import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
 import {Elevation} from '../styles/elevation'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, Radius} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
 import FlatButton from './FlatButton'
 import IconLabel from './IconLabel'
 import NewMeetingActions from './NewMeetingActions'
-import NewMeetingHowTo from './NewMeetingHowTo'
-import NewMeetingIllustration from './NewMeetingIllustration'
-import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
+import NewMeetingCarousel from './NewMeetingCarousel'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
 
@@ -29,20 +26,14 @@ interface Props {
   onClose: () => void
 }
 
-const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
-
-const IllustrationAndSelector = styled('div')<{isDesktop}>(({isDesktop}) => ({
-  gridArea: 'picker',
-  width: '100%',
-  paddingBottom: isDesktop ? 0 : 32
-}))
+const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
 
 const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   gridArea: 'settings',
-  marginTop: isDesktop ? 32 : undefined,
+  marginTop: isDesktop ? 32 : 16,
   minHeight: 166
 }))
 
@@ -52,8 +43,9 @@ const TeamAndSettingsInner = styled('div')({
 })
 
 const NewMeetingDialog = styled(DialogContainer)({
-  width: '800px',
-  maxHeight: 'unset'
+  width: '860px',
+  maxHeight: 'unset',
+  borderRadius: Radius.FIELD
 })
 
 const Title = styled(DialogTitle)({
@@ -62,46 +54,37 @@ const Title = styled(DialogTitle)({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingBottom: 24
+  padding: '16px 16px 16px 24px',
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    padding: '8px 8px 8px 16px'
+  }
 })
 
 const CloseButton = styled(FlatButton)({
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  color: PALETTE.SLATE_600,
-  padding: 0
+  padding: 8,
+  color: PALETTE.SLATE_600
 })
 
-const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
-  {
-    alignItems: 'flex-start',
-    justifyItems: 'center',
-    margin: '0 auto auto',
-    [MEDIA_QUERY_VERTICAL_CENTERING]: {
-      marginTop: 'auto'
-    }
-  },
-  ({isDesktop}) =>
-    isDesktop && {
-      display: 'grid',
-      gridTemplateAreas: `'picker howto' 'settings actions'`,
-      gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
-      gridTemplateRows: 'auto 3fr',
-      height: '100%',
-      margin: 'auto',
-      maxHeight: 640,
-      maxWidth: 1400,
-      padding: '0 64px 16px 64px'
-    }
-)
+const NewMeetingInner = styled('div')({
+  height: '100%',
+  maxHeight: 640,
+  maxWidth: 1400,
+  padding: 0,
+
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    display: 'block',
+    padding: 0
+  }
+})
 
 const createMeetingOrder = ({standups}: {standups: boolean}) => {
-  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['poker', 'retrospective', 'action']
+  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['retrospective']
 
   if (standups) {
     meetingOrder.push('teamPrompt')
   }
+
+  meetingOrder.push('poker', 'action')
 
   return meetingOrder
 }
@@ -135,12 +118,14 @@ const NewMeeting = (props: Props) => {
   const {viewer} = data
   const {teams, featureFlags} = viewer
   const {insights} = featureFlags
-  const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
+  const [meetingOrder, setMeetingOrder] = useState<MeetingTypeEnum[]>(
+    createMeetingOrder(featureFlags)
+  )
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
   useUsageSnackNag(insights)
-  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
+  const meetingType = meetingOrder[idx] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {
@@ -155,8 +140,11 @@ const NewMeeting = (props: Props) => {
   useEffect(() => {
     if (!selectedTeam) return
     const {lastMeetingType} = selectedTeam
-    const meetingIdx = newMeetingOrder.indexOf(lastMeetingType)
-    setIdx(meetingIdx)
+    const meetingIdx = meetingOrder.indexOf(lastMeetingType)
+    const newMeetingOrder = [...meetingOrder]
+    const firstMeeting = newMeetingOrder.splice(meetingIdx, 1)[0] as MeetingTypeEnum
+    newMeetingOrder.unshift(firstMeeting)
+    setMeetingOrder(newMeetingOrder)
   }, [])
   if (!teamId || !selectedTeam) return null
   return (
@@ -167,12 +155,8 @@ const NewMeeting = (props: Props) => {
           <IconLabel icon='close' iconLarge />
         </CloseButton>
       </Title>
-      <NewMeetingInner isDesktop={isDesktop}>
-        <IllustrationAndSelector isDesktop={isDesktop}>
-          <NewMeetingIllustration idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
-          <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
-        </IllustrationAndSelector>
-        <NewMeetingHowTo meetingType={meetingType} />
+      <NewMeetingInner>
+        <NewMeetingCarousel idx={idx} setIdx={setIdx} meetingOrder={meetingOrder} />
         <TeamAndSettings isDesktop={isDesktop}>
           <TeamAndSettingsInner>
             <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
