@@ -68,10 +68,10 @@ module.exports = ({isDeploy}) => ({
     new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
     // native bindings might be faster, but abandonware & not currently used
     new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
-    new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[contenthash].js.map',
-      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
-    }),
+    // new webpack.SourceMapDevToolPlugin({
+    //   filename: '[name]_[contenthash].js.map',
+    //   append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
+    // }),
     isDeploy &&
       new S3Plugin({
         s3Options: {
