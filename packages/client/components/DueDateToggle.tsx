@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import AccessTime from '@mui/icons-material/AccessTime'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React from 'react'
@@ -8,12 +9,10 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {DueDateToggle_task} from '../__generated__/DueDateToggle_task.graphql'
 import CardButton from './CardButton'
-import Icon from './Icon'
 
 interface StyleProps {
   cardIsActive: boolean
@@ -87,8 +86,9 @@ const Toggle = styled(CardButton)<StyleProps>(
     }
 )
 
-const DueDateIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const DueDateIcon = styled('div')({
+  height: 18,
+  width: 18
 })
 
 const DateString = styled('span')({
@@ -122,43 +122,49 @@ const getDateInfo = (dueDate) => {
   return {title: `Due ${dateString}, ${action}`}
 }
 
-const DueDatePicker = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'DueDatePicker' */
-    './DueDatePicker'
-  )
+const DueDatePicker = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'DueDatePicker' */
+      './DueDatePicker'
+    )
 )
 
 const DueDateToggle = (props: Props) => {
   const {cardIsActive, task, useTaskChild, isArchived} = props
   const {dueDate} = task
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
   return (
     <>
-      {!isArchived && <Toggle
-        cardIsActive={!dueDate && cardIsActive}
-        tabIndex={0}
-        dueDate={!!dueDate}
-        isPastDue={isPastDue}
-        isDueSoon={isDueSoon}
-        ref={originRef}
-        onClick={togglePortal}
-        onMouseEnter={DueDatePicker.preload}
-      >
-        <DueDateIcon
-          onClick={closeTooltip}
-          onMouseEnter={openTooltip}
-          onMouseLeave={closeTooltip}
-          ref={tipRef}
+      {!isArchived && (
+        <Toggle
+          cardIsActive={!dueDate && cardIsActive}
+          tabIndex={0}
+          dueDate={!!dueDate}
+          isPastDue={isPastDue}
+          isDueSoon={isDueSoon}
+          ref={originRef}
+          onClick={togglePortal}
+          onMouseEnter={DueDatePicker.preload}
         >
-          access_time
-        </DueDateIcon>
-        {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
-      </Toggle>}
+          <DueDateIcon
+            onClick={closeTooltip}
+            onMouseEnter={openTooltip}
+            onMouseLeave={closeTooltip}
+            ref={tipRef}
+          >
+            <AccessTime />
+          </DueDateIcon>
+          {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
+        </Toggle>
+      )}
       {tooltipPortal(<div>{title}</div>)}
       {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
     </>

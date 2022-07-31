@@ -1,12 +1,11 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import UnfoldLess from '@mui/icons-material/UnfoldLess'
+import UnfoldMore from '@mui/icons-material/UnfoldMore'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 
-const DropdownIcon = styled(Icon)({
-  padding: '8px 0 8px 4px',
-  fontSize: ICON_SIZE.MD24
+const DropdownIcon = styled('div')({
+  padding: '8px 0 8px 4px'
 })
 
 const Label = styled('div')({
@@ -33,7 +32,7 @@ const ExpansionPanelSummary = (props: Props) => {
   return (
     <Label onClick={onClick}>
       {label}
-      <DropdownIcon>{isExpanded ? 'unfold_less' : 'unfold_more'}</DropdownIcon>
+      <DropdownIcon>{isExpanded ? <UnfoldLess /> : <UnfoldMore />}</DropdownIcon>
     </Label>
   )
 }

@@ -1,13 +1,13 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
-import React, {forwardRef, ReactElement, Ref} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import React, {forwardRef, ReactElement, Ref} from 'react'
 import useMenu from '../hooks/useMenu'
 import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
-import ui from '../styles/ui'
 import {PALETTE} from '../styles/paletteV3'
+import ui from '../styles/ui'
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled(ExpandMore)({
   color: PALETTE.SLATE_600,
   marginLeft: 8
 })
@@ -70,7 +70,7 @@ const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) =
     >
       <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={0}>
         <Value>{defaultText}</Value>
-        {!disabled && <DropdownIcon>expand_more</DropdownIcon>}
+        {!disabled && <DropdownIcon />}
       </InputBlock>
     </DropdownBlock>
   )

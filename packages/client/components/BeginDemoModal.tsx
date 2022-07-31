@@ -1,12 +1,11 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import DialogContainer from './DialogContainer'
-import PrimaryButton from './PrimaryButton'
+import Chat from '@mui/icons-material/Chat'
+import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import {PALETTE} from '../styles/paletteV3'
+import DialogContainer from './DialogContainer'
+import PrimaryButton from './PrimaryButton'
 
 const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',
@@ -24,9 +23,10 @@ const StyledCopy = styled('p')({
   textAlign: 'center'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Chat)({
   color: PALETTE.SKY_500,
-  fontSize: ICON_SIZE.MD48
+  width: 48,
+  height: 48
 })
 
 interface Props {
@@ -35,7 +35,7 @@ interface Props {
 
 const BeginDemoModal = (props: Props) => {
   const {closePortal} = props
-  const atmosphere = (useAtmosphere() as unknown) as LocalAtmosphere
+  const atmosphere = useAtmosphere() as unknown as LocalAtmosphere
   const {clientGraphQLServer} = atmosphere
   const {startBot} = clientGraphQLServer
   const onClick = () => {
@@ -47,7 +47,7 @@ const BeginDemoModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <StyledIcon>chat</StyledIcon>
+      <StyledIcon />
       <StyledCopy>
         Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
         colleagues

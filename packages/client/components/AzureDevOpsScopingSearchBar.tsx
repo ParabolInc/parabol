@@ -1,17 +1,15 @@
 import styled from '@emotion/styled'
+import Search from '@mui/icons-material/Search'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {AzureDevOpsScopingSearchBar_meeting$key} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
 import AzureDevOpsScopingSearchFilterToggle from './AzureDevOpsScopingSearchFilterToggle'
 import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'
-import Icon from './Icon'
 
-const SearchIcon = styled(Icon)({
+const SearchIcon = styled(Search)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
   padding: 3,
   marginRight: 12
 })
@@ -49,7 +47,7 @@ const AzureDevOpsScopingSearchBar = (props: Props) => {
   return (
     <SearchBar>
       <SearchBarWrapper>
-        <SearchIcon>search</SearchIcon>
+        <SearchIcon />
         <AzureDevOpsScopingSearchInput meeting={meeting} />
         <AzureDevOpsScopingSearchFilterToggle meeting={meeting} />
       </SearchBarWrapper>

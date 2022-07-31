@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import MoreVert from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -10,7 +11,6 @@ import {PortalStatus} from '../hooks/usePortal'
 import {PALETTE} from '../styles/paletteV3'
 import isDemoRoute from '../utils/isDemoRoute'
 import lazyPreload from '../utils/lazyPreload'
-import Icon from './Icon'
 
 const FacilitatorBlock = styled('div')({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
@@ -29,12 +29,12 @@ const FacilitatorToggle = styled('div')<{isActive: boolean; isReadOnly: boolean}
     // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
     padding: '2px 4px',
     // StyledIcon when toggle isActive or not
-    '& > i': {
+    '& > span': {
       backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
       color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600
     },
     // StyledIcon when toggle hovered
-    '&:hover > i': {
+    '&:hover > span': {
       backgroundColor: PALETTE.SLATE_200,
       color: PALETTE.SLATE_700
     }
@@ -55,14 +55,14 @@ const Subtext = styled('div')({
   lineHeight: '16px'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('span')({
   borderRadius: 32,
-  display: 'block',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   flexShrink: 0,
   height: 32,
-  lineHeight: '32px',
   marginLeft: 'auto',
-  textAlign: 'center',
   width: 32
 })
 
@@ -88,17 +88,20 @@ interface Props {
   meeting: Facilitator_meeting
 }
 
-const FacilitatorMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'FacilitatorMenu' */
-    './FacilitatorMenu'
-  )
+const FacilitatorMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'FacilitatorMenu' */
+      './FacilitatorMenu'
+    )
 )
 
 const Facilitator = (props: Props) => {
   const {meeting} = props
   const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
-  const connectedMemberIds = meetingMembers.filter(({user}) => user.isConnected).map(({user}) => user.id)
+  const connectedMemberIds = meetingMembers
+    .filter(({user}) => user.isConnected)
+    .map(({user}) => user.id)
   const {user, picture, preferredName} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
   const isConnected = user?.isConnected ?? false
@@ -110,7 +113,12 @@ const Facilitator = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isReadOnly = isDemoRoute() || (viewerId === facilitatorUserId && connectedMemberIds.length === 1 && connectedMemberIds[0] === viewerId) || !!endedAt
+  const isReadOnly =
+    isDemoRoute() ||
+    (viewerId === facilitatorUserId &&
+      connectedMemberIds.length === 1 &&
+      connectedMemberIds[0] === viewerId) ||
+    !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
@@ -129,7 +137,11 @@ const Facilitator = (props: Props) => {
           <Label>Facilitator</Label>
           <Subtext>{preferredName}</Subtext>
         </div>
-        {!isReadOnly && <StyledIcon>more_vert</StyledIcon>}
+        {!isReadOnly && (
+          <StyledIcon>
+            <MoreVert />
+          </StyledIcon>
+        )}
       </FacilitatorToggle>
       {menuPortal(<FacilitatorMenu menuProps={menuProps} meeting={meeting} />)}
     </FacilitatorBlock>

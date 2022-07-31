@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
+import ErrorIcon from '@mui/icons-material/Error'
+import Warning from '@mui/icons-material/Warning'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
@@ -16,7 +17,6 @@ import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
-import Icon from './Icon'
 import BasicTextArea from './InputField/BasicTextArea'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
@@ -104,9 +104,8 @@ const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   width: '100%'
 }))
 
-const StyledIcon = styled(Icon)<{isWarning: boolean}>(({isWarning}) => ({
+const StyledIcon = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   color: isWarning ? PALETTE.GOLD_500 : PALETTE.TOMATO_500,
-  fontSize: ICON_SIZE.MD24,
   marginRight: 8
 }))
 
@@ -239,7 +238,7 @@ const AddTeamMemberModal = (props: Props) => {
             {error && (
               <ErrorWrapper isWarning={!isSubmitted}>
                 <StyledIcon isWarning={!isSubmitted}>
-                  <Icon>{isSubmitted ? 'error' : 'warning'}</Icon>
+                  {isSubmitted ? <ErrorIcon /> : <Warning />}
                 </StyledIcon>
                 <Label>{error.message}</Label>
               </ErrorWrapper>

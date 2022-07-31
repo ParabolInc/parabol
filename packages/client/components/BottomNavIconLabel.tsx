@@ -1,7 +1,10 @@
 import styled from '@emotion/styled'
+import Event from '@mui/icons-material/Event'
+import HelpOutline from '@mui/icons-material/HelpOutline'
+import PersonPinCircleOutlined from '@mui/icons-material/PersonPinCircleOutlined'
+import TimerOutlined from '@mui/icons-material/TimerOutlined'
 import React, {forwardRef, ReactNode, Ref} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
 
 const paletteColors = {
   warm: PALETTE.ROSE_500,
@@ -20,17 +23,17 @@ interface Props {
   children?: ReactNode
 }
 
+const StyledIcon = styled('div')<{iconColor?: string}>(({iconColor}) => ({
+  color: iconColor ? paletteColors[iconColor] : 'inherit',
+  height: 24
+}))
+
 const Inner = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   padding: '8px 8px 4px'
 })
-
-const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({
-  color: iconColor ? paletteColors[iconColor] : 'inherit',
-  height: 24
-}))
 
 const Label = styled('div')({
   color: 'inherit',
@@ -41,9 +44,21 @@ const Label = styled('div')({
 
 const BottomNavIconLabel = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {children, className, icon, iconColor, label} = props
+
   return (
     <Inner className={className} ref={ref}>
-      {children || <StyledIcon iconColor={iconColor}>{icon}</StyledIcon>}
+      {children || (
+        <StyledIcon iconColor={iconColor}>
+          {
+            {
+              help_outline: <HelpOutline />,
+              timer: <TimerOutlined />,
+              event: <Event />,
+              person_pin_circle: <PersonPinCircleOutlined />
+            }[icon!]
+          }
+        </StyledIcon>
+      )}
       <Label>{label}</Label>
     </Inner>
   )

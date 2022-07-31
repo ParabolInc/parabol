@@ -1,4 +1,5 @@
 import styled from '@emotion/styled-base'
+import Edit from '@mui/icons-material/Edit'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -8,12 +9,11 @@ import useModal from '../hooks/useModal'
 import UpdateGitHubDimensionFieldMutation from '../mutations/UpdateGitHubDimensionFieldMutation'
 import textOverflow from '../styles/helpers/textOverflow'
 import {PALETTE} from '../styles/paletteV3'
-import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
+import {FONT_FAMILY} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import EditGitHubLabelTemplateModal from './EditGitHubLabelTemplateModal'
 import FlatButton from './FlatButton'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
@@ -63,8 +63,9 @@ const Button = styled(FlatButton)({
   width: 32
 })
 
-const ActionButton = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const ActionButton = styled(Edit)({
+  height: 18,
+  width: 18
 })
 
 interface Props {
@@ -109,7 +110,11 @@ const GitHubFieldMenu = (props: Props) => {
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ] as string[]
   const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
-  const {modalPortal, openPortal, closePortal: closeModal} = useModal({
+  const {
+    modalPortal,
+    openPortal,
+    closePortal: closeModal
+  } = useModal({
     id: 'editGitHubLabel',
     parentId: 'githubFieldMenu'
   })
@@ -165,7 +170,7 @@ const GitHubFieldMenu = (props: Props) => {
               </LabelOptionBlock>
               <EditButtonGroup>
                 <Button onClick={openEditModal} size='small'>
-                  <ActionButton>{'edit'}</ActionButton>
+                  <ActionButton />
                 </Button>
               </EditButtonGroup>
             </LabelOptionRoot>

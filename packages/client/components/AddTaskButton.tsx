@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import TaskAltOutlined from '@mui/icons-material/TaskAltOutlined'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
 const StyledPlainButton = styled(PlainButton)({
@@ -18,8 +18,7 @@ const StyledPlainButton = styled(PlainButton)({
   transition: 'color 0.1s ease'
 })
 
-const AddTaskIcon = styled(Icon)({
-  fontSize: 20,
+const AddTaskIcon = styled(TaskAltOutlined)({
   width: 20,
   height: 20,
   margin: '0 4px 0 0'
@@ -40,7 +39,7 @@ const AddTaskButton = (props: Props) => {
 
   return (
     <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
-      <AddTaskIcon>task_alt</AddTaskIcon>
+      <AddTaskIcon />
       <AddTaskLabel>Add a task</AddTaskLabel>
     </StyledPlainButton>
   )

@@ -58,10 +58,13 @@
   "dependencies": {
     "@datadog/browser-rum": "^3.6.12",
     "@emotion/core": "^10.0.27",
+    "@emotion/react": "^11.9.3",
     "@emotion/styled": "^10.0.27",
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@mattkrick/sanitize-svg": "0.3.1",
     "@mattkrick/trebuchet-client": "^3.0.1",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.9.2",
     "@sentry/browser": "^5.8.0",
     "@tiptap/extension-character-count": "^2.0.0-beta.25",
     "@tiptap/extension-link": "^2.0.0-beta.38",

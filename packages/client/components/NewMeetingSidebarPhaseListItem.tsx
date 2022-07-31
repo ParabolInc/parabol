@@ -1,21 +1,18 @@
 import styled from '@emotion/styled'
+import Comment from '@mui/icons-material/Comment'
+import Edit from '@mui/icons-material/Edit'
+import Group from '@mui/icons-material/Group'
+import GroupWork from '@mui/icons-material/GroupWork'
+import PlaylistAdd from '@mui/icons-material/PlaylistAdd'
+import Receipt from '@mui/icons-material/Receipt'
+import ThumbsUpDown from '@mui/icons-material/ThumbsUpDown'
+import Update from '@mui/icons-material/Update'
 import React from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
-import Icon from './Icon'
-
-const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
-  {
-    color: PALETTE.SLATE_600,
-    margin: '0 16px'
-  },
-  ({isUnsyncedFacilitatorPhase}) => ({
-    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
-  })
-)
 
 const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
   ({isUnsyncedFacilitatorPhase}) => ({
@@ -27,6 +24,16 @@ const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
         fill: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : PALETTE.SLATE_600
       }
     }
+  })
+)
+
+const NavItemIcon = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
+  {
+    color: PALETTE.SLATE_600,
+    margin: '0 16px'
+  },
+  ({isUnsyncedFacilitatorPhase}) => ({
+    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
   })
 )
 
@@ -142,6 +149,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const icon = phaseIconLookup[phaseType]
   const Image = phaseImageLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
+
   return (
     <NavListItemLink
       isActive={isActive}
@@ -153,7 +161,20 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       title={label}
     >
       {icon && (
-        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+          {
+            {
+              group: <Group />,
+              edit: <Edit />,
+              thumbs_up_down: <ThumbsUpDown />,
+              comment: <Comment />,
+              group_work: <GroupWork />,
+              playlist_add: <PlaylistAdd />,
+              update: <Update />,
+              receipt: <Receipt />
+            }[icon]
+          }
+        </NavItemIcon>
       )}
       {Image && (
         <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>

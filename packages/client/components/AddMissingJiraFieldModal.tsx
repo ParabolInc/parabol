@@ -1,21 +1,20 @@
-import React from 'react'
+import styled from '@emotion/styled'
+import Error from '@mui/icons-material/Error'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import styled from '@emotion/styled'
-import DialogContainer from './DialogContainer'
-import DialogContent from './DialogContent'
-import DialogTitle from './DialogTitle'
-import Icon from './Icon'
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import AddMissingJiraFieldMutation from '../mutations/AddMissingJiraFieldMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import AtlassianManager from '../utils/AtlassianManager'
 import {AddMissingJiraFieldModal_stage} from '../__generated__/AddMissingJiraFieldModal_stage.graphql'
+import DialogContainer from './DialogContainer'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import PrimaryButton from './PrimaryButton'
+import SecondaryButton from './SecondaryButton'
 
 interface Props {
   closePortal: () => void
@@ -49,9 +48,8 @@ const ErrorWrapper = styled('div')({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Error)({
   color: PALETTE.TOMATO_500,
-  fontSize: ICON_SIZE.MD24,
   marginRight: 8
 })
 
@@ -113,9 +111,7 @@ const AddMissingJiraFieldModal = (props: Props) => {
 
           {error && (
             <ErrorWrapper>
-              <StyledIcon>
-                <Icon>{'error'}</Icon>
-              </StyledIcon>
+              <StyledIcon />
               <Label>{error.message}</Label>
             </ErrorWrapper>
           )}

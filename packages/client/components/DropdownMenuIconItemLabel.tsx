@@ -1,7 +1,9 @@
 import styled from '@emotion/styled'
+import Business from '@mui/icons-material/Business'
+import Group from '@mui/icons-material/Group'
+import Public from '@mui/icons-material/Public'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
 
 const Label = styled('span')({
   alignItems: 'center',
@@ -13,7 +15,7 @@ const Label = styled('span')({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
   paddingRight: 12
 })
@@ -27,7 +29,15 @@ const DropdownMenuIconItemLabel = (props: Props) => {
   const {icon, label} = props
   return (
     <Label>
-      <StyledIcon>{icon}</StyledIcon>
+      <StyledIcon>
+        {
+          {
+            group: <Group />,
+            business: <Business />,
+            public: <Public />
+          }[icon]
+        }
+      </StyledIcon>
       {label}
     </Label>
   )

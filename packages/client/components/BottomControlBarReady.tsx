@@ -1,4 +1,6 @@
 import styled from '@emotion/styled'
+import ArrowForward from '@mui/icons-material/ArrowForward'
+import Check from '@mui/icons-material/Check'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -16,7 +18,6 @@ import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_me
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import Icon from './Icon'
 
 interface Props {
   isNext: boolean
@@ -30,11 +31,9 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady: boolean}>(
+const CheckIcon = styled('div')<{progress: number; isNext: boolean; isViewerReady: boolean}>(
   ({isViewerReady, progress, isNext}) => ({
     color: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
-    fontSize: 24,
-    fontWeight: 600,
     height: 24,
     opacity: isNext ? 1 : isViewerReady ? 1 : 0.5,
     transformOrigin: '0 0',
@@ -134,6 +133,7 @@ const BottomControlBarReady = (props: Props) => {
     }
     return false
   }
+
   const disabled = getDisabled()
   return (
     <>
@@ -150,7 +150,12 @@ const BottomControlBarReady = (props: Props) => {
         <BottomControlBarProgress isNext={isNext} progress={progress} />
         <BottomNavIconLabel label={label} ref={originRef}>
           <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-            {icon}
+            {
+              {
+                arrow_forward: <ArrowForward />,
+                check: <Check />
+              }[icon]
+            }
           </CheckIcon>
         </BottomNavIconLabel>
       </BottomNavControl>

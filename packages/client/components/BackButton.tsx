@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
+import ArrowBack from '@mui/icons-material/ArrowBack'
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {PALETTE} from '~/styles/paletteV3'
 import FlatButton from './FlatButton'
-import Icon from './Icon'
 
 const IconButton = styled(FlatButton)({
   color: PALETTE.SLATE_600,
@@ -15,7 +15,7 @@ const IconButton = styled(FlatButton)({
   }
 })
 
-const BackIcon = styled(Icon)({
+const BackIcon = styled(ArrowBack)({
   color: 'inherit'
 })
 
@@ -28,7 +28,7 @@ const BackButton = ({ariaLabel, to}: Props) => {
   return (
     <Link to={to}>
       <IconButton aria-label={ariaLabel}>
-        <BackIcon>arrow_back</BackIcon>
+        <BackIcon />
       </IconButton>
     </Link>
   )
