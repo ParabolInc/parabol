@@ -3,7 +3,6 @@ import CancelOutlined from '@mui/icons-material/CancelOutlined'
 import Close from '@mui/icons-material/Close'
 import Menu from '@mui/icons-material/Menu'
 import React from 'react'
-import {ICON_SIZE} from '../styles/typographyV2'
 import LinkButton, {LinkButtonProps} from './LinkButton'
 
 const StyledButton = styled(LinkButton)({outline: 0})
@@ -13,23 +12,39 @@ interface Props extends LinkButtonProps {
   iconLarge?: boolean
 }
 
-const StyledIcon = styled('div')<{iconLarge?: boolean}>(({iconLarge}) => ({
+const StyledIcon = styled('div')({
   color: 'inherit',
-  display: 'block',
-  fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18
-}))
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+})
+
+const notIconLargeStyles = {
+  height: 18,
+  width: 18
+}
+
+const CancelOutlinedIcon = styled(CancelOutlined)<{iconLarge?: boolean}>((iconLarge) =>
+  !iconLarge ? notIconLargeStyles : undefined
+)
+const CloseIcon = styled(Close)<{iconLarge?: boolean}>((iconLarge) =>
+  !iconLarge ? notIconLargeStyles : undefined
+)
+const MenuIcon = styled(Menu)<{iconLarge?: boolean}>((iconLarge) =>
+  !iconLarge ? notIconLargeStyles : undefined
+)
 
 const IconButton = (props: Props) => {
   const {icon, iconLarge} = props
 
   return (
     <StyledButton {...props} type='button'>
-      <StyledIcon iconLarge={iconLarge}>
+      <StyledIcon>
         {
           {
-            cancel: <CancelOutlined />,
-            close: <Close />,
-            menu: <Menu />
+            cancel: <CancelOutlinedIcon iconLarge={iconLarge} />,
+            close: <CloseIcon iconLarge={iconLarge} />,
+            menu: <MenuIcon iconLarge={iconLarge} />
           }[icon]
         }
       </StyledIcon>

@@ -45,11 +45,13 @@ const StyledIcon = styled('div')<Pick<Props, 'iconAfter'>>(({iconAfter}) => ({
   alignItems: 'center',
   order: iconAfter ? 2 : undefined
 }))
+
 const notIconLargeStyles = {
   height: 18,
   width: 18
 }
 
+// Not sure why iconLarge showing opposite behavior (it should be !iconLarge ? notIconLargeStyles...)
 const SearchIcon = styled(Search)<{iconLarge?: boolean}>((iconLarge) =>
   iconLarge ? notIconLargeStyles : undefined
 )
