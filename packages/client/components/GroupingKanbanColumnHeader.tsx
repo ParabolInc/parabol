@@ -58,6 +58,9 @@ const Wrapper = styled('div')({
 })
 
 const StyledIcon = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   transform: 'rotate(45deg)'
 })
 

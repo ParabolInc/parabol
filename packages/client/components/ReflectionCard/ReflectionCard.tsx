@@ -41,7 +41,9 @@ const StyledReacjis = styled(ReactjiSection)({
 })
 
 const SpotlightIcon = styled(IconLabel)({
-  color: PALETTE.SLATE_700
+  color: PALETTE.SLATE_700,
+  width: 16,
+  height: 16
 })
 
 const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotlight}) => ({
