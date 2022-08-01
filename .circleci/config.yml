@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt install nodejs
+            sudo apt install nodejs
             corepack enable
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
