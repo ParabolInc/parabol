@@ -1,3 +1,4 @@
+import ms from 'ms'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
@@ -54,14 +55,10 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   await r
     .table('NewMeeting')
     .get(meetingId)
-    .update(
-      {
-        meetingSeriesId: newMeetingSeriesId,
-        scheduledEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
-      },
-      {returnChanges: true}
-    )('changes')(0)('new_val')
-    .default(null)
+    .update({
+      meetingSeriesId: newMeetingSeriesId,
+      scheduledEndTime: new Date(Date.now() + ms('24h')) // 24 hours from now
+    })
     .run()
 
   dataLoader.get('newMeetings').clear(meetingId)

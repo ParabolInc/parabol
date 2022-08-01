@@ -7,8 +7,7 @@ export type StartRecurrenceSuccessSource = {
 }
 
 const StartRecurrenceSuccess: StartRecurrenceSuccessResolvers = {
-  meeting: async (source, _args, {dataLoader}) => {
-    const {meetingId} = source
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
     return dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingTeamPrompt>
   }
 }
