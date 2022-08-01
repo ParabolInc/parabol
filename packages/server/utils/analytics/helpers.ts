@@ -1,10 +1,25 @@
+import {CHECKIN} from '../../../client/utils/constants'
+import Meeting from '../../database/types/Meeting'
+import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 
-export const createMeetingTemplateAnalyticsParams = (template: MeetingTemplate) => {
+export const createMeetingProperties = (
+  completedMeeting: Meeting,
+  meetingMembers?: MeetingMember[],
+  template?: MeetingTemplate
+) => {
+  const {id: meetingId, teamId, facilitatorUserId, meetingType, phases} = completedMeeting
+  const hasIcebreaker = phases[0]?.phaseType === CHECKIN
   return {
-    meetingTemplateId: template.id,
-    meetingTemplateName: template.name,
-    meetingTemplateScope: template.scope,
-    meetingTemplateIsFromParabol: !!template.isStarter
+    meetingId,
+    teamId,
+    facilitatorUserId,
+    meetingType,
+    hasIcebreaker,
+    teamMembersPresentCount: meetingMembers?.length,
+    meetingTemplateId: template?.id,
+    meetingTemplateName: template?.name,
+    meetingTemplateScope: template?.scope,
+    meetingTemplateIsFromParabol: !!template?.isStarter
   }
 }
