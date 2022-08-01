@@ -54,7 +54,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt update && sudo apt install nodejs npm
-            npm install -g yarn
+            sudo npm install -g yarn
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
       - save_cache:
