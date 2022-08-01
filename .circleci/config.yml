@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: cimg/base:2022.07
-      - image: cimg/node:16.14.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.10
         environment:
@@ -54,8 +53,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            npm uninstall -g yarn pnpm
-            npm install -g corepack
+            apt install nodejs
             corepack enable
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
