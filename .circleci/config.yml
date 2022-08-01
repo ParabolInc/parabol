@@ -54,8 +54,10 @@ jobs:
           name: Install dependencies
           command: |
             curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-            sudo apt update && sudo apt install -y nodejs npm
-            sudo npm install -g yarn
+            sudo apt update && sudo apt install -y nodejs
+            curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+            echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update && sudo apt-get install yarn
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
       - save_cache:
