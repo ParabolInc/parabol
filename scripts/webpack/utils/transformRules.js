@@ -17,13 +17,11 @@ const transformRules = (projectRoot) => {
       test: /\.tsx?$/,
       // things that need the relay plugin
       include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
-      // but don't need the inline-import plugin
-      exclude: [path.join(CLIENT_ROOT, 'utils/GitHubManager.ts')],
       use: [
         {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true,
+            cacheDirectory: false,
             babelrc: false,
             plugins: [
               [
@@ -50,7 +48,7 @@ const transformRules = (projectRoot) => {
       // things that don't need babel
       include: [SERVER_ROOT, GQL_ROOT, TOOLBOX_SRC],
       // things that need babel
-      exclude: path.join(SERVER_ROOT, 'email'),
+      exclude: [/node_modules/, path.join(SERVER_ROOT, 'email')],
       use: {
         loader: '@sucrase/webpack-loader',
         options: {
