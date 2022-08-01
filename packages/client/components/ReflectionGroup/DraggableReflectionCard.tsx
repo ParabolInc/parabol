@@ -134,9 +134,9 @@ const DraggableReflectionCard = (props: Props) => {
     >
       <ReflectionCard
         dataCy={dataCy}
-        reflection={reflection}
+        reflectionRef={reflection}
         isClipped={isClipped}
-        meeting={meeting}
+        meetingRef={meeting}
         openSpotlight={openSpotlight}
       />
     </DragWrapper>

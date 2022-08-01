@@ -35,7 +35,7 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
           return reflections.map((reflection) => {
             return (
               <div key={reflection.id} ref={setItemRef(reflection.id)}>
-                <ReflectionCard showReactji reflection={reflection} meeting={meeting} />
+                <ReflectionCard showReactji reflectionRef={reflection} meetingRef={meeting} />
               </div>
             )
           })
