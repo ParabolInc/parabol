@@ -13,6 +13,7 @@ import {
 } from '../integrations/OAuth2Manager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import {getInstanceId} from './azureDevOps/azureDevOpsFieldTypeToId'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -259,9 +260,9 @@ class AzureDevOpsServerManager {
     const {error, projects} = await this.getAllUserProjects()
     if (error) return error
     const project = projects?.find((project) => project.name === integrationRepoId)
-    if (!project) throw new Error()
-    const instanceId = `https://dev.azure.com/ParabolDevelopment`
-    const uri = `https://dev.azure.com/ParabolDevelopment/${project.id}/_apis/wit/workitems/$Issue?api-version=6.0`
+    if (!project) throw new Error(`Project ${integrationRepoId} not found`)
+    const instanceId = getInstanceId(new URL(project.url))
+    const uri = `https://${instanceId}/${project.id}/_apis/wit/workitems/$Issue?api-version=6.0`
     const issueRes = await this.patch<CreateTaskIssueRes>(uri, [
       {
         op: 'add',
@@ -271,7 +272,6 @@ class AzureDevOpsServerManager {
       }
     ])
     if (issueRes instanceof Error) return issueRes
-
     return {
       integrationHash: AzureDevOpsIssueId.join(instanceId, project.id, String(issueRes.id)),
       issueId: issueRes.id,
