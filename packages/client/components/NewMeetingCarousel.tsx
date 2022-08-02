@@ -97,17 +97,22 @@ const NewMeetingCarousel = (props: Props) => {
   const moreThanThreeSlides = meetingOrder.length > 3
 
   useHotkey('left', () => {
-    const newIdx = idx === 0 ? meetingOrder.length - 1 : idx - 1
-    setIdx(newIdx)
+    if (idx !== 0) {
+      const newIdx = idx - 1
+      setIdx(newIdx)
+    }
   })
   useHotkey('right', () => {
-    const newIdx = idx === meetingOrder.length - 1 ? 0 : idx + 1
-    setIdx(newIdx)
+    if (idx !== meetingOrder.length - 1) {
+      const newIdx = idx + 1
+      setIdx(newIdx)
+    }
   })
 
+  const enterKey = 13
   // keycode is a number but package thinks it's a string
   const onKeyPress = (_swiper: unknown, keycode: string) => {
-    if (parseInt(keycode, 10) === 13) {
+    if (parseInt(keycode, 10) === enterKey) {
       // inefficient, but only happens on enter
       const isModalOpen =
         document.querySelector(`div[id='templateModal']`) ||
