@@ -93,6 +93,20 @@ const TaskIntegrationLink = (props: Props) => {
         {children}
       </StyledLink>
     )
+  } else if (integration.__typename === 'AzureDevOpsWorkItem') {
+    const {id, teamProject, url} = integration
+    return (
+      <StyledLink
+        href={url}
+        rel='noopener noreferrer'
+        target='_blank'
+        title={`Azure Item #${id} on ${teamProject}`}
+        className={className}
+      >
+        {`Work Item #${id}`}
+        {children}
+      </StyledLink>
+    )
   }
   return null
 }
@@ -131,6 +145,14 @@ graphql`
   }
 `
 
+graphql`
+  fragment TaskIntegrationLinkIntegrationAzure on AzureDevOpsWorkItem {
+    id
+    teamProject
+    url
+  }
+`
+
 export default createFragmentContainer(TaskIntegrationLink, {
   integration: graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
@@ -139,6 +161,7 @@ export default createFragmentContainer(TaskIntegrationLink, {
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
       ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
+      ...TaskIntegrationLinkIntegrationAzure @relay(mask: false)
     }
   `
 })

@@ -44,10 +44,18 @@ graphql`
           webPath
           webUrl
         }
+        ... on AzureDevOpsWorkItem {
+          __typename
+          id
+          teamProject
+          title
+          url
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
         ...TaskIntegrationLinkIntegrationJiraServer
         ...TaskIntegrationLinkIntegrationGitLab
+        ...TaskIntegrationLinkIntegrationAzure
       }
       updatedAt
       teamId
@@ -166,6 +174,34 @@ const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
+const azureTaskIntegrationOptimisitcUpdater = (store, variables) => {
+  const {integrationRepoId: name, taskId} = variables
+  console.log('🚀 ~ variables', variables)
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const integrationRepository = createProxyRecord(store, 'AzureDevOpsRemoteProject', {
+    name
+  })
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const {title, contentState} = splitDraftContent(contentStr)
+  const descriptionHtml = stateToHTML(contentState)
+  console.log('🚀 ~ descriptionHtml', descriptionHtml)
+  // const webPath = `${fullPath}/-/issues/0`
+  const optimisticIntegration = {
+    name,
+    descriptionHtml,
+    iid: 0,
+    webUrl: `https://gitlab.com`,
+    updatedAt: now.toJSON()
+  } as const
+  console.log('🚀 ~ optimisticIntegrat', optimisticIntegration)
+  const integration = createProxyRecord(store, 'AzureDevOpsWorkItem', optimisticIntegration)
+  integration.setLinkedRecord(integrationRepository, 'repository')
+  task.setLinkedRecord(integration, 'integration')
+}
+
 const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMutation> = (
   atmosphere,
   variables,
@@ -185,6 +221,8 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         jiraServerTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'gitlab') {
         gitlabTaskIntegrationOptimisitcUpdater(store, variables)
+      } else if (integrationProviderService === 'azureDevOps') {
+        azureTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
     onCompleted,

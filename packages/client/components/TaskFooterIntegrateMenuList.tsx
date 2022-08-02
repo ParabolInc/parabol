@@ -47,7 +47,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const {mutationProps, menuProps, placeholder, repoIntegrations, task, label} = props
   const {hasMore} = repoIntegrations
   const items = repoIntegrations.items || []
-  console.log('🚀 ~ repoIntegrations', repoIntegrations)
   const {id: taskId, teamId, userId} = task
 
   const {
@@ -160,7 +159,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             const variables = {
               integrationRepoId: name,
               taskId,
-              integrationProviderService: 'gitlab' as const
+              integrationProviderService: 'azureDevOps' as const
             }
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})

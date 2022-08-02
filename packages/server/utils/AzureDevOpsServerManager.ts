@@ -1,5 +1,7 @@
 import AbortController from 'abort-controller'
 import fetch, {RequestInit} from 'node-fetch'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
@@ -119,6 +121,14 @@ export interface WorkItem {
   url: string
 }
 
+export interface CreateTaskIssueRes {
+  id: number
+  rev: number
+  fields: object
+  _links: ReferenceLinks
+  url: string
+}
+
 export interface ReferenceLinks {
   links: object
 }
@@ -202,6 +212,7 @@ class AzureDevOpsServerManager {
     Accept: 'application/json' as const,
     'Content-Type': 'application/json'
   }
+  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult | null
 
   async init(code: string, codeVerifier: string | null) {
     if (!codeVerifier) {
@@ -229,12 +240,50 @@ class AzureDevOpsServerManager {
     if (!!provider) {
       this.provider = provider
     }
+    this.auth = auth
   }
 
   setToken(token: string) {
     this.accessToken = token
     this.headers.Authorization = `Bearer ${token}`
   }
+
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }) {
+    const {title, contentState} = splitDraftContent(rawContentStr)
+    const {error, projects} = await this.getAllUserProjects()
+    if (error) return error
+    const project = projects?.find((project) => project.name === integrationRepoId)
+    if (!project) throw new Error()
+    const instanceId = `https://dev.azure.com/ParabolDevelopment`
+    const uri = `https://dev.azure.com/ParabolDevelopment/${project.id}/_apis/wit/workitems/$Issue?api-version=6.0`
+    const issueRes = await this.patch<CreateTaskIssueRes>(uri, [
+      {
+        op: 'add',
+        path: '/fields/System.Title',
+        from: null,
+        value: title
+      }
+    ])
+    if (issueRes instanceof Error) return issueRes
+
+    return {
+      integrationHash: AzureDevOpsIssueId.join(instanceId, project.id, String(issueRes.id)),
+      issueId: issueRes.id,
+      integration: {
+        accessUserId: this.auth!.userId,
+        service: 'azureDevOps',
+        projectKey: project.id,
+        issueKey: issueRes.id
+      }
+    }
+  }
+
   private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
     const controller = new AbortController()
     const {signal} = controller

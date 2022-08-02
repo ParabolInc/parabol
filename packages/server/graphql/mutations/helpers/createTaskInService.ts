@@ -9,8 +9,10 @@ import removeRangesForEntity from '../../../../client/utils/draftjs/removeRanges
 import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
 import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
 import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
+import {getUserId} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
+import createAzureWorkItem from './createAzureWorkItem'
 import createGitHubTask from './createGitHubTask'
 import createGitLabTask from './createGitLabTask'
 import createJiraTask from './createJiraTask'
@@ -24,7 +26,7 @@ const createTaskInService = async (
   info: GraphQLResolveInfo
 ) => {
   if (!integrationInput) return {integrationHash: undefined, integration: undefined}
-  const {dataLoader} = context
+  const {dataLoader, authToken} = context
   const {service, serviceProjectHash} = integrationInput
   const eqFn = (data: {value: string}) => ['archived', 'private'].includes(data.value)
   const taglessContentJSON = removeRangesForEntity(rawContent, 'TAG', eqFn) || rawContent
@@ -76,7 +78,7 @@ const createTaskInService = async (
   } else if (service === 'gitlab') {
     const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
     if (!gitlabAuth) {
-      return {error: new Error('Cannot create GitLab task without a valid GitHLab token')}
+      return {error: new Error('Cannot create GitLab task without a valid GitLab token')}
     }
     const gitlabTaskRes = await createGitLabTask(
       taglessContentJSON,
@@ -99,6 +101,22 @@ const createTaskInService = async (
       }),
       integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }
+  } else if (service === 'azureDevOps') {
+    const viewerId = getUserId(authToken)
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuths')
+      .load({service: 'azureDevOps', teamId, userId: viewerId})
+    if (!auth) {
+      return {error: new Error('Cannot create Azure work item without a valid Azure token')}
+    }
+    const azureDevOpsTaskRes = await createAzureWorkItem(
+      taglessContentJSON,
+      serviceProjectHash,
+      auth,
+      context,
+      info,
+      dataLoader
+    )
   }
   return {error: new Error('Unknown integration')}
 }
