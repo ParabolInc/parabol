@@ -249,41 +249,6 @@ class AzureDevOpsServerManager {
     this.headers.Authorization = `Bearer ${token}`
   }
 
-  async createTask({
-    rawContentStr,
-    integrationRepoId
-  }: {
-    rawContentStr: string
-    integrationRepoId: string
-  }) {
-    const {title, contentState} = splitDraftContent(rawContentStr)
-    const {error, projects} = await this.getAllUserProjects()
-    if (error) return error
-    const project = projects?.find((project) => project.name === integrationRepoId)
-    if (!project) throw new Error(`Project ${integrationRepoId} not found`)
-    const instanceId = getInstanceId(new URL(project.url))
-    const uri = `https://${instanceId}/${project.id}/_apis/wit/workitems/$Issue?api-version=6.0`
-    const issueRes = await this.patch<CreateTaskIssueRes>(uri, [
-      {
-        op: 'add',
-        path: '/fields/System.Title',
-        from: null,
-        value: title
-      }
-    ])
-    if (issueRes instanceof Error) return issueRes
-    return {
-      integrationHash: AzureDevOpsIssueId.join(instanceId, project.id, String(issueRes.id)),
-      issueId: issueRes.id,
-      integration: {
-        accessUserId: this.auth!.userId,
-        service: 'azureDevOps',
-        projectKey: project.id,
-        issueKey: issueRes.id
-      }
-    }
-  }
-
   private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
     const controller = new AbortController()
     const {signal} = controller
@@ -348,6 +313,41 @@ class AzureDevOpsServerManager {
       return new Error(json.message)
     }
     return json
+  }
+
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }) {
+    const {title, contentState} = splitDraftContent(rawContentStr)
+    const {error, projects} = await this.getAllUserProjects()
+    if (error) return error
+    const project = projects?.find((project) => project.name === integrationRepoId)
+    if (!project) throw new Error(`Project ${integrationRepoId} not found`)
+    const instanceId = getInstanceId(new URL(project.url))
+    const uri = `https://${instanceId}/${project.id}/_apis/wit/workitems/$Issue?api-version=6.0`
+    const issueRes = await this.patch<CreateTaskIssueRes>(uri, [
+      {
+        op: 'add',
+        path: '/fields/System.Title',
+        from: null,
+        value: title
+      }
+    ])
+    if (issueRes instanceof Error) return issueRes
+    return {
+      integrationHash: AzureDevOpsIssueId.join(instanceId, project.id, String(issueRes.id)),
+      issueId: issueRes.id,
+      integration: {
+        accessUserId: this.auth!.userId,
+        service: 'azureDevOps',
+        projectKey: project.id,
+        issueKey: issueRes.id
+      }
+    }
   }
 
   async getWorkItemData(instanceId: string, workItemIds: number[], fields?: string[]) {

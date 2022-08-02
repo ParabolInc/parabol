@@ -1,24 +1,28 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
-import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import {IntegrationProviderAzureDevOps} from 'server/postgres/queries/getIntegrationProvidersByIds'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
 
 const createAzureWorkItem = async (
   rawContent: string,
   fullPath: string,
-  gitlabAuth: IGetTeamMemberIntegrationAuthQueryResult,
+  azureAuth: IGetTeamMemberIntegrationAuthQueryResult,
   context: GQLContext,
   info: GraphQLResolveInfo,
   dataLoader: DataLoaderWorker
 ) => {
-  const {accessToken, providerId} = gitlabAuth
+  const {accessToken, providerId} = azureAuth
   if (!accessToken) return {error: new Error('Invalid GitLab auth')}
   const {title, contentState} = splitDraftContent(rawContent)
   const body = stateToMarkdown(contentState)
-  const provider = await dataLoader.get('integrationProviders').load(providerId)
-  const manager = new GitLabServerManager(gitlabAuth, context, info, provider!.serverBaseUrl!)
+  const provider = (await dataLoader
+    .get('integrationProviders')
+    .load(providerId)) as IntegrationProviderAzureDevOps
+  console.log('🚀 ~ azure prov', {provider})
+  const manager = new AzureDevOpsServerManager(azureAuth, provider)
   const [createIssueData, createIssueError] = await manager.createIssue({
     title,
     description: body,
