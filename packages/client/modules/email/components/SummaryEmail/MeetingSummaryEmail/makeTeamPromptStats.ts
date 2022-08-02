@@ -10,16 +10,13 @@ const makeTeamPromptStats = (meetingRef: makeTeamPromptStats_meeting$key) => {
         id
         taskCount
         commentCount
-        responses {
-          plaintextContent
-        }
+        responseCount
       }
     `,
     meetingRef
   )
 
-  const {responses, taskCount: newTaskCount, commentCount} = meeting
-  const responseCount = responses.filter((resp) => !!resp.plaintextContent).length
+  const {responseCount, taskCount: newTaskCount, commentCount} = meeting
 
   return [
     {value: responseCount, label: plural(responseCount, 'Response')},

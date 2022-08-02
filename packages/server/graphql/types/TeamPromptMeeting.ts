@@ -44,6 +44,15 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
         return meetingMember || null
       }
     },
+    responseCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of responses generated in the meeting',
+      resolve: async ({id: meetingId}) => {
+        return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
+          (response) => !!response.plaintextContent
+        ).length
+      }
+    },
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
