@@ -17,6 +17,7 @@ const transformRules = (projectRoot) => {
       test: /\.tsx?$/,
       // things that need the relay plugin
       include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
+      exclude: /node_modules/,
       use: [
         {
           loader: 'babel-loader',
@@ -59,6 +60,7 @@ const transformRules = (projectRoot) => {
     {
       // things that need inline-import
       include: [path.join(SERVER_ROOT, 'graphql'), path.join(SERVER_ROOT, 'integrations')],
+      exclude: /node_modules/,
       test: /\.tsx?/,
       use: [
         {
