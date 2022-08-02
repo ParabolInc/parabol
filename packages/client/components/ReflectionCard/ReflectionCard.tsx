@@ -216,7 +216,11 @@ const ReflectionCard = (props: Props) => {
     phases,
     isSpotlightSource
   )
-  const userSelect = readOnly ? (phaseType === 'discuss' || 'vote' ? 'text' : 'none') : undefined
+  const userSelect = readOnly
+    ? phaseType === 'discuss' || phaseType === 'vote'
+      ? 'text'
+      : 'none'
+    : undefined
 
   const onToggleReactji = (emojiId: string) => {
     if (submitting) return
