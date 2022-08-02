@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -23,10 +22,6 @@ interface Props {
   teams: NewMeetingTeamPicker_teams
 }
 
-const Dropdown = styled(NewMeetingDropdown)({
-  borderRadius: '4px 4px 0 0'
-})
-
 const NewMeetingTeamPicker = (props: Props) => {
   const {selectedTeam, teams} = props
   const {history} = useRouter()
@@ -43,13 +38,13 @@ const NewMeetingTeamPicker = (props: Props) => {
   }
   return (
     <>
-      <Dropdown
-        icon={'group'}
+      <NewMeetingDropdown
         label={name}
         onClick={togglePortal}
         onMouseEnter={SelectTeamDropdown.preload}
         disabled={teams.length === 0}
         ref={originRef}
+        title={'Team'}
       />
       {menuPortal(
         <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={handleSelect} />

@@ -12,9 +12,7 @@ import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {NonEmptyArray} from '~/types/generics'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
-import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
-import {Elevation} from '../styles/elevation'
 import {Breakpoint, Radius} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import DialogContainer from './DialogContainer'
@@ -34,18 +32,29 @@ interface Props {
 
 const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
 
-const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  gridArea: 'settings',
-  marginTop: isDesktop ? 32 : 16,
-  minHeight: 166
-}))
+const TeamAndSettings = styled('div')({
+  marginTop: 16,
+  minHeight: 166,
+  padding: '0px 24px'
+})
 
-const TeamAndSettingsInner = styled('div')({
-  borderRadius: '4px',
-  boxShadow: Elevation.Z1
+const SettingsFirstRow = styled('div')({
+  paddingBottom: 16
+})
+
+const SettingsRow = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  gap: 16,
+  '> div, button': {
+    width: '50%'
+  },
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    flexDirection: 'column',
+    '> div, button': {
+      width: '100%'
+    }
+  }
 })
 
 const NewMeetingDialog = styled(DialogContainer)({
@@ -141,7 +150,6 @@ const NewMeeting = (props: Props) => {
       history.replace(nextPath, location.state)
     }
   }, [])
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const selectedTeam = teams.find((team) => team.id === teamId)
   useEffect(() => {
     if (!selectedTeam) return
@@ -184,11 +192,13 @@ const NewMeeting = (props: Props) => {
           meetingOrder={meetingOrder}
           onStartMeetingClick={onStartMeetingClick}
         />
-        <TeamAndSettings isDesktop={isDesktop}>
-          <TeamAndSettingsInner>
+        <TeamAndSettings>
+          <SettingsFirstRow>
             <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
+          </SettingsFirstRow>
+          <SettingsRow>
             <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
-          </TeamAndSettingsInner>
+          </SettingsRow>
         </TeamAndSettings>
       </NewMeetingInner>
       <NewMeetingActions
