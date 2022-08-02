@@ -160,7 +160,7 @@ const ReflectionCard = (props: Props) => {
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
-  const reflectionNewRef = useRef<HTMLDivElement>(null)
+  const reflectionReference = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
@@ -300,8 +300,8 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    if (openSpotlight && reflectionNewRef.current) {
-      openSpotlight(reflectionId, reflectionNewRef)
+    if (openSpotlight && reflectionReference.current) {
+      openSpotlight(reflectionId, reflectionReference)
     }
   }
 
@@ -334,7 +334,7 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       shouldAnimate={shouldAnimate}
-      ref={reflectionNewRef}
+      ref={reflectionReference}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
