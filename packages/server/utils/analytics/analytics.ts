@@ -101,6 +101,7 @@ class Analytics {
     meetingSpecificProperties?: any
   ) => {
     this.track(userId, 'Meeting Completed', {
+      wasFacilitator: completedMeeting.facilitatorUserId === userId,
       ...createMeetingProperties(completedMeeting, meetingMembers, template),
       ...meetingSpecificProperties
     })
