@@ -27,7 +27,11 @@ const ActionRow = styled('div')({
   padding: 24,
   paddingTop: 16,
   [narrowScreenMediaQuery]: {
-    flexDirection: 'column'
+      flexDirection: 'column',
+      justifyContent: 'center',
+      flexWrap: 'nowrap',
+      alignContent: 'center',
+      alignSelf:'center',
   }
 })
 
