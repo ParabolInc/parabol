@@ -106,7 +106,7 @@ export default {
       dataLoader.get('meetingTemplates').load(templateId)
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-    analytics.retrospectiveEnd(completedMeeting, meetingMembers, template)
+    analytics.sprintPokerEnd(completedMeeting, meetingMembers, template)
     const isKill = phase && phase.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
