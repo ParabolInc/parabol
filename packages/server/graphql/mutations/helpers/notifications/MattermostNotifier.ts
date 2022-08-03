@@ -7,6 +7,8 @@ import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import segmentIo from '../../../../utils/segmentIo'
@@ -87,6 +89,71 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
 
 type MattermostNotificationAuth = IntegrationProviderMattermost & {userId: string}
 
+const makeTeamPromptStartMeetingNotification = (
+  team: Team,
+  meeting: Meeting,
+  meetingUrl: string
+) => {
+  return [
+    makeFieldsAttachment(
+      [
+        {
+          short: true,
+          title: 'Team',
+          value: team.name
+        },
+        {
+          short: false,
+          value: makeHackedFieldButtonValue({label: 'Submit Response', link: meetingUrl})
+        }
+      ],
+      {
+        fallback: `Async Standup started, submit response: ${meetingUrl}`,
+        title: `${meeting.name} is open 💬 `,
+        title_link: meetingUrl
+      }
+    )
+  ]
+}
+
+const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meetingUrl: string) => {
+  return [
+    makeFieldsAttachment(
+      [
+        {
+          short: true,
+          title: 'Team',
+          value: team.name
+        },
+        {
+          short: true,
+          title: 'Meeting',
+          value: meeting.name
+        },
+        {
+          short: false,
+          value: makeHackedFieldButtonValue({label: 'Join meeting', link: meetingUrl})
+        }
+      ],
+      {
+        fallback: `Meeting started, join: ${meetingUrl}`,
+        title: 'Meeting started 👋',
+        title_link: meetingUrl
+      }
+    )
+  ]
+}
+
+const makeStartMeetingNotificationLookup: Record<
+  MeetingTypeEnum,
+  (team: Team, meeting: Meeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
+> = {
+  teamPrompt: makeTeamPromptStartMeetingNotification,
+  action: makeGenericStartMeetingNotification,
+  retrospective: makeGenericStartMeetingNotification,
+  poker: makeGenericStartMeetingNotification
+}
+
 const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNotificationAuth> = (
   notificationChannel
 ) => ({
@@ -101,32 +168,13 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const attachments = [
-      makeFieldsAttachment(
-        [
-          {
-            short: true,
-            title: 'Team',
-            value: team.name
-          },
-          {
-            short: true,
-            title: 'Meeting',
-            value: meeting.name
-          },
-          {
-            short: false,
-            value: makeHackedFieldButtonValue({label: 'Join meeting', link: meetingUrl})
-          }
-        ],
-        {
-          fallback: `Meeting started, join: ${meetingUrl}`,
-          title: 'Meeting started 👋',
-          title_link: meetingUrl
-        }
-      )
-    ]
-    return notifyMattermost('meetingStart', webhookUrl, facilitatorUserId, team.id, attachments)
+    const notification = makeStartMeetingNotificationLookup[meeting.meetingType](
+      team,
+      meeting,
+      meetingUrl
+    )
+
+    return notifyMattermost('meetingStart', webhookUrl, facilitatorUserId, team.id, notification)
   },
 
   async endMeeting(meeting, team) {
