@@ -32,6 +32,8 @@ const ActionRow = styled('div')({
       flexWrap: 'nowrap',
       alignContent: 'center',
       alignSelf:'center',
+      marginTop: 'auto',
+      paddingBottom: '24px',
   }
 })
 
