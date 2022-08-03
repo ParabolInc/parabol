@@ -9,6 +9,9 @@ const INVITE_TASK_STRING = `🎉 Welcome to your new team! You can now start inv
 const addTeamTasks = async (userId: string, teamId: string) => {
   const inviteURL = makeAppURL(appOrigin, `team/${teamId}`, {
     searchParams: {
+      utm_source: 'new team seed task card',
+      utm_medium: 'product',
+      utm_campaign: 'onboarding',
       invite: 'true'
     }
   })
