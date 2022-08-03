@@ -1,10 +1,9 @@
 import ms from 'ms'
-import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -26,16 +25,22 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
-  if (meeting.meetingType !== 'teamPrompt') {
+  const {teamId, meetingType} = meeting
+
+  if (!isTeamMember(authToken, teamId)) {
+    return standardError(new Error('Team not found'), {userId: viewerId})
+  }
+
+  if (meetingType !== 'teamPrompt') {
     return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
   }
 
-  const {teamId, meetingSeriesId} = meeting
-  if (meetingSeriesId) {
+  if (meeting.meetingSeriesId) {
     return standardError(new Error('Meeting already has meeting series'), {userId: viewerId})
   }
 
   // Next meeting start is tomorrow at 9a UTC
+  // :TODO: (jmtaber129): Determine this from meeting series configuration.
   const startDate = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9)
   )
@@ -65,7 +70,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
 
   // RESOLUTION
 
-  const data = {meetingId, meetingSeriesId: MeetingSeriesId.join(newMeetingSeriesId)}
+  const data = {meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'StartRecurrenceSuccess', data, subOptions)
   return data
 }

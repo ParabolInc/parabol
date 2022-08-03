@@ -3,7 +3,6 @@ import {StartRecurrenceSuccessResolvers} from '../resolverTypes'
 
 export type StartRecurrenceSuccessSource = {
   meetingId: string
-  meetingSeriesId: string
 }
 
 const StartRecurrenceSuccess: StartRecurrenceSuccessResolvers = {

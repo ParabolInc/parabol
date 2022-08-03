@@ -1,4 +1,3 @@
-import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import getPg from '../getPg'
 import {
   getMeetingSeriesByIdsQuery,
@@ -7,18 +6,13 @@ import {
 
 export interface MeetingSeries extends IGetMeetingSeriesByIdsQueryResult {}
 
-const getMeetingSeriesByIds = async (meetingSeriesIds: readonly string[]) => {
+const getMeetingSeriesByIds = async (meetingSeriesIds: readonly number[]) => {
   const meetingSeriesResults = await getMeetingSeriesByIdsQuery.run(
-    {ids: meetingSeriesIds.map((id) => MeetingSeriesId.split(id))},
+    {ids: meetingSeriesIds},
     getPg()
   )
 
-  return meetingSeriesResults.map((meetingSeries) => {
-    return {
-      ...meetingSeries,
-      id: MeetingSeriesId.join(meetingSeries.id)
-    }
-  })
+  return meetingSeriesResults
 }
 
 export default getMeetingSeriesByIds

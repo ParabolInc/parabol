@@ -11,9 +11,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   },
   meetingSeries: async ({meetingSeriesId}, _args, {dataLoader}) => {
     if (meetingSeriesId) {
-      const series = await dataLoader
-        .get('meetingSeries')
-        .load(MeetingSeriesId.join(meetingSeriesId))
+      const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
       if (!series) {
         return null
       }
