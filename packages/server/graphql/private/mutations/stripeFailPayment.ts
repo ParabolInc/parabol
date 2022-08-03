@@ -32,10 +32,12 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   const invoice = await manager.retrieveInvoice(invoiceId)
   const {amount_due: amountDue, customer, metadata, subscription, paid} = invoice
   const customerId = customer as string
-  let maybeOrgId = metadata.orgId
+  let maybeOrgId = metadata?.orgId
   if (!maybeOrgId) {
     const customer = await manager.retrieveCustomer(customerId)
-    maybeOrgId = customer.metadata.orgid
+    if ('metadata' in customer) {
+      maybeOrgId = customer.metadata.orgId
+    }
   }
   if (!maybeOrgId) {
     throw new Error(`Could not find orgId on invoice ${invoiceId}`)

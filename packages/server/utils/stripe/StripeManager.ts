@@ -1,12 +1,12 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
-import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
+import sendToSentry from '../sendToSentry'
 
 export default class StripeManager {
   static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
 
   constructEvent(rawBody: string, signature: string) {
     try {
@@ -72,15 +72,54 @@ export default class StripeManager {
     return this.stripe.subscriptions.del(stripeSubscriptionId)
   }
 
-  async updateSubscriptionQuantity(
-    stripeSubscriptionId: string,
-    quantity: number,
-    prorationDate?: number
-  ) {
-    return this.stripe.subscriptions.update(stripeSubscriptionId, {
-      quantity,
-      proration_date: prorationDate
+  async getSubscriptionItem(subscriptionId: string) {
+    const allSubscriptionItems = await this.stripe.subscriptionItems.list({
+      subscription: subscriptionId
     })
+    // we only include one subscription item in our subscriptions
+    if (allSubscriptionItems.data.length > 1) {
+      // sanity check
+      sendToSentry(new Error(`${subscriptionId} contains more than one subscription item`))
+    }
+    return allSubscriptionItems.data[0]
+  }
+
+  async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {
+    return this.stripe.invoices.listLineItems(invoiceId, options)
+  }
+
+  async retrieveCharge(chargeId: string) {
+    return this.stripe.charges.retrieve(chargeId)
+  }
+
+  async retrieveCustomer(customerId: string) {
+    return this.stripe.customers.retrieve(customerId)
+  }
+
+  async retrieveInvoice(invoiceId: string) {
+    return this.stripe.invoices.retrieve(invoiceId)
+  }
+
+  async retrieveInvoiceItem(invoiceItemId: string) {
+    return this.stripe.invoiceItems.retrieve(invoiceItemId)
+  }
+
+  async retrieveSource(customerId: string, cardId: string) {
+    return this.stripe.customers.retrieveSource(customerId, cardId)
+  }
+
+  async retrieveSubscription(subscriptionId: string) {
+    return this.stripe.subscriptions.retrieve(subscriptionId)
+  }
+
+  async retrieveUpcomingInvoice(stripeId: string) {
+    return this.stripe.invoices.retrieveUpcoming({
+      customer: stripeId
+    })
+  }
+
+  async updateAccountBalance(customerId: string, newBalance: number) {
+    return this.stripe.customers.update(customerId, {balance: newBalance})
   }
 
   async updateInvoice(invoiceId: string, orgId: string) {
@@ -96,37 +135,18 @@ export default class StripeManager {
     return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId, hookId}})
   }
 
-  async retrieveCustomer(customerId: string) {
-    return this.stripe.customers.retrieve(customerId)
-  }
-
-  async retrieveInvoice(invoiceId: string) {
-    return this.stripe.invoices.retrieve(invoiceId)
-  }
-
-  async retrieveInvoiceItem(invoiceItemId: string) {
-    return this.stripe.invoiceItems.retrieve(invoiceItemId)
-  }
-
-  async retrieveInvoiceLines(invoiceId: string, options: IInvoiceLineItemRetrievalOptions) {
-    return this.stripe.invoices.retrieveLines(invoiceId, options)
-  }
-
-  async retrieveSubscription(subscriptionId: string) {
-    return this.stripe.subscriptions.retrieve(subscriptionId)
-  }
-
-  async retrieveUpcomingInvoice(stripeId: string, stripeSubscriptionId: string) {
-    return this.stripe.invoices.retrieveUpcoming(stripeId, {
-      subscription: stripeSubscriptionId
-    })
-  }
-
-  async updateAccountBalance(customerId: string, newBalance: number) {
-    return this.stripe.customers.update(customerId, {account_balance: newBalance})
-  }
-
   async updatePayment(customerId: string, source: string) {
     return this.stripe.customers.update(customerId, {source})
+  }
+
+  async updateSubscriptionItemQuantity(
+    stripeSubscriptionItemId: string,
+    quantity: number,
+    prorationDate?: number
+  ) {
+    return this.stripe.subscriptionItems.update(stripeSubscriptionItemId, {
+      quantity,
+      proration_date: prorationDate
+    })
   }
 }

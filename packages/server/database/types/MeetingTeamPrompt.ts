@@ -24,7 +24,7 @@ function createTeamPromptDefaultTitle() {
     day: 'numeric'
   })
 
-  return `Async Standup - ${formattedDate}`
+  return `Standup - ${formattedDate}`
 }
 
 export default class MeetingTeamPrompt extends Meeting {

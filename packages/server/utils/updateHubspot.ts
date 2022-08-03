@@ -66,6 +66,8 @@ query MeetingCompleted($userIds: [ID!]!, $userId: ID!) {
     tier
     lastMetAt
     meetingCount
+    activeUserCount
+    activeTeamCount
     monthlyTeamStreakMax
   }
   users(userIds: $userIds) {
@@ -120,6 +122,7 @@ query AccountCreated($userId: ID!) {
     company {
       userCount
       activeUserCount
+      activeTeamCount
     }
   }
 }`,
@@ -131,6 +134,7 @@ query AccountRemoved($userId: ID!) {
     company {
       userCount
       activeUserCount
+      activeTeamCount
     }
   }
 }`,
@@ -140,6 +144,7 @@ query AccountPaused($userId: ID!) {
     email
     company {
       activeUserCount
+      activeTeamCount
     }
   }
 }`,
@@ -149,6 +154,7 @@ query AccountUnpaused($userId: ID!) {
     email
     company {
       activeUserCount
+      activeTeamCount
     }
   }
 }`,

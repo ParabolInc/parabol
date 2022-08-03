@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NewMeetingActions_team} from '~/__generated__/NewMeetingActions_team.graphql'
+import {useFragment} from 'react-relay'
+import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
 import {Breakpoint} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
@@ -47,13 +47,22 @@ const StartButton = styled(FlatPrimaryButton)({
 
 interface Props {
   error?: {message: string}
-  team: NewMeetingActions_team
+  teamRef: NewMeetingActions_team$key
   onStartMeetingClick: () => void
   submitting: boolean
 }
 
 const NewMeetingActions = (props: Props) => {
-  const {team, onStartMeetingClick, submitting, error} = props
+  const {teamRef, onStartMeetingClick, submitting, error} = props
+  const team = useFragment(
+    graphql`
+      fragment NewMeetingActions_team on Team {
+        ...NewMeetingActionsCurrentMeetings_team
+        id
+      }
+    `,
+    teamRef
+  )
 
   return (
     <ActionRow>
@@ -70,11 +79,4 @@ const NewMeetingActions = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingActions, {
-  team: graphql`
-    fragment NewMeetingActions_team on Team {
-      ...NewMeetingActionsCurrentMeetings_team
-      id
-    }
-  `
-})
+export default NewMeetingActions

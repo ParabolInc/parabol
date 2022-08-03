@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
+import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
@@ -46,6 +47,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const {id: meetingId, endedAt} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const {history} = useRouter()
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
@@ -60,7 +62,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         }
         onClick={() => {
           menuProps.closePortal()
-          EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError})
+          EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, history})
         }}
       />
     </Menu>

@@ -28,12 +28,12 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
       fragment TimelineEventTeamPromptComplete_timelineEvent on TimelineEventTeamPromptComplete {
         ...TimelineEventCard_timelineEvent
         id
-        responseCount
-        taskCount
-        commentCount
         meeting {
           id
           name
+          responseCount
+          taskCount
+          commentCount
         }
         team {
           id
@@ -44,12 +44,12 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     timelineEventRef
   )
 
-  const {meeting, team, responseCount, commentCount, taskCount} = timelineEvent
+  const {meeting, team} = timelineEvent
   if (!meeting) {
     return null
   }
 
-  const {id: meetingId, name: meetingName} = meeting
+  const {id: meetingId, name: meetingName, responseCount, commentCount, taskCount} = meeting
   const {name: teamName} = team
 
   return (
@@ -76,6 +76,8 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         {'.'}
         <br />
         <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
+        {' or '}
+        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
       </TimelineEventBody>
     </TimelineEventCard>
   )

@@ -14,8 +14,9 @@ import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import QuickStats from './QuickStats'
 import RetroTopics from './RetroTopics'
 import SummaryHeader from './SummaryHeader'
-import SummarySheetCTA from './SummarySheetCTA'
 import SummaryPokerStories from './SummaryPokerStories'
+import SummarySheetCTA from './SummarySheetCTA'
+import TeamPromptResponseSummary from './TeamPromptResponseSummary'
 
 interface Props {
   emailCSVUrl: string
@@ -54,10 +55,25 @@ const SummarySheet = (props: Props) => {
           referrer={referrer}
         />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
-        <MeetingMembersWithTasks meeting={meeting} />
-        <MeetingMembersWithoutTasks meeting={meeting} />
-        <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} appOrigin={appOrigin} />
-        <SummaryPokerStories appOrigin={appOrigin} meeting={meeting} isEmail={referrer === 'email'} />
+        {meetingType === 'teamPrompt' ? (
+          <TeamPromptResponseSummary meetingRef={meeting} />
+        ) : (
+          <>
+            <MeetingMembersWithTasks meeting={meeting} />
+            <MeetingMembersWithoutTasks meeting={meeting} />
+            <RetroTopics
+              isDemo={isDemo}
+              isEmail={referrer === 'email'}
+              meeting={meeting}
+              appOrigin={appOrigin}
+            />
+            <SummaryPokerStories
+              appOrigin={appOrigin}
+              meeting={meeting}
+              isEmail={referrer === 'email'}
+            />
+          </>
+        )}
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
@@ -80,6 +96,7 @@ export default createFragmentContainer(SummarySheet, {
       ...MeetingMembersWithoutTasks_meeting
       ...RetroTopics_meeting
       ...SummaryPokerStories_meeting
+      ...TeamPromptResponseSummary_meeting
       meetingType
       name
     }

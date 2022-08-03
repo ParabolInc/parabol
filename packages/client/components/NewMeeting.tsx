@@ -10,7 +10,6 @@ import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import {NonEmptyArray} from '~/types/generics'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
 import useRouter from '../hooks/useRouter'
 import {Breakpoint, Radius} from '../types/constEnums'
@@ -92,23 +91,10 @@ const NewMeetingInner = styled('div')({
   }
 })
 
-const createMeetingOrder = ({standups}: {standups: boolean}) => {
-  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['retrospective']
-
-  if (standups) {
-    meetingOrder.push('teamPrompt')
-  }
-
-  meetingOrder.push('poker', 'action')
-
-  return meetingOrder
-}
-
 const query = graphql`
   query NewMeetingQuery {
     viewer {
       featureFlags {
-        standups
         insights
       }
       teams {
@@ -133,9 +119,12 @@ const NewMeeting = (props: Props) => {
   const {viewer} = data
   const {teams, featureFlags} = viewer
   const {insights} = featureFlags
-  const [meetingOrder, setMeetingOrder] = useState<MeetingTypeEnum[]>(
-    createMeetingOrder(featureFlags)
-  )
+  const [meetingOrder, setMeetingOrder] = useState<MeetingTypeEnum[]>([
+    'retrospective',
+    'teamPrompt',
+    'poker',
+    'action'
+  ])
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
@@ -202,7 +191,7 @@ const NewMeeting = (props: Props) => {
         </TeamAndSettings>
       </NewMeetingInner>
       <NewMeetingActions
-        team={selectedTeam}
+        teamRef={selectedTeam}
         onStartMeetingClick={onStartMeetingClick}
         submitting={submitting}
         error={error}
