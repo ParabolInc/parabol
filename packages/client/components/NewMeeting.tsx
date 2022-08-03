@@ -2,7 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import useUsageSnackNag from '~/hooks/useUsageSnackNag'
+import StartCheckInMutation from '~/mutations/StartCheckInMutation'
+import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
+import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -137,6 +143,22 @@ const NewMeeting = (props: Props) => {
     newMeetingOrder.unshift(firstMeeting)
     setMeetingOrder(newMeetingOrder)
   }, [])
+  const {submitMutation, error, submitting, onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const onStartMeetingClick = () => {
+    if (submitting || !selectedTeam) return
+    submitMutation()
+    const {id: teamId} = selectedTeam
+    if (meetingType === 'poker') {
+      StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'action') {
+      StartCheckInMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'retrospective') {
+      StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'teamPrompt') {
+      StartTeamPromptMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    }
+  }
   if (!teamId || !selectedTeam) return null
   return (
     <NewMeetingDialog isDesktop={isDesktop}>
@@ -147,7 +169,12 @@ const NewMeeting = (props: Props) => {
         </CloseButton>
       </Title>
       <NewMeetingInner>
-        <NewMeetingCarousel idx={idx} setIdx={setIdx} meetingOrder={meetingOrder} />
+        <NewMeetingCarousel
+          idx={idx}
+          setIdx={setIdx}
+          meetingOrder={meetingOrder}
+          onStartMeetingClick={onStartMeetingClick}
+        />
         <TeamAndSettings isDesktop={isDesktop}>
           <TeamAndSettingsInner>
             <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
@@ -155,7 +182,12 @@ const NewMeeting = (props: Props) => {
           </TeamAndSettingsInner>
         </TeamAndSettings>
       </NewMeetingInner>
-      <NewMeetingActions team={selectedTeam} meetingType={meetingType} onClose={onClose} />
+      <NewMeetingActions
+        teamRef={selectedTeam}
+        onStartMeetingClick={onStartMeetingClick}
+        submitting={submitting}
+        error={error}
+      />
     </NewMeetingDialog>
   )
 }
