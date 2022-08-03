@@ -13,12 +13,13 @@ import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
+import sendToSentry from '../../utils/sendToSentry'
 import {getStripeManager} from '../../utils/stripe'
 
 interface InvoicesByStartTime {
   [start: string]: {
-    unusedTime?: Stripe.invoices.IInvoiceLineItem
-    remainingTime?: Stripe.invoices.IInvoiceLineItem
+    unusedTime?: Stripe.InvoiceLineItem
+    remainingTime?: Stripe.InvoiceLineItem
   }
 }
 
@@ -197,7 +198,7 @@ const makeDetailedLineItems = async (itemDict: ItemDict, dataLoader: DataLoaderW
   return detailedLineItems
 }
 
-const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineItem) => {
+const addToDict = (itemDict: ItemDict, lineItem: Stripe.InvoiceLineItem) => {
   const {
     metadata,
     period: {start}
@@ -216,9 +217,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
   startTimeItems[bucket] = lineItem
 }
 
-const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
+const makeItemDict = (stripeLineItems: Stripe.InvoiceLineItem[]) => {
   const itemDict = {} as ItemDict
-  const unknownLineItems = [] as Stripe.invoices.IInvoiceLineItem[]
+  const unknownLineItems = [] as Stripe.InvoiceLineItem[]
   let nextPeriodCharges!: NextPeriodCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i]!
@@ -229,22 +230,21 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
       proration,
       quantity
     } = lineItem
-    // This has apparently changed in the new API (cannot be null). we need to fix this if we upgrade to the latest stripe API
-    const description = lineItem.description as string | null
-    if (description === null && proration === false) {
+    const lineItemQuantity = quantity ?? 0
+    if (proration === false) {
       if (!nextPeriodCharges) {
         // this must be the next month's charge
         nextPeriodCharges = new NextPeriodCharges({
           amount,
-          quantity,
+          quantity: lineItemQuantity,
           nextPeriodEnd: fromEpochSeconds(end),
-          unitPrice: lineItem.plan.amount || undefined,
-          interval: lineItem.plan.interval
+          unitPrice: lineItem.plan?.amount || undefined,
+          interval: lineItem.plan?.interval || 'month'
         })
       } else {
         //merge the quantity & price line for enterprise
         nextPeriodCharges.amount = nextPeriodCharges.amount || amount
-        nextPeriodCharges.quantity = nextPeriodCharges.quantity || quantity
+        nextPeriodCharges.quantity = nextPeriodCharges.quantity || lineItemQuantity
       }
     } else if (!metadata.type) {
       unknownLineItems.push(lineItem)
@@ -257,12 +257,12 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
 }
 
 const maybeReduceUnknowns = async (
-  unknownLineItems: Stripe.invoices.IInvoiceLineItem[],
+  unknownLineItems: Stripe.InvoiceLineItem[],
   itemDict: ItemDict,
   stripeSubscriptionId: string
 ) => {
   const r = await getRethink()
-  const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
+  const unknowns = [] as Stripe.InvoiceLineItem[]
   const manager = getStripeManager()
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]!
@@ -278,7 +278,9 @@ const maybeReduceUnknowns = async (
     if (hook) {
       const {id: hookId, type, userId} = hook
       // push it back to stripe for posterity
-      manager.updateInvoiceItem(unknownLineItem.id, type, userId, hookId).catch()
+      if (unknownLineItem.invoice_item) {
+        manager.updateInvoiceItem(unknownLineItem.invoice_item, type, userId, hookId).catch()
+      }
       // mutate the original line item
       unknownLineItem.metadata = {
         type,
@@ -293,8 +295,8 @@ const maybeReduceUnknowns = async (
 }
 
 export default async function generateInvoice(
-  invoice: Stripe.invoices.IInvoice,
-  stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
+  invoice: Stripe.Invoice,
+  stripeLineItems: Stripe.InvoiceLineItem[],
   orgId: string,
   invoiceId: string,
   dataLoader: DataLoaderWorker
@@ -317,7 +319,7 @@ export default async function generateInvoice(
         new InvoiceLineItemOtherAdjustments({
           amount: item.amount,
           description: item.description,
-          quantity: item.quantity
+          quantity: item.quantity ?? 0
         })
     ),
     ...quantityChangeLineItems
@@ -327,21 +329,25 @@ export default async function generateInvoice(
   const calculatedTotal =
     invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
   if (calculatedTotal !== invoice.total) {
-    console.warn(
-      'Calculated invoice does not match stripe invoice',
-      invoiceId,
-      calculatedTotal,
-      invoice.total
-    )
+    sendToSentry(new Error('Calculated invoice does not match stripe invoice'), {
+      tags: {invoiceId, calculatedTotal, invoiceTotal: invoice.total}
+    })
   }
 
   const [type] = invoiceId.split('_')
   const isUpcoming = type === 'upcoming'
 
   let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
-  if (status === 'PENDING' && invoice.closed === true) {
-    status = invoice.paid ? 'PAID' : 'FAILED'
+  if (status === 'PENDING' && typeof invoice.charge === 'string') {
+    const manager = getStripeManager()
+    const charge = await manager.retrieveCharge(invoice.charge)
+    if (charge.status === 'failed') {
+      status = 'FAILED'
+    } else if (charge.status === 'succeeded') {
+      status = 'PAID'
+    }
   }
+
   const paidAt = status === 'PAID' ? now : undefined
 
   const {organization, billingLeaderIds} = await r({
@@ -359,12 +365,12 @@ export default async function generateInvoice(
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 
   const coupon =
-    (couponDetails &&
+    (couponDetails?.name &&
       new Coupon({
         id: couponDetails.id,
-        amountOff: couponDetails.amount_off,
+        amountOff: couponDetails.amount_off ?? 0,
         name: couponDetails.name,
-        percentOff: couponDetails.percent_off
+        percentOff: couponDetails.percent_off ?? 0
       })) ||
     null
 
@@ -377,7 +383,7 @@ export default async function generateInvoice(
     billingLeaderEmails,
     creditCard: organization.creditCard,
     endAt: fromEpochSeconds(invoice.period_end),
-    invoiceDate: fromEpochSeconds(invoice.date!),
+    invoiceDate: fromEpochSeconds(invoice.due_date!),
     lines: invoiceLineItems,
     nextPeriodCharges,
     orgId,

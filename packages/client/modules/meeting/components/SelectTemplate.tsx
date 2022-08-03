@@ -28,6 +28,7 @@ const ButtonBlock = styled('div')({
   right: 16,
   bottom: 16,
   width: '100%',
+  zIndex: 1
 })
 
 const Button = styled(FloatingActionButton)({

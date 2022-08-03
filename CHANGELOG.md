@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.68.0 2022-July-27
+
+### Added
+- feat: New meeting dialog is now a modal (#6866)
+- feat: New meeting type carousel (#6950)
+- feat: mattermost info icon (#6911)
+- feat(standups): Beta badge within meeting (#6928)
+- feat(metrics): Add more Segment events to Standups (#6908)
+- feat(Azure DevOps): Add SaaS url to sprint poker estimation (#6892)
+
+### Fixed
+- fix: impersonate user bug (#6901)
+- fix: Added dismiss button to snackbar messages (#6847)
+- fix: add query parameter to identify the page source (#6967)
+- chore: Fix browser translation (#6927)
+
+### Changed
+- feat(chore): edit PR template to add Metrics Representative (#6770)
+- chore(deps): bump terser from 4.8.0 to 4.8.1 (#6903)
+
 ## 6.67.0 2022-July-20
 
 ### Added

@@ -3,16 +3,12 @@ import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
 import {getStripeManager} from '../../../utils/stripe'
 
-export default async function makeUpcomingInvoice(
-  orgId: string,
-  stripeId?: string,
-  stripeSubscriptionId?: string | null
-) {
-  if (!stripeId || !stripeSubscriptionId) return undefined
+export default async function makeUpcomingInvoice(orgId: string, stripeId?: string | null) {
+  if (!stripeId) return undefined
   const manager = getStripeManager()
-  let stripeInvoice: Stripe.invoices.IInvoice
+  let stripeInvoice: Stripe.Invoice
   try {
-    stripeInvoice = await manager.retrieveUpcomingInvoice(stripeId, stripeSubscriptionId)
+    stripeInvoice = await manager.retrieveUpcomingInvoice(stripeId)
   } catch (e) {
     // useful for debugging prod accounts in dev
     return undefined
@@ -22,7 +18,7 @@ export default async function makeUpcomingInvoice(
     amountDue: stripeInvoice.amount_due,
     total: stripeInvoice.total,
     endAt: fromEpochSeconds(stripeInvoice.period_end),
-    invoiceDate: fromEpochSeconds(stripeInvoice.date!),
+    invoiceDate: fromEpochSeconds(stripeInvoice.due_date!),
     orgId,
     startAt: fromEpochSeconds(stripeInvoice.period_start),
     startingBalance: stripeInvoice.starting_balance,

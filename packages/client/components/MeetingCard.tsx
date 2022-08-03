@@ -150,7 +150,7 @@ const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-In',
   poker: 'Sprint Poker',
-  teamPrompt: 'Async Standup'
+  teamPrompt: 'Standup'
 }
 
 const MeetingCard = (props: Props) => {
