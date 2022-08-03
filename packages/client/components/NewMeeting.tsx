@@ -41,11 +41,13 @@ const TeamAndSettingsInner = styled('div')({
   boxShadow: Elevation.Z1
 })
 
-const NewMeetingDialog = styled(DialogContainer)({
-  width: '860px',
-  maxHeight: 'unset',
-  borderRadius: Radius.FIELD
-})
+const NewMeetingDialog = styled(DialogContainer)<{isDesktop}>(({isDesktop}) =>({
+  width: '800px',
+  borderRadius: isDesktop ? Radius.FIELD : 0,
+  minWidth: isDesktop ? 'unset' : '100vw',
+  maxHeight: isDesktop ? 'unset' : '100vh',
+  minHeight: isDesktop ? 'unset' : '100vh',
+}))
 
 const Title = styled(DialogTitle)({
   fontSize: 24,
@@ -137,7 +139,7 @@ const NewMeeting = (props: Props) => {
   }, [])
   if (!teamId || !selectedTeam) return null
   return (
-    <NewMeetingDialog>
+    <NewMeetingDialog isDesktop={isDesktop}>
       <Title>
         New meeting
         <CloseButton onClick={onClose}>
