@@ -15,7 +15,7 @@ export default function StubStripeManager() {
             plan,
             current_period_start: toEpochSeconds(new Date()),
             current_period_end: toEpochSeconds(new Date()) + 10_000
-          } as unknown as Stripe.subscriptions.ISubscription
+          } as unknown as Stripe.Subscription
         }
       }
       return target[propKey]

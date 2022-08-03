@@ -1,10 +1,9 @@
-import * as Stripe from 'stripe'
+import Stripe from 'stripe'
 import {getStripeManager} from '../../utils/stripe'
-import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
 
 export default async function fetchAllLines(invoiceId: string, customerId?: string) {
-  const stripeLineItems = [] as Stripe.invoices.IInvoiceLineItem[]
-  const options = {limit: 100} as IInvoiceLineItemRetrievalOptions
+  const stripeLineItems = [] as Stripe.InvoiceLineItem[]
+  const options = {limit: 100} as Stripe.InvoiceLineItemListParams & {customer: string}
   // used for upcoming invoices
   if (customerId) {
     options.customer = customerId
@@ -15,7 +14,7 @@ export default async function fetchAllLines(invoiceId: string, customerId?: stri
       options.starting_after = stripeLineItems[stripeLineItems.length - 1]!.id
     }
 
-    const invoiceLines = await manager.retrieveInvoiceLines(invoiceId, options) // eslint-disable-line no-await-in-loop
+    const invoiceLines = await manager.listLineItems(invoiceId, options) // eslint-disable-line no-await-in-loop
     stripeLineItems.push(...invoiceLines.data)
     if (!invoiceLines.has_more) break
   }
