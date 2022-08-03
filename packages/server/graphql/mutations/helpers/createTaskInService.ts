@@ -24,7 +24,7 @@ const createTaskInService = async (
   info: GraphQLResolveInfo
 ) => {
   if (!integrationInput) return {integrationHash: undefined, integration: undefined}
-  const {dataLoader, authToken} = context
+  const {dataLoader} = context
   const {service, serviceProjectHash} = integrationInput
   const eqFn = (data: {value: string}) => ['archived', 'private'].includes(data.value)
   const taglessContentJSON = removeRangesForEntity(rawContent, 'TAG', eqFn) || rawContent
@@ -61,7 +61,6 @@ const createTaskInService = async (
       context,
       info
     )
-    console.log('🚀 ~ create gh task in service!', {githubTaskRes})
     if (githubTaskRes.error) {
       return {error: githubTaskRes.error}
     }

@@ -322,7 +322,7 @@ class AzureDevOpsServerManager {
     rawContentStr: string
     integrationRepoId: string
   }) {
-    const {title, contentState} = splitDraftContent(rawContentStr)
+    const {title} = splitDraftContent(rawContentStr)
     const {error, projects} = await this.getAllUserProjects()
     if (error) return error
     const project = projects?.find((project) => project.name === integrationRepoId)
