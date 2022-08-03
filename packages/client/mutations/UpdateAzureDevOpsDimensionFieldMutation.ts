@@ -1,4 +1,3 @@
-
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {DiscriminateProxy} from '../types/generics'
@@ -30,6 +29,7 @@ graphql`
             projectKey
             dimensionName
             fieldName
+            workItemType
           }
         }
       }
@@ -43,6 +43,7 @@ const mutation = graphql`
     $meetingId: ID!
     $instanceId: ID!
     $projectKey: ID!
+    $workItemType: ID!
   ) {
     updateAzureDevOpsDimensionField(
       dimensionName: $dimensionName
@@ -50,6 +51,7 @@ const mutation = graphql`
       meetingId: $meetingId
       instanceId: $instanceId
       projectKey: $projectKey
+      workItemType: $workItemType
     ) {
       ... on ErrorPayload {
         error {
@@ -68,7 +70,7 @@ const UpdateAzureDevOpsDimensionFieldMutation: StandardMutation<
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, instanceId, dimensionName, fieldName, projectKey} = variables
+      const {meetingId, instanceId, dimensionName, fieldName, projectKey, workItemType} = variables
       const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) {
         return
@@ -84,7 +86,8 @@ const UpdateAzureDevOpsDimensionFieldMutation: StandardMutation<
           (dimensionField) =>
             dimensionField.getValue('dimensionName') === dimensionName &&
             dimensionField.getValue('instanceId') === instanceId &&
-            dimensionField.getValue('projectKey') === projectKey
+            dimensionField.getValue('projectKey') === projectKey &&
+            dimensionField.getValue('workItemType') === workItemType
         )
         if (existingField) {
           existingField.setValue(fieldName, 'fieldName')
@@ -96,7 +99,8 @@ const UpdateAzureDevOpsDimensionFieldMutation: StandardMutation<
               fieldName,
               dimensionName,
               instanceId,
-              projectKey
+              projectKey,
+              workItemType
             }
           )
           const nextAzureDevOpsDimensionFields = [
@@ -139,4 +143,3 @@ const UpdateAzureDevOpsDimensionFieldMutation: StandardMutation<
 }
 
 export default UpdateAzureDevOpsDimensionFieldMutation
-

@@ -20,7 +20,7 @@ export const phaseLabelLookup = {
   SUMMARY: 'Summary',
   SCOPE: 'Scope',
   ESTIMATE: 'Estimate',
-  RESPONSES: 'Started'
+  RESPONSES: 'Active'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseIconLookup = {

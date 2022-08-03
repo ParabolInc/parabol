@@ -201,11 +201,9 @@ const setTaskEstimate = {
       githubLabelName = githubPushRes
     } else if (service === 'azureDevOps') {
       const {accessUserId, instanceId, issueKey, projectKey} = integration!
-      const [auth, azureDevOpsDimensionFieldMapEntry, azureDevOpsWorkItem] = await Promise.all([
+
+      const [auth, azureDevOpsWorkItem] = await Promise.all([
         dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId: accessUserId}),
-        dataLoader
-          .get('azureDevOpsDimensionFieldMap')
-          .load({teamId, dimensionName, instanceId, projectKey}),
         dataLoader.get('azureDevOpsWorkItem').load({
           teamId,
           userId: accessUserId,
@@ -220,16 +218,23 @@ const setTaskEstimate = {
         return {error: {message: 'User no longer has access to Azure DevOps'}}
       }
 
-      if (!azureDevOpsDimensionFieldMapEntry) {
-        return {error: {message: 'Cannot find the correct field to push changes to.'}}
-      }
+      const workItemType = azureDevOpsWorkItem?.type ? azureDevOpsWorkItem?.type : ''
+
+      const azureDevOpsDimensionFieldMapEntry = await dataLoader
+        .get('azureDevOpsDimensionFieldMap')
+        .load({teamId, dimensionName, instanceId, projectKey, workItemType})
+
+      const fieldName = azureDevOpsDimensionFieldMapEntry
+        ? azureDevOpsDimensionFieldMapEntry.fieldName
+        : SprintPokerDefaults.SERVICE_FIELD_COMMENT.toString()
+
+      const fieldType = azureDevOpsDimensionFieldMapEntry
+        ? azureDevOpsDimensionFieldMapEntry.fieldType
+        : 'string'
 
       if (!azureDevOpsWorkItem) {
         return {error: {message: 'Cannot find the correct work item to push changes to.'}}
       }
-
-      const fieldName = azureDevOpsDimensionFieldMapEntry.fieldName
-      const fieldType = azureDevOpsDimensionFieldMapEntry.fieldType
 
       const manager = new AzureDevOpsServerManager(auth, null)
 

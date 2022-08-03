@@ -6,6 +6,7 @@ import MeetingAction from '../../database/types/MeetingAction'
 import generateUID from '../../generateUID'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -14,7 +15,6 @@ import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
-import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
@@ -99,7 +99,7 @@ export default {
     ])
 
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    sendMeetingStartToSegment(meeting)
+    analytics.meetingStarted(viewerId, meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
     return data

@@ -1,10 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateAzureDevOpsDimensionFieldMutation from '../mutations/UpdateAzureDevOpsDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
+import {
+  azureDevOpsEffortWorkItems,
+  azureDevOpsOriginalEstimateWorkItems,
+  azureDevOpsRemainingWorkWorkItems,
+  azureDevOpsStoryPointWorkItems
+} from '../utils/AzureDevOpsWorkItemFields'
 import {AzureDevOpsFieldMenu_stage$key} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -54,34 +61,21 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   const {serviceField, task, meetingId, dimensionRef} = stage
   const {name: serviceFieldName} = serviceField
   const {name: dimensionName} = dimensionRef
-  const defaultActiveIdx = useMemo(() => {
-    if (
-      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL ||
-      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT
-    ) {
-      return 1
-    } else {
-      return 0
-    }
-  }, [serviceFieldName])
-
   if (task?.integration?.__typename !== 'AzureDevOpsWorkItem') return null
   const {integration} = task
   const {teamProject, url, type: workItemType} = integration
-  const getInstanceId = (url: URL) => {
-    const index = url.pathname.indexOf('/', 1)
-    return url.hostname + url.pathname.substring(0, index)
-  }
+
   const handleClick = (fieldName: string) => () => {
     if (fieldName !== serviceFieldName) {
       UpdateAzureDevOpsDimensionFieldMutation(
         atmosphere,
         {
           meetingId,
-          instanceId: getInstanceId(new URL(url)),
+          instanceId: AzureDevOpsClientManager.getInstanceId(new URL(url)),
           dimensionName,
           fieldName,
-          projectKey: teamProject
+          projectKey: teamProject,
+          workItemType
         },
         {
           onCompleted: submitScore,
@@ -97,7 +91,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   }
 
   const getDefaultMenuValues = (workItemType: string): MenuOption[] => {
-    if (workItemType === 'User Story' || workItemType === 'Bug') {
+    if (azureDevOpsStoryPointWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_USERSTORY_FIELD_LABEL,
@@ -108,7 +102,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (workItemType === 'Task') {
+    } else if (azureDevOpsOriginalEstimateWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_TASK_FIELD_LABEL,
@@ -119,7 +113,18 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
         }
       ]
-    } else if (workItemType === 'Epic' || workItemType === 'Feature') {
+    } else if (azureDevOpsRemainingWorkWorkItems.includes(workItemType)) {
+      return [
+        {
+          label: SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_LABEL,
+          fieldValue: SprintPokerDefaults.AZURE_DEVOPS_REMAINING_WORK_FIELD
+        },
+        {
+          label: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+          fieldValue: SprintPokerDefaults.SERVICE_FIELD_COMMENT
+        }
+      ]
+    } else if (azureDevOpsEffortWorkItems.includes(workItemType)) {
       return [
         {
           label: SprintPokerDefaults.AZURE_DEVOPS_EFFORT_LABEL,
@@ -139,7 +144,26 @@ const AzureDevOpsFieldMenu = (props: Props) => {
       ]
     }
   }
+
   const menuValues = getDefaultMenuValues(workItemType)
+
+  const getDefaultIdx = () => {
+    let returnedIndex = 0
+    menuValues.forEach((menuOption, index) => {
+      const {label, fieldValue} = menuOption
+      if (serviceFieldName === label || serviceFieldName === fieldValue) {
+        returnedIndex = index
+      }
+    })
+    if (
+      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL ||
+      serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL
+    ) {
+      returnedIndex = menuValues.length + 1
+    }
+    return returnedIndex
+  }
+  const defaultActiveIdx = getDefaultIdx()
 
   return (
     <>
@@ -153,7 +177,6 @@ const AzureDevOpsFieldMenu = (props: Props) => {
           return <MenuItem key={fieldValue} label={label} onClick={handleClick(fieldValue)} />
         })}
         <MenuItemHR />
-
         <MenuItem
           label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
           onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}

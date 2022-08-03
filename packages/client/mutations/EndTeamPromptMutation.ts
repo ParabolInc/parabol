@@ -1,8 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
+import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndTeamPromptMutation_team} from '~/__generated__/EndTeamPromptMutation_team.graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {
+  HistoryMaybeLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  SharedUpdater,
+  StandardMutation
+} from '../types/relayMutations'
 import {EndTeamPromptMutation as TEndTeamPromptMutation} from '../__generated__/EndTeamPromptMutation.graphql'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
@@ -46,6 +53,19 @@ const mutation = graphql`
   }
 `
 
+export const endTeamPromptTeamOnNext: OnNextHandler<
+  EndTeamPromptMutation_team,
+  OnNextHistoryContext
+> = (payload, context) => {
+  const {meeting} = payload
+  const {history} = context
+  if (!meeting) return
+  const {id: meetingId} = meeting
+  if (onMeetingRoute(window.location.pathname, [meetingId])) {
+    history.push(`/new-summary/${meetingId}`)
+  }
+}
+
 export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team> = (
   payload,
   {store}
@@ -55,10 +75,10 @@ export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team>
   handleAddTimelineEvent(meeting, timelineEvent, store)
 }
 
-const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation> = (
+const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, HistoryMaybeLocalHandler> = (
   atmosphere,
   variables,
-  {onError, onCompleted}
+  {onError, onCompleted, history}
 ) => {
   return commitMutation<TEndTeamPromptMutation>(atmosphere, {
     mutation,
@@ -69,7 +89,12 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation> = (
       const context = {atmosphere, store: store as any}
       endTeamPromptTeamUpdater(payload as any, context)
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      endTeamPromptTeamOnNext(res.endTeamPrompt as any, {atmosphere, history})
+    },
     onError
   })
 }

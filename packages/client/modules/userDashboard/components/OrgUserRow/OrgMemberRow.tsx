@@ -15,12 +15,10 @@ import RowInfoLink from '../../../../components/Row/RowInfoLink'
 import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
-import Toggle from '../../../../components/Toggle/Toggle'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
 import useTooltip from '../../../../hooks/useTooltip'
-import InactivateUserMutation from '../../../../mutations/InactivateUserMutation'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
@@ -56,11 +54,6 @@ const ActionsBlock = styled('div')({
 const MenuToggleBlock = styled('div')({
   marginLeft: 8,
   width: '2rem'
-})
-
-const ToggleBlock = styled('div')({
-  marginLeft: 8,
-  width: 36
 })
 
 interface Props extends WithMutationProps {
@@ -104,41 +97,17 @@ const RemoveFromOrgModal = lazyPreload(
 
 const OrgMemberRow = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {billingLeaderCount, submitMutation, onError, onCompleted, organizationUser, organization} =
-    props
-  const {orgId, isViewerBillingLeader, tier} = organization
+  const {billingLeaderCount, organizationUser, organization} = props
+  const {orgId, isViewerBillingLeader} = organization
   const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === 'BILLING_LEADER'
   const {email, inactive, picture, preferredName, userId} = user
-  const isProTier = tier === 'pro'
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
-  const toggleHandler = () => {
-    if (!isProTier) return
-    if (!inactive) {
-      submitMutation()
-      const handleError = (error) => {
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          autoDismiss: 5,
-          key: 'pauseUserError',
-          message: error || 'Cannot pause user'
-        })
-        onError(error)
-      }
-      InactivateUserMutation(atmosphere, userId, handleError, onCompleted)
-    } else {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        autoDismiss: 5,
-        key: 'unpauseUserError',
-        message:
-          'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
-      })
-    }
-  }
   const {
     tooltipPortal,
     openTooltip,
@@ -172,11 +141,6 @@ const OrgMemberRow = (props: Props) => {
             <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
               Leave Organization
             </StyledFlatButton>
-          )}
-          {isProTier && isViewerBillingLeader && (
-            <ToggleBlock>
-              <Toggle active={!inactive} disabled={!isProTier} onClick={toggleHandler} />
-            </ToggleBlock>
           )}
           {isViewerLastBillingLeader && userId === viewerId && (
             <MenuToggleBlock
@@ -229,7 +193,6 @@ export default createFragmentContainer(withMutationProps(OrgMemberRow), {
     fragment OrgMemberRow_organization on Organization {
       isViewerBillingLeader: isBillingLeader
       orgId: id
-      tier
       ...BillingLeaderActionMenu_organization
     }
   `,

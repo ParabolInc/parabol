@@ -46,6 +46,7 @@ export interface Snack {
   onDismiss?: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
+  showDismissButton?: boolean
 }
 
 const Snackbar = React.memo(() => {
@@ -169,6 +170,7 @@ const Snackbar = React.memo(() => {
             dismissSnack={dismiss}
             onMouseEnter={onMouseEnter(child)}
             onMouseLeave={onMouseLeave}
+            showDismissButton={child.showDismissButton}
           />
         )
       })}

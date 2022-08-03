@@ -11,6 +11,11 @@ class AzureDevOpsClientManager {
     return Array.from(array, (item) => `0${item.toString(16)}`.substr(-2)).join('')
   }
 
+  static getInstanceId = (url: URL) => {
+    const index = url.pathname.indexOf('/', 1)
+    return url.hostname + url.pathname.substring(0, index)
+  }
+
   static async generateCodeChallenge(codeVerifier: string): Promise<string> {
     const digest = await window.crypto.subtle.digest(
       'SHA-256',
