@@ -84,7 +84,8 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   segmentIo.identify({
     userId,
     traits: {
-      isActive: true
+      isActive: true,
+      featureFlags: user.featureFlags
     }
   })
   return user
