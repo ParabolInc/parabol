@@ -4,22 +4,22 @@ import {TaskStatusEnum} from '../../../database/types/Task'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {addTasks} from './addTasks'
 
-const NEW_MEETING_TASK_STRING = `Start a meeting with your team`
+const INVITE_TASK_STRING = `🎉 Welcome to your new team! You can now start inviting your teammates`
 
 const addTeamTasks = async (userId: string, teamId: string) => {
-  const newMeetingURL = makeAppURL(appOrigin, `/new-meeting/${teamId}`, {
+  const inviteURL = makeAppURL(appOrigin, `team/${teamId}`, {
     searchParams: {
-      source: 'TeamTask'
+      invite: 'true'
     }
   })
-  const newMeetingTaskHTML = `<a href="${newMeetingURL}">Start a meeting</a> with your team`
+  const inviteTeamTaskHTML = `🎉 Welcome to your new team! You can now start <a href="${inviteURL}" target="_self">inviting your teammates</a>`
 
   const teamTasks = [
     {
       status: 'active' as TaskStatusEnum,
       sortOrder: 0,
-      content: convertHtmlToTaskContent(newMeetingTaskHTML),
-      plaintextContent: NEW_MEETING_TASK_STRING
+      content: convertHtmlToTaskContent(inviteTeamTaskHTML),
+      plaintextContent: INVITE_TASK_STRING
     }
   ]
 
