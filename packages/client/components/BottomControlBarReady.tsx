@@ -15,6 +15,7 @@ import useTooltip from '../hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomControlBarReadyButton from './BottomControlBarReadyButton'
+import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 
@@ -138,7 +139,7 @@ const BottomControlBarReady = (props: Props) => {
   const disabled = getDisabled()
   return (
     <>
-      <BottomControlBarReadyButton
+      <BottomNavControl
         dataCy={`next-phase`}
         disabled={disabled}
         confirming={!!cancelConfirm}
@@ -146,16 +147,17 @@ const BottomControlBarReady = (props: Props) => {
         status={status}
         onTransitionEnd={onTransitionEnd}
         onKeyDown={onKeyDown}
-        meetingRef={meeting}
         ref={ref}
       >
-        <BottomControlBarProgress isNext={isNext} progress={progress} />
-        <BottomNavIconLabel label={label} ref={originRef}>
-          <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-            {icon}
-          </CheckIcon>
-        </BottomNavIconLabel>
-      </BottomControlBarReadyButton>
+        <BottomControlBarReadyButton meetingRef={meeting}>
+          <BottomControlBarProgress isNext={isNext} progress={progress} />
+          <BottomNavIconLabel label={label} ref={originRef}>
+            <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
+              {icon}
+            </CheckIcon>
+          </BottomNavIconLabel>
+        </BottomControlBarReadyButton>
+      </BottomNavControl>
       {tooltipPortal(`Tap 'Next' again to Confirm`)}
     </>
   )

@@ -1,11 +1,10 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, Ref, useEffect, useState} from 'react'
+import React, {ReactNode, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {BottomControlBarReadyButton_meeting$key} from '~/__generated__/BottomControlBarReadyButton_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import BottomNavControl, {BottomNavControlProps} from './BottomNavControl'
 
 const shake = keyframes`
   20%, 40%, 60% {
@@ -33,143 +32,137 @@ const shake = keyframes`
   }
 `
 
-const BottomNavReadyButton = styled(BottomNavControl)<{shouldAnimate?: boolean; delay: number}>(
+const BottomNavReadyButton = styled('div')<{shouldAnimate?: boolean; delay: number}>(
   ({shouldAnimate, delay}) => {
     if (!shouldAnimate) return
 
     return {
-      animation: `1s ease-in-out ${delay}s 3 ${shake}`
+      animation: `1s ease-in-out ${delay}s infinite ${shake}`
     }
   }
 )
 
-interface BottomControlBarReadyButton extends BottomNavControlProps {
+interface BottomControlBarReadyButton {
   meetingRef: BottomControlBarReadyButton_meeting$key
+  children: ReactNode
 }
 
-const BottomControlBarReadyButton = forwardRef(
-  (props: BottomControlBarReadyButton, ref: Ref<HTMLButtonElement>) => {
-    const {meetingRef, ...rest} = props
-    const meeting = useFragment(
-      graphql`
-        fragment BottomControlBarReadyButton_meeting on NewMeeting {
+const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
+  const {meetingRef, children} = props
+  const meeting = useFragment(
+    graphql`
+      fragment BottomControlBarReadyButton_meeting on NewMeeting {
+        localPhase {
+          phaseType
+        }
+        localStage {
+          readyCount
+          isViewerReady
+        }
+        meetingMembers {
+          id
+        }
+        ... on RetrospectiveMeeting {
+          endedAt
+          facilitatorUserId
           localPhase {
-            phaseType
-          }
-          localStage {
-            readyCount
-            isViewerReady
-          }
-          meetingMembers {
-            id
-          }
-          ... on RetrospectiveMeeting {
-            endedAt
-            facilitatorUserId
-            localPhase {
-              ... on ReflectPhase {
-                reflectPrompts {
-                  id
-                  editorIds
-                }
-              }
-            }
-            reflectionGroups {
-              id
-              reflections {
+            ... on ReflectPhase {
+              reflectPrompts {
                 id
-                isEditing
-                isViewerDragging
+                editorIds
               }
             }
-            viewerMeetingMember {
-              votesRemaining
+          }
+          reflectionGroups {
+            id
+            reflections {
+              id
+              isEditing
+              isViewerDragging
             }
+          }
+          viewerMeetingMember {
             votesRemaining
           }
+          votesRemaining
         }
-      `,
-      meetingRef
-    )
-    const {
-      endedAt,
-      facilitatorUserId,
-      localPhase,
-      localStage,
-      meetingMembers,
-      reflectionGroups,
-      viewerMeetingMember,
-      votesRemaining
-    } = meeting
-    const [delaySeconds, setDelaySeconds] = useState(2)
-    const [shouldAnimate, setShouldAnimate] = useState(false)
-    const atmosphere = useAtmosphere()
-    const {viewerId} = atmosphere
-
-    useEffect(() => {
-      // only enable for facilitatorUser
-      const isFacilitator = viewerId === facilitatorUserId && !endedAt
-      if (!isFacilitator) return
-
-      switch (localPhase.phaseType) {
-        case 'reflect':
-          const reflectPrompts = localPhase.reflectPrompts!
-          const beforeDemoStart = reflectPrompts.every(
-            (prompts) => !Array.isArray(prompts.editorIds)
-          )
-          const hasAnyoneEditing = reflectPrompts.some((prompts) => prompts.editorIds?.length !== 0)
-
-          setShouldAnimate(!beforeDemoStart && !hasAnyoneEditing)
-          break
-        case 'group':
-          const isNotDragging = reflectionGroups?.every((group) =>
-            group.reflections.every((reflection) => !reflection.isViewerDragging)
-          )
-
-          setDelaySeconds(30)
-          setShouldAnimate(!!isNotDragging)
-          break
-        case 'vote':
-          const teamVotesRemaining = votesRemaining || 0
-          const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
-          const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
-
-          setDelaySeconds(30)
-          setShouldAnimate(isNotVoting)
-          break
-        case 'discuss':
-          // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
-          setDelaySeconds(5 * 60)
-          setShouldAnimate(true)
-          break
       }
+    `,
+    meetingRef
+  )
+  const {
+    endedAt,
+    facilitatorUserId,
+    localPhase,
+    localStage,
+    meetingMembers,
+    reflectionGroups,
+    viewerMeetingMember,
+    votesRemaining
+  } = meeting
+  const [delaySeconds, setDelaySeconds] = useState(2)
+  const [shouldAnimate, setShouldAnimate] = useState(false)
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
 
-      // if the ready button is "full" before these conditions are met, the animation should start after 5s
-      const activeCount = meetingMembers.length
-      const readyCount = localStage.readyCount || 0
-      if (readyCount === Math.max(1, activeCount - 1)) {
-        setDelaySeconds(5)
+  useEffect(() => {
+    // only enable for facilitatorUser
+    const isFacilitator = viewerId === facilitatorUserId && !endedAt
+    if (!isFacilitator) return
+
+    switch (localPhase.phaseType) {
+      case 'reflect':
+        const reflectPrompts = localPhase.reflectPrompts!
+        const beforeDemoStart = reflectPrompts.every((prompts) => !Array.isArray(prompts.editorIds))
+        const hasAnyoneEditing = reflectPrompts.some((prompts) => prompts.editorIds?.length !== 0)
+
+        setShouldAnimate(!beforeDemoStart && !hasAnyoneEditing)
+        break
+      case 'group':
+        const isNotDragging = reflectionGroups?.every((group) =>
+          group.reflections.every((reflection) => !reflection.isViewerDragging)
+        )
+
+        setDelaySeconds(30)
+        setShouldAnimate(!!isNotDragging)
+        break
+      case 'vote':
+        const teamVotesRemaining = votesRemaining || 0
+        const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
+        const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
+
+        setDelaySeconds(30)
+        setShouldAnimate(isNotVoting)
+        break
+      case 'discuss':
+        // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
+        setDelaySeconds(5 * 60)
         setShouldAnimate(true)
-      }
-    }, [
-      localPhase.phaseType,
-      localPhase.reflectPrompts,
-      localStage.readyCount,
-      reflectionGroups,
-      meetingMembers,
-      viewerMeetingMember,
-      votesRemaining
-    ])
+        break
+    }
 
-    return (
-      <BottomNavReadyButton
-        shouldAnimate={shouldAnimate}
-        delay={delaySeconds}
-        ref={ref}
-        {...rest}
-      />
-    )
-  }
-)
+    // if the ready button is "full" before these conditions are met, the animation should start after 5s
+    const activeCount = meetingMembers.length
+    const readyCount = localStage.readyCount || 0
+    if (readyCount === Math.max(1, activeCount - 1)) {
+      setDelaySeconds(5)
+      setShouldAnimate(true)
+    }
+  }, [
+    localPhase.phaseType,
+    localPhase.reflectPrompts,
+    localStage.readyCount,
+    reflectionGroups,
+    meetingMembers,
+    viewerMeetingMember,
+    votesRemaining
+  ])
+
+  return (
+    <BottomNavReadyButton shouldAnimate={shouldAnimate} delay={delaySeconds}>
+      {children}
+    </BottomNavReadyButton>
+  )
+}
 
 export default BottomControlBarReadyButton
