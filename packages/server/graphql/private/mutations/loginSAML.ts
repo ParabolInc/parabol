@@ -57,8 +57,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, que
     const value = attributes[key]
     caseInsensitiveAtttributes[lowercaseKey] = String(value)
   })
-  const {email: inputEmail, emailaddress, preferredname} = caseInsensitiveAtttributes
-  const preferredName = preferredname || name
+  const {email: inputEmail, emailaddress, displayname} = caseInsensitiveAtttributes
+  const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return {error: {message: 'Email attribute was not included in SAML response'}}

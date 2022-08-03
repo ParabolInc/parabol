@@ -35,7 +35,12 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   ])
 
   if (samlURL) {
-    return {error: {message: 'Please login using SSO'}}
+    return {
+      error: {
+        message:
+          'our organization requires you to login with SSO. Reach out to support@parabol.co for more help!'
+      }
+    }
   }
   if (existingUser) {
     const {id: viewerId, identities, rol} = existingUser
