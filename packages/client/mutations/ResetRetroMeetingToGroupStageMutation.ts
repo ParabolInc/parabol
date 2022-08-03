@@ -33,6 +33,7 @@ graphql`
           viewerVoteCount
         }
       }
+      ...MeetingControlBar_meeting
     }
   }
 `
