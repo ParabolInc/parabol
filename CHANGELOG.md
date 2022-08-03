@@ -5,9 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.69.0 2022-August-03
+
+### Added
+
+- feat(standups): Added beta badge to standups on new meeting view (#6961)
+- feat(standups): Customized start standup notification (#6879)
+- feat(standups): Summary Page (#6885)
+
+### Fixed
+
+- fix: Text in reflection cards is not selectable during vote period (#6924)
+- fix: allow to go to the discuss phase without voting (#6966)
+- fix: css mobile version use template button (#6824)
+- fix(metrics): update activeUserCount & activeTeamCount for companies in HubSpot more often (#6983)
+
+### Changed
+
+- feat: remove manual pausing (#6962)
+- feat: removed standups feature flag (#6953)
+- feat(standups): Rename Async standup -> standup (#6991)
+- feat(metrics): Refactor meeting related events (#6981)
+- chore: upgrade stripe (#6895)
+
 ## 6.68.0 2022-July-27
 
 ### Added
+
 - feat: New meeting dialog is now a modal (#6866)
 - feat: New meeting type carousel (#6950)
 - feat: mattermost info icon (#6911)
@@ -16,12 +40,14 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat(Azure DevOps): Add SaaS url to sprint poker estimation (#6892)
 
 ### Fixed
+
 - fix: impersonate user bug (#6901)
 - fix: Added dismiss button to snackbar messages (#6847)
 - fix: add query parameter to identify the page source (#6967)
 - chore: Fix browser translation (#6927)
 
 ### Changed
+
 - feat(chore): edit PR template to add Metrics Representative (#6770)
 - chore(deps): bump terser from 4.8.0 to 4.8.1 (#6903)
 
