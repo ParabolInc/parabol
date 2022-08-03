@@ -56,7 +56,26 @@ module.exports = ({isDeploy}) => ({
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
   target: 'node',
+  optimization: {
+    minimize: Boolean(isDeploy || isStats),
+    minimizer: [
+      new TerserPlugin({
+        parallel: isDeploy ? 1 : true,
+        terserOptions: {
+          output: {
+            comments: false,
+            ecma: 6
+          },
+          compress: {
+            ecma: 6
+          }
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        }
+      })
+    ]
+  },
   plugins: [
+
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
