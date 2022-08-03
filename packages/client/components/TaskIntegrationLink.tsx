@@ -94,7 +94,7 @@ const TaskIntegrationLink = (props: Props) => {
       </StyledLink>
     )
   } else if (integration.__typename === 'AzureDevOpsWorkItem') {
-    const {id, teamProject, url} = integration
+    const {id, teamProject, url, type} = integration
     return (
       <StyledLink
         href={url}
@@ -103,7 +103,7 @@ const TaskIntegrationLink = (props: Props) => {
         title={`Azure Item #${id} on ${teamProject}`}
         className={className}
       >
-        {`Work Item #${id}`}
+        {`${type} #${id}`}
         {children}
       </StyledLink>
     )
@@ -149,6 +149,7 @@ graphql`
   fragment TaskIntegrationLinkIntegrationAzure on AzureDevOpsWorkItem {
     id
     teamProject
+    type
     url
   }
 `
