@@ -8,6 +8,7 @@ import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutati
 import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
@@ -77,6 +78,14 @@ const MassInvitationTokenLink = (props: Props) => {
   const displayToken = isTokenValid ? token : '············'
   const linkLabel = `${window.__ACTION__.prblIn}/${displayToken}`
   const url = getMassInvitationUrl(displayToken)
+
+  const {viewerId} = atmosphere
+  const handleCopy = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Copied Team Invite Link', {
+      viewerId,
+      teamId
+    })
+  }
   return (
     <StyledCopyShortLink
       icon='link'
@@ -84,6 +93,7 @@ const MassInvitationTokenLink = (props: Props) => {
       label={linkLabel}
       title={'Copy invite link'}
       tooltip={'Copied! Valid for 30 days'}
+      onCopy={handleCopy}
     />
   )
 }
