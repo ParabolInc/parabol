@@ -9,6 +9,7 @@ import {ICON_SIZE} from '~/styles/typographyV2'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
 import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
@@ -175,6 +176,10 @@ const AddTeamMemberModal = (props: Props) => {
 
   const sendInvitations = () => {
     if (invitees.length === 0) return
+    SendClientSegmentEventMutation(atmosphere, 'Clicked Send Invitation Button', {
+      viewerId: atmosphere.viewerId,
+      teamId
+    })
     submitMutation()
     const handleCompleted = (res) => {
       setIsSubmitted(true)
