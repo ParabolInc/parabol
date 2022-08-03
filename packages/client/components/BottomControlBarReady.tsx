@@ -14,11 +14,11 @@ import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import BottomControlBarProgress from './BottomControlBarProgress'
-import BottomNavControl from './BottomNavControl'
+import BottomControlBarReadyButton from './BottomControlBarReadyButton'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 
-interface Props {
+export interface Props {
   isNext: boolean
   cancelConfirm: undefined | (() => void)
   isConfirming: boolean
@@ -60,6 +60,7 @@ const BottomControlBarReady = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarReady_meeting on NewMeeting {
+        ...BottomControlBarReadyButton_meeting
         ... on RetrospectiveMeeting {
           reflectionGroups {
             id
@@ -137,7 +138,7 @@ const BottomControlBarReady = (props: Props) => {
   const disabled = getDisabled()
   return (
     <>
-      <BottomNavControl
+      <BottomControlBarReadyButton
         dataCy={`next-phase`}
         disabled={disabled}
         confirming={!!cancelConfirm}
@@ -145,6 +146,7 @@ const BottomControlBarReady = (props: Props) => {
         status={status}
         onTransitionEnd={onTransitionEnd}
         onKeyDown={onKeyDown}
+        meetingRef={meeting}
         ref={ref}
       >
         <BottomControlBarProgress isNext={isNext} progress={progress} />
@@ -153,7 +155,7 @@ const BottomControlBarReady = (props: Props) => {
             {icon}
           </CheckIcon>
         </BottomNavIconLabel>
-      </BottomNavControl>
+      </BottomControlBarReadyButton>
       {tooltipPortal(`Tap 'Next' again to Confirm`)}
     </>
   )

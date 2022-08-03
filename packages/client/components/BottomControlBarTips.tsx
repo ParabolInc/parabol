@@ -13,7 +13,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
 import BottomNavControl from './BottomNavControl'
-import BottomNavHelpButton from './BottomNavHelpButton'
+import BottomNavIconLabel from './BottomNavIconLabel'
 import Menu from './Menu'
 
 const TallMenu = styled(Menu)({
@@ -113,7 +113,6 @@ const BottomControlBarTips = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
-        ...BottomNavHelpButton_meeting
         id
         meetingType
         localPhase {
@@ -160,12 +159,7 @@ const BottomControlBarTips = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <BottomNavHelpButton
-        icon='help_outline'
-        iconColor='midGray'
-        label={'Tips'}
-        meetingRef={meeting}
-      />
+      <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
           <MenuContent meetingType={meetingType} />
