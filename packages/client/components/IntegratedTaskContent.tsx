@@ -57,11 +57,11 @@ const IntegratedTaskContent = (props: Props) => {
       </Content>
     )
   } else if (integration.__typename === 'AzureDevOpsWorkItem') {
-    const {descriptionHtml, title} = integration
+    const {descriptionHTML, title} = integration
     return (
       <Content>
         <Summary>{title}</Summary>
-        {descriptionHtml && <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />}
+        {descriptionHTML && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
       </Content>
     )
   }

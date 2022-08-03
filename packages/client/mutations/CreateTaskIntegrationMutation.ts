@@ -175,30 +175,24 @@ const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
 }
 
 const azureTaskIntegrationOptimisitcUpdater = (store, variables) => {
-  const {integrationRepoId: name, taskId} = variables
-  console.log('🚀 ~ variables', variables)
+  const {integrationRepoId: teamProject, taskId} = variables
   const now = new Date()
   const task = store.get(taskId)
   if (!task) return
-  const integrationRepository = createProxyRecord(store, 'AzureDevOpsRemoteProject', {
-    name
-  })
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
   const {title, contentState} = splitDraftContent(contentStr)
-  const descriptionHtml = stateToHTML(contentState)
-  console.log('🚀 ~ descriptionHtml', descriptionHtml)
-  // const webPath = `${fullPath}/-/issues/0`
+  const descriptionHTML = stateToHTML(contentState)
   const optimisticIntegration = {
-    name,
-    descriptionHtml,
-    iid: 0,
-    webUrl: `https://gitlab.com`,
+    id: '?',
+    title,
+    descriptionHTML,
+    teamProject,
+    type: 'Issue',
+    url: `https://dev.azure.com`,
     updatedAt: now.toJSON()
   } as const
-  console.log('🚀 ~ optimisticIntegrat', optimisticIntegration)
   const integration = createProxyRecord(store, 'AzureDevOpsWorkItem', optimisticIntegration)
-  integration.setLinkedRecord(integrationRepository, 'repository')
   task.setLinkedRecord(integration, 'integration')
 }
 

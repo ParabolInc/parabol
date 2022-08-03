@@ -95,6 +95,7 @@ const TaskIntegrationLink = (props: Props) => {
     )
   } else if (integration.__typename === 'AzureDevOpsWorkItem') {
     const {id, teamProject, url, type} = integration
+    const integrationType = type.includes('Issue') ? 'Issue' : type
     return (
       <StyledLink
         href={url}
@@ -103,7 +104,7 @@ const TaskIntegrationLink = (props: Props) => {
         title={`Azure Item #${id} on ${teamProject}`}
         className={className}
       >
-        {`${type} #${id}`}
+        {`${integrationType} #${id}`}
         {children}
       </StyledLink>
     )
