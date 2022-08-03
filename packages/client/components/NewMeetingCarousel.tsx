@@ -86,7 +86,7 @@ const TITLES = {
   retrospective: 'Retrospective',
   action: 'Team Check-in',
   poker: 'Sprint Poker',
-  teamPrompt: 'Async Standup'
+  teamPrompt: 'Standup'
 } as Record<MeetingTypeEnum, string>
 
 const DESCRIPTIONS = {

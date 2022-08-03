@@ -108,7 +108,7 @@ const makeTeamPromptStartMeetingNotification = (
         }
       ],
       {
-        fallback: `Async Standup started, submit response: ${meetingUrl}`,
+        fallback: `Standup started, submit response: ${meetingUrl}`,
         title: `${meeting.name} is open 💬 `,
         title_link: meetingUrl
       }
