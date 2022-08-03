@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect, useRef} from 'react'
 import {FreeMode, Keyboard, Mousewheel} from 'swiper'
 import 'swiper/css'
 import 'swiper/css/free-mode'
 import 'swiper/css/mousewheel'
 import {Swiper, SwiperSlide} from 'swiper/react'
-import useHotkey from '~/hooks/useHotkey'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -58,7 +57,8 @@ const Card = styled('div')<{isActive: boolean; meetingType: keyof typeof BACKGRO
     transition: `all 200ms ${BezierCurve.DECELERATE}`,
     transform: isActive ? `scale(1.1)` : 'scale(1)',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    outline: 'none'
   })
 )
 
@@ -92,34 +92,30 @@ interface Props {
 
 const NewMeetingCarousel = (props: Props) => {
   const {idx, setIdx, meetingOrder, onStartMeetingClick} = props
-
   // TODO: remove when standups feature flag removed
   const moreThanThreeSlides = meetingOrder.length > 3
+  const cardRef = useRef<HTMLDivElement | null>(null)
 
-  useHotkey('left', () => {
-    if (idx !== 0) {
-      const newIdx = idx - 1
-      setIdx(newIdx)
+  useEffect(() => {
+    if (cardRef.current) {
+      cardRef.current.focus()
     }
-  })
-  useHotkey('right', () => {
-    if (idx !== meetingOrder.length - 1) {
-      const newIdx = idx + 1
-      setIdx(newIdx)
-    }
-  })
+  }, [cardRef.current])
 
-  const enterKey = 13
-  // keycode is a number but package thinks it's a string
-  const onKeyPress = (_swiper: unknown, keycode: string) => {
-    if (parseInt(keycode, 10) === enterKey) {
-      // inefficient, but only happens on enter
-      const isModalOpen =
-        document.querySelector(`div[id='templateModal']`) ||
-        document.querySelector(`div[id='portal']`)
-      if (!isModalOpen) {
-        onStartMeetingClick()
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const {key} = e
+    if (key === 'ArrowLeft') {
+      if (idx !== 0) {
+        const newIdx = idx - 1
+        setIdx(newIdx)
       }
+    } else if (key === 'ArrowRight') {
+      if (idx !== meetingOrder.length - 1) {
+        const newIdx = idx + 1
+        setIdx(newIdx)
+      }
+    } else if (key === 'Enter') {
+      onStartMeetingClick()
     }
   }
 
@@ -134,7 +130,6 @@ const NewMeetingCarousel = (props: Props) => {
         spaceBetween={16}
         threshold={10}
         keyboard={true}
-        onKeyPress={onKeyPress}
         slidesPerView={1.5}
         breakpoints={{
           [Breakpoint.FUZZY_TABLET]: {
@@ -158,9 +153,10 @@ const NewMeetingCarousel = (props: Props) => {
               <Card
                 isActive={isActive}
                 meetingType={meetingType}
-                onClick={() => {
-                  setIdx(index)
-                }}
+                tabIndex={0}
+                onClick={() => setIdx(index)}
+                ref={isActive ? cardRef : null}
+                onKeyDown={onKeyDown}
               >
                 <MeetingImage src={src} key={meetingType} />
                 <Title isActive={isActive}>{title}</Title>
