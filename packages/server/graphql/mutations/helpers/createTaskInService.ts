@@ -9,10 +9,8 @@ import removeRangesForEntity from '../../../../client/utils/draftjs/removeRanges
 import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
 import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
 import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
-import {getUserId} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
-import createAzureWorkItem from './createAzureWorkItem'
 import createGitHubTask from './createGitHubTask'
 import createGitLabTask from './createGitLabTask'
 import createJiraTask from './createJiraTask'
@@ -63,6 +61,7 @@ const createTaskInService = async (
       context,
       info
     )
+    console.log('🚀 ~ create gh task in service!', {githubTaskRes})
     if (githubTaskRes.error) {
       return {error: githubTaskRes.error}
     }
@@ -102,21 +101,7 @@ const createTaskInService = async (
       integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }
   } else if (service === 'azureDevOps') {
-    const viewerId = getUserId(authToken)
-    const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
-      .load({service: 'azureDevOps', teamId, userId: viewerId})
-    if (!auth) {
-      return {error: new Error('Cannot create Azure work item without a valid Azure token')}
-    }
-    const azureDevOpsTaskRes = await createAzureWorkItem(
-      taglessContentJSON,
-      serviceProjectHash,
-      auth,
-      context,
-      info,
-      dataLoader
-    )
+    // TODO: implement when we can create a new Azure issue from Poker meeting
   }
   return {error: new Error('Unknown integration')}
 }
