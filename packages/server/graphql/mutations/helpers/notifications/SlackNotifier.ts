@@ -8,6 +8,8 @@ import getRethink from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
+import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -17,6 +19,11 @@ import getSummaryText from './getSummaryText'
 import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 import {NotificationIntegrationHelper, NotifyResponse} from './NotificationIntegrationHelper'
 import {Notifier} from './Notifier'
+
+type SlackNotification = {
+  title: string
+  blocks: string | Array<{type: string}>
+}
 
 const notifySlack = async (
   notificationChannel: SlackNotificationAuth,
@@ -100,6 +107,61 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
+const createLinkSectionContent = (
+  meetingId: string,
+  meetingUrl: string,
+  meetingShortLink?: string
+) => {
+  const shortLink = meetingShortLink || `https:/prbl.in/${meetingId}`
+  return `*Link:*\n<${meetingUrl}|${shortLink}>`
+}
+
+const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
+
+const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
+
+const makeTeamPromptStartMeetingNotification = (
+  team: Team,
+  meeting: Meeting,
+  meetingUrl: string
+): SlackNotification => {
+  const title = `*${meeting.name}* is open :speech_balloon: `
+  const blocks = [
+    makeSection(title),
+    makeSection(createTeamSectionContent(team)), // TODO: add end date once we have it implemented
+    makeSection(createLinkSectionContent(meeting.id, meetingUrl)),
+    makeButtons([{text: 'Submit Response', url: meetingUrl, type: 'primary'}])
+  ]
+
+  return {title, blocks}
+}
+
+const makeGenericStartMeetingNotification = (
+  team: Team,
+  meeting: Meeting,
+  meetingUrl: string
+): SlackNotification => {
+  const title = 'Meeting started :wave: '
+  const blocks = [
+    makeSection(title),
+    makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
+    makeSection(createLinkSectionContent(meeting.id, meetingUrl)),
+    makeButtons([{text: 'Join meeting', url: meetingUrl, type: 'primary'}])
+  ]
+
+  return {title, blocks}
+}
+
+const makeStartMeetingNotificationLookup: Record<
+  MeetingTypeEnum,
+  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotification
+> = {
+  teamPrompt: makeTeamPromptStartMeetingNotification,
+  action: makeGenericStartMeetingNotification,
+  retrospective: makeGenericStartMeetingNotification,
+  poker: makeGenericStartMeetingNotification
+}
+
 export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNotificationAuth> = (
   notificationChannel
 ) => ({
@@ -111,25 +173,21 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
-    const title = 'Meeting started :wave: '
-    const blocks = [
-      makeSection(title),
-      makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
-      makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meeting.id}>`),
-      makeButtons([button])
-    ]
+    const {title, blocks} = makeStartMeetingNotificationLookup[meeting.meetingType](
+      team,
+      meeting,
+      meetingUrl
+    )
+
     return notifySlack(notificationChannel, 'meetingStart', team.id, blocks, title)
   },
 
   async endMeeting(meeting, team) {
     const summaryText = getSummaryText(meeting)
-    const {name: teamName} = team
-    const {name: meetingName} = meeting
     const title = 'Meeting completed :tada:'
     const blocks = [
       makeSection(title),
-      makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+      makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
       makeSection(summaryText),
       makeEndMeetingButtons(meeting)
     ]
@@ -137,8 +195,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   },
 
   async startTimeLimit(scheduledEndTime, meeting, team) {
-    const {name: meetingName, phases, facilitatorStageId} = meeting
-    const {name: teamName} = team
+    const {phases, facilitatorStageId} = meeting
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
     const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meeting.id}`)
@@ -157,9 +214,9 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const title = `The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`
     const blocks = [
       makeSection(title),
-      makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+      makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
       makeSection(constraint),
-      makeSection(`*Link:*\n<${meetingUrl}|${maybeMeetingShortLink}>`),
+      makeSection(createLinkSectionContent(meeting.id, meetingUrl, maybeMeetingShortLink)),
       makeButtons([button])
     ]
     return notifySlack(

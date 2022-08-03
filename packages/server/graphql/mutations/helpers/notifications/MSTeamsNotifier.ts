@@ -7,6 +7,7 @@ import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {Team} from '../../../../postgres/queries/getTeamsByIds'
+import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -43,6 +44,44 @@ const notifyMSTeams = async (
 }
 export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string}
 
+const createTeamPromptMeetingTitle = (meetingName: string) => `*${meetingName}* is open 💬`
+const createGenericMeetingTitle = () => `Meeting Started 👋`
+
+const meetingTypeTitleLookup: Record<MeetingTypeEnum, (meetingName: string) => string> = {
+  action: createGenericMeetingTitle,
+  poker: createGenericMeetingTitle,
+  retrospective: createGenericMeetingTitle,
+  teamPrompt: createTeamPromptMeetingTitle
+}
+
+const createGenericMeetingAction = (meetingUrl: string) => {
+  const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
+  joinMeetingAction.title = 'Join Meeting'
+  joinMeetingAction.url = meetingUrl
+  joinMeetingAction.id = 'joinMeeting'
+
+  return joinMeetingAction
+}
+
+const createTeamPromptMeetingAction = (meetingUrl: string) => {
+  const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
+  joinMeetingAction.title = 'Submit Response'
+  joinMeetingAction.url = meetingUrl
+  joinMeetingAction.id = 'submitResponse'
+
+  return joinMeetingAction
+}
+
+const MeetingActionLookup: Record<
+  MeetingTypeEnum,
+  (meetingUrl: string) => AdaptiveCards.OpenUrlAction
+> = {
+  action: createGenericMeetingAction,
+  poker: createGenericMeetingAction,
+  retrospective: createGenericMeetingAction,
+  teamPrompt: createTeamPromptMeetingAction
+}
+
 export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNotificationAuth> = (
   notificationChannel
 ) => ({
@@ -61,7 +100,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const card = new AdaptiveCards.AdaptiveCard()
     card.version = new AdaptiveCards.Version(1.2, 0)
 
-    const meetingTitle = 'Meeting Started 👋'
+    const meetingTitle = meetingTypeTitleLookup[meeting.meetingType](meeting.name)
     const titleTextBlock = GenerateACMeetingTitle(meetingTitle)
     card.addItem(titleTextBlock)
 
@@ -80,11 +119,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
     meetingLinkTextBlock.wrap = true
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
-    const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
-    joinMeetingAction.title = 'Join Meeting'
-    joinMeetingAction.url = meetingUrl
-    joinMeetingAction.id = 'joinMeeting'
-
+    const joinMeetingAction = MeetingActionLookup[meeting.meetingType](meetingUrl)
     joinMeetingActionSet.addAction(joinMeetingAction)
 
     meetingLinkColumn.addItem(meetingLinkHeaderTextBlock)

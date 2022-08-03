@@ -57,9 +57,23 @@ const Card = styled('div')<{isActive: boolean; meetingType: keyof typeof BACKGRO
     transition: `all 200ms ${BezierCurve.DECELERATE}`,
     transform: isActive ? `scale(1.1)` : 'scale(1)',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    position: 'relative'
   })
 )
+
+const Badge = styled('div')({
+  position: 'absolute',
+  top: -8,
+  right: -8,
+  background: PALETTE.GRAPE_500,
+  color: PALETTE.WHITE,
+  fontSize: 12,
+  fontWeight: 600,
+  padding: '6px 14px',
+  borderRadius: 24,
+  textTransform: 'uppercase'
+})
 
 const ILLUSTRATIONS = {
   retrospective,
@@ -72,7 +86,7 @@ const TITLES = {
   retrospective: 'Retrospective',
   action: 'Team Check-in',
   poker: 'Sprint Poker',
-  teamPrompt: 'Async Standup'
+  teamPrompt: 'Standup'
 } as Record<MeetingTypeEnum, string>
 
 const DESCRIPTIONS = {
@@ -134,6 +148,7 @@ const NewMeetingCarousel = (props: Props) => {
                 <MeetingImage src={src} key={meetingType} />
                 <Title isActive={isActive}>{title}</Title>
                 <Description isActive={isActive}>{description}</Description>
+                {meetingType === 'teamPrompt' && <Badge>Beta</Badge>}
               </Card>
             </SwiperSlide>
           )
