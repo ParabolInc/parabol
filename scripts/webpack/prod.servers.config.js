@@ -57,7 +57,7 @@ module.exports = ({isDeploy}) => ({
   },
   target: 'node',
   optimization: {
-    minimize: Boolean(isDeploy || isStats),
+    minimize: Boolean(isDeploy),
     minimizer: [
       new TerserPlugin({
         parallel: isDeploy ? 1 : true,
