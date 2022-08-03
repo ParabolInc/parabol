@@ -56,13 +56,17 @@ const SettingsRow = styled('div')({
   }
 })
 
-const NewMeetingDialog = styled(DialogContainer)<{isDesktop}>(({isDesktop}) =>({
+const NewMeetingDialog = styled(DialogContainer)({
   width: '800px',
-  borderRadius: isDesktop ? Radius.FIELD : 0,
-  minWidth: isDesktop ? 'unset' : '100vw',
-  maxHeight: isDesktop ? 'unset' : '100vh',
-  minHeight: isDesktop ? 'unset' : '100vh',
-}))
+  borderRadius: Radius.FIELD,
+
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    minWidth: '100vw',
+    maxHeight: '100vh',
+    minHeight: '100vh',
+    borderRadius: 0
+  }
+})
 
 const Title = styled(DialogTitle)({
   fontSize: 24,
@@ -169,7 +173,7 @@ const NewMeeting = (props: Props) => {
   }
   if (!teamId || !selectedTeam) return null
   return (
-    <NewMeetingDialog isDesktop={isDesktop}>
+    <NewMeetingDialog>
       <Title>
         New meeting
         <CloseButton onClick={onClose}>
