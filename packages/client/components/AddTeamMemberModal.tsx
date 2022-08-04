@@ -176,7 +176,7 @@ const AddTeamMemberModal = (props: Props) => {
 
   const sendInvitations = () => {
     if (invitees.length === 0) return
-    SendClientSegmentEventMutation(atmosphere, 'Clicked Send Invitation Button', {
+    SendClientSegmentEventMutation(atmosphere, 'Send Invitation Button Clicked', {
       viewerId: atmosphere.viewerId,
       teamId
     })

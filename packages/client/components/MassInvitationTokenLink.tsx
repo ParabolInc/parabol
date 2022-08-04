@@ -81,7 +81,7 @@ const MassInvitationTokenLink = (props: Props) => {
 
   const {viewerId} = atmosphere
   const handleCopy = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Copied Team Invite Link', {
+    SendClientSegmentEventMutation(atmosphere, 'Team Invite Link Copied', {
       viewerId,
       teamId
     })
