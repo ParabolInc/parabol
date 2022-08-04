@@ -6,7 +6,6 @@ const S3Plugin = require('webpack-s3-plugin')
 const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
-const TerserPlugin = require('terser-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -56,22 +55,7 @@ module.exports = ({isDeploy}) => ({
   },
   target: 'node',
   optimization: {
-    minimize: Boolean(isDeploy),
-    minimizer: [
-      new TerserPlugin({
-        parallel: isDeploy ? 1 : true,
-        terserOptions: {
-          output: {
-            comments: false,
-            ecma: 6
-          },
-          compress: {
-            ecma: 6
-          }
-          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-        }
-      })
-    ]
+    minimize: false
   },
   plugins: [
 
@@ -86,10 +70,10 @@ module.exports = ({isDeploy}) => ({
     new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
     // native bindings might be faster, but abandonware & not currently used
     new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
-    // new webpack.SourceMapDevToolPlugin({
-    //   filename: '[name]_[contenthash].js.map',
-    //   append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
-    // }),
+    new webpack.SourceMapDevToolPlugin({
+      filename: '[name]_[contenthash].js.map',
+      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
+    }),
     isDeploy &&
       new S3Plugin({
         s3Options: {
