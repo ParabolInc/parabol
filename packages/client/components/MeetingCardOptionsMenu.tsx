@@ -4,6 +4,7 @@ import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
@@ -65,6 +66,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const canEndMeeting = meetingType === 'teamPrompt'
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const {history} = useRouter()
 
   const {closePortal} = menuProps
   return (
@@ -96,7 +98,11 @@ const MeetingCardOptionsMenu = (props: Props) => {
           onClick={() => {
             popTooltip()
             closePortal()
-            EndMeetingMutationLookup[meetingType]?.(atmosphere, {meetingId}, {onError, onCompleted})
+            EndMeetingMutationLookup[meetingType]?.(
+              atmosphere,
+              {meetingId},
+              {onError, onCompleted, history}
+            )
           }}
         />
       )}

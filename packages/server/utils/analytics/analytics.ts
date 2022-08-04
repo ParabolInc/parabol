@@ -7,7 +7,7 @@ import {IntegrationProviderServiceEnumType} from '../../graphql/types/Integratio
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {AnyMeeting, MeetingTypeEnum} from '../../postgres/types/Meeting'
 import segment from '../segmentIo'
-import {createMeetingTemplateAnalyticsParams} from './helpers'
+import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
 export type OrgTierChangeEventProperties = {
@@ -61,7 +61,7 @@ class Analytics {
     )
     meetingMembers.forEach((meetingMember) => {
       const plaintextResponseContent = userIdsResponses[meetingMember.userId]
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, {
+      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, undefined, {
         responseAdded: !!plaintextResponseContent
       })
     })
@@ -79,12 +79,7 @@ class Analytics {
     template: MeetingTemplate
   ) => {
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(
-        meetingMember.userId,
-        completedMeeting,
-        meetingMembers,
-        createMeetingTemplateAnalyticsParams(template)
-      )
+      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, template)
     )
   }
 
@@ -94,12 +89,7 @@ class Analytics {
     template: MeetingTemplate
   ) => {
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(
-        meetingMember.userId,
-        completedMeeting,
-        meetingMembers,
-        createMeetingTemplateAnalyticsParams(template)
-      )
+      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, template)
     )
   }
 
@@ -107,23 +97,22 @@ class Analytics {
     userId: string,
     completedMeeting: Meeting,
     meetingMembers: MeetingMember[],
+    template?: MeetingTemplate,
     meetingSpecificProperties?: any
   ) => {
-    const {facilitatorUserId, meetingNumber, meetingType, phases, teamId} = completedMeeting
-    const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
-    const wasFacilitator = userId === facilitatorUserId
     this.track(userId, 'Meeting Completed', {
-      hasIcebreaker: phases[0]?.phaseType === 'checkin',
-      // include wasFacilitator as a flag to handle 1 per meeting
-      wasFacilitator,
-      userIds: wasFacilitator ? presentMemberUserIds : undefined,
-      meetingType,
-      meetingNumber,
-      teamMembersCount: meetingMembers.length, // TODO: use team members count
-      teamMembersPresentCount: meetingMembers.length,
-      teamId,
+      wasFacilitator: completedMeeting.facilitatorUserId === userId,
+      ...createMeetingProperties(completedMeeting, meetingMembers, template),
       ...meetingSpecificProperties
     })
+  }
+
+  meetingStarted = (userId: string, meeting: Meeting, template?: MeetingTemplate) => {
+    this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
+  }
+
+  meetingJoined = (userId: string, meeting: Meeting) => {
+    this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
   }
 
   commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {

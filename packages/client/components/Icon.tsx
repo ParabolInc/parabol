@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
+import React from 'react'
 import {ICON_SIZE} from '../styles/typographyV2'
 
-const Icon = styled('i')({
+const StyledIcon = styled('i')({
   flexShrink: 0,
   fontFamily: 'Material Icons',
   fontWeight: 'normal',
@@ -24,5 +25,11 @@ const Icon = styled('i')({
   // Support for IE
   fontFeatureSettings: 'liga'
 })
+
+const Icon = (props: Parameters<typeof StyledIcon>[0]) => {
+  // add notranslate class so it's skipped by Chrome translate website
+  const className = `notranslate ${props.className ?? ''}`
+  return <StyledIcon {...props} className={className} />
+}
 
 export default Icon

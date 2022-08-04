@@ -1,25 +1,27 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {mod} from 'react-swipeable-views-core'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import useUsageSnackNag from '~/hooks/useUsageSnackNag'
+import StartCheckInMutation from '~/mutations/StartCheckInMutation'
+import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
+import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
+import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import {NonEmptyArray} from '~/types/generics'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
 import {Elevation} from '../styles/elevation'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, Radius} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
 import FlatButton from './FlatButton'
 import IconLabel from './IconLabel'
 import NewMeetingActions from './NewMeetingActions'
-import NewMeetingHowTo from './NewMeetingHowTo'
-import NewMeetingIllustration from './NewMeetingIllustration'
-import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
+import NewMeetingCarousel from './NewMeetingCarousel'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
 
@@ -29,20 +31,14 @@ interface Props {
   onClose: () => void
 }
 
-const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
-
-const IllustrationAndSelector = styled('div')<{isDesktop}>(({isDesktop}) => ({
-  gridArea: 'picker',
-  width: '100%',
-  paddingBottom: isDesktop ? 0 : 32
-}))
+const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
 
 const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   gridArea: 'settings',
-  marginTop: isDesktop ? 32 : undefined,
+  marginTop: isDesktop ? 32 : 16,
   minHeight: 166
 }))
 
@@ -51,10 +47,13 @@ const TeamAndSettingsInner = styled('div')({
   boxShadow: Elevation.Z1
 })
 
-const NewMeetingDialog = styled(DialogContainer)({
+const NewMeetingDialog = styled(DialogContainer)<{isDesktop}>(({isDesktop}) => ({
   width: '800px',
-  maxHeight: 'unset'
-})
+  borderRadius: isDesktop ? Radius.FIELD : 0,
+  minWidth: isDesktop ? 'unset' : '100vw',
+  maxHeight: isDesktop ? 'unset' : '100vh',
+  minHeight: isDesktop ? 'unset' : '100vh'
+}))
 
 const Title = styled(DialogTitle)({
   fontSize: 24,
@@ -62,55 +61,33 @@ const Title = styled(DialogTitle)({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingBottom: 24
+  padding: '16px 16px 16px 24px',
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    padding: '8px 8px 8px 16px'
+  }
 })
 
 const CloseButton = styled(FlatButton)({
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  color: PALETTE.SLATE_600,
-  padding: 0
+  padding: 8,
+  color: PALETTE.SLATE_600
 })
 
-const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
-  {
-    alignItems: 'flex-start',
-    justifyItems: 'center',
-    margin: '0 auto auto',
-    [MEDIA_QUERY_VERTICAL_CENTERING]: {
-      marginTop: 'auto'
-    }
-  },
-  ({isDesktop}) =>
-    isDesktop && {
-      display: 'grid',
-      gridTemplateAreas: `'picker howto' 'settings actions'`,
-      gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
-      gridTemplateRows: 'auto 3fr',
-      height: '100%',
-      margin: 'auto',
-      maxHeight: 640,
-      maxWidth: 1400,
-      padding: '0 64px 16px 64px'
-    }
-)
+const NewMeetingInner = styled('div')({
+  height: '100%',
+  maxHeight: 640,
+  maxWidth: 1400,
+  padding: 0,
 
-const createMeetingOrder = ({standups}: {standups: boolean}) => {
-  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['poker', 'retrospective', 'action']
-
-  if (standups) {
-    meetingOrder.push('teamPrompt')
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    display: 'block',
+    padding: 0
   }
-
-  return meetingOrder
-}
+})
 
 const query = graphql`
   query NewMeetingQuery {
     viewer {
       featureFlags {
-        standups
         insights
       }
       teams {
@@ -135,12 +112,17 @@ const NewMeeting = (props: Props) => {
   const {viewer} = data
   const {teams, featureFlags} = viewer
   const {insights} = featureFlags
-  const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
+  const [meetingOrder, setMeetingOrder] = useState<MeetingTypeEnum[]>([
+    'retrospective',
+    'teamPrompt',
+    'poker',
+    'action'
+  ])
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
   useUsageSnackNag(insights)
-  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
+  const meetingType = meetingOrder[idx] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {
@@ -155,24 +137,44 @@ const NewMeeting = (props: Props) => {
   useEffect(() => {
     if (!selectedTeam) return
     const {lastMeetingType} = selectedTeam
-    const meetingIdx = newMeetingOrder.indexOf(lastMeetingType)
-    setIdx(meetingIdx)
+    const meetingIdx = meetingOrder.indexOf(lastMeetingType)
+    const newMeetingOrder = [...meetingOrder]
+    const firstMeeting = newMeetingOrder.splice(meetingIdx, 1)[0] as MeetingTypeEnum
+    newMeetingOrder.unshift(firstMeeting)
+    setMeetingOrder(newMeetingOrder)
   }, [])
+  const {submitMutation, error, submitting, onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const onStartMeetingClick = () => {
+    if (submitting || !selectedTeam) return
+    submitMutation()
+    const {id: teamId} = selectedTeam
+    if (meetingType === 'poker') {
+      StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'action') {
+      StartCheckInMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'retrospective') {
+      StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'teamPrompt') {
+      StartTeamPromptMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    }
+  }
   if (!teamId || !selectedTeam) return null
   return (
-    <NewMeetingDialog>
+    <NewMeetingDialog isDesktop={isDesktop}>
       <Title>
         New meeting
         <CloseButton onClick={onClose}>
           <IconLabel icon='close' iconLarge />
         </CloseButton>
       </Title>
-      <NewMeetingInner isDesktop={isDesktop}>
-        <IllustrationAndSelector isDesktop={isDesktop}>
-          <NewMeetingIllustration idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
-          <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
-        </IllustrationAndSelector>
-        <NewMeetingHowTo meetingType={meetingType} />
+      <NewMeetingInner>
+        <NewMeetingCarousel
+          idx={idx}
+          setIdx={setIdx}
+          meetingOrder={meetingOrder}
+          onStartMeetingClick={onStartMeetingClick}
+        />
         <TeamAndSettings isDesktop={isDesktop}>
           <TeamAndSettingsInner>
             <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
@@ -180,7 +182,12 @@ const NewMeeting = (props: Props) => {
           </TeamAndSettingsInner>
         </TeamAndSettings>
       </NewMeetingInner>
-      <NewMeetingActions team={selectedTeam} meetingType={meetingType} onClose={onClose} />
+      <NewMeetingActions
+        teamRef={selectedTeam}
+        onStartMeetingClick={onStartMeetingClick}
+        submitting={submitting}
+        error={error}
+      />
     </NewMeetingDialog>
   )
 }
