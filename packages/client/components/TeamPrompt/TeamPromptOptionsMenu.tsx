@@ -7,6 +7,7 @@ import {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
+import StartRecurrenceMutation from '~/mutations/StartRecurrenceMutation'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import {PALETTE} from '../../styles/paletteV3'
@@ -38,19 +39,44 @@ const TeamPromptOptionsMenu = (props: Props) => {
     graphql`
       fragment TeamPromptOptionsMenu_meeting on TeamPromptMeeting {
         id
+        meetingSeriesId
         endedAt
+        viewerMeetingMember {
+          user {
+            featureFlags {
+              recurrence
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, endedAt} = meeting
+  const {id: meetingId, meetingSeriesId, endedAt, viewerMeetingMember} = meeting
+  const recurrence = viewerMeetingMember?.user.featureFlags.recurrence
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+      {recurrence && (
+        <MenuItem
+          key='copy'
+          isDisabled={!!endedAt || !!meetingSeriesId}
+          label={
+            <OptionMenuItem>
+              <StyledIcon>replay</StyledIcon>
+              <span>{'Repeat M-F'}</span>
+            </OptionMenuItem>
+          }
+          onClick={() => {
+            menuProps.closePortal()
+            StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+          }}
+        />
+      )}
       <MenuItem
         key='copy'
         isDisabled={!!endedAt}
