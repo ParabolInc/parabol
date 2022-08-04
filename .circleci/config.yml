@@ -90,7 +90,7 @@ jobs:
             yarn postdeploy
       - run:
           name: Start Testing Server
-          command: yarn start || true
+          command: apt-get update && apt-get install -y libvips-dev --no-install-recommends && yarn start || true
           background: true
       - run:
           name: Wait for testing server to be healthy
