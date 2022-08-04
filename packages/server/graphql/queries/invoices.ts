@@ -58,7 +58,7 @@ export default {
     const extraInvoices: Invoice[] = tooManyInvoices || []
     const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice
-      ? [upcomingInvoice].concat(paginatedInvoices)
+      ? [upcomingInvoice, ...paginatedInvoices]
       : paginatedInvoices
     const nodes = allInvoices.slice(0, first)
     const edges = nodes.map((node) => ({
