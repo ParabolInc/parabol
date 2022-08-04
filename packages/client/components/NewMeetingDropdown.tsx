@@ -5,7 +5,7 @@ import MenuToggleV2Text from './MenuToggleV2Text'
 
 interface Props {
   className?: string
-  icon?: string
+  icon?: React.ReactElement
   dropdownIcon?: string
   label: string
   disabled?: boolean
