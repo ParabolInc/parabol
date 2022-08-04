@@ -85,7 +85,8 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     userId,
     traits: {
       isActive: true,
-      featureFlags: user.featureFlags
+      featureFlags: user.featureFlags,
+      highestTier: user.tier
     }
   })
   return user
