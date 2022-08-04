@@ -27,7 +27,7 @@ jobs:
       SENTRY_PROJECT: "action-production"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
-      NODE_OPTIONS: "--max-old-space-size=6144"
+      NODE_OPTIONS: "--max-old-space-size=8192"
     working_directory: ~/action
     resource_class: large
     steps:
