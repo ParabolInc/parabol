@@ -1,4 +1,4 @@
-import dayJS from 'dayJS'
+import dayjs from 'dayjs'
 import Stripe from 'stripe'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
@@ -19,12 +19,11 @@ export default async function makeUpcomingInvoice(orgId: string, stripeId?: stri
     return undefined
   }
   const cardSource = sources.data.find((source): source is Stripe.Card => source.object === 'card')
-
   const creditCard = cardSource
     ? {
         brand: cardSource.brand,
         last4: cardSource.last4,
-        expiry: dayJS(`${cardSource.exp_year}-${cardSource.exp_month}-01`).format('MM/YY')
+        expiry: dayjs(`${cardSource.exp_year}-${cardSource.exp_month}-01`).format('MM/YY')
       }
     : undefined
 
