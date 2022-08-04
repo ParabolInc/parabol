@@ -22,12 +22,12 @@ const compile = (config, isSilent) => {
 
 const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  // await generateGraphQLArtifacts()
+  await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
-  // const clientConfig = makeClientConfig({isDeploy})
+  const clientConfig = makeClientConfig({isDeploy})
   if (isDeploy) {
     await compile(serversConfig)
-    // await compile(clientConfig)
+    await compile(clientConfig)
   } else {
     await Promise.all([compile(serversConfig), compile(clientConfig)])
     require('./toolbox/postDeploy.js')

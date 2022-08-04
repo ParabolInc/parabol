@@ -2,6 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
+      # executor machines get more memory, so we run a base image & install node on it
       - image: cimg/base:2022.07
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.10
