@@ -60,6 +60,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {azureDevOps} = integrations
   const provider = azureDevOps?.sharedProviders[0] ?? azureDevOps?.cloudProvider
   const accessToken = azureDevOps?.auth?.accessToken ?? undefined
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   if (!provider) return null
 
@@ -67,7 +68,6 @@ const AzureDevOpsProviderRow = (props: Props) => {
     await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
 
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <>
       <ProviderRow
