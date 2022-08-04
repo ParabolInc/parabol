@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Start Testing Server
           command: |
-            sudo apt-get update && apt-get install -y libvips-dev --no-install-recommends
+            sudo apt-get update && sudo apt-get install -y libvips-dev --no-install-recommends
             yarn start || true
           background: true
       - run:
