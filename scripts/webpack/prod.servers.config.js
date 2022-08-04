@@ -38,8 +38,6 @@ module.exports = ({isDeploy}) => ({
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dist')
   },
-  // all those node_modules make circleCI run out of memory, can remove when we're no on the free tier
-  // parallelism: isDeploy ? 1 : 100,
   resolve: {
     alias: {
       '~': CLIENT_ROOT,
@@ -58,7 +56,6 @@ module.exports = ({isDeploy}) => ({
     minimize: false
   },
   plugins: [
-
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
