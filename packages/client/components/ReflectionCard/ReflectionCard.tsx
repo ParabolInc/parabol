@@ -119,6 +119,7 @@ const ReflectionCard = (props: Props) => {
         localStage {
           isComplete
         }
+        meetingNumber
         phases {
           phaseType
           stages {
@@ -152,8 +153,15 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery, reflectionGroups} =
-    meeting
+  const {
+    localPhase,
+    localStage,
+    meetingNumber,
+    spotlightGroup,
+    phases,
+    spotlightSearchQuery,
+    reflectionGroups
+  } = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -314,9 +322,10 @@ const ReflectionCard = (props: Props) => {
 
   const isGroupPhase = !isComplete && phaseType === 'group'
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
+  const isMeetingNumberLessThanThree = meetingNumber < 3
 
   const shouldAnimate = (() => {
-    if (isGroupPhase && hasNoGroup) {
+    if (isGroupPhase && hasNoGroup && isMeetingNumberLessThanThree) {
       const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
       const isFirst = reflectionId === firstReflection?.id
       const isNotEditing = !firstReflection?.isEditing
