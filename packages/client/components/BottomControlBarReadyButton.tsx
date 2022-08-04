@@ -5,10 +5,11 @@ import React, {ReactNode, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {BottomControlBarReadyButton_meeting$key} from '~/__generated__/BottomControlBarReadyButton_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import isDemoRoute from '../utils/isDemoRoute'
 
 const shake = keyframes`
   20%, 40%, 60% {
-    padding: 12px;
+    padding: 4px 4px 8px;
     overflow: hidden;
     background: #a06bd6;
     color: white;
@@ -34,10 +35,11 @@ const shake = keyframes`
 
 const BottomNavReadyButton = styled('div')<{shouldAnimate?: boolean; delay: number}>(
   ({shouldAnimate, delay}) => {
-    if (!shouldAnimate) return
-
     return {
-      animation: `1s ease-in-out ${delay}s infinite ${shake}`
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      animation: shouldAnimate ? `1s ease-in-out ${delay}s 3 ${shake}` : undefined
     }
   }
 )
@@ -78,6 +80,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
             reflections {
               id
               isEditing
+              isDropping
               isViewerDragging
             }
           }
@@ -112,15 +115,25 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
 
     switch (localPhase.phaseType) {
       case 'reflect':
-        const reflectPrompts = localPhase.reflectPrompts!
-        const beforeDemoStart = reflectPrompts.every((prompts) => !Array.isArray(prompts.editorIds))
-        const hasAnyoneEditing = reflectPrompts.some((prompts) => prompts.editorIds?.length !== 0)
+        const hasNoReflection = reflectionGroups?.every((group) => group.reflections?.length === 0)
+        if (hasNoReflection) return
 
-        setShouldAnimate(!beforeDemoStart && !hasAnyoneEditing)
+        const reflectPrompts = localPhase.reflectPrompts!
+        const beforeDemoStart =
+          isDemoRoute() && reflectPrompts.every(({editorIds}) => !Array.isArray(editorIds))
+        if (beforeDemoStart) return
+
+        const isNotEditing = reflectPrompts.every(({editorIds}) => {
+          return editorIds === undefined || (Array.isArray(editorIds) && editorIds.length === 0)
+        })
+
+        setShouldAnimate(isNotEditing)
         break
       case 'group':
         const isNotDragging = reflectionGroups?.every((group) =>
-          group.reflections.every((reflection) => !reflection.isViewerDragging)
+          group.reflections?.every(
+            (reflection) => !reflection.isViewerDragging && !reflection.isDropping
+          )
         )
 
         setDelaySeconds(30)
@@ -142,6 +155,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
     }
 
     // if the ready button is "full" before these conditions are met, the animation should start after 5s
+    // TODO: replace with props from ButtonControlBarReady
     const activeCount = meetingMembers.length
     const readyCount = localStage.readyCount || 0
     if (readyCount === Math.max(1, activeCount - 1)) {
