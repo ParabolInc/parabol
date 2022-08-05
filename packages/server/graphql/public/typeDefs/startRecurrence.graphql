@@ -1,0 +1,26 @@
+extend type Mutation {
+  """
+  Changes the meeting to be recurring
+  """
+  startRecurrence(
+    """
+    Describe the first arg here
+    """
+    meetingId: ID!
+  ): StartRecurrencePayload!
+}
+
+"""
+Return value for startRecurrence, which could be an error
+"""
+union StartRecurrencePayload = StartRecurrenceSuccess | ErrorPayload
+
+type StartRecurrenceSuccess {
+  """
+  The updated meeting
+  :TODO: (jmtaber129): Change this to be any NewMeeting.
+  """
+  meeting: TeamPromptMeeting!
+}
+
+extend union TeamSubscriptionPayload = StartRecurrenceSuccess

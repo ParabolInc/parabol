@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {InvitationTokenError} from '~/types/constEnums'
+import {InvitationTokenError, LOCKED_MESSAGE} from '~/types/constEnums'
 import {AcceptTeamInvitationMutation_notification} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
 import Atmosphere from '../Atmosphere'
 import {
@@ -144,15 +144,13 @@ export const handleAcceptTeamInvitationErrors = (
 ) => {
   if (acceptTeamInvitation?.error) {
     const {message} = acceptTeamInvitation.error
-    if (message === InvitationTokenError.ALREADY_ACCEPTED) return true
+    if (message === InvitationTokenError.ALREADY_ACCEPTED) return
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 0,
       key: `acceptTeamInvitation:${message}`,
       message
     })
-    return false
   }
-  return true
 }
 
 const AcceptTeamInvitationMutation: StandardMutation<
@@ -180,19 +178,29 @@ const AcceptTeamInvitationMutation: StandardMutation<
       const {authToken, team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
-        if (serverError.message === InvitationTokenError.ALREADY_ACCEPTED) {
+        const message = serverError.message
+        if (message === InvitationTokenError.ALREADY_ACCEPTED) {
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
             history,
             meetingId: locallyRequestedMeetingId
           })
+        } else if (!ignoreApproval) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            autoDismiss: 0,
+            key: `acceptTeamInvitation:${message}`,
+            message,
+            action:
+              message === LOCKED_MESSAGE.TEAM_INVITE
+                ? {
+                    label: 'Contact Sales',
+                    callback: () => window.open('mailto:love@parabol.co?subject=Overdue Payment')
+                  }
+                : undefined
+          })
         }
-        return
+        if (!ignoreApproval) return
       }
-      const isOK = ignoreApproval
-        ? true
-        : handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      if (!isOK) return
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team
