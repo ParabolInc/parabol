@@ -127,6 +127,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
           return editorIds === undefined || (Array.isArray(editorIds) && editorIds.length === 0)
         })
 
+        setDelaySeconds(30)
         setShouldAnimate(isNotEditing)
         break
       case 'group':
