@@ -32,7 +32,7 @@ class AzureDevOpsClientManager {
   static async openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
-    provider: any,
+    provider: {id: string; tenantId: string; clientId: string},
     mutationProps: MenuMutationProps
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
