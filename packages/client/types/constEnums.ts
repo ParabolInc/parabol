@@ -126,6 +126,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   GETTING_STARTED_ASYNC_STANDUP = 'https://www.parabol.co/resources/async-standup-meetings',
+  INTEGRATIONS = 'https://www.parabol.co/integrations',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
