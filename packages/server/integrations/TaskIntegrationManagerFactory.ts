@@ -37,7 +37,8 @@ export interface TaskIntegrationManager {
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    issueId: string
+    issueId: string,
+    integrationHash?: string
   ): Promise<string | Error>
 }
 

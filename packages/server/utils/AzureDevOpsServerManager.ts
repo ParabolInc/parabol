@@ -4,7 +4,6 @@ import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import {TaskIntegrationManager} from 'server/integrations/TaskIntegrationManagerFactory'
 import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import appOrigin from '../appOrigin'
@@ -13,6 +12,10 @@ import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
+import {
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../integrations/TaskIntegrationManagerFactory'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import {getInstanceId} from './azureDevOps/azureDevOpsFieldTypeToId'
@@ -325,7 +328,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }: {
     rawContentStr: string
     integrationRepoId: string
-  }) {
+  }): Promise<CreateTaskResponse> {
     const {title} = splitDraftContent(rawContentStr)
     const {error, projects} = await this.getAllUserProjects()
     if (error) return error
@@ -339,6 +342,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       issueId: String(issueRes.id),
       integration: {
         accessUserId: this.auth!.userId,
+        instanceId,
         service: 'azureDevOps',
         projectKey: project.id,
         issueKey: String(issueRes.id)
@@ -374,8 +378,11 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     issueId: string,
     integrationHash: string
   ): Promise<string | Error> {
-    const {instanceId, projectKey} = IntegrationHash.split('azureDevOps', integrationHash)
-
+    const integration = IntegrationHash.split('azureDevOps', integrationHash)
+    if (!integration?.projectKey || !integration?.issueKey) {
+      return new Error(`Invalid integrationHash: ${integrationHash}`)
+    }
+    const {instanceId, projectKey} = integration
     const comment = makeCreateAzureTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
     const res = await this.post<WorkItemAddCommentResponse>(
       `https://${instanceId}/${projectKey}/_apis/wit/workItems/${issueId}/comments?api-version=7.1-preview.3`,
