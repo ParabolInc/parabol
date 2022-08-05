@@ -1,6 +1,6 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
+import {RDatum, RValue} from '../../../database/stricterR'
 import TeamMember from '../../../database/types/TeamMember'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
@@ -70,7 +70,7 @@ const Company: CompanyResolvers = {
         return r
           .table('NewMeeting')
           .getAll(team.id, {index: 'teamId'})
-          .filter((meeting) => meeting('updatedAt').ge(metAfter))
+          .filter((meeting: RDatum) => meeting('updatedAt').ge(metAfter))
           .limit(1)
           .nth(0)('updatedAt')
           .default(null)
@@ -201,7 +201,7 @@ const Company: CompanyResolvers = {
       r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('endedAt').default(null).ne(null))
+        .filter((row: RDatum) => row('endedAt').default(null).ne(null))
         // number of months since unix epoch
         .merge((row: RValue) => ({
           epochMonth: row('endedAt').month().add(row('endedAt').year().mul(12))

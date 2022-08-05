@@ -19,6 +19,7 @@ declare module '*getProjectRoot'
 declare module 'tayden-clusterfck'
 declare module 'unicode-substring'
 declare module 'json2csv/lib/JSON2CSVParser'
+declare module 'object-hash'
 
 declare const __PROJECT_ROOT__: string
 declare const __PRODUCTION__: string

@@ -18,7 +18,7 @@ export default function StubStripeManager() {
           } as unknown as Stripe.Subscription
         }
       }
-      return target[propKey]
+      return target[propKey as keyof typeof target]
     }
   })
 }

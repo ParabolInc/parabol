@@ -1,4 +1,4 @@
-const dontTellDraft = (e) => {
+const dontTellDraft = (e: React.MouseEvent) => {
   e.preventDefault()
   // e.stopPropagation();
 }

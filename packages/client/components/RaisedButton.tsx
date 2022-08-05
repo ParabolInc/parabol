@@ -1,9 +1,9 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
+import React, {forwardRef, Ref} from 'react'
+import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'
 import BaseButton, {BaseButtonProps} from './BaseButton'
-import {Elevation} from '../styles/elevation'
 
 const paletteColors = {
   gray: PALETTE.SLATE_200,
@@ -13,12 +13,12 @@ const paletteColors = {
   dark: PALETTE.SLATE_700,
   blue: PALETTE.SKY_500,
   white: '#FFFFFF'
-}
+} as const
 
 const buttonLightThemes = ['white', 'gray']
 
 const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
-  const backgroundColor = paletteColors[palette]
+  const backgroundColor = paletteColors[palette as keyof typeof paletteColors]
   const color = buttonLightThemes.includes(palette) ? PALETTE.SLATE_700 : '#FFFFFF'
   return {
     backgroundColor,

@@ -252,7 +252,7 @@ const setTaskEstimate = {
           return {error: {message: res.message}}
         }
       } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        const fieldId = fieldTypeToId[azureDevOpsWorkItem.type]
+        const fieldId = fieldTypeToId[azureDevOpsWorkItem.type as keyof typeof fieldTypeToId]
         try {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
           await manager.addScoreField(instanceId, fieldId, updatedStoryPoints, issueKey, projectKey)

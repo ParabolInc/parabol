@@ -115,7 +115,13 @@ class Analytics {
     this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
   }
 
-  commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {
+  commentAdded = (
+    userId: string,
+    meeting: Meeting,
+    isAnonymous: boolean,
+    isAsync: boolean,
+    isReply: boolean
+  ) => {
     this.track(userId, 'Comment Added', {
       meetingId: meeting.id,
       meetingType: meeting.meetingType,

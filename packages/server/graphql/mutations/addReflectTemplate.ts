@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -75,7 +76,7 @@ const addReflectTemplate = {
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .filter({type: 'retrospective'})
-        .filter((row) => row('name').match(`^${copyName}`) as any)
+        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
         .count()
         .run()
       const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`

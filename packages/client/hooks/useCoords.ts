@@ -24,7 +24,10 @@ export enum MenuPosition {
   LOWER_CENTER
 }
 
-const getOffset = (orientation, fullWidth) => {
+const getOffset = (
+  orientation: 'center' | 'top' | 'bottom' | 'right' | 'left',
+  fullWidth: number
+) => {
   if (orientation === 'center') {
     return fullWidth / 2
   } else if (orientation === 'right' || orientation === 'bottom') {
@@ -94,12 +97,12 @@ const anchorLookup = {
       vertical: 'top'
     }
   }
-}
+} as const
 
 const lowerLookup = {
   [MenuPosition.UPPER_LEFT]: MenuPosition.LOWER_LEFT,
   [MenuPosition.UPPER_RIGHT]: MenuPosition.LOWER_RIGHT
-}
+} as const
 
 const MENU_PADDING = 4
 
@@ -134,7 +137,9 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition
     }
   }
   const menuPosition =
-    (nextCoords.top === undefined && lowerLookup[preferredMenuPosition]) || preferredMenuPosition
+    (nextCoords.top === undefined &&
+      lowerLookup[preferredMenuPosition as keyof typeof lowerLookup]) ||
+    preferredMenuPosition
   // if by choice or circumstance, put it above & anchor it from the bottom
   if (nextCoords.top === undefined) {
     const bottom = innerHeight - originTop - scrollY

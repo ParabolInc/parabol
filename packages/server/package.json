@@ -92,6 +92,7 @@
     "@pgtyped/query": "^0.11.0",
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
+    "@types/node-fetch": "^2.6.2",
     "abort-controller": "^3.0.0",
     "adaptivecards": "^2.10.0",
     "analytics-node": "^5.0.0",
