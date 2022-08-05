@@ -43,9 +43,12 @@ const AddToAzureMenuItem = forwardRef((props: Props, ref) => {
   )
   const {cloudProvider} = azure
   if (!cloudProvider) return null
+
   const onClick = () => {
+    if (!cloudProvider.tenantId) return
     AzureDevOpsClientManager.openOAuth(atmosphere, teamId, cloudProvider, mutationProps)
   }
+
   return (
     <MenuItem
       ref={ref}

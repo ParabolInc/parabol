@@ -32,16 +32,17 @@ class AzureDevOpsClientManager {
   static async openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
-    provider: {id: string; tenantId: string; clientId: string},
+    provider: {id: string; tenantId: string | null; clientId: string},
     mutationProps: MenuMutationProps
   ) {
+    const {id: providerId, tenantId, clientId} = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
     const verifier = AzureDevOpsClientManager.generateVerifier()
     const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
     const redirect = makeHref('/auth/ado')
     const scope = '499b84ac-1321-427f-aa17-267ca6975798/.default'
-    const url = `https://login.microsoftonline.com/${provider.tenantId}/oauth2/v2.0/authorize?client_id=${provider.clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=${scope}&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
+    const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=${scope}&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
 
     // Open synchronously because of Safari
     const popup = window.open(
@@ -65,7 +66,7 @@ class AzureDevOpsClientManager {
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
         {
-          providerId: provider.id,
+          providerId,
           oauthCodeOrPat: code,
           oauthVerifier: verifier,
           redirectUri: redirect,
