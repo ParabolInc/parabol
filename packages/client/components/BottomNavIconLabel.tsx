@@ -3,7 +3,7 @@ import React, {forwardRef, ReactNode, Ref} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import Icon from './Icon'
 
-export const paletteColors = {
+const paletteColors = {
   warm: PALETTE.ROSE_500,
   midGray: PALETTE.SLATE_600,
   red: PALETTE.TOMATO_600,
