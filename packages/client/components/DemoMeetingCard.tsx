@@ -105,12 +105,9 @@ const TopLine = styled('div')({
 const DemoMeetingCard = () => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
-  const {viewerId} = atmospehere
 
   const onOpen = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Demo Meeting Card Clicked', {
-      viewerId
-    })
+    SendClientSegmentEventMutation(atmospehere, 'Demo Meeting Card Clicked')
   }, [])
 
   return (

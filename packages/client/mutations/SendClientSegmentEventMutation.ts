@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {getRequest} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
+import {SegmentEventTrackOptions} from '../__generated__/SendClientSegmentEventMutation.graphql'
 
 const mutation = graphql`
   mutation SendClientSegmentEventMutation($event: String!, $options: SegmentEventTrackOptions) {
@@ -8,10 +9,9 @@ const mutation = graphql`
   }
 `
 
-interface Options {
+type Options = {
   eventId?: number
-  [key: string]: any
-}
+} & SegmentEventTrackOptions
 
 const SendClientSegmentEventMutation = (
   atmosphere: Atmosphere,

@@ -45,7 +45,6 @@ interface Props {
 const ScopingSearchInput = (props: Props) => {
   const {placeholder, queryString, meetingId, linkedRecordName, defaultInput, service} = props
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
 
@@ -66,7 +65,6 @@ const ScopingSearchInput = (props: Props) => {
 
   const trackEvent = (eventTitle: string) => {
     SendClientSegmentEventMutation(atmosphere, eventTitle, {
-      viewerId,
       meetingId,
       service
     })

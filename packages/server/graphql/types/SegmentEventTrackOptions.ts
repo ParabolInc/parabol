@@ -21,7 +21,6 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     spotlightSearchQuery: {type: GraphQLString},
     meetingId: {type: GraphQLID},
     reflectionId: {type: GraphQLID},
-    viewerId: {type: GraphQLID},
     reflectionsCount: {type: GraphQLInt},
     action: {type: GraphQLString},
     searchQueryString: {type: GraphQLString},
