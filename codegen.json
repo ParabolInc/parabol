@@ -43,6 +43,7 @@
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "StartRecurrenceSuccess": "./types/StartRecurrenceSuccess#StartRecurrenceSuccessSource",
+          "StopRecurrenceSuccess": "./types/StopRecurrenceSuccess#StopRecurrenceSuccessSource",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
