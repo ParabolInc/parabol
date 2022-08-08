@@ -69,7 +69,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
       {recurrence && (
         <MenuItem
           key='copy'
-          isDisabled={!!endedAt || !!meetingSeries?.cancelledAt}
+          isDisabled={!!endedAt}
           label={
             <OptionMenuItem>
               <StyledIcon>replay</StyledIcon>
@@ -88,7 +88,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         />
       )}
       <MenuItem
-        key='end'
+        key='copy'
         isDisabled={!!endedAt}
         label={
           <OptionMenuItem>
