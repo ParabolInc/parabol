@@ -42,9 +42,10 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
 
   await r
     .table('NewMeeting')
-    .filter({meetingSeriesId: meetingSeries.id, endedAt: null})
+    .filter({meetingSeriesId: meetingSeries.id})
+    .filter({endedAt: null}, {default: true})
     .update({
-      scheduledEndTime: undefined
+      scheduledEndTime: null
     })
     .run()
 

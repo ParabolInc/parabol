@@ -33,7 +33,7 @@ export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
   meetingPrompt: string
   meetingSeriesId?: number
-  scheduledEndTime?: Date
+  scheduledEndTime?: Date | null | undefined
 
   constructor(input: Input) {
     const {
