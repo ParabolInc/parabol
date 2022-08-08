@@ -107,8 +107,16 @@ class Analytics {
     })
   }
 
-  meetingStarted = (userId: string, meeting: Meeting, template?: MeetingTemplate) => {
-    this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
+  meetingStarted = (
+    userId: string,
+    meeting: Meeting,
+    template?: MeetingTemplate,
+    isRecurring?: boolean
+  ) => {
+    this.track(userId, 'Meeting Started', {
+      isRecurring: isRecurring,
+      ...createMeetingProperties(meeting, undefined, template)
+    })
   }
 
   meetingJoined = (userId: string, meeting: Meeting) => {

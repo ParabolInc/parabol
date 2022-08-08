@@ -54,7 +54,9 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     meetingType: 'teamPrompt',
     title: 'Async Standup',
     recurrenceRule: recurrenceRule.toString(),
-    duration: 24 * 60 // 24 hours
+    duration: 24 * 60, // 24 hours
+    teamId,
+    facilitatorId: viewerId
   })
 
   await r
