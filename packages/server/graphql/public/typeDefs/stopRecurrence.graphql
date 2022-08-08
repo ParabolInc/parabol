@@ -1,10 +1,10 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Stops the recurrence of meeting with given ID
   """
   stopRecurrence(
     """
-    Describe the first arg here
+    ID of the meeting to stop recurrence for
     """
     meetingId: ID!
   ): StopRecurrencePayload!
@@ -18,7 +18,7 @@ union StopRecurrencePayload = ErrorPayload | StopRecurrenceSuccess
 type StopRecurrenceSuccess {
   """
   The updated meeting
-  :TODO: (jmtaber129): Change this to be any NewMeeting.
+  :TODO: Change this to be any NewMeeting.
   """
   meeting: TeamPromptMeeting!
 }
