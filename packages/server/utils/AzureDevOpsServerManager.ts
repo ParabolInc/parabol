@@ -213,7 +213,7 @@ interface WorkItemAddFieldResponse {
 const MAX_REQUEST_TIME = 8000
 
 class AzureDevOpsServerManager implements TaskIntegrationManager {
-  public title = 'GitLab'
+  public title = 'AzureDevOps'
   accessToken = ''
   private headers = {
     Authorization: '',
