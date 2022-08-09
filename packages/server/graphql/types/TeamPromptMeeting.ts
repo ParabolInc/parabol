@@ -1,7 +1,9 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import getRethink from '../../database/rethinkDriver'
 import {getTeamPromptResponsesByMeetingId} from '../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {getUserId} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import TeamPromptMeetingMember from './TeamPromptMeetingMember'
@@ -40,6 +42,58 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember || null
+      }
+    },
+    responseCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of responses generated in the meeting',
+      resolve: async ({id: meetingId}) => {
+        return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
+          (response) => !!response.plaintextContent
+        ).length
+      }
+    },
+    taskCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of tasks generated in the meeting',
+      resolve: async ({id: meetingId}, _args: unknown, {dataLoader}: GQLContext) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        if (meeting.meetingType !== 'teamPrompt') {
+          return 0
+        }
+        const {phases} = meeting
+        const discussPhase = getPhase(phases, 'RESPONSES')
+        const {stages} = discussPhase
+        const discussionIds = stages.map((stage) => stage.discussionId)
+        const r = await getRethink()
+        return r
+          .table('Task')
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
+          .count()
+          .default(0)
+          .run()
+      }
+    },
+    commentCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of comments generated in the meeting',
+      resolve: async ({id: meetingId}, _args: unknown, {dataLoader}: GQLContext) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        if (meeting.meetingType !== 'teamPrompt') {
+          return 0
+        }
+        const {phases} = meeting
+        const discussPhase = getPhase(phases, 'RESPONSES')
+        const {stages} = discussPhase
+        const discussionIds = stages.map((stage) => stage.discussionId)
+        const r = await getRethink()
+        return r
+          .table('Comment')
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
+          .filter({isActive: true})
+          .count()
+          .default(0)
+          .run()
       }
     }
   })

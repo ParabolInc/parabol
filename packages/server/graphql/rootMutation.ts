@@ -47,7 +47,6 @@ import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import endTeamPrompt from './mutations/endTeamPrompt'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
-import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
@@ -187,7 +186,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       endDraggingReflection,
       endRetrospective,
       flagReadyToAdvance,
-      inactivateUser,
       invalidateSessions,
       inviteToTeam,
       loginWithPassword,

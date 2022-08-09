@@ -6,6 +6,7 @@ enum UserFlagEnum {
   azureDevOps
   msTeams
   insights
+  recurrence
 }
 
 """
@@ -16,6 +17,7 @@ type UserFeatureFlags {
   azureDevOps: Boolean!
   msTeams: Boolean!
   insights: Boolean!
+  recurrence: Boolean!
 }
 
 extend type Mutation {

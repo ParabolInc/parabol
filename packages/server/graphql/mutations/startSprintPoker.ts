@@ -11,6 +11,7 @@ import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTem
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
@@ -21,7 +22,6 @@ import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
-import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -166,7 +166,7 @@ export default {
       updateTeamByTeamId(updates, teamId)
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    sendMeetingStartToSegment(meeting, template)
+    analytics.meetingStarted(viewerId, meeting, template)
     const data = {teamId, meetingId: meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)
     return data

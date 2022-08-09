@@ -76,7 +76,7 @@ const BACKGROUND_COLORS = {
   retrospective: PALETTE.GRAPE_500,
   action: PALETTE.AQUA_400,
   poker: PALETTE.TOMATO_400,
-  teamPrompt: PALETTE.JADE_300
+  teamPrompt: PALETTE.JADE_400
 }
 const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
   ({meetingType}) => ({
@@ -150,7 +150,7 @@ const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-In',
   poker: 'Sprint Poker',
-  teamPrompt: 'Async Standup'
+  teamPrompt: 'Standup'
 }
 
 const MeetingCard = (props: Props) => {

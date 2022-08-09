@@ -1941,7 +1941,9 @@ type TeamMemberIntegrations {
   """
   slack: SlackIntegration
 
-  """All things associated with a A integration for a team member"""
+  """
+  All things associated with a A integration for a team member
+  """
   azureDevOps: AzureDevOpsIntegration!
 }
 
@@ -2783,15 +2785,23 @@ enum SlackNotificationEventTypeEnum {
   member
 }
 
-"""The Azure DevOps auth + integration helpers for a specific team member"""
+"""
+The Azure DevOps auth + integration helpers for a specific team member
+"""
 type AzureDevOpsIntegration {
-  """The OAuth2 Authorization for this team member"""
+  """
+  The OAuth2 Authorization for this team member
+  """
   auth: TeamMemberIntegrationAuthOAuth2
 
-  """Composite key in ado:teamId:userId format"""
+  """
+  Composite key in ado:teamId:userId format
+  """
   id: ID!
 
-  """true if the auth is valid, else false"""
+  """
+  true if the auth is valid, else false
+  """
   isActive: Boolean!
 
   """
@@ -2799,44 +2809,65 @@ type AzureDevOpsIntegration {
   """
   accessToken: ID
 
-  """The Azure DevOps account ID"""
+  """
+  The Azure DevOps account ID
+  """
   accountId: ID!
 
-  """The Azure DevOps instance IDs that the user has granted"""
+  """
+  The Azure DevOps instance IDs that the user has granted
+  """
   instanceIds: [ID!]!
 
-  """The timestamp the provider was created"""
+  """
+  The timestamp the provider was created
+  """
   createdAt: DateTime!
 
-  """The team that the token is linked to"""
+  """
+  The team that the token is linked to
+  """
   teamId: ID!
 
-  """The timestamp the token was updated at"""
+  """
+  The timestamp the token was updated at
+  """
   updatedAt: DateTime!
 
-  """The user that the access token is attached to"""
+  """
+  The user that the access token is attached to
+  """
   userId: ID!
-
 
   """
   The cloud provider the team member may choose to integrate with. Nullable based on env vars
   """
   cloudProvider: IntegrationProviderOAuth2
 
-  """The non-global providers shared with the team or organization"""
+  """
+  The non-global providers shared with the team or organization
+  """
   sharedProviders: [IntegrationProviderOAuth2!]!
 }
 
-"""The Azure DevOps Issue that comes direct from Azure DevOps"""
+"""
+The Azure DevOps Issue that comes direct from Azure DevOps
+"""
 type AzureDevOpsWorkItem {
-  """GUID instanceId:issueKey"""
+  """
+  GUID instanceId:issueKey
+  """
   id: ID!
 
-  """URL to the issue"""
+  """
+  URL to the issue
+  """
   url: String!
 }
 
-"""All the user details for a specific meeting"""
+"""
+All the user details for a specific meeting
+"""
 interface MeetingMember {
   """
   A composite of userId::meetingId
@@ -3932,8 +3963,15 @@ type UserFeatureFlags {
   """
   gitlab: Boolean!
 
-  """true if azuredevops is allowed"""
+  """
+  true if azuredevops is allowed
+  """
   azureDevOps: Boolean!
+
+  """
+  true if recurrence is allowed
+  """
+  recurrence: Boolean!
 }
 
 """
