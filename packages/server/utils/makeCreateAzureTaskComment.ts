@@ -6,10 +6,7 @@ const makeCreateAzureTaskComment = (
   teamName: string,
   teamDashboardUrl: string
 ) => {
-  const sanitizedCreator = creator.replace(/#(\d+)/g, '#​\u200b$1')
-  const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
-
-  return `<div>Created by ${sanitizedCreator} for ${sanitizedAssignee}</div>
+  return `<div>Created by ${creator} for ${assignee}</div>
 
   <br>
 

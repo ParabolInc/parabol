@@ -552,7 +552,6 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         teamProjectReferences.push(...accountProjects)
       }
     }
-    console.log('🚀 ~ teamProjectReferences', teamProjectReferences)
     return {error: undefined, projects: teamProjectReferences}
   }
 
