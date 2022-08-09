@@ -5,6 +5,7 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
+import updateMeetingSeries from '../../../postgres/queries/updateMeetingSeries'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -38,7 +39,27 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   }
 
   if (meeting.meetingSeriesId) {
-    return standardError(new Error('Meeting already has meeting series'), {userId: viewerId})
+    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
+    if (!meetingSeries.cancelledAt) {
+      return standardError(new Error('Meeting is already recurring'), {userId: viewerId})
+    }
+
+    // meeting has stopped recurrence associated with it, reenable it
+    await updateMeetingSeries({cancelledAt: null}, meeting.meetingSeriesId)
+    dataLoader.get('meetingSeries').clear(meeting.meetingSeriesId)
+
+    // TODO: what's the right time to close all the open meetings in the series?
+    // for now, let's set all the meetings to close in 24h
+    await r
+      .table('NewMeeting')
+      .filter({meetingSeriesId: meetingSeries.id})
+      .filter({endedAt: null}, {default: true})
+      .update({
+        scheduledEndTime: new Date(Date.now() + ms('24h'))
+      })
+      .run()
+
+    return {meetingId}
   }
 
   // Next meeting start is tomorrow at 9a UTC

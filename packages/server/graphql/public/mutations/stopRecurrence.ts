@@ -18,7 +18,7 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
-
+ 
   const {teamId, meetingType, meetingSeriesId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
