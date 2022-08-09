@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -166,10 +167,15 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           )
         }
         if (__typename === 'AzureDevOpsRemoteProject') {
-          const {name} = repoIntegration
+          const {name, id: projectId, instanceId} = repoIntegration
           const onClick = () => {
+            const integrationRepoId = IntegrationRepoId.join({
+              instanceId,
+              projectId,
+              service: 'azureDevOps'
+            })
             const variables = {
-              integrationRepoId: name,
+              integrationRepoId,
               taskId,
               integrationProviderService: 'azureDevOps' as const
             }
@@ -212,7 +218,9 @@ graphql`
       fullPath
     }
     ... on AzureDevOpsRemoteProject {
+      id
       name
+      instanceId
     }
     ... on JiraServerRemoteProject {
       name

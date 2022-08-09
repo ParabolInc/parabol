@@ -6,6 +6,7 @@ import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
+import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
@@ -18,7 +19,6 @@ import {
 } from '../integrations/TaskIntegrationManagerFactory'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import {getInstanceId} from './azureDevOps/azureDevOpsFieldTypeToId'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 
 export interface AzureDevOpsUser {
@@ -330,21 +330,17 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
     const {title} = splitDraftContent(rawContentStr)
-    const {error, projects} = await this.getAllUserProjects()
-    if (error) return error
-    const project = projects?.find((project) => project.name === integrationRepoId)
-    if (!project) throw new Error(`Project ${integrationRepoId} not found`)
-    const instanceId = getInstanceId(new URL(project.url))
-    const issueRes = await this.createIssue({title, instanceId, projectId: project.id})
+    const {instanceId, projectId} = AzureDevOpsProjectId.split(integrationRepoId)
+    const issueRes = await this.createIssue({title, instanceId, projectId})
     if (issueRes instanceof Error) return issueRes
     return {
-      integrationHash: AzureDevOpsIssueId.join(instanceId, project.id, String(issueRes.id)),
+      integrationHash: AzureDevOpsIssueId.join(instanceId, projectId, String(issueRes.id)),
       issueId: String(issueRes.id),
       integration: {
         accessUserId: this.auth!.userId,
         instanceId,
         service: 'azureDevOps',
-        projectKey: project.id,
+        projectKey: projectId,
         issueKey: String(issueRes.id)
       }
     }
@@ -556,6 +552,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         teamProjectReferences.push(...accountProjects)
       }
     }
+    console.log('🚀 ~ teamProjectReferences', teamProjectReferences)
     return {error: undefined, projects: teamProjectReferences}
   }
 
