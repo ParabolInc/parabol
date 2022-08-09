@@ -19,7 +19,7 @@ const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   userSelect: 'none',
   transition: `all 300ms`,
   transform: isOpen ? undefined : `translateX(-${NavSidebar.WIDTH}px)`,
-  width: isOpen ? NavSidebar.WIDTH : '65px'
+  width: isOpen ? NavSidebar.WIDTH : '70px'
 }))
 
 const Contents = styled('div')({

@@ -12,7 +12,7 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   overflow: 'hidden',
   paddingLeft: isOpen ? 5 : 3,
   paddingRight: isOpen ? 5 : 3,
-  width: isOpen ? 145 : 48,
+  width: isOpen ? 155 : 48,
   marginLeft: 10,
   marginTop: 15,
   marginBottom: 15,
@@ -22,7 +22,7 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
 
 const MeetingIcon = styled(Icon)<{isOpen: boolean}>(({isOpen}) => ({
   marginLeft: isOpen ? 2 : 8,
-  marginRight: isOpen ? 5 : 8,
+  marginRight: isOpen ? 12 : 8,
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
