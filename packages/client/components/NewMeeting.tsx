@@ -48,7 +48,7 @@ const TeamAndSettingsInner = styled('div')({
 })
 
 const NewMeetingDialog = styled(DialogContainer)<{isDesktop}>(({isDesktop}) => ({
-  width: '800px',
+  width: '860px',
   borderRadius: isDesktop ? Radius.FIELD : 0,
   minWidth: isDesktop ? 'unset' : '100vw',
   maxHeight: isDesktop ? 'unset' : '100vh',
