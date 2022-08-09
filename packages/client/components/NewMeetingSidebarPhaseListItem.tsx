@@ -41,7 +41,6 @@ const navListItemLinkActive = {
   borderLeftColor: PALETTE.GRAPE_700,
   borderRadius: '0 4px 4px 0',
   color: PALETTE.SLATE_700,
-  marginBottom: 8,
   cursor: 'default',
   ':hover,:focus': {
     backgroundColor: PALETTE.SLATE_300
