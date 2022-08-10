@@ -317,3 +317,67 @@ test('Should only start a new meeting if it would still be active', async () => 
   const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
   expect(actualMeeting.endedAt).toBeTruthy()
 })
+
+test('Should not start a new meeting if the rrule has not started', async () => {
+  const r = await getRethink()
+  const {userId} = await signUp()
+  const {id: teamId} = (await getUserTeams(userId))[0]
+
+  const now = new Date()
+
+  // Create a meeting series that starts tomorrow, and happens daily at 9a UTC.
+  const startDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9)
+  )
+  const recurrenceRule = new RRule({
+    freq: RRule.DAILY,
+    dtstart: startDate
+  })
+
+  const newMeetingSeriesId = await insertMeetingSeriesQuery({
+    meetingType: 'teamPrompt',
+    title: 'Async Standup',
+    recurrenceRule: recurrenceRule.toString(),
+    duration: 24 * 60, // 24 hours
+    teamId,
+    facilitatorId: userId
+  })
+
+  const meetingId = generateUID()
+  const meeting = new MeetingTeamPrompt({
+    id: meetingId,
+    teamId,
+    meetingCount: 0,
+    phases: [new TeamPromptResponsesPhase(['foobar'])],
+    facilitatorUserId: userId,
+    meetingPrompt: 'What are you working on today? Stuck on anything?',
+    scheduledEndTime: new Date(Date.now() - ms('1h')),
+    meetingSeriesId: newMeetingSeriesId
+  })
+
+  // The last meeting in the series was created just over 24h ago, but the active rrule doesn't
+  // start until tomorrow.
+  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
+  meeting.endedAt = new Date(Date.now() - ms('1h'))
+
+  await r.table('NewMeeting').insert(meeting).run()
+
+  const update = await sendIntranet({
+    query: PROCESS_RECURRENCE,
+    isPrivate: true
+  })
+
+  expect(update).toEqual({
+    data: {
+      processRecurrence: {
+        meetingsStarted: 0,
+        meetingsEnded: 0
+      }
+    }
+  })
+
+  await assertIdempotency()
+
+  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  expect(actualMeeting.endedAt).toBeTruthy()
+})
