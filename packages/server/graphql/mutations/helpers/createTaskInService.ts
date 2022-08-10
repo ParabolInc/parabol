@@ -11,6 +11,7 @@ import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab
 import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
+import createAzureTask from './createAzureTask'
 import createGitHubTask from './createGitHubTask'
 import createGitLabTask from './createGitLabTask'
 import createJiraTask from './createJiraTask'
@@ -101,6 +102,20 @@ const createTaskInService = async (
     }
   } else if (service === 'azureDevOps') {
     // TODO: implement when we can create a new Azure issue from Poker meeting
+    const azureAuth = await dataLoader
+      .get('freshAzureDevOpsAuth')
+      .load({teamId, userId: accessUserId})
+    if (!azureAuth) {
+      return {error: new Error('Cannot create Azure task without a valid token')}
+    }
+    const azureTaskRes = await createAzureTask(
+      taglessContentJSON,
+      serviceProjectHash,
+      azureAuth,
+      context,
+      info,
+      dataLoader
+    )
   }
   return {error: new Error('Unknown integration')}
 }

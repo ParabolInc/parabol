@@ -6,6 +6,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
@@ -172,7 +173,7 @@ const NewAzureIssueInput = (props: Props) => {
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
-        service: 'gitlab' as const,
+        service: 'azureDevOps' as const,
         serviceProjectHash: selectedProjectName
       }
     }
@@ -183,7 +184,7 @@ const NewAzureIssueInput = (props: Props) => {
         meetingId,
         updates: [
           {
-            service: 'gitlab',
+            service: 'azureDevOps',
             serviceTaskId: integrationHash,
             action: 'ADD'
           } as const
@@ -195,7 +196,7 @@ const NewAzureIssueInput = (props: Props) => {
         contents: [newIssueTitle]
       })
     }
-    // CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
+    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
   if (!isEditing) return null

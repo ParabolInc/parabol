@@ -19,6 +19,7 @@ import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/Create
 import {CreateTaskMutation_notification} from '../__generated__/CreateTaskMutation_notification.graphql'
 import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
+import handleAzureCreateIssue from './handlers/handleAzureCreateIssue'
 import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
@@ -63,6 +64,11 @@ graphql`
           webPath
           webUrl
         }
+        ... on AzureDevOpsWorkItem {
+          id
+          title
+          url
+        }
       }
     }
   }
@@ -104,6 +110,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   handleJiraCreateIssue(task, store)
   handleGitHubCreateIssue(task, store)
   handleGitLabCreateIssue(task, store)
+  handleAzureCreateIssue(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -206,6 +213,18 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
             iid: '?'
           })
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
+        } else if (service === 'azureDevOps') {
+          console.log('🚀 ~ serviceProjectHash', {serviceProjectHash, service})
+          const webPath = `/${serviceProjectHash}/-/issues/?`
+          const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
+            // state: 'opened',
+            title: plaintextContent,
+            // description: '',
+            // webPath,
+            // webUrl: `/${webPath}`,
+            id: '?'
+          })
+          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')
         }
@@ -216,6 +235,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleJiraCreateIssue(task, store)
       handleGitHubCreateIssue(task as any, store)
       handleGitLabCreateIssue(task as any, store)
+      handleAzureCreateIssue(task as any, store)
     },
     onError,
     onCompleted
