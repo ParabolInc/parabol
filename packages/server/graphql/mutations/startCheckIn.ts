@@ -86,8 +86,7 @@ export default {
     const agendaItemIds = agendaItems.map(({id}) => id)
 
     const updates = {
-      lastMeetingType: meetingType,
-      updatedAt: new Date()
+      lastMeetingType: meetingType
     }
     await Promise.all([
       r
