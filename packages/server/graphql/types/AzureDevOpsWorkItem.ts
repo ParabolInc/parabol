@@ -1,6 +1,4 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
-import {getInstanceId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -16,11 +14,7 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'GUID instanceId:projectKey:issueKey',
-      resolve: ({id, teamProject, url}: {id: string; teamProject: string; url: string}) => {
-        const instanceId = getInstanceId(new URL(url))
-        return AzureDevOpsIssueId.join(instanceId, teamProject, id)
-      }
+      description: 'GUID instanceId:issueKey'
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),
