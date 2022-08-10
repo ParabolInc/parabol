@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import { useFragment } from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
-import { PALETTE } from '../styles/paletteV3'
-import { Threshold } from '../types/constEnums'
+import {PALETTE} from '../styles/paletteV3'
+import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
-import { AzureDevOpsScopingSearchResultItem_issue } from '../__generated__/AzureDevOpsScopingSearchResultItem_issue.graphql'
-import { UpdatePokerScopeMutationVariables } from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {AzureDevOpsScopingSearchResultItem_issue} from '../__generated__/AzureDevOpsScopingSearchResultItem_issue.graphql'
+import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
 import Ellipsis from './Ellipsis/Ellipsis'
 
@@ -62,8 +62,9 @@ const AzureDevOpsScopingSearchResultItem = (props: Props) => {
     `,
     issueRef
   )
-  const {id: gid, url, state, type} = issue
-  const serviceTaskId = AzureDevOpsIssueId.join(providerId, gid)
+  const {id, url, state, type} = issue
+  const {issueKey} = AzureDevOpsIssueId.split(id)
+  const serviceTaskId = AzureDevOpsIssueId.join(providerId, id)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -83,7 +84,7 @@ const AzureDevOpsScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [gid]})
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [id]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
       // persistQuery()
@@ -99,9 +100,9 @@ const AzureDevOpsScopingSearchResultItem = (props: Props) => {
           href={url}
           rel='noopener noreferrer'
           target='_blank'
-          title={`Azure DevOps Work Item #${gid}`}
+          title={`Azure DevOps Work Item #${issueKey}`}
         >
-          {gid}
+          {issueKey}
           {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
