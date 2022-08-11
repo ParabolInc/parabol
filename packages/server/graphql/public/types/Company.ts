@@ -1,4 +1,3 @@
-import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import TeamMember from '../../../database/types/TeamMember'
@@ -7,7 +6,6 @@ import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {CompanyResolvers} from '../resolverTypes'
-
 export type CompanySource = {id: string}
 
 const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
@@ -121,14 +119,10 @@ const Company: CompanyResolvers = {
     if (unarchivedTeams.length === 0) return 0
     // create teamMemberIds
     const teamIds = unarchivedTeams.map(({id}) => id)
-    const userIds = [...new Set(organizationUsers.map(({userId}) => userId))]
-    const teamMemberIds = userIds
-      .map((userId) => teamIds.map((teamId) => TeamMemberId.join(teamId, userId)))
-      .flat()
     // get the teamMembers by teamId, userId
-    const teamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds)).filter(
-      isValid
-    )
+    const teamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
+      .flat()
+      .filter(isValid)
     // group by teamId
     const teamMembersByTeamId = teamMembers.reduce((obj, teamMember) => {
       if (obj[teamMember.teamId]) {

@@ -329,12 +329,17 @@ const InsightsCharts = (props: Props) => {
   )
   const {organizations} = domain
   const {membersData, teamsData, meetingData} = useMemo(() => {
-    const userCreatedAts = organizations
-      .map(({organizationUsers}) =>
-        organizationUsers.edges.map((edge) => new Date(edge.node.user.createdAt).getTime())
+    const userCreatedAts = [
+      ...new Set(
+        organizations
+          .map(({organizationUsers}) =>
+            organizationUsers.edges.map((edge) => new Date(edge.node.user.createdAt).getTime())
+          )
+          .flat()
+          .sort()
       )
-      .flat()
-      .sort()
+    ]
+
     const teamCreatedAts = organizations
       .map(({teamStats}) => teamStats.map(({createdAt}) => new Date(createdAt).getTime()))
       .flat()
@@ -348,7 +353,6 @@ const InsightsCharts = (props: Props) => {
     const meetingData = makeMeetingData(flatMeetingStats)
     return {membersData, teamsData, meetingData}
   }, [organizations])
-
   return (
     <ChartBlock>
       <FullChartWrapper>
