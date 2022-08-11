@@ -9,6 +9,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import {PALETTE} from '~/styles/paletteV3'
+import {NewAzureIssueInput_viewer$key} from '~/__generated__/NewAzureIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -98,7 +99,7 @@ interface Props {
   isEditing: boolean
   meetingId: string
   setIsEditing: (isEditing: boolean) => void
-  viewerRef: any // NewGitLabIssueInput_viewer$key
+  viewerRef: NewAzureIssueInput_viewer$key
 }
 
 const validateIssue = (issue: string) => {
@@ -169,7 +170,7 @@ const NewAzureIssueInput = (props: Props) => {
       fields.newIssue.dirty = false
       return
     }
-    const selectedProject = projects.find((project) => project.name === selectedProjectName)
+    const selectedProject = projects.find((project) => project.name === selectedProjectName)!
     const serviceProjectHash = AzureDevOpsProjectId.join(
       selectedProject.instanceId,
       selectedProject.id

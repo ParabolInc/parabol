@@ -103,7 +103,6 @@ const createTaskInService = async (
       integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }
   } else if (service === 'azureDevOps') {
-    // TODO: implement when we can create a new Azure issue from Poker meeting
     const azureAuth = await dataLoader
       .get('freshAzureDevOpsAuth')
       .load({teamId, userId: accessUserId})

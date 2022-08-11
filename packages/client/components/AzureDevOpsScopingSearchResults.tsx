@@ -108,11 +108,10 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   if (!edges) {
     return <MockScopingList />
   }
-  if (!edges || (edges.length === 0 && !isEditing)) {
+  if (edges.length === 0 && !isEditing) {
     return (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        {/* TODO: can remove? */}
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New User Story'} />
       </>
     )
@@ -128,24 +127,22 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             viewerRef={viewer}
           />
         )}
-        {edges?.map(({node}) => {
-          return (
-            <ScopingSearchResultItem
-              key={node.id}
-              service={'azureDevOps'}
-              usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
-              meetingId={meetingId}
-              persistQuery={() => {
-                return null
-              }}
-              summary={node.title}
-              url={node.url}
-              linkText={`${node.type} #${node.id}`}
-              linkTitle={`Azure DevOps Work Item #${node.id}`}
-            />
-          )
-        })}
+        {edges?.map(({node}) => (
+          <ScopingSearchResultItem
+            key={node.id}
+            service={'azureDevOps'}
+            usedServiceTaskIds={usedServiceTaskIds}
+            serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
+            meetingId={meetingId}
+            persistQuery={() => {
+              return null
+            }}
+            summary={node.title}
+            url={node.url}
+            linkText={`${node.type} #${node.id}`}
+            linkTitle={`Azure DevOps Work Item #${node.id}`}
+          />
+        ))}
       </ResultScroller>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
