@@ -27,6 +27,7 @@ export type AnalyticsEvent =
   | 'Comment Added'
   | 'Response Added'
   | 'Reactji Interacted'
+  | 'Meeting Recurrence Started'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -117,6 +118,12 @@ class Analytics {
       isRecurring: isRecurring,
       ...createMeetingProperties(meeting, undefined, template)
     })
+  }
+
+  recurrenceStarted = (userId: string, meeting: Meeting) => {
+    // :TODO: (jmtaber129): Add properties related to recurrence settings (duration, frequency,
+    // etc.) after we support configuring those.
+    this.track(userId, 'Meeting Recurrence Started', createMeetingProperties(meeting))
   }
 
   meetingJoined = (userId: string, meeting: Meeting) => {

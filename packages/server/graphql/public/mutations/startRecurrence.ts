@@ -2,7 +2,9 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
+import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -59,19 +61,23 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     facilitatorId: viewerId
   })
 
-  await r
+  const updatedMeeting = (await r
     .table('NewMeeting')
     .get(meetingId)
-    .update({
-      meetingSeriesId: newMeetingSeriesId,
-      scheduledEndTime: new Date(Date.now() + ms('24h')) // 24 hours from now
-    })
-    .run()
+    .update(
+      {
+        meetingSeriesId: newMeetingSeriesId,
+        scheduledEndTime: new Date(Date.now() + ms('24h')) // 24 hours from now
+      },
+      {returnChanges: true}
+    )('changes')(0)('new_val')
+    .run()) as MeetingTeamPrompt
 
   dataLoader.get('newMeetings').clear(meetingId)
 
   // RESOLUTION
 
+  analytics.recurrenceStarted(viewerId, updatedMeeting)
   const data = {meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'StartRecurrenceSuccess', data, subOptions)
   return data
