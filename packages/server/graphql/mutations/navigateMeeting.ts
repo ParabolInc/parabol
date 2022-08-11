@@ -110,11 +110,11 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .update(
-        {
+        (meeting) => ({
           facilitatorStageId: facilitatorStageId ?? undefined,
           phases,
-          updatedAt: now
-        },
+          updatedAt: r.branch(meeting('endedAt'), meeting('updatedAt'), now)
+        }),
         {returnChanges: true}
       )('changes')(0)('old_val')('facilitatorStageId')
       .default(null)
