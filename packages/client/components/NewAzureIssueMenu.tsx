@@ -3,6 +3,10 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import {
+  NewAzureIssueMenu_AzureDevOpsRemoteProjects,
+  NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
+} from '../__generated__/NewAzureIssueMenu_AzureDevOpsRemoteProjects.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
@@ -13,11 +17,10 @@ interface Props {
   menuProps: MenuProps
   teamId: string
   userId: string
-  projectsRef: any // NewJiraIssueMenu_JiraRemoteProjects$key
+  projectsRef: NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
 }
 
-// const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.name
-const getValue = (project) => project.name
+const getValue = (project: NewAzureIssueMenu_AzureDevOpsRemoteProjects[0]) => project.name
 
 const NewAzureIssueMenu = (props: Props) => {
   const {setSelectedProjectName, menuProps, projectsRef} = props
@@ -45,7 +48,7 @@ const NewAzureIssueMenu = (props: Props) => {
       {...menuProps}
       resetActiveOnChanges={[projects]}
     >
-      <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
+      <SearchMenuItem placeholder='Search Azure' onChange={onQueryChange} value={query} />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
