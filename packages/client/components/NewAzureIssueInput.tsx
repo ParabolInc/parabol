@@ -217,6 +217,7 @@ const NewAzureIssueInput = (props: Props) => {
           <Form onSubmit={handleCreateNewIssue}>
             <NewIssueInput
               autoFocus
+              autoComplete='off'
               onBlur={handleCreateNewIssue}
               onChange={onChange}
               maxLength={255}

@@ -84,7 +84,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   )
 
   const viewer = query.viewer
-  console.log('🚀 ~ query', query)
   const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
   const workItems = azureDevOps?.workItems ?? null
   const edges = workItems?.edges ?? null
