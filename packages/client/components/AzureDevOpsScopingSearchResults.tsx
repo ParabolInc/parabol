@@ -127,7 +127,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             viewerRef={viewer}
           />
         )}
-        {edges?.map(({node}) => (
+        {edges.map(({node}) => (
           <ScopingSearchResultItem
             key={node.id}
             service={'azureDevOps'}
