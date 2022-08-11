@@ -1,4 +1,5 @@
 import {GraphQLResolveInfo} from 'graphql'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import GitHubIssueId from '../../../../client/shared/gqlIds/GitHubIssueId'
@@ -6,6 +7,7 @@ import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import removeRangesForEntity from '../../../../client/utils/draftjs/removeRangesForEntity'
+import TaskIntegrationAzureDevOps from '../../../database/types/TaskIntegrationAzureDevOps'
 import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
 import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
 import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
@@ -112,10 +114,20 @@ const createTaskInService = async (
       taglessContentJSON,
       serviceProjectHash,
       azureAuth,
-      context,
-      info,
       dataLoader
     )
+    if (azureTaskRes instanceof Error) return {error: azureTaskRes}
+    const {integrationHash} = azureTaskRes
+    const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(integrationHash)
+    return {
+      integration: new TaskIntegrationAzureDevOps({
+        instanceId,
+        accessUserId,
+        projectKey,
+        issueKey
+      }),
+      integrationHash
+    }
   }
   return {error: new Error('Unknown integration')}
 }

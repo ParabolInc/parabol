@@ -7,6 +7,7 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import {PALETTE} from '~/styles/paletteV3'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
@@ -118,6 +119,7 @@ const NewAzureIssueInput = (props: Props) => {
               projects {
                 id
                 name
+                instanceId
               }
             }
           }
@@ -165,6 +167,11 @@ const NewAzureIssueInput = (props: Props) => {
       fields.newIssue.dirty = false
       return
     }
+    const selectedProject = projects.find((project) => project.name === selectedProjectName)
+    const serviceProjectHash = AzureDevOpsProjectId.join(
+      selectedProject.instanceId,
+      selectedProject.id
+    )
     const newTask = {
       teamId,
       userId,
@@ -174,7 +181,7 @@ const NewAzureIssueInput = (props: Props) => {
       status: 'active' as const,
       integration: {
         service: 'azureDevOps' as const,
-        serviceProjectHash: selectedProjectName
+        serviceProjectHash
       }
     }
     const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
