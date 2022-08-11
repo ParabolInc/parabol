@@ -18,6 +18,7 @@ import Legitity from '../validation/Legitity'
 import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
+import NewAzureIssueMenu from './NewAzureIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -117,6 +118,7 @@ const NewAzureIssueInput = (props: Props) => {
           integrations {
             azureDevOps {
               projects {
+                ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
                 id
                 name
                 instanceId
@@ -231,13 +233,13 @@ const NewAzureIssueInput = (props: Props) => {
           </StyledButton>
         </Issue>
       </Item>
-      {/* {menuPortal(
+      {menuPortal(
         <NewAzureIssueMenu
-          gitlabProjects={gitlabProjects}
-          handleSelectFullPath={setSelectedProjectName}
+          projectsRef={projects}
+          setSelectedProjectName={setSelectedProjectName}
           menuProps={menuProps}
         />
-      )} */}
+      )}
     </>
   )
 }

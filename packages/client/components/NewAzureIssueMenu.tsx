@@ -3,32 +3,31 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {
-  NewJiraIssueMenu_JiraRemoteProjects,
-  NewJiraIssueMenu_JiraRemoteProjects$key
-} from '../__generated__/NewJiraIssueMenu_JiraRemoteProjects.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
-  handleSelectProjectKey: (key: string) => void
+  setSelectedProjectName: (key: string) => void
   menuProps: MenuProps
-  projectsRef: NewJiraIssueMenu_JiraRemoteProjects$key
+  teamId: string
+  userId: string
+  projectsRef: any // NewJiraIssueMenu_JiraRemoteProjects$key
 }
 
-const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.name
+// const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.name
+const getValue = (project) => project.name
 
-const NewJiraIssueMenu = (props: Props) => {
-  const {handleSelectProjectKey, menuProps, projectsRef} = props
+const NewAzureIssueMenu = (props: Props) => {
+  const {setSelectedProjectName, menuProps, projectsRef} = props
 
   const projects = useFragment(
     graphql`
-      fragment NewJiraIssueMenu_JiraRemoteProjects on JiraRemoteProject @relay(plural: true) {
+      fragment NewAzureIssueMenu_AzureDevOpsRemoteProjects on AzureDevOpsRemoteProject
+      @relay(plural: true) {
         id
         name
-        key
       }
     `,
     projectsRef
@@ -41,7 +40,7 @@ const NewJiraIssueMenu = (props: Props) => {
 
   return (
     <Menu
-      ariaLabel='Select Jira project'
+      ariaLabel='Select Azure project'
       keepParentFocus
       {...menuProps}
       resetActiveOnChanges={[projects]}
@@ -52,9 +51,9 @@ const NewJiraIssueMenu = (props: Props) => {
       )}
 
       {filteredProjects.slice(0, 10).map((project) => {
-        const {id, name, key} = project
+        const {id, name} = project
         const onClick = () => {
-          handleSelectProjectKey(key)
+          setSelectedProjectName(name)
         }
         return (
           <TaskIntegrationMenuItem
@@ -62,7 +61,7 @@ const NewJiraIssueMenu = (props: Props) => {
             query={query}
             label={name}
             onClick={onClick}
-            service='jira'
+            service='azureDevOps'
           />
         )
       })}
@@ -70,4 +69,4 @@ const NewJiraIssueMenu = (props: Props) => {
   )
 }
 
-export default NewJiraIssueMenu
+export default NewAzureIssueMenu
