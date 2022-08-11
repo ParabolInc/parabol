@@ -199,11 +199,13 @@ class Analytics {
   inviteAccepted = (
     userId: string,
     teamId: string,
+    inviterId: string,
     isNewUser: boolean,
     acceptAt: 'meeting' | 'team'
   ) => {
     this.track(userId, 'Invite Accepted', {
       teamId,
+      inviterId,
       isNewUser,
       acceptAt
     })
