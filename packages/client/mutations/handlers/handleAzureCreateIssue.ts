@@ -1,7 +1,8 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
+import getAzureWorkItemsConn from '../connections/getAzureWorkItemsConn'
 
 const handleAzureCreateIssue = (
   task: RecordProxy<NonNullable<CreateTaskMutationResponse['createTask']['task']>>,
@@ -13,32 +14,34 @@ const handleAzureCreateIssue = (
   const meetingId = task.getValue('meetingId')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const viewerId = viewer?.getValue('id') as string
-  console.log('🚀 ~ handleAzureCreateIssue', {viewerId, meetingId, teamId})
-  if (!viewerId) return
+  if (!viewerId || !meetingId) return
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
-  const atlassian = integrations?.getLinkedRecord('atlassian')
-  const jiraSearchQueryId = SearchQueryId.join('azure', meetingId)
-  console.log('🚀 ~ jiraSearchQueryId', jiraSearchQueryId)
-  const jiraSearchQuery = store.get(jiraSearchQueryId)
-  const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
-  // const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined
-  const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
+  const azureDevOps = integrations?.getLinkedRecord('azureDevOps')
+  const azureSearchQueryId = SearchQueryId.join('azureDevOps', meetingId)
+  const azureSearchQuery = store.get(azureSearchQueryId)
+  const queryString = azureSearchQuery?.getValue('queryString') as string | undefined
+  const isWIQL = azureSearchQuery?.getValue('isWIQL') as boolean | undefined
+  const projectKeyFilters = azureSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
   const typename = integration.getType()
-  console.log('🚀 ~ typename', typename)
   if (typename === 'AzureDevOpsWorkItem') {
-    // const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
-    // if (!jiraIssuesConn) return
-    // const now = new Date().toISOString()
-    // const newEdge = ConnectionHandler.createEdge(
-    //   store,
-    //   jiraIssuesConn,
-    //   integration,
-    //   'JiraIssueEdge'
-    // )
-    // newEdge.setValue(now, 'cursor')
-    // ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
+    const azureWorkItemsConn = getAzureWorkItemsConn(
+      azureDevOps,
+      isWIQL,
+      queryString,
+      projectKeyFilters
+    )
+    if (!azureWorkItemsConn) return
+    const now = new Date().toISOString()
+    const newEdge = ConnectionHandler.createEdge(
+      store,
+      azureWorkItemsConn,
+      integration,
+      'AzureWorkItemEdge'
+    )
+    newEdge.setValue(now, 'cursor')
+    ConnectionHandler.insertEdgeBefore(azureWorkItemsConn, newEdge)
   }
 }
 

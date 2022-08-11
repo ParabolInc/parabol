@@ -15,8 +15,6 @@ import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 interface Props {
   setSelectedProjectName: (key: string) => void
   menuProps: MenuProps
-  teamId: string
-  userId: string
   projectsRef: NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
 }
 

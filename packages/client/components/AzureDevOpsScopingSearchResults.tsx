@@ -3,9 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {AzureDevOpsScopingSearchResultsQuery} from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResults_meeting.graphql'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewAzureIssueInput from './NewAzureIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
@@ -25,11 +27,40 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
 
   const query = usePreloadedQuery(
     graphql`
-      query AzureDevOpsScopingSearchResultsQuery($teamId: ID!) {
+      query AzureDevOpsScopingSearchResultsQuery(
+        $teamId: ID!
+        $first: Int
+        $queryString: String
+        $projectKeyFilters: [String!]!
+        $isWIQL: Boolean!
+      ) {
         viewer {
           ...NewAzureIssueInput_viewer
           teamMember(teamId: $teamId) {
-            id
+            integrations {
+              azureDevOps {
+                workItems(
+                  first: $first
+                  queryString: $queryString
+                  projectKeyFilters: $projectKeyFilters
+                  isWIQL: $isWIQL
+                ) @connection(key: "AzureDevOpsScopingSearchResults_workItems") {
+                  error {
+                    message
+                  }
+                  edges {
+                    cursor
+                    node {
+                      id
+                      title
+                      url
+                      state
+                      type
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -54,7 +85,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
 
   const viewer = query.viewer
   console.log('🚀 ~ query', query)
-  const azureDevOps = null // viewer?.teamMember!.integrations.azureDevOps ?? null
+  const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
   const workItems = azureDevOps?.workItems ?? null
   const edges = workItems?.edges ?? null
   const error = workItems?.error ?? null
@@ -75,18 +106,18 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
     return AzureDevOpsClientManager.getInstanceId(url) + ':' + getProjectId(url)
   }
 
-  // if (!edges) {
-  //   return <MockScopingList />
-  // }
-  // if (!edges || (edges.length === 0 && !isEditing)) {
-  //   return (
-  //     <>
-  //       <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-  //       {/* TODO: can remove? */}
-  //       <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New User Story'} />
-  //     </>
-  //   )
-  // }
+  if (!edges) {
+    return <MockScopingList />
+  }
+  if (!edges || (edges.length === 0 && !isEditing)) {
+    return (
+      <>
+        <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
+        {/* TODO: can remove? */}
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New User Story'} />
+      </>
+    )
+  }
   return (
     <>
       <ResultScroller>

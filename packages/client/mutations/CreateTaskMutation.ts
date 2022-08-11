@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import Atmosphere from '../Atmosphere'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
@@ -214,14 +215,11 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           })
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'azureDevOps') {
-          console.log('🚀 ~ serviceProjectHash', {serviceProjectHash, service})
-          const webPath = `/${serviceProjectHash}/-/issues/?`
+          const {instanceId} = AzureDevOpsProjectId.split(serviceProjectHash)
           const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
-            // state: 'opened',
             title: plaintextContent,
-            // description: '',
-            // webPath,
-            // webUrl: `/${webPath}`,
+            url: `https://${instanceId}`,
+            type: 'Basic:Issue',
             id: '?'
           })
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
