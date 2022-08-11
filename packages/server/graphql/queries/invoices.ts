@@ -1,10 +1,10 @@
-import {GQLContext} from './../graphql'
-import {GraphQLID, GraphQLNonNull, GraphQLInt} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import Invoice from '../../database/types/Invoice'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {InvoiceConnection} from '../types/Invoice'
+import {GQLContext} from './../graphql'
 import makeUpcomingInvoice from './helpers/makeUpcomingInvoice'
 
 export default {
@@ -37,11 +37,7 @@ export default {
     }
 
     // RESOLUTION
-    const {stripeId, stripeSubscriptionId} = await r
-      .table('Organization')
-      .get(orgId)
-      .pluck('stripeId', 'stripeSubscriptionId')
-      .run()
+    const {stripeId} = await r.table('Organization').get(orgId).pluck('stripeId').run()
     const dbAfter = after ? new Date(after) : r.maxval
     const [tooManyInvoices, upcomingInvoice] = await Promise.all([
       r
@@ -51,24 +47,18 @@ export default {
           leftBound: 'open',
           rightBound: 'closed'
         })
-        .filter((invoice) =>
-          invoice('status')
-            .ne('UPCOMING')
-            .and(invoice('total').ne(0))
-        )
+        .filter((invoice) => invoice('status').ne('UPCOMING').and(invoice('total').ne(0)))
         // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)
         // break ties based on when created. In the future, we might want to consider using the created_at provided by stripe instead of our own
         .orderBy(r.desc('startAt'), r.desc('createdAt'))
         .limit(first + 1)
         .run(),
-      after
-        ? Promise.resolve(undefined)
-        : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
+      after ? Promise.resolve(undefined) : makeUpcomingInvoice(orgId, stripeId)
     ])
     const extraInvoices: Invoice[] = tooManyInvoices || []
     const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice
-      ? [upcomingInvoice].concat(paginatedInvoices)
+      ? [upcomingInvoice, ...paginatedInvoices]
       : paginatedInvoices
     const nodes = allInvoices.slice(0, first)
     const edges = nodes.map((node) => ({

@@ -20,11 +20,8 @@ const endTeamPrompt = {
       description: 'The meeting to end'
     }
   },
-  resolve: async (
-    _source: unknown,
-    {meetingId}: {meetingId: string},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) => {
+  resolve: async (_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) => {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const now = new Date()
@@ -82,6 +79,11 @@ const endTeamPrompt = {
     )
     const timelineEventId = events[0]!.id
     await r.table('TimelineEvent').insert(events).run()
+    // Due to a reference to 'window' deep in the current summary hierarchy, we're not currently
+    // able to render the summary view on the server-side for emails.
+    // :TODO: (jmtaber129): Refactor the prompt response editor such that we're able to render
+    // TipTap-formatted responses on the server-side.
+    // sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
     analytics.teamPromptEnd(meeting, meetingMembers, responses)
 
     const data = {

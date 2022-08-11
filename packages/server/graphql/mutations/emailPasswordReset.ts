@@ -36,6 +36,7 @@ const emailPasswordReset = {
           .table('PasswordResetRequest')
           .getAll(ip, {index: 'ip'})
           .filter({email})
+          .filter((row) => row('time').ge(yesterday))
           .count()
           .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown as boolean,
         failOnTime: r

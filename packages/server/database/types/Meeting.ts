@@ -1,5 +1,5 @@
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 interface Input {
@@ -12,6 +12,7 @@ interface Input {
   phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
+  scheduledEndTime?: Date
 }
 
 const namePrefix = {

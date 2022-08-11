@@ -129,20 +129,25 @@ const AnalyticsPage = () => {
   }, [isSegmentLoaded])
 
   useEffect(() => {
-    if (!isSegmentLoaded || !window.analytics) return
+    if (!isSegmentLoaded || !window.analytics || typeof window.analytics.page !== 'function') return
     const prevPathname = pathnameRef.current
     pathnameRef.current = pathname
     setTimeout(() => {
       const title = document.title || ''
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')
+      // Detect browser translations, see https://www.ctrl.blog/entry/detect-machine-translated-webpages.html
+      const translated = !!document.querySelector(
+        'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
+      )
       window.analytics.page(
         pageName,
         {
           referrer: makeHref(prevPathname),
           title,
           path: pathname,
-          url: href
+          url: href,
+          translated
         },
         // See: segmentIo.ts:28 for more information on the next line
         {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}

@@ -34,7 +34,7 @@ const meetingCopyLabelLookup = {
   action: 'a Check-in Meeting',
   retrospective: 'a Retrospective Meeting',
   poker: 'a Sprint Poker Meeting',
-  teamPrompt: 'an Async Standup Meeting'
+  teamPrompt: 'a Standup Meeting'
 } as const
 
 const utmParams = {

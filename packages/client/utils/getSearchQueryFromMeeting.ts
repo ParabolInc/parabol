@@ -5,20 +5,30 @@ const getSearchQueryFromMeeting = (meeting: PokerScopeMeeting, service: TaskServ
   switch (service) {
     case 'PARABOL':
       const {parabolSearchQuery} = meeting
-      return [parabolSearchQuery.queryString]
+      return {
+        searchQueryString: parabolSearchQuery.queryString ?? undefined
+      }
     case 'github':
       const {githubSearchQuery} = meeting
-      return [githubSearchQuery.queryString]
+      return {
+        searchQueryString: githubSearchQuery.queryString ?? undefined
+      }
     case 'gitlab':
       const {gitlabSearchQuery} = meeting
       const {queryString, selectedProjectsIds} = gitlabSearchQuery
-      return [queryString, selectedProjectsIds]
+      return {
+        searchQueryString: queryString,
+        searchQueryFilters: selectedProjectsIds?.concat()
+      }
     case 'jira':
       const {jiraSearchQuery} = meeting
       const {queryString: jiraQueryString, projectKeyFilters} = jiraSearchQuery
-      return [jiraQueryString, projectKeyFilters]
+      return {
+        searchQueryString: jiraQueryString,
+        searchQueryFilters: projectKeyFilters.concat()
+      }
   }
-  return null
+  return undefined
 }
 
 export default getSearchQueryFromMeeting

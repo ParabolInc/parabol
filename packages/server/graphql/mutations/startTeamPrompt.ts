@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import generateUID from '../../generateUID'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import RedisLockQueue from '../../utils/RedisLockQueue'
@@ -13,7 +14,6 @@ import StartTeamPromptPayload from '../types/StartTeamPromptPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
-import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -80,7 +80,7 @@ const startTeamPrompt = {
     await r.table('NewMeeting').insert(meeting).run()
 
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    sendMeetingStartToSegment(meeting)
+    analytics.meetingStarted(viewerId, meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
     return data
