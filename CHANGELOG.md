@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.70.1 2022-August-11
+
+### Fixed
+
+- fix: Email summaries not sending for non-standup meetings.
+
 ## 6.70.0 2022-August-10
 
 ### Added
