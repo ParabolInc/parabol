@@ -48,8 +48,8 @@ module.exports = ({isDeploy, isStats}) => ({
   output: {
     path: buildPath,
     publicPath,
-    filename: '[name]_[contenthash].js',
-    chunkFilename: '[name]_[contenthash].js',
+    filename: '[name]_[hash].js',
+    chunkFilename: '[name]_[hash].js',
     crossOriginLoading: 'anonymous'
   },
   resolve: {
@@ -124,7 +124,7 @@ module.exports = ({isDeploy, isStats}) => ({
       // This build may be deployed to many different environments
     }),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[contenthash].js.map',
+      filename: '[name]_[hash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({
