@@ -47,7 +47,10 @@ export default {
     const viewerId = getUserId(authToken)
     const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {createdBy, facilitatorUserId, phases, teamId, meetingType} = meeting
+    const {createdBy, endedAt, facilitatorUserId, phases, teamId, meetingType} = meeting
+    if (endedAt) {
+      return {error: {message: 'Meeting already ended'}}
+    }
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== createdBy) {
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
@@ -110,11 +113,11 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .update(
-        (meeting) => ({
+        {
           facilitatorStageId: facilitatorStageId ?? undefined,
           phases,
-          updatedAt: r.branch(meeting('endedAt'), meeting('updatedAt'), now)
-        }),
+          updatedAt: now
+        },
         {returnChanges: true}
       )('changes')(0)('old_val')('facilitatorStageId')
       .default(null)
