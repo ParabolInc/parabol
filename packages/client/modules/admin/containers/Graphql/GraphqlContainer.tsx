@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Fetcher} from '@graphiql/toolkit'
-import GraphiQL from 'graphiql'
+import GraphiQL, {GraphiQLProps} from 'graphiql'
 import {ToolbarSelect, ToolbarSelectOption} from 'graphiql/dist/components/ToolbarSelect'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
@@ -19,19 +19,50 @@ const GQL = styled('div')({
 
 type SchemaType = 'Public' | 'Private'
 
+const safeParseJSON = (str: string | null) => {
+  if (!str) return null
+  try {
+    return JSON.parse(str)
+  } catch {
+    return null
+  }
+}
+
+const persistSchemaForTab = (currentSchema: SchemaType) => {
+  // get active tab idx
+  const tabStateStr = window.localStorage.getItem('graphiql:tabState')
+  if (!tabStateStr) return
+  const parsedTabState = safeParseJSON(tabStateStr)
+  if (!parsedTabState) return
+  const activeTabIdx = parsedTabState?.activeTabIndex ?? null
+  if (activeTabIdx === null) return
+  // set schema for the given tab
+  const tabSchemaLookupStr = window.localStorage.getItem('graphiql:tabSchemaLookup')
+  const parsedTabSchemaLookup = safeParseJSON(tabSchemaLookupStr)
+  const tabSchemaLookup = Array.isArray(parsedTabSchemaLookup) ? parsedTabSchemaLookup : []
+  tabSchemaLookup[activeTabIdx] = currentSchema
+  window.localStorage.setItem('graphiql:tabSchemaLookup', JSON.stringify(tabSchemaLookup))
+}
+
 const GraphqlContainer = () => {
   const [currentSchema, setCurrentSchema] = useState<SchemaType>(() => {
     return (window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) as SchemaType) || 'Public'
   })
-
+  const introspectionResultRef = useRef({Public: '', Private: ''})
   const graphiql = useRef<GraphiQL>(null)
   const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
   const changeSchema = (value: SchemaType) => () => {
     setCurrentSchema(value)
     window.localStorage.setItem(LocalStorageKey.GRAPHIQL_SCHEMA, value)
+    persistSchemaForTab(value)
   }
   const fetcher: Fetcher = async ({query, variables}) => {
+    const introspectionResult = introspectionResultRef.current
+    const isIntrospectionQuery = query.includes('IntrospectionQuery')
+    if (isIntrospectionQuery && introspectionResult[currentSchema]) {
+      return introspectionResult[currentSchema]
+    }
     const res = await fetch('/intranet-graphql', {
       method: 'POST',
       headers: {
@@ -40,12 +71,24 @@ const GraphqlContainer = () => {
       },
       body: JSON.stringify({query, variables, isPrivate: currentSchema === 'Private'})
     })
-    return res.json()
+    const resJSON = await res.json()
+    if (isIntrospectionQuery) {
+      introspectionResult[currentSchema] = resJSON
+    }
+    return resJSON
+  }
+
+  const onTabChange: Exclude<GraphiQLProps['tabs'], boolean | undefined>['onTabChange'] = (tab) => {
+    const tabSchemaLookupStr = window.localStorage.getItem('graphiql:tabSchemaLookup')
+    const parsedTabSchemaLookup = safeParseJSON(tabSchemaLookupStr)
+    const tabSchemaLookup = Array.isArray(parsedTabSchemaLookup) ? parsedTabSchemaLookup : []
+    const schemaToUse = tabSchemaLookup[tab.activeTabIndex] || 'Public'
+    setCurrentSchema(schemaToUse)
   }
 
   return (
     <GQL>
-      <GraphiQL fetcher={fetcher} ref={graphiql} tabs>
+      <GraphiQL fetcher={fetcher} ref={graphiql} tabs={{onTabChange}}>
         <GraphiQL.Logo>
           <img crossOrigin='' alt='Parabol' src={logoMarkPrimary} />
         </GraphiQL.Logo>
