@@ -107,7 +107,6 @@ interface Props {
 const NewMeetingCarousel = (props: Props) => {
   const {idx, setIdx, meetingOrder, onStartMeetingClick} = props
   // TODO: remove when standups feature flag removed
-  const moreThanThreeSlides = meetingOrder.length > 3
   const cardRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -139,18 +138,17 @@ const NewMeetingCarousel = (props: Props) => {
         modules={[Mousewheel, FreeMode, Keyboard]}
         mousewheel={true}
         slidesOffsetBefore={24}
-        slidesOffsetAfter={16}
-        slideToClickedSlide={true}
-        spaceBetween={16}
+        slidesOffsetAfter={24}
+        centeredSlides
+        centeredSlidesBounds
+        slideToClickedSlide
+        spaceBetween={24}
         threshold={10}
         keyboard={true}
-        slidesPerView={1.5}
+        slidesPerView={1.99}
         breakpoints={{
           [Breakpoint.FUZZY_TABLET]: {
-            slidesPerView: moreThanThreeSlides ? 3.5 : 3.15,
-            slidesOffsetBefore: 24,
-            slidesOffsetAfter: 16,
-            slideToClickedSlide: moreThanThreeSlides
+            slidesPerView: 2.99
           }
         }}
         freeMode={{
