@@ -142,6 +142,8 @@ const NewMeetingCarousel = (props: Props) => {
         slidesOffsetAfter={16}
         slideToClickedSlide={true}
         spaceBetween={16}
+        centeredSlides={true}
+        centeredSlidesBounds={true}
         threshold={10}
         keyboard={true}
         slidesPerView={1.5}
