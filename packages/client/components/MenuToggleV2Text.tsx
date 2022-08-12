@@ -13,26 +13,42 @@ const MenuToggleInner = styled('div')({
 
 const MenuToggleIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
-  padding: '0 16px'
+  alignSelf: 'center',
+  fontSize: 36,
+  paddingRight: 12
 })
 
 const MenuToggleLabel = styled('div')({
   flex: 1,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap'
+  whiteSpace: 'nowrap',
+  fontSize: 20,
+  fontWeight: 600,
+  color: PALETTE.SLATE_900
+})
+
+const MenuToggleTitle = styled('div')({
+  fontSize: 14,
+  lineHeight: '16px',
+  fontWeight: 400,
+  color: PALETTE.SLATE_900
 })
 
 interface Props {
   label: string
-  icon: string
+  icon?: string
+  title: string
 }
 const MenuToggleV2Text = forwardRef((props: Props, ref: any) => {
-  const {icon, label} = props
+  const {icon, label, title} = props
   return (
     <MenuToggleInner ref={ref}>
-      <MenuToggleIcon>{icon}</MenuToggleIcon>
-      <MenuToggleLabel>{label}</MenuToggleLabel>
+      {icon && <MenuToggleIcon>{icon}</MenuToggleIcon>}
+      <div>
+        <MenuToggleTitle>{title}</MenuToggleTitle>
+        <MenuToggleLabel>{label}</MenuToggleLabel>
+      </div>
     </MenuToggleInner>
   )
 })
