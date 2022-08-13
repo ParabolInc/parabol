@@ -168,7 +168,7 @@ const ReflectionCard = (props: Props) => {
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
-  const reflectionReference = useRef<HTMLDivElement>(null)
+  const reflectionDivRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
@@ -308,8 +308,8 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    if (openSpotlight && reflectionReference.current) {
-      openSpotlight(reflectionId, reflectionReference)
+    if (openSpotlight && reflectionDivRef.current) {
+      openSpotlight(reflectionId, reflectionDivRef)
     }
   }
 
@@ -322,17 +322,18 @@ const ReflectionCard = (props: Props) => {
 
   const isGroupPhase = !isComplete && phaseType === 'group'
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
-  const isMeetingNumberLessThanThree = meetingNumber < 3
+  const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
 
-  const shouldAnimate = (() => {
-    if (isGroupPhase && hasNoGroup && isMeetingNumberLessThanThree) {
+  const showDragHintAnimation = (() => {
+    if (isGroupPhase && hasNoGroup && isRetrospectiveBeginner) {
       const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
       const isFirst = reflectionId === firstReflection?.id
-      const isNotEditing = !firstReflection?.isEditing
-      const isNotDragging = reflectionGroups.every((group) =>
-        group.reflections.every((reflection) => !reflection.isViewerDragging)
+      const isNotInteracting = reflectionGroups.every((group) =>
+        group.reflections.every(
+          (reflection) => !reflection.isViewerDragging && !reflection.isEditing
+        )
       )
-      return isFirst && isNotEditing && isNotDragging
+      return isFirst && isNotInteracting
     }
     return false
   })()
@@ -342,8 +343,8 @@ const ReflectionCard = (props: Props) => {
       data-cy={`${dataCy}-root`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      shouldAnimate={shouldAnimate}
-      ref={reflectionReference}
+      showDragHintAnimation={showDragHintAnimation}
+      ref={reflectionDivRef}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
