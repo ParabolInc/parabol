@@ -71,6 +71,9 @@ export default createFragmentContainer(ThreadedCommentHeader, {
   comment: graphql`
     fragment ThreadedCommentHeader_comment on Comment {
       id
+      createdByUser {
+        preferredName
+      }
       createdByUserNullable: createdByUser {
         preferredName
       }
