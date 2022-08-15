@@ -32,9 +32,9 @@ interface Props {
 }
 
 const getName = (comment) => {
-  const {isActive, createdByUserNullable, isViewerComment} = comment
+  const {isActive, createdByUser, isViewerComment} = comment
   if (!isActive) return 'Message Deleted'
-  if (createdByUserNullable?.preferredName) return createdByUserNullable.preferredName
+  if (createdByUser?.preferredName) return createdByUser.preferredName
   return isViewerComment ? 'Anonymous (You)' : 'Anonymous'
 }
 
@@ -72,9 +72,6 @@ export default createFragmentContainer(ThreadedCommentHeader, {
     fragment ThreadedCommentHeader_comment on Comment {
       id
       createdByUser {
-        preferredName
-      }
-      createdByUserNullable: createdByUser {
         preferredName
       }
       isActive
