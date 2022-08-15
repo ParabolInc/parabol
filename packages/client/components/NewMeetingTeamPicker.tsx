@@ -62,7 +62,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   return (
     <>
       <NewMeetingDropdown
-        icon={<NewMeetingTeamPickerAvatars teamRef={selectedTeam} />}
+        startAdornment={<NewMeetingTeamPickerAvatars teamRef={selectedTeam} />}
         label={name}
         onClick={togglePortal}
         onMouseEnter={SelectTeamDropdown.preload}

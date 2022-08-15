@@ -10,7 +10,7 @@ const MenuToggleInner = styled('div')({
   minWidth: 0
 })
 
-const IconContainer = styled('div')({
+const AdornmentContainer = styled('div')({
   marginRight: 16
 })
 
@@ -33,14 +33,14 @@ const MenuToggleTitle = styled('div')({
 
 interface Props {
   label: string
-  icon?: React.ReactElement
+  startAdornment?: React.ReactElement
   title: string
 }
 const MenuToggleV2Text = forwardRef((props: Props, ref: any) => {
-  const {icon, label, title} = props
+  const {startAdornment, label, title} = props
   return (
     <MenuToggleInner ref={ref}>
-      {icon && <IconContainer>{icon}</IconContainer>}
+      {startAdornment && <AdornmentContainer>{startAdornment}</AdornmentContainer>}
       <div>
         <MenuToggleTitle>{title}</MenuToggleTitle>
         <MenuToggleLabel>{label}</MenuToggleLabel>

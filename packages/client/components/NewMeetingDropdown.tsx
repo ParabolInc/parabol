@@ -5,7 +5,7 @@ import MenuToggleV2Text from './MenuToggleV2Text'
 
 interface Props {
   className?: string
-  icon?: React.ReactElement
+  startAdornment?: React.ReactElement
   dropdownIcon?: string
   label: string
   disabled?: boolean
@@ -15,7 +15,8 @@ interface Props {
 }
 
 const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
-  const {className, icon, dropdownIcon, label, disabled, onClick, onMouseEnter, title} = props
+  const {className, startAdornment, dropdownIcon, label, disabled, onClick, onMouseEnter, title} =
+    props
   return (
     <DropdownToggleV2
       className={className}
@@ -25,7 +26,7 @@ const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
       disabled={disabled}
       ref={ref}
     >
-      <MenuToggleV2Text icon={icon} label={label} title={title} />
+      <MenuToggleV2Text startAdornment={startAdornment} label={label} title={title} />
     </DropdownToggleV2>
   )
 })
