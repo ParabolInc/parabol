@@ -57,7 +57,7 @@ const SettingsRow = styled('div')({
 })
 
 const NewMeetingDialog = styled(DialogContainer)({
-  width: '800px',
+  width: '860px',
   borderRadius: Radius.FIELD,
 
   [MEDIA_QUERY_FUZZY_TABLET]: {
