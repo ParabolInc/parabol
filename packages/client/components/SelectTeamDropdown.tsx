@@ -1,12 +1,13 @@
-import React from 'react'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import DropdownMenuLabel from './DropdownMenuLabel'
-import DropdownMenuItemLabel from './DropdownMenuItemLabel'
-import {MenuProps} from '../hooks/useMenu'
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {SelectTeamDropdown_teams} from '~/__generated__/SelectTeamDropdown_teams.graphql'
+import {MenuProps} from '../hooks/useMenu'
+import DropdownMenuItemLabel from './DropdownMenuItemLabel'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   menuProps: MenuProps
@@ -14,10 +15,14 @@ interface Props {
   teams: SelectTeamDropdown_teams
 }
 
+const TeamMenu = styled(Menu)({
+  maxWidth: 'none'
+})
+
 const SelectTeamDropdown = (props: Props) => {
   const {teams, menuProps, teamHandleClick} = props
   return (
-    <Menu ariaLabel={'Select the team associated with the new task'} {...menuProps}>
+    <TeamMenu ariaLabel={'Select the team associated with the new task'} {...menuProps}>
       <DropdownMenuLabel>Select Team:</DropdownMenuLabel>
       {teams.map((team) => {
         return (
@@ -28,7 +33,7 @@ const SelectTeamDropdown = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </TeamMenu>
   )
 }
 

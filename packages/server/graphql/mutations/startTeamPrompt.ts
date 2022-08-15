@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import generateUID from '../../generateUID'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -77,7 +78,15 @@ const startTeamPrompt = {
       facilitatorUserId: viewerId,
       meetingPrompt: 'What are you working on today? Stuck on anything?' // :TODO: (jmtaber129): Get this from meeting settings.
     })
-    await r.table('NewMeeting').insert(meeting).run()
+    await Promise.all([
+      r.table('NewMeeting').insert(meeting).run(),
+      updateTeamByTeamId(
+        {
+          lastMeetingType: 'teamPrompt'
+        },
+        teamId
+      )
+    ])
 
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewerId, meeting)
