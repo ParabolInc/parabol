@@ -1,4 +1,3 @@
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
@@ -244,25 +243,13 @@ class Analytics {
     meeting?: AnyMeeting,
     service?: IntegrationProviderServiceEnumType
   ) => {
-    let isAsync
-    let meetingId
-    if (meeting) {
-      const {phases, id} = meeting
-      meetingId = id
-      const discussPhase = phases.find(
-        ({phaseType}: {phaseType: NewMeetingPhaseTypeEnum}) =>
-          phaseType === 'discuss' || phaseType === 'agendaitems'
-      )
-      if (discussPhase) {
-        const {stages} = discussPhase
-        isAsync = stages.some((stage) => stage.isAsync)
-      }
-    }
+    const {id: meetingId, meetingType} = meeting || {}
 
     this.track(userId, 'Task Created', {
       meetingId,
       teamId,
-      isAsync,
+      inMeeting: !!meetingId,
+      meetingType,
       isReply,
       service
     })
