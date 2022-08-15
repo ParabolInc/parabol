@@ -33,7 +33,6 @@ const nameToId = (name: string, isTemplate: boolean) => {
     .trim()
   return `${cleanedName}${isTemplate ? 'Template' : 'Prompt'}`
 }
-
 const templateNames = ['Scrum Values Retrospective']
 
 const promptsInfo = [
