@@ -31,11 +31,6 @@ interface Props {
   teamRef: NewMeetingTeamPickerAvatars_team$key
 }
 
-interface TeamMember {
-  id: string
-  picture: string
-}
-
 const NewMeetingTeamPickerAvatars = (props: Props) => {
   const {teamRef} = props
 
@@ -54,7 +49,7 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
   const {teamMembers} = team
 
   const randomAvatars = useMemo(() => {
-    const randomTeamMembers = getShuffledArr(teamMembers as TeamMember[])
+    const randomTeamMembers = getShuffledArr(teamMembers)
     return randomTeamMembers.slice(0, 4)
   }, [teamMembers])
 
