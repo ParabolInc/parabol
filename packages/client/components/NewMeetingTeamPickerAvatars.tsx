@@ -4,6 +4,7 @@ import React, {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
+import getShuffledArr from '../utils/getShuffledArr'
 import {NewMeetingTeamPickerAvatars_team$key} from '../__generated__/NewMeetingTeamPickerAvatars_team.graphql'
 import Avatar from './Avatar/Avatar'
 import ErrorBoundary from './ErrorBoundary'
@@ -26,17 +27,13 @@ const StyledAvatar = styled(Avatar)({
   border: `2px solid ${PALETTE.SLATE_200}`
 })
 
-const getShuffledArr = (arr) => {
-  const newArr = arr.slice()
-  for (let i = newArr.length - 1; i > 0; i--) {
-    const rand = Math.floor(Math.random() * (i + 1))
-    ;[newArr[i], newArr[rand]] = [newArr[rand], newArr[i]]
-  }
-  return newArr
-}
-
 interface Props {
   teamRef: NewMeetingTeamPickerAvatars_team$key
+}
+
+interface TeamMember {
+  id: string
+  picture: string
 }
 
 const NewMeetingTeamPickerAvatars = (props: Props) => {
@@ -61,7 +58,7 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
   }
 
   const randomAvatars = useMemo(() => {
-    const randomTeamMembers = getShuffledArr(teamMembers)
+    const randomTeamMembers = getShuffledArr(teamMembers as TeamMember[])
     return randomTeamMembers.slice(0, 4)
   }, [teamMembers])
 
