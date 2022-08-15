@@ -1,11 +1,11 @@
 import React, {forwardRef} from 'react'
 import useMenu from '../hooks/useMenu'
+import DropdownToggleInner from './DropdownToggleInner'
 import DropdownToggleV2 from './DropdownToggleV2'
-import MenuToggleV2Text from './MenuToggleV2Text'
 
 interface Props {
   className?: string
-  startAdornment?: React.ReactElement
+  icon?: React.ReactElement
   dropdownIcon?: string
   label: string
   disabled?: boolean
@@ -15,8 +15,7 @@ interface Props {
 }
 
 const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
-  const {className, startAdornment, dropdownIcon, label, disabled, onClick, onMouseEnter, title} =
-    props
+  const {className, icon, dropdownIcon, label, disabled, onClick, onMouseEnter, title} = props
   return (
     <DropdownToggleV2
       className={className}
@@ -26,7 +25,7 @@ const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
       disabled={disabled}
       ref={ref}
     >
-      <MenuToggleV2Text startAdornment={startAdornment} label={label} title={title} />
+      <DropdownToggleInner icon={icon} label={label} title={title} />
     </DropdownToggleV2>
   )
 })
