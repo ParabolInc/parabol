@@ -53,10 +53,6 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
 
   const {teamMembers} = team
 
-  if (!teamMembers) {
-    return null
-  }
-
   const randomAvatars = useMemo(() => {
     const randomTeamMembers = getShuffledArr(teamMembers as TeamMember[])
     return randomTeamMembers.slice(0, 4)
