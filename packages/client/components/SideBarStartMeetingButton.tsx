@@ -8,23 +8,21 @@ import FlatPrimaryButton from './FlatPrimaryButton'
 import Icon from './Icon'
 
 const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
-  height: 48,
+  height: 50,
   overflow: 'hidden',
-  paddingLeft: isOpen ? 5 : 3,
-  paddingRight: isOpen ? 5 : 3,
-  width: isOpen ? 155 : 48,
-  marginLeft: 10,
+  padding: 0,
+  width: isOpen ? 160 : 50,
+  marginLeft: 7,
   marginTop: 15,
   marginBottom: 15,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   justifyContent: 'flex-start'
 }))
 
-const MeetingIcon = styled(Icon)<{isOpen: boolean}>(({isOpen}) => ({
-  marginLeft: isOpen ? 2 : 8,
-  marginRight: isOpen ? 12 : 8,
+const MeetingIcon = styled(Icon)({
+  margin: '0px 12px',
   transition: `all 300ms ${BezierCurve.DECELERATE}`
-}))
+})
 
 const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   fontSize: 16,
@@ -43,7 +41,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   }
   return (
     <Button isOpen={isOpen} onClick={onClick}>
-      <MeetingIcon isOpen={isOpen}>{'add'}</MeetingIcon>
+      <MeetingIcon>{'add'}</MeetingIcon>
       <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>
     </Button>
   )
