@@ -110,6 +110,14 @@ const GroupingKanban = (props: Props) => {
   if (!phaseRef.current) return null
   // It is passed down to ReflectionCard
   const firstReflectionId = groupsByPrompt[reflectPrompts?.[0]?.id ?? '']?.[0]?.reflections?.[0]?.id
+  const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
+  let isNotInteracting = false
+  if (hasNoGroup) {
+    isNotInteracting = reflectionGroups.every((group) =>
+      group.reflections.every((reflection) => !reflection.isViewerDragging && !reflection.isEditing)
+    )
+  }
+
   return (
     <PortalProvider>
       <ColumnsBlock isDesktop={isDesktop}>
@@ -133,6 +141,7 @@ const GroupingKanban = (props: Props) => {
               reflectPromptsCount={reflectPromptsCount}
               swipeColumn={swipeColumn}
               firstReflectionId={firstReflectionId}
+              isNotInteracting={isNotInteracting}
             />
           ))}
         </ColumnWrapper>

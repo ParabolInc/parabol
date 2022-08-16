@@ -68,6 +68,7 @@ interface Props {
   showReactji?: boolean
   dataCy?: string
   firstReflectionId?: string
+  isNotInteracting?: boolean
 }
 
 const getReadOnly = (
@@ -95,7 +96,8 @@ const ReflectionCard = (props: Props) => {
     stackCount,
     showReactji,
     dataCy,
-    firstReflectionId
+    firstReflectionId,
+    isNotInteracting
   } = props
   const reflection = useFragment(
     graphql`
@@ -140,14 +142,6 @@ const ReflectionCard = (props: Props) => {
           id
         }
         spotlightSearchQuery
-        reflectionGroups {
-          id
-          reflections {
-            id
-            isEditing
-            isViewerDragging
-          }
-        }
       }
     `,
     meetingRef
@@ -162,15 +156,8 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {
-    localPhase,
-    localStage,
-    meetingNumber,
-    spotlightGroup,
-    phases,
-    spotlightSearchQuery,
-    reflectionGroups
-  } = meeting
+  const {localPhase, localStage, meetingNumber, spotlightGroup, phases, spotlightSearchQuery} =
+    meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -330,18 +317,11 @@ const ReflectionCard = (props: Props) => {
     (isHovering || !isDesktop)
 
   const isGroupPhase = !isComplete && phaseType === 'group'
-  const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
   const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
 
   const showDragHintAnimation = (() => {
-    if (isGroupPhase && hasNoGroup && isRetrospectiveBeginner) {
-      const isFirst = reflectionId === firstReflectionId
-      const isNotInteracting = reflectionGroups.every((group) =>
-        group.reflections.every(
-          (reflection) => !reflection.isViewerDragging && !reflection.isEditing
-        )
-      )
-      return isFirst && isNotInteracting
+    if (isGroupPhase && isNotInteracting && isRetrospectiveBeginner) {
+      return reflectionId === firstReflectionId
     }
     return false
   })()

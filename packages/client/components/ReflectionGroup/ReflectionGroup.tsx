@@ -77,6 +77,7 @@ interface Props {
   reflectionIdsToHide?: string[] | null
   isSpotlightEntering?: boolean
   firstReflectionId?: string
+  isNotInteracting?: boolean
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -90,7 +91,8 @@ const ReflectionGroup = (props: Props) => {
     expandedReflectionGroupPortalParentId,
     reflectionIdsToHide,
     isSpotlightEntering,
-    firstReflectionId
+    firstReflectionId,
+    isNotInteracting
   } = props
   const meeting = useFragment(
     graphql`
@@ -294,6 +296,7 @@ const ReflectionGroup = (props: Props) => {
                   swipeColumn={swipeColumn}
                   isSpotlightEntering={!!isSpotlightEntering}
                   firstReflectionId={firstReflectionId}
+                  isNotInteracting={isNotInteracting}
                 />
               </ReflectionWrapper>
             )

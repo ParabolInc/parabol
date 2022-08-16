@@ -89,6 +89,7 @@ interface Props {
   reflectPromptsCount: number
   swipeColumn?: SwipeColumn
   firstReflectionId?: string
+  isNotInteracting?: boolean
 }
 
 const GroupingKanbanColumn = (props: Props) => {
@@ -103,7 +104,8 @@ const GroupingKanbanColumn = (props: Props) => {
     prompt,
     reflectPromptsCount,
     swipeColumn,
-    firstReflectionId
+    firstReflectionId,
+    isNotInteracting
   } = props
   const {question, id: promptId, groupColor} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
@@ -186,6 +188,7 @@ const GroupingKanbanColumn = (props: Props) => {
                       reflectionGroupRef={reflectionGroup}
                       swipeColumn={swipeColumn}
                       firstReflectionId={firstReflectionId}
+                      isNotInteracting={isNotInteracting}
                     />
                   )
                 })}
