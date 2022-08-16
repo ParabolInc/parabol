@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useRef} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
@@ -331,9 +331,10 @@ const useDragAndDrop = (
       // clip quick drags so the cursor is guaranteed to be inside the card
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
-      drag.clone = cloneReflection(drag.ref, reflectionId)
       drag.id = clientTempId()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
+      // clone is done after mutation as earlier it was creating issue (https://github.com/ParabolInc/parabol/pull/6910#issuecomment-1193069249)
+      drag.clone = cloneReflection(drag.ref, reflectionId)
     }
     if (!drag.clone) return
     drag.clientY = clientY
