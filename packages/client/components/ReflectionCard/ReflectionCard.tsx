@@ -67,6 +67,7 @@ interface Props {
   showOriginFooter?: boolean
   showReactji?: boolean
   dataCy?: string
+  firstReflectionId?: string
 }
 
 const getReadOnly = (
@@ -86,8 +87,16 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meetingRef, reflectionRef, isClipped, openSpotlight, stackCount, showReactji, dataCy} =
-    props
+  const {
+    meetingRef,
+    reflectionRef,
+    isClipped,
+    openSpotlight,
+    stackCount,
+    showReactji,
+    dataCy,
+    firstReflectionId
+  } = props
   const reflection = useFragment(
     graphql`
       fragment ReflectionCard_reflection on RetroReflection {
@@ -326,8 +335,7 @@ const ReflectionCard = (props: Props) => {
 
   const showDragHintAnimation = (() => {
     if (isGroupPhase && hasNoGroup && isRetrospectiveBeginner) {
-      const firstReflection = reflectionGroups?.[0]?.reflections?.[0]
-      const isFirst = reflectionId === firstReflection?.id
+      const isFirst = reflectionId === firstReflectionId
       const isNotInteracting = reflectionGroups.every((group) =>
         group.reflections.every(
           (reflection) => !reflection.isViewerDragging && !reflection.isEditing

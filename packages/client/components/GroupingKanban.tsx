@@ -108,6 +108,8 @@ const GroupingKanban = (props: Props) => {
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
   if (!phaseRef.current) return null
+  // It is passed down to ReflectionCard
+  const firstReflectionId = groupsByPrompt[reflectPrompts?.[0]?.id ?? '']?.[0]?.reflections?.[0]?.id
   return (
     <PortalProvider>
       <ColumnsBlock isDesktop={isDesktop}>
@@ -130,6 +132,7 @@ const GroupingKanban = (props: Props) => {
               reflectionGroups={groupsByPrompt[prompt.id] || []}
               reflectPromptsCount={reflectPromptsCount}
               swipeColumn={swipeColumn}
+              firstReflectionId={firstReflectionId}
             />
           ))}
         </ColumnWrapper>
@@ -168,6 +171,7 @@ export default createFragmentContainer(GroupingKanban, {
         id
         promptId
         reflections {
+          id
           isViewerDragging
           isEditing
         }

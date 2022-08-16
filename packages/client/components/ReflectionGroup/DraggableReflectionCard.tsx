@@ -57,6 +57,7 @@ interface Props {
   swipeColumn?: SwipeColumn
   dataCy?: string
   isSpotlightEntering?: boolean
+  firstReflectionId?: string
 }
 
 export interface TargetBBox {
@@ -78,7 +79,8 @@ const DraggableReflectionCard = (props: Props) => {
     isDraggable,
     swipeColumn,
     dataCy,
-    isSpotlightEntering
+    isSpotlightEntering,
+    firstReflectionId
   } = props
   const {teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
@@ -138,6 +140,7 @@ const DraggableReflectionCard = (props: Props) => {
         isClipped={isClipped}
         meetingRef={meeting}
         openSpotlight={openSpotlight}
+        firstReflectionId={firstReflectionId}
       />
     </DragWrapper>
   )
