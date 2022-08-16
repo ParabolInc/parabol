@@ -164,7 +164,18 @@ export default {
       publish(SubscriptionChannel.TASK, userId, 'CreateTaskIntegrationPayload', data, subOptions)
     })
 
-    analytics.taskPublished(viewerId, teamId, integrationProviderService, meetingId)
+    const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
+    analytics.taskPublished(
+      viewerId,
+      {
+        taskId,
+        teamId,
+        meetingId,
+        meetingType: meeting?.meetingType,
+        inMeeting: !!meetingId
+      },
+      integrationProviderService
+    )
 
     return data
   }
