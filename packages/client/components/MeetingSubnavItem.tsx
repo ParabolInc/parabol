@@ -18,7 +18,7 @@ interface ItemRootProps {
 const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
     alignItems: 'center',
-    backgroundColor: isActive ? PALETTE.SLATE_300 : isDragging ? PALETTE.SLATE_100 : 'transparent',
+    backgroundColor: isActive ? PALETTE.SLATE_200 : isDragging ? PALETTE.SLATE_100 : 'transparent',
     borderRadius: '0 4px 4px 0',
     color: PALETTE.SLATE_700,
     display: 'flex',
@@ -32,7 +32,7 @@ const ItemRoot = styled('div')<ItemRootProps>(
     userSelect: 'none',
     width: '100%',
     '&:hover, :focus': {
-      backgroundColor: onClick && !isActive ? PALETTE.SLATE_300 : undefined,
+      backgroundColor: onClick && !isActive ? PALETTE.SLATE_200 : undefined,
       cursor: !isActive && onClick ? 'pointer' : undefined,
       opacity: !isDisabled ? 1 : undefined
     }
