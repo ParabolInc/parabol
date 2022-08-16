@@ -189,7 +189,7 @@ const NewMeeting = (props: Props) => {
         />
         <TeamAndSettings>
           <SettingsFirstRow>
-            <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
+            <NewMeetingTeamPicker selectedTeamRef={selectedTeam} teamsRef={teams} />
           </SettingsFirstRow>
           <SettingsRow>
             <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
