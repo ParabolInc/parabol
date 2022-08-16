@@ -109,7 +109,7 @@ const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flexDirection: 'column',
   height: isDesktop ? '100%' : undefined,
   flex: isDesktop ? 1 : undefined,
-  overflow: 'auto',
+  overflow: 'hidden',
   width: '100%'
 }))
 
