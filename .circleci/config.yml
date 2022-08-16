@@ -77,8 +77,7 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
               cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
               yarn build --deploy
-            fi
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            else
               cp $DEVOPS_WORKDIR/environments/development .env
               yarn build --deploy
             fi
