@@ -100,55 +100,58 @@ const BottomControlBarReadyButton = (props: Props) => {
   const {viewerId} = atmosphere
 
   useEffect(() => {
-    switch (localPhase.phaseType) {
-      case 'reflect':
-        const hasNoReflection = reflectionGroups?.every((group) => group.reflections?.length === 0)
-        if (hasNoReflection) return
+    if (localPhase.phaseType !== 'reflect') return
 
-        const reflectPrompts = localPhase.reflectPrompts!
-        const beforeDemoStart =
-          isDemoRoute() && reflectPrompts.every(({editorIds}) => !Array.isArray(editorIds))
-        if (beforeDemoStart) return
+    const hasNoReflection = reflectionGroups?.every((group) => group.reflections?.length === 0)
+    if (hasNoReflection) return
 
-        const isNotEditing = reflectPrompts.every(({editorIds}) => {
-          return editorIds === undefined || (Array.isArray(editorIds) && editorIds.length === 0)
-        })
+    const reflectPrompts = localPhase.reflectPrompts!
+    const beforeDemoStart =
+      isDemoRoute() && reflectPrompts.every(({editorIds}) => !Array.isArray(editorIds))
+    if (beforeDemoStart) return
 
-        setDelaySeconds(isNotEditing ? 30 : undefined)
-        break
-      case 'group':
-        const isNotDragging = reflectionGroups?.every((group) =>
-          group.reflections?.every(
-            (reflection) => !reflection.isViewerDragging && !reflection.isDropping
-          )
-        )
+    const isNotEditing = reflectPrompts.every(({editorIds}) => {
+      return editorIds === undefined || (Array.isArray(editorIds) && editorIds.length === 0)
+    })
 
-        setDelaySeconds(isNotDragging ? 30 : undefined)
-        break
-      case 'vote':
-        const teamVotesRemaining = votesRemaining || 0
-        const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
-        const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
+    setDelaySeconds(isNotEditing ? 30 : undefined)
+  }, [localPhase.phaseType === 'reflect', reflectionGroups, localPhase])
 
-        setDelaySeconds(isNotVoting ? 30 : undefined)
-        break
-      case 'discuss':
-        // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
-        setDelaySeconds(5 * 60)
-        break
-    }
+  useEffect(() => {
+    if (localPhase.phaseType !== 'group') return
 
-    // if the ready button is "full" before these conditions are met, the animation should start after 5s
-    if (progress === 1) {
-      setDelaySeconds(5)
-    }
-  }, [
-    localPhase.phaseType,
-    localPhase.reflectPrompts,
-    reflectionGroups,
-    viewerMeetingMember,
-    votesRemaining
-  ])
+    const isNotDragging = reflectionGroups?.every((group) =>
+      group.reflections?.every(
+        (reflection) => !reflection.isViewerDragging && !reflection.isDropping
+      )
+    )
+
+    setDelaySeconds(isNotDragging ? 30 : undefined)
+  }, [localPhase.phaseType === 'group', reflectionGroups, localPhase])
+
+  useEffect(() => {
+    if (localPhase.phaseType !== 'vote') return
+
+    const teamVotesRemaining = votesRemaining || 0
+    const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
+    const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
+
+    setDelaySeconds(isNotVoting ? 30 : undefined)
+  }, [localPhase.phaseType === 'vote', votesRemaining, viewerMeetingMember])
+
+  useEffect(() => {
+    if (localPhase.phaseType !== 'discuss') return
+
+    setDelaySeconds(5 * 60)
+  }, [localPhase.phaseType === 'discuss'])
+
+  useEffect(() => {
+    // if the ready button is "full" before these conditions are met,
+    // the animation should start after 5s
+    if (progress !== 1) return
+
+    setDelaySeconds(5)
+  }, [progress])
 
   // only enable for facilitatorUser
   const isFacilitator = viewerId === facilitatorUserId && !endedAt
