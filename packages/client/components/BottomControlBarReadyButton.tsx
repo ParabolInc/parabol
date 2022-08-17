@@ -151,7 +151,7 @@ const BottomControlBarReadyButton = (props: Props) => {
     if (progress !== 1) return
 
     setDelaySeconds(5)
-  }, [progress])
+  }, [progress, localPhase.phaseType])
 
   // only enable for facilitatorUser
   const isFacilitator = viewerId === facilitatorUserId && !endedAt
