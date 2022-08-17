@@ -44,6 +44,13 @@ const SpotlightIcon = styled(IconLabel)({
   color: PALETTE.SLATE_700
 })
 
+const Author = styled('div')({
+  padding: '12px 16px',
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  fontWeight: 700
+})
+
 const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotlight}) => ({
   bottom: 2,
   color: PALETTE.SLATE_700,
@@ -94,9 +101,11 @@ const ReflectionCard = (props: Props) => {
     isViewerCreator,
     meetingId,
     reactjis,
-    reflectionGroupId
+    reflectionGroupId,
+    creator
   } = reflection
-  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery} = meeting
+  const {localPhase, localStage, spotlightGroup, phases, disableAnonymity, spotlightSearchQuery} =
+    meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -280,6 +289,7 @@ const ReflectionCard = (props: Props) => {
         readOnly={readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
+        disableAnonymity={disableAnonymity}
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
@@ -289,6 +299,7 @@ const ReflectionCard = (props: Props) => {
           reflectionId={reflectionId}
         />
       )}
+      {disableAnonymity && <Author>{creator?.preferredName}</Author>}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <SpotlightButton
@@ -321,6 +332,9 @@ export default createFragmentContainer(ReflectionCard, {
         isViewerReactji
       }
       sortOrder
+      creator {
+        preferredName
+      }
     }
   `,
   meeting: graphql`
@@ -342,6 +356,7 @@ export default createFragmentContainer(ReflectionCard, {
       spotlightGroup {
         id
       }
+      disableAnonymity
       spotlightSearchQuery
     }
   `

@@ -73,7 +73,7 @@ const subscription = graphql`
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectTemplateMutation_team @relay(mask: false)
       ...SetAppLocationMutation_team @relay(mask: false)
-      ...SetCheckInEnabledMutation_team @relay(mask: false)
+      ...SetMeetingSettingsMutation_team @relay(mask: false)
       ...StartCheckInMutation_team @relay(mask: false)
       ...StartRetrospectiveMutation_team @relay(mask: false)
       ...StartSprintPokerMutation_team @relay(mask: false)

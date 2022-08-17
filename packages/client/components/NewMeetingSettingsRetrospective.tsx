@@ -3,7 +3,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsRetrospective_team$key} from '~/__generated__/NewMeetingSettingsRetrospective_team.graphql'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
-import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsRetrospectiveSettings from './NewMeetingSettingsRetrospectiveSettings'
 
 interface Props {
   teamRef: NewMeetingSettingsRetrospective_team$key
@@ -17,6 +17,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...RetroTemplatePicker_settings
           ...NewMeetingSettingsToggleCheckIn_settings
+          ...NewMeetingSettingsToggleAnonymity_settings
         }
       }
     `,
@@ -26,7 +27,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
   return (
     <>
       <RetroTemplatePicker settings={retroSettings} />
-      <NewMeetingSettingsToggleCheckIn settings={retroSettings} />
+      <NewMeetingSettingsRetrospectiveSettings settings={retroSettings} />
     </>
   )
 }

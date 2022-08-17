@@ -12,6 +12,7 @@ interface Input {
   templateId: string
   totalVotes: number
   maxVotesPerGroup: number
+  disableAnonymity?: boolean
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -25,6 +26,7 @@ export default class MeetingRetrospective extends Meeting {
   nextAutoGroupThreshold?: number | null
   totalVotes: number
   maxVotesPerGroup: number
+  disableAnonymity?: boolean
   // end meeting stats
   commentCount?: number
   taskCount?: number
@@ -42,7 +44,8 @@ export default class MeetingRetrospective extends Meeting {
       facilitatorUserId,
       templateId,
       totalVotes,
-      maxVotesPerGroup
+      maxVotesPerGroup,
+      disableAnonymity
     } = input
     super({
       id,
@@ -57,5 +60,6 @@ export default class MeetingRetrospective extends Meeting {
     this.maxVotesPerGroup = maxVotesPerGroup
     this.showConversionModal = showConversionModal
     this.templateId = templateId
+    this.disableAnonymity = disableAnonymity
   }
 }

@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NewMeetingSettingsToggleCheckIn_settings} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import {useFragment} from 'react-relay'
+import {NewMeetingSettingsToggleAnonymity_settings$key} from '~/__generated__/NewMeetingSettingsToggleAnonymity_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
@@ -44,14 +44,26 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 }))
 
 interface Props {
-  settings: NewMeetingSettingsToggleCheckIn_settings
+  settingsRef: NewMeetingSettingsToggleAnonymity_settings$key
   className?: string
 }
 
-const NewMeetingSettingsToggleCheckIn = (props: Props) => {
-  const {settings, className} = props
-  const {id: settingsId, phaseTypes} = settings
-  const hasCheckIn = phaseTypes.includes('checkin')
+const NewMeetingSettingsToggleAnonymity = (props: Props) => {
+  const {settingsRef, className} = props
+
+  const settings = useFragment(
+    graphql`
+      fragment NewMeetingSettingsToggleAnonymity_settings on TeamMeetingSettings {
+        id
+        ... on RetrospectiveMeetingSettings {
+          disableAnonymity
+        }
+      }
+    `,
+    settingsRef
+  )
+
+  const {id: settingsId, disableAnonymity} = settings
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const toggleCheckIn = () => {
@@ -59,23 +71,16 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
     submitMutation()
     SetMeetingSettingsMutation(
       atmosphere,
-      {checkinEnabled: !hasCheckIn, settingsId},
+      {disableAnonymity: !disableAnonymity, settingsId},
       {onError, onCompleted}
     )
   }
   return (
     <ButtonRow onClick={toggleCheckIn} className={className}>
-      <Label>{'Include Icebreaker'}</Label>
-      <StyledCheckbox active={hasCheckIn} />
+      <Label>{'Anonymous reflections'}</Label>
+      <StyledCheckbox active={!disableAnonymity} />
     </ButtonRow>
   )
 }
 
-export default createFragmentContainer(NewMeetingSettingsToggleCheckIn, {
-  settings: graphql`
-    fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
-      id
-      phaseTypes
-    }
-  `
-})
+export default NewMeetingSettingsToggleAnonymity

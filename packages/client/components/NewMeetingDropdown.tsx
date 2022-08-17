@@ -10,8 +10,8 @@ interface Props {
   label: string
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
-  onMouseEnter: () => void
-  title: string
+  onMouseEnter?: () => void
+  title?: string
 }
 
 const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {

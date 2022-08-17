@@ -19,6 +19,7 @@ import ReflectPrompt from './ReflectPrompt'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
+import User from './User'
 
 const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
   name: 'RetroReflection',
@@ -45,6 +46,26 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
     },
+    creator: {
+      description: 'The user that created the reflection, only visible if anonymity is disabled',
+      type: User,
+      resolve: async ({creatorId, meetingId}, _args: unknown, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+
+        const {meetingType} = meeting
+
+        if (meetingType !== 'retrospective') {
+          return null
+        }
+
+        if (!meeting.disableAnonymity) {
+          return null
+        }
+
+        return creatorId ? dataLoader.get('users').load(creatorId) : null
+      }
+    },
+
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
@@ -55,6 +76,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       description: 'True if the reflection was not removed, else false',
       resolve: ({isActive}) => !!isActive
     },
+
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: new GraphQLNonNull(GraphQLBoolean),
