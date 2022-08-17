@@ -133,10 +133,10 @@ const NewAzureIssueInput = (props: Props) => {
   )
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const projects = teamMember?.integrations?.azureDevOps.projects || []
+  const projects = teamMember?.integrations?.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const [selectedProjectName, setSelectedProjectName] = useState(projects[0]?.name || '')
+  const [selectedProjectName, setSelectedProjectName] = useState(projects[0]?.name ?? '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
