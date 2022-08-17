@@ -57,7 +57,7 @@ interface Props {
 
 const EditorLinkChangerModal = (props: Props) => {
   const {originCoords, removeModal, link, text, handleSubmit, handleEscape} = props
-  const trimmedText = !!text ? text.trim() : ''
+  const trimmedText = text ? text.trim() : ''
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
     isDropdown: true,
     originCoords
