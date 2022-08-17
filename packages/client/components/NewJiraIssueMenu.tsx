@@ -8,9 +8,9 @@ import {
   NewJiraIssueMenu_JiraRemoteProjects$key
 } from '../__generated__/NewJiraIssueMenu_JiraRemoteProjects.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import JiraMenuItem from './JiraMenuItem'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
+import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   handleSelectProjectKey: (key: string) => void
@@ -58,7 +58,15 @@ const NewJiraIssueMenu = (props: Props) => {
         const onClick = () => {
           handleSelectProjectKey(key)
         }
-        return <JiraMenuItem key={id} query={query} name={name} onClick={onClick} />
+        return (
+          <TaskIntegrationMenuItem
+            key={id}
+            query={query}
+            label={name}
+            onClick={onClick}
+            service='jira'
+          />
+        )
       })}
     </Menu>
   )

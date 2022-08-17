@@ -4,12 +4,12 @@ import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {AzureDevOpsScopingSearchResultsQuery} from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResults_meeting.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
