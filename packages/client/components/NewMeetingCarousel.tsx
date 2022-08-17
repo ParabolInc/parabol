@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import React from 'react'
-import {FreeMode, Mousewheel} from 'swiper'
+import React, {useEffect, useRef} from 'react'
+import {FreeMode, Keyboard, Mousewheel} from 'swiper'
 import 'swiper/css'
 import 'swiper/css/free-mode'
 import 'swiper/css/mousewheel'
@@ -57,9 +57,24 @@ const Card = styled('div')<{isActive: boolean; meetingType: keyof typeof BACKGRO
     transition: `all 200ms ${BezierCurve.DECELERATE}`,
     transform: isActive ? `scale(1.1)` : 'scale(1)',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    outline: 'none',
+    position: 'relative'
   })
 )
+
+const Badge = styled('div')({
+  position: 'absolute',
+  top: -8,
+  right: -8,
+  background: PALETTE.GRAPE_500,
+  color: PALETTE.WHITE,
+  fontSize: 12,
+  fontWeight: 600,
+  padding: '6px 14px',
+  borderRadius: 24,
+  textTransform: 'uppercase'
+})
 
 const ILLUSTRATIONS = {
   retrospective,
@@ -72,7 +87,7 @@ const TITLES = {
   retrospective: 'Retrospective',
   action: 'Team Check-in',
   poker: 'Sprint Poker',
-  teamPrompt: 'Async Standup'
+  teamPrompt: 'Standup'
 } as Record<MeetingTypeEnum, string>
 
 const DESCRIPTIONS = {
@@ -86,24 +101,49 @@ interface Props {
   idx: number
   setIdx: (idx: number) => void
   meetingOrder: MeetingTypeEnum[]
+  onStartMeetingClick: () => void
 }
 
 const NewMeetingCarousel = (props: Props) => {
-  const {idx, setIdx, meetingOrder} = props
-
+  const {idx, setIdx, meetingOrder, onStartMeetingClick} = props
   // TODO: remove when standups feature flag removed
   const moreThanThreeSlides = meetingOrder.length > 3
+  const cardRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (cardRef.current) {
+      cardRef.current.focus()
+    }
+  }, [cardRef.current])
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const {key} = e
+    if (key === 'ArrowLeft') {
+      if (idx !== 0) {
+        const newIdx = idx - 1
+        setIdx(newIdx)
+      }
+    } else if (key === 'ArrowRight') {
+      if (idx !== meetingOrder.length - 1) {
+        const newIdx = idx + 1
+        setIdx(newIdx)
+      }
+    } else if (key === 'Enter') {
+      onStartMeetingClick()
+    }
+  }
 
   return (
     <Container>
       <Swiper
-        modules={[Mousewheel, FreeMode]}
+        modules={[Mousewheel, FreeMode, Keyboard]}
         mousewheel={true}
         slidesOffsetBefore={24}
         slidesOffsetAfter={16}
         slideToClickedSlide={true}
         spaceBetween={16}
         threshold={10}
+        keyboard={true}
         slidesPerView={1.5}
         breakpoints={{
           [Breakpoint.FUZZY_TABLET]: {
@@ -127,13 +167,15 @@ const NewMeetingCarousel = (props: Props) => {
               <Card
                 isActive={isActive}
                 meetingType={meetingType}
-                onClick={() => {
-                  setIdx(index)
-                }}
+                tabIndex={0}
+                onClick={() => setIdx(index)}
+                ref={isActive ? cardRef : null}
+                onKeyDown={onKeyDown}
               >
                 <MeetingImage src={src} key={meetingType} />
                 <Title isActive={isActive}>{title}</Title>
                 <Description isActive={isActive}>{description}</Description>
+                {meetingType === 'teamPrompt' && <Badge>Beta</Badge>}
               </Card>
             </SwiperSlide>
           )

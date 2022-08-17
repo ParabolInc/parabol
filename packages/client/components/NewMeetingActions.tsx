@@ -1,16 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import StartCheckInMutation from '~/mutations/StartCheckInMutation'
-import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
-import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
-import {NewMeetingActions_team} from '~/__generated__/NewMeetingActions_team.graphql'
-import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
-import StartSprintPokerMutation from '../mutations/StartSprintPokerMutation'
+import {useFragment} from 'react-relay'
+import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
 import {Breakpoint} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
@@ -25,9 +17,14 @@ const ActionRow = styled('div')({
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   padding: 24,
-  paddingTop: 16,
   [narrowScreenMediaQuery]: {
-    flexDirection: 'column'
+      flexDirection: 'column',
+      justifyContent: 'center',
+      flexWrap: 'nowrap',
+      alignContent: 'center',
+      alignSelf:'center',
+      marginTop: 'auto',
+      paddingBottom: '24px',
   }
 })
 
@@ -55,30 +52,23 @@ const StartButton = styled(FlatPrimaryButton)({
 })
 
 interface Props {
-  meetingType: MeetingTypeEnum
-  team: NewMeetingActions_team
-  onClose: () => void
+  error?: {message: string}
+  teamRef: NewMeetingActions_team$key
+  onStartMeetingClick: () => void
+  submitting: boolean
 }
 
 const NewMeetingActions = (props: Props) => {
-  const {team, meetingType} = props
-  const {id: teamId} = team
-  const atmosphere = useAtmosphere()
-  const {history} = useRouter()
-  const {submitMutation, error, submitting, onError, onCompleted} = useMutationProps()
-  const onStartMeetingClick = () => {
-    if (submitting) return
-    submitMutation()
-    if (meetingType === 'poker') {
-      StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
-    } else if (meetingType === 'action') {
-      StartCheckInMutation(atmosphere, {teamId}, {history, onError, onCompleted})
-    } else if (meetingType === 'retrospective') {
-      StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})
-    } else if (meetingType === 'teamPrompt') {
-      StartTeamPromptMutation(atmosphere, {teamId}, {history, onError, onCompleted})
-    }
-  }
+  const {teamRef, onStartMeetingClick, submitting, error} = props
+  const team = useFragment(
+    graphql`
+      fragment NewMeetingActions_team on Team {
+        ...NewMeetingActionsCurrentMeetings_team
+        id
+      }
+    `,
+    teamRef
+  )
 
   return (
     <ActionRow>
@@ -95,11 +85,4 @@ const NewMeetingActions = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingActions, {
-  team: graphql`
-    fragment NewMeetingActions_team on Team {
-      ...NewMeetingActionsCurrentMeetings_team
-      id
-    }
-  `
-})
+export default NewMeetingActions

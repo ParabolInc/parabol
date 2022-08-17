@@ -5,6 +5,7 @@ import {ACTION} from 'parabol-client/utils/constants'
 import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import lazyPreload from '~/utils/lazyPreload'
 import ExportToCSV from '../ExportToCSV'
 import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
@@ -14,8 +15,8 @@ import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import QuickStats from './QuickStats'
 import RetroTopics from './RetroTopics'
 import SummaryHeader from './SummaryHeader'
-import SummarySheetCTA from './SummarySheetCTA'
 import SummaryPokerStories from './SummaryPokerStories'
+import SummarySheetCTA from './SummarySheetCTA'
 
 interface Props {
   emailCSVUrl: string
@@ -37,6 +38,12 @@ const SummarySheet = (props: Props) => {
   const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl, appOrigin} = props
   const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
+
+  // 'TeamPromptResponseSummary' includes client-side-only code that breaks SSR, so lazy-load it.
+  // :TODO: (jmtaber129): Change this to a normal import once 'TeamPromptResponseSummary' supports
+  // SSR.
+  const TeamPromptResponseSummary = lazyPreload(() => import('./TeamPromptResponseSummary'))
+
   return (
     <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
       <tbody>
@@ -54,10 +61,25 @@ const SummarySheet = (props: Props) => {
           referrer={referrer}
         />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
-        <MeetingMembersWithTasks meeting={meeting} />
-        <MeetingMembersWithoutTasks meeting={meeting} />
-        <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} appOrigin={appOrigin} />
-        <SummaryPokerStories appOrigin={appOrigin} meeting={meeting} isEmail={referrer === 'email'} />
+        {meetingType === 'teamPrompt' ? (
+          <TeamPromptResponseSummary meetingRef={meeting} />
+        ) : (
+          <>
+            <MeetingMembersWithTasks meeting={meeting} />
+            <MeetingMembersWithoutTasks meeting={meeting} />
+            <RetroTopics
+              isDemo={isDemo}
+              isEmail={referrer === 'email'}
+              meeting={meeting}
+              appOrigin={appOrigin}
+            />
+            <SummaryPokerStories
+              appOrigin={appOrigin}
+              meeting={meeting}
+              isEmail={referrer === 'email'}
+            />
+          </>
+        )}
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
@@ -80,6 +102,7 @@ export default createFragmentContainer(SummarySheet, {
       ...MeetingMembersWithoutTasks_meeting
       ...RetroTopics_meeting
       ...SummaryPokerStories_meeting
+      ...TeamPromptResponseSummary_meeting
       meetingType
       name
     }

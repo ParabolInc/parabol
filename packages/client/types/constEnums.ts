@@ -199,6 +199,10 @@ export const enum LocalStorageKey {
   ERROR_PRONE_AT = 'errorProneAt'
 }
 
+export const enum LOCKED_MESSAGE {
+  TEAM_INVITE = `Sorry! You're unable to join this team because one of your teams has an overdue payment`
+}
+
 export const enum AuthenticationError {
   FAILED_TO_SEND = 'failedToSend',
   MISSING_HASH = 'missingHash',
@@ -369,7 +373,6 @@ export const enum Threshold {
   MASS_INVITATION_TOKEN_LIFESPAN = 2592000000, // 30 days
   TEAM_INVITATION_LIFESPAN = 2592000000, // 30 days
   MAX_FREE_TEAMS = 10,
-  MAX_MONTHLY_PAUSES = 4,
   MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,
   MAX_ACCOUNT_DAILY_PASSWORD_RESETS = 3,
   MAX_AVATAR_FILE_SIZE = 1024 * 1024,

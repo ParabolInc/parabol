@@ -30,8 +30,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const {error, isOldBrowserErr} = this.state
     if (!error || isOldBrowserErr) return
     const {atmosphere} = this.props
-    const {viewerId} = atmosphere
-    SendClientSegmentEventMutation(atmosphere, 'Fatal Error', {viewerId})
+    SendClientSegmentEventMutation(atmosphere, 'Fatal Error')
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {

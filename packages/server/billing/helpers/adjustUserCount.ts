@@ -167,6 +167,19 @@ export default async function adjustUserCount(
     }
   }
 
+  if (
+    type === InvoiceItemType.PAUSE_USER ||
+    type === InvoiceItemType.AUTO_PAUSE_USER ||
+    type === InvoiceItemType.REMOVE_USER
+  ) {
+    segmentIo.identify({
+      userId,
+      traits: {
+        isActive: false
+      }
+    })
+  }
+
   const prorationDate = options.prorationDate ? toEpochSeconds(options.prorationDate) : undefined
   const hooks = proOrgs.map((org) => {
     return new InvoiceItemHook({

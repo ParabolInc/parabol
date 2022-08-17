@@ -74,12 +74,12 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     : undefined
 
   const manager = getStripeManager()
-  const [safeProrationDate, stripeSubscription] = await Promise.all([
+  const [safeProrationDate, stripeSubscriptionItem] = await Promise.all([
     getSafeProrationDate(stripeSubscriptionId, tentativeProrationDate),
-    manager.retrieveSubscription(stripeSubscriptionId)
+    manager.getSubscriptionItem(stripeSubscriptionId)
   ])
-  if (!stripeSubscription) return
-  const stripeQty = stripeSubscription.quantity || 0
+  if (!stripeSubscriptionItem) return
+  const stripeQty = stripeSubscriptionItem.quantity || 0
   const nextQuantity = stripeQty + getTypeDelta(type)
   await Promise.all([
     r
@@ -92,7 +92,11 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
         previousQuantity: stripeQty
       })
       .run(),
-    manager.updateSubscriptionQuantity(stripeSubscriptionId, nextQuantity, safeProrationDate)
+    manager.updateSubscriptionItemQuantity(
+      stripeSubscriptionItem.id,
+      nextQuantity,
+      safeProrationDate
+    )
   ])
 
   const isFlushed = await r

@@ -6,8 +6,10 @@ import SwipeableViews from 'react-swipeable-views'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
+import useBreakpoint from '../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
+import {Breakpoint} from '../../../types/constEnums'
 import {PokerTemplateList_settings} from '../../../__generated__/PokerTemplateList_settings.graphql'
 import AddNewPokerTemplate from './AddNewPokerTemplate'
 import PokerTemplateListOrgRoot from './PokerTemplateListOrgRoot'
@@ -15,14 +17,14 @@ import PokerTemplateListPublicRoot from './PokerTemplateListPublicRoot'
 import PokerTemplateListTeam from './PokerTemplateListTeam'
 
 const WIDTH = 360
-const TemplateSidebar = styled('div')({
+const TemplateSidebar = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   boxShadow: desktopSidebarShadow,
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
-  width: WIDTH,
+  width: !isDesktop ? '100%' : WIDTH,
   zIndex: 1 // show above template details to show box-shadow
-})
+}))
 
 const Label = styled('div')({
   color: PALETTE.SLATE_700,
@@ -89,8 +91,10 @@ const PokerTemplateList = (props: Props) => {
     if (props.reason === 'focus') return
     setActiveIdx(idx)
   }
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
+
   return (
-    <TemplateSidebar>
+    <TemplateSidebar isDesktop={isDesktop}>
       <Label>Sprint Poker Templates</Label>
       <StyledTabsBar activeIdx={activeIdx}>
         <FullTab

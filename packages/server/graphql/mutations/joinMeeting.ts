@@ -15,12 +15,12 @@ import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMembe
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import insertDiscussions from '../../postgres/queries/insertDiscussions'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JoinMeetingPayload from '../types/JoinMeetingPayload'
-import sendMeetingJoinToSegment from './helpers/sendMeetingJoinToSegment'
 
 const createMeetingMember = (meeting: Meeting, teamMember: TeamMember) => {
   const {userId, teamId, isSpectatingPoker} = teamMember
@@ -161,7 +161,7 @@ const joinMeeting = {
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-    sendMeetingJoinToSegment(viewerId, meeting)
+    analytics.meetingJoined(viewerId, meeting)
     return data
   }
 }

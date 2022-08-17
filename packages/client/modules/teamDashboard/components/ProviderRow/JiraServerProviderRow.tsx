@@ -48,7 +48,6 @@ const JiraServerProviderRow = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
@@ -77,9 +76,7 @@ const JiraServerProviderRow = (props: Props) => {
         providerLogo={<JiraServerProviderLogo />}
         contactUsUrl={ExternalLinks.INTEGRATIONS_JIRASERVER}
         onContactUsSubmit={() => {
-          SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button', {
-            viewerId
-          })
+          SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button')
         }}
         hasProvider={!!provider}
       />

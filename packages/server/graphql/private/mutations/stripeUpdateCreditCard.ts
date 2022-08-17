@@ -16,7 +16,10 @@ const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = asyn
   const r = await getRethink()
   const manager = getStripeManager()
   const customer = await manager.retrieveCustomer(customerId)
-  const creditCard = getCCFromCustomer(customer)
+  if (customer.deleted) {
+    throw new Error('Unable to update credit card as customer has been deleted')
+  }
+  const creditCard = await getCCFromCustomer(customer)
   const {
     metadata: {orgId}
   } = customer
