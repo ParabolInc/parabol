@@ -19,7 +19,7 @@ import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 
-export interface Props {
+interface Props {
   isNext: boolean
   cancelConfirm: undefined | (() => void)
   isConfirming: boolean

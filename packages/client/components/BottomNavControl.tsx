@@ -4,14 +4,14 @@ import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import FlatButton, {FlatButtonProps} from './FlatButton'
 
-export interface BottomNavControlProps extends FlatButtonProps {
+interface Props extends FlatButtonProps {
   confirming?: boolean
   disabled?: boolean
   status: TransitionStatus
   waiting?: boolean
 }
 
-const BottomNavControl = styled(FlatButton)<BottomNavControlProps>((props) => {
+const BottomNavControl = styled(FlatButton)<Props>((props) => {
   const {confirming, disabled, status, waiting} = props
   const visuallyDisabled = disabled || waiting
   return {
