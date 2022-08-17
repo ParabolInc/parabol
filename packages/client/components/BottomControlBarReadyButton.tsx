@@ -7,7 +7,7 @@ import {BottomControlBarReadyButton_meeting$key} from '~/__generated__/BottomCon
 import useAtmosphere from '../hooks/useAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
 
-const shake = keyframes`
+const shakeAnimation = keyframes`
   20%, 40%, 60% {
     padding: 4px 4px 8px;
     overflow: hidden;
@@ -33,13 +33,13 @@ const shake = keyframes`
   }
 `
 
-const BottomNavReadyButton = styled('div')<{shouldAnimate?: boolean; delay: number}>(
-  ({shouldAnimate, delay}) => {
+const BottomNavReadyButton = styled('div')<{showShakeAnimation?: boolean; delay: number}>(
+  ({showShakeAnimation, delay}) => {
     return {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      animation: shouldAnimate ? `1s ease-in-out ${delay}s 3 ${shake}` : undefined
+      animation: showShakeAnimation ? `1s ease-in-out ${delay}s 3 ${shakeAnimation}` : undefined
     }
   }
 )
@@ -104,7 +104,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
     votesRemaining
   } = meeting
   const [delaySeconds, setDelaySeconds] = useState(2)
-  const [shouldAnimate, setShouldAnimate] = useState(false)
+  const [showShakeAnimation, setShowShakeAnimation] = useState(false)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -128,7 +128,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
         })
 
         setDelaySeconds(30)
-        setShouldAnimate(isNotEditing)
+        setShowShakeAnimation(isNotEditing)
         break
       case 'group':
         const isNotDragging = reflectionGroups?.every((group) =>
@@ -138,7 +138,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
         )
 
         setDelaySeconds(30)
-        setShouldAnimate(!!isNotDragging)
+        setShowShakeAnimation(!!isNotDragging)
         break
       case 'vote':
         const teamVotesRemaining = votesRemaining || 0
@@ -146,12 +146,12 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
         const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
 
         setDelaySeconds(30)
-        setShouldAnimate(isNotVoting)
+        setShowShakeAnimation(isNotVoting)
         break
       case 'discuss':
         // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
         setDelaySeconds(5 * 60)
-        setShouldAnimate(true)
+        setShowShakeAnimation(true)
         break
     }
 
@@ -161,7 +161,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
     const readyCount = localStage.readyCount || 0
     if (readyCount === Math.max(1, activeCount - 1)) {
       setDelaySeconds(5)
-      setShouldAnimate(true)
+      setShowShakeAnimation(true)
     }
   }, [
     localPhase.phaseType,
@@ -174,7 +174,7 @@ const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
   ])
 
   return (
-    <BottomNavReadyButton shouldAnimate={shouldAnimate} delay={delaySeconds}>
+    <BottomNavReadyButton showShakeAnimation={showShakeAnimation} delay={delaySeconds}>
       {children}
     </BottomNavReadyButton>
   )
