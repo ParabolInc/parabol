@@ -44,12 +44,12 @@ const BottomNavReadyButton = styled('div')<{showShakeAnimation?: boolean; delay:
   }
 )
 
-interface BottomControlBarReadyButton {
+interface Props {
   meetingRef: BottomControlBarReadyButton_meeting$key
   children: ReactNode
 }
 
-const BottomControlBarReadyButton = (props: BottomControlBarReadyButton) => {
+const BottomControlBarReadyButton = (props: Props) => {
   const {meetingRef, children} = props
   const meeting = useFragment(
     graphql`
