@@ -46,23 +46,17 @@ const BottomNavReadyButton = styled('div')<{showShakeAnimation?: boolean; delay:
 
 interface Props {
   meetingRef: BottomControlBarReadyButton_meeting$key
+  progress: number
   children: ReactNode
 }
 
 const BottomControlBarReadyButton = (props: Props) => {
-  const {meetingRef, children} = props
+  const {meetingRef, progress, children} = props
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarReadyButton_meeting on NewMeeting {
         localPhase {
           phaseType
-        }
-        localStage {
-          readyCount
-          isViewerReady
-        }
-        meetingMembers {
-          id
         }
         ... on RetrospectiveMeeting {
           endedAt
@@ -97,8 +91,6 @@ const BottomControlBarReadyButton = (props: Props) => {
     endedAt,
     facilitatorUserId,
     localPhase,
-    localStage,
-    meetingMembers,
     reflectionGroups,
     viewerMeetingMember,
     votesRemaining
@@ -156,19 +148,14 @@ const BottomControlBarReadyButton = (props: Props) => {
     }
 
     // if the ready button is "full" before these conditions are met, the animation should start after 5s
-    // TODO: replace with props from ButtonControlBarReady
-    const activeCount = meetingMembers.length
-    const readyCount = localStage.readyCount || 0
-    if (readyCount === Math.max(1, activeCount - 1)) {
+    if (progress === 1) {
       setDelaySeconds(5)
       setShowShakeAnimation(true)
     }
   }, [
     localPhase.phaseType,
     localPhase.reflectPrompts,
-    localStage.readyCount,
     reflectionGroups,
-    meetingMembers,
     viewerMeetingMember,
     votesRemaining
   ])

@@ -149,7 +149,7 @@ const BottomControlBarReady = (props: Props) => {
         onKeyDown={onKeyDown}
         ref={ref}
       >
-        <BottomControlBarReadyButton meetingRef={meeting}>
+        <BottomControlBarReadyButton meetingRef={meeting} progress={progress}>
           <BottomControlBarProgress isNext={isNext} progress={progress} />
           <BottomNavIconLabel label={label} ref={originRef}>
             <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
