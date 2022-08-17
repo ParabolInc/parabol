@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import publish from '../../utils/publish'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
 
 export default {
   type: PromoteNewMeetingFacilitatorPayload,
@@ -33,7 +33,7 @@ export default {
     // AUTH
     const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {facilitatorUserId: oldFacilitatorUserId, teamId} = meeting
+    const {facilitatorUserId: oldFacilitatorUserId, teamId, endedAt} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -45,6 +45,9 @@ export default {
     }
     if (!newFacilitator.tms.includes(teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (endedAt) {
+      return {error: {message: 'Meeting has already ended'}}
     }
 
     // RESOLUTION

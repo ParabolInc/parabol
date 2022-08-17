@@ -112,6 +112,12 @@ export interface AzureUserInfo {
   timeStamp: string
 }
 
+export interface AzureProjects extends TeamProjectReference {
+  userId: string
+  teamId: string
+  service: 'azureDevOps'
+}
+
 export const freshAzureDevOpsAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, IGetTeamMemberIntegrationAuthQueryResult | null, string> => {
@@ -300,8 +306,8 @@ export const allAzureDevOpsAccessibleOrgs = (
 
 export const allAzureDevOpsProjects = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, TeamProjectReference[], string> => {
-  return new DataLoader<TeamUserKey, TeamProjectReference[], string>(
+): DataLoader<TeamUserKey, AzureProjects[], string> => {
+  return new DataLoader<TeamUserKey, AzureProjects[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {

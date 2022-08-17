@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.70.1 2022-August-11
+
+### Fixed
+
+- fix: Email summaries not sending for non-standup meetings.
+
+## 6.70.0 2022-August-10
+
+### Added
+
+- feat(graphiql): persist schema for tabs (#6813)
+- feat(metrics): Add isActive and featureFlags as new User Properties for Segment identify calls (#6997)
+- feat(standups): startRecurrence mutation (#6957)
+- feat(metrics): identify user's tier upon login (#7003)
+- feat(metrics): Use HubSpot Private apps access token for HubSpot calls ( #7010)
+
+### Fixed
+
+- fix(resetPassword): Reset request count daily (#6955)
+- fix: add billing info (#7000)
+- fix: fix truncated sprint poker description in new meeting dialog (#7027)
+- fix(metrics): remove duplicate viewerId in various Segment events (#7009)
+- fix: bug that set org count to 0 (#7008)
+- fix(standups): Update 'lastMeetingType' after a team prompt meeting starts (#7029)
+
 ## 6.69.0 2022-August-03
 
 ### Added
