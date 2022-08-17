@@ -35,14 +35,13 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     })
   }
 
-  const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
-  await updateMeetingSeries({cancelledAt: now}, meetingSeries.id)
+  await updateMeetingSeries({cancelledAt: now}, meeting.meetingSeriesId)
 
   dataLoader.get('meetingSeries').clear(meeting.meetingSeriesId)
 
   await r
     .table('NewMeeting')
-    .filter({meetingSeriesId: meetingSeries.id})
+    .filter({meetingSeriesId: meeting.meetingSeriesId})
     .filter({endedAt: null}, {default: true})
     .update({
       scheduledEndTime: null
