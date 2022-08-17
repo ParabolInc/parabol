@@ -33,7 +33,7 @@ const shakeAnimation = keyframes`
   }
 `
 
-const BottomNavReadyButton = styled('div')<{showShakeAnimation?: boolean; delay: number}>(
+const BottomNavReadyButton = styled('div')<{showShakeAnimation?: boolean; delay?: number}>(
   ({showShakeAnimation, delay}) => {
     return {
       display: 'flex',
@@ -95,8 +95,7 @@ const BottomControlBarReadyButton = (props: Props) => {
     viewerMeetingMember,
     votesRemaining
   } = meeting
-  const [delaySeconds, setDelaySeconds] = useState(2)
-  const [showShakeAnimation, setShowShakeAnimation] = useState(false)
+  const [delaySeconds, setDelaySeconds] = useState<number>()
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -119,8 +118,7 @@ const BottomControlBarReadyButton = (props: Props) => {
           return editorIds === undefined || (Array.isArray(editorIds) && editorIds.length === 0)
         })
 
-        setDelaySeconds(30)
-        setShowShakeAnimation(isNotEditing)
+        setDelaySeconds(isNotEditing ? 30 : undefined)
         break
       case 'group':
         const isNotDragging = reflectionGroups?.every((group) =>
@@ -129,28 +127,24 @@ const BottomControlBarReadyButton = (props: Props) => {
           )
         )
 
-        setDelaySeconds(30)
-        setShowShakeAnimation(!!isNotDragging)
+        setDelaySeconds(isNotDragging ? 30 : undefined)
         break
       case 'vote':
         const teamVotesRemaining = votesRemaining || 0
         const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
         const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
 
-        setDelaySeconds(30)
-        setShowShakeAnimation(isNotVoting)
+        setDelaySeconds(isNotVoting ? 30 : undefined)
         break
       case 'discuss':
         // this is a tricky one since a lot could be happening sync in a call. Maybe we hint after 5 minutes?
         setDelaySeconds(5 * 60)
-        setShowShakeAnimation(true)
         break
     }
 
     // if the ready button is "full" before these conditions are met, the animation should start after 5s
     if (progress === 1) {
       setDelaySeconds(5)
-      setShowShakeAnimation(true)
     }
   }, [
     localPhase.phaseType,
@@ -161,7 +155,7 @@ const BottomControlBarReadyButton = (props: Props) => {
   ])
 
   return (
-    <BottomNavReadyButton showShakeAnimation={showShakeAnimation} delay={delaySeconds}>
+    <BottomNavReadyButton showShakeAnimation={delaySeconds !== undefined} delay={delaySeconds}>
       {children}
     </BottomNavReadyButton>
   )
