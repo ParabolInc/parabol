@@ -125,8 +125,8 @@ const EditorLinkChangerModal = (props: Props) => {
           <InputBlock>
             <BasicInput
               {...fields.link}
+              autoFocus={!link && !!text}
               value={fields.link.value === null ? '' : fields.link.value}
-              autoFocus={link === null && text !== ''}
               onChange={onChange}
               name='link'
               spellCheck={false}
