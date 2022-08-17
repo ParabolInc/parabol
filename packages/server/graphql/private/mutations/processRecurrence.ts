@@ -3,8 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
-import getPg from '../../../postgres/getPg'
-import {getActiveMeetingSeriesQuery} from '../../../postgres/queries/generated/getActiveMeetingSeriesQuery'
+import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/queries/getMeetingSeriesByIds'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish from '../../../utils/publish'
@@ -80,7 +79,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
 
   // For each active meeting series, get the meeting start times (according to rrule) after the most
   // recent meeting start time and before now.
-  const activeMeetingSeries = await getActiveMeetingSeriesQuery.run(undefined, getPg())
+  const activeMeetingSeries = await getActiveMeetingSeries()
   for (const meetingSeries of activeMeetingSeries) {
     const lastMeeting = await r
       .table('NewMeeting')
