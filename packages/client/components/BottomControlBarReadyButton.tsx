@@ -100,10 +100,6 @@ const BottomControlBarReadyButton = (props: Props) => {
   const {viewerId} = atmosphere
 
   useEffect(() => {
-    // only enable for facilitatorUser
-    const isFacilitator = viewerId === facilitatorUserId && !endedAt
-    if (!isFacilitator) return
-
     switch (localPhase.phaseType) {
       case 'reflect':
         const hasNoReflection = reflectionGroups?.every((group) => group.reflections?.length === 0)
@@ -153,6 +149,12 @@ const BottomControlBarReadyButton = (props: Props) => {
     viewerMeetingMember,
     votesRemaining
   ])
+
+  // only enable for facilitatorUser
+  const isFacilitator = viewerId === facilitatorUserId && !endedAt
+  if (!isFacilitator) {
+    return <>{children}</>
+  }
 
   return (
     <BottomNavReadyButton showShakeAnimation={delaySeconds !== undefined} delay={delaySeconds}>
