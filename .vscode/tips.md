@@ -24,3 +24,7 @@ code --list-extensions | xargs -L 1 code-insiders --install-extension
 
 - Flow Language Support: causes goto definition (ctrl + click) to go to the import statement.
 - Apollo GraphQL (apollographql.vscode-apollo): makes autosuggest popups painfully slow!
+
+## Other tips and tricks
+
+- On a Mac, TypeScript imports can be incorrect, e.g. it tries to import from 'server/...'. To fix, go to VSCode Settings (UI), type "import module" into the search, and change TypeScript > Preferences: Import Module Specifier from "auto" to "relative".
