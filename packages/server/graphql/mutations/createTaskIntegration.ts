@@ -141,7 +141,8 @@ export default {
         assigneeName,
         team.name,
         teamDashboardUrl,
-        issueId
+        issueId,
+        updateTaskInput.integrationHash
       )
 
       if (addCommentResponse instanceof Error) {

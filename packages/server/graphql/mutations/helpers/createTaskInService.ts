@@ -76,7 +76,7 @@ const createTaskInService = async (
   } else if (service === 'gitlab') {
     const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
     if (!gitlabAuth) {
-      return {error: new Error('Cannot create GitLab task without a valid GitHLab token')}
+      return {error: new Error('Cannot create GitLab task without a valid GitLab token')}
     }
     const gitlabTaskRes = await createGitLabTask(
       taglessContentJSON,
@@ -99,6 +99,8 @@ const createTaskInService = async (
       }),
       integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }
+  } else if (service === 'azureDevOps') {
+    // TODO: implement when we can create a new Azure issue from Poker meeting
   }
   return {error: new Error('Unknown integration')}
 }
