@@ -16,6 +16,7 @@ interface Props extends WithMutationProps {
   children: ReactNode
   iconName: string
   suggestedActionId: string
+  onClick?: () => void
 }
 
 const Surface = styled('div')({
@@ -46,6 +47,7 @@ const CancelIcon = styled(Icon)({
 
 const FloatingSealIcon = styled(Icon)({
   color: PALETTE.GRAPE_700,
+  cursor: 'pointer',
   background: PALETTE.SLATE_300,
   borderRadius: '100%',
   boxShadow: buttonShadow,
@@ -53,7 +55,11 @@ const FloatingSealIcon = styled(Icon)({
   position: 'absolute',
   fontSize: ICON_SIZE.MD36,
   top: 100,
-  userSelect: 'none'
+  userSelect: 'none',
+  opacity: 0.7,
+  '&:hover': {
+    opacity: 1
+  }
 })
 
 const SuggestedActionCard = (props: Props) => {
@@ -65,7 +71,7 @@ const SuggestedActionCard = (props: Props) => {
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
   }
 
-  const {backgroundColor, children, iconName} = props
+  const {backgroundColor, children, iconName, onClick} = props
   return (
     <Surface>
       <SuggestedActionBackground backgroundColor={backgroundColor} />
@@ -73,7 +79,7 @@ const SuggestedActionCard = (props: Props) => {
       <PlainButton onClick={onCancel}>
         <CancelIcon>cancel</CancelIcon>
       </PlainButton>
-      <FloatingSealIcon>{iconName}</FloatingSealIcon>
+      <FloatingSealIcon onClick={onClick}>{iconName}</FloatingSealIcon>
     </Surface>
   )
 }

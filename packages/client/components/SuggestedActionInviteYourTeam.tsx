@@ -1,20 +1,20 @@
-import {SuggestedActionInviteYourTeam_suggestedAction} from '../__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
-import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {lazy} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useModal from '../hooks/useModal'
 import {PALETTE} from '../styles/paletteV3'
+import {SuggestedActionInviteYourTeam_suggestedAction} from '../__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
-import useModal from '../hooks/useModal'
 
 interface Props {
   suggestedAction: SuggestedActionInviteYourTeam_suggestedAction
 }
 
-const AddTeamMemberModal = lazy(() =>
-  import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
+const AddTeamMemberModal = lazy(
+  () => import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
 )
 
 const TeamName = styled('span')({
@@ -31,6 +31,7 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
       backgroundColor={PALETTE.SKY_500}
       iconName='person_add'
       suggestedActionId={suggestedActionId}
+      onClick={togglePortal}
     >
       <SuggestedActionCopy>
         {'Invite your teammates to: '}
