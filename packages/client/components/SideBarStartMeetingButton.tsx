@@ -8,10 +8,10 @@ import FlatPrimaryButton from './FlatPrimaryButton'
 import Icon from './Icon'
 
 const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
-  height: 50,
+  height: 48,
   overflow: 'hidden',
   padding: 0,
-  width: isOpen ? 160 : 50,
+  width: isOpen ? 160 : 48,
   marginLeft: 7,
   marginTop: 15,
   marginBottom: 15,
@@ -20,8 +20,7 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
 }))
 
 const MeetingIcon = styled(Icon)({
-  margin: '0px 12px',
-  transition: `all 300ms ${BezierCurve.DECELERATE}`
+  margin: '0px 11px'
 })
 
 const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
