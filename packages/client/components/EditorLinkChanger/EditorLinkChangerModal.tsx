@@ -66,7 +66,6 @@ const EditorLinkChangerModal = (props: Props) => {
       getDefault: () => text,
       validate: (value) =>
         new Legitity(value)
-          .trim()
           .required()
           .min(1, 'Maybe give it a name?')
           .max(100, 'That name is looking pretty long')
