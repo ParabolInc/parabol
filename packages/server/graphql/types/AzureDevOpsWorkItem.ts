@@ -1,6 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import {getInstanceId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
@@ -14,15 +17,28 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'GUID instanceId:issueKey'
+      description: 'GUID instanceId:projectKey:issueKey',
+      resolve: ({id, teamProject, url}: {id: string; teamProject: string; url: string}) => {
+        const instanceId = getInstanceId(new URL(url))
+        return AzureDevOpsIssueId.join(instanceId, teamProject, id)
+      }
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Title of the work item'
     },
+    // TODO: change teamProject name: https://github.com/ParabolInc/parabol/issues/7073
     teamProject: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Name of the Team Project the work item belongs to'
+    },
+    project: {
+      type: new GraphQLNonNull(AzureDevOpsRemoteProject),
+      description: 'The Azure DevOps Remote Project the work item belongs to'
+      // resolve: ({teamProject, url}: {teamProject: string; url: string}) => {
+      //   const instanceId = getInstanceId(new URL(url))
+      //   return {instanceId, teamProject}
+      // }
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),
