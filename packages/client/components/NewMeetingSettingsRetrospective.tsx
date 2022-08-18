@@ -16,8 +16,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
       fragment NewMeetingSettingsRetrospective_team on Team {
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...RetroTemplatePicker_settings
-          ...NewMeetingSettingsToggleCheckIn_settings
-          ...NewMeetingSettingsToggleAnonymity_settings
+          ...NewMeetingSettingsRetrospectiveSettings_settings
         }
       }
     `,
@@ -27,7 +26,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
   return (
     <>
       <RetroTemplatePicker settings={retroSettings} />
-      <NewMeetingSettingsRetrospectiveSettings settings={retroSettings} />
+      <NewMeetingSettingsRetrospectiveSettings settingsRef={retroSettings} />
     </>
   )
 }
