@@ -4,9 +4,11 @@ import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import JiraServerSVG from './JiraServerSVG'
+import JiraSVG from './JiraSVG'
 import MenuItem from './MenuItem'
 import MenuItemAvatar from './MenuItemAvatar'
 import MenuItemLabel from './MenuItemLabel'
+import ParabolLogoSVG from './ParabolLogoSVG'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
@@ -16,12 +18,14 @@ interface Props {
   query: string
 }
 
-const svgLookup = {
-  jira: JiraServerSVG,
+const svgLookup: Record<TaskServiceEnum, React.MemoExoticComponent<() => JSX.Element>> = {
+  jiraServer: JiraServerSVG,
   gitlab: GitLabSVG,
   azureDevOps: AzureDevOpsSVG,
-  github: GitHubSVG
-} as Record<TaskServiceEnum, React.MemoExoticComponent<() => JSX.Element>>
+  github: GitHubSVG,
+  jira: JiraSVG,
+  PARABOL: ParabolLogoSVG
+}
 
 const TaskIntegrationMenuItem = forwardRef((props: Props, ref: any) => {
   const {label, onClick, service, query} = props
