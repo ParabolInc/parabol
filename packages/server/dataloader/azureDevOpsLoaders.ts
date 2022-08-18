@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import {IntegrationProviderServiceEnum} from '../graphql/private/resolverTypes'
 import {AzureDevOpsRemoteProject} from '../graphql/public/resolverTypes'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
@@ -113,7 +114,7 @@ export interface AzureUserInfo {
   timeStamp: string
 }
 
-export interface AzureProjects extends TeamProjectReference {
+export interface AzureProject extends TeamProjectReference {
   userId: string
   teamId: string
   service: 'azureDevOps'
@@ -307,8 +308,8 @@ export const allAzureDevOpsAccessibleOrgs = (
 
 export const allAzureDevOpsProjects = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, AzureProjects[], string> => {
-  return new DataLoader<TeamUserKey, AzureProjects[], string>(
+): DataLoader<TeamUserKey, AzureProject[], string> => {
+  return new DataLoader<TeamUserKey, AzureProject[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
@@ -350,16 +351,8 @@ export const allAzureDevOpsProjects = (
 
 export const azureDevOpsProject = (
   parent: RootDataLoader
-): DataLoader<
-  AzureDevOpsRemoteProjectKey,
-  AzureDevOpsRemoteProject | Error | undefined,
-  string
-> => {
-  return new DataLoader<
-    AzureDevOpsRemoteProjectKey,
-    AzureDevOpsRemoteProject | Error | undefined,
-    string
-  >(
+): DataLoader<AzureDevOpsRemoteProjectKey, AzureDevOpsRemoteProject | never[], string> => {
+  return new DataLoader<AzureDevOpsRemoteProjectKey, AzureDevOpsRemoteProject | never[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({instanceId, userId, teamId, projectId}) => {
@@ -382,7 +375,8 @@ export const azureDevOpsProject = (
             userId,
             self: project._links.self.href,
             key: 'testa',
-            service: 'azureDevOps'
+            instanceId,
+            service: 'azureDevOps' as IntegrationProviderServiceEnum
           }
         })
       )

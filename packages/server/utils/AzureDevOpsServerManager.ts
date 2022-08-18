@@ -233,7 +233,7 @@ interface ProjectRes {
     name: string
     url: string
   }
-  lastUpdateTime: string
+  lastUpdateTime: Date
 }
 
 const MAX_REQUEST_TIME = 8000
