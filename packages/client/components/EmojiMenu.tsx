@@ -1,10 +1,10 @@
 import {EditorState} from 'draft-js'
 import React, {Component, Ref} from 'react'
 import stringScore from 'string-score'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 import emojiArray from '../utils/emojiArray'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface EmojiSuggestion {
   value: string
@@ -14,7 +14,7 @@ interface EmojiSuggestion {
 interface Props {
   menuProps: MenuProps
   editorState: EditorState
-  menuItemClickFactory: (emoji: string, editorState: EditorState) => (e: React.MouseEvent) => void
+  onSelectEmoji: (emoji: string, editorState: EditorState) => void
   menuRef: Ref<any>
   query: string
 }
@@ -71,7 +71,7 @@ class EmojiMenu extends Component<Props, State> {
   }
 
   render() {
-    const {menuProps, menuRef, menuItemClickFactory} = this.props
+    const {menuProps, menuRef, onSelectEmoji} = this.props
     const {focusedEditorState} = this.state
     const {suggestedEmojis} = this.state
     return (
@@ -80,7 +80,10 @@ class EmojiMenu extends Component<Props, State> {
           <MenuItem
             key={value}
             label={`${emoji} ${value}`}
-            onClick={menuItemClickFactory(emoji, focusedEditorState!)}
+            onClick={(e) => {
+              e.preventDefault()
+              onSelectEmoji(emoji, focusedEditorState!)
+            }}
           />
         ))}
       </Menu>

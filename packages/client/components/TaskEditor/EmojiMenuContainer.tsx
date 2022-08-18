@@ -6,7 +6,7 @@ import lazyPreload from '../../utils/lazyPreload'
 
 interface Props {
   originCoords: ClientRect
-  menuItemClickFactory: (emoji: string, editorState: EditorState) => (e: React.MouseEvent) => void
+  onSelectEmoji: (emoji: string, editorState: EditorState) => void
   query: string
   menuRef: Ref<any>
   editorState: EditorState
@@ -16,16 +16,17 @@ interface Props {
 const EmojiMenu = lazyPreload(() => import(/* webpackChunkName: 'EmojiMenu' */ '../EmojiMenu'))
 
 const EmojiMenuContainer = (props: Props) => {
-  const {originCoords, removeModal, menuItemClickFactory, query, menuRef, editorState} = props
+  const {originCoords, removeModal, onSelectEmoji, query, menuRef, editorState} = props
   const {menuProps, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT, {
     originCoords,
     onClose: removeModal
   })
+
   useEffect(togglePortal, [])
   return menuPortal(
     <EmojiMenu
       menuProps={menuProps}
-      menuItemClickFactory={menuItemClickFactory}
+      onSelectEmoji={onSelectEmoji}
       query={query}
       menuRef={menuRef}
       editorState={editorState}

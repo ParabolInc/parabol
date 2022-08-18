@@ -29,8 +29,7 @@ const withEmojis = (ComposedComponent) => {
 
     menuRef = React.createRef<any>()
 
-    menuItemClickFactory = (emoji, editorState) => (e) => {
-      e.preventDefault()
+    onSelectEmoji = (emoji, editorState) => {
       const {setEditorState} = this.props
       const nextEditorState = autoCompleteEmoji(editorState, emoji)
       setEditorState(nextEditorState)
@@ -80,7 +79,7 @@ const withEmojis = (ComposedComponent) => {
       return (
         <EmojiMenuContainer
           removeModal={this.removeModal}
-          menuItemClickFactory={this.menuItemClickFactory}
+          onSelectEmoji={this.onSelectEmoji}
           query={query}
           menuRef={this.menuRef}
           editorState={editorState}

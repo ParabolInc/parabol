@@ -1,11 +1,11 @@
-import React, {ReactNode, useRef, useState} from 'react'
-import getWordAt from './getWordAt'
-import getDraftCoords from '../../utils/getDraftCoords'
-import getAnchorLocation from './getAnchorLocation'
-import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
-import EmojiMenuContainer from './EmojiMenuContainer'
 import {EditorProps, EditorState} from 'draft-js'
+import React, {ReactNode, useRef, useState} from 'react'
 import {SetEditorState} from '../../types/draft'
+import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
+import getDraftCoords from '../../utils/getDraftCoords'
+import EmojiMenuContainer from './EmojiMenuContainer'
+import getAnchorLocation from './getAnchorLocation'
+import getWordAt from './getWordAt'
 
 type Handlers = Pick<EditorProps, 'keyBindingFn' | 'onChange'> & {
   renderModal?: () => ReactNode | null
@@ -37,10 +37,7 @@ const useEmojis = (
     }
     return null
   }
-  const menuItemClickFactory = (emoji: string, editorState: EditorState) => (
-    e: React.MouseEvent
-  ) => {
-    e.preventDefault()
+  const onSelectEmoji = (emoji: string, editorState: EditorState) => {
     const nextEditorState = autoCompleteEmoji(editorState, emoji)
     setEditorState(nextEditorState)
   }
@@ -73,7 +70,7 @@ const useEmojis = (
     return (
       <EmojiMenuContainer
         removeModal={onRemoveModal}
-        menuItemClickFactory={menuItemClickFactory}
+        onSelectEmoji={onSelectEmoji}
         query={query}
         menuRef={menuRef}
         editorState={editorState}
