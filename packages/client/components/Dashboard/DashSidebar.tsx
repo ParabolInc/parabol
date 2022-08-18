@@ -6,6 +6,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
+import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
 
 interface Props {
@@ -18,7 +19,7 @@ const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   userSelect: 'none',
   transition: `all 300ms`,
   transform: isOpen ? undefined : `translateX(-${NavSidebar.WIDTH}px)`,
-  width: isOpen ? NavSidebar.WIDTH : 0
+  width: isOpen ? NavSidebar.WIDTH : '70px'
 }))
 
 const Contents = styled('div')({
@@ -50,26 +51,34 @@ const NavItemsWrap = styled('div')({
   paddingRight: 8
 })
 
+const Wrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column'
+})
+
 const DashSidebar = (props: Props) => {
   const {isOpen, viewer} = props
   return (
-    <Nav isOpen={isOpen}>
-      <Contents>
-        <NavItemsWrap>
-          <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-          <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
-          <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
-        </NavItemsWrap>
-        <DashHR />
-        <NavMain>
-          <NavList viewer={viewer} />
-        </NavMain>
-        <DashHR />
-        <NavItemsWrap>
-          <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
-        </NavItemsWrap>
-      </Contents>
-    </Nav>
+    <Wrapper>
+      <SideBarStartMeetingButton isOpen={isOpen} />
+      <Nav isOpen={isOpen}>
+        <Contents>
+          <NavItemsWrap>
+            <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
+            <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
+            <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
+          </NavItemsWrap>
+          <DashHR />
+          <NavMain>
+            <NavList viewer={viewer} />
+          </NavMain>
+          <DashHR />
+          <NavItemsWrap>
+            <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+          </NavItemsWrap>
+        </Contents>
+      </Nav>
+    </Wrapper>
   )
 }
 
