@@ -1,3 +1,4 @@
+import {EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
 import getDraftCoords from '../../utils/getDraftCoords'
@@ -10,6 +11,7 @@ const withEmojis = (ComposedComponent) => {
     cachedCoords: any
 
     state = {
+      focusedEditorState: null,
       isOpen: false,
       query: ''
     }
@@ -29,9 +31,22 @@ const withEmojis = (ComposedComponent) => {
 
     menuRef = React.createRef<any>()
 
-    onSelectEmoji = (emoji, editorState) => {
+    static getDerivedStateFromProps(nextProps, prevState) {
+      const {editorState} = nextProps
+      return {
+        // clicking on a menu will cause the editorStateSelection to lose focus, so we persist the last state before that point
+        focusedEditorState: editorState.getSelection().getHasFocus()
+          ? editorState
+          : prevState.focusedEditorState
+      }
+    }
+
+    onSelectEmoji = (emoji) => {
       const {setEditorState} = this.props
-      const nextEditorState = autoCompleteEmoji(editorState, emoji)
+      const nextEditorState = autoCompleteEmoji(
+        this.state.focusedEditorState! as EditorState,
+        emoji
+      )
       setEditorState(nextEditorState)
     }
 
@@ -74,7 +89,6 @@ const withEmojis = (ComposedComponent) => {
 
     renderModal = () => {
       const {query} = this.state
-      const {editorState} = this.props
       this.cachedCoords = getDraftCoords() || this.cachedCoords
       return (
         <EmojiMenuContainer
@@ -82,7 +96,6 @@ const withEmojis = (ComposedComponent) => {
           onSelectEmoji={this.onSelectEmoji}
           query={query}
           menuRef={this.menuRef}
-          editorState={editorState}
           originCoords={this.cachedCoords}
         />
       )

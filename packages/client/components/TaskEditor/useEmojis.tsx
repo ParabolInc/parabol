@@ -26,6 +26,11 @@ const useEmojis = (
   const cachedCoordsRef = useRef<ClientRect | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const [focusedEditorState, setFocusedEditorState] = useState<EditorState>(editorState)
+  if (focusedEditorState !== editorState && editorState.getSelection().getHasFocus()) {
+    setFocusedEditorState(editorState)
+  }
+
   const handleKeyBindingFn: Handlers['keyBindingFn'] = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
@@ -37,8 +42,8 @@ const useEmojis = (
     }
     return null
   }
-  const onSelectEmoji = (emoji: string, editorState: EditorState) => {
-    const nextEditorState = autoCompleteEmoji(editorState, emoji)
+  const onSelectEmoji = (emoji: string) => {
+    const nextEditorState = autoCompleteEmoji(focusedEditorState, emoji)
     setEditorState(nextEditorState)
   }
 
@@ -73,7 +78,6 @@ const useEmojis = (
         onSelectEmoji={onSelectEmoji}
         query={query}
         menuRef={menuRef}
-        editorState={editorState}
         originCoords={cachedCoordsRef.current!}
       />
     )

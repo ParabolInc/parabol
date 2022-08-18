@@ -1,4 +1,3 @@
-import {EditorState} from 'draft-js'
 import React, {Component, Ref} from 'react'
 import stringScore from 'string-score'
 import {MenuProps} from '../hooks/useMenu'
@@ -13,14 +12,12 @@ interface EmojiSuggestion {
 
 interface Props {
   menuProps: MenuProps
-  editorState: EditorState
-  onSelectEmoji: (emoji: string, editorState: EditorState) => void
+  onSelectEmoji: (emoji: string) => void
   menuRef: Ref<any>
   query: string
 }
 
 interface State {
-  focusedEditorState: EditorState | null
   suggestedEmojis: EmojiSuggestion[]
   query: string
 }
@@ -47,7 +44,7 @@ class EmojiMenu extends Component<Props, State> {
     nextProps: Readonly<Props>,
     prevState: State
   ): Partial<State> | null {
-    const {editorState, query} = nextProps
+    const {query} = nextProps
     if (query && query === prevState.query) return null
     const suggestedEmojis = EmojiMenu.filterByQuery(query)
     if (suggestedEmojis.length === 0) {
@@ -55,24 +52,18 @@ class EmojiMenu extends Component<Props, State> {
       return null
     }
     return {
-      // clicking on a menu will cause the editorStateSelection to lose focus, so we persist the last state before that point
-      focusedEditorState: editorState.getSelection().getHasFocus()
-        ? editorState
-        : prevState.focusedEditorState,
       query,
       suggestedEmojis
     }
   }
 
   state: State = {
-    focusedEditorState: null,
     suggestedEmojis: [],
     query: ''
   }
 
   render() {
     const {menuProps, menuRef, onSelectEmoji} = this.props
-    const {focusedEditorState} = this.state
     const {suggestedEmojis} = this.state
     return (
       <Menu ariaLabel={'Select the emoji'} {...menuProps} keepParentFocus ref={menuRef} tabReturns>
@@ -82,7 +73,7 @@ class EmojiMenu extends Component<Props, State> {
             label={`${emoji} ${value}`}
             onClick={(e) => {
               e.preventDefault()
-              onSelectEmoji(emoji, focusedEditorState!)
+              onSelectEmoji(emoji)
             }}
           />
         ))}
