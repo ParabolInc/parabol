@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import {AzureDevOpsRemoteProject} from '../graphql/public/resolverTypes'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
@@ -43,7 +44,7 @@ export interface AzureDevOpsRemoteProjectKey {
   userId: string
   teamId: string
   instanceId: string
-  projectKey: string
+  projectId: string
 }
 
 export interface AzureDevOpsIssueKey {
@@ -349,10 +350,16 @@ export const allAzureDevOpsProjects = (
 
 export const azureDevOpsProject = (
   parent: RootDataLoader
-  // ): DataLoader<TeamUserKey, AzureProjects[], string> => {
-): DataLoader<any, any, string> => {
-  return new DataLoader<any, any, string>(
-    // return new DataLoader<TeamUserKey, AzureProjects[], string>(
+): DataLoader<
+  AzureDevOpsRemoteProjectKey,
+  AzureDevOpsRemoteProject | Error | undefined,
+  string
+> => {
+  return new DataLoader<
+    AzureDevOpsRemoteProjectKey,
+    AzureDevOpsRemoteProject | Error | undefined,
+    string
+  >(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({instanceId, userId, teamId, projectId}) => {

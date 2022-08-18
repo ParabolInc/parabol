@@ -8,7 +8,6 @@ import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
-import {AzureDevOpsRemoteProject} from '../graphql/public/resolverTypes'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
@@ -209,6 +208,32 @@ interface WorkItemAddFieldResponse {
   fields: object
   _links: object
   url: string
+}
+
+interface ProjectRes {
+  id: string
+  name: string
+  url: string
+  state: string
+  revision: number
+  _links: {
+    self: {
+      href: string
+    }
+    collection: {
+      href: string
+    }
+    web: {
+      href: string
+    }
+  }
+  visibility: string
+  defaultTeam: {
+    id: string
+    name: string
+    url: string
+  }
+  lastUpdateTime: string
 }
 
 const MAX_REQUEST_TIME = 8000
@@ -605,7 +630,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
   async getProject(instanceId: string, projectId: string) {
     const uri = `https://${instanceId}/_apis/projects/${projectId}`
-    const res = await this.get<AzureDevOpsRemoteProject>(uri)
+    const res = await this.get<ProjectRes>(uri)
     if (res instanceof Error) {
       return {error: res}
     }
