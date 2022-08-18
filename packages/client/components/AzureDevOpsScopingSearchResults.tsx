@@ -57,6 +57,10 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                       url
                       state
                       type
+                      project {
+                        id
+                        name
+                      }
                     }
                   }
                 }
@@ -87,6 +91,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const viewer = query.viewer
   const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
   const workItems = azureDevOps?.workItems ?? null
+  console.log('🚀 ~ workItems', workItems)
   const edges = workItems?.edges ?? null
   const error = workItems?.error ?? null
 
@@ -142,8 +147,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
               }}
               summary={node.title}
               url={node.url}
-              // linkText={`${node.type} #${node.id}`}
-              linkText={`#${issueKey} #${node.id}`}
+              linkText={`#${issueKey} #${node.project.name}`}
               linkTitle={`Azure DevOps Work Item #${node.id}`}
             />
           )

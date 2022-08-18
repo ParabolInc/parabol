@@ -537,7 +537,9 @@ export const getMappedAzureDevOpsWorkItem = async (
     descriptionHTML: returnedWorkItem.fields['System.Description']
       ? returnedWorkItem.fields['System.Description']
       : '',
-    service: 'azureDevOps'
+    service: 'azureDevOps',
+    teamId,
+    userId
   } as AzureDevOpsWorkItem
 
   const projectResult = await manager.getProjectProcessTemplate(

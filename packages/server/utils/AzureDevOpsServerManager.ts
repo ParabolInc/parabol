@@ -8,6 +8,7 @@ import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
+import {AzureDevOpsRemoteProject} from '../graphql/public/resolverTypes'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
@@ -600,6 +601,15 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       firstError = result
     }
     return {error: firstError, process: result.name}
+  }
+
+  async getProject(instanceId: string, projectId: string) {
+    const uri = `https://${instanceId}/_apis/projects/${projectId}`
+    const res = await this.get<AzureDevOpsRemoteProject>(uri)
+    if (res instanceof Error) {
+      return {error: res, project: null}
+    }
+    return {error: null, project: res}
   }
 
   async getAccountProjects(accountName: string) {

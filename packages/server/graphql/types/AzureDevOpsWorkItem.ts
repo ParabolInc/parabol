@@ -1,6 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import {IntegrationProviderAzureDevOps} from 'server/postgres/queries/getIntegrationProvidersByIds'
 import {getInstanceId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
@@ -19,7 +21,7 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'GUID instanceId:projectKey:issueKey',
       resolve: ({id, teamProject, url}: {id: string; teamProject: string; url: string}) => {
-        const instanceId = getInstanceId(new URL(url))
+        const instanceId = getInstanceId(url)
         return AzureDevOpsIssueId.join(instanceId, teamProject, id)
       }
     },
@@ -30,15 +32,29 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
     // TODO: change teamProject name: https://github.com/ParabolInc/parabol/issues/7073
     teamProject: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'Name of the Team Project the work item belongs to'
+      description: 'Name or id of the Team Project the work item belongs to'
     },
     project: {
       type: new GraphQLNonNull(AzureDevOpsRemoteProject),
-      description: 'The Azure DevOps Remote Project the work item belongs to'
-      // resolve: ({teamProject, url}: {teamProject: string; url: string}) => {
-      //   const instanceId = getInstanceId(new URL(url))
-      //   return {instanceId, teamProject}
-      // }
+      description: 'The Azure DevOps Remote Project the work item belongs to',
+      resolve: async ({teamId, userId, teamProject, url}, _args: unknown, {dataLoader}) => {
+        const auth = await dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
+        const provider = await dataLoader.get('integrationProviders').loadNonNull(auth!.providerId)
+        const manager = new AzureDevOpsServerManager(
+          auth,
+          provider as IntegrationProviderAzureDevOps
+        )
+        const instanceId = getInstanceId(url)
+        const {project} = await manager.getProject(instanceId, teamProject)
+        return {
+          ...project,
+          teamId,
+          userId,
+          self: project._links.self.href,
+          key: 'testa',
+          service: 'azureDevOps'
+        }
+      }
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),
