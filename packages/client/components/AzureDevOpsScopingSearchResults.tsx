@@ -58,7 +58,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                       state
                       type
                       project {
-                        id
                         name
                       }
                     }

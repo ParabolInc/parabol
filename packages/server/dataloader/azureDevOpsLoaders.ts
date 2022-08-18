@@ -374,7 +374,6 @@ export const azureDevOpsProject = (
             teamId,
             userId,
             self: project._links.self.href,
-            key: 'testa',
             instanceId,
             service: 'azureDevOps' as IntegrationProviderServiceEnum
           }

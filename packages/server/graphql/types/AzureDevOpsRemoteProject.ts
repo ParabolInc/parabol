@@ -38,9 +38,6 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
       description: 'The instance ID that the project lives on',
       resolve: ({url}: {url: string}) => getInstanceId(new URL(url))
     },
-    key: {
-      type: new GraphQLNonNull(GraphQLString)
-    },
     name: {
       type: new GraphQLNonNull(GraphQLString)
     },
