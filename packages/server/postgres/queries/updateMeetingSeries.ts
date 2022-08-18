@@ -6,13 +6,12 @@ import {
 
 const updateMeetingSeries = async (
   update: Partial<IUpdateMeetingSeriesByIdQueryParams>,
-  meetingSeriesIds: number | number[]
+  id: number
 ) => {
-  meetingSeriesIds = typeof meetingSeriesIds === 'number' ? [meetingSeriesIds] : meetingSeriesIds
   return updateMeetingSeriesByIdQuery.run(
     {
       ...update,
-      ids: meetingSeriesIds
+      id
     } as any,
     getPg()
   )

@@ -1,6 +1,5 @@
 /*
   @name updateMeetingSeriesByIdQuery
-  @param ids -> (...)
 */
 UPDATE "MeetingSeries" SET
   "meetingType" = COALESCE(:meetingType, "meetingType"),
@@ -8,4 +7,4 @@ UPDATE "MeetingSeries" SET
   "recurrenceRule" = COALESCE(:recurrenceRule, "recurrenceRule"),
   "duration" = COALESCE(:duration, "duration"),
   "cancelledAt" = COALESCE(:cancelledAt, "cancelledAt")
-WHERE id IN :ids;
+WHERE id = :id;
