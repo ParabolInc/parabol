@@ -347,6 +347,47 @@ export const allAzureDevOpsProjects = (
   )
 }
 
+export const azureDevOpsProject = (
+  parent: RootDataLoader
+  // ): DataLoader<TeamUserKey, AzureProjects[], string> => {
+): DataLoader<any, any, string> => {
+  return new DataLoader<any, any, string>(
+    // return new DataLoader<TeamUserKey, AzureProjects[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({instanceId, userId, teamId, projectId}) => {
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return []
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          if (!provider) return []
+          const manager = new AzureDevOpsServerManager(
+            auth,
+            provider as IntegrationProviderAzureDevOps
+          )
+          const {error, project} = await manager.getProject(instanceId, projectId)
+          if (error !== undefined) {
+            console.log(error)
+            return []
+          }
+          return {
+            ...project,
+            teamId,
+            userId,
+            self: project._links.self.href,
+            key: 'testa',
+            service: 'azureDevOps'
+          }
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}:${key.instanceId}:${key.projectId}`
+    }
+  )
+}
+
 export const azureDevOpsDimensionFieldMap = (
   parent: RootDataLoader
 ): DataLoader<

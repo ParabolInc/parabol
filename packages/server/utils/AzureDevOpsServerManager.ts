@@ -607,9 +607,9 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const uri = `https://${instanceId}/_apis/projects/${projectId}`
     const res = await this.get<AzureDevOpsRemoteProject>(uri)
     if (res instanceof Error) {
-      return {error: res, project: null}
+      return {error: res}
     }
-    return {error: null, project: res}
+    return {project: res}
   }
 
   async getAccountProjects(accountName: string) {
