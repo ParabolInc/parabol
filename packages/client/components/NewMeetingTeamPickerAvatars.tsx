@@ -40,6 +40,8 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
         teamMembers {
           id
           picture
+          isLead
+          isSelf
         }
       }
     `,
@@ -50,7 +52,18 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
 
   const randomAvatars = useMemo(() => {
     const randomTeamMembers = getShuffledArr(teamMembers)
-    return randomTeamMembers.slice(0, 4)
+
+    const filteredMembers = [] as typeof randomTeamMembers
+    randomTeamMembers.forEach((member) => {
+      // Always show the lead first
+      if (member.isLead) {
+        filteredMembers.unshift(member)
+      } else if (teamMembers.length <= 4 || !member.isSelf) {
+        filteredMembers.push(member)
+      }
+    })
+
+    return filteredMembers.slice(0, 4)
   }, [teamMembers])
 
   return (
