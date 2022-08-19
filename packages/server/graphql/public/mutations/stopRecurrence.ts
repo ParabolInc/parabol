@@ -19,8 +19,7 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
 
-  const {teamId, meetingType} = meeting
-
+  const {teamId, meetingType, meetingSeriesId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
@@ -29,19 +28,18 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
   }
 
-  if (!meeting.meetingSeriesId) {
+  if (!meetingSeriesId) {
     return standardError(new Error('Meeting does not have meeting series associated!'), {
       userId: viewerId
     })
   }
 
-  await updateMeetingSeries({cancelledAt: now}, meeting.meetingSeriesId)
-
-  dataLoader.get('meetingSeries').clear(meeting.meetingSeriesId)
+  await updateMeetingSeries({cancelledAt: now}, meetingSeriesId)
+  dataLoader.get('meetingSeries').clear(meetingSeriesId)
 
   await r
     .table('NewMeeting')
-    .filter({meetingSeriesId: meeting.meetingSeriesId})
+    .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
     .filter({endedAt: null}, {default: true})
     .update({
       scheduledEndTime: null
