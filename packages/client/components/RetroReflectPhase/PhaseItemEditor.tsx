@@ -268,7 +268,16 @@ const PhaseItemEditor = (props: Props) => {
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
-                <ReflectionEditorWrapper editorState={card.editorState} readOnly />
+                <ReflectionEditorWrapper
+                  editorState={card.editorState}
+                  readOnly
+                  disableAnonymity={disableAnonymity}
+                />
+                {disableAnonymity && (
+                  <ReflectionCardAuthor>
+                    {viewerMeetingMember?.user.preferredName}
+                  </ReflectionCardAuthor>
+                )}
               </CardInFlightStyles>
             )
           })}
