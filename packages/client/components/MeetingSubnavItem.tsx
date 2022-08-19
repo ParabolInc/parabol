@@ -31,7 +31,7 @@ const ItemRoot = styled('div')<ItemRootProps>(
     position: 'relative',
     userSelect: 'none',
     width: '100%',
-    '&:hover, :focus': {
+    '&:hover': {
       backgroundColor: onClick && !isActive ? PALETTE.SLATE_200 : undefined,
       cursor: !isActive && onClick ? 'pointer' : undefined,
       opacity: !isDisabled ? 1 : undefined
