@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import usePortal from '../../hooks/usePortal'
@@ -10,6 +12,8 @@ import {Elevation} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
+import {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
+import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import getBBox from './getBBox'
@@ -52,6 +56,7 @@ interface Props {
   stackTopRef: RefObject<HTMLDivElement>
   dataCy: string
   readOnly?: boolean
+  meetingRef: PhaseItemEditor_meeting$key
 }
 
 const PhaseItemEditor = (props: Props) => {
@@ -64,7 +69,8 @@ const PhaseItemEditor = (props: Props) => {
     cardsInFlightRef,
     forceUpdateColumn,
     dataCy,
-    readOnly
+    readOnly,
+    meetingRef
   } = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
@@ -98,6 +104,22 @@ const PhaseItemEditor = (props: Props) => {
       return undefined
     }
   }, [isFocused, isEditing, editorState.getCurrentContent().hasText()])
+
+  const meeting = useFragment(
+    graphql`
+      fragment PhaseItemEditor_meeting on RetrospectiveMeeting {
+        disableAnonymity
+        viewerMeetingMember {
+          user {
+            preferredName
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+
+  const {disableAnonymity, viewerMeetingMember} = meeting
 
   const handleSubmit = (content) => {
     const input = {
@@ -227,7 +249,11 @@ const PhaseItemEditor = (props: Props) => {
           placeholder='My reflection… (press enter to add)'
           setEditorState={setEditorState}
           readOnly={readOnly}
+          disableAnonymity={disableAnonymity}
         />
+        {disableAnonymity && (
+          <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
+        )}
         <EnterHint visible={!!enterHint} onClick={handleKeydown}>
           {enterHint}
         </EnterHint>

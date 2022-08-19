@@ -33,6 +33,7 @@ import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
+import ReflectionCardAuthor from './ReflectionCardAuthor'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
 
@@ -42,13 +43,6 @@ const StyledReacjis = styled(ReactjiSection)({
 
 const SpotlightIcon = styled(IconLabel)({
   color: PALETTE.SLATE_700
-})
-
-const Author = styled('div')({
-  padding: '12px 16px',
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  fontWeight: 700
 })
 
 const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotlight}) => ({
@@ -299,7 +293,7 @@ const ReflectionCard = (props: Props) => {
           reflectionId={reflectionId}
         />
       )}
-      {disableAnonymity && <Author>{creator?.preferredName}</Author>}
+      {disableAnonymity && <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <SpotlightButton
