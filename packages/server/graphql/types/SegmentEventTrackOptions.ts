@@ -6,8 +6,9 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql'
+import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
+import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
-import TaskServiceEnum from './TaskServiceEnum'
 import TierEnum from './TierEnum'
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
@@ -24,12 +25,15 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     reflectionsCount: {type: GraphQLInt},
     action: {type: GraphQLString},
     searchQueryString: {type: GraphQLString},
-    service: {type: TaskServiceEnum},
+    service: {type: IntegrationProviderServiceEnum},
     searchQueryFilters: {type: GraphQLList(GraphQLID)},
     projectId: {type: GraphQLID},
     selectedAll: {type: GraphQLBoolean},
     domainId: {type: GraphQLID},
-    CTAType: {type: TierEnum}
+    CTAType: {type: TierEnum},
+    taskId: {type: GraphQLID},
+    meetingType: {type: MeetingTypeEnum},
+    inMeeting: {type: GraphQLBoolean}
   })
 })
 

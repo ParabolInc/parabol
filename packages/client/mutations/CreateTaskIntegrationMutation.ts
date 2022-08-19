@@ -6,6 +6,7 @@ import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {
@@ -52,6 +53,11 @@ graphql`
       updatedAt
       teamId
       userId
+      id
+      meeting {
+        id
+        meetingType
+      }
     }
   }
 `
@@ -187,7 +193,21 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         gitlabTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
-    onCompleted,
+    onCompleted: (data, errors) => {
+      if (onCompleted) {
+        onCompleted(data, errors)
+      }
+      if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
+        SendClientSegmentEventMutation(atmosphere, 'Task Published', {
+          taskId: data.createTaskIntegration.task?.id,
+          teamId: data.createTaskIntegration.task?.teamId,
+          meetingId: data.createTaskIntegration.task?.meeting?.id,
+          meetingType: data.createTaskIntegration.task?.meeting?.meetingType,
+          inMeeting: window.location.href.includes('/meet'),
+          service: integrationProviderService
+        })
+      }
+    },
     onError
   })
 }

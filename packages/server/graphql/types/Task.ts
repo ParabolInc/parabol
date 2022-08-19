@@ -24,6 +24,7 @@ import isValid from '../isValid'
 import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import NewMeeting from './NewMeeting'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import TaskEditorDetails from './TaskEditorDetails'
 import TaskEstimate from './TaskEstimate'
@@ -259,6 +260,13 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
     meetingId: {
       type: GraphQLID,
       description: 'the foreign key for the meeting the task was created in'
+    },
+    meeting: {
+      type: NewMeeting,
+      description: 'The meeting the task was created in',
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('newMeetings').load(meetingId)
+      }
     },
     doneMeetingId: {
       type: GraphQLID,

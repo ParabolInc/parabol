@@ -10,7 +10,8 @@ const IntegrationProviderServiceEnum = new GraphQLEnumType({
     mattermost: {},
     jiraServer: {},
     azureDevOps: {},
-    msTeams: {}
+    msTeams: {},
+    PARABOL: {}
   }
 })
 
@@ -23,3 +24,4 @@ export type IntegrationProviderServiceEnumType =
   | 'jiraServer'
   | 'azureDevOps'
   | 'msTeams'
+  | 'PARABOL'
