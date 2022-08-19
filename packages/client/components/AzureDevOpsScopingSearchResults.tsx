@@ -90,7 +90,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const viewer = query.viewer
   const azureDevOps = viewer?.teamMember!.integrations.azureDevOps ?? null
   const workItems = azureDevOps?.workItems ?? null
-  console.log('🚀 ~ workItems', workItems)
   const edges = workItems?.edges ?? null
   const error = workItems?.error ?? null
 
@@ -133,21 +132,19 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
           />
         )}
         {edges.map(({node}) => {
-          const {issueKey} = AzureDevOpsIssueId.split(node.id)
+          const {id: workItemId, title, project, url} = node
+          const {issueKey} = AzureDevOpsIssueId.split(workItemId)
           return (
             <ScopingSearchResultItem
-              key={node.id}
+              key={workItemId}
               service={'azureDevOps'}
               usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
+              serviceTaskId={getServiceTaskId(new URL(url)) + ':' + workItemId}
               meetingId={meetingId}
-              persistQuery={() => {
-                return null
-              }}
-              summary={node.title}
-              url={node.url}
-              linkText={`#${issueKey} #${node.project.name}`}
-              linkTitle={`Azure DevOps Work Item #${node.id}`}
+              summary={title}
+              url={url}
+              linkText={`#${issueKey} ${project.name}`}
+              linkTitle={`Azure DevOps Work Item #${issueKey}`}
             />
           )
         })}
