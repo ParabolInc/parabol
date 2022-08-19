@@ -5,7 +5,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndTeamPromptPayload from '../types/EndTeamPromptPayload'
-import endTeamPromptHelper from './helpers/endTeamPrompt'
+import safeEndTeamPrompt from './helpers/safeEndTeamPrompt'
 
 const endTeamPrompt = {
   type: GraphQLNonNull(EndTeamPromptPayload),
@@ -35,7 +35,7 @@ const endTeamPrompt = {
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    return endTeamPromptHelper({meeting, now, r, dataLoader, subOptions, viewerId})
+    return safeEndTeamPrompt({meeting, now, r, dataLoader, subOptions, viewerId})
   }
 }
 

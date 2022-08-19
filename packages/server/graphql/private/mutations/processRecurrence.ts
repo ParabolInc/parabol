@@ -8,10 +8,10 @@ import {MeetingSeries} from '../../../postgres/queries/getMeetingSeriesByIds'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import createTeamPrompt from '../../mutations/helpers/createTeamPrompt'
-import endTeamPrompt from '../../mutations/helpers/endTeamPrompt'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
+import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 
 const startRecurringTeamPrompt = async (
@@ -27,11 +27,15 @@ const startRecurringTeamPrompt = async (
   const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
   if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
 
-  const meeting = await createTeamPrompt(teamId, facilitatorId, r, dataLoader)
-
   const formattedDate = new Date().toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
+  })
+
+  const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
+    name: `${meetingSeries.title} - ${formattedDate}`,
+    scheduledEndTime: new Date(startTime.getTime() + ms(`${meetingSeries.duration}m`)),
+    meetingSeriesId: meetingSeries.id
   })
 
   meeting.name = `${meetingSeries.title} - ${formattedDate}`
@@ -41,7 +45,7 @@ const startRecurringTeamPrompt = async (
   await r.table('NewMeeting').insert(meeting).run()
 
   IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
-  analytics.meetingStarted(facilitatorId, meeting, undefined, true)
+  analytics.meetingStarted(facilitatorId, meeting)
   const data = {teamId, meetingId: meeting.id}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
 }
@@ -67,49 +71,52 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
     .filter((row) => row('scheduledEndTime').lt(now))
     .run()) as MeetingTeamPrompt[]
 
-  let meetingsEnded = 0
-  await Promise.all(
+  const res = await Promise.all(
     teamPromptMeetingsToEnd.map(async (meeting) => {
-      const res = await endTeamPrompt({meeting, now, dataLoader, r, subOptions})
-      if (!('error' in res)) meetingsEnded++
+      return await safeEndTeamPrompt({meeting, now, dataLoader, r, subOptions})
     })
   )
+
+  const meetingsEnded = res.filter((res) => !('error' in res)).length
 
   let meetingsStarted = 0
 
   // For each active meeting series, get the meeting start times (according to rrule) after the most
   // recent meeting start time and before now.
   const activeMeetingSeries = await getActiveMeetingSeries()
-  for (const meetingSeries of activeMeetingSeries) {
-    const lastMeeting = await r
-      .table('NewMeeting')
-      .filter({meetingType: 'teamPrompt', meetingSeriesId: meetingSeries.id})
-      .orderBy(r.desc('createdAt'))
-      .nth(0)
-      .run()
+  await Promise.all(
+    activeMeetingSeries.map(async (meetingSeries) => {
+      const lastMeeting = await r
+        .table('NewMeeting')
+        .filter({meetingType: 'teamPrompt', meetingSeriesId: meetingSeries.id})
+        .orderBy(r.desc('createdAt'))
+        .nth(0)
+        .default(null)
+        .run()
 
-    // For meetings that should still be active, start the meeting and set its end time.
-    // Any subscriptions are handled by the shared meeting start code
-    const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+      // For meetings that should still be active, start the meeting and set its end time.
+      // Any subscriptions are handled by the shared meeting start code
+      const rrule = RRule.fromString(meetingSeries.recurrenceRule)
 
-    // Only get meetings that should currently be active, i.e. meetings that should have started
-    // within the last 24 hours, started after the last meeting in the series, and started before
-    // 'now'.
-    const fromDate = new Date(
-      Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
-    )
-    const newMeetingsStartTimes = rrule.between(fromDate, now)
-    for (const startTime of newMeetingsStartTimes) {
-      const err = await startRecurringTeamPrompt(
-        meetingSeries,
-        startTime,
-        dataLoader,
-        r,
-        subOptions
-      )
-      if (!err) meetingsStarted++
-    }
-  }
+      // Only get meetings that should currently be active, i.e. meetings that should have started
+      // within the last 24 hours, started after the last meeting in the series, and started before
+      // 'now'.
+      const fromDate = lastMeeting
+        ? new Date(Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h')))
+        : new Date(0)
+      const newMeetingsStartTimes = rrule.between(fromDate, now)
+      for (const startTime of newMeetingsStartTimes) {
+        const err = await startRecurringTeamPrompt(
+          meetingSeries,
+          startTime,
+          dataLoader,
+          r,
+          subOptions
+        )
+        if (!err) meetingsStarted++
+      }
+    })
+  )
 
   const data = {meetingsStarted, meetingsEnded}
   return data

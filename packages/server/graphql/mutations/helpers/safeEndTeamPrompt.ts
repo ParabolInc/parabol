@@ -8,7 +8,7 @@ import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 
-const endTeamPrompt = async ({
+const safeEndTeamPrompt = async ({
   meeting,
   now,
   viewerId,
@@ -80,4 +80,4 @@ const endTeamPrompt = async ({
   return data
 }
 
-export default endTeamPrompt
+export default safeEndTeamPrompt
