@@ -66,9 +66,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
   // Find any meetings with a scheduledEndTime before now, and close them
   const teamPromptMeetingsToEnd = (await r
     .table('NewMeeting')
+    .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
     .filter({meetingType: 'teamPrompt'})
-    .filter((row) => row.hasFields('endedAt').not())
-    .filter((row) => row('scheduledEndTime').lt(now))
     .run()) as MeetingTeamPrompt[]
 
   const res = await Promise.all(
