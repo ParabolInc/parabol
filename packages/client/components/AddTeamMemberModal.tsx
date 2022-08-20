@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import ErrorIcon from '@mui/icons-material/Error'
-import Warning from '@mui/icons-material/Warning'
+import {Error as ErrorIcon, Warning} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import AccessTime from '@mui/icons-material/AccessTime'
+import {AccessTime} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React from 'react'

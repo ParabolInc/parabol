@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-import Business from '@mui/icons-material/Business'
-import Group from '@mui/icons-material/Group'
-import Public from '@mui/icons-material/Public'
+import {Business, Group, Public} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 

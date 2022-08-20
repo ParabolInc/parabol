@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-import Add from '@mui/icons-material/Add'
-import UnfoldLess from '@mui/icons-material/UnfoldLess'
-import UnfoldMore from '@mui/icons-material/UnfoldMore'
+import {Add, UnfoldLess, UnfoldMore} from '@mui/icons-material'
 import React, {MouseEvent} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'

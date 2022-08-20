@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-import CheckBox from '@mui/icons-material/CheckBox'
-import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank'
-import IndeterminateCheckBox from '@mui/icons-material/IndeterminateCheckBox'
+import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 interface Props {

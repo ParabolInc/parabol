@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import ArrowForward from '@mui/icons-material/ArrowForward'
-import Check from '@mui/icons-material/Check'
+import {ArrowForward, Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'

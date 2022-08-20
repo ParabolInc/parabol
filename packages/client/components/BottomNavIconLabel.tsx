@@ -1,8 +1,5 @@
 import styled from '@emotion/styled'
-import Event from '@mui/icons-material/Event'
-import HelpOutline from '@mui/icons-material/HelpOutline'
-import PersonPinCircleOutlined from '@mui/icons-material/PersonPinCircleOutlined'
-import TimerOutlined from '@mui/icons-material/TimerOutlined'
+import {Event, HelpOutline, PersonPinCircleOutlined, TimerOutlined} from '@mui/icons-material'
 import React, {forwardRef, ReactNode, Ref} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 

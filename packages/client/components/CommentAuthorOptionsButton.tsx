@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import MoreVert from '@mui/icons-material/MoreVert'
+import {MoreVert} from '@mui/icons-material'
 import React from 'react'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'

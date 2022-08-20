@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-import ContentCopy from '@mui/icons-material/ContentCopy'
-import Delete from '@mui/icons-material/Delete'
-import Edit from '@mui/icons-material/Edit'
+import {ContentCopy, Delete, Edit} from '@mui/icons-material'
 import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'

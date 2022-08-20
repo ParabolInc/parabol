@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import Edit from '@mui/icons-material/Edit'
+import {Edit} from '@mui/icons-material'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import {PALETTE} from '../styles/paletteV3'

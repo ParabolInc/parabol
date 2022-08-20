@@ -1,5 +1,5 @@
 import styled from '@emotion/styled-base'
-import Edit from '@mui/icons-material/Edit'
+import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'

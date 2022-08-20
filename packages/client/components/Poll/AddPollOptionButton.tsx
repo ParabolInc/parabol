@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import AddOutlined from '@mui/icons-material/AddOutlined'
+import {AddOutlined} from '@mui/icons-material'
 import React from 'react'
 import {PollsAriaLabels} from '~/types/constEnums'
 import {PALETTE} from '../../styles/paletteV3'

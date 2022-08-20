@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import ArrowBack from '@mui/icons-material/ArrowBack'
+import {ArrowBack} from '@mui/icons-material'
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {PALETTE} from '~/styles/paletteV3'

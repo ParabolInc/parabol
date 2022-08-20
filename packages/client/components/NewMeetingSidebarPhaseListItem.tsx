@@ -1,12 +1,14 @@
 import styled from '@emotion/styled'
-import Comment from '@mui/icons-material/Comment'
-import Edit from '@mui/icons-material/Edit'
-import Group from '@mui/icons-material/Group'
-import GroupWork from '@mui/icons-material/GroupWork'
-import PlaylistAdd from '@mui/icons-material/PlaylistAdd'
-import Receipt from '@mui/icons-material/Receipt'
-import ThumbsUpDown from '@mui/icons-material/ThumbsUpDown'
-import Update from '@mui/icons-material/Update'
+import {
+  Comment,
+  Edit,
+  Group,
+  GroupWork,
+  PlaylistAdd,
+  Receipt,
+  ThumbsUpDown,
+  Update
+} from '@mui/icons-material'
 import React from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {PALETTE} from '../styles/paletteV3'

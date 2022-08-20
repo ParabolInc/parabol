@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import Error from '@mui/icons-material/Error'
+import {Error} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'

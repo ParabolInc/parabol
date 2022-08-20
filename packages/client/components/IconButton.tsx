@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-import CancelOutlined from '@mui/icons-material/CancelOutlined'
-import Close from '@mui/icons-material/Close'
-import Menu from '@mui/icons-material/Menu'
+import {CancelOutlined, Close, Menu} from '@mui/icons-material'
 import React from 'react'
 import LinkButton, {LinkButtonProps} from './LinkButton'
 

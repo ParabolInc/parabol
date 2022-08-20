@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import Chat from '@mui/icons-material/Chat'
+import {Chat} from '@mui/icons-material'
 import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
