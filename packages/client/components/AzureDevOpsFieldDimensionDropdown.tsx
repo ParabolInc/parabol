@@ -40,6 +40,8 @@ const CurrentValue = styled('div')({
 })
 
 const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}) => ({
+  height: 18,
+  width: 18,
   display: isFacilitator ? undefined : 'none'
 }))
 

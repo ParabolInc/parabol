@@ -18,6 +18,8 @@ const Label = styled('div')({
 
 const StyledIcon = styled('span')({
   color: PALETTE.SKY_500,
+  height: 24,
+  width: 24,
   alignSelf: 'center'
 })
 

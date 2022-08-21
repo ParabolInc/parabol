@@ -22,7 +22,8 @@ interface Props {
 
 const StyledIcon = styled('div')<{iconColor?: string}>(({iconColor}) => ({
   color: iconColor ? paletteColors[iconColor] : 'inherit',
-  height: 24
+  height: 24,
+  width: 24
 }))
 
 const Inner = styled('div')({

@@ -12,6 +12,8 @@ interface Props {
 const StyledIcon = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   color: PALETTE.SLATE_600,
   cursor: disabled ? 'not-allowed' : 'pointer',
+  height: 24,
+  width: 24,
   display: 'block',
   opacity: disabled ? 0.38 : 1,
   userSelect: 'none'

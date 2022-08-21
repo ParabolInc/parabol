@@ -18,7 +18,9 @@ const Message = styled('div')({
 })
 
 const Info = styled('div')({
-  paddingRight: 16
+  paddingRight: 16,
+  height: 24,
+  width: 24
 })
 
 interface Props {

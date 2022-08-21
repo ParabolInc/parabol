@@ -105,6 +105,8 @@ const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
 
 const StyledIcon = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   color: isWarning ? PALETTE.GOLD_500 : PALETTE.TOMATO_500,
+  height: 24,
+  width: 24,
   marginRight: 8
 }))
 

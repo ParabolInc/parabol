@@ -16,6 +16,9 @@ const Button = styled(FlatButton)({
 })
 
 const ActionButton = styled('div')({
+  ' & svg': {
+    fontSize: 18
+  },
   height: 18,
   width: 18
 })

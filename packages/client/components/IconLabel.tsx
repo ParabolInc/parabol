@@ -4,6 +4,7 @@ import {
   Archive,
   ArrowBack,
   ArrowForward,
+  Close,
   Code,
   FormatBold,
   FormatItalic,
@@ -40,88 +41,17 @@ const Label = styled('div')<{iconAfter?: boolean}>(({iconAfter}) => ({
   whiteSpace: 'nowrap'
 }))
 
-const StyledIcon = styled('div')<Pick<Props, 'iconAfter'>>(({iconAfter}) => ({
-  color: 'inherit',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  order: iconAfter ? 2 : undefined
-}))
-
-const notIconLargeStyles = {
-  height: 18,
-  width: 18
-}
-
-// Not sure why iconLarge showing opposite behavior (it should be !iconLarge ? notIconLargeStyles...)
-const SearchIcon = styled(Search)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const FormatBoldIcon = styled(FormatBold)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const FormatItalicIcon = styled(FormatItalic)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const FormatUnderlinedIcon = styled(FormatUnderlined)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const FormatStrikethroughIcon = styled(FormatStrikethrough)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const LinkIcon = styled(Link)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const StyledLabelIcon = styled(LabelIcon)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const SentimentSatisfiedIcon = styled(SentimentSatisfied)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const PersonPinIcon = styled(PersonPin)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const CodeIcon = styled(Code)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const WebAssetIcon = styled(WebAsset)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const FormatQuoteIcon = styled(FormatQuote)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const RemoveCircleIcon = styled(RemoveCircle)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const MoreVertIcon = styled(MoreVert)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const OpenInNewIcon = styled(OpenInNew)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const UnfoldMoreIcon = styled(UnfoldMore)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const ArrowBackIcon = styled(ArrowBack)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const AddIcon = styled(Add)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const KeyboardIcon = styled(Keyboard)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const ReplyIcon = styled(Reply)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const PublishIcon = styled(Publish)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const ArrowForwardIcon = styled(ArrowForward)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
-)
-const ArchiveIcon = styled(Archive)<{iconLarge?: boolean}>((iconLarge) =>
-  iconLarge ? notIconLargeStyles : undefined
+const StyledIcon = styled('div')<{iconAfter: boolean | undefined; iconLarge: boolean | undefined}>(
+  ({iconAfter, iconLarge}) => ({
+    color: 'inherit',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    order: iconAfter ? 2 : undefined,
+    '& svg': {
+      fontSize: iconLarge ? 24 : 18
+    }
+  })
 )
 
 interface Props {
@@ -138,32 +68,33 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
   const {icon, label, onClick, onMouseEnter, onMouseLeave, iconAfter, iconLarge} = props
   return (
     <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onClick}>
-      <StyledIcon iconAfter={iconAfter}>
+      <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
         {
           {
-            format_bold: <FormatBoldIcon iconLarge={iconLarge} />,
-            format_italic: <FormatItalicIcon iconLarge={iconLarge} />,
-            format_underline: <FormatUnderlinedIcon iconLarge={iconLarge} />,
-            format_strikethrough: <FormatStrikethroughIcon iconLarge={iconLarge} />,
-            link: <LinkIcon iconLarge={iconLarge} />,
-            label: <StyledLabelIcon iconLarge={iconLarge} />,
-            sentiment_satisfied: <SentimentSatisfiedIcon iconLarge={iconLarge} />,
-            person_pin: <PersonPinIcon iconLarge={iconLarge} />,
-            code: <CodeIcon iconLarge={iconLarge} />,
-            web_asset: <WebAssetIcon iconLarge={iconLarge} />,
-            format_quote: <FormatQuoteIcon iconLarge={iconLarge} />,
-            remove_circle: <RemoveCircleIcon iconLarge={iconLarge} />,
-            more_vert: <MoreVertIcon iconLarge={iconLarge} />,
-            open_in_new: <OpenInNewIcon iconLarge={iconLarge} />,
-            unfold_more: <UnfoldMoreIcon iconLarge={iconLarge} />,
-            arrow_back: <ArrowBackIcon iconLarge={iconLarge} />,
-            add: <AddIcon iconLarge={iconLarge} />,
-            keyboard: <KeyboardIcon iconLarge={iconLarge} />,
-            search: <SearchIcon iconLarge={iconLarge} />,
-            reply: <ReplyIcon iconLarge={iconLarge} />,
-            publish: <PublishIcon />,
-            arrow_forward: <ArrowForwardIcon iconLarge={iconLarge} />,
-            archive: <ArchiveIcon iconLarge={iconLarge} />
+            format_bold: <FormatBold />,
+            format_italic: <FormatItalic />,
+            format_underline: <FormatUnderlined />,
+            format_strikethrough: <FormatStrikethrough />,
+            link: <Link />,
+            label: <LabelIcon />,
+            sentiment_satisfied: <SentimentSatisfied />,
+            person_pin: <PersonPin />,
+            code: <Code />,
+            web_asset: <WebAsset />,
+            format_quote: <FormatQuote />,
+            remove_circle: <RemoveCircle />,
+            more_vert: <MoreVert />,
+            open_in_new: <OpenInNew />,
+            unfold_more: <UnfoldMore />,
+            arrow_back: <ArrowBack />,
+            add: <Add />,
+            keyboard: <Keyboard />,
+            search: <Search />,
+            reply: <Reply />,
+            arrow_forward: <ArrowForward />,
+            archive: <Archive />,
+            close: <Close />,
+            publish: <Publish />
           }[icon]
         }
       </StyledIcon>

@@ -32,6 +32,8 @@ const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
 const NavItemIcon = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
   {
     color: PALETTE.SLATE_600,
+    height: 24,
+    width: 24,
     margin: '0 16px'
   },
   ({isUnsyncedFacilitatorPhase}) => ({

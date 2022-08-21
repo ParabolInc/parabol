@@ -59,6 +59,8 @@ const StyledIcon = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  height: 24,
+  width: 24,
   transform: 'rotate(45deg)'
 })
 

@@ -34,6 +34,7 @@ const CheckIcon = styled('div')<{progress: number; isNext: boolean; isViewerRead
   ({isViewerReady, progress, isNext}) => ({
     color: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
     height: 24,
+    width: 24,
     opacity: isNext ? 1 : isViewerReady ? 1 : 0.5,
     transformOrigin: '0 0',
     // 20px to 16 = 0.75
