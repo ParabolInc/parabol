@@ -87,7 +87,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
     activeMeetingSeries.map(async (meetingSeries) => {
       const lastMeeting = await r
         .table('NewMeeting')
-        .filter({meetingType: 'teamPrompt', meetingSeriesId: meetingSeries.id})
+        .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
+        .filter({meetingType: 'teamPrompt'})
         .orderBy(r.desc('createdAt'))
         .nth(0)
         .default(null)
