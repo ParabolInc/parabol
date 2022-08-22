@@ -12,6 +12,7 @@ interface Input {
   phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
+  meetingSeriesId?: number
   scheduledEndTime?: Date
 }
 
@@ -36,6 +37,8 @@ export default abstract class Meeting {
   meetingType: MeetingTypeEnum
   phases: GenericMeetingPhase[]
   showConversionModal?: boolean
+  meetingSeriesId?: number
+  scheduledEndTime?: Date | null
 
   constructor(input: Input) {
     const {
@@ -46,7 +49,9 @@ export default abstract class Meeting {
       meetingType,
       name,
       phases,
-      showConversionModal
+      showConversionModal,
+      meetingSeriesId,
+      scheduledEndTime
     } = input
     this.id = id ?? generateUID()
     this.createdBy = facilitatorUserId
@@ -59,5 +64,7 @@ export default abstract class Meeting {
     this.phases = phases
     this.teamId = teamId
     this.showConversionModal = showConversionModal
+    this.meetingSeriesId = meetingSeriesId
+    this.scheduledEndTime = scheduledEndTime
   }
 }

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {StartRecurrenceMutation as TStartRecurrenceMutation} from '../__generated__/StartRecurrenceMutation.graphql'
+import {StopRecurrenceMutation as TStopRecurrenceMutation} from '../__generated__/StopRecurrenceMutation.graphql'
 
 graphql`
-  fragment StartRecurrenceMutation_team on StartRecurrenceSuccess {
+  fragment StopRecurrenceMutation_team on StopRecurrenceSuccess {
     meeting {
       id
       meetingSeriesId
@@ -20,24 +20,24 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartRecurrenceMutation($meetingId: ID!) {
-    startRecurrence(meetingId: $meetingId) {
+  mutation StopRecurrenceMutation($meetingId: ID!) {
+    stopRecurrence(meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...StartRecurrenceMutation_team @relay(mask: false)
+      ...StopRecurrenceMutation_team @relay(mask: false)
     }
   }
 `
 
-const StartRecurrenceMutation: StandardMutation<TStartRecurrenceMutation> = (
+const StopRecurrenceMutation: StandardMutation<TStopRecurrenceMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TStartRecurrenceMutation>(atmosphere, {
+  return commitMutation<TStopRecurrenceMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -45,4 +45,4 @@ const StartRecurrenceMutation: StandardMutation<TStartRecurrenceMutation> = (
   })
 }
 
-export default StartRecurrenceMutation
+export default StopRecurrenceMutation
