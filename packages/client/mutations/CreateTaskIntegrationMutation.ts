@@ -54,6 +54,7 @@ graphql`
       teamId
       userId
       id
+      taskService
       meeting {
         id
         meetingType
@@ -201,10 +202,8 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         SendClientSegmentEventMutation(atmosphere, 'Task Published', {
           taskId: data.createTaskIntegration.task?.id,
           teamId: data.createTaskIntegration.task?.teamId,
-          meetingId: data.createTaskIntegration.task?.meeting?.id,
-          meetingType: data.createTaskIntegration.task?.meeting?.meetingType,
           inMeeting: window.location.href.includes('/meet'),
-          service: integrationProviderService
+          service: data.createTaskIntegration.task?.taskService
         })
       }
     },
