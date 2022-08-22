@@ -18,12 +18,16 @@ const ButtonRow = styled(PlainButton)({
   lineHeight: '24px',
   fontWeight: 600,
   userSelect: 'none',
-  width: '100%',
   ':hover': {
     backgroundColor: PALETTE.SLATE_300
   },
   padding: '22px 16px',
-  alignItems: 'center'
+  alignItems: 'center',
+  flexGrow: 1,
+  flexShrink: 9999,
+  flexBasis: '50%'
+  //minWidth: '40%',
+  //overflow: 'hidden',
 })
 
 const Label = styled('div')({

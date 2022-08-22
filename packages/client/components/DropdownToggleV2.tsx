@@ -20,7 +20,7 @@ const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}
   lineHeight: '24px',
   fontWeight: 600,
   userSelect: 'none',
-  width: '100%',
+  //width: '100%',
   ':hover': {
     backgroundColor: PALETTE.SLATE_300
   },
