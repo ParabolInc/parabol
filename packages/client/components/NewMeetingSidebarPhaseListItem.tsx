@@ -37,13 +37,13 @@ const NavItemLabel = styled('span')({
 })
 
 const navListItemLinkActive = {
-  backgroundColor: PALETTE.SLATE_100,
+  backgroundColor: PALETTE.SLATE_200,
   borderLeftColor: PALETTE.GRAPE_700,
   borderRadius: '0 4px 4px 0',
   color: PALETTE.SLATE_700,
   cursor: 'default',
   ':hover,:focus': {
-    backgroundColor: PALETTE.SLATE_100
+    backgroundColor: PALETTE.SLATE_200
   }
 }
 
@@ -76,7 +76,7 @@ const NavListItemLink = styled('div')<LinkProps>(
     userSelect: 'none',
     fontWeight: 600,
     ':hover,:focus': {
-      backgroundColor: PALETTE.SLATE_100
+      backgroundColor: PALETTE.SLATE_200
     }
   },
   ({isDisabled}) => isDisabled && navListItemLinkDisabled,
