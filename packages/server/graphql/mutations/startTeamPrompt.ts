@@ -1,10 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
-import generateUID from '../../generateUID'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -12,9 +9,9 @@ import RedisLockQueue from '../../utils/RedisLockQueue'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartTeamPromptPayload from '../types/StartTeamPromptPayload'
-import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
+import safeCreateTeamPrompt from './helpers/safeCreateTeamPrompt'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -53,31 +50,8 @@ const startTeamPrompt = {
       })
     }
 
-    const meetingType: MeetingTypeEnum = 'teamPrompt'
-    const meetingCount = await r
-      .table('NewMeeting')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({meetingType})
-      .count()
-      .default(0)
-      .run()
-    const meetingId = generateUID()
-    const phases = await createNewMeetingPhases(
-      viewerId,
-      teamId,
-      meetingId,
-      meetingCount,
-      meetingType,
-      dataLoader
-    )
-    const meeting = new MeetingTeamPrompt({
-      id: meetingId,
-      teamId,
-      meetingCount,
-      phases,
-      facilitatorUserId: viewerId,
-      meetingPrompt: 'What are you working on today? Stuck on anything?' // :TODO: (jmtaber129): Get this from meeting settings.
-    })
+    const meeting = await safeCreateTeamPrompt(teamId, viewerId, r, dataLoader)
+
     await Promise.all([
       r.table('NewMeeting').insert(meeting).run(),
       updateTeamByTeamId(
@@ -88,9 +62,9 @@ const startTeamPrompt = {
       )
     ])
 
-    IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
+    IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
     analytics.meetingStarted(viewerId, meeting)
-    const data = {teamId, meetingId}
+    const data = {teamId, meetingId: meeting.id}
     publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
     return data
   }
