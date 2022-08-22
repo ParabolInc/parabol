@@ -91,7 +91,12 @@ export type RethinkSchema = {
   }
   NewMeeting: {
     type: AnyMeeting
-    index: 'facilitatorUserId' | 'teamId' | 'templateId' | 'meetingSeriesId'
+    index:
+      | 'facilitatorUserId'
+      | 'teamId'
+      | 'templateId'
+      | 'meetingSeriesId'
+      | 'hasEndedScheduledEndTime'
   }
   NewFeature: {
     type: any
