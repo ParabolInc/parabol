@@ -38,8 +38,6 @@ const Label = styled('div')({
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
-  height: 28,
-  width: 28,
   '& svg': {
     fontSize: 28
   },

@@ -18,7 +18,7 @@ const Message = styled('div')({
 })
 
 const Info = styled('div')({
-  paddingRight: 16,
+  marginRight: 16,
   height: 24,
   width: 24
 })

@@ -17,7 +17,7 @@ const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
   height: 24,
   width: 24,
-  paddingRight: 12
+  marginRight: 12
 })
 
 interface Props {

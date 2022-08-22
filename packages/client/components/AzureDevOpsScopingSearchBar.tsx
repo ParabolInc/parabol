@@ -10,8 +10,7 @@ import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'
 
 const SearchIcon = styled(Search)({
   color: PALETTE.SLATE_600,
-  padding: 3,
-  marginRight: 12
+  margin: '3px 15px 3px 3px'
 })
 
 const SearchBar = styled('div')({

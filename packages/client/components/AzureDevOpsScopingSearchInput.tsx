@@ -28,7 +28,7 @@ const SearchInput = styled('input')({
 const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  padding: 12,
+  margin: 12,
   visibility: isEmpty ? 'hidden' : undefined
 }))
 

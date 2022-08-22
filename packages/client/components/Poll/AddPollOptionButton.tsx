@@ -20,7 +20,6 @@ const StyledPlainButton = styled(PlainButton)({
 })
 
 const AddPollOptionIcon = styled(AddOutlined)({
-  fontSize: 20,
   width: 20,
   height: 20,
   margin: '0 4px'
