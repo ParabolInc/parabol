@@ -1,15 +1,14 @@
 import styled from '@emotion/styled'
+import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from '../../../components/Icon'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTemplateScaleValueMutation'
 import palettePickerOptions from '../../../styles/palettePickerOptions'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import Legitity from '../../../validation/Legitity'
 import {NewTemplateScaleValueLabelInput_scale} from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'
@@ -50,17 +49,19 @@ const ScaleValueInputBox = styled('input')({
   width: '100%'
 })
 
-const RemoveScaleValueIcon = styled(Icon)({
+const RemoveScaleValueIcon = styled('div')({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  height: ICON_SIZE.MD24,
-  width: ICON_SIZE.MD24,
-  lineHeight: '24px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  '& svg': {
+    fontSize: 18
+  },
+  height: 24,
+  width: 24,
   marginLeft: 'auto',
-  padding: 0,
-  textAlign: 'center'
+  padding: 0
 })
 
 const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values']) => {
@@ -70,8 +71,8 @@ const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values'
   const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
   const isNextLabelValid = !isNaN(potentialNextLabel)
     ? potentialNextLabel >= 0 &&
-    potentialNextLabel < 100 &&
-    !existingLabels.includes(String(potentialNextLabel))
+      potentialNextLabel < 100 &&
+      !existingLabels.includes(String(potentialNextLabel))
     : false
   return isNextLabelValid ? potentialNextLabel.toString() : 'Enter a new scale value'
 }
@@ -182,7 +183,9 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
         />
         {error && <StyledError>{error.message}</StyledError>}
       </Form>
-      <RemoveScaleValueIcon onClick={closeAdding}>cancel</RemoveScaleValueIcon>
+      <RemoveScaleValueIcon onClick={closeAdding}>
+        <CancelIcon />
+      </RemoveScaleValueIcon>
     </NewScaleValueInput>
   )
 }

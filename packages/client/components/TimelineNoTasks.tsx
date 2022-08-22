@@ -1,9 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
+import {ThumbUp} from '@mui/icons-material'
+import React from 'react'
 import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
+import {PALETTE} from '../styles/paletteV3'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -13,8 +12,9 @@ const Wrapper = styled('div')({
   paddingTop: 64
 })
 
-const ThumbsUp = styled(Icon)({
-  fontSize: ICON_SIZE.MD48,
+const ThumbsUp = styled(ThumbUp)({
+  height: 48,
+  width: 48,
   marginBottom: 16
 })
 
@@ -26,7 +26,7 @@ const RallyLink = styled('span')({
 const TimelineNoTasks = () => {
   return (
     <Wrapper>
-      <ThumbsUp>thumb_up</ThumbsUp>
+      <ThumbsUp />
       {'You’re all caught up!'}
       <RallyLink>{getRallyLink()}</RallyLink>
     </Wrapper>

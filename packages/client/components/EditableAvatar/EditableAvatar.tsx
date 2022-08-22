@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Avatar from '../Avatar/Avatar'
+import {Edit as EditIcon} from '@mui/icons-material'
+import React from 'react'
 import {panelShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
-import Icon from '../Icon'
+import Avatar from '../Avatar/Avatar'
 
 const borderRadius = '50%'
 const borderRadiusPanel = 4
@@ -70,7 +70,7 @@ const EditableAvatar = (props: Props) => {
   return (
     <EditableAvatarRoot hasPanel={hasPanel} size={size}>
       <EditableAvatarEditOverlay hasPanel={hasPanel} onClick={onClick} size={size}>
-        <Icon>edit</Icon>
+        <EditIcon />
         <span>{'EDIT'}</span>
       </EditableAvatarEditOverlay>
       <EditableAvatarImgBlock hasPanel={hasPanel} size={size}>

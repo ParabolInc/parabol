@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {FilterList, Group, Person} from '@mui/icons-material'
 import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from '../Icon'
 import LinkButton from '../LinkButton'
 
 interface Props {
@@ -14,8 +14,10 @@ interface Props {
   onMouseEnter: () => void
 }
 
-const StyledIcon = styled(Icon)({
-  fontWeight: 400,
+const StyledIcon = styled('div')({
+  height: 24,
+  width: 24,
+  // fontWeight: 400,
   marginRight: 8
 })
 
@@ -39,7 +41,15 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       ref={ref}
       dataCy={dataCy}
     >
-      <StyledIcon>{iconText || 'filter_list'}</StyledIcon>
+      <StyledIcon>
+        {
+          {
+            person: <Person />,
+            group: <Group />
+          }[iconText!]
+        }{' '}
+        || <FilterList />
+      </StyledIcon>
       {value}
     </StyledLinkButton>
   )

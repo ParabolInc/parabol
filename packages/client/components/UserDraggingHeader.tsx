@@ -1,9 +1,9 @@
-import React from 'react'
+import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '@mui/icons-material'
+import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
-import {keyframes} from '@emotion/core'
 import BaseTag from './Tag/BaseTag'
 
 const keyframesOpacity = keyframes`
@@ -25,14 +25,15 @@ const Header = styled('div')({
   textAlign: 'end'
 })
 
-const Arrow = styled(Icon)({
+const ArrowIcon = styled('div')({
   animationDuration: '800ms',
   animationIterationCount: 'infinite',
   animationName: keyframesOpacity.toString(),
   height: 11,
   width: 11,
-  fontSize: 11,
-  fontWeight: 600,
+  '& svg': {
+    fontSize: 11
+  },
   verticalAlign: 'text-bottom'
 })
 
@@ -59,7 +60,18 @@ const UserDraggingHeader = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const label = userId === viewerId ? 'Your ghost 👻' : name
-  const arrowEl = <Arrow>{arrow}</Arrow>
+  const arrowEl = (
+    <ArrowIcon>
+      {
+        {
+          arrow_downward: <ArrowDownward />,
+          arrow_upward: <ArrowUpward />,
+          arrow_back: <ArrowBack />,
+          arrow_forward: <ArrowForward />
+        }[arrow!]
+      }
+    </ArrowIcon>
+  )
   return (
     <Header style={style}>
       <StyledTag>

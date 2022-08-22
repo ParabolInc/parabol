@@ -1,9 +1,13 @@
 import styled from '@emotion/styled'
+import {
+  Business as BusinessIcon,
+  Group as GroupIcon,
+  Public as PublicIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
-import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import useBreakpoint from '../../../hooks/useBreakpoint'
@@ -61,7 +65,9 @@ const TabLabel = styled('div')({
   alignItems: 'center'
 })
 
-const TabIcon = styled(Icon)({
+const TabIcon = styled('div')({
+  height: 24,
+  width: 24,
   marginRight: 4
 })
 
@@ -100,7 +106,10 @@ const PokerTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'group'}</TabIcon> Team
+              <TabIcon>
+                <GroupIcon />
+              </TabIcon>{' '}
+              Team
             </TabLabel>
           }
           onClick={gotoTeamTemplates}
@@ -108,7 +117,10 @@ const PokerTemplateList = (props: Props) => {
         <WideTab
           label={
             <TabLabel>
-              <TabIcon>{'business'}</TabIcon> Organization
+              <TabIcon>
+                <BusinessIcon />
+              </TabIcon>{' '}
+              Organization
             </TabLabel>
           }
           onClick={() => setActiveIdx(1)}
@@ -116,7 +128,10 @@ const PokerTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Public
+              <TabIcon>
+                <PublicIcon />
+              </TabIcon>{' '}
+              Public
             </TabLabel>
           }
           onClick={gotoPublicTemplates}

@@ -1,19 +1,19 @@
 import styled from '@emotion/styled'
+import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
 import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
-import Icon from '../Icon'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
 
-const LinkIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const LinkIcon = styled(Link)({
+  height: 18,
+  width: 18
 })
 
 const BubbleMenuWrapper = styled('div')({
@@ -229,7 +229,7 @@ const PromptResponseEditor = (props: Props) => {
                 <s>S</s>
               </BubbleMenuButton>
               <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
-                <LinkIcon>link</LinkIcon>
+                <LinkIcon />
               </BubbleMenuButton>
             </BubbleMenuWrapper>
           </BubbleMenu>

@@ -4,12 +4,11 @@
  *   [ (!) Your Message Here ]
  *
  */
-import React from 'react'
 import styled from '@emotion/styled'
+import {Warning} from '@mui/icons-material'
+import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius} from '../../types/constEnums'
-import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props {
   message: string
@@ -25,15 +24,16 @@ const ErrorAlertWrapper = styled('div')({
   padding: '8px 16px'
 })
 
-const SpacedIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
+const SpacedIcon = styled(Warning)({
+  height: 18,
+  width: 18,
   marginRight: 8
 })
 
 const ErrorAlert = ({message}: Props) => {
   return (
     <ErrorAlertWrapper role='alert'>
-      <SpacedIcon>warning</SpacedIcon>
+      <SpacedIcon />
       <span>{message}</span>
     </ErrorAlertWrapper>
   )

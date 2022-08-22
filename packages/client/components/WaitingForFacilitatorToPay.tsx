@@ -1,14 +1,14 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import InvitationDialogCopy from './InvitationDialogCopy'
+import {LiveHelp} from '@mui/icons-material'
+import React from 'react'
 import DialogContainer from './DialogContainer'
-import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
 import Ellipsis from './Ellipsis/Ellipsis'
+import InvitationDialogCopy from './InvitationDialogCopy'
 
-const HelpIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD48,
-  padding: 24
+const HelpIcon = styled(LiveHelp)({
+  height: 48,
+  width: 48,
+  margin: 24
 })
 
 const Container = styled(DialogContainer)({
@@ -25,7 +25,7 @@ const WaitingForFacilitatorToPay = (props: Props) => {
   const {facilitatorName} = props
   return (
     <Container>
-      <HelpIcon>live_help</HelpIcon>
+      <HelpIcon />
       <InvitationDialogCopy>
         {'Waiting for '}
         <b>{facilitatorName}</b>

@@ -1,7 +1,6 @@
-import React from 'react'
-import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
 import styled from '@emotion/styled'
+import {CreditCard, Extension, Group} from '@mui/icons-material'
+import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 //    TODO:
@@ -10,8 +9,8 @@ import {PALETTE} from '../../styles/paletteV3'
 //  • Add disabled styles (TA)
 
 const iconStyles = {
-  fontSize: ICON_SIZE.MD18,
-  lineHeight: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   marginRight: '.25rem',
   verticalAlign: 'middle'
 }
@@ -68,7 +67,16 @@ const ToggleNav = (props: Props) => {
             isFirst={index === 0}
             isLast={index === items.length - 1}
           >
-            <Icon style={iconStyles}>{item.icon}</Icon> {item.label}
+            <div style={iconStyles}>
+              {
+                {
+                  group: <Group />,
+                  extension: <Extension />,
+                  credit_card: <CreditCard />
+                }[item.icon]
+              }
+            </div>
+            {item.label}
           </Item>
         )
       })}

@@ -1,8 +1,7 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
-import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
 
 const Content = styled('div')({
   fontSize: 13,
@@ -12,16 +11,22 @@ const Content = styled('div')({
   width: 272
 })
 
-const MenuClose = styled(Icon)({
+const MenuClose = styled('div')({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  fontSize: ICON_SIZE.MD18,
   position: 'absolute',
+  height: 18,
+  width: 18,
   right: 4,
   top: -4,
   '&:hover': {
     opacity: 0.5
   }
+})
+
+const CloseIcon = styled(Close)({
+  height: 18,
+  width: 18
 })
 
 interface Props {
@@ -34,7 +39,7 @@ const HelpMenuContent = (props: Props) => {
   return (
     <Content>
       <MenuClose data-cy='help-menu-close' onClick={closePortal} title='Close help menu'>
-        close
+        <CloseIcon />
       </MenuClose>
       {children}
     </Content>

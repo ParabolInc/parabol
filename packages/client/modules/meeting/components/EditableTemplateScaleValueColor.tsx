@@ -1,16 +1,15 @@
 import styled from '@emotion/styled'
+import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {BezierCurve} from '~/types/constEnums'
 import {EditableTemplateScaleValueColor_scale} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
-import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../styles/typographyV2'
+import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 
 interface Props {
   scale: EditableTemplateScaleValueColor_scale
@@ -43,12 +42,13 @@ const ColorBadge = styled('div')<{color?: string}>(({color}) => ({
   width: 14
 }))
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled('div')({
   bottom: 0,
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
+  '& svg': {
+    fontSize: 18
+  },
   height: 24,
-  lineHeight: '24px',
   opacity: 0,
   position: 'absolute',
   right: -6,
@@ -65,13 +65,18 @@ const EditableTemplateScaleValueColor = (props: Props) => {
   return (
     <ScaleValueColor ref={originRef} onClick={togglePortal}>
       <ColorBadge color={scaleValueColor} />
-      <DropdownIcon>arrow_drop_down</DropdownIcon>
-      {menuPortal(<ScaleValuePalettePicker menuProps={menuProps}
-        scaleValueLabel={scaleValueLabel}
-        scaleValueColor={scaleValueColor}
-        scale={scale}
-        setScaleValueColor={setScaleValueColor}
-      />)}
+      <DropdownIcon>
+        <ArrowDropDownIcon />
+      </DropdownIcon>
+      {menuPortal(
+        <ScaleValuePalettePicker
+          menuProps={menuProps}
+          scaleValueLabel={scaleValueLabel}
+          scaleValueColor={scaleValueColor}
+          scale={scale}
+          setScaleValueColor={setScaleValueColor}
+        />
+      )}
     </ScaleValueColor>
   )
 }

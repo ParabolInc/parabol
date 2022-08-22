@@ -1,8 +1,7 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import {CreditCard, DateRange, Lock} from '@mui/icons-material'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 
 const FieldBlock = styled('div')({
   alignItems: 'center',
@@ -15,13 +14,16 @@ interface StyleProps {
   hasError: boolean
 }
 
-const FieldIcon = styled(Icon)<StyleProps>(({hasError}) => ({
+const FieldIcon = styled('div')<StyleProps>(({hasError}) => ({
   color: hasError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
   display: 'block',
-  fontSize: ICON_SIZE.MD18,
+  height: 24,
+  width: 24,
+  '& svg': {
+    fontSize: 18
+  },
   opacity: 0.5,
-  paddingLeft: 8,
-  textAlign: 'center'
+  marginLeft: 8
 }))
 
 interface Props {
@@ -81,7 +83,15 @@ const UpgradeCreditCardFormField = (props: Props) => {
   const hasError = dirty && !!error
   return (
     <FieldBlock className={className}>
-      <FieldIcon hasError={hasError}>{iconName}</FieldIcon>
+      <FieldIcon hasError={hasError}>
+        {
+          {
+            credit_card: <CreditCard />,
+            date_range: <DateRange />,
+            lock: <Lock />
+          }[iconName]
+        }
+      </FieldIcon>
       <Input
         hasError={hasError}
         autoComplete={autoComplete}

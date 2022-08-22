@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Flag, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -8,17 +9,19 @@ import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import StartRecurrenceMutation from '~/mutations/StartRecurrenceMutation'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import {PALETTE} from '../../styles/paletteV3'
-import Icon from '../Icon'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
 import {MenuItemLabelStyle} from '../MenuItemLabel'
 
-const StyledIcon = styled(Icon)({
+const ReplayIcon = styled(Replay)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
+  marginRight: 8
+})
+
+const FlagIcon = styled(Flag)({
+  color: PALETTE.SLATE_600,
   marginRight: 8
 })
 
@@ -67,7 +70,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
           isDisabled={!!endedAt || !!meetingSeriesId}
           label={
             <OptionMenuItem>
-              <StyledIcon>replay</StyledIcon>
+              <ReplayIcon />
               <span>{'Repeat M-F'}</span>
             </OptionMenuItem>
           }
@@ -82,7 +85,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         isDisabled={!!endedAt}
         label={
           <OptionMenuItem>
-            <StyledIcon>flag</StyledIcon>
+            <FlagIcon />
             <span>{'End this activity'}</span>
           </OptionMenuItem>
         }

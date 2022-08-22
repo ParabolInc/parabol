@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -9,7 +10,6 @@ import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {TopBarSearch_viewer} from '~/__generated__/TopBarSearch_viewer.graphql'
 import Atmosphere from '../Atmosphere'
-import Icon from './Icon'
 
 const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
   const {pathname} = location
@@ -56,10 +56,12 @@ const SearchInput = styled('input')({
   width: '100%'
 })
 
-const SearchIcon = styled(Icon)({
+const SearchIcon = styled('div')({
+  height: 24,
+  width: 24,
   color: '#fff',
   cursor: 'pointer',
-  padding: 12
+  margin: 12
 })
 
 const setSearch = (atmosphere: Atmosphere, value: string) => {
@@ -87,7 +89,14 @@ const TopBarSearch = (props: Props) => {
   return (
     <Wrapper location={location}>
       <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
-      <SearchIcon onClick={onClick}>{icon}</SearchIcon>
+      <SearchIcon onClick={onClick}>
+        {
+          {
+            close: <Close />,
+            search: <Search />
+          }[icon]
+        }
+      </SearchIcon>
     </Wrapper>
   )
 }
