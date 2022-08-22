@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -8,10 +9,8 @@ import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuItemLabelStyle} from './MenuItemLabel'
@@ -22,9 +21,10 @@ interface Props {
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
 }
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Close)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
+  height: 18,
+  width: 18,
   marginRight: 8
 })
 
@@ -91,7 +91,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
           key='close'
           label={
             <OptionMenuItem>
-              <StyledIcon>close</StyledIcon>
+              <StyledIcon />
               <span>{'End the meeting'}</span>
             </OptionMenuItem>
           }

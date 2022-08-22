@@ -1,19 +1,19 @@
+import styled from '@emotion/styled'
+import {Event as EventIcon, Timer as TimerIcon} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {StageTimerModal_stage} from '../__generated__/StageTimerModal_stage.graphql'
-import {MenuProps} from '../hooks/useMenu'
-import Tab from './Tab/Tab'
-import Tabs from './Tabs/Tabs'
-import Icon from './Icon'
-import styled from '@emotion/styled'
 import SwipeableViews from 'react-swipeable-views'
-import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
+import {MenuProps} from '../hooks/useMenu'
+import {PALETTE} from '../styles/paletteV3'
+import {StageTimerModal_facilitator} from '../__generated__/StageTimerModal_facilitator.graphql'
+import {StageTimerModal_stage} from '../__generated__/StageTimerModal_stage.graphql'
+import StageTimerModalEditTimeEnd from './StageTimerModalEditTimeEnd'
 import StageTimerModalEditTimeLimit from './StageTimerModalEditTimeLimit'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
-import StageTimerModalEditTimeEnd from './StageTimerModalEditTimeEnd'
-import {StageTimerModal_facilitator} from '../__generated__/StageTimerModal_facilitator.graphql'
-import {PALETTE} from '../styles/paletteV3'
+import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
+import Tab from './Tab/Tab'
+import Tabs from './Tabs/Tabs'
 
 const WIDTH = 224
 
@@ -72,8 +72,8 @@ const StageTimerModal = (props: Props) => {
   return (
     <Modal>
       <StyledTabsBar activeIdx={activeIdx}>
-        <FullTab label={<Icon>{'timer'}</Icon>} onClick={() => setActiveIdx(0)} />
-        <FullTab label={<Icon>{'event'}</Icon>} onClick={() => setActiveIdx(1)} />
+        <FullTab label={<TimerIcon />} onClick={() => setActiveIdx(0)} />
+        <FullTab label={<EventIcon />} onClick={() => setActiveIdx(1)} />
       </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents

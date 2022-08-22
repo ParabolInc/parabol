@@ -1,29 +1,26 @@
 import styled from '@emotion/styled'
+import {ExpandMore, Search} from '@mui/icons-material'
 import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import ScopingSearchHistoryMenu, {SearchQueries} from './ScopingSearchHistoryMenu'
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Search)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
-  padding: 3,
-  marginRight: 12
+  margin: '3px 15px 3px 3px'
 })
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled(ExpandMore)({
   color: PALETTE.SLATE_700,
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   marginLeft: -8
 })
 
-const StyledIconDroprown = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
+const StyledIconDroprown = styled(Search)({
+  color: PALETTE.SLATE_600
 })
 
 const Toggle = styled(PlainButton)({
@@ -45,14 +42,14 @@ const ScopingSearchHistoryToggle = (props: Props) => {
   })
 
   if (!searchQueries) {
-    return <StyledIcon>search</StyledIcon>
+    return <StyledIcon />
   }
 
   return (
     <>
       <Toggle onClick={togglePortal} ref={originRef}>
-        <StyledIconDroprown>search</StyledIconDroprown>
-        <DropdownIcon>expand_more</DropdownIcon>
+        <StyledIconDroprown />
+        <DropdownIcon />
       </Toggle>
 
       {menuPortal(<ScopingSearchHistoryMenu searchQueries={searchQueries} menuProps={menuProps} />)}
