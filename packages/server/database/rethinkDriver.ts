@@ -96,8 +96,7 @@ export type RethinkSchema = {
       | 'teamId'
       | 'templateId'
       | 'meetingSeriesId'
-      | 'scheduledEndTime'
-      | 'hasNotEnded'
+      | 'hasEndedScheduledEndTime'
   }
   NewFeature: {
     type: any
