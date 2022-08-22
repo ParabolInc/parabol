@@ -14,6 +14,11 @@ const IconContainer = styled('div')({
   marginRight: 16
 })
 
+const MenuToggleLabelContainer = styled('div')({
+  // Squeeze in an extra 1% to fit the largest public template "Always Be Learning Retrospective 🌱"
+  maxWidth: '101%'
+})
+
 const MenuToggleLabel = styled('div')({
   flex: 1,
   overflow: 'hidden',
@@ -41,10 +46,10 @@ const DropdownToggleInner = forwardRef((props: Props, ref: any) => {
   return (
     <Container ref={ref}>
       {icon && <IconContainer>{icon}</IconContainer>}
-      <div>
+      <MenuToggleLabelContainer>
         <MenuToggleTitle>{title}</MenuToggleTitle>
         <MenuToggleLabel>{label}</MenuToggleLabel>
-      </div>
+      </MenuToggleLabelContainer>
     </Container>
   )
 })
