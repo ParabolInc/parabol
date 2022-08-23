@@ -109,10 +109,12 @@ const BottomControlBarReadyButton = (props: Props): JSX.Element => {
 
   useEffect(() => {
     if (localPhase.phaseType !== 'group') return
+    if (reflectionGroups?.every((group) => group.reflections.length === 1)) return
 
     const isNotDragging = reflectionGroups?.every((group) =>
       group.reflections?.every(
-        (reflection) => !reflection.isViewerDragging && !reflection.isDropping
+        ({isDropping, isEditing, isViewerDragging}) =>
+          !isViewerDragging && !isDropping && !isEditing
       )
     )
 
