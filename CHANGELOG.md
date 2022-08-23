@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.71.0 2022-August-17
+
+### Added
+
+- Updated new meeting settings area (#6989)
+- Added Team members preview in new meeting team selector (#7001)
+- **Metrics**: Added `inviterId` to Invite Accepted events (#7058)
+- Added scrum template (#7064)
+- Implemented Azure task integration (#7007)
+
+### Fixed
+
+- **Usage Stats**: active teams definition (#7060)
+- Removed double scrollbar on discuss phase (#7066)
+
 ## 6.70.1 2022-August-11
 
 ### Fixed

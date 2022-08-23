@@ -1,0 +1,26 @@
+extend type Mutation {
+  """
+  Stops the recurrence of meeting with given ID
+  """
+  stopRecurrence(
+    """
+    ID of the meeting to stop recurrence for
+    """
+    meetingId: ID!
+  ): StopRecurrencePayload!
+}
+
+"""
+Return value for stopRecurrence, which could be an error
+"""
+union StopRecurrencePayload = ErrorPayload | StopRecurrenceSuccess
+
+type StopRecurrenceSuccess {
+  """
+  The updated meeting
+  :TODO: Change this to be any NewMeeting.
+  """
+  meeting: TeamPromptMeeting!
+}
+
+extend union TeamSubscriptionPayload = StopRecurrenceSuccess

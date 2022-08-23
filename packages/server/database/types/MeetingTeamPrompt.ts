@@ -32,8 +32,6 @@ function createTeamPromptDefaultTitle() {
 export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
   meetingPrompt: string
-  meetingSeriesId?: number
-  scheduledEndTime?: Date
 
   constructor(input: Input) {
     const {
@@ -54,10 +52,10 @@ export default class MeetingTeamPrompt extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'teamPrompt',
-      name: name ?? createTeamPromptDefaultTitle()
+      name: name ?? createTeamPromptDefaultTitle(),
+      meetingSeriesId,
+      scheduledEndTime
     })
     this.meetingPrompt = meetingPrompt
-    this.meetingSeriesId = meetingSeriesId
-    this.scheduledEndTime = scheduledEndTime
   }
 }
