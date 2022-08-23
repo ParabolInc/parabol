@@ -45,6 +45,9 @@ const SettingsRow = styled('div')({
   display: 'flex',
   flexDirection: 'row',
   gap: 16,
+  '> div, button': {
+    width: '50%'
+  },
   [MEDIA_QUERY_FUZZY_TABLET]: {
     flexDirection: 'column',
     '> div, button': {
