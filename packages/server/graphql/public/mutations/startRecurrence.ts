@@ -52,7 +52,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     // for now, let's set all the meetings to close in 24h
     await r
       .table('NewMeeting')
-      .filter({meetingSeriesId: meetingSeries.id})
+      .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
       .filter({endedAt: null}, {default: true})
       .update({
         scheduledEndTime: new Date(Date.now() + ms('24h'))
