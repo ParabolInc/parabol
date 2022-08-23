@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Close} from '@mui/icons-material'
+import {Close as CloseIcon, PersonAdd as PersonAddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -21,10 +21,13 @@ interface Props {
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
 }
 
-const StyledIcon = styled(Close)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  height: 18,
-  width: 18,
+  height: 24,
+  width: 24,
+  '& svg': {
+    fontSize: 24
+  },
   marginRight: 8
 })
 
@@ -75,7 +78,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
         key='copy'
         label={
           <OptionMenuItem>
-            <StyledIcon>person_add</StyledIcon>
+            <StyledIcon>
+              <PersonAddIcon />
+            </StyledIcon>
             <span>{'Copy invite link'}</span>
           </OptionMenuItem>
         }
@@ -91,7 +96,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
           key='close'
           label={
             <OptionMenuItem>
-              <StyledIcon />
+              <StyledIcon>
+                <CloseIcon />
+              </StyledIcon>
               <span>{'End the meeting'}</span>
             </OptionMenuItem>
           }

@@ -19,7 +19,7 @@ const DropdownIcon = styled(ExpandMore)({
   marginLeft: -8
 })
 
-const StyledIconDroprown = styled(Search)({
+const StyledIconDropdown = styled(Search)({
   color: PALETTE.SLATE_600
 })
 
@@ -48,7 +48,7 @@ const ScopingSearchHistoryToggle = (props: Props) => {
   return (
     <>
       <Toggle onClick={togglePortal} ref={originRef}>
-        <StyledIconDroprown />
+        <StyledIconDropdown />
         <DropdownIcon />
       </Toggle>
 

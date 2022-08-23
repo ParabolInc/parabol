@@ -10,39 +10,29 @@ interface Props extends LinkButtonProps {
   iconLarge?: boolean
 }
 
-const StyledIcon = styled('div')({
+const StyledIcon = styled('div')<{iconLarge: boolean | undefined}>(({iconLarge}) => ({
   color: 'inherit',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center'
-})
-
-const notIconLargeStyles = {
-  height: 18,
-  width: 18
-}
-
-const CancelOutlinedIcon = styled(CancelOutlined)<{iconLarge?: boolean}>((iconLarge) =>
-  !iconLarge ? notIconLargeStyles : undefined
-)
-const CloseIcon = styled(Close)<{iconLarge?: boolean}>((iconLarge) =>
-  !iconLarge ? notIconLargeStyles : undefined
-)
-const MenuIcon = styled(Menu)<{iconLarge?: boolean}>((iconLarge) =>
-  !iconLarge ? notIconLargeStyles : undefined
-)
+  justifyContent: 'center',
+  height: iconLarge ? 24 : 18,
+  width: iconLarge ? 24 : 18,
+  '& svg': {
+    fontSize: iconLarge ? 24 : 18
+  }
+}))
 
 const IconButton = (props: Props) => {
   const {icon, iconLarge} = props
 
   return (
     <StyledButton {...props} type='button'>
-      <StyledIcon>
+      <StyledIcon iconLarge={iconLarge}>
         {
           {
-            cancel: <CancelOutlinedIcon iconLarge={iconLarge} />,
-            close: <CloseIcon iconLarge={iconLarge} />,
-            menu: <MenuIcon iconLarge={iconLarge} />
+            cancel: <CancelOutlined />,
+            close: <Close />,
+            menu: <Menu />
           }[icon]
         }
       </StyledIcon>

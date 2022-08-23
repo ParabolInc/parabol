@@ -55,8 +55,8 @@ const Action = styled('div')({
   justifyContent: 'end',
   alignItems: 'center',
   height: 24,
-  width: 24,
-  margin: 16
+  marginRight: 16,
+  width: 24
 })
 
 interface Props {

@@ -51,14 +51,7 @@ const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
     >
       {children}
       {!disabled && (
-        <DropdownIcon>
-          {
-            {
-              keyboard_arrow_right: <KeyboardArrowRight />
-            }[icon!]
-          }
-          || <ExpandMoreIcon />
-        </DropdownIcon>
+        <DropdownIcon>{icon ? <KeyboardArrowRight /> : <ExpandMoreIcon />}</DropdownIcon>
       )}
     </DropdownBlock>
   )

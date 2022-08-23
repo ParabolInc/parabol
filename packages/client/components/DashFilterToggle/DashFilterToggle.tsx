@@ -47,8 +47,8 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
             person: <Person />,
             group: <Group />
           }[iconText!]
-        }{' '}
-        || <FilterList />
+        }
+        {!iconText && <FilterList />}
       </StyledIcon>
       {value}
     </StyledLinkButton>
