@@ -78,23 +78,13 @@ const BottomControlBarReadyButton = (props: Props) => {
               isViewerDragging
             }
           }
-          viewerMeetingMember {
-            votesRemaining
-          }
           votesRemaining
         }
       }
     `,
     meetingRef
   )
-  const {
-    endedAt,
-    facilitatorUserId,
-    localPhase,
-    reflectionGroups,
-    viewerMeetingMember,
-    votesRemaining
-  } = meeting
+  const {endedAt, facilitatorUserId, localPhase, reflectionGroups, votesRemaining} = meeting
   const [delaySeconds, setDelaySeconds] = useState<number>()
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -133,11 +123,10 @@ const BottomControlBarReadyButton = (props: Props) => {
     if (localPhase.phaseType !== 'vote') return
 
     const teamVotesRemaining = votesRemaining ?? 0
-    const myVotesRemaining = viewerMeetingMember?.votesRemaining ?? 0
-    const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
+    const noVotesRemaining = teamVotesRemaining === 0
 
-    setDelaySeconds(isNotVoting ? 30 : undefined)
-  }, [localPhase.phaseType === 'vote', votesRemaining, viewerMeetingMember])
+    setDelaySeconds(noVotesRemaining ? 30 : undefined)
+  }, [localPhase.phaseType === 'vote', votesRemaining])
 
   useEffect(() => {
     if (localPhase.phaseType !== 'discuss') return
