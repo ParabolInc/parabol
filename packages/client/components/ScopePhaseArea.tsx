@@ -37,12 +37,15 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: isDesktop ? '80%' : 'calc(100% - 16px)',
   maxWidth: 1040,
   height: '70%',
-  boxShadow: Elevation.Z3
+  boxShadow: Elevation.Z3,
+  overflow: 'hidden'
 }))
 
 const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
-  maxWidth: '100%'
+  maxWidth: '100%',
+  overflow: 'auto',
+  overflowY: 'hidden'
 })
 
 const TabIcon = styled(Icon)({

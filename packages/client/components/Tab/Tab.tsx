@@ -21,8 +21,7 @@ const TabStyle = styled(PlainButton)<{isActive: boolean; isClickable: boolean}>(
     outline: 0,
     lineHeight: '1.25rem',
     padding: '12px 16px',
-    userSelect: 'none',
-    overflow: 'hidden'
+    userSelect: 'none'
   })
 )
 
