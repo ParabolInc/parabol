@@ -50,7 +50,7 @@ interface Props {
   children: ReactNode
 }
 
-const BottomControlBarReadyButton = (props: Props) => {
+const BottomControlBarReadyButton = (props: Props): JSX.Element => {
   const {meetingRef, progress, children} = props
   const meeting = useFragment(
     graphql`
