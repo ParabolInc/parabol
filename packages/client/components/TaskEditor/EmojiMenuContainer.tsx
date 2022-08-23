@@ -8,7 +8,7 @@ interface Props {
   onSelectEmoji: (emoji: string) => void
   query: string
   menuRef?: Ref<any>
-  removeModal: () => void
+  removeModal?: () => void
 }
 
 const EmojiMenu = lazyPreload(() => import(/* webpackChunkName: 'EmojiMenu' */ '../EmojiMenu'))

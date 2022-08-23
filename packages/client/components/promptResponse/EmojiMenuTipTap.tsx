@@ -36,6 +36,7 @@ const EmojiMenuTipTap = (props: Props) => {
           setOpenEmojiMenu(false)
         },
         onUpdate: ({query, range}) => {
+          setOpenEmojiMenu(true)
           setRange(range)
           setEmojiQuery(query)
         }
@@ -60,12 +61,11 @@ const EmojiMenuTipTap = (props: Props) => {
       .run()
   }
 
-  return openEmojiMenu ? (
+  return openEmojiMenu && tiptapEditor.isFocused ? (
     <EmojiMenuContainer
       originCoords={getSelectionBoundingBox(tiptapEditor)}
       onSelectEmoji={onSelectEmoji}
       query={emojiQuery}
-      removeModal={() => setOpenEmojiMenu(false)}
     />
   ) : null
 }
