@@ -1,11 +1,15 @@
 import styled from '@emotion/styled'
+import {
+  Business as BusinessIcon,
+  Group as GroupIcon,
+  Public as PublicIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
-import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import useBreakpoint from '../../../hooks/useBreakpoint'
@@ -65,7 +69,7 @@ const TabLabel = styled('div')({
   alignItems: 'center'
 })
 
-const TabIcon = styled(Icon)({
+const TabIcon = styled('div')({
   marginRight: 4
 })
 
@@ -157,7 +161,10 @@ const ReflectTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'group'}</TabIcon> Team
+              <TabIcon>
+                <GroupIcon />
+              </TabIcon>{' '}
+              Team
             </TabLabel>
           }
           onClick={() => goToTab('TEAM')}
@@ -165,7 +172,10 @@ const ReflectTemplateList = (props: Props) => {
         <WideTab
           label={
             <TabLabel>
-              <TabIcon>{'business'}</TabIcon> Organization
+              <TabIcon>
+                <BusinessIcon />
+              </TabIcon>{' '}
+              Organization
             </TabLabel>
           }
           onClick={() => goToTab('ORGANIZATION')}
@@ -173,7 +183,10 @@ const ReflectTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Public
+              <TabIcon>
+                <PublicIcon />
+              </TabIcon>{' '}
+              Public
             </TabLabel>
           }
           onClick={() => goToTab('PUBLIC')}

@@ -1,17 +1,16 @@
+import styled from '@emotion/styled'
+import {Info as InfoIcon} from '@mui/icons-material'
 import React, {useState} from 'react'
-import CreditCardForm from './CreditCardForm'
 import DialogTitle from '~/components/DialogTitle'
 import DialogContainer from '../../../../components/DialogContainer'
-import UpgradeSuccess from '../../../../components/UpgradeSuccess'
 import UpgradeLater from '../../../../components/UpgradeLater'
-import styled from '@emotion/styled'
-import CreditCardReassurance from './CreditCardReassurance'
-import Icon from '../../../../components/Icon'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
+import UpgradeSuccess from '../../../../components/UpgradeSuccess'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import PayLaterMutation from '../../../../mutations/PayLaterMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks} from '../../../../types/constEnums'
-import PayLaterMutation from '../../../../mutations/PayLaterMutation'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
+import CreditCardForm from './CreditCardForm'
+import CreditCardReassurance from './CreditCardReassurance'
 
 export type CreditCardModalActionType = 'update' | 'upgrade' | 'squeeze'
 
@@ -19,10 +18,14 @@ const Container = styled(DialogContainer)({
   width: 312
 })
 
-const Info = styled(Icon)({
+const Info = styled('div')({
+  height: 18,
+  width: 18,
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
-  paddingLeft: 8
+  '& svg': {
+    fontSize: 18
+  },
+  marginLeft: 8
 })
 
 interface Props {
@@ -66,7 +69,9 @@ const CreditCardModal = (props: Props) => {
         {actionType === 'update' ? 'Update Credit Card' : 'Upgrade to Pro'}
         {actionType !== 'update' && (
           <a href={ExternalLinks.PRICING_LINK} rel='noopener noreferrer' target='blank'>
-            <Info>info</Info>
+            <Info>
+              <InfoIcon />
+            </Info>
           </a>
         )}
       </DialogTitle>

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState, SelectionState} from 'draft-js'
 import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NewCheckInQuestion_meeting} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
-import Icon from '../../../../components/Icon'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import '../../../../components/TaskEditor/Draft.css'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -14,17 +14,18 @@ import useEditorState from '../../../../hooks/useEditorState'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 
-const CogIcon = styled(Icon)({
+const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
   cursor: 'pointer',
-  display: 'block',
   height: 24,
-  fontSize: ICON_SIZE.MD18,
-  marginLeft: 8,
-  paddingTop: 3,
-  textAlign: 'center',
+  '& svg': {
+    fontSize: 18
+  },
+  margin: '3px 3px 3px 11px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   width: 24
 })
 
@@ -126,10 +127,14 @@ const NewCheckInQuestion = (props: Props) => {
             onMouseLeave={closeTooltip}
             ref={originRef}
           >
-            <CogIcon>create</CogIcon>
+            <CogIcon>
+              <CreateIcon />
+            </CogIcon>
           </PlainButton>
           <PlainButton aria-label={'Refresh'} onClick={refresh}>
-            <CogIcon>refresh</CogIcon>
+            <CogIcon>
+              <RefreshIcon />
+            </CogIcon>
           </PlainButton>
         </>
       )}

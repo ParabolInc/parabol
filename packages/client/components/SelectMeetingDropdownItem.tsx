@@ -1,15 +1,19 @@
 import styled from '@emotion/styled'
+import {
+  ArrowForward as ArrowForwardIcon,
+  ChangeHistory,
+  GroupWork,
+  History
+} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
 import {SelectMeetingDropdownItem_meeting} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
-import Icon from './Icon'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -17,10 +21,11 @@ const Wrapper = styled('div')({
   width: '100%'
 })
 
-const MeetingIcon = styled(Icon)({
+const MeetingIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
-  padding: 16
+  height: 24,
+  width: 24,
+  margin: 16
 })
 
 const MeetingSVG = styled('div')({
@@ -44,10 +49,14 @@ const Subtitle = styled('div')({
   fontSize: 12
 })
 
-const Action = styled(Icon)({
+const Action = styled('div')({
   flex: 1,
-  textAlign: 'right',
-  padding: 16
+  display: 'flex',
+  justifyContent: 'end',
+  alignItems: 'center',
+  height: 24,
+  width: 24,
+  margin: 16
 })
 
 interface Props {
@@ -77,14 +86,30 @@ const SelectMeetingDropdownItem = (props: Props) => {
 
   return (
     <Wrapper onClick={gotoMeeting}>
-      {typeof IconOrSVG === 'string' ? <MeetingIcon>{IconOrSVG}</MeetingIcon> : <MeetingSVG><IconOrSVG /></MeetingSVG>}
+      {typeof IconOrSVG === 'string' ? (
+        <MeetingIcon>
+          {
+            {
+              group_work: <GroupWork />,
+              change_history: <ChangeHistory />,
+              history: <History />
+            }[IconOrSVG]
+          }
+        </MeetingIcon>
+      ) : (
+        <MeetingSVG>
+          <IconOrSVG />
+        </MeetingSVG>
+      )}
       <MeetingInfo>
         <Title>{name}</Title>
         <Subtitle>
           {meetingPhaseLabel} • {teamName}
         </Subtitle>
       </MeetingInfo>
-      <Action>{'arrow_forward'}</Action>
+      <Action>
+        <ArrowForwardIcon />
+      </Action>
     </Wrapper>
   )
 }

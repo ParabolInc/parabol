@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
+import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import React from 'react'
 import FlatButton from '../../../../components/FlatButton'
-import Icon from '../../../../components/Icon'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout} from '../../../../types/constEnums'
 
 const MenuButton = styled(FlatButton)({
@@ -38,13 +37,21 @@ const StatusLabel = styled('div')({
   paddingLeft: 6
 })
 
-const StatusIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
+const StatusIcon = styled('div')({
+  '& svg': {
+    fontSize: 18
+  },
+  width: 18,
+  height: 18,
   color: PALETTE.SUCCESS_LIGHT
 })
 
-const MenuSmallIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const MenuSmallIcon = styled(MoreVertIcon)({
+  '& svg': {
+    fontSize: 18
+  },
+  width: 18,
+  height: 18
 })
 
 const ProviderName = styled('div')({
@@ -137,16 +144,20 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
               {isDesktop ? (
                 <>
                   <StatusWrapper>
-                    <StatusIcon>done</StatusIcon>
+                    <StatusIcon>
+                      <DoneIcon />
+                    </StatusIcon>
                     <StatusLabel>Connected</StatusLabel>
                   </StatusWrapper>
                   <SmallMenuButton onClick={togglePortal} ref={menuRef}>
-                    <MenuSmallIcon>more_vert</MenuSmallIcon>
+                    <MenuSmallIcon>
+                      <MoreVertIcon />
+                    </MenuSmallIcon>
                   </SmallMenuButton>
                 </>
               ) : (
                 <MenuButton onClick={togglePortal} ref={menuRef}>
-                  <Icon>more_vert</Icon>
+                  <MoreVertIcon />
                 </MenuButton>
               )}
             </>

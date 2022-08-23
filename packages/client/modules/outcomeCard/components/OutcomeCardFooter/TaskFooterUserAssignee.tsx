@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {AssignmentInd as AssignmentIndIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -12,7 +13,6 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TaskFooterUserAssignee_task} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
-import Icon from '../../../../components/Icon'
 
 const label = {
   ...textOverflow,
@@ -80,13 +80,17 @@ const TooltipToggle = styled('div')({
   display: 'inline-flex'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   alignContent: 'center',
   alignItems: 'center',
   color: PALETTE.WHITE,
   cursor: 'pointer',
   display: 'flex',
-  fontSize: 22,
+  '& svg': {
+    fontSize: 22
+  },
+  height: 22,
+  width: 22,
   justifyContent: 'center',
   position: 'relative',
   top: 1
@@ -100,10 +104,11 @@ interface Props {
   useTaskChild: UseTaskChild
 }
 
-const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot'
-  )
+const TaskFooterUserAssigneeMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot'
+    )
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
@@ -112,9 +117,12 @@ const TaskFooterUserAssignee = (props: Props) => {
   const userImage = user?.picture || avatarUser
   const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <TooltipToggle
@@ -133,7 +141,9 @@ const TaskFooterUserAssignee = (props: Props) => {
             {user ? (
               <AvatarImage alt={preferredName} src={userImage} />
             ) : (
-              <StyledIcon>{'assignment_ind'}</StyledIcon>
+              <StyledIcon>
+                <AssignmentIndIcon />
+              </StyledIcon>
             )}
           </Avatar>
           <AvatarLabel>{preferredName}</AvatarLabel>

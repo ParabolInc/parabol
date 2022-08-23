@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
@@ -6,10 +7,8 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {TemplatePromptItem_prompts} from '~/__generated__/TemplatePromptItem_prompts.graphql'
-import Icon from '../../../components/Icon'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
@@ -31,8 +30,7 @@ interface StyledProps {
 const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'flex-start',
-    backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
+    backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
@@ -42,17 +40,19 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
   })
 )
 
-const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
+const RemovePromptIcon = styled('div')<StyledProps>(({isHover}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  display: 'block',
-  fontSize: ICON_SIZE.MD18,
+  '& svg': {
+    fontSize: 18
+  },
   height: 24,
-  lineHeight: '24px',
   marginLeft: 'auto',
   padding: 0,
   opacity: isHover ? 1 : 0,
-  textAlign: 'center',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   width: 24
 }))
 
@@ -117,7 +117,7 @@ const TemplatePromptItem = (props: Props) => {
       </PromptAndDescription>
       {canRemove && (
         <RemovePromptIcon isHover={isHover} onClick={removePrompt}>
-          cancel
+          <CancelIcon />
         </RemovePromptIcon>
       )}
     </PromptItem>

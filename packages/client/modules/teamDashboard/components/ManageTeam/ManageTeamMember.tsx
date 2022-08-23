@@ -1,23 +1,23 @@
 import styled from '@emotion/styled'
+import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import Row from '../../../../components/Row/Row'
-import Icon from '../../../../components/Icon'
-import {PALETTE} from '../../../../styles/paletteV3'
 import FlatButton from '../../../../components/FlatButton'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberModal'
-import RemoveTeamMemberModal from '../RemoveTeamMemberModal/RemoveTeamMemberModal'
-import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
-import useModal from '../../../../hooks/useModal'
+import Row from '../../../../components/Row/Row'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import lazyPreload from '../../../../utils/lazyPreload'
+import useModal from '../../../../hooks/useModal'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
+import lazyPreload from '../../../../utils/lazyPreload'
+import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
+import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberModal'
+import RemoveTeamMemberModal from '../RemoveTeamMemberModal/RemoveTeamMemberModal'
 
 const StyledRow = styled(Row)({
   borderTop: 0,
@@ -47,8 +47,12 @@ const Content = styled('div')({
   flexDirection: 'column'
 })
 
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const StyledIcon = styled('div')({
+  '& svg': {
+    fontSize: 18
+  },
+  height: 18,
+  width: 18
 })
 
 const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
@@ -59,10 +63,11 @@ const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
   lineHeight: '12px'
 }))
 
-const TeamMemberAvatarMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TeamMemberAvatarMenu' */ '../../../../components/DashboardAvatars/TeamMemberAvatarMenu'
-  )
+const TeamMemberAvatarMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TeamMemberAvatarMenu' */ '../../../../components/DashboardAvatars/TeamMemberAvatarMenu'
+    )
 )
 
 interface Props {
@@ -123,7 +128,9 @@ const ManageTeamMember = (props: Props) => {
         onMouseEnter={TeamMemberAvatarMenu.preload}
         ref={originRef}
       >
-        <StyledIcon>more_vert</StyledIcon>
+        <StyledIcon>
+          <MoreVertIcon />
+        </StyledIcon>
       </StyledButton>
       {menuPortal(
         <TeamMemberAvatarMenu
