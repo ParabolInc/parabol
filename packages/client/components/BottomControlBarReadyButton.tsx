@@ -115,7 +115,7 @@ const BottomControlBarReadyButton = (props: Props) => {
     })
 
     setDelaySeconds(isNotEditing ? 30 : undefined)
-  }, [localPhase.phaseType === 'reflect', reflectionGroups, localPhase])
+  }, [localPhase.phaseType === 'reflect', reflectionGroups, localPhase.reflectPrompts])
 
   useEffect(() => {
     if (localPhase.phaseType !== 'group') return
@@ -127,13 +127,13 @@ const BottomControlBarReadyButton = (props: Props) => {
     )
 
     setDelaySeconds(isNotDragging ? 30 : undefined)
-  }, [localPhase.phaseType === 'group', reflectionGroups, localPhase])
+  }, [localPhase.phaseType === 'group', reflectionGroups])
 
   useEffect(() => {
     if (localPhase.phaseType !== 'vote') return
 
-    const teamVotesRemaining = votesRemaining || 0
-    const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
+    const teamVotesRemaining = votesRemaining ?? 0
+    const myVotesRemaining = viewerMeetingMember?.votesRemaining ?? 0
     const isNotVoting = teamVotesRemaining === 0 || myVotesRemaining === 0
 
     setDelaySeconds(isNotVoting ? 30 : undefined)
@@ -151,7 +151,7 @@ const BottomControlBarReadyButton = (props: Props) => {
     if (progress !== 1) return
 
     setDelaySeconds(5)
-  }, [progress, localPhase.phaseType])
+  }, [progress === 1, localPhase.phaseType])
 
   // only enable for facilitatorUser
   const isFacilitator = viewerId === facilitatorUserId && !endedAt
