@@ -153,7 +153,7 @@ export const freshAzureDevOpsAuth = (
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
-              // Azure refresh token only lasts 24 hrs for SPAs. User needs to manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
+              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
               if (oauthRes.message === 'invalid_grant') {
                 await removeTeamMemberIntegrationAuthQuery('azureDevOps', teamId, userId)
               }
