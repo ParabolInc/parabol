@@ -88,7 +88,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         />
       )}
       <MenuItem
-        key='copy'
+        key='end'
         isDisabled={!!endedAt}
         label={
           <OptionMenuItem>
