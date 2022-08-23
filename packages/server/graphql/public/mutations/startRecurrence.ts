@@ -4,12 +4,14 @@ import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
+import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
-import updateMeetingSeries from '../../../postgres/queries/updateMeetingSeries'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
+
+const MEETING_DURATION_IN_MINUTES = 24 * 60 // 24 hours
 
 const startRecurrence: MutationResolvers['startRecurrence'] = async (
   _source,
@@ -38,46 +40,76 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
   }
 
-  if (meeting.meetingSeriesId) {
-    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
-    if (!meetingSeries.cancelledAt) {
-      return standardError(new Error('Meeting is already recurring'), {userId: viewerId})
-    }
-
-    // meeting has stopped recurrence associated with it, reenable it
-    await updateMeetingSeries({cancelledAt: null}, meeting.meetingSeriesId)
-    dataLoader.get('meetingSeries').clear(meeting.meetingSeriesId)
-
-    // TODO: what's the right time to close all the open meetings in the series?
-    // for now, let's set all the meetings to close in 24h
-    await r
-      .table('NewMeeting')
-      .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
-      .filter({endedAt: null}, {default: true})
-      .update({
-        scheduledEndTime: new Date(Date.now() + ms('24h'))
-      })
-      .run()
-
-    return {meetingId}
-  }
-
   // Next meeting start is tomorrow at 9a UTC
   // :TODO: (jmtaber129): Determine this from meeting series configuration.
-  const startDate = new Date(
+  const nextMeetingStartDate = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9)
   )
   const recurrenceRule = new RRule({
     freq: RRule.WEEKLY,
     byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR],
-    dtstart: startDate
+    dtstart: nextMeetingStartDate
   })
+
+  if (meeting.meetingSeriesId) {
+    const {cancelledAt, recurrenceRule, id} = await dataLoader
+      .get('meetingSeries')
+      .loadNonNull(meeting.meetingSeriesId)
+    if (!cancelledAt) {
+      return standardError(new Error('Meeting is already recurring'), {userId: viewerId})
+    }
+
+    const currentRRule = RRule.fromString(recurrenceRule)
+    const hasRecentlyStopped = cancelledAt.getTime() > now.getTime() - ms('1h')
+    const nextScheduledStartDate = currentRRule.after(now)
+    const isNextScheduledStartDateReasonable =
+      nextScheduledStartDate.getTime() > now.getTime() + ms('9h')
+    if (hasRecentlyStopped || isNextScheduledStartDateReasonable) {
+      // no need to change the recurrence rule, next meeting starts in reasonable time
+      await restartMeetingSeries({cancelledAt: null}, meeting.meetingSeriesId)
+    } else {
+      // meeting series was stopped more than ~1h ago and the next scheduled start date is within the next ~9h
+      // to prevent a meeting from being scheduled too soon, we need to change the recurrence rule
+      const newRecurrenceRule = currentRRule.clone()
+      newRecurrenceRule.options.dtstart = new Date(nextMeetingStartDate.getTime() + ms('1d'))
+
+      await restartMeetingSeries(
+        {cancelledAt: null, recurrenceRule: newRecurrenceRule.toString()},
+        meeting.meetingSeriesId
+      )
+    }
+
+    dataLoader.get('meetingSeries').clear(meeting.meetingSeriesId)
+
+    // update all the active meetings to end at proper time
+    const activeMeetings = await r
+      .table('NewMeeting')
+      .getAll(id, {index: 'meetingSeriesId'})
+      .filter({endedAt: null}, {default: true})
+      .run()
+    const updates = activeMeetings.map((meeting) =>
+      r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({
+          scheduledEndTime: new Date(
+            meeting.createdAt.getTime() + ms(`${MEETING_DURATION_IN_MINUTES}m`)
+          )
+        })
+        .run()
+    )
+    await Promise.all(updates)
+
+    const data = {meetingId}
+    publish(SubscriptionChannel.TEAM, teamId, 'StartRecurrenceSuccess', data, subOptions)
+    return data
+  }
 
   const newMeetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',
     title: 'Async Standup',
     recurrenceRule: recurrenceRule.toString(),
-    duration: 24 * 60, // 24 hours
+    duration: MEETING_DURATION_IN_MINUTES,
     teamId,
     facilitatorId: viewerId
   })
@@ -88,7 +120,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     .update(
       {
         meetingSeriesId: newMeetingSeriesId,
-        scheduledEndTime: new Date(Date.now() + ms('24h')) // 24 hours from now
+        scheduledEndTime: new Date(now.getTime() + ms('24h')) // 24 hours from now
       },
       {returnChanges: true}
     )('changes')(0)('new_val')
@@ -97,7 +129,6 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   dataLoader.get('newMeetings').clear(meetingId)
 
   // RESOLUTION
-
   analytics.recurrenceStarted(viewerId, updatedMeeting)
   const data = {meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'StartRecurrenceSuccess', data, subOptions)
