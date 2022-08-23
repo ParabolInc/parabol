@@ -215,6 +215,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               meetingId,
               userId: viewerId,
               url: '',
+              title,
               state: '',
               type: ''
             })
