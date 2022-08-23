@@ -13,7 +13,7 @@ interface EmojiSuggestion {
 interface Props {
   menuProps: MenuProps
   onSelectEmoji: (emoji: string) => void
-  menuRef: Ref<any>
+  menuRef?: Ref<any>
   query: string
 }
 

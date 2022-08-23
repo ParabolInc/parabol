@@ -7,7 +7,7 @@ interface Props {
   originCoords: ClientRect
   onSelectEmoji: (emoji: string) => void
   query: string
-  menuRef: Ref<any>
+  menuRef?: Ref<any>
   removeModal: () => void
 }
 
