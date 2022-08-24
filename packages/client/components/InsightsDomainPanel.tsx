@@ -15,7 +15,7 @@ import Panel from './Panel/Panel'
 
 const StatsPanel = styled(Panel)({
   boxShadow: Elevation.Z3,
-  maxWidth: 520
+  maxWidth: 600
 })
 
 const Wrapper = styled('div')({
@@ -109,7 +109,7 @@ const InsightsDomainPanel = (props: Props) => {
     openTooltip: orgOpenTooltip,
     closeTooltip: orgCloseTooltip,
     originRef: orgRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
   const {
     tooltipPortal: teamPortal,
     openTooltip: teamOpenTooltip,
@@ -139,7 +139,7 @@ const InsightsDomainPanel = (props: Props) => {
   return (
     <Wrapper>
       <StatsPanel>
-        <DomainName>{domainId}</DomainName>
+        <DomainName>{`${domainId} Usage`}</DomainName>
         <StatBlocks>
           <StatBlock>
             <StatBlockNumber>{activeOrganizationCount}</StatBlockNumber>
