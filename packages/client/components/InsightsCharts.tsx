@@ -137,7 +137,7 @@ const meetingOptions: ChartOptions<'bar'> = {
     },
     title: {
       display: true,
-      text: 'Meetings',
+      text: 'Total Meetings',
       font: {
         size: 20,
         weight: '400'
