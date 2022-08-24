@@ -124,10 +124,7 @@ const BottomControlBarReadyButton = (props: Props): JSX.Element => {
   useEffect(() => {
     if (localPhase.phaseType !== 'vote') return
 
-    const teamVotesRemaining = votesRemaining ?? 0
-    const noVotesRemaining = teamVotesRemaining === 0
-
-    setDelaySeconds(noVotesRemaining ? 30 : undefined)
+    setDelaySeconds(!votesRemaining ? 30 : undefined)
   }, [localPhase.phaseType === 'vote', votesRemaining])
 
   useEffect(() => {
