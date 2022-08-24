@@ -81,12 +81,10 @@ interface Props {
 }
 
 const tooltipTextLookup = {
-  org: 'Organizations with at least 1 unarchived team on it, which has at least 2 team members who have logged in within the last 30 days',
-  team: 'Teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an updatedAt newer than 30 days ago',
-  member:
-    'The number of users on an active organization that has logged in within the last 30 days',
-  meeting:
-    'The number of meetings created by unarchived teams on organizations assigned to the domain'
+  org: 'Organizations associated with this domain that have at least 2 active members',
+  team: 'Teams that met within the last 30 days and have at least 2 active members',
+  member: 'Users who have logged in within the last 30 days',
+  meeting: 'Total number of meetings by teams in associated organizations'
 }
 
 const InsightsDomainPanel = (props: Props) => {
