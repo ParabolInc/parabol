@@ -23,6 +23,9 @@ const EmojiMenuTipTap = (props: Props) => {
     }
 
     const plugin = Suggestion({
+      // The 'pluginKey' type definition seems to be a mismatch between prosemirror and this
+      // extension, so cast to 'any' to get around it.
+      // :TODO: (jmtaber129): get these type definitions to play nice.
       pluginKey: pluginKey as any,
       editor: tiptapEditor,
       char: ':',
