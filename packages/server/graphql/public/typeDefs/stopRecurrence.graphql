@@ -6,7 +6,7 @@ extend type Mutation {
     """
     ID of the meeting to stop recurrence for
     """
-    meetingId: ID!
+    meetingSeriesId: ID!
   ): StopRecurrencePayload!
 }
 

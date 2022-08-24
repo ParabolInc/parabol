@@ -80,7 +80,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
             menuProps.closePortal()
 
             if (hasRecurrenceEnabled) {
-              StopRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+              StopRecurrenceMutation(
+                atmosphere,
+                {meetingSeriesId: meetingSeries.id},
+                {onCompleted, onError}
+              )
             } else {
               StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
             }

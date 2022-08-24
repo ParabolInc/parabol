@@ -20,8 +20,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StopRecurrenceMutation($meetingId: ID!) {
-    stopRecurrence(meetingId: $meetingId) {
+  mutation StopRecurrenceMutation($meetingSeriesId: ID!) {
+    stopRecurrence(meetingSeriesId: $meetingSeriesId) {
       ... on ErrorPayload {
         error {
           message
