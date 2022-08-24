@@ -1,11 +1,11 @@
-import React, {ReactNode, useRef, useState} from 'react'
-import getWordAt from './getWordAt'
-import getDraftCoords from '../../utils/getDraftCoords'
-import getAnchorLocation from './getAnchorLocation'
-import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
-import EmojiMenuContainer from './EmojiMenuContainer'
 import {EditorProps, EditorState} from 'draft-js'
+import React, {ReactNode, useRef, useState} from 'react'
 import {SetEditorState} from '../../types/draft'
+import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
+import getDraftCoords from '../../utils/getDraftCoords'
+import EmojiMenuContainer from './EmojiMenuContainer'
+import getAnchorLocation from './getAnchorLocation'
+import getWordAt from './getWordAt'
 
 type Handlers = Pick<EditorProps, 'keyBindingFn' | 'onChange'> & {
   renderModal?: () => ReactNode | null
@@ -26,6 +26,11 @@ const useEmojis = (
   const cachedCoordsRef = useRef<ClientRect | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const [focusedEditorState, setFocusedEditorState] = useState<EditorState>(editorState)
+  if (focusedEditorState !== editorState && editorState.getSelection().getHasFocus()) {
+    setFocusedEditorState(editorState)
+  }
+
   const handleKeyBindingFn: Handlers['keyBindingFn'] = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
@@ -37,11 +42,8 @@ const useEmojis = (
     }
     return null
   }
-  const menuItemClickFactory = (emoji: string, editorState: EditorState) => (
-    e: React.MouseEvent
-  ) => {
-    e.preventDefault()
-    const nextEditorState = autoCompleteEmoji(editorState, emoji)
+  const onSelectEmoji = (emoji: string) => {
+    const nextEditorState = autoCompleteEmoji(focusedEditorState, emoji)
     setEditorState(nextEditorState)
   }
 
@@ -73,10 +75,9 @@ const useEmojis = (
     return (
       <EmojiMenuContainer
         removeModal={onRemoveModal}
-        menuItemClickFactory={menuItemClickFactory}
+        onSelectEmoji={onSelectEmoji}
         query={query}
         menuRef={menuRef}
-        editorState={editorState}
         originCoords={cachedCoordsRef.current!}
       />
     )
