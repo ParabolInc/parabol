@@ -13,7 +13,7 @@ const StyledIcon = styled(CheckCircle)({
 
 const ModalCopy = styled('p')({
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
   display: 'flex',
   fontSize: 15,
   lineHeight: '32px',

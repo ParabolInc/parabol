@@ -8,10 +8,8 @@ import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientM
 
 const LineIcon = styled('div')({
   '& svg': {
-    fontSize: 18
+    fontSize: 19
   },
-  height: 20,
-  width: 20,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'

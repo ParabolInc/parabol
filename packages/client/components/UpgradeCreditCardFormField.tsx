@@ -16,9 +16,11 @@ interface StyleProps {
 
 const FieldIcon = styled('div')<StyleProps>(({hasError}) => ({
   color: hasError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
-  display: 'block',
   height: 24,
   width: 24,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   '& svg': {
     fontSize: 18
   },

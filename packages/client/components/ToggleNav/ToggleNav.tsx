@@ -8,12 +8,15 @@ import {PALETTE} from '../../styles/paletteV3'
 //  • Make icons optional (TA)
 //  • Add disabled styles (TA)
 
-const iconStyles = {
+const StyledIcon = styled('div')({
   height: 18,
   width: 18,
+  '& svg': {
+    fontSize: 18
+  },
   marginRight: '.25rem',
   verticalAlign: 'middle'
-}
+})
 
 const Nav = styled('div')({
   display: 'flex',
@@ -67,7 +70,7 @@ const ToggleNav = (props: Props) => {
             isFirst={index === 0}
             isLast={index === items.length - 1}
           >
-            <div style={iconStyles}>
+            <StyledIcon>
               {
                 {
                   group: <Group />,
@@ -75,7 +78,7 @@ const ToggleNav = (props: Props) => {
                   credit_card: <CreditCard />
                 }[item.icon]
               }
-            </div>
+            </StyledIcon>
             {item.label}
           </Item>
         )

@@ -17,7 +17,6 @@ interface Props {
 const StyledIcon = styled('div')({
   height: 24,
   width: 24,
-  // fontWeight: 400,
   marginRight: 8
 })
 

@@ -30,16 +30,21 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const CheckIcon = styled('div')<{progress: number; isNext: boolean; isViewerReady: boolean}>(
+const StyledIcon = styled('div')<{progress: number; isNext: boolean; isViewerReady: boolean}>(
   ({isViewerReady, progress, isNext}) => ({
-    color: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
     height: 24,
     width: 24,
     opacity: isNext ? 1 : isViewerReady ? 1 : 0.5,
     transformOrigin: '0 0',
     // 20px to 16 = 0.75
     transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
-    transition: `transform 100ms ${BezierCurve.DECELERATE}`
+    transition: `transform 100ms ${BezierCurve.DECELERATE}`,
+    '& svg': {
+      // without fill property the icon will have different color inside
+      fill: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+      stroke: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+      strokeWidth: 1
+    }
   })
 )
 
@@ -149,14 +154,14 @@ const BottomControlBarReady = (props: Props) => {
       >
         <BottomControlBarProgress isNext={isNext} progress={progress} />
         <BottomNavIconLabel label={label} ref={originRef}>
-          <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
+          <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
             {
               {
                 arrow_forward: <ArrowForward />,
                 check: <Check />
               }[icon]
             }
-          </CheckIcon>
+          </StyledIcon>
         </BottomNavIconLabel>
       </BottomNavControl>
       {tooltipPortal(`Tap 'Next' again to Confirm`)}

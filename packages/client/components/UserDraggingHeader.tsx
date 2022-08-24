@@ -19,7 +19,6 @@ const Header = styled('div')({
   bottom: '100%',
   color: PALETTE.TOMATO_600,
   fontSize: 11,
-  lineHeight: '18px',
   position: 'absolute',
   right: 0,
   textAlign: 'end'
@@ -29,16 +28,22 @@ const ArrowIcon = styled('div')({
   animationDuration: '800ms',
   animationIterationCount: 'infinite',
   animationName: keyframesOpacity.toString(),
-  height: 11,
-  width: 11,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  //added little margin to separate from username
+  margin: 3,
   '& svg': {
+    strokeWidth: 2,
+    stroke: 'white',
+    fill: 'white',
     fontSize: 11
-  },
-  verticalAlign: 'text-bottom'
+  }
 })
 
 const StyledTag = styled(BaseTag)({
   backgroundColor: PALETTE.GRAPE_500,
+  display: 'flex',
   color: '#FFFFFF'
 })
 

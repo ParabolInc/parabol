@@ -70,6 +70,8 @@ const TabLabel = styled('div')({
 })
 
 const TabIcon = styled('div')({
+  width: 24,
+  height: 24,
   marginRight: 4
 })
 

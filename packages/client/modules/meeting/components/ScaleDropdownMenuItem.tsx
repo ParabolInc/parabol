@@ -45,7 +45,8 @@ const ScaleName = styled('div')({
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
   fontWeight: 600,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  alignItems: 'center'
 })
 
 const ScaleValues = styled('div')({

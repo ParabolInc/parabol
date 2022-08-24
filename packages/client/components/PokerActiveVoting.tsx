@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Check} from '@mui/icons-material'
+import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -18,7 +18,7 @@ import PokerVotingRowBase from './PokerVotingRowBase'
 import RaisedButton from './RaisedButton'
 import TipBanner from './TipBanner'
 
-const CheckIcon = styled(Check)({
+const StyledCheckIcon = styled(CheckIcon)({
   color: PALETTE.JADE_400
 })
 
@@ -69,14 +69,18 @@ const RevealButtonIcon = styled('div')<{color: string}>(({color}) => ({
   border: `1px solid rgba(130, 128, 154, 0.2)`,
   borderRadius: '100%',
   boxShadow: `0px 0px 2px rgba(68, 66, 88, 0.14), 0px 2px 2px rgba(68, 66, 88, 0.12), 0px 1px 3px rgba(68, 66, 88, 0.2)`,
-  color,
   display: 'flex',
   height: 40,
   justifyContent: 'center',
   left: 19,
   position: 'absolute',
   top: 7,
-  width: 40
+  width: 40,
+  '& svg': {
+    fill: color,
+    stroke: color,
+    strokeWidth: 1
+  }
 }))
 
 const MiniCardWrapper = styled('div')({
@@ -128,7 +132,7 @@ const PokerActiveVoting = (props: Props) => {
       <PokerVotingRowBase>
         <MiniCardWrapper>
           <MiniPokerCard>
-            <CheckIcon />
+            <StyledCheckIcon />
           </MiniPokerCard>
         </MiniCardWrapper>
         <AvatarList
@@ -144,7 +148,7 @@ const PokerActiveVoting = (props: Props) => {
           <RevealButton onClick={reveal} color={PALETTE.SLATE_600}>
             <Progress radius={22} thickness={4} stroke={PALETTE.JADE_400} progress={votePercent} />
             <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_400}>
-              <Check />
+              <CheckIcon />
             </RevealButtonIcon>
             <RevealLabel color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_600}>
               {'Reveal Votes'}

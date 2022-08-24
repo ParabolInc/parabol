@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Add} from '@mui/icons-material'
+import {Add as AddIcon} from '@mui/icons-material'
 import React, {useEffect, useRef, useState} from 'react'
 import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
@@ -26,11 +26,18 @@ const Button = styled(FloatingActionButton)({
   zIndex: ZIndex.FAB
 })
 
-const MeetingIcon = styled(Add)<{isExpanded: boolean}>(({isExpanded}) => ({
+const MeetingIcon = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   margin: 16,
   marginLeft: isExpanded ? 24 : 16,
   marginRight: 16,
-  transition: `all 300ms ${BezierCurve.DECELERATE}`
+  width: 24,
+  height: 24,
+  transition: `all 300ms ${BezierCurve.DECELERATE}`,
+  '& svg': {
+    stroke: 'white',
+    fill: 'white',
+    strokeWidth: 0.4
+  }
 }))
 
 const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
@@ -93,7 +100,9 @@ const StartMeetingFAB = (props: Props) => {
   return (
     <Block className={className}>
       <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <MeetingIcon isExpanded={isExpanded} />
+        <MeetingIcon isExpanded={isExpanded}>
+          <AddIcon />
+        </MeetingIcon>
         <MeetingLabel isExpanded={isExpanded}>{'Add Meeting'}</MeetingLabel>
       </Button>
     </Block>
