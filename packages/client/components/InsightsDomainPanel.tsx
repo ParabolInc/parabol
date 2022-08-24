@@ -2,10 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
+import {ICON_SIZE} from '../styles/typographyV2'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
+import Icon from './Icon'
 import InsightsDomainNudge from './InsightsDomainNudge'
 import Panel from './Panel/Panel'
 
@@ -58,11 +62,31 @@ const StatBlockLabel = styled('div')({
   fontWeight: 600,
   lineHeight: '16px',
   textTransform: 'uppercase',
-  textAlign: 'center'
+  textAlign: 'center',
+  display: 'flex',
+  alignItems: 'center'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.SLATE_600,
+  fontSize: ICON_SIZE.MD18,
+  paddingLeft: '4px',
+  ':hover': {
+    cursor: 'pointer'
+  }
 })
 
 interface Props {
   domainRef: InsightsDomainPanel_domain$key
+}
+
+const tooltipTextLookup = {
+  org: 'Organizations with at least 1 unarchived team on it, which has at least 2 team members who have logged in within the last 30 days',
+  team: 'Teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an updatedAt newer than 30 days ago',
+  member:
+    'The number of users on an active organization that has logged in within the last 30 days',
+  meeting:
+    'The number of meetings created by unarchived teams on organizations assigned to the domain'
 }
 
 const InsightsDomainPanel = (props: Props) => {
@@ -83,12 +107,37 @@ const InsightsDomainPanel = (props: Props) => {
     domainRef
   )
   const {
+    tooltipPortal: orgPortal,
+    openTooltip: orgOpenTooltip,
+    closeTooltip: orgCloseTooltip,
+    originRef: orgRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const {
+    tooltipPortal: teamPortal,
+    openTooltip: teamOpenTooltip,
+    closeTooltip: teamCloseTooltip,
+    originRef: teamRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const {
+    tooltipPortal: memberPortal,
+    openTooltip: memberOpenTooltip,
+    closeTooltip: memberCloseTooltip,
+    originRef: memberRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const {
+    tooltipPortal: meetingPortal,
+    openTooltip: meetingOpenTooltip,
+    closeTooltip: meetingCloseTooltip,
+    originRef: meetingRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
+  const {
     id: domainId,
     activeOrganizationCount,
     activeTeamCount,
     activeUserCount,
     meetingCount
   } = domain
+
   return (
     <Wrapper>
       <StatsPanel>
@@ -96,19 +145,43 @@ const InsightsDomainPanel = (props: Props) => {
         <StatBlocks>
           <StatBlock>
             <StatBlockNumber>{activeOrganizationCount}</StatBlockNumber>
-            <StatBlockLabel>{plural(activeOrganizationCount, 'Organization')}</StatBlockLabel>
+            <StatBlockLabel ref={orgRef}>
+              {plural(activeOrganizationCount, 'Organization')}
+              <StyledIcon onMouseOver={orgOpenTooltip} onMouseOut={orgCloseTooltip}>
+                {'info'}
+              </StyledIcon>
+            </StatBlockLabel>
+            {orgPortal(tooltipTextLookup.org)}
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{activeTeamCount}</StatBlockNumber>
-            <StatBlockLabel>{plural(activeTeamCount, 'Active Team')}</StatBlockLabel>
+            <StatBlockLabel ref={teamRef}>
+              {plural(activeOrganizationCount, 'Active Team')}
+              <StyledIcon onMouseOver={teamOpenTooltip} onMouseOut={teamCloseTooltip}>
+                {'info'}
+              </StyledIcon>
+            </StatBlockLabel>
+            {teamPortal(tooltipTextLookup.team)}
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{activeUserCount}</StatBlockNumber>
-            <StatBlockLabel>{plural(activeUserCount, 'Active Member')}</StatBlockLabel>
+            <StatBlockLabel ref={memberRef}>
+              {plural(activeOrganizationCount, 'Active Member')}
+              <StyledIcon onMouseOver={memberOpenTooltip} onMouseOut={memberCloseTooltip}>
+                {'info'}
+              </StyledIcon>
+            </StatBlockLabel>
+            {memberPortal(tooltipTextLookup.member)}
           </StatBlock>
           <StatBlock>
             <StatBlockNumber>{meetingCount}</StatBlockNumber>
-            <StatBlockLabel>{plural(meetingCount, 'Meeting')}</StatBlockLabel>
+            <StatBlockLabel ref={meetingRef}>
+              {plural(activeOrganizationCount, 'Total Meeting')}
+              <StyledIcon onMouseOver={meetingOpenTooltip} onMouseOut={meetingCloseTooltip}>
+                {'info'}
+              </StyledIcon>
+            </StatBlockLabel>
+            {meetingPortal(tooltipTextLookup.meeting)}
           </StatBlock>
         </StatBlocks>
         <InsightsDomainNudge domainRef={domain} />
