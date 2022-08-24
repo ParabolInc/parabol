@@ -15,6 +15,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import BottomControlBarProgress from './BottomControlBarProgress'
+import BottomControlBarReadyButton from './BottomControlBarReadyButton'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 
@@ -64,6 +65,7 @@ const BottomControlBarReady = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarReady_meeting on NewMeeting {
+        ...BottomControlBarReadyButton_meeting
         ... on RetrospectiveMeeting {
           reflectionGroups {
             id
@@ -152,17 +154,19 @@ const BottomControlBarReady = (props: Props) => {
         onKeyDown={onKeyDown}
         ref={ref}
       >
-        <BottomControlBarProgress isNext={isNext} progress={progress} />
-        <BottomNavIconLabel label={label} ref={originRef}>
-          <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-            {
+        <BottomControlBarReadyButton meetingRef={meeting} progress={progress}>
+          <BottomControlBarProgress isNext={isNext} progress={progress} />
+          <BottomNavIconLabel label={label} ref={originRef}>
+            <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
               {
-                arrow_forward: <ArrowForward />,
-                check: <Check />
-              }[icon]
-            }
-          </StyledIcon>
-        </BottomNavIconLabel>
+                {
+                  arrow_forward: <ArrowForward />,
+                 check: <Check />
+                }[icon]
+              }
+           </StyledIcon>
+          </BottomNavIconLabel>
+        </BottomControlBarReadyButton>
       </BottomNavControl>
       {tooltipPortal(`Tap 'Next' again to Confirm`)}
     </>

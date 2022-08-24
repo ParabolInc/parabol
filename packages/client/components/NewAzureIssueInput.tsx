@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -7,19 +6,20 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
 import {PALETTE} from '~/styles/paletteV3'
-import getNonNullEdges from '~/utils/getNonNullEdges'
-import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
+import {NewAzureIssueInput_viewer$key} from '~/__generated__/NewAzureIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
-import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {CompletedHandler} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
 import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
-import NewGitLabIssueMenu from './NewGitLabIssueMenu'
+import Icon from './Icon'
+import NewAzureIssueMenu from './NewAzureIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -37,10 +37,9 @@ const StyledButton = styled(PlainButton)({
   }
 })
 
-const StyledIcon = styled(ExpandMore)({
+const StyledIcon = styled(Icon)({
   color: PALETTE.SKY_500,
-  height: 20,
-  width: 20,
+  fontSize: 20,
   padding: 0,
   alignContent: 'center'
 })
@@ -100,48 +99,30 @@ interface Props {
   isEditing: boolean
   meetingId: string
   setIsEditing: (isEditing: boolean) => void
-  viewerRef: NewGitLabIssueInput_viewer$key
+  viewerRef: NewAzureIssueInput_viewer$key
 }
 
 const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
-const NewGitLabIssueInput = (props: Props) => {
+const NewAzureIssueInput = (props: Props) => {
   const {isEditing, meetingId, setIsEditing, viewerRef} = props
   const viewer = useFragment(
     graphql`
-      fragment NewGitLabIssueInput_viewer on User {
+      fragment NewAzureIssueInput_viewer on User {
         id
         team(teamId: $teamId) {
           id
         }
         teamMember(teamId: $teamId) {
           integrations {
-            gitlab {
-              api {
-                errors {
-                  message
-                  locations {
-                    line
-                    column
-                  }
-                  path
-                }
-                # use alias to tell relay that this query shouldn't be cached with GitLabScopingSearchResults query
-                newIssueQuery: query {
-                  projects(membership: true, first: 100, sort: "latest_activity_desc") {
-                    edges {
-                      node {
-                        ... on _xGitLabProject {
-                          __typename
-                          id
-                          fullPath
-                        }
-                      }
-                    }
-                  }
-                }
+            azureDevOps {
+              projects {
+                ...NewAzureIssueMenu_AzureDevOpsRemoteProjects
+                id
+                name
+                instanceId
               }
             }
           }
@@ -152,11 +133,10 @@ const NewGitLabIssueInput = (props: Props) => {
   )
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const nullableEdges = teamMember?.integrations?.gitlab?.api?.newIssueQuery?.projects?.edges ?? []
-  const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
+  const projects = teamMember?.integrations?.azureDevOps.projects ?? []
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
+  const [selectedProjectName, setSelectedProjectName] = useState(projects[0]?.name ?? '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
@@ -177,7 +157,7 @@ const NewGitLabIssueInput = (props: Props) => {
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited || !selectedFullPath) return
+    if (portalStatus !== PortalStatus.Exited || !selectedProjectName) return
     const {newIssue: newIssueRes} = validateField()
     const {value: newIssueTitle, error} = newIssueRes
     if (error) {
@@ -190,6 +170,11 @@ const NewGitLabIssueInput = (props: Props) => {
       fields.newIssue.dirty = false
       return
     }
+    const selectedProject = projects.find((project) => project.name === selectedProjectName)!
+    const serviceProjectHash = AzureDevOpsProjectId.join(
+      selectedProject.instanceId,
+      selectedProject.id
+    )
     const newTask = {
       teamId,
       userId,
@@ -198,8 +183,8 @@ const NewGitLabIssueInput = (props: Props) => {
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
-        service: 'gitlab' as const,
-        serviceProjectHash: selectedFullPath
+        service: 'azureDevOps' as const,
+        serviceProjectHash
       }
     }
     const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
@@ -209,7 +194,7 @@ const NewGitLabIssueInput = (props: Props) => {
         meetingId,
         updates: [
           {
-            service: 'gitlab',
+            service: 'azureDevOps',
             serviceTaskId: integrationHash,
             action: 'ADD'
           } as const
@@ -233,6 +218,7 @@ const NewGitLabIssueInput = (props: Props) => {
           <Form onSubmit={handleCreateNewIssue}>
             <NewIssueInput
               autoFocus
+              autoComplete='off'
               onBlur={handleCreateNewIssue}
               onChange={onChange}
               maxLength={255}
@@ -244,15 +230,15 @@ const NewGitLabIssueInput = (props: Props) => {
             {dirty && error && <Error>{error}</Error>}
           </Form>
           <StyledButton ref={originRef} onMouseDown={togglePortal}>
-            <StyledLink>{selectedFullPath}</StyledLink>
-            <StyledIcon />
+            <StyledLink>{selectedProjectName}</StyledLink>
+            <StyledIcon>expand_more</StyledIcon>
           </StyledButton>
         </Issue>
       </Item>
       {menuPortal(
-        <NewGitLabIssueMenu
-          gitlabProjects={gitlabProjects}
-          handleSelectFullPath={setSelectedFullPath}
+        <NewAzureIssueMenu
+          projectsRef={projects}
+          setSelectedProjectName={setSelectedProjectName}
           menuProps={menuProps}
         />
       )}
@@ -260,4 +246,4 @@ const NewGitLabIssueInput = (props: Props) => {
   )
 }
 
-export default NewGitLabIssueInput
+export default NewAzureIssueInput

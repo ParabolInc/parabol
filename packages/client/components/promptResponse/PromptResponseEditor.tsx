@@ -9,6 +9,7 @@ import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
+import EmojiMenuTipTap from './EmojiMenuTipTap'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
 
 const LinkIcon = styled(Link)({
@@ -234,6 +235,7 @@ const PromptResponseEditor = (props: Props) => {
             </BubbleMenuWrapper>
           </BubbleMenu>
         )}
+        {editor && <EmojiMenuTipTap tiptapEditor={editor} />}
         {editor && linkOverlayProps?.linkMenuProps && (
           <EditorLinkChangerTipTap
             text={linkOverlayProps.linkMenuProps.text}

@@ -259,8 +259,6 @@ const NewJiraIssueInput = (props: Props) => {
             handleSelectProjectKey={handleSelectProjectKey}
             menuProps={menuProps}
             projectsRef={projects}
-            teamId={teamId}
-            userId={userId}
           />
         )}
     </>
