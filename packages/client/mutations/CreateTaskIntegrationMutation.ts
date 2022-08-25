@@ -197,7 +197,9 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
       }
       const {meetingId} = getMeetingPathParams()
       const store = atmosphere.getStore()
-      const meetingType = (store as any)?._recordSource?._records?.get(meetingId)?.meetingType
+      const meetingType = meetingId
+        ? (store.getSource().get(meetingId) as any)?.meetingType
+        : undefined
       if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
         SendClientSegmentEventMutation(atmosphere, 'Task Published', {
           taskId: data.createTaskIntegration.task?.id,
