@@ -2,9 +2,10 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: cimg/node:16.16.0
+      # executor machines get more memory, so we run a base image & install node on it
+      - image: cimg/base:2022.07
       - image: rethinkdb:2.4.0
-      - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
+      - image: cimg/postgres:12.10
         environment:
           # These env values need to be synced up with the `test` environment file
           POSTGRES_PASSWORD: "p9_p455w02d_f02_73575"
@@ -12,7 +13,7 @@ jobs:
           POSTGRES_DB: "parabol-saas"
           POSTGRES_HOST: "localhost"
           POSTGRES_PORT: "5432"
-      - image: redis:6.2.6-alpine
+      - image: cimg/redis:6.2.6
         environment:
           TERM: xterm
     environment:
@@ -27,6 +28,7 @@ jobs:
       SENTRY_PROJECT: "action-production"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
+      NODE_OPTIONS: "--max-old-space-size=7168"
     working_directory: ~/action
     resource_class: large
     steps:
@@ -52,6 +54,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+            sudo apt update && sudo apt install -y nodejs
+            curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+            echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update && sudo apt-get install yarn
             yarn --frozen-lockfile
             yarn workspace integration-tests playwright install
       - save_cache:
@@ -74,8 +81,13 @@ jobs:
           name: Build Assets
           # Use the staging env to run webpack (NODE_ENV=production)
           command: |
-            cp $DEVOPS_WORKDIR/environments/staging .env
-            yarn build --deploy
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+              cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
+              yarn build --deploy
+            else
+              cp $DEVOPS_WORKDIR/environments/development .env
+              yarn build --deploy
+            fi
       - run:
           name: Push Assets to Databases
           # Use the test env so the ports match up (NODE_ENV=testing)
@@ -84,7 +96,9 @@ jobs:
             yarn postdeploy
       - run:
           name: Start Testing Server
-          command: yarn start || true
+          command: |
+            sudo apt-get update && sudo apt-get install -y libvips-dev --no-install-recommends
+            yarn start || true
           background: true
       - run:
           name: Wait for testing server to be healthy
@@ -175,6 +189,26 @@ jobs:
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/dist
               sentry-cli releases finalize "$ACTION_VERSION"
+            fi
+      - run:
+          name: Upload source maps to datadog
+          # adding the node dep for datadog-ci here as it's not needed in the core app, only used for sourcemap upload
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+              yarn add @datadog/datadog-ci -W
+              yarn datadog-ci sourcemaps upload ./build \
+                --service=parabol-saas-production \
+                --release-version=$ACTION_VERSION \
+                --minified-path-prefix=https://action-files.parabol.co/production/build/v$ACTION_VERSION
+            fi
+            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+              yarn add @datadog/datadog-ci -W
+              yarn datadog-ci sourcemaps upload ./build \
+                --service=parabol-saas-staging \
+                --release-version=$ACTION_VERSION \
+                --minified-path-prefix=https://action-files.parabol.co/staging/build/v$ACTION_VERSION
             fi
 workflows:
   version: 2

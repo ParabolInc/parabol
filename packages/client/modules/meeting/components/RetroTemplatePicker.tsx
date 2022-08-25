@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -19,11 +18,6 @@ const ReflectTemplateModal = lazyPreload(
     )
 )
 
-const Dropdown = styled(NewMeetingDropdown)({
-  borderWidth: '0 1px 1px',
-  borderRadius: 0
-})
-
 const RetroTemplatePicker = (props: Props) => {
   const {settings} = props
   const {selectedTemplate} = settings
@@ -35,12 +29,12 @@ const RetroTemplatePicker = (props: Props) => {
 
   return (
     <>
-      <Dropdown
-        icon={'question_answer'}
-        dropdownIcon={'edit'}
+      <NewMeetingDropdown
+        dropdownIcon={'keyboard_arrow_right'}
         label={templateName}
         onClick={togglePortal}
         onMouseEnter={ReflectTemplateModal.preload}
+        title={'Template'}
       />
       {modalPortal(
         <ReflectTemplateModal closePortal={closePortal} retroMeetingSettings={settings} />

@@ -102,17 +102,12 @@ const THUMBNAIL = 'http://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
 const TutorialMeetingCard = () => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
-  const {viewerId} = atmospehere
 
   const onOpen = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Opened', {
-      viewerId
-    })
+    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Opened')
   }, [])
   const onClose = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Closed', {
-      viewerId
-    })
+    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Closed')
   }, [])
 
   const {togglePortal: toggleModal, modalPortal} = useModal({onOpen, onClose})

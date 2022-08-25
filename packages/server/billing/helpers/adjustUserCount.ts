@@ -45,6 +45,12 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], userId: str
     userId,
     event: inactive ? 'Account Paused' : 'Account Unpaused'
   })
+  segmentIo.identify({
+    userId,
+    traits: {
+      isActive: !inactive
+    }
+  })
   return Promise.all([
     updateUser(
       {

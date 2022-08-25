@@ -44,10 +44,18 @@ graphql`
           webPath
           webUrl
         }
+        ... on AzureDevOpsWorkItem {
+          __typename
+          id
+          teamProject
+          title
+          url
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
         ...TaskIntegrationLinkIntegrationJiraServer
         ...TaskIntegrationLinkIntegrationGitLab
+        ...TaskIntegrationLinkIntegrationAzure
       }
       updatedAt
       teamId
@@ -166,6 +174,28 @@ const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
+const azureTaskIntegrationOptimisitcUpdater = (store, variables) => {
+  const {integrationRepoId: teamProject, taskId} = variables
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const {title, contentState} = splitDraftContent(contentStr)
+  const descriptionHTML = stateToHTML(contentState)
+  const optimisticIntegration = {
+    id: '?',
+    title,
+    descriptionHTML,
+    teamProject,
+    type: 'Issue',
+    url: `https://dev.azure.com`,
+    updatedAt: now.toJSON()
+  } as const
+  const integration = createProxyRecord(store, 'AzureDevOpsWorkItem', optimisticIntegration)
+  task.setLinkedRecord(integration, 'integration')
+}
+
 const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMutation> = (
   atmosphere,
   variables,
@@ -185,6 +215,8 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         jiraServerTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'gitlab') {
         gitlabTaskIntegrationOptimisitcUpdater(store, variables)
+      } else if (integrationProviderService === 'azureDevOps') {
+        azureTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
     onCompleted,

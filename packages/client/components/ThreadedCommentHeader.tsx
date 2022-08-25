@@ -31,7 +31,7 @@ interface Props {
   meetingId: string
 }
 
-const getName = (comment) => {
+const getName = (comment: ThreadedCommentHeader_comment) => {
   const {isActive, createdByUserNullable, isViewerComment} = comment
   if (!isActive) return 'Message Deleted'
   if (createdByUserNullable?.preferredName) return createdByUserNullable.preferredName
