@@ -23,11 +23,6 @@ graphql`
       viewerVoteCount
       voteCount
     }
-    unlockedStages {
-      id
-      isNavigable
-      isNavigableByFacilitator
-    }
   }
 `
 
