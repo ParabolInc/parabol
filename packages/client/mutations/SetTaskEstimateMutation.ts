@@ -49,11 +49,13 @@ const SetTaskEstimateMutation: StandardMutation<TSetTaskEstimateMutation, Handle
       if (onCompleted) {
         onCompleted(data, errors)
       }
-      console.log(`onCompleted`)
+      const store = atmosphere.getStore()
+      const service = (store.getSource().get(taskId) as any)?.taskService
       SendClientSegmentEventMutation(atmosphere, 'Task Estimate Set', {
         meetingId,
         taskId,
         dimensionName,
+        service,
         errorMessage: data.setTaskEstimate.error?.message,
         success: !data.setTaskEstimate.error
       })
