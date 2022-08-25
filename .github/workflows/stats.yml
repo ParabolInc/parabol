@@ -2,10 +2,11 @@ name: Pull Request Stats
 
 on:
   pull_request:
-    types: [opened]
+    types: [labeled]
 
 jobs:
   stats:
+    if: ${{ github.event.label.name == 'pr_stats' }}
     runs-on: ubuntu-latest
     steps:
       - name: Run pull request stats
