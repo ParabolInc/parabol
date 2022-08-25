@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {Facilitator_meeting} from '~/__generated__/Facilitator_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {Facilitator_meeting$key} from '~/__generated__/Facilitator_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -85,7 +85,7 @@ const Avatar = styled('img')({
 })
 
 interface Props {
-  meeting: Facilitator_meeting
+  meetingRef: Facilitator_meeting$key
 }
 
 const FacilitatorMenu = lazyPreload(
@@ -97,7 +97,30 @@ const FacilitatorMenu = lazyPreload(
 )
 
 const Facilitator = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment Facilitator_meeting on NewMeeting {
+        ...FacilitatorMenu_meeting
+        endedAt
+        facilitatorUserId
+        meetingMembers {
+          user {
+            id
+            isConnected
+          }
+        }
+        facilitator {
+          picture
+          preferredName
+          user {
+            isConnected
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
   const connectedMemberIds = meetingMembers
     .filter(({user}) => user.isConnected)
@@ -144,25 +167,4 @@ const Facilitator = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(Facilitator, {
-  meeting: graphql`
-    fragment Facilitator_meeting on NewMeeting {
-      ...FacilitatorMenu_meeting
-      endedAt
-      facilitatorUserId
-      meetingMembers {
-        user {
-          id
-          isConnected
-        }
-      }
-      facilitator {
-        picture
-        preferredName
-        user {
-          isConnected
-        }
-      }
-    }
-  `
-})
+export default Facilitator
