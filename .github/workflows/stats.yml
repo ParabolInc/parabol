@@ -13,4 +13,4 @@ jobs:
         uses: flowwer-dev/pull-request-stats@master
         with:
           charts: true
-          sort-by: 'REVIEWS'
+          sort-by: 'TIME'
