@@ -227,7 +227,7 @@ const makeOptions = (title: string, subtitle: string) => {
           style: 'italic'
         },
         padding: {
-          bottom: 8,
+          bottom: 16,
           top: 0
         }
       }
