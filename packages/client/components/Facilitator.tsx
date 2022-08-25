@@ -50,7 +50,7 @@ const Label = styled('div')({
 
 const Subtext = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: 11,
+  fontSize: 13,
   fontWeight: 400,
   lineHeight: '16px'
 })
@@ -88,17 +88,20 @@ interface Props {
   meeting: Facilitator_meeting
 }
 
-const FacilitatorMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'FacilitatorMenu' */
-    './FacilitatorMenu'
-  )
+const FacilitatorMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'FacilitatorMenu' */
+      './FacilitatorMenu'
+    )
 )
 
 const Facilitator = (props: Props) => {
   const {meeting} = props
   const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
-  const connectedMemberIds = meetingMembers.filter(({user}) => user.isConnected).map(({user}) => user.id)
+  const connectedMemberIds = meetingMembers
+    .filter(({user}) => user.isConnected)
+    .map(({user}) => user.id)
   const {user, picture, preferredName} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
   const isConnected = user?.isConnected ?? false
@@ -110,7 +113,12 @@ const Facilitator = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isReadOnly = isDemoRoute() || (viewerId === facilitatorUserId && connectedMemberIds.length === 1 && connectedMemberIds[0] === viewerId) || !!endedAt
+  const isReadOnly =
+    isDemoRoute() ||
+    (viewerId === facilitatorUserId &&
+      connectedMemberIds.length === 1 &&
+      connectedMemberIds[0] === viewerId) ||
+    !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
