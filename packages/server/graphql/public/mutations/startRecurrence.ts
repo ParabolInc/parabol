@@ -52,9 +52,8 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   })
 
   if (meeting.meetingSeriesId) {
-    const {cancelledAt, recurrenceRule, id} = await dataLoader
-      .get('meetingSeries')
-      .loadNonNull(meeting.meetingSeriesId)
+    const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
+    const {cancelledAt, recurrenceRule, id: meetingSeriesId} = meetingSeries
     if (!cancelledAt) {
       return standardError(new Error('Meeting is already recurring'), {userId: viewerId})
     }
@@ -66,7 +65,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
       nextScheduledStartDate.getTime() > now.getTime() + ms('9h')
     if (hasRecentlyStopped || isNextScheduledStartDateReasonable) {
       // no need to change the recurrence rule, next meeting starts in reasonable time
-      await restartMeetingSeries({cancelledAt: null}, meeting.meetingSeriesId)
+      await restartMeetingSeries({cancelledAt: null}, meetingSeriesId)
     } else {
       // meeting series was stopped more than ~1h ago and the next scheduled start date is within the next ~9h
       // to prevent a meeting from being scheduled too soon, we need to change the recurrence rule
@@ -75,16 +74,16 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
 
       await restartMeetingSeries(
         {cancelledAt: null, recurrenceRule: newRecurrenceRule.toString()},
-        meeting.meetingSeriesId
+        meetingSeriesId
       )
     }
 
-    dataLoader.get('meetingSeries').clear(meeting.meetingSeriesId)
+    dataLoader.get('meetingSeries').clear(meetingSeriesId)
 
     // update all the active meetings to end at proper time
     const activeMeetings = await r
       .table('NewMeeting')
-      .getAll(id, {index: 'meetingSeriesId'})
+      .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
       .filter({endedAt: null}, {default: true})
       .run()
     const updates = activeMeetings.map((meeting) =>
@@ -100,19 +99,21 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     )
     await Promise.all(updates)
 
+    analytics.recurrenceStarted(viewerId, meetingSeries)
     const data = {meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRecurrenceSuccess', data, subOptions)
     return data
   }
 
-  const newMeetingSeriesId = await insertMeetingSeriesQuery({
+  const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
     title: 'Async Standup',
     recurrenceRule: recurrenceRule.toString(),
     duration: MEETING_DURATION_IN_MINUTES,
     teamId,
     facilitatorId: viewerId
-  })
+  } as const
+  const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
 
   const updatedMeeting = (await r
     .table('NewMeeting')
@@ -129,7 +130,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   dataLoader.get('newMeetings').clear(meetingId)
 
   // RESOLUTION
-  analytics.recurrenceStarted(viewerId, updatedMeeting)
+  analytics.recurrenceStarted(viewerId, {id: newMeetingSeriesId, ...newMeetingSeriesParams})
   const data = {meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'StartRecurrenceSuccess', data, subOptions)
   return data
