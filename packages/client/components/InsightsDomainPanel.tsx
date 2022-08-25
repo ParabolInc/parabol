@@ -2,11 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {Breakpoint} from '../types/constEnums'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
 import Icon from './Icon'
@@ -33,22 +35,30 @@ const DomainName = styled('div')({
 const StatBlocks = styled('div')({
   display: 'flex',
   borderTop: `1px solid ${PALETTE.SLATE_400}`,
-  width: '100%'
+  width: '100%',
+  flexWrap: 'wrap'
 })
 
-const StatBlock = styled('div')({
+const StatBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   ':first-of-type': {
-    border: 'none'
+    border: 'none',
+    borderBottom: isDesktop ? 'none' : `1px solid ${PALETTE.SLATE_400}`
+  },
+  ':nth-of-type(2)': {
+    borderBottom: isDesktop ? 'none' : `1px solid ${PALETTE.SLATE_400}`
+  },
+  ':nth-of-type(3)': {
+    borderLeft: isDesktop ? `1px solid ${PALETTE.SLATE_400}` : 'none'
   },
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'flex-start',
-  width: '25%',
+  width: isDesktop ? '25%' : '50%',
   paddingTop: 14,
   paddingBottom: 14
-})
+}))
 
 const StatBlockNumber = styled('div')({
   color: PALETTE.SLATE_600,
@@ -74,6 +84,10 @@ const StyledIcon = styled(Icon)({
   ':hover': {
     cursor: 'pointer'
   }
+})
+
+const IconBlock = styled('div')({
+  display: 'flex'
 })
 
 interface Props {
@@ -109,7 +123,7 @@ const InsightsDomainPanel = (props: Props) => {
     openTooltip: orgOpenTooltip,
     closeTooltip: orgCloseTooltip,
     originRef: orgRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_RIGHT)
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
   const {
     tooltipPortal: teamPortal,
     openTooltip: teamOpenTooltip,
@@ -136,48 +150,57 @@ const InsightsDomainPanel = (props: Props) => {
     meetingCount
   } = domain
 
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   return (
     <Wrapper>
       <StatsPanel>
         <DomainName>{`${domainId} Usage`}</DomainName>
         <StatBlocks>
-          <StatBlock>
+          <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{activeOrganizationCount}</StatBlockNumber>
-            <StatBlockLabel ref={orgRef}>
+            <StatBlockLabel>
               {plural(activeOrganizationCount, 'Organization')}
-              <StyledIcon onMouseOver={orgOpenTooltip} onMouseOut={orgCloseTooltip}>
-                {'info'}
-              </StyledIcon>
+              <IconBlock ref={orgRef}>
+                <StyledIcon onMouseOver={orgOpenTooltip} onMouseOut={orgCloseTooltip}>
+                  {'info'}
+                </StyledIcon>
+              </IconBlock>
             </StatBlockLabel>
             {orgPortal(tooltipTextLookup.org)}
           </StatBlock>
-          <StatBlock>
+          <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{activeTeamCount}</StatBlockNumber>
-            <StatBlockLabel ref={teamRef}>
+            <StatBlockLabel>
               {plural(activeOrganizationCount, 'Active Team')}
-              <StyledIcon onMouseOver={teamOpenTooltip} onMouseOut={teamCloseTooltip}>
-                {'info'}
-              </StyledIcon>
+              <IconBlock ref={teamRef}>
+                <StyledIcon onMouseOver={teamOpenTooltip} onMouseOut={teamCloseTooltip}>
+                  {'info'}
+                </StyledIcon>
+              </IconBlock>
             </StatBlockLabel>
             {teamPortal(tooltipTextLookup.team)}
           </StatBlock>
-          <StatBlock>
+          <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{activeUserCount}</StatBlockNumber>
-            <StatBlockLabel ref={memberRef}>
+            <StatBlockLabel>
               {plural(activeOrganizationCount, 'Active Member')}
-              <StyledIcon onMouseOver={memberOpenTooltip} onMouseOut={memberCloseTooltip}>
-                {'info'}
-              </StyledIcon>
+              <IconBlock ref={memberRef}>
+                <StyledIcon onMouseOver={memberOpenTooltip} onMouseOut={memberCloseTooltip}>
+                  {'info'}
+                </StyledIcon>
+              </IconBlock>
             </StatBlockLabel>
             {memberPortal(tooltipTextLookup.member)}
           </StatBlock>
-          <StatBlock>
+          <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{meetingCount}</StatBlockNumber>
-            <StatBlockLabel ref={meetingRef}>
+            <StatBlockLabel>
               {plural(activeOrganizationCount, 'Total Meeting')}
-              <StyledIcon onMouseOver={meetingOpenTooltip} onMouseOut={meetingCloseTooltip}>
-                {'info'}
-              </StyledIcon>
+              <IconBlock ref={meetingRef}>
+                <StyledIcon onMouseOver={meetingOpenTooltip} onMouseOut={meetingCloseTooltip}>
+                  {'info'}
+                </StyledIcon>
+              </IconBlock>
             </StatBlockLabel>
             {meetingPortal(tooltipTextLookup.meeting)}
           </StatBlock>
