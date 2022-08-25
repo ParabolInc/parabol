@@ -23,6 +23,14 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
         return AzureDevOpsIssueId.join(instanceId, teamProject, id)
       }
     },
+    issueKey: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The id of the issue from Azure, e.g. 7',
+      resolve: async ({id}: {id: string}) => {
+        const {issueKey} = AzureDevOpsIssueId.split(id)
+        return issueKey
+      }
+    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Title of the work item'

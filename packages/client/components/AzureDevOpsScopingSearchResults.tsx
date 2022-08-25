@@ -4,7 +4,6 @@ import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {AzureDevOpsScopingSearchResultsQuery} from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResults_meeting.graphql'
@@ -57,6 +56,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                       url
                       state
                       type
+                      issueKey
                       project {
                         name
                       }
@@ -131,23 +131,19 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             viewerRef={viewer}
           />
         )}
-        {edges.map(({node}) => {
-          const {id: workItemId, title, project, url} = node
-          const {issueKey} = AzureDevOpsIssueId.split(workItemId)
-          return (
-            <ScopingSearchResultItem
-              key={workItemId}
-              service={'azureDevOps'}
-              usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={getServiceTaskId(new URL(url)) + ':' + workItemId}
-              meetingId={meetingId}
-              summary={title}
-              url={url}
-              linkText={`#${issueKey} ${project.name}`}
-              linkTitle={`Azure DevOps Work Item #${issueKey}`}
-            />
-          )
-        })}
+        {edges.map(({node}) => (
+          <ScopingSearchResultItem
+            key={node.id}
+            service={'azureDevOps'}
+            usedServiceTaskIds={usedServiceTaskIds}
+            serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
+            meetingId={meetingId}
+            summary={node.title}
+            url={node.url}
+            linkText={`#${node.issueKey} ${node.project.name}`}
+            linkTitle={`Azure DevOps Work Item #${node.issueKey}`}
+          />
+        ))}
       </ResultScroller>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
