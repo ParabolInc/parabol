@@ -210,7 +210,7 @@ interface WorkItemAddFieldResponse {
   url: string
 }
 
-interface ProjectRes {
+export interface ProjectRes {
   id: string
   name: string
   url: string

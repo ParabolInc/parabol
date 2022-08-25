@@ -1,7 +1,5 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {IntegrationProviderServiceEnum} from '../graphql/private/resolverTypes'
-import {AzureDevOpsRemoteProject} from '../graphql/public/resolverTypes'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
@@ -9,6 +7,7 @@ import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager, {
+  ProjectRes,
   Resource,
   TeamProjectReference,
   WorkItem
@@ -114,7 +113,13 @@ export interface AzureUserInfo {
   timeStamp: string
 }
 
-export interface AzureProject extends TeamProjectReference {
+export interface AzureAccountProject extends TeamProjectReference {
+  userId: string
+  teamId: string
+  service: 'azureDevOps'
+}
+
+interface AzureProject extends ProjectRes {
   userId: string
   teamId: string
   service: 'azureDevOps'
@@ -308,8 +313,8 @@ export const allAzureDevOpsAccessibleOrgs = (
 
 export const allAzureDevOpsProjects = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, AzureProject[], string> => {
-  return new DataLoader<TeamUserKey, AzureProject[], string>(
+): DataLoader<TeamUserKey, AzureAccountProject[], string> => {
+  return new DataLoader<TeamUserKey, AzureAccountProject[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
@@ -351,15 +356,15 @@ export const allAzureDevOpsProjects = (
 
 export const azureDevOpsProject = (
   parent: RootDataLoader
-): DataLoader<AzureDevOpsRemoteProjectKey, AzureDevOpsRemoteProject | never[], string> => {
-  return new DataLoader<AzureDevOpsRemoteProjectKey, AzureDevOpsRemoteProject | never[], string>(
+): DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string> => {
+  return new DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({instanceId, userId, teamId, projectId}) => {
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) return []
+          if (!auth) return null
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
-          if (!provider) return []
+          if (!provider) return null
           const manager = new AzureDevOpsServerManager(
             auth,
             provider as IntegrationProviderAzureDevOps
@@ -367,7 +372,7 @@ export const azureDevOpsProject = (
           const {error, project} = await manager.getProject(instanceId, projectId)
           if (error !== undefined) {
             console.log(error)
-            return []
+            return null
           }
           return {
             ...project,
@@ -375,11 +380,11 @@ export const azureDevOpsProject = (
             userId,
             self: project._links.self.href,
             instanceId,
-            service: 'azureDevOps' as IntegrationProviderServiceEnum
+            service: 'azureDevOps' as const
           }
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
