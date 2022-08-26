@@ -1,11 +1,10 @@
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
-import {AnyMeeting, MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
@@ -17,6 +16,14 @@ export type OrgTierChangeEventProperties = {
   oldTier: string
   newTier: string
   billingLeaderEmail: string
+}
+
+export type TaskProperties = {
+  taskId: string
+  teamId: string
+  meetingId?: string
+  meetingType?: MeetingTypeEnum
+  inMeeting: boolean
 }
 
 export type AnalyticsEvent =
@@ -233,46 +240,17 @@ class Analytics {
   // task
   taskPublished = (
     userId: string,
-    teamId: string,
-    service: IntegrationProviderServiceEnumType,
-    meetingId?: string
+    taskProperties: TaskProperties,
+    service: IntegrationProviderServiceEnumType
   ) => {
     this.track(userId, 'Task Published', {
-      teamId,
-      meetingId,
+      ...taskProperties,
       service
     })
   }
 
-  taskCreated = (
-    userId: string,
-    teamId: string,
-    isReply: boolean,
-    meeting?: AnyMeeting,
-    service?: IntegrationProviderServiceEnumType
-  ) => {
-    let isAsync
-    let meetingId
-    if (meeting) {
-      const {phases, id} = meeting
-      meetingId = id
-      const discussPhase = phases.find(
-        ({phaseType}: {phaseType: NewMeetingPhaseTypeEnum}) =>
-          phaseType === 'discuss' || phaseType === 'agendaitems'
-      )
-      if (discussPhase) {
-        const {stages} = discussPhase
-        isAsync = stages.some((stage) => stage.isAsync)
-      }
-    }
-
-    this.track(userId, 'Task Created', {
-      meetingId,
-      teamId,
-      isAsync,
-      isReply,
-      service
-    })
+  taskCreated = (userId: string, taskProperties: TaskProperties) => {
+    this.track(userId, 'Task Created', taskProperties)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>

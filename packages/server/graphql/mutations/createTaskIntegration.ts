@@ -4,7 +4,6 @@ import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
-import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
@@ -56,7 +55,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {content: rawContentStr, teamId, meetingId, userId} = task
+    const {content: rawContentStr, teamId, userId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -164,8 +163,6 @@ export default {
     teamMembers.forEach(({userId}) => {
       publish(SubscriptionChannel.TASK, userId, 'CreateTaskIntegrationPayload', data, subOptions)
     })
-
-    analytics.taskPublished(viewerId, teamId, integrationProviderService, meetingId)
 
     return data
   }
