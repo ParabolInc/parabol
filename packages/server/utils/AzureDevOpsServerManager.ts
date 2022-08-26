@@ -630,11 +630,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
   async getProject(instanceId: string, projectId: string) {
     const uri = `https://${instanceId}/_apis/projects/${projectId}`
-    const res = await this.get<ProjectRes>(uri)
-    if (res instanceof Error) {
-      return {error: res}
-    }
-    return {project: res}
+    return this.get<ProjectRes>(uri)
   }
 
   async getAccountProjects(accountName: string) {

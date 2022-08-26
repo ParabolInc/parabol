@@ -369,16 +369,16 @@ export const azureDevOpsProject = (
             auth,
             provider as IntegrationProviderAzureDevOps
           )
-          const {error, project} = await manager.getProject(instanceId, projectId)
-          if (error !== undefined) {
-            console.log(error)
+          const projectRes = await manager.getProject(instanceId, projectId)
+          if (projectRes instanceof Error) {
+            console.log(projectRes)
             return null
           }
           return {
-            ...project,
+            ...projectRes,
             teamId,
             userId,
-            self: project._links.self.href,
+            self: projectRes._links.self.href,
             instanceId,
             service: 'azureDevOps' as const
           }
