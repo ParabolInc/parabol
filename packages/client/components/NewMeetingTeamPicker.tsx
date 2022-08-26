@@ -1,13 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NewMeetingTeamPicker_selectedTeam} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
-import {NewMeetingTeamPicker_teams} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
+import {useFragment} from 'react-relay'
+import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
+import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import useRouter from '../hooks/useRouter'
 import lazyPreload from '../utils/lazyPreload'
 import NewMeetingDropdown from './NewMeetingDropdown'
+import NewMeetingTeamPickerAvatars from './NewMeetingTeamPickerAvatars'
 
 const SelectTeamDropdown = lazyPreload(
   () =>
@@ -18,12 +19,12 @@ const SelectTeamDropdown = lazyPreload(
 )
 
 interface Props {
-  selectedTeam: NewMeetingTeamPicker_selectedTeam
-  teams: NewMeetingTeamPicker_teams
+  selectedTeamRef: NewMeetingTeamPicker_selectedTeam$key
+  teamsRef: NewMeetingTeamPicker_teams$key
 }
 
 const NewMeetingTeamPicker = (props: Props) => {
-  const {selectedTeam, teams} = props
+  const {selectedTeamRef, teamsRef} = props
   const {history} = useRouter()
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
@@ -32,6 +33,28 @@ const NewMeetingTeamPicker = (props: Props) => {
       isDropdown: true
     }
   )
+
+  const selectedTeam = useFragment(
+    graphql`
+      fragment NewMeetingTeamPicker_selectedTeam on Team {
+        ...NewMeetingTeamPickerAvatars_team
+        name
+      }
+    `,
+    selectedTeamRef
+  )
+
+  const teams = useFragment(
+    graphql`
+      fragment NewMeetingTeamPicker_teams on Team @relay(plural: true) {
+        ...SelectTeamDropdown_teams
+        id
+        name
+      }
+    `,
+    teamsRef
+  )
+
   const {name} = selectedTeam
   const handleSelect = (teamId: string) => {
     history.replace(`/new-meeting/${teamId}`)
@@ -39,6 +62,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   return (
     <>
       <NewMeetingDropdown
+        icon={<NewMeetingTeamPickerAvatars teamRef={selectedTeam} />}
         label={name}
         onClick={togglePortal}
         onMouseEnter={SelectTeamDropdown.preload}
@@ -53,17 +77,4 @@ const NewMeetingTeamPicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingTeamPicker, {
-  selectedTeam: graphql`
-    fragment NewMeetingTeamPicker_selectedTeam on Team {
-      name
-    }
-  `,
-  teams: graphql`
-    fragment NewMeetingTeamPicker_teams on Team @relay(plural: true) {
-      ...SelectTeamDropdown_teams
-      id
-      name
-    }
-  `
-})
+export default NewMeetingTeamPicker

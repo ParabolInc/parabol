@@ -15,19 +15,19 @@ interface Props {
 const TopBarHelpMenu = (props: Props) => {
   const {menuProps, toggleShortcuts, dataCy} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const gotoTeamworkResources = () => {
-    window.open(ExternalLinks.RESOURCES, '_blank', 'noreferrer')
-  }
   const gotoSupport = () => {
     window.open(ExternalLinks.SUPPORT, '_blank', 'noreferrer')
+  }
+  const gotoContact = () => {
+    window.open(ExternalLinks.CONTACT, '_blank', 'noreferrer')
   }
   return (
     <Menu ariaLabel={'How may we help?'} {...menuProps}>
       <MenuItem
         label={
-          <MenuItemWithIcon dataCy={`${dataCy}`} label={'Teamwork Resources'} icon={'bookmark'} />
+          <MenuItemWithIcon dataCy={`${dataCy}`} label={'Documentation'} icon={'bookmark'} />
         }
-        onClick={gotoTeamworkResources}
+        onClick={gotoSupport}
       />
       {isDesktop && (
         <MenuItem
@@ -38,8 +38,8 @@ const TopBarHelpMenu = (props: Props) => {
         />
       )}
       <MenuItem
-        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Give Feedback'} icon={'comment '} />}
-        onClick={gotoSupport}
+        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Get help'} icon={'comment '} />}
+        onClick={gotoContact}
       />
     </Menu>
   )

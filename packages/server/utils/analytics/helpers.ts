@@ -1,6 +1,7 @@
 import {CHECKIN} from '../../../client/utils/constants'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
+import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 
 export const createMeetingProperties = (
@@ -20,6 +21,8 @@ export const createMeetingProperties = (
     meetingTemplateId: template?.id,
     meetingTemplateName: template?.name,
     meetingTemplateScope: template?.scope,
-    meetingTemplateIsFromParabol: template?.isStarter
+    meetingTemplateIsFromParabol: template?.isStarter,
+    meetingSeriesId:
+      meetingType === 'teamPrompt' ? (meeting as MeetingTeamPrompt).meetingSeriesId : null
   }
 }

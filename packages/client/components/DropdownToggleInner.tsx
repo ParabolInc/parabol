@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import React, {forwardRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from './Icon'
 
-const MenuToggleInner = styled('div')({
+const Container = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
@@ -11,11 +10,8 @@ const MenuToggleInner = styled('div')({
   minWidth: 0
 })
 
-const MenuToggleIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  alignSelf: 'center',
-  fontSize: 36,
-  paddingRight: 12
+const IconContainer = styled('div')({
+  marginRight: 16
 })
 
 const MenuToggleLabel = styled('div')({
@@ -37,20 +33,20 @@ const MenuToggleTitle = styled('div')({
 
 interface Props {
   label: string
-  icon?: string
+  icon?: React.ReactElement
   title: string
 }
-const MenuToggleV2Text = forwardRef((props: Props, ref: any) => {
+const DropdownToggleInner = forwardRef((props: Props, ref: any) => {
   const {icon, label, title} = props
   return (
-    <MenuToggleInner ref={ref}>
-      {icon && <MenuToggleIcon>{icon}</MenuToggleIcon>}
+    <Container ref={ref}>
+      {icon && <IconContainer>{icon}</IconContainer>}
       <div>
         <MenuToggleTitle>{title}</MenuToggleTitle>
         <MenuToggleLabel>{label}</MenuToggleLabel>
       </div>
-    </MenuToggleInner>
+    </Container>
   )
 })
 
-export default MenuToggleV2Text
+export default DropdownToggleInner

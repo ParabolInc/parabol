@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
@@ -203,7 +204,8 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
               }
             : null
         } else if (integration.service === 'azureDevOps') {
-          const {instanceId, projectKey, issueKey} = integration
+          const {projectKey, issueKey} = integration
+          const {instanceId} = AzureDevOpsIssueId.split(integrationHash!)
           return dataLoader.get('azureDevOpsWorkItem').load({
             teamId,
             userId: accessUserId,

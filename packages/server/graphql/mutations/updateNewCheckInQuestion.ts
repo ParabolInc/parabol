@@ -1,15 +1,15 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import UpdateNewCheckInQuestionPayload from '../types/UpdateNewCheckInQuestionPayload'
+import {GQLContext} from './../graphql'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
@@ -36,16 +36,16 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {phases, teamId} = meeting
+    const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
+    if (endedAt) {
+      return {error: {message: 'Meeting has already ended'}}
+    }
     // VALIDATION
     const normalizedCheckInQuestion = checkInQuestion
       ? normalizeRawDraftJS(checkInQuestion)

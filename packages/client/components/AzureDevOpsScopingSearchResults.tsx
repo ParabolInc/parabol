@@ -4,12 +4,13 @@ import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {AzureDevOpsScopingSearchResultsQuery} from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResults_meeting.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import NewAzureIssueInput from './NewAzureIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -34,6 +35,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         $isWIQL: Boolean!
       ) {
         viewer {
+          ...NewAzureIssueInput_viewer
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
@@ -115,9 +117,17 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
     )
   }
   return (
-    <ResultScroller>
-      {edges.map(({node}) => {
-        return (
+    <>
+      <ResultScroller>
+        {query && (
+          <NewAzureIssueInput
+            isEditing={isEditing}
+            meetingId={meetingId}
+            setIsEditing={setIsEditing}
+            viewerRef={viewer}
+          />
+        )}
+        {edges.map(({node}) => (
           <ScopingSearchResultItem
             key={node.id}
             service={'azureDevOps'}
@@ -132,9 +142,12 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             linkText={`${node.type} #${node.id}`}
             linkTitle={`Azure DevOps Work Item #${node.id}`}
           />
-        )
-      })}
-    </ResultScroller>
+        ))}
+      </ResultScroller>
+      {!isEditing && (
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+      )}
+    </>
   )
 }
 

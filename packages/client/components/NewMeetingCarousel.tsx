@@ -52,7 +52,6 @@ const Card = styled('div')<{isActive: boolean; meetingType: keyof typeof BACKGRO
     background: isActive ? BACKGROUND_COLORS[meetingType] : PALETTE.SLATE_200,
     cursor: 'pointer',
     borderRadius: 4,
-    marginRight: 10,
     padding: 16,
     transition: `all 200ms ${BezierCurve.DECELERATE}`,
     transform: isActive ? `scale(1.1)` : 'scale(1)',
@@ -106,8 +105,6 @@ interface Props {
 
 const NewMeetingCarousel = (props: Props) => {
   const {idx, setIdx, meetingOrder, onStartMeetingClick} = props
-  // TODO: remove when standups feature flag removed
-  const moreThanThreeSlides = meetingOrder.length > 3
   const cardRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -138,19 +135,20 @@ const NewMeetingCarousel = (props: Props) => {
       <Swiper
         modules={[Mousewheel, FreeMode, Keyboard]}
         mousewheel={true}
-        slidesOffsetBefore={24}
-        slidesOffsetAfter={16}
+        slidesOffsetAfter={24}
+        centeredSlides
         slideToClickedSlide={true}
-        spaceBetween={16}
+        spaceBetween={26}
         threshold={10}
         keyboard={true}
         slidesPerView={1.5}
         breakpoints={{
           [Breakpoint.FUZZY_TABLET]: {
-            slidesPerView: moreThanThreeSlides ? 3.5 : 3.15,
             slidesOffsetBefore: 24,
-            slidesOffsetAfter: 16,
-            slideToClickedSlide: moreThanThreeSlides
+            slidesPerView: 3.5,
+            slideToClickedSlide: true,
+            centeredSlides: false,
+            centeredSlidesBounds: false
           }
         }}
         freeMode={{
