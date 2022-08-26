@@ -5,9 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.72.1 2022-August-26
+
+### Fixed
+
+- fix: Update stripe.subscription.create prorate parameter (#7119)
+
 ## 6.72.0 2022-August-25
 
 ### Added
+
 - feat: Update location of "add meeting" to left sidebar (#7012)
 - feat(standups): Recurrence - stopRecurrence mutation (#7023)
 - feat(standups): Recurrence - processRecurrence mutation (#7041)
@@ -16,6 +23,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - feat(tiptap): Emoji Support (#7102)
 
 ### Fixed
+
 - fix: show the team lead first in the preview of team selector (#7091)
 - fix(metrics): Move identify inactive up to within changePause() (#7083)
 - fix: title of the reflection columns should not be italic (#7044)
@@ -26,6 +34,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fix: support documentation easier to find in-app (#7080)
 
 ### Changed
+
 - chore: update vscode import settings (#7077)
 
 ## 6.71.0 2022-August-17
