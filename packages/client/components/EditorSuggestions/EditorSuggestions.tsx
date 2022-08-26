@@ -1,11 +1,11 @@
+import styled from '@emotion/styled'
 import React, {useLayoutEffect} from 'react'
+import {MenuPosition} from '../../hooks/useCoords'
+import useMenu from '../../hooks/useMenu'
+import {PALETTE} from '../../styles/paletteV3'
+import {BBox} from '../../types/animations'
 import MentionTag from '../MentionTag/MentionTag'
 import MentionUser from '../MentionUser/MentionUser'
-import {PALETTE} from '../../styles/paletteV3'
-import styled from '@emotion/styled'
-import useMenu from '../../hooks/useMenu'
-import {BBox} from '../../types/animations'
-import {MenuPosition} from '../../hooks/useCoords'
 import {DraftSuggestion} from '../TaskEditor/useSuggestions'
 
 const dontTellDraft = (e) => {
@@ -25,7 +25,7 @@ const MentionMenu = styled('div')({
 
 interface Props {
   active: number
-  handleSelect: (idx: number) => (e: React.MouseEvent) => void
+  handleSelect: (item: DraftSuggestion) => void
   originCoords: BBox
   suggestions: DraftSuggestion[]
   suggestionType: TaskSuggestionType
@@ -39,18 +39,27 @@ const EditorSuggestions = (props: Props) => {
   })
   const SuggestionItem = suggestionTypes[suggestionType]
   useLayoutEffect(openPortal, [])
-  return menuPortal(
-    <MentionMenu>
-      {suggestions.map((suggestion, idx) => {
-        return (
-          // eslint-disable-next-line
-          <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
-            <SuggestionItem active={active === idx} {...(suggestion as any)} />
-          </div>
-        )
-      })}
-    </MentionMenu>
-  )
+  return suggestions.length > 0
+    ? menuPortal(
+        <MentionMenu>
+          {suggestions.map((suggestion, idx) => {
+            return (
+              // eslint-disable-next-line
+              <div
+                key={idx}
+                onMouseDown={dontTellDraft}
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleSelect(suggestion)
+                }}
+              >
+                <SuggestionItem active={active === idx} {...(suggestion as any)} />
+              </div>
+            )
+          })}
+        </MentionMenu>
+      )
+    : null
 }
 
 export default EditorSuggestions

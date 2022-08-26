@@ -5,7 +5,7 @@ import stringScore from 'string-score'
 import {BBox} from '../types/animations'
 import {SuggestMentionableUsersQuery} from '../__generated__/SuggestMentionableUsersQuery.graphql'
 import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
-import {DraftSuggestion} from './TaskEditor/useSuggestions'
+import {MentionSuggestion} from './TaskEditor/useSuggestions'
 
 const makeSuggestions = (triggerWord, teamMembers) => {
   if (!triggerWord) {
@@ -29,9 +29,9 @@ const makeSuggestions = (triggerWord, teamMembers) => {
 
 interface Props {
   active: number
-  handleSelect: (idx: number) => (e: React.MouseEvent) => void
-  suggestions: DraftSuggestion[]
-  setSuggestions: (suggestions: DraftSuggestion[]) => void
+  handleSelect: (item: MentionSuggestion) => void
+  suggestions: MentionSuggestion[]
+  setSuggestions: (suggestions: MentionSuggestion[]) => void
   originCoords: BBox
   triggerWord: string
   queryRef: PreloadedQuery<SuggestMentionableUsersQuery>
@@ -67,7 +67,7 @@ const SuggestMentionableUsers = (props: Props) => {
   return (
     <EditorSuggestions
       active={active}
-      handleSelect={handleSelect}
+      handleSelect={(item) => handleSelect(item as MentionSuggestion)}
       originCoords={originCoords}
       suggestions={suggestions}
       suggestionType={'mention'}

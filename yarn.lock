@@ -4558,6 +4558,15 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-list-item/-/extension-list-item-2.0.0-beta.20.tgz#7169528b226dee4590e013bdf6e5fc6d83729b0f"
   integrity sha512-5IPEspJt38t9ROj4xLUesOVEYlTT/R9Skd9meHRxJQZX1qrzBICs5PC/WRIsnexrvTBhdxpYgCYjpvpsJBlKuQ==
 
+"@tiptap/extension-mention@^2.0.0-beta.102":
+  version "2.0.0-beta.102"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-mention/-/extension-mention-2.0.0-beta.102.tgz#a80036b0a4481efc4f69b788af3f5c76428624cc"
+  integrity sha512-QTBBpWnRnoV7/ZW31HwhPvZL3HiwnlehlHSLeMioVxAQPF5WrRtlOpxK/SRu7+KuwdCb7ZA1eWW/yjbXI3oktg==
+  dependencies:
+    "@tiptap/suggestion" "^2.0.0-beta.97"
+    prosemirror-model "1.18.1"
+    prosemirror-state "1.4.1"
+
 "@tiptap/extension-ordered-list@^2.0.0-beta.27":
   version "2.0.0-beta.27"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-ordered-list/-/extension-ordered-list-2.0.0-beta.27.tgz#ed48a53a9b012d578613b68375db31e8664bfdc9"
@@ -6731,9 +6740,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001286, caniuse-lite@^1.0.30001317, caniuse-lite@^1.0.30001359, caniuse-lite@~1.0.0:
-  version "1.0.30001384"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001384.tgz#029527c2d781a3cfef13fa63b3a78a6088e35973"
-  integrity sha512-BBWt57kqWbc0GYZXb47wTXpmAgqr5LSibPzNjk/AWMdmJMQhLqOl3c/Kd4OAU/tu4NLfYkMx8Tlq3RVBkOBolQ==
+  version "1.0.30001383"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001383.tgz#aecf317ccd940690725ae3ae4f28293c5fb8050e"
+  integrity sha512-swMpEoTp5vDoGBZsYZX7L7nXHe6dsHxi9o6/LKf/f0LukVtnrxly5GVb/fWdCDTqi/yw6Km6tiJ0pmBacm0gbg==
 
 capital-case@^1.0.4:
   version "1.0.4"
