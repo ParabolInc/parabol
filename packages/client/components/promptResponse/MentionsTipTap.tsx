@@ -2,6 +2,7 @@ import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
 import React, {Suspense, useCallback, useEffect, useRef, useState} from 'react'
+import TeamMemberId from '../../shared/gqlIds/TeamMemberId'
 import SuggestMentionableUsersRoot from '../SuggestMentionableUsersRoot'
 import {MentionSuggestion} from '../TaskEditor/useSuggestions'
 import {getSelectionBoundingBox} from './tiptapConfig'
@@ -32,6 +33,8 @@ const MentionsTipTap = (props: Props) => {
         range.to += 1
       }
 
+      const {userId} = TeamMemberId.split(item.id)
+
       tiptapEditor
         .chain()
         .focus()
@@ -39,7 +42,7 @@ const MentionsTipTap = (props: Props) => {
           {
             type: 'mention',
             attrs: {
-              id: item.id,
+              id: userId,
               label: item.preferredName
             }
           },
