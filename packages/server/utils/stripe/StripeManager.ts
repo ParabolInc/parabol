@@ -40,14 +40,14 @@ export default class StripeManager {
       metadata: {
         orgId
       },
-      prorate: false,
+      proration_behavior: 'none',
       items: [
         {
           plan: plan || StripeManager.PARABOL_ENTERPRISE_2019Q3,
           quantity
         }
       ]
-    } as any)
+    })
   }
 
   async createProSubscription(customerId: string, orgId: string, quantity: number) {
