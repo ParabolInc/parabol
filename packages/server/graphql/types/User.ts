@@ -21,7 +21,7 @@ import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
-import getPg from '../../postgres/getPg'
+import getPatientZeroByDomain from '../../postgres/queries/getPatientZeroByDomain'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
@@ -105,12 +105,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'true if the user is the first to sign up from their domain, else false',
       resolve: async ({id: userId, email}: {id: string; email: string}) => {
         const domain = getDomainFromEmail(email)
-        const pg = getPg()
-        const patientZeroId = await pg.query(
-          'SELECT "id" FROM "User" WHERE "domain" = $1 ORDER BY "createdAt" LIMIT 1',
-          [domain]
-        )
-        return patientZeroId.rows[0]?.id === userId
+        const patientZero = await getPatientZeroByDomain(domain)
+        return patientZero.id === userId
       }
     },
     reasonRemoved: {
