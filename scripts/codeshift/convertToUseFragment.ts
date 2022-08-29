@@ -12,11 +12,6 @@ const transform: Transform = (fileInfo, api, options) => {
 
   const root = j(source)
 
-  if (root.find(j.Identifier, {name: 'createFragmentContainer'}).size() > 2) {
-    // We only expect two refs - the import and the call to wrap the component.
-    throw new Error('more than two refs to createFragmentContainer')
-  }
-
   // Find where we're wrapping our component with 'createFragmentContainer':
   //   createFragmentContainer(MyComponent, {myProp: graphql`<fragment>`})
   const functionExpressions = root.find(j.CallExpression, {
