@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import {SetTaskEstimateMutation as TSetTaskEstimateMutation} from '../__generated__/SetTaskEstimateMutation.graphql'
-import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment SetTaskEstimateMutation_meeting on SetTaskEstimateSuccess {
@@ -33,9 +32,6 @@ const SetTaskEstimateMutation: StandardMutation<TSetTaskEstimateMutation, Handle
   variables,
   {onError, onCompleted, stageId}
 ) => {
-  const {taskEstimate} = variables
-  const {taskId, meetingId, dimensionName} = taskEstimate
-
   return commitMutation<TSetTaskEstimateMutation>(atmosphere, {
     mutation,
     variables,
@@ -45,21 +41,7 @@ const SetTaskEstimateMutation: StandardMutation<TSetTaskEstimateMutation, Handle
       const stage = store.get(stageId)
       stage?.setValue(value, 'finalScore')
     },
-    onCompleted: (data, errors) => {
-      if (onCompleted) {
-        onCompleted(data, errors)
-      }
-      const store = atmosphere.getStore()
-      const service = (store.getSource().get(taskId) as any)?.taskService
-      SendClientSegmentEventMutation(atmosphere, 'Task Estimate Set', {
-        meetingId,
-        taskId,
-        dimensionName,
-        service,
-        errorMessage: data.setTaskEstimate.error?.message,
-        success: !data.setTaskEstimate.error
-      })
-    },
+    onCompleted,
     onError
   })
 }

@@ -93,7 +93,6 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
       task {
         ...PokerEstimateHeaderCardParabol_task
         integrationHash
-        taskService
         integration {
           ... on AzureDevOpsWorkItem {
             __typename

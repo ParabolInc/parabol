@@ -16,7 +16,6 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
   fields: () => ({
     teamId: {type: GraphQLID},
     orgId: {type: GraphQLID},
-    dimensionName: {type: GraphQLString},
     phase: {type: NewMeetingPhaseTypeEnum},
     eventId: {type: GraphQLInt},
     actionType: {type: GraphQLString},
@@ -34,9 +33,7 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     CTAType: {type: TierEnum},
     taskId: {type: GraphQLID},
     meetingType: {type: MeetingTypeEnum},
-    inMeeting: {type: GraphQLBoolean},
-    errorMessage: {type: GraphQLString},
-    success: {type: GraphQLBoolean}
+    inMeeting: {type: GraphQLBoolean}
   })
 })
 
