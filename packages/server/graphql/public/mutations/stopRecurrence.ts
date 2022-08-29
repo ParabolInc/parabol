@@ -1,18 +1,22 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
 import getRethink from '../../../database/rethinkDriver'
 import updateMeetingSeries from '../../../postgres/queries/updateMeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
   _source,
   {meetingSeriesId},
-  {authToken, dataLoader}
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
   const viewerId = getUserId(authToken)
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
   const now = new Date()
 
   // VALIDATION
@@ -35,20 +39,18 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
   dataLoader.get('meetingSeries').clear(id)
   analytics.recurrenceStopped(viewerId, meetingSeries)
 
-  const updatedMeeting = await r
+  await r
     .table('NewMeeting')
     .getAll(id, {index: 'meetingSeriesId'})
     .filter({endedAt: null}, {default: true})
-    .update(
-      {
-        scheduledEndTime: null
-      },
-      {returnChanges: true}
-    )('changes')(0)('new_val')
+    .update({
+      scheduledEndTime: null
+    })
     .run()
 
   // RESOLUTION
-  const data = {meetingId: updatedMeeting.id}
+  const data = {meetingSeriesId}
+  publish(SubscriptionChannel.TEAM, teamId, 'StopRecurrenceSuccess', data, subOptions)
   return data
 }
 

@@ -1,13 +1,14 @@
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
 import {StopRecurrenceSuccessResolvers} from '../resolverTypes'
 
 export type StopRecurrenceSuccessSource = {
-  meetingId: string
+  meetingSeriesId: string
 }
 
 const StopRecurrenceSuccess: StopRecurrenceSuccessResolvers = {
-  meeting: async ({meetingId}, _args, {dataLoader}) => {
-    return dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingTeamPrompt>
+  meetingSeries: async ({meetingSeriesId}, _args, {dataLoader}) => {
+    const id = MeetingSeriesId.split(meetingSeriesId)
+    return dataLoader.get('meetingSeries').loadNonNull(id)
   }
 }
 

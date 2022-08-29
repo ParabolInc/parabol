@@ -43,6 +43,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
         meetingSeries {
           id
           cancelledAt
+          activeMeetings {
+            id
+          }
         }
         endedAt
         viewerMeetingMember {
@@ -62,14 +65,17 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
+  const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  const hasActiveMetings = !!meetingSeries?.activeMeetings?.length
+  const canToggleRecurrence = isEnded ? hasActiveMetings : true
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
       {recurrence && (
         <MenuItem
           key='copy'
-          isDisabled={!!endedAt}
+          isDisabled={!canToggleRecurrence}
           label={
             <OptionMenuItem>
               <StyledIcon>replay</StyledIcon>
@@ -93,7 +99,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
       )}
       <MenuItem
         key='end'
-        isDisabled={!!endedAt}
+        isDisabled={isEnded}
         label={
           <OptionMenuItem>
             <StyledIcon>flag</StyledIcon>
