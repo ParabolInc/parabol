@@ -209,6 +209,32 @@ interface WorkItemAddFieldResponse {
   url: string
 }
 
+export interface ProjectRes {
+  id: string
+  name: string
+  url: string
+  state: string
+  revision: number
+  _links: {
+    self: {
+      href: string
+    }
+    collection: {
+      href: string
+    }
+    web: {
+      href: string
+    }
+  }
+  visibility: string
+  defaultTeam: {
+    id: string
+    name: string
+    url: string
+  }
+  lastUpdateTime: Date
+}
+
 const MAX_REQUEST_TIME = 8000
 
 class AzureDevOpsServerManager implements TaskIntegrationManager {
@@ -599,6 +625,11 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       firstError = result
     }
     return {error: firstError, process: result.name}
+  }
+
+  async getProject(instanceId: string, projectId: string) {
+    const uri = `https://${instanceId}/_apis/projects/${projectId}`
+    return this.get<ProjectRes>(uri)
   }
 
   async getAccountProjects(accountName: string) {
