@@ -262,10 +262,11 @@ const upsertHubspotContact = async (
     }))
   })
   const res = await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
+    `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/`,
     {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${hapiKey}`,
         'Content-Type': 'application/json'
       },
       body
@@ -291,9 +292,10 @@ const updateHubspotBulkContact = async (records: BulkRecord[], retryCount = 0) =
       }
     })
   )
-  const res = await fetch(`https://api.hubapi.com/contacts/v1/contact/batch/?hapikey=${hapiKey}`, {
+  const res = await fetch(`https://api.hubapi.com/contacts/v1/contact/batch/`, {
     method: 'POST',
     headers: {
+      Authorization: `Bearer ${hapiKey}`,
       'Content-Type': 'application/json'
     },
     body
@@ -312,8 +314,14 @@ const updateHubspotCompany = async (
   retryCount = 0
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
-  const contactRes = await fetch(url)
+  const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
+  const contactRes = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${hapiKey}`,
+      'Content-Type': 'application/json'
+    }
+  })
   const contactStatus = String(contactRes.status)
   if (!contactStatus.startsWith('2')) {
     await sleep(2000)
@@ -342,16 +350,14 @@ const updateHubspotCompany = async (
       value: normalize(propertiesObj[key])
     }))
   })
-  const companyRes = await fetch(
-    `https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body
-    }
-  )
+  const companyRes = await fetch(`https://api.hubapi.com/companies/v2/companies/${companyId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${hapiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body
+  })
   if (!String(companyRes.status).startsWith('2')) {
     let errBody
     try {

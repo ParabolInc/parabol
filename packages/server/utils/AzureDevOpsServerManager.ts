@@ -1,16 +1,24 @@
-import AbortController from 'abort-controller'
-import fetch from 'node-fetch'
+import fetch, {RequestInit} from 'node-fetch'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
+import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
+import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
+import {
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../integrations/TaskIntegrationManagerFactory'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -128,6 +136,14 @@ export interface WorkItem {
   url: string
 }
 
+export interface CreateTaskIssueRes {
+  id: number
+  rev: number
+  fields: object
+  _links: ReferenceLinks
+  url: string
+}
+
 export interface ReferenceLinks {
   html?: {
     href: string
@@ -204,15 +220,43 @@ interface WorkItemAddFieldResponse {
   url: string
 }
 
+export interface ProjectRes {
+  id: string
+  name: string
+  url: string
+  state: string
+  revision: number
+  _links: {
+    self: {
+      href: string
+    }
+    collection: {
+      href: string
+    }
+    web: {
+      href: string
+    }
+  }
+  visibility: string
+  defaultTeam: {
+    id: string
+    name: string
+    url: string
+  }
+  lastUpdateTime: Date
+}
+
 const MAX_REQUEST_TIME = 8000
 
-class AzureDevOpsServerManager {
+class AzureDevOpsServerManager implements TaskIntegrationManager {
+  public title = 'AzureDevOps'
   accessToken = ''
   private headers = {
     Authorization: '',
     Accept: 'application/json' as const,
     'Content-Type': 'application/json'
   }
+  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult | null
 
   async init(code: string, codeVerifier: string | null) {
     if (!codeVerifier) {
@@ -240,12 +284,14 @@ class AzureDevOpsServerManager {
     if (!!provider) {
       this.provider = provider
     }
+    this.auth = auth
   }
 
   setToken(token: string) {
     this.accessToken = token
     this.headers.Authorization = `Bearer ${token}`
   }
+
   private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
     const controller = new AbortController()
     const {signal} = controller
@@ -310,6 +356,71 @@ class AzureDevOpsServerManager {
       return new Error(json.message)
     }
     return json
+  }
+
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }): Promise<CreateTaskResponse> {
+    const {title} = splitDraftContent(rawContentStr)
+    const {instanceId, projectId} = AzureDevOpsProjectId.split(integrationRepoId)
+    const issueRes = await this.createIssue({title, instanceId, projectId})
+    if (issueRes instanceof Error) return issueRes
+    return {
+      integrationHash: AzureDevOpsIssueId.join(instanceId, projectId, String(issueRes.id)),
+      issueId: String(issueRes.id),
+      integration: {
+        accessUserId: this.auth!.userId,
+        instanceId,
+        service: 'azureDevOps',
+        projectKey: projectId,
+        issueKey: String(issueRes.id)
+      }
+    }
+  }
+
+  async createIssue({
+    title,
+    instanceId,
+    projectId
+  }: {
+    title: string
+    instanceId: string
+    projectId: string
+  }) {
+    const uri = `https://${instanceId}/${projectId}/_apis/wit/workitems/$Issue?api-version=6.0`
+    return this.patch<CreateTaskIssueRes>(uri, [
+      {
+        op: 'add',
+        path: '/fields/System.Title',
+        from: null,
+        value: title
+      }
+    ])
+  }
+
+  async addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string,
+    integrationHash: string
+  ): Promise<string | Error> {
+    const integration = IntegrationHash.split('azureDevOps', integrationHash)
+    if (!integration?.projectKey || !integration?.issueKey) {
+      return new Error(`Invalid integrationHash: ${integrationHash}`)
+    }
+    const {instanceId, projectKey} = integration
+    const comment = makeCreateAzureTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+    const res = await this.post<WorkItemAddCommentResponse>(
+      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${issueId}/comments?api-version=7.1-preview.3`,
+      {text: comment}
+    )
+    return res instanceof Error ? res : res.url
   }
 
   async getWorkItemData(instanceId: string, workItemIds: number[], fields?: string[]) {
@@ -525,6 +636,11 @@ class AzureDevOpsServerManager {
       firstError = result
     }
     return {error: firstError, process: result.name}
+  }
+
+  async getProject(instanceId: string, projectId: string) {
+    const uri = `https://${instanceId}/_apis/projects/${projectId}`
+    return this.get<ProjectRes>(uri)
   }
 
   async getAccountProjects(accountName: string) {

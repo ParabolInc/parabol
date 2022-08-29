@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useRef} from 'react'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import Atmosphere from '../Atmosphere'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {ElementHeight, ElementWidth} from '../types/constEnums'
+import {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
+import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import Icon from './Icon'
-import {ElementHeight, ElementWidth} from '../types/constEnums'
-import Atmosphere from '../Atmosphere'
-import {commitLocalUpdate, useFragment} from 'react-relay'
-import {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import React, {useRef} from 'react'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const SearchWrapper = styled('div')({
   width: ElementWidth.REFLECTION_CARD
@@ -84,9 +84,7 @@ const SpotlightSearchBar = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSpotlightSearch(atmosphere, meetingId, e.currentTarget.value)
     if (!hasSearchedRef.current) {
-      const {viewerId} = atmosphere
       SendClientSegmentEventMutation(atmosphere, 'Searched in Spotlight', {
-        viewerId,
         reflectionId: spotlightReflectionId,
         meetingId
       })

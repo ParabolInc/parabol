@@ -46,6 +46,12 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], userId: str
     userId,
     event: inactive ? 'Account Paused' : 'Account Unpaused'
   })
+  segmentIo.identify({
+    userId,
+    traits: {
+      isActive: !inactive
+    }
+  })
   return Promise.all([
     updateUser(
       {
@@ -166,19 +172,6 @@ export default async function adjustUserCount(
     if (!user || user.inactive) {
       return
     }
-  }
-
-  if (
-    type === InvoiceItemType.PAUSE_USER ||
-    type === InvoiceItemType.AUTO_PAUSE_USER ||
-    type === InvoiceItemType.REMOVE_USER
-  ) {
-    segmentIo.identify({
-      userId,
-      traits: {
-        isActive: false
-      }
-    })
   }
 
   const prorationDate = options.prorationDate ? toEpochSeconds(options.prorationDate) : undefined

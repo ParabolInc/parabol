@@ -1,13 +1,13 @@
-import useAtmosphere from '~/hooks/useAtmosphere'
-import clientTempId from '~/utils/relay/clientTempId'
-import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import {Times} from 'parabol-client/types/constEnums'
-import {Elevation} from '~/styles/elevation'
-import cloneReflection from '~/utils/retroGroup/cloneReflection'
-import {PortalStatus} from '~/hooks/usePortal'
 import {MutableRefObject, useLayoutEffect, useRef} from 'react'
-import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {PortalStatus} from '~/hooks/usePortal'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
+import {Elevation} from '~/styles/elevation'
+import {BezierCurve, ElementWidth} from '~/types/constEnums'
+import clientTempId from '~/utils/relay/clientTempId'
+import cloneReflection from '~/utils/retroGroup/cloneReflection'
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
@@ -15,7 +15,6 @@ const useAnimatedSpotlightSource = (
   dragIdRef: MutableRefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const sourceRef = useRef<HTMLDivElement | null>(null)
   const sourceCloneRef = useRef<HTMLDivElement | null>(null)
 
@@ -55,7 +54,6 @@ const useAnimatedSpotlightSource = (
     // execute mutation after cloning as the mutation will cause reflection height to change
     startDrag(reflectionId, dragIdRef.current)
     SendClientSegmentEventMutation(atmosphere, 'Opened Spotlight', {
-      viewerId,
       reflectionId
     })
     const dragInterval = setInterval(() => {

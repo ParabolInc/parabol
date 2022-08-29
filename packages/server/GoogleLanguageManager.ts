@@ -1,4 +1,3 @@
-import AbortController from 'abort-controller'
 import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import sendToSentry from './utils/sendToSentry'

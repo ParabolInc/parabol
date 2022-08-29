@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useRef} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
@@ -238,7 +238,6 @@ const useDragAndDrop = (
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
   const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
@@ -270,7 +269,6 @@ const useDragAndDrop = (
         ? `Spotlight result to ${targetType === 'REFLECTION_GROUP' ? 'source' : 'result'}`
         : `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
       SendClientSegmentEventMutation(atmosphere, event, {
-        viewerId,
         reflectionId,
         meetingId,
         spotlightSearchQuery
