@@ -4,6 +4,7 @@ import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/gene
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
+import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager, {
@@ -159,6 +160,10 @@ export const freshAzureDevOpsAuth = (
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
+              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
+              if (oauthRes.message === 'invalid_grant') {
+                await removeTeamMemberIntegrationAuthQuery('azureDevOps', teamId, userId)
+              }
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
