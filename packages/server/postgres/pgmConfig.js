@@ -5,7 +5,7 @@ const pgmConfig = {
   host: process.env.POSTGRES_HOST,
   port: process.env.POSTGRES_PORT,
   database: process.env.POSTGRES_DB,
-  tsconfig: 'packages/server/tsconfig.json',
+  tsconfig: 'packages/server/postgres/tsconfig.json',
   'migrations-dir': 'packages/server/postgres/migrations',
   'migrations-table': 'PgMigrations',
   'template-file-name':'packages/server/postgres/migrationTemplate.ts'

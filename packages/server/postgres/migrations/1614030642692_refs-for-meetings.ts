@@ -138,7 +138,7 @@ export async function up(): Promise<void> {
     return rArr.map((x: any) => r.branch(test(x), f(x), x))
   }
   await r(dimensionIdToDimensionRefIdx)
-    .do((lookup) => {
+    .do((lookup: any) => {
       return r
         .table('NewMeeting')
         .filter({meetingType: 'poker'})
@@ -148,7 +148,7 @@ export async function up(): Promise<void> {
             (phase: RValue) => phase('phaseType').eq('ESTIMATE'),
             (estimatePhase: RValue) =>
               estimatePhase.merge({
-                stages: estimatePhase('stages').map((stage) =>
+                stages: estimatePhase('stages').map((stage: any) =>
                   stage.merge({
                     dimensionRefIdx: lookup(stage('dimensionId'))
                   })

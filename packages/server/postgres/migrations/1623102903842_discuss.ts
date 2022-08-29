@@ -1,6 +1,6 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r} from 'rethinkdb-ts'
+import {r, RValue} from 'rethinkdb-ts'
 import {parse} from 'url'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import DiscussPhase from '../../database/types/DiscussPhase'
@@ -12,11 +12,11 @@ import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL!)
   await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: path.split('/')[1]
+    host: host!,
+    port: parseInt(port!, 10),
+    db: path!.split('/')[1]
   })
   const client = new Client(getPgConfig())
   await client.connect()
@@ -32,8 +32,8 @@ export async function up(): Promise<void> {
     return r
       .table('NewMeeting')
       .get(meetingId)
-      .update((meeting) => ({
-        phases: meeting('phases').map((phase) =>
+      .update((meeting: RValue) => ({
+        phases: meeting('phases').map((phase: RValue) =>
           r.branch(
             phase('phaseType').eq(phaseType),
             phase.merge({
@@ -72,7 +72,7 @@ export async function up(): Promise<void> {
       .limit(BATCH_SIZE)
       .run()
     if (curMeetings.length < 1) break
-    const discussions = []
+    const discussions = [] as any[]
     const threadIdToDiscussionId = [] as [string, string][]
     const stageUpdates = curMeetings.map((meeting) => {
       const {id: meetingId, teamId, meetingType, phases} = meeting
