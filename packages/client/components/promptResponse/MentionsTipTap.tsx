@@ -23,6 +23,8 @@ const MentionsTipTap = (props: Props) => {
 
   const [suggestions, setSuggestions] = useState<MentionSuggestion[]>([])
 
+  useEffect(() => setActive(0), [suggestions])
+
   const onSelectMention = useCallback(
     (item: MentionSuggestion) => {
       if (!range) return
@@ -58,6 +60,8 @@ const MentionsTipTap = (props: Props) => {
 
   const keyHandlerRef = useRef<any>(null)
 
+  // :HACK: We can't just pass these into the 'Suggestion' plugin because these change based on
+  // active, suggestions, etc., and we can't recreate the plugin every time one of these changes.
   useEffect(() => {
     keyHandlerRef.current = {
       upHandler: () => {
