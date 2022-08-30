@@ -97,7 +97,9 @@ export async function up(): Promise<void> {
         })
         return updateStagesWithDiscussionIds(meetingId, 'discuss', discussionIds)
       } else if (meetingType === 'action') {
-        const phase = phases.find((phase) => phase.phaseType === 'agendaitems') as AgendaItemsPhase
+        const phase = phases.find(
+          (phase: any) => phase.phaseType === 'agendaitems'
+        ) as AgendaItemsPhase
         if (!phase) return
         const {stages} = phase
         const discussionIds = stages.map(() => generateUID())
