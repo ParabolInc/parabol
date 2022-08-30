@@ -73,10 +73,12 @@ export async function up(): Promise<void> {
     if (curMeetings.length < 1) break
     const discussions = [] as any[]
     const threadIdToDiscussionId = [] as [string, string][]
-    const stageUpdates = curMeetings.map((meeting) => {
+    const stageUpdates = curMeetings.map((meeting: any) => {
       const {id: meetingId, teamId, meetingType, phases} = meeting
       if (meetingType === 'retrospective') {
-        const discussPhase = phases.find((phase) => phase.phaseType === 'discuss') as DiscussPhase
+        const discussPhase = phases.find(
+          (phase: any) => phase.phaseType === 'discuss'
+        ) as DiscussPhase
         if (!discussPhase) return
         const {stages} = discussPhase
         const discussionIds = stages.map(() => generateUID())
@@ -84,7 +86,7 @@ export async function up(): Promise<void> {
         stages.forEach((stage, idx) => {
           const {reflectionGroupId} = stage
           if (reflectionGroupId) {
-            const discussionId = discussionIds[idx]
+            const discussionId = discussionIds[idx]!
             threadIdToDiscussionId.push([reflectionGroupId, discussionId])
             discussions.push({
               id: discussionId,
@@ -105,7 +107,7 @@ export async function up(): Promise<void> {
         const discussionIds = stages.map(() => generateUID())
         stages.forEach((stage, idx) => {
           const {agendaItemId} = stage
-          const discussionId = discussionIds[idx]
+          const discussionId = discussionIds[idx]!
           threadIdToDiscussionId.push([agendaItemId, discussionId])
           discussions.push({
             id: discussionId,
@@ -123,14 +125,17 @@ export async function up(): Promise<void> {
         const discussionIds = stages.map(() => generateUID())
         stages.forEach((stage, idx) => {
           const {service, serviceTaskId} = stage as any
-          const discussionId = discussionIds[idx]
+          const discussionId = discussionIds[idx]!
           threadIdToDiscussionId.push([serviceTaskId, discussionId])
           discussions.push({
             id: discussionId,
             meetingId,
             teamId,
             discussionTopicId: serviceTaskId,
-            discussionTopicType: taskServiceToDiscussionTopicType[service] || 'task'
+            discussionTopicType:
+              taskServiceToDiscussionTopicType[
+                service as keyof typeof taskServiceToDiscussionTopicType
+              ] || 'task'
           })
         })
         return updateStagesWithDiscussionIds(meetingId, 'ESTIMATE', discussionIds)

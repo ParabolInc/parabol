@@ -46,7 +46,7 @@ export async function up() {
       RETURNING id;`,
       ['mattermost', 'webhook', 'team', webhookUrl, teamId]
     )
-    const providerId = result.rows[0].id
+    const providerId = result.rows[0]!.id
     await client.query(
       `
       INSERT INTO

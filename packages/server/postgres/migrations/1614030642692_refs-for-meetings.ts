@@ -97,7 +97,7 @@ export async function up(): Promise<void> {
           dimensionIdToDimensionRefIdx[dimensionId] = idx
 
           const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
-          const templateScale = templateScales[scaleIdx]
+          const templateScale = templateScales[scaleIdx]!
           const {id: scaleRefId} = templateScale
           return {
             name,
