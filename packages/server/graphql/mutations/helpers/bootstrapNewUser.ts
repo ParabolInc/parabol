@@ -16,11 +16,14 @@ import createTeamAndLeader from './createTeamAndLeader'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
-  const {id: userId, email, featureFlags, tier, segmentId} = user
+  const {id: userId, createdAt, email, featureFlags, tier, segmentId, preferredName} = user
   const domain = email.split('@')[1]
   segmentIo.identify({
     userId,
     traits: {
+      createdAt,
+      email,
+      name: preferredName,
       isActive: true,
       featureFlags,
       highestTier: tier,
