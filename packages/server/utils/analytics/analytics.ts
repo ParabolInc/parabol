@@ -2,6 +2,7 @@ import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
+import {TaskServiceEnum} from '../../database/types/Task'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
@@ -26,6 +27,15 @@ export type TaskProperties = {
   inMeeting: boolean
 }
 
+export type TaskEstimateProperties = {
+  taskId: string
+  meetingId: string
+  dimensionName: string
+  service?: TaskServiceEnum
+  success: boolean
+  errorMessage?: string
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -46,6 +56,7 @@ export type AnalyticsEvent =
   // task
   | 'Task Created'
   | 'Task Published'
+  | 'Task Estimate Set'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -251,6 +262,10 @@ class Analytics {
 
   taskCreated = (userId: string, taskProperties: TaskProperties) => {
     this.track(userId, 'Task Created', taskProperties)
+  }
+
+  taskEstimateSet = (userId: string, taskEstimateProperties: TaskEstimateProperties) => {
+    this.track(userId, 'Task Estimate Set', taskEstimateProperties)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>
