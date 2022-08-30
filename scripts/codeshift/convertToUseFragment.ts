@@ -22,7 +22,7 @@ const transform: Transform = (fileInfo, api, options) => {
   })
 
   if (functionExpressions.size() !== 1) {
-    throw new Error('trying to convert file with multiple fragment containers')
+    throw new Error('trying to convert file with zero or multiple fragment containers')
   }
 
   const functionExpression = functionExpressions.get().value
@@ -32,6 +32,8 @@ const transform: Transform = (fileInfo, api, options) => {
   // Replace the call to 'createFragmentContainer' with just a reference to the component we're
   // wrapping:
   //   createFragmentContainer(MyComponent, {myProp: graphql``})
+  // to
+  //   MyComponent
   functionExpressions.replaceWith(replacementExport)
 
   if (replacementExport.type !== 'Identifier') {
@@ -156,6 +158,7 @@ const transform: Transform = (fileInfo, api, options) => {
 
         const name = p.value.typeAnnotation.typeAnnotation.typeName.name
 
+        // Rename all identifiers with this name to also update the import.
         root.find(j.Identifier, {name}).replaceWith(j.identifier(name + '$key'))
       })
       .size() === Object.keys(propMap).length
