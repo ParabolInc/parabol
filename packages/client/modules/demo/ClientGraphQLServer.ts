@@ -162,20 +162,34 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   constructor(atmosphere: LocalAtmosphere) {
     super()
     this.atmosphere = atmosphere
-    const demoDB = window.localStorage.getItem('retroDemo') || ''
+    const validDB = this.getValidDB()
+    if (validDB) {
+      this.db = validDB
+      this.startDemo()
+    } else {
+      this.db = initDB(initBotScript())
+    }
+  }
+
+  private getValidDB(): RetroDemoDB | undefined {
     let validDB
     try {
+      const demoDB = window.localStorage.getItem('retroDemo') || ''
       validDB = parse(demoDB)
     } catch (e) {
       // noop
     }
     // const isStale = false
-    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
-    this.db = isStale ? initDB(initBotScript()) : validDB
-    if (!isStale) {
-      this.isNew = false
-      this.startBot()
-    }
+    const isUpdatedIn5Minutes =
+      validDB && new Date(validDB._updatedAt).getTime() >= Date.now() - ms('5m')
+    if (!isUpdatedIn5Minutes) return
+
+    return validDB
+  }
+
+  startDemo() {
+    this.isNew = false
+    this.startBot()
   }
 
   getUnlockedStages(stageIds: string[]) {
