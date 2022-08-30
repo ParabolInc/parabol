@@ -1,6 +1,6 @@
 import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
-import {parse} from 'flatted'
+import {parse, stringify} from 'flatted'
 import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
@@ -158,14 +158,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getTempId = (prefix: string) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
-  isNew = true
   constructor(atmosphere: LocalAtmosphere) {
     super()
     this.atmosphere = atmosphere
     const validDB = this.getValidDB()
     if (validDB) {
       this.db = validDB
-      this.startDemo()
+      this.db._started && this.startBot()
     } else {
       this.db = initDB(initBotScript())
     }
@@ -188,8 +187,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   }
 
   startDemo() {
-    this.isNew = false
     this.startBot()
+    this.db._started = true
+    window.localStorage.setItem('retroDemo', stringify(this.db))
   }
 
   getUnlockedStages(stageIds: string[]) {

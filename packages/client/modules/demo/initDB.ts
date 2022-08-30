@@ -573,6 +573,7 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
     team,
     teamMembers,
     users,
+    _started: false,
     _updatedAt: new Date(),
     _tempID: 1,
     _botScript: botScript
