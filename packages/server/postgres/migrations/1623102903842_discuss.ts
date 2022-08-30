@@ -1,7 +1,6 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
 import {r, RValue} from 'rethinkdb-ts'
-import {parse} from 'url'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import EstimatePhase from '../../database/types/EstimatePhase'
@@ -12,11 +11,11 @@ import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL!)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
-    host: host!,
-    port: parseInt(port!, 10),
-    db: path!.split('/')[1]
+    host,
+    port: parseInt(port, 10),
+    db: pathname.split('/')[1]
   })
   const client = new Client(getPgConfig())
   await client.connect()
@@ -188,15 +187,15 @@ export async function up(): Promise<void> {
   }
 
   await client.end()
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
     port: parseInt(port, 10),
-    db: path.split('/')[1]
+    db: pathname.split('/')[1]
   })
   try {
     await Promise.all([
@@ -206,7 +205,7 @@ export async function down(pgm: MigrationBuilder): Promise<void> {
   } catch (e) {
     // nope
   }
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
   await pgm.db.query(`
     DELETE FROM "Discussion";
   `)

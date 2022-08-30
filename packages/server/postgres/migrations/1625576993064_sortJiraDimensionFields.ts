@@ -1,17 +1,16 @@
 import stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {r} from 'rethinkdb-ts'
-import {parse} from 'url'
 import Team from '../../database/types/Team'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
     port: parseInt(port, 10),
-    db: path.split('/')[1]
+    db: pathname.split('/')[1]
   })
 
   if (await r.tableList().contains('Team').run()) {
@@ -21,7 +20,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       .pluck('id', 'jiraDimensionFields')
       .run()) as Pick<Team, 'id' | 'jiraDimensionFields'>[]
     teams.forEach((team) => {
-      team.jiraDimensionFields.sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
+      team.jiraDimensionFields?.sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
     })
     await r(teams)
       .forEach((team) => {

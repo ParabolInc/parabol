@@ -12,7 +12,7 @@ interface MattermostAuth {
 }
 
 const connectRethinkDB = async () => {
-  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
     port: parseInt(port, 10),
@@ -63,7 +63,7 @@ export async function up() {
   })
   await Promise.all(mattermostAuthsToInsert)
   await client.end()
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down() {
