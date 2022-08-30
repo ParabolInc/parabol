@@ -1,4 +1,3 @@
-import {GQLContext} from './../../graphql'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import {JSDOM} from 'jsdom'
 import fetch from 'node-fetch'
@@ -13,6 +12,7 @@ import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
 import standardError from '../../../utils/standardError'
 import {UpdateUserProfileInputType} from '../../types/UpdateUserProfileInput'
+import {GQLContext} from './../../graphql'
 
 const updateUserProfile = async (
   _source: unknown,
@@ -84,12 +84,6 @@ const updateUserProfile = async (
       userId,
       event: 'Changed name',
       properties: {
-        name: validUpdatedUser.preferredName
-      }
-    })
-    segmentIo.identify({
-      userId,
-      traits: {
         name: validUpdatedUser.preferredName
       }
     })

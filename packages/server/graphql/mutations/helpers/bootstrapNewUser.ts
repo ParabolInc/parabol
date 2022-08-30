@@ -6,6 +6,7 @@ import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTr
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import getPatientZeroByDomain from '../../../postgres/queries/getPatientZeroByDomain'
 import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
 import segmentIo from '../../../utils/segmentIo'
@@ -15,14 +16,15 @@ import createTeamAndLeader from './createTeamAndLeader'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
-  const {id: userId, createdAt, email, segmentId, picture, preferredName} = user
+  const {id: userId, email, featureFlags, tier, segmentId} = user
+  const domain = email.split('@')[1]
   segmentIo.identify({
     userId,
     traits: {
-      avatar: picture,
-      createdAt,
-      email,
-      name: preferredName
+      isActive: true,
+      featureFlags,
+      highestTier: tier,
+      isPatient0: domain ? userId === (await getPatientZeroByDomain(domain)).id : undefined
     },
     anonymousId: segmentId
   })
