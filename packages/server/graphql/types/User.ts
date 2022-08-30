@@ -21,7 +21,6 @@ import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
-import getPatientZeroByDomain from '../../postgres/queries/getPatientZeroByDomain'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
@@ -30,6 +29,7 @@ import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
+import isPatientZero from '../mutations/helpers/isPatientZero'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
@@ -105,8 +105,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'true if the user is the first to sign up from their domain, else false',
       resolve: async ({id: userId, email}: {id: string; email: string}) => {
         const domain = getDomainFromEmail(email)
-        const patientZero = await getPatientZeroByDomain(domain)
-        return patientZero.id === userId
+        return isPatientZero(userId, domain)
       }
     },
     reasonRemoved: {

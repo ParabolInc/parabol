@@ -1,13 +1,13 @@
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
-import getPatientZeroByDomain from '../../../postgres/queries/getPatientZeroByDomain'
 import updateUser from '../../../postgres/queries/updateUser'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
+import isPatientZero from '../../mutations/helpers/isPatientZero'
 import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
@@ -88,9 +88,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       isActive: true,
       featureFlags: user.featureFlags,
       highestTier: user.tier,
-      isPatient0: user.domain
-        ? userId === (await getPatientZeroByDomain(user.domain)).id
-        : undefined
+      isPatient0: await isPatientZero(userId, user.domain)
     }
   })
   return user
