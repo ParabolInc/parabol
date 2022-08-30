@@ -87,6 +87,12 @@ const updateUserProfile = async (
         name: validUpdatedUser.preferredName
       }
     })
+    segmentIo.identify({
+      userId,
+      traits: {
+        name: validUpdatedUser.preferredName
+      }
+    })
   }
 
   const teamIds = teamMembers.map(({teamId}) => teamId)
