@@ -28,17 +28,14 @@ const restartRecurrence = async (meetingSeries: MeetingSeries) => {
     nextScheduledStartDate.getTime() > now.getTime() + ms('9h')
   if (hasRecentlyStopped || isNextScheduledStartDateReasonable) {
     // no need to change the recurrence rule, next meeting starts in reasonable time
-    await restartMeetingSeries({cancelledAt: null}, meetingSeriesId)
+    await restartMeetingSeries(meetingSeriesId)
   } else {
     // meeting series was stopped more than ~1h ago and the next scheduled start date is within the next ~9h
     // to prevent a meeting from being scheduled too soon, we need to change the recurrence rule
     const newRecurrenceRule = currentRRule.clone()
     newRecurrenceRule.options.dtstart = new Date(nextScheduledStartDate.getTime() + ms('1d'))
 
-    await restartMeetingSeries(
-      {cancelledAt: null, recurrenceRule: newRecurrenceRule.toString()},
-      meetingSeriesId
-    )
+    await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
   }
 
   // update all the active meetings to end at proper time

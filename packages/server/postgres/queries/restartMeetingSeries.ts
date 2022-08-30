@@ -5,8 +5,8 @@ import {
 } from './generated/restartMeetingSeriesByIdQuery'
 
 const restartMeetingSeries = async (
-  update: Partial<IRestartMeetingSeriesByIdQueryParams>,
-  id: number
+  id: number,
+  update?: Partial<IRestartMeetingSeriesByIdQueryParams>
 ) => {
   return restartMeetingSeriesByIdQuery.run(
     {

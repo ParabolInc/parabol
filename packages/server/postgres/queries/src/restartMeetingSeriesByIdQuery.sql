@@ -3,5 +3,5 @@
 */
 UPDATE "MeetingSeries" SET
   "recurrenceRule" = COALESCE(:recurrenceRule, "recurrenceRule"),
-  "cancelledAt" = :cancelledAt
+  "cancelledAt" = NULL
 WHERE id = :id;
