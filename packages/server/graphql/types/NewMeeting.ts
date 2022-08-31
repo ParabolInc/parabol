@@ -49,7 +49,7 @@ export const newMeetingFields = () => ({
     description: 'The timestamp the meeting officially ended'
   },
   meetingSeriesId: {
-    type: new GraphQLNonNull(GraphQLID),
+    type: GraphQLID,
     description: 'The id of the meeting series this meeting belongs to'
   },
   scheduledEndTime: {
