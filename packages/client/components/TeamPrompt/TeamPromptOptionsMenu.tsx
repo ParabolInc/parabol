@@ -68,7 +68,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   const hasActiveMetings = !!meetingSeries?.activeMeetings?.length
-  const canToggleRecurrence = isEnded ? hasActiveMetings : true
+  const canStartRecurrence = !isEnded
+  const canEndRecurrence = !isEnded || !hasActiveMetings
+  const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
