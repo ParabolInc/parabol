@@ -62,11 +62,14 @@ const restartExistingMeetingSeries = async (meetingSeries: MeetingSeries) => {
     return
   }
 
-  // to keep things simple, we'll just restart the meeting series at arbitrarty time, 9 AM tomorrow
-  const nextMeetingStartDate = createNextMeetingStartDate()
+  const now = new Date()
+  // to keep things simple, restart the meeting series at the same time a new series would start
   const currentRRule = RRule.fromString(recurrenceRule)
+  const nextMeetingStartDate = currentRRule.after(
+    new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0))
+  )
   const newRecurrenceRule = currentRRule.clone()
-  newRecurrenceRule.options.dtstart = new Date(nextMeetingStartDate)
+  newRecurrenceRule.options.dtstart = nextMeetingStartDate
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
   // lets close all active meetings at the time when
