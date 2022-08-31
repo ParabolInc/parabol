@@ -14,7 +14,8 @@ import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import TeamPromptOptions from './TeamPromptOptions'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
-  marginRight: '8px'
+  marginRight: '8px',
+  paddingLeft: '0'
 })
 
 const TeamPromptHeaderTitle = styled('h1')({
