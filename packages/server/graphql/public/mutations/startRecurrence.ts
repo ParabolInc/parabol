@@ -13,32 +13,64 @@ import {MutationResolvers} from '../resolverTypes'
 
 const MEETING_DURATION_IN_MINUTES = 24 * 60 // 24 hours
 
-const restartRecurrence = async (meetingSeries: MeetingSeries) => {
+// Next meeting start is tomorrow at 9a UTC
+// :TODO: (jmtaber129): Determine this from meeting series configuration.
+const createNextMeetingStartDate = () => {
+  const now = new Date()
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9))
+}
+
+const startNewMeetingSeries = async (viewerId: string, teamId: string, meetingId: string) => {
+  const now = new Date()
+  const r = await getRethink()
+  const nextMeetingStartDate = createNextMeetingStartDate()
+  const recurrenceRule = new RRule({
+    freq: RRule.WEEKLY,
+    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR],
+    dtstart: nextMeetingStartDate
+  })
+
+  const newMeetingSeriesParams = {
+    meetingType: 'teamPrompt',
+    title: 'Async Standup',
+    recurrenceRule: recurrenceRule.toString(),
+    duration: MEETING_DURATION_IN_MINUTES,
+    teamId,
+    facilitatorId: viewerId
+  } as const
+  const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
+
+  await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .update({
+      meetingSeriesId: newMeetingSeriesId,
+      scheduledEndTime: new Date(now.getTime() + ms('24h')) // 24 hours from now
+    })
+    .run()
+
+  return {
+    id: newMeetingSeriesId,
+    ...newMeetingSeriesParams
+  }
+}
+
+const restartExistingMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const r = await getRethink()
   const {cancelledAt, recurrenceRule, id: meetingSeriesId} = meetingSeries
   if (!cancelledAt) {
     return
   }
 
-  const now = new Date()
+  // to keep things simple, we'll just restart the meeting series at arbitrarty time, 9 AM tomorrow
+  const nextMeetingStartDate = createNextMeetingStartDate()
   const currentRRule = RRule.fromString(recurrenceRule)
-  const hasRecentlyStopped = cancelledAt.getTime() > now.getTime() - ms('1h')
-  const nextScheduledStartDate = currentRRule.after(now)
-  const isNextScheduledStartDateReasonable =
-    nextScheduledStartDate.getTime() > now.getTime() + ms('9h')
-  if (hasRecentlyStopped || isNextScheduledStartDateReasonable) {
-    // no need to change the recurrence rule, next meeting starts in reasonable time
-    await restartMeetingSeries(meetingSeriesId)
-  } else {
-    // meeting series was stopped more than ~1h ago and the next scheduled start date is within the next ~9h
-    // to prevent a meeting from being scheduled too soon, we need to change the recurrence rule
-    const newRecurrenceRule = currentRRule.clone()
-    newRecurrenceRule.options.dtstart = new Date(nextScheduledStartDate.getTime() + ms('1d'))
+  const newRecurrenceRule = currentRRule.clone()
+  newRecurrenceRule.options.dtstart = new Date(nextMeetingStartDate)
+  await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
-    await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
-  }
-
-  // update all the active meetings to end at proper time
+  // lets close all active meetings at the time when
+  // a new meeting will be created (tomorrow at 9 AM, same as date start of new recurrence rule)
   const activeMeetings = await r
     .table('NewMeeting')
     .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
@@ -49,7 +81,7 @@ const restartRecurrence = async (meetingSeries: MeetingSeries) => {
       .table('NewMeeting')
       .get(meeting.id)
       .update({
-        scheduledEndTime: new Date(meeting.createdAt.getTime() + ms(`${meetingSeries.duration}m`))
+        scheduledEndTime: nextMeetingStartDate
       })
       .run()
   )
@@ -61,9 +93,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
   {meetingId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const viewerId = getUserId(authToken)
-  const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -89,43 +119,15 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     if (!cancelledAt) {
       return standardError(new Error('Meeting is already recurring'), {userId: viewerId})
     }
-    await restartRecurrence(meetingSeries)
+    await restartExistingMeetingSeries(meetingSeries)
     dataLoader.get('meetingSeries').clear(meetingSeriesId)
 
     analytics.recurrenceStarted(viewerId, meetingSeries)
   } else {
-    // Next meeting start is tomorrow at 9a UTC
-    // :TODO: (jmtaber129): Determine this from meeting series configuration.
-    const nextMeetingStartDate = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9)
-    )
-    const recurrenceRule = new RRule({
-      freq: RRule.WEEKLY,
-      byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR],
-      dtstart: nextMeetingStartDate
-    })
-
-    const newMeetingSeriesParams = {
-      meetingType: 'teamPrompt',
-      title: 'Async Standup',
-      recurrenceRule: recurrenceRule.toString(),
-      duration: MEETING_DURATION_IN_MINUTES,
-      teamId,
-      facilitatorId: viewerId
-    } as const
-    const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
-
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        meetingSeriesId: newMeetingSeriesId,
-        scheduledEndTime: new Date(now.getTime() + ms('24h')) // 24 hours from now
-      })
-      .run()
+    const newMeetingSeries = await startNewMeetingSeries(viewerId, teamId, meetingId)
     dataLoader.get('newMeetings').clear(meetingId)
 
-    analytics.recurrenceStarted(viewerId, {id: newMeetingSeriesId, ...newMeetingSeriesParams})
+    analytics.recurrenceStarted(viewerId, newMeetingSeries)
   }
 
   // RESOLUTION
