@@ -16,7 +16,7 @@ type NotifyResponseMentioned implements Notification {
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The userId that should see this notification
   """
   userId: ID!
 
