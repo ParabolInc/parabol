@@ -52,6 +52,9 @@ const transform: Transform = (fileInfo, api, options) => {
   const fragmentProps = functionExpression.arguments[1]
   const propMap = {}
   fragmentProps.properties.forEach((prop) => {
+    if (root.find(j.Identifier, {name: `${prop.key.name}Ref`}).length > 0) {
+      throw new Error(`Naming conflict with ${prop.key.name}Ref`)
+    }
     propMap[prop.key.name] = prop.value
   })
 
