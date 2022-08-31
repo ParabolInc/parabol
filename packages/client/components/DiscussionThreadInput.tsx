@@ -29,6 +29,7 @@ import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import {createLocalPoll} from './Poll/local/newPoll'
+import ensureHasText from '../modules/meeting/helpers/ensureHasText'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -155,7 +156,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     editorRef.current?.focus()
   }
 
-  const hasText = editorState.getCurrentContent().hasText()
+  const hasText = ensureHasText(editorState.getCurrentContent().getPlainText())
   const commentSubmitState = hasText ? 'typing' : 'idle'
 
   const addComment = (rawContent: string) => {
@@ -212,12 +213,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     if (isAndroid) {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
-      if (!value) return
+      if (!ensureHasText(value)) return
       addComment(convertToTaskContent(value))
       return
     }
     const content = editorState.getCurrentContent()
-    if (!content.hasText()) return
+    if (!ensureHasText(content.getPlainText())) return
     addComment(JSON.stringify(convertToRaw(content)))
   }
 

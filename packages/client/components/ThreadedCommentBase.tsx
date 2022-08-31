@@ -25,6 +25,7 @@ import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 import useFocusedReply from './useFocusedReply'
+import ensureHasText from '../modules/meeting/helpers/ensureHasText'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -130,7 +131,7 @@ const ThreadedCommentBase = (props: Props) => {
     if (isAndroid) {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
-      if (!value) return
+      if (!ensureHasText(value)) return
       const initialContentState = editorState.getCurrentContent()
       const initialText = initialContentState.getPlainText()
       setIsEditing(false)
@@ -144,7 +145,7 @@ const ThreadedCommentBase = (props: Props) => {
       return
     }
     const contentState = editorState.getCurrentContent()
-    if (!contentState.hasText()) return
+    if (!ensureHasText(contentState.getPlainText())) return
     const nextContent = JSON.stringify(convertToRaw(contentState))
     setIsEditing(false)
     if (content === nextContent) return
