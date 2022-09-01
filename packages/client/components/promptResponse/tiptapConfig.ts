@@ -24,7 +24,7 @@ export type LinkOverlayProps =
     }
   | undefined
 
-const getSelectionBoundingBox = (editor: Editor) => {
+export const getSelectionBoundingBox = (editor: Editor) => {
   const selection = editor.view.state.selection
   const {from, to} = selection
 

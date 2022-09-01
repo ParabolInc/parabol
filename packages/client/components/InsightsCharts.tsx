@@ -137,15 +137,30 @@ const meetingOptions: ChartOptions<'bar'> = {
     },
     title: {
       display: true,
-      text: 'Meetings',
+      text: 'Total Meetings',
       font: {
         size: 20,
         weight: '400'
+      },
+      padding: 0
+    },
+    subtitle: {
+      display: true,
+      text: 'Total number of meetings by teams in associated organizations',
+      font: {
+        size: 12,
+        weight: '300',
+        style: 'italic'
+      },
+      padding: {
+        bottom: 8,
+        top: 0
       }
     }
   }
 }
-const makeOptions = (title: string) => {
+
+const makeOptions = (title: string, subtitle: string) => {
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -200,6 +215,20 @@ const makeOptions = (title: string) => {
         font: {
           size: 20,
           weight: '400'
+        },
+        padding: 0
+      },
+      subtitle: {
+        display: true,
+        text: subtitle,
+        font: {
+          size: 12,
+          weight: '300',
+          style: 'italic'
+        },
+        padding: {
+          bottom: 16,
+          top: 0
         }
       }
     }
@@ -297,8 +326,8 @@ const makeMeetingData = (flatMeetingStats: {createdAt: string; meetingType: Meet
   return {datasets} as ChartData<'bar'>
 }
 
-const membersOptions = makeOptions('Total Members')
-const teamsOptions = makeOptions('Total Teams')
+const membersOptions = makeOptions('Total Members', 'Total users in associated organizations')
+const teamsOptions = makeOptions('Total Teams', 'Total teams in associated organizations')
 
 const InsightsCharts = (props: Props) => {
   const {domainRef} = props

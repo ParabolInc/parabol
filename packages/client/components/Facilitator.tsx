@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {Facilitator_meeting} from '~/__generated__/Facilitator_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {Facilitator_meeting$key} from '~/__generated__/Facilitator_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -50,7 +50,7 @@ const Label = styled('div')({
 
 const Subtext = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: 11,
+  fontSize: 13,
   fontWeight: 400,
   lineHeight: '16px'
 })
@@ -85,20 +85,46 @@ const Avatar = styled('img')({
 })
 
 interface Props {
-  meeting: Facilitator_meeting
+  meetingRef: Facilitator_meeting$key
 }
 
-const FacilitatorMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'FacilitatorMenu' */
-    './FacilitatorMenu'
-  )
+const FacilitatorMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'FacilitatorMenu' */
+      './FacilitatorMenu'
+    )
 )
 
 const Facilitator = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment Facilitator_meeting on NewMeeting {
+        ...FacilitatorMenu_meeting
+        endedAt
+        facilitatorUserId
+        meetingMembers {
+          user {
+            id
+            isConnected
+          }
+        }
+        facilitator {
+          picture
+          preferredName
+          user {
+            isConnected
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
-  const connectedMemberIds = meetingMembers.filter(({user}) => user.isConnected).map(({user}) => user.id)
+  const connectedMemberIds = meetingMembers
+    .filter(({user}) => user.isConnected)
+    .map(({user}) => user.id)
   const {user, picture, preferredName} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
   const isConnected = user?.isConnected ?? false
@@ -110,7 +136,12 @@ const Facilitator = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isReadOnly = isDemoRoute() || (viewerId === facilitatorUserId && connectedMemberIds.length === 1 && connectedMemberIds[0] === viewerId) || !!endedAt
+  const isReadOnly =
+    isDemoRoute() ||
+    (viewerId === facilitatorUserId &&
+      connectedMemberIds.length === 1 &&
+      connectedMemberIds[0] === viewerId) ||
+    !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
@@ -136,25 +167,4 @@ const Facilitator = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(Facilitator, {
-  meeting: graphql`
-    fragment Facilitator_meeting on NewMeeting {
-      ...FacilitatorMenu_meeting
-      endedAt
-      facilitatorUserId
-      meetingMembers {
-        user {
-          id
-          isConnected
-        }
-      }
-      facilitator {
-        picture
-        preferredName
-        user {
-          isConnected
-        }
-      }
-    }
-  `
-})
+export default Facilitator

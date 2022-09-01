@@ -110,7 +110,7 @@ const NewMeetingSidebar = (props: Props) => {
           {endedAt && <MeetingCompletedTag>Meeting Completed</MeetingCompletedTag>}
         </div>
       </SidebarHeader>
-      <Facilitator meeting={meeting} />
+      <Facilitator meetingRef={meeting} />
       {children}
       <LogoBlock onClick={handleMenuClick} />
     </SidebarParent>

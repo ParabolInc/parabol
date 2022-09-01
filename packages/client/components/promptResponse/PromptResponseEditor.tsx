@@ -10,6 +10,7 @@ import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
 import Icon from '../Icon'
+import EmojiMenuTipTap from './EmojiMenuTipTap'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
 
 const LinkIcon = styled(Icon)({
@@ -65,6 +66,7 @@ const CancelButton = styled(SubmitButton)({
 const StyledEditor = styled('div')`
   .ProseMirror {
     min-height: 40px;
+    line-height: 20px;
   }
 
   .ProseMirror :is(ul, ol) {
@@ -234,6 +236,7 @@ const PromptResponseEditor = (props: Props) => {
             </BubbleMenuWrapper>
           </BubbleMenu>
         )}
+        {editor && <EmojiMenuTipTap tiptapEditor={editor} />}
         {editor && linkOverlayProps?.linkMenuProps && (
           <EditorLinkChangerTipTap
             text={linkOverlayProps.linkMenuProps.text}

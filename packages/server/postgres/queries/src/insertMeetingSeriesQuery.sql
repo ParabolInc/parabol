@@ -1,10 +1,12 @@
 /*
   @name insertMeetingSeriesQuery
 */
-INSERT INTO "MeetingSeries" ("meetingType", "title", "recurrenceRule", "duration") VALUES (
+INSERT INTO "MeetingSeries" ("meetingType", "title", "recurrenceRule", "duration", "teamId", "facilitatorId") VALUES (
   :meetingType,
   :title,
   :recurrenceRule,
-  :duration
+  :duration,
+  :teamId,
+  :facilitatorId
 )
 RETURNING id;
