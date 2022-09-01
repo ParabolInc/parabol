@@ -49,7 +49,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   }
 
   const {invitation} = invitationRes
-  const {meetingId, teamId} = invitation
+  const {meetingId, teamId, invitedBy: inviterId} = invitation
   const acceptAt = invitation.meetingId ? 'meeting' : 'team'
   const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
   const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
@@ -138,7 +138,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     )
   }
   const isNewUser = viewer.createdAt.getDate() === viewer.lastSeenAt.getDate()
-  analytics.inviteAccepted(viewerId, teamId, isNewUser, acceptAt)
+  analytics.inviteAccepted(viewerId, teamId, inviterId, isNewUser, acceptAt)
   return {
     ...data,
     authToken: encodedAuthToken

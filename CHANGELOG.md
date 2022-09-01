@@ -5,6 +5,78 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.72.1 2022-August-26
+
+### Fixed
+
+- fix: Update stripe.subscription.create prorate parameter (#7119)
+
+## 6.72.0 2022-August-25
+
+### Added
+
+- feat: Update location of "add meeting" to left sidebar (#7012)
+- feat(standups): Recurrence - stopRecurrence mutation (#7023)
+- feat(standups): Recurrence - processRecurrence mutation (#7041)
+- feat: create azure issue (#7053)
+- feat(retro): prompt user to go to next phase (#6942)
+- feat(tiptap): Emoji Support (#7102)
+
+### Fixed
+
+- fix: show the team lead first in the preview of team selector (#7091)
+- fix(metrics): Move identify inactive up to within changePause() (#7083)
+- fix: title of the reflection columns should not be italic (#7044)
+- fix: Contrast of selected highlight of the current phase is low (#6940)
+- fix: hyperlink default focus (#7078)
+- fix: demo comments are always anonymous (#7065)
+- fix: center new meeting dialog slides on mobile (#7079)
+- fix: support documentation easier to find in-app (#7080)
+
+### Changed
+
+- chore: update vscode import settings (#7077)
+
+## 6.71.0 2022-August-17
+
+### Added
+
+- Updated new meeting settings area (#6989)
+- Added Team members preview in new meeting team selector (#7001)
+- **Metrics**: Added `inviterId` to Invite Accepted events (#7058)
+- Added scrum template (#7064)
+- Implemented Azure task integration (#7007)
+
+### Fixed
+
+- **Usage Stats**: active teams definition (#7060)
+- Removed double scrollbar on discuss phase (#7066)
+
+## 6.70.1 2022-August-11
+
+### Fixed
+
+- fix: Email summaries not sending for non-standup meetings.
+
+## 6.70.0 2022-August-10
+
+### Added
+
+- feat(graphiql): persist schema for tabs (#6813)
+- feat(metrics): Add isActive and featureFlags as new User Properties for Segment identify calls (#6997)
+- feat(standups): startRecurrence mutation (#6957)
+- feat(metrics): identify user's tier upon login (#7003)
+- feat(metrics): Use HubSpot Private apps access token for HubSpot calls ( #7010)
+
+### Fixed
+
+- fix(resetPassword): Reset request count daily (#6955)
+- fix: add billing info (#7000)
+- fix: fix truncated sprint poker description in new meeting dialog (#7027)
+- fix(metrics): remove duplicate viewerId in various Segment events (#7009)
+- fix: bug that set org count to 0 (#7008)
+- fix(standups): Update 'lastMeetingType' after a team prompt meeting starts (#7029)
+
 ## 6.69.0 2022-August-03
 
 ### Added

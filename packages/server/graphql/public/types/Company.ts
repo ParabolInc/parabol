@@ -22,7 +22,7 @@ const getTeamsByOrgIds = async (
 
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {
-    // teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an updatedAt newer than 30 days ago
+    // teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has an max(createdAt, endedAt) newer than 30 days ago
     const metAfter = after ? new Date(after) : new Date(Date.now() - THIRTY_DAYS)
     // get the organizations
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
@@ -61,16 +61,19 @@ const Company: CompanyResolvers = {
       })
       .filter((agg) => agg.count >= 2)
       .map((agg) => agg.team)
-    // for each filtered team, find a meeting with an updatedAt newer than metAfter (default 30 days)
+    // for each filtered team, find a meeting with a lastMetAt newer than metAfter (default 30 days)
     const r = await getRethink()
     const lastMetAt = (await Promise.all(
       teamsWithSufficientTeamMembers.map((team) => {
         return r
           .table('NewMeeting')
           .getAll(team.id, {index: 'teamId'})
-          .filter((meeting) => meeting('updatedAt').ge(metAfter))
+          .merge((meeting: RValue) => ({
+            lastMetAt: meeting('endedAt').default(meeting('createdAt'))
+          }))
+          .filter((meeting: RValue) => meeting('lastMetAt').ge(metAfter))
           .limit(1)
-          .nth(0)('updatedAt')
+          .nth(0)('lastMetAt')
           .default(null)
       })
     )) as unknown as (Date | null)[]

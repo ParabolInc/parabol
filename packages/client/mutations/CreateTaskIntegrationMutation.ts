@@ -4,8 +4,10 @@ import {commitMutation} from 'react-relay'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
+import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {
@@ -44,14 +46,24 @@ graphql`
           webPath
           webUrl
         }
+        ... on AzureDevOpsWorkItem {
+          __typename
+          id
+          teamProject
+          title
+          url
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
         ...TaskIntegrationLinkIntegrationJiraServer
         ...TaskIntegrationLinkIntegrationGitLab
+        ...TaskIntegrationLinkIntegrationAzure
       }
       updatedAt
       teamId
       userId
+      id
+      taskService
     }
   }
 `
@@ -166,6 +178,28 @@ const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
+const azureTaskIntegrationOptimisitcUpdater = (store, variables) => {
+  const {integrationRepoId: teamProject, taskId} = variables
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const {title, contentState} = splitDraftContent(contentStr)
+  const descriptionHTML = stateToHTML(contentState)
+  const optimisticIntegration = {
+    id: '?',
+    title,
+    descriptionHTML,
+    teamProject,
+    type: 'Issue',
+    url: `https://dev.azure.com`,
+    updatedAt: now.toJSON()
+  } as const
+  const integration = createProxyRecord(store, 'AzureDevOpsWorkItem', optimisticIntegration)
+  task.setLinkedRecord(integration, 'integration')
+}
+
 const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMutation> = (
   atmosphere,
   variables,
@@ -185,9 +219,30 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         jiraServerTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'gitlab') {
         gitlabTaskIntegrationOptimisitcUpdater(store, variables)
+      } else if (integrationProviderService === 'azureDevOps') {
+        azureTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
-    onCompleted,
+    onCompleted: (data, errors) => {
+      if (onCompleted) {
+        onCompleted(data, errors)
+      }
+      const {meetingId} = getMeetingPathParams()
+      const store = atmosphere.getStore()
+      const meetingType = meetingId
+        ? (store.getSource().get(meetingId) as any)?.meetingType
+        : undefined
+      if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
+        SendClientSegmentEventMutation(atmosphere, 'Task Published', {
+          taskId: data.createTaskIntegration.task?.id,
+          teamId: data.createTaskIntegration.task?.teamId,
+          inMeeting: !!meetingId,
+          meetingId,
+          meetingType,
+          service: data.createTaskIntegration.task?.taskService
+        })
+      }
+    },
     onError
   })
 }

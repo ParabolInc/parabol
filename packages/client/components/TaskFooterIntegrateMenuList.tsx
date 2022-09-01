@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -12,14 +13,11 @@ import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import GitHubMenuItem from './GitHubMenuItem'
-import GitLabMenuItem from './GitLabMenuItem'
-import JiraMenuItem from './JiraMenuItem'
-import JiraServerMenuItem from './JiraServerMenuItem'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import {SearchMenuItem} from './SearchMenuItem'
+import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   menuProps: MenuProps
@@ -97,7 +95,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <JiraMenuItem key={id} query={query} name={repoIntegration.name} onClick={onClick} />
+            <TaskIntegrationMenuItem
+              key={id}
+              query={query}
+              label={repoIntegration.name}
+              onClick={onClick}
+              service='jira'
+            />
           )
         }
         if (__typename === 'JiraServerRemoteProject') {
@@ -111,11 +115,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <JiraServerMenuItem
+            <TaskIntegrationMenuItem
               key={id}
               query={query}
-              repoIntegration={repoIntegration}
+              label={repoIntegration.name}
               onClick={onClick}
+              service='jiraServer'
             />
           )
         }
@@ -131,11 +136,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <GitHubMenuItem
+            <TaskIntegrationMenuItem
               key={id}
               query={query}
-              nameWithOwner={repoIntegration.nameWithOwner}
+              label={repoIntegration.nameWithOwner}
               onClick={onClick}
+              service='github'
             />
           )
         }
@@ -150,7 +156,41 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
-          return <GitLabMenuItem key={id} query={query} fullPath={fullPath} onClick={onClick} />
+          return (
+            <TaskIntegrationMenuItem
+              key={id}
+              query={query}
+              label={fullPath}
+              onClick={onClick}
+              service='gitlab'
+            />
+          )
+        }
+        if (__typename === 'AzureDevOpsRemoteProject') {
+          const {name, id: projectId, instanceId} = repoIntegration
+          const onClick = () => {
+            const integrationRepoId = IntegrationRepoId.join({
+              instanceId,
+              projectId,
+              service: 'azureDevOps'
+            })
+            const variables = {
+              integrationRepoId,
+              taskId,
+              integrationProviderService: 'azureDevOps' as const
+            }
+            submitMutation()
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+          }
+          return (
+            <TaskIntegrationMenuItem
+              key={id}
+              query={query}
+              label={name}
+              onClick={onClick}
+              service='azureDevOps'
+            />
+          )
         }
         return null
       })}
@@ -177,7 +217,14 @@ graphql`
     ... on _xGitLabProject {
       fullPath
     }
-    ...JiraServerMenuItem_repoIntegration
+    ... on AzureDevOpsRemoteProject {
+      id
+      name
+      instanceId
+    }
+    ... on JiraServerRemoteProject {
+      name
+    }
   }
 `
 
