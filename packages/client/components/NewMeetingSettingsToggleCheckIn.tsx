@@ -45,10 +45,11 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 
 interface Props {
   settingsRef: NewMeetingSettingsToggleCheckIn_settings$key
+  className?: string
 }
 
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {
-  const {settingsRef} = props
+  const {settingsRef, className} = props
   const settings = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
@@ -58,7 +59,6 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
     `,
     settingsRef
   )
-
   const {id: settingsId, phaseTypes} = settings
   const hasCheckIn = phaseTypes.includes('checkin')
   const atmosphere = useAtmosphere()
@@ -73,7 +73,7 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
     )
   }
   return (
-    <ButtonRow onClick={toggleCheckIn}>
+    <ButtonRow onClick={toggleCheckIn} className={className}>
       <Label>{'Include Icebreaker'}</Label>
       <StyledCheckbox active={hasCheckIn} />
     </ButtonRow>

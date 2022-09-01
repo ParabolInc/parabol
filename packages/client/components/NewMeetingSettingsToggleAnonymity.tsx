@@ -45,10 +45,11 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 
 interface Props {
   settingsRef: NewMeetingSettingsToggleAnonymity_settings$key
+  className?: string
 }
 
 const NewMeetingSettingsToggleAnonymity = (props: Props) => {
-  const {settingsRef} = props
+  const {settingsRef, className} = props
 
   const settings = useFragment(
     graphql`
@@ -75,7 +76,7 @@ const NewMeetingSettingsToggleAnonymity = (props: Props) => {
     )
   }
   return (
-    <ButtonRow onClick={toggleCheckIn}>
+    <ButtonRow onClick={toggleCheckIn} className={className}>
       <Label>{'Anonymous reflections'}</Label>
       <StyledCheckbox active={!disableAnonymity} />
     </ButtonRow>
