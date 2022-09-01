@@ -53,7 +53,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       />
       {menuPortal(
         <div {...menuProps}>
-          <NewMeetingSettingsToggleCheckInMenuEntry settings={settings} />
+          <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
         </div>
       )}

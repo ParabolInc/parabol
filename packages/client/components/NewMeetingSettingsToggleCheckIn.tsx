@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NewMeetingSettingsToggleCheckIn_settings} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import {useFragment} from 'react-relay'
+import {NewMeetingSettingsToggleCheckIn_settings$key} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
@@ -44,11 +44,21 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 }))
 
 interface Props {
-  settings: NewMeetingSettingsToggleCheckIn_settings
+  settingsRef: NewMeetingSettingsToggleCheckIn_settings$key
 }
 
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {
-  const {settings} = props
+  const {settingsRef} = props
+  const settings = useFragment(
+    graphql`
+      fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
+        id
+        phaseTypes
+      }
+    `,
+    settingsRef
+  )
+
   const {id: settingsId, phaseTypes} = settings
   const hasCheckIn = phaseTypes.includes('checkin')
   const atmosphere = useAtmosphere()
@@ -70,11 +80,4 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingSettingsToggleCheckIn, {
-  settings: graphql`
-    fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
-      id
-      phaseTypes
-    }
-  `
-})
+export default NewMeetingSettingsToggleCheckIn
