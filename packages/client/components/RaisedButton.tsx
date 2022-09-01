@@ -17,17 +17,19 @@ const paletteColors = {
 
 const buttonLightThemes = ['white', 'gray']
 
-const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
-  const backgroundColor = paletteColors[palette as keyof typeof paletteColors]
-  const color = buttonLightThemes.includes(palette) ? PALETTE.SLATE_700 : '#FFFFFF'
-  return {
-    backgroundColor,
-    borderRadius: Radius.BUTTON_PILL,
-    color,
-    fontWeight: 600,
-    outline: 0
+const StyledBaseButton = styled(BaseButton)<{palette?: keyof typeof paletteColors}>(
+  ({palette = 'gray'}) => {
+    const backgroundColor = paletteColors[palette]
+    const color = buttonLightThemes.includes(palette) ? PALETTE.SLATE_700 : '#FFFFFF'
+    return {
+      backgroundColor,
+      borderRadius: Radius.BUTTON_PILL,
+      color,
+      fontWeight: 600,
+      outline: 0
+    }
   }
-})
+)
 
 export interface RaisedButtonProps extends BaseButtonProps {
   palette?: keyof typeof paletteColors
