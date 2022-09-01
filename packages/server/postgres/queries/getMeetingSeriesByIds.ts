@@ -1,10 +1,5 @@
 import getPg from '../getPg'
-import {
-  getMeetingSeriesByIdsQuery,
-  IGetMeetingSeriesByIdsQueryResult
-} from './generated/getMeetingSeriesByIdsQuery'
-
-export interface MeetingSeries extends IGetMeetingSeriesByIdsQueryResult {}
+import {getMeetingSeriesByIdsQuery} from './generated/getMeetingSeriesByIdsQuery'
 
 const getMeetingSeriesByIds = async (meetingSeriesIds: readonly number[]) => {
   const meetingSeriesResults = await getMeetingSeriesByIdsQuery.run(
