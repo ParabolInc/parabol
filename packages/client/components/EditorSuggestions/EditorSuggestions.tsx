@@ -6,7 +6,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import {BBox} from '../../types/animations'
 import MentionTag from '../MentionTag/MentionTag'
 import MentionUser from '../MentionUser/MentionUser'
-import {DraftSuggestion} from '../TaskEditor/useSuggestions'
+import {BaseSuggestion} from '../TaskEditor/useSuggestions'
 
 const dontTellDraft = (e) => {
   e.preventDefault()
@@ -23,15 +23,15 @@ const MentionMenu = styled('div')({
   color: PALETTE.SLATE_700
 })
 
-interface Props {
+interface Props<T extends BaseSuggestion> {
   active: number
-  handleSelect: (item: DraftSuggestion) => void
+  handleSelect: (item: T) => void
   originCoords: BBox
-  suggestions: DraftSuggestion[]
+  suggestions: T[]
   suggestionType: TaskSuggestionType
 }
 
-const EditorSuggestions = (props: Props) => {
+const EditorSuggestions = <T extends BaseSuggestion>(props: Props<T>) => {
   const {active, handleSelect, suggestions, suggestionType, originCoords} = props
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
     originCoords,

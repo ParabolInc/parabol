@@ -23,7 +23,7 @@ interface CustomProps {
   teamId: string
 }
 
-interface BaseSuggestion {
+export interface BaseSuggestion {
   id: string
 }
 
@@ -68,7 +68,7 @@ const useSuggestions = (
     }
   }
 
-  const handleSelect = (item) => {
+  const handleSelect = (item: BaseSuggestion) => {
     if (suggestionType === 'tag') {
       const {name} = item as TagSuggestion
       setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`))
@@ -94,7 +94,7 @@ const useSuggestions = (
       setActive(Math.min(active + 1, suggestions!.length - 1))
     } else if (e.key === 'Tab') {
       e.preventDefault()
-      handleSelect(suggestions![active])
+      handleSelect(suggestions[active]!)
     }
     return null
   }
@@ -104,7 +104,7 @@ const useSuggestions = (
       handleReturn(e, editorState)
     }
     if (active === undefined) return 'not-handled'
-    handleSelect(suggestions![active])
+    handleSelect(suggestions[active]!)
     return 'handled'
   }
 

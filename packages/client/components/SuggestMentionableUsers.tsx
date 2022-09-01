@@ -67,7 +67,7 @@ const SuggestMentionableUsers = (props: Props) => {
   return (
     <EditorSuggestions
       active={active}
-      handleSelect={(item) => handleSelect(item as MentionSuggestion)}
+      handleSelect={(item) => handleSelect(item)}
       originCoords={originCoords}
       suggestions={suggestions}
       suggestionType={'mention'}
