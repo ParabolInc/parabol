@@ -39,9 +39,6 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
   dataLoader.get('meetingSeries').clear(id)
   analytics.recurrenceStopped(viewerId, meetingSeries)
 
-  const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
-  analytics.recurrenceStopped(viewerId, meetingSeries)
-
   await r
     .table('NewMeeting')
     .getAll(id, {index: 'meetingSeriesId'})

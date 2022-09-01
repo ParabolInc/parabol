@@ -67,9 +67,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const {history} = useRouter()
   const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
-  const hasActiveMetings = !!meetingSeries?.activeMeetings?.length
+  const hasActiveMeetings = !!meetingSeries?.activeMeetings?.length
   const canStartRecurrence = !isEnded
-  const canEndRecurrence = !isEnded || !hasActiveMetings
+  const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
 
   return (
