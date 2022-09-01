@@ -1,7 +1,7 @@
 import {makePlaceholderStylesString} from '../helpers/makePlaceholderStyles'
-import fontLoader from './fontLoader'
-import {FONT_FAMILY} from '../typographyV2'
 import {PALETTE} from '../paletteV3'
+import {FONT_FAMILY} from '../typographyV2'
+import fontLoader from './fontLoader'
 
 const placeholderStyles = makePlaceholderStylesString(PALETTE.SLATE_600)
 
@@ -122,23 +122,24 @@ export default `
     font-weight: 600;
   }
 
-  /*::-webkit-scrollbar {
+  .scope-phase-area::-webkit-scrollbar {
     -webkit-appearance: none;
     width:6px;
+    height:4px;
   }
 
-  ::-webkit-scrollbar-thumb {
+  .scope-phase-area::-webkit-scrollbar-thumb {
     border-radius:3px;
     background-color:rgba(0, 0, 0, 0.3);
   }
 
-  ::-webkit-scrollbar-thumb:hover {
+  .scope-phase-area::-webkit-scrollbar-thumb:hover {
     background:rgba(0, 0, 0, 0.5);
   }
 
-  ::-webkit-scrollbar-thumb:window-inactive {
+  .scope-phase-area::-webkit-scrollbar-thumb:window-inactive {
     background:rgba(0, 0, 0, 0.2);
-  }*/
+  }
 
   @media print {
     html,

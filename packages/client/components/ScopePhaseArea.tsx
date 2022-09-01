@@ -37,15 +37,14 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: isDesktop ? '80%' : 'calc(100% - 16px)',
   maxWidth: 1040,
   height: '70%',
-  boxShadow: Elevation.Z3,
-  overflow: 'hidden'
+  boxShadow: Elevation.Z3
 }))
 
 const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   maxWidth: '100%',
-  overflow: 'auto',
-  overflowY: 'hidden'
+  overflow: 'hidden',
+  overflowX: 'auto'
 })
 
 const TabIcon = styled(Icon)({
@@ -57,7 +56,7 @@ const TabLabel = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
   minWidth: 80,
-  whiteSpace: 'pre-wrap'
+  whiteSpace: 'nowrap'
 })
 
 const TabContents = styled('div')({
@@ -146,7 +145,7 @@ const ScopePhaseArea = (props: Props) => {
 
   return (
     <ScopingArea isDesktop={isDesktop}>
-      <StyledTabsBar activeIdx={activeIdx}>
+      <StyledTabsBar className='scope-phase-area' activeIdx={activeIdx}>
         {tabs.map((tab, idx) => (
           <Tab
             key={tab.label}
