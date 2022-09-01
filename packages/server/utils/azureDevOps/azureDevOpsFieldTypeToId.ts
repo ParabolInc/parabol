@@ -27,7 +27,8 @@ export const fieldTypeToId = {
   'CMMI:Task': originalEstimateField
 }
 
-export const getInstanceId = (url: URL) => {
-  const index = url.pathname.indexOf('/', 1)
-  return url.hostname + url.pathname.substring(0, index)
+export const getInstanceId = (url: URL | string) => {
+  const urlObj = typeof url === 'string' ? new URL(url) : url
+  const index = urlObj.pathname.indexOf('/', 1)
+  return urlObj.hostname + urlObj.pathname.substring(0, index)
 }

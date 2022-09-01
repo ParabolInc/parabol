@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
@@ -28,6 +29,7 @@ import PageInfoDateCursor from './PageInfoDateCursor'
 import TaskEditorDetails from './TaskEditorDetails'
 import TaskEstimate from './TaskEstimate'
 import TaskIntegration from './TaskIntegration'
+import TaskServiceEnum from './TaskServiceEnum'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
@@ -49,6 +51,13 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
         const {discussionTopicId, discussionTopicType} = discussion
         if (discussionTopicType !== 'agendaItem') return null
         return dataLoader.get('agendaItems').load(discussionTopicId)
+      }
+    },
+    taskService: {
+      type: TaskServiceEnum,
+      description: 'Type of the integration if there is one',
+      resolve: ({integration}: DBTask, _args: unknown) => {
+        return integration?.service
       }
     },
     createdBy: {
@@ -195,7 +204,8 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
               }
             : null
         } else if (integration.service === 'azureDevOps') {
-          const {instanceId, projectKey, issueKey} = integration
+          const {projectKey, issueKey} = integration
+          const {instanceId} = AzureDevOpsIssueId.split(integrationHash!)
           return dataLoader.get('azureDevOpsWorkItem').load({
             teamId,
             userId: accessUserId,

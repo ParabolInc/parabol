@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.70.1",
+  "version": "6.72.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -37,6 +37,10 @@
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "postmigrate": "node scripts/postDeployMigrate.js",
     "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
+    "docker:yarn": "docker run --rm --network=host --name=parabolyarn -v $(pwd):/home/node/ node:$(grep '\"node\":' package.json | cut -d\\\" -f4 | tr -d '^') /bin/bash -c \"cd /home/node/ && yarn\"",
+    "docker:dev": "docker run --rm --network=host --name=paraboldev -v $(pwd):/home/node/ node:$(grep '\"node\":' package.json | cut -d\\\" -f4 | tr -d '^') /bin/bash -c \"cd /home/node/ && yarn dev\"",
+    "docker:build": "docker run --rm --network=host --name=parabolbuild -v $(pwd):/home/node/ node:$(grep '\"node\":' package.json | cut -d\\\" -f4 | tr -d '^') /bin/bash -c \"cd /home/node/ && yarn build\"",
+    "docker:runbuild": "docker run --rm --network=host --name=parabolrunbuild -v $(pwd):/home/node/ node:$(grep '\"node\":' package.json | cut -d\\\" -f4 | tr -d '^') /bin/bash -c \"cd /home/node/ && apt-get update && apt-get install -y libvips-dev --no-install-recommends && (node dist/gqlExecutor.js & node dist/web.js && fg)\"",
     "lint": "lerna run --parallel lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "relay": "node scripts/compileRelay.js",
@@ -88,6 +92,7 @@
     "jscodeshift": "^0.13.0",
     "lerna": "^4.0.0",
     "minimist": "^1.2.5",
+    "node-loader": "^2.0.0",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
     "raw-loader": "^4.0.2",

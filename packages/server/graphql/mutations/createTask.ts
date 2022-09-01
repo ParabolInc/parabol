@@ -239,7 +239,17 @@ export default {
     }).catch()
 
     const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
-    analytics.taskCreated(viewerId, teamId, !!threadParentId, meeting, integration?.service)
+    const taskProperties = {
+      taskId,
+      teamId,
+      meetingId: meeting?.id,
+      meetingType: meeting?.meetingType,
+      inMeeting: !!meetingId
+    }
+    analytics.taskCreated(viewerId, taskProperties)
+    if (integration?.service) {
+      analytics.taskPublished(viewerId, taskProperties, integration.service)
+    }
     return {taskId}
   }
 }

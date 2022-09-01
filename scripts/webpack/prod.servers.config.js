@@ -1,6 +1,5 @@
 require('./utils/dotenv')
 const path = require('path')
-const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 const S3Plugin = require('webpack-s3-plugin')
@@ -37,7 +36,6 @@ module.exports = ({isDeploy}) => ({
   },
   output: {
     filename: '[name].js',
-    publicPath,
     path: path.join(PROJECT_ROOT, 'dist')
   },
   resolve: {
@@ -46,7 +44,7 @@ module.exports = ({isDeploy}) => ({
       'parabol-client': CLIENT_ROOT,
       'parabol-server': SERVER_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
+    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
@@ -54,17 +52,23 @@ module.exports = ({isDeploy}) => ({
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
   target: 'node',
-  externals: [
-    nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
-    })
-  ],
+  optimization: {
+    minimize: false
+  },
   plugins: [
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
+      'process.platform': JSON.stringify(process.platform),
+      'process.arch': JSON.stringify(process.arch),
+      'process.versions.modules': JSON.stringify(process.versions.modules)
     }),
+    // if we need canvas for SSR we can just install it to our own package.json
+    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    // native bindings might be faster, but abandonware & not currently used
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[contenthash].js.map',
+      filename: '[name]_[fullhash].js.map',
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
     isDeploy &&
@@ -88,7 +92,22 @@ module.exports = ({isDeploy}) => ({
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader'
+            loader: 'file-loader',
+            options: {
+              publicPath
+            }
+          }
+        ]
+      },
+      {
+        include: [/node_modules/],
+        test: /\.node$/,
+        use: [
+          {
+            loader: 'node-loader',
+            options: {
+              name: "[name].[ext]",
+            },
           }
         ]
       }
