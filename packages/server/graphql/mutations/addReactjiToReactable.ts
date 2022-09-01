@@ -80,10 +80,10 @@ const addReactjiToReactable = {
 
     //AUTH
     let reactable: Reactable
-    const pgLoaderName = pgDataloaderLookup[reactableType] as ValueOf<
-      typeof pgDataloaderLookup
-    > | null
-    const rethinkDbTable = rethinkTableLookup[reactableType]
+    const pgLoaderName = pgDataloaderLookup[
+      reactableType as keyof typeof pgDataloaderLookup
+    ] as ValueOf<typeof pgDataloaderLookup> | null
+    const rethinkDbTable = rethinkTableLookup[reactableType as keyof typeof rethinkTableLookup]
     if (pgLoaderName) {
       reactable = await dataLoader.get(pgLoaderName).loadNonNull(reactableId)
     } else {

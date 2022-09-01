@@ -101,7 +101,7 @@ const EditorLinkChangerModal = (props: Props) => {
     }
   }
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       removeModal(true)
       handleEscape && handleEscape()

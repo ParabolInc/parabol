@@ -230,7 +230,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       return issueTypes
     }
 
-    const bestIssueType = issueTypes.find((type) => type.name === 'Task') || issueTypes.values[0]
+    const bestIssueType = issueTypes.find((type) => type.name === 'Task') || issueTypes[0]
 
     if (!bestIssueType) {
       return new Error('No issue types specified')

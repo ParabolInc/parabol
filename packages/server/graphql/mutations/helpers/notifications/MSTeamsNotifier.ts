@@ -214,7 +214,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
     const {phaseType} = stage
-    const phaseLabel = phaseLabelLookup[phaseType]
+    const phaseLabel = phaseLabelLookup[phaseType as keyof typeof phaseLabelLookup]
 
     const meetingTitle = `The **${phaseLabel} Phase** has begun ⌛`
 

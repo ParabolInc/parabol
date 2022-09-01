@@ -201,7 +201,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meeting.id}`)
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const {phaseType} = stage
-    const phaseLabel = phaseLabelLookup[phaseType]
+    const phaseLabel = phaseLabelLookup[phaseType as keyof typeof phaseLabelLookup]
 
     const fallbackDate = formatWeekday(scheduledEndTime)
     const fallbackTime = formatTime(scheduledEndTime)

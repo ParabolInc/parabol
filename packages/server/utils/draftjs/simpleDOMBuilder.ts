@@ -1,6 +1,6 @@
 import {JSDOM} from 'jsdom'
 
-function simpleDOMBuilder(html) {
+function simpleDOMBuilder(html: string) {
   const {document, HTMLElement, HTMLAnchorElement} = new JSDOM(`<!DOCTYPE html>`).window
 
   global.HTMLElement = HTMLElement
