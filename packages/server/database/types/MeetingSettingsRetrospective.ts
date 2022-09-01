@@ -17,7 +17,7 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   maxVotesPerGroup: number
   totalVotes: number
   selectedTemplateId: string
-  disableAnonymity?: boolean
+  disableAnonymity: boolean
   constructor(input: Input) {
     const {teamId, id, maxVotesPerGroup, selectedTemplateId, totalVotes, disableAnonymity} = input
     super({teamId, id, meetingType: 'retrospective', phaseTypes})
@@ -25,6 +25,6 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
       maxVotesPerGroup ?? MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
     this.totalVotes = totalVotes ?? MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
     this.selectedTemplateId = selectedTemplateId || 'workingStuckTemplate'
-    this.disableAnonymity = disableAnonymity
+    this.disableAnonymity = disableAnonymity ?? false
   }
 }

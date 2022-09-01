@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import {getUserId} from '../../utils/authorization'
@@ -51,7 +52,7 @@ const setMeetingSettings = {
       .get(settingsId)
       .update((row: RValue) => {
         const updatedSettings: {[key: string]: any} = {}
-        if (checkinEnabled !== null && checkinEnabled !== undefined) {
+        if (isNotNull(checkinEnabled)) {
           updatedSettings.phaseTypes = r.branch(
             row('phaseTypes').contains('checkin'),
             checkinEnabled ? row('phaseTypes') : row('phaseTypes').difference(['checkin']),
@@ -59,7 +60,7 @@ const setMeetingSettings = {
           )
         }
 
-        if (disableAnonymity !== null && disableAnonymity !== undefined) {
+        if (isNotNull(disableAnonymity)) {
           updatedSettings.disableAnonymity = disableAnonymity
         }
 

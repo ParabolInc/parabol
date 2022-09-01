@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {StandardMutation} from '../types/relayMutations'
 import {
   SetMeetingSettingsMutation as TSetMeetingSettingsMutation,
@@ -51,18 +50,16 @@ const SetMeetingSettingsMutation: StandardMutation<TSetMeetingSettingsMutation> 
       const settings = store.get<Settings>(settingsId)
       if (!settings) return
 
-      // relay
       if (checkinEnabled !== undefined) {
-        const phaseTypes = settings.getValue('phaseTypes').slice() as NewMeetingPhaseTypeEnum[]
+        const phaseTypes = settings.getValue('phaseTypes')
         if (checkinEnabled && !phaseTypes.includes('checkin')) {
-          phaseTypes.unshift('checkin')
+          settings.setValue(['checkin', ...phaseTypes], 'phaseTypes')
         } else if (!checkinEnabled && phaseTypes.includes('checkin')) {
-          phaseTypes.splice(
-            phaseTypes.findIndex((type) => type === 'checkin'),
-            1
+          settings.setValue(
+            phaseTypes.filter((type) => type !== 'checkin'),
+            'phaseTypes'
           )
         }
-        settings.setValue(phaseTypes, 'phaseTypes')
       }
 
       if (disableAnonymity !== undefined) {

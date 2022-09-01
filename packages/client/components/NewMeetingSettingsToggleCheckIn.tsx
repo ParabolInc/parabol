@@ -45,11 +45,10 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 
 interface Props {
   settings: NewMeetingSettingsToggleCheckIn_settings
-  className?: string
 }
 
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {
-  const {settings, className} = props
+  const {settings} = props
   const {id: settingsId, phaseTypes} = settings
   const hasCheckIn = phaseTypes.includes('checkin')
   const atmosphere = useAtmosphere()
@@ -64,7 +63,7 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
     )
   }
   return (
-    <ButtonRow onClick={toggleCheckIn} className={className}>
+    <ButtonRow onClick={toggleCheckIn}>
       <Label>{'Include Icebreaker'}</Label>
       <StyledCheckbox active={hasCheckIn} />
     </ButtonRow>

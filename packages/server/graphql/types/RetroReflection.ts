@@ -8,7 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import Reflection from '../../database/types/Reflection'
-import {getUserId} from '../../utils/authorization'
+import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
 import resolveReactjis from '../resolvers/resolveReactjis'
@@ -44,7 +44,21 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     creatorId: {
       description: 'The userId that created the reflection (or unique Id if not a team member)',
       type: GraphQLID,
-      resolve: resolveForSU('creatorId')
+      resolve: async ({creatorId, meetingId}, _args: unknown, {authToken, dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+
+        const {meetingType} = meeting
+
+        if (
+          !isSuperUser(authToken) ||
+          meetingType !== 'retrospective' ||
+          !meeting.disableAnonymity
+        ) {
+          return null
+        }
+
+        return creatorId
+      }
     },
     creator: {
       description: 'The user that created the reflection, only visible if anonymity is disabled',
@@ -54,18 +68,15 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
 
         const {meetingType} = meeting
 
-        if (meetingType !== 'retrospective') {
+        // let's not allow super users to grap this in case the UI does not check `disableAnonymity` in which case
+        // reflection authors would be always visible for them
+        if (meetingType !== 'retrospective' || !meeting.disableAnonymity) {
           return null
         }
 
-        if (!meeting.disableAnonymity) {
-          return null
-        }
-
-        return creatorId ? dataLoader.get('users').load(creatorId) : null
+        return dataLoader.get('users').load(creatorId)
       }
     },
-
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
@@ -76,7 +87,6 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       description: 'True if the reflection was not removed, else false',
       resolve: ({isActive}) => !!isActive
     },
-
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: new GraphQLNonNull(GraphQLBoolean),

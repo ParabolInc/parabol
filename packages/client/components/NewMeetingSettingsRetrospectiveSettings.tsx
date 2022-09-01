@@ -1,4 +1,4 @@
-import {ClassNames} from '@emotion/core'
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -8,6 +8,16 @@ import useMenu from '../hooks/useMenu'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
+
+const NewMeetingSettingsToggleCheckInMenuEntry = styled(NewMeetingSettingsToggleCheckIn)({
+  background: 'none',
+  borderRadius: 0
+})
+
+const NewMeetingSettingsToggleAnonymityMenuEntry = styled(NewMeetingSettingsToggleAnonymity)({
+  background: 'none',
+  borderRadius: 0
+})
 
 interface Props {
   settingsRef: NewMeetingSettingsRetrospectiveSettings_settings$key
@@ -43,26 +53,8 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       />
       {menuPortal(
         <div {...menuProps}>
-          <ClassNames>
-            {({css}) => (
-              <>
-                <NewMeetingSettingsToggleCheckIn
-                  settings={settings}
-                  className={css({
-                    borderRadius: 0,
-                    background: 'none'
-                  })}
-                />
-                <NewMeetingSettingsToggleAnonymity
-                  settingsRef={settings}
-                  className={css({
-                    borderRadius: 0,
-                    background: 'none'
-                  })}
-                />
-              </>
-            )}
-          </ClassNames>
+          <NewMeetingSettingsToggleCheckInMenuEntry settings={settings} />
+          <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
         </div>
       )}
     </>
