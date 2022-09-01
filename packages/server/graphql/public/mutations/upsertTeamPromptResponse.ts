@@ -9,7 +9,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
-import publishTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
+import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
@@ -79,7 +79,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     .get('teamPromptResponses')
     .loadNonNull(teamPromptResponseId)
 
-  const notifications = await publishTeamPromptMentionNotifications(
+  const notifications = await createTeamPromptMentionNotifications(
     oldTeamPromptResponse,
     newTeamPromptResponse
   )

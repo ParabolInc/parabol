@@ -1,10 +1,4 @@
-import NotificationResponseMentioned from '../../../database/types/NotificationResponseMentioned'
 import {NotifyResponseMentionedResolvers, ResolversTypes} from '../resolverTypes'
-
-export type NotifyResponseMentionedSource = Pick<
-  NotificationResponseMentioned,
-  keyof NotificationResponseMentioned
->
 
 const NotifyResponseMentioned: NotifyResponseMentionedResolvers = {
   __isTypeOf: ({type}) => type === 'RESPONSE_MENTIONED',

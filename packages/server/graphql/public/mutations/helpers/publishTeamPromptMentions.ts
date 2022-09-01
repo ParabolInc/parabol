@@ -5,7 +5,7 @@ import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResp
 
 const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
   if (content.type === 'mention' && content.attrs?.id) {
-    return [content.attrs?.id]
+    return [content.attrs.id]
   }
 
   if (!content.content) {
@@ -15,7 +15,7 @@ const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
   return content.content.map(getMentionedUserIdsFromContent).flat()
 }
 
-const publishTeamPromptMentionNotifications = async (
+const createTeamPromptMentionNotifications = async (
   oldResponse: TeamPromptResponse | undefined,
   newResponse: TeamPromptResponse
 ) => {
@@ -51,4 +51,4 @@ const publishTeamPromptMentionNotifications = async (
   return notificationsToAdd
 }
 
-export default publishTeamPromptMentionNotifications
+export default createTeamPromptMentionNotifications

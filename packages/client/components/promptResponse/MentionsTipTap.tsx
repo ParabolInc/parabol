@@ -1,7 +1,7 @@
 import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
-import React, {Suspense, useCallback, useEffect, useRef, useState} from 'react'
+import React, {Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import TeamMemberId from '../../shared/gqlIds/TeamMemberId'
 import SuggestMentionableUsersRoot from '../SuggestMentionableUsersRoot'
 import {MentionSuggestion} from '../TaskEditor/useSuggestions'
@@ -60,10 +60,9 @@ const MentionsTipTap = (props: Props) => {
 
   const keyHandlerRef = useRef<any>(null)
 
-  // :HACK: We can't just pass these into the 'Suggestion' plugin because these change based on
-  // active, suggestions, etc., and we can't recreate the plugin every time one of these changes.
-  useEffect(() => {
-    keyHandlerRef.current = {
+  useImperativeHandle(
+    keyHandlerRef,
+    () => ({
       upHandler: () => {
         setActive((active + suggestions.length - 1) % suggestions.length)
       },
@@ -73,8 +72,9 @@ const MentionsTipTap = (props: Props) => {
       enterHandler: () => {
         onSelectMention(suggestions[active]!)
       }
-    }
-  }, [setActive, active, onSelectMention, suggestions])
+    }),
+    [setActive, active, onSelectMention, suggestions]
+  )
 
   useEffect(() => {
     if (tiptapEditor.isDestroyed) {
