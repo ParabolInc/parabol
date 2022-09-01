@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import {NewMeetingSettingsRetrospectiveSettings_settings$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_settings.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
+import {PortalStatus} from '../hooks/usePortal'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
@@ -25,7 +26,7 @@ interface Props {
 
 const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
   const {settingsRef} = props
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
+  const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
       parentId: 'newMeetingRoot',
@@ -50,6 +51,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
         label={'Settings'}
         onClick={togglePortal}
         ref={originRef}
+        opened={[PortalStatus.Entering, PortalStatus.Entered].includes(portalStatus)}
       />
       {menuPortal(
         <div {...menuProps}>
