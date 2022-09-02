@@ -1,6 +1,6 @@
-import styled from '@emotion/styled'
 import React from 'react'
 import {Link} from 'react-router-dom'
+import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 
@@ -24,14 +24,13 @@ const Image = styled('img')({
 })
 
 interface Props {
-  className?: string
-  onClick?: () => void
+  onClick: () => void
 }
 
 const LogoBlock = (props: Props) => {
-  const {onClick, className} = props
+  const {onClick} = props
   return (
-    <RootBlock className={className}>
+    <RootBlock>
       <Anchor title='My Dashboard' to='/meetings' onClick={onClick}>
         <Image crossOrigin='' alt='Parabol' src={logoMarkPurple} />
       </Anchor>

@@ -1,6 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-export PATH="/Users/enriquesanchez/.nvm/versions/node/v16.14.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin"
-
 yarn run precommit
