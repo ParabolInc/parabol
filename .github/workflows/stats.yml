@@ -1,16 +1,17 @@
 name: Pull Request Stats
 
 on:
-  pull_request:
-    types: [labeled]
+  schedule:
+    - cron: '0 * * * 5'
 
 jobs:
   stats:
-    if: ${{ github.event.label.name == 'pr_stats' }}
     runs-on: ubuntu-latest
     steps:
       - name: Run pull request stats
         uses: flowwer-dev/pull-request-stats@master
         with:
+          slack-channel: '#t_product_github_notifications'
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
           charts: true
           sort-by: 'TIME'
