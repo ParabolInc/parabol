@@ -50,9 +50,8 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
         const {meetingType} = meeting
 
         if (
-          !isSuperUser(authToken) ||
-          meetingType !== 'retrospective' ||
-          !meeting.disableAnonymity
+          !isSuperUser(authToken) &&
+          (meetingType !== 'retrospective' || !meeting.disableAnonymity)
         ) {
           return null
         }
