@@ -122,24 +122,23 @@ export default `
     font-weight: 600;
   }
 
-  .scope-phase-area::-webkit-scrollbar {
+  /*::-webkit-scrollbar {
     -webkit-appearance: none;
     width:6px;
-    height:4px;
   }
 
-  .scope-phase-area::-webkit-scrollbar-thumb {
+  ::-webkit-scrollbar-thumb {
     border-radius:3px;
     background-color:rgba(0, 0, 0, 0.3);
   }
 
-  .scope-phase-area::-webkit-scrollbar-thumb:hover {
+  ::-webkit-scrollbar-thumb:hover {
     background:rgba(0, 0, 0, 0.5);
   }
 
-  .scope-phase-area::-webkit-scrollbar-thumb:window-inactive {
+  ::-webkit-scrollbar-thumb:window-inactive {
     background:rgba(0, 0, 0, 0.2);
-  }
+  }*/
 
   @media print {
     html,

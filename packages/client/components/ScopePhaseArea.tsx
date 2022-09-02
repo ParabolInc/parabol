@@ -44,7 +44,22 @@ const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   maxWidth: '100%',
   overflow: 'hidden',
-  overflowX: 'auto'
+  overflowX: 'auto',
+  '&::-webkit-scrollbar': {
+    webkitAppearance: 'none',
+    width: '6px',
+    height: '4px'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    borderRadius: '3px',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background: 'rgba(0, 0, 0, 0.5)'
+  },
+  '&::-webkit-scrollbar-thumb:window-inactive': {
+    background: 'rgba(0, 0, 0, 0.2)'
+  }
 })
 
 const TabIcon = styled(Icon)({
@@ -145,7 +160,7 @@ const ScopePhaseArea = (props: Props) => {
 
   return (
     <ScopingArea isDesktop={isDesktop}>
-      <StyledTabsBar className='scope-phase-area' activeIdx={activeIdx}>
+      <StyledTabsBar activeIdx={activeIdx}>
         {tabs.map((tab, idx) => (
           <Tab
             key={tab.label}
