@@ -14,6 +14,11 @@ graphql`
         id
         isViewerReactji
         count
+        users {
+          id
+          preferredName
+          picture
+        }
       }
     }
   }
@@ -73,6 +78,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
         } else {
           reactji.setValue(count - 1, 'count')
           reactji.setValue(false, 'isViewerReactji')
+          reactji.setLinkedRecords([], 'users')
         }
       } else {
         if (reactjiIdx === -1) {
@@ -82,7 +88,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
               id,
               count: 1,
               isViewerReactji: true
-            })
+            }).setLinkedRecords([], 'users')
           const nextReactjis = [...reactjis, optimisticReactji]
           reactable.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
@@ -90,6 +96,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           const count = reactji.getValue('count')
           reactji.setValue(count + 1, 'count')
           reactji.setValue(true, 'isViewerReactji')
+          reactji.setLinkedRecords([], 'users')
         }
       }
     },

@@ -10,6 +10,8 @@ import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
 import {ReactjiCount_reactji} from '~/__generated__/ReactjiCount_reactji.graphql'
+import {MenuPosition} from '../../hooks/useCoords'
+import useTooltip from '../../hooks/useTooltip'
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
 
 uncompress(data)
@@ -60,6 +62,9 @@ interface Props {
 
 const ReactjiCount = (props: Props) => {
   const {onToggle, reactji, status, onTransitionEnd} = props
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
   const {name} = ReactjiId.split(id)
@@ -68,10 +73,14 @@ const ReactjiCount = (props: Props) => {
   const onClick = () => {
     onToggle(name)
   }
+
   return (
     <Parent onTransitionEnd={onTransitionEnd} status={status}>
       <Inner isViewerReactji={isViewerReactji} onClick={onClick}>
-        <Emoji>{unicode}</Emoji>
+        <Emoji onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+          {unicode}
+        </Emoji>
+        {tooltipPortal(reactji.users.map(({preferredName}) => preferredName).join(', '))}
         <Count>{count}</Count>
       </Inner>
     </Parent>
@@ -84,6 +93,11 @@ export default createFragmentContainer(ReactjiCount, {
       id
       count
       isViewerReactji
+      users {
+        id
+        preferredName
+        picture
+      }
     }
   `
 })
