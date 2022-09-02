@@ -5,11 +5,13 @@ import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import Icon from './Icon'
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled(Icon)<{opened: boolean | undefined}>(({opened}) => ({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD36,
-  alignSelf: 'center'
-})
+  alignSelf: 'center',
+  transform: opened ? 'rotateX(180deg)' : 'none',
+  transition: 'transform 0.2s'
+}))
 
 const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   background: PALETTE.SLATE_200,
@@ -34,10 +36,11 @@ interface Props {
   onClick: ReturnType<typeof useMenu>['togglePortal']
   onMouseEnter?: () => void
   children: ReactNode
+  opened?: boolean
 }
 
 const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, children, icon, onClick, onMouseEnter, disabled} = props
+  const {className, children, icon, onClick, onMouseEnter, disabled, opened} = props
   return (
     <DropdownBlock
       className={className}
@@ -47,7 +50,7 @@ const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
       onClick={disabled ? undefined : onClick}
     >
       {children}
-      {!disabled && <DropdownIcon>{icon || 'expand_more'}</DropdownIcon>}
+      {!disabled && <DropdownIcon opened={opened}>{icon || 'expand_more'}</DropdownIcon>}
     </DropdownBlock>
   )
 })

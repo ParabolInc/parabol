@@ -7686,14 +7686,20 @@ type Mutation {
   """
   Enabled or disable the icebreaker round
   """
-  setCheckInEnabled(
+  setMeetingSettings(
     settingsId: ID!
 
     """
     true to turn icebreaker phase on, false to turn it off
     """
-    isEnabled: Boolean!
-  ): SetCheckInEnabledPayload!
+    checkinEnabled: Boolean
+
+    """
+    disables anonymity of reflections
+    """
+    disableAnonymity: Boolean
+
+  ): SetMeetingSettingsPayload!
 
   """
   Update the default Slack channel where notifications are sent
@@ -9745,7 +9751,7 @@ type SetAppLocationSuccess {
   user: User!
 }
 
-type SetCheckInEnabledPayload {
+type SetMeetingSettingsPayload {
   error: StandardMutationError
   settings: TeamMeetingSettings
 }
@@ -11165,7 +11171,7 @@ union TeamSubscriptionPayload =
   | RenamePokerTemplateDimensionPayload
   | RenamePokerTemplateScalePayload
   | RemovePokerTemplateScaleValuePayload
-  | SetCheckInEnabledPayload
+  | SetMeetingSettingsPayload
   | SetSlackNotificationPayload
   | UpdatePokerTemplateDimensionScalePayload
   | UpdatePokerTemplateScaleValuePayload
