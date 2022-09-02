@@ -122,7 +122,7 @@ const MentionsTipTap = (props: Props) => {
             return true
           }
 
-          if (event.key === 'Enter') {
+          if (event.key === 'Enter' || event.key === 'Tab') {
             keyHandlerRef.current.enterHandler()
             return true
           }
