@@ -178,10 +178,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (e) {
       // noop
     }
-    // const isStale = false
-    const isUpdatedIn5Minutes =
-      validDB && new Date(validDB._updatedAt).getTime() >= Date.now() - ms('5m')
-    if (!isUpdatedIn5Minutes) return
+    const isFresh = validDB && new Date(validDB._updatedAt).getTime() >= Date.now() - ms('5m')
+    if (!isFresh) return
 
     return validDB
   }
