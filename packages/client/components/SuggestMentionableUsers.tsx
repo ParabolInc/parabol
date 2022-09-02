@@ -7,26 +7,6 @@ import {SuggestMentionableUsersQuery} from '../__generated__/SuggestMentionableU
 import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
 import {MentionSuggestion} from './TaskEditor/useSuggestions'
 
-const makeSuggestions = (triggerWord, teamMembers) => {
-  if (!triggerWord) {
-    return teamMembers.slice(0, 6)
-  }
-  return (
-    teamMembers
-      .map((teamMember) => {
-        const score = stringScore(teamMember.preferredName, triggerWord)
-        return {
-          ...teamMember,
-          score
-        }
-      })
-      .sort((a, b) => (a.score < b.score ? 1 : -1))
-      .slice(0, 6)
-      // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
-      .filter((obj, _idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3)
-  )
-}
-
 interface Props {
   active: number
   handleSelect: (item: MentionSuggestion) => void
@@ -60,9 +40,34 @@ const SuggestMentionableUsers = (props: Props) => {
   const {viewer} = data
   const {team} = viewer
   const teamMembers = team ? team.teamMembers : null
+
   useEffect(() => {
-    setSuggestions(makeSuggestions(triggerWord, teamMembers))
+    if (!teamMembers) {
+      setSuggestions([])
+      return
+    }
+
+    if (!triggerWord) {
+      setSuggestions(teamMembers?.slice(0, 6) ?? [])
+      return
+    }
+
+    const suggestions = teamMembers
+      .map((teamMember) => {
+        const score = stringScore(teamMember.preferredName, triggerWord)
+        return {
+          ...teamMember,
+          score
+        }
+      })
+      .sort((a, b) => (a.score < b.score ? 1 : -1))
+      .slice(0, 6)
+      // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
+      .filter((obj, _idx, arr) => obj.score > 0 && arr[0]!.score - obj.score < 0.3)
+
+    setSuggestions(suggestions)
   }, [triggerWord, teamMembers])
+
   if (!team) return null
   return (
     <EditorSuggestions

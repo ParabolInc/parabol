@@ -124,7 +124,7 @@ const useSuggestions = (
     return false
   }
 
-  const makeSuggestions = async (triggerWord: string, resolveType: SuggestionType) => {
+  const makeSuggestions = async (triggerWord: string, resolveType: 'tag') => {
     const resolve = resolvers[resolveType]
     const suggestions = await resolve(triggerWord)
     if (suggestions.length > 0) {

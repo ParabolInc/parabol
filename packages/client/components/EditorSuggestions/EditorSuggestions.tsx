@@ -8,7 +8,7 @@ import MentionTag from '../MentionTag/MentionTag'
 import MentionUser from '../MentionUser/MentionUser'
 import {BaseSuggestion} from '../TaskEditor/useSuggestions'
 
-const dontTellDraft = (e) => {
+const dontTellDraft = (e: React.MouseEvent<HTMLDivElement>) => {
   e.preventDefault()
 }
 

@@ -1,4 +1,6 @@
-const getAnchorLocation = (editorState) => {
+import {EditorState} from 'draft-js'
+
+const getAnchorLocation = (editorState: EditorState) => {
   const selection = editorState.getSelection()
   const currentContent = editorState.getCurrentContent()
   const anchorKey = selection.getAnchorKey()
