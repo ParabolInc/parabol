@@ -5,33 +5,13 @@ import stringScore from 'string-score'
 import {BBox} from '../types/animations'
 import {SuggestMentionableUsersQuery} from '../__generated__/SuggestMentionableUsersQuery.graphql'
 import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
-import {DraftSuggestion} from './TaskEditor/useSuggestions'
-
-const makeSuggestions = (triggerWord, teamMembers) => {
-  if (!triggerWord) {
-    return teamMembers.slice(0, 6)
-  }
-  return (
-    teamMembers
-      .map((teamMember) => {
-        const score = stringScore(teamMember.preferredName, triggerWord)
-        return {
-          ...teamMember,
-          score
-        }
-      })
-      .sort((a, b) => (a.score < b.score ? 1 : -1))
-      .slice(0, 6)
-      // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
-      .filter((obj, _idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3)
-  )
-}
+import {MentionSuggestion} from './TaskEditor/useSuggestions'
 
 interface Props {
   active: number
-  handleSelect: (idx: number) => (e: React.MouseEvent) => void
-  suggestions: DraftSuggestion[]
-  setSuggestions: (suggestions: DraftSuggestion[]) => void
+  handleSelect: (item: MentionSuggestion) => void
+  suggestions: MentionSuggestion[]
+  setSuggestions: (suggestions: MentionSuggestion[]) => void
   originCoords: BBox
   triggerWord: string
   queryRef: PreloadedQuery<SuggestMentionableUsersQuery>
@@ -60,14 +40,39 @@ const SuggestMentionableUsers = (props: Props) => {
   const {viewer} = data
   const {team} = viewer
   const teamMembers = team ? team.teamMembers : null
+
   useEffect(() => {
-    setSuggestions(makeSuggestions(triggerWord, teamMembers))
+    if (!teamMembers) {
+      setSuggestions([])
+      return
+    }
+
+    if (!triggerWord) {
+      setSuggestions(teamMembers?.slice(0, 6) ?? [])
+      return
+    }
+
+    const suggestions = teamMembers
+      .map((teamMember) => {
+        const score = stringScore(teamMember.preferredName, triggerWord)
+        return {
+          ...teamMember,
+          score
+        }
+      })
+      .sort((a, b) => (a.score < b.score ? 1 : -1))
+      .slice(0, 6)
+      // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
+      .filter((obj, _idx, arr) => obj.score > 0 && arr[0]!.score - obj.score < 0.3)
+
+    setSuggestions(suggestions)
   }, [triggerWord, teamMembers])
+
   if (!team) return null
   return (
     <EditorSuggestions
       active={active}
-      handleSelect={handleSelect}
+      handleSelect={(item) => handleSelect(item)}
       originCoords={originCoords}
       suggestions={suggestions}
       suggestionType={'mention'}

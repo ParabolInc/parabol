@@ -1,18 +1,20 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Team from './Team'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import Notification, {notificationInterfaceFields} from './Notification'
+import {NotificationEnumType} from './NotificationEnum'
 import Task from './Task'
 import TaskInvolvementType from './TaskInvolvementType'
+import Team from './Team'
 import TeamMember from './TeamMember'
 import TeamNotification from './TeamNotification'
-import {GQLContext} from '../graphql'
-import {isTeamMember, getUserId} from '../../utils/authorization'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext>({
   name: 'NotifyTaskInvolves',
   description: 'A notification sent to someone who was just added to a team',
   interfaces: () => [Notification, TeamNotification],
+  isTypeOf: ({type}: {type: NotificationEnumType}) => type === 'TASK_INVOLVES',
   fields: () => ({
     ...notificationInterfaceFields,
     involvement: {

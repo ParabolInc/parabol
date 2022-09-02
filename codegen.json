@@ -45,6 +45,7 @@
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
           "StartRecurrenceSuccess": "./types/StartRecurrenceSuccess#StartRecurrenceSuccessSource",
           "StopRecurrenceSuccess": "./types/StopRecurrenceSuccess#StopRecurrenceSuccessSource",
+          "NotifyResponseMentioned": "../../database/types/NotificationResponseMentioned#default as NotificationResponseMentionedDB",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
