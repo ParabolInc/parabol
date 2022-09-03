@@ -78,10 +78,12 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
         } else {
           reactji.setValue(count - 1, 'count')
           reactji.setValue(false, 'isViewerReactji')
+          // TODO: remove the viewer from the users list
           reactji.setLinkedRecords([], 'users')
         }
       } else {
         if (reactjiIdx === -1) {
+          // TODO: populate user list properly
           const optimisticReactji =
             store.get(id) ||
             createProxyRecord(store, 'Reactji', {
@@ -96,6 +98,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           const count = reactji.getValue('count')
           reactji.setValue(count + 1, 'count')
           reactji.setValue(true, 'isViewerReactji')
+          // TODO: add the viewer to the users list
           reactji.setLinkedRecords([], 'users')
         }
       }

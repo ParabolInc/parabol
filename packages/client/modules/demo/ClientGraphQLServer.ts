@@ -400,14 +400,23 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         } else {
           existingReactji.count--
           existingReactji.isViewerReactji = false
+          existingReactji.userIds = existingReactji.userIds.filter(
+            ({id}: {id: string}) => id !== userId
+          )
         }
       } else {
         if (!existingReactji) {
-          reactjis.push({id: reactjiId, count: 1, isViewerReactji: userId === demoViewerId})
+          reactjis.push({
+            id: reactjiId,
+            count: 1,
+            isViewerReactji: userId === demoViewerId,
+            users: [{__typename: 'user', id: userId}]
+          })
         } else {
           existingReactji.count++
           existingReactji.isViewerReactji =
             existingReactji.isViewerReactji || userId === demoViewerId
+          existingReactji.users = [...existingReactji.users, {__typename: 'user', id: userId}]
         }
       }
       const data = {
