@@ -131,6 +131,7 @@ jobs:
       - deploy:
           name: Commit Deployment
           command: |
+            sudo apt-get update && sudo apt-get install -y libvips-dev --no-install-recommends
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
               export DEPLOY_ENV="production"
