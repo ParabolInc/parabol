@@ -1,6 +1,13 @@
 import styled from '@emotion/styled'
 import {Editor as EditorState} from '@tiptap/core'
-import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
+import {
+  BubbleMenu,
+  EditorContent,
+  EditorEvents,
+  JSONContent,
+  PureEditorContent,
+  useEditor
+} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
@@ -162,7 +169,7 @@ const PromptResponseEditor = (props: Props) => {
   }, [setEditing])
 
   const onSubmit = useCallback(
-    (newEditorState: EditorState) => {
+    ({editor: newEditorState}: EditorEvents['blur']) => {
       setEditing(false)
       const newContent = newEditorState.getJSON()
 
@@ -192,6 +199,7 @@ const PromptResponseEditor = (props: Props) => {
         placeholder
       ),
       autofocus: autoFocus,
+      onBlur: onSubmit,
       onUpdate,
       editable: !readOnly
     },
@@ -270,7 +278,7 @@ const PromptResponseEditor = (props: Props) => {
         )}
         <EditorContent ref={editorRef} editor={editor} />
       </StyledEditor>
-      {!readOnly && (
+      {/* {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
         <SubmissionButtonWrapper>
@@ -289,7 +297,7 @@ const PromptResponseEditor = (props: Props) => {
             </SubmitButton>
           )}
         </SubmissionButtonWrapper>
-      )}
+      )} */}
     </>
   )
 }

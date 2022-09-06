@@ -25,6 +25,7 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
     [FIRST_CALL]: {},
     [AGENDA_ITEMS]: {},
     [LAST_CALL]: {},
+    additems: {},
     // Retro
     [REFLECT]: {},
     [GROUP]: {},

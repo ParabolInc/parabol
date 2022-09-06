@@ -327,6 +327,7 @@ The phase of the meeting
 enum NewMeetingPhaseTypeEnum {
   lobby
   checkin
+  additems
   updates
   firstcall
   agendaitems
@@ -1209,6 +1210,8 @@ type AgendaItem {
   The body of the agenda item
   """
   content: String!
+
+  descriptionContent: String
 
   """
   The timestamp the agenda item was created
@@ -7699,7 +7702,6 @@ type Mutation {
     disables anonymity of reflections
     """
     disableAnonymity: Boolean
-
   ): SetMeetingSettingsPayload!
 
   """

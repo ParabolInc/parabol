@@ -6,6 +6,7 @@ const phaseTypes = [
   'reflect',
   'group',
   'vote',
+  'additems',
   'firstcall',
   'lastcall',
   'SCOPE',

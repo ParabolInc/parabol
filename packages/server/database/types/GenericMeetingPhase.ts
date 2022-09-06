@@ -3,6 +3,7 @@ import GenericMeetingStage from './GenericMeetingStage'
 
 export type NewMeetingPhaseTypeEnum =
   | 'ESTIMATE'
+  | 'additems'
   | 'SCOPE'
   | 'SUMMARY'
   | 'agendaitems'

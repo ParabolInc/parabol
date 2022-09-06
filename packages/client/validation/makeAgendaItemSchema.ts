@@ -1,6 +1,6 @@
-import {compositeId, id} from './templates'
 import legitify from './legitify'
 import Legitity from './Legitity'
+import {compositeId, id} from './templates'
 
 export default function makeAgendaItemSchema() {
   return legitify({
@@ -9,6 +9,7 @@ export default function makeAgendaItemSchema() {
     pinned: (value: Legitity) => value.boolean(),
     sortOrder: (value: Legitity) => value.float(),
     teamId: id,
-    teamMemberId: compositeId
+    teamMemberId: compositeId,
+    descriptionContent: (value: Legitity) => value
   })
 }

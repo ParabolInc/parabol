@@ -86,6 +86,8 @@ const createNewMeetingPhases = async (
     phaseTypes.map(async (phaseType) => {
       const durations = stageDurations[phaseType]
       switch (phaseType) {
+        case 'additems':
+          return new GenericMeetingPhase(phaseType, durations)
         case CHECKIN:
           return new CheckInPhase({
             teamId,

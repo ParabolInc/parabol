@@ -12,6 +12,7 @@ export interface AgendaItemInput {
   content: string
   meetingId?: string
   pinned?: boolean
+  descriptionContent?: string
   pinnedParentId?: string
 }
 
@@ -28,6 +29,7 @@ export default class AgendaItem {
   meetingId?: string
   pinned?: boolean
   pinnedParentId?: string
+  descriptionContent?: string
 
   constructor(input: AgendaItemInput) {
     const {
@@ -42,7 +44,8 @@ export default class AgendaItem {
       content,
       meetingId,
       pinned,
-      pinnedParentId
+      pinnedParentId,
+      descriptionContent
     } = input
     const now = new Date()
     this.id = id || generateUID()
@@ -57,5 +60,6 @@ export default class AgendaItem {
     this.meetingId = meetingId
     this.pinned = pinned
     this.pinnedParentId = pinnedParentId
+    this.descriptionContent = descriptionContent
   }
 }

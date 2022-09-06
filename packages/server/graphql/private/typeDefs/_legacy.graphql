@@ -833,6 +833,7 @@ The phase of the meeting
 enum NewMeetingPhaseTypeEnum {
   lobby
   checkin
+  additems
   updates
   firstcall
   agendaitems

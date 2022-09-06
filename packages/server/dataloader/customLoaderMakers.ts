@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
+import MeetingSettingsAction from '../database/types/MeetingSettingsAction'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
@@ -323,6 +324,9 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
         // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
         if (meetingType === 'teamPrompt') {
           return new MeetingSettingsTeamPrompt({teamId})
+        }
+        if (meetingType === 'action') {
+          return new MeetingSettingsAction({teamId})
         }
         return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
       })

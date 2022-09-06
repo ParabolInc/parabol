@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {
   GraphQLID,
   GraphQLInterfaceType,
@@ -17,17 +16,18 @@ import {
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
+import {NewMeetingPhaseTypeEnum as INewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {resolveGQLStagesFromPhase} from '../resolvers'
+import {GQLContext} from './../graphql'
 import AgendaItemsPhase from './AgendaItemsPhase'
 import CheckInPhase from './CheckInPhase'
 import DiscussPhase from './DiscussPhase'
 import EstimatePhase from './EstimatePhase'
 import GenericMeetingPhase from './GenericMeetingPhase'
-import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
-import {NewMeetingPhaseTypeEnum as INewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NewMeetingStage from './NewMeetingStage'
 import ReflectPhase from './ReflectPhase'
+import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 import UpdatesPhase from './UpdatesPhase'
 
 export const newMeetingPhaseFields = () => ({
@@ -63,7 +63,8 @@ const resolveTypeLookup = {
   [LAST_CALL]: GenericMeetingPhase,
   RESPONSES: TeamPromptResponsesPhase,
   SCOPE: GenericMeetingPhase,
-  ESTIMATE: EstimatePhase
+  ESTIMATE: EstimatePhase,
+  additems: GenericMeetingPhase
 } as Record<INewMeetingPhaseTypeEnum, GraphQLObjectType<any, GQLContext>>
 
 const NewMeetingPhase: GraphQLInterfaceType = new GraphQLInterfaceType({

@@ -23,6 +23,10 @@ const CreateAgendaItemInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The content of the agenda item'
     },
+    descriptionContent: {
+      type: GraphQLString,
+      description: 'The description content of the agenda item'
+    },
     pinned: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'True if the agenda item has been pinned'

@@ -1,13 +1,15 @@
 import styled from '@emotion/styled'
+import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {Breakpoint} from '../types/constEnums'
+import {Elevation} from '../styles/elevation'
+import {Breakpoint, Card, DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
@@ -19,6 +21,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
+import PromptResponseEditor from './promptResponse/PromptResponseEditor'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingAgendaItems_meeting
@@ -33,6 +36,18 @@ const AgendaVerbatim = styled('div')({
 const StyledHeading = styled(MeetingPhaseHeading)({
   marginLeft: 16,
   fontSize: 24
+})
+
+const DescriptionWrapper = styled('div')({
+  marginTop: '16px',
+  width: DiscussionThreadEnum.WIDTH,
+  background: Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: Elevation.CARD_SHADOW,
+  padding: Card.PADDING,
+  outline: 'none',
+  maxHeight: '33%',
+  overflow: 'scroll'
 })
 
 const StyledCopy = styled(MeetingCopy)({
@@ -58,9 +73,13 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {agendaItem, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const meetingContentRef = useRef<HTMLDivElement>(null)
+  const contentJSON: JSONContent | null = useMemo(
+    () => (agendaItem?.descriptionContent ? JSON.parse(agendaItem.descriptionContent) : null),
+    [agendaItem]
+  )
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
-  const {content, teamMember} = agendaItem
+  const {content, teamMember, descriptionContent} = agendaItem
   const {picture, preferredName} = teamMember
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   return (
@@ -78,7 +97,12 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <Avatar picture={picture} size={64} />
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
-          <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
+          {contentJSON && (
+            <DescriptionWrapper>
+              <PromptResponseEditor content={contentJSON} readOnly={true} />
+            </DescriptionWrapper>
+          )}
+          <StyledCopy></StyledCopy>
           <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}
@@ -107,6 +131,7 @@ graphql`
     discussionId
     agendaItem {
       content
+      descriptionContent
       teamMember {
         picture
         preferredName

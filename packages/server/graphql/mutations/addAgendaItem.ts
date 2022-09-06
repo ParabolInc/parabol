@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
@@ -11,6 +10,7 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput, {CreateAgendaItemInputType} from '../types/CreateAgendaItemInput'
+import {GQLContext} from './../graphql'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 
 export default {
@@ -40,8 +40,11 @@ export default {
     const schema = makeAgendaItemSchema()
     const {errors, data: validNewAgendaItem} = schema(newAgendaItem)
     if (Object.keys(errors).length) {
+      console.log(errors)
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
+
+    console.log(validNewAgendaItem)
 
     // RESOLUTION
     const agendaItemId = `${teamId}::${generateUID()}`

@@ -17,20 +17,23 @@ interface Props {
 }
 
 const phaseLookup = {
-  checkin: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  additems: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './AddAgendaItems')
   ),
-  updates: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
+  checkin: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  firstcall: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
+  updates: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
   ),
-  agendaitems: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
+  firstcall: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
   ),
-  lastcall: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
+  agendaitems: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
+  ),
+  lastcall: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
@@ -42,9 +45,8 @@ export interface ActionMeetingPhaseProps {
 const ActionMeeting = (props: Props) => {
   const {meeting} = props
   const {localPhase, showSidebar} = meeting
-  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} = useMeeting(
-    meeting
-  )
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} =
+    useMeeting(meeting)
   useEffect(() => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
@@ -85,6 +87,7 @@ export default createFragmentContainer(ActionMeeting, {
       ...useMeeting_meeting
       ...ActionMeetingSidebar_meeting
       ...NewMeetingCheckIn_meeting
+      ...AddAgendaItems_meeting
       ...ActionMeetingUpdates_meeting
       ...ActionMeetingFirstCall_meeting
       ...ActionMeetingAgendaItems_meeting

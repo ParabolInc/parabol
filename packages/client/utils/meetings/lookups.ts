@@ -17,6 +17,7 @@ export const phaseLabelLookup = {
   firstcall: 'First Call',
   agendaitems: 'Team Agenda',
   lastcall: 'Last Call',
+  additems: 'Add Agenda Items',
   SUMMARY: 'Summary',
   SCOPE: 'Scope',
   ESTIMATE: 'Estimate',
@@ -33,6 +34,7 @@ export const phaseIconLookup = {
   firstcall: 'comment',
   agendaitems: 'comment',
   lastcall: 'comment',
+  additems: 'update',
   SUMMARY: 'receipt',
   SCOPE: 'playlist_add'
 } as Record<NewMeetingPhaseTypeEnum, string>
@@ -57,6 +59,7 @@ export const phaseTypeToSlug = {
   firstcall: 'firstcall',
   agendaitems: 'agendaitems',
   lastcall: 'lastcall',
+  additems: 'additems',
   SUMMARY: 'summary',
   SCOPE: 'scope',
   ESTIMATE: 'estimate',

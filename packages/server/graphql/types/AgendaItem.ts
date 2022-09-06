@@ -75,6 +75,10 @@ const AgendaItem = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamMemberId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
+    },
+    descriptionContent: {
+      type: GraphQLString,
+      description: 'The response to the prompt'
     }
   })
 })
