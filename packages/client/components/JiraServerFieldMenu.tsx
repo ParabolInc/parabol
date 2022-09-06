@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -26,6 +27,9 @@ interface Props {
 
 const JiraServerFieldMenu = (props: Props) => {
   const {menuProps, stage: stageRef, submitScore} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
 
@@ -95,23 +99,25 @@ const JiraServerFieldMenu = (props: Props) => {
   }
   return (
     <Menu
-      ariaLabel={'Select the JiraServer Field to push to'}
+      ariaLabel={t('JiraServerFieldMenu.SelectTheJiraserverFieldToPushTo')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}
     >
-      {possibleEstimationFieldNames.length === 0 && <NoFieldsLabel>No fields found</NoFieldsLabel>}
+      {possibleEstimationFieldNames.length === 0 && (
+        <NoFieldsLabel>{t('JiraServerFieldMenu.NoFieldsFound')}</NoFieldsLabel>
+      )}
       {possibleEstimationFieldNames.map((fieldName) => {
         return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
       })}
       <MenuItemHR />
       <MenuItem
-        key={'__comment'}
+        key={t('JiraServerFieldMenu.Comment')}
         label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
       />
       <MenuItem
-        key={'__null'}
+        key={t('JiraServerFieldMenu.Null')}
         label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
       />

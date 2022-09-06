@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -20,6 +21,10 @@ const EditableSubText = styled(EditableText)({
 
 const EditableTemplateDescription = (props: Props) => {
   const {isOwner, description, promptId, onEditingChange} = props
+
+  //FIXME i18n: That description is probably long enough
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -62,7 +67,7 @@ const EditableTemplateDescription = (props: Props) => {
       initialValue={description}
       maxLength={256}
       validate={validate}
-      placeholder={'Description'}
+      placeholder={t('EditableTemplateDescription.Description')}
       onEditingChange={onEditChange}
     />
   )

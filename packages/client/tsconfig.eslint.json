@@ -11,6 +11,7 @@
     "polyfills.ts",
     "components/promptResponse/PromptResponseEditor.tsx",
     "components/EstimatePhaseEmptyState.tsx",
+    "components/JiraScopingSearchCurrentFilters.tsx",
     "mutations/AddFeatureFlagMutation.ts"
   ]
 }

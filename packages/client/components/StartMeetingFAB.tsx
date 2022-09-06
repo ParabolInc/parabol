@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Add as AddIcon} from '@mui/icons-material'
 import React, {useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
@@ -54,6 +55,8 @@ interface Props {
 }
 
 const StartMeetingFAB = (props: Props) => {
+  const {t} = useTranslation()
+
   const location = useLocation()
   const {className} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -103,7 +106,7 @@ const StartMeetingFAB = (props: Props) => {
         <MeetingIcon isExpanded={isExpanded}>
           <AddIcon />
         </MeetingIcon>
-        <MeetingLabel isExpanded={isExpanded}>{'Add Meeting'}</MeetingLabel>
+        <MeetingLabel isExpanded={isExpanded}>{t('StartMeetingFAB.AddMeeting')}</MeetingLabel>
       </Button>
     </Block>
   )

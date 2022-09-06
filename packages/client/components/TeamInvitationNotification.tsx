@@ -1,13 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {TeamInvitationNotification_notification} from '~/__generated__/TeamInvitationNotification_notification.graphql'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import NotificationTemplate from './NotificationTemplate'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import {TeamInvitationNotification_notification} from '~/__generated__/TeamInvitationNotification_notification.graphql'
 
 interface Props {
   notification: TeamInvitationNotification_notification
@@ -15,6 +16,9 @@ interface Props {
 
 const TeamInvitationNotification = (props: Props) => {
   const {notification} = props
+
+  const {t} = useTranslation()
+
   const {submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -36,7 +40,12 @@ const TeamInvitationNotification = (props: Props) => {
       avatar={inviterPicture}
       message={`${inviterName} invited you to the ${teamName} team`}
       notification={notification}
-      action={<NotificationAction label={'Accept invitation'} onClick={accept} />}
+      action={
+        <NotificationAction
+          label={t('TeamInvitationNotification.AcceptInvitation')}
+          onClick={accept}
+        />
+      }
     />
   )
 }

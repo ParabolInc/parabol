@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DialogContainer from '../../../../components/DialogContainer'
@@ -25,6 +26,8 @@ interface Props extends WithMutationProps {
   teamMember: PromoteTeamMemberModal_teamMember
 }
 const PromoteTeamMemberModal = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {closePortal, submitMutation, submitting, onError, onCompleted, teamMember} = props
   const {preferredName, teamId, userId} = teamMember
@@ -35,7 +38,7 @@ const PromoteTeamMemberModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Are you sure?'}</DialogTitle>
+      <DialogTitle>{t('PromoteTeamMemberModal.AreYouSure?')}</DialogTitle>
       <DialogContent>
         {`You will be removed as the team leader and promote ${preferredName}. You will no longer be able to change team membership. This cannot be undone!`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>

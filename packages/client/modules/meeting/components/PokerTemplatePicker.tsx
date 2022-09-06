@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
 import useModal from '../../../hooks/useModal'
@@ -20,6 +21,9 @@ const PokerTemplateModal = lazyPreload(
 
 const PokerTemplatePicker = (props: Props) => {
   const {settings} = props
+
+  const {t} = useTranslation()
+
   const {selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
   const {togglePortal, modalPortal, closePortal} = useModal({
@@ -30,11 +34,11 @@ const PokerTemplatePicker = (props: Props) => {
   return (
     <>
       <NewMeetingDropdown
-        dropdownIcon={'keyboard_arrow_right'}
+        dropdownIcon={t('PokerTemplatePicker.KeyboardArrowRight')}
         label={templateName}
         onClick={togglePortal}
         onMouseEnter={PokerTemplateModal.preload}
-        title={'Template'}
+        title={t('PokerTemplatePicker.Template')}
       />
       {modalPortal(
         <PokerTemplateModal closePortal={closePortal} pokerMeetingSettings={settings} />

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsToggleAnonymity_settings$key} from '~/__generated__/NewMeetingSettingsToggleAnonymity_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -51,6 +52,8 @@ interface Props {
 const NewMeetingSettingsToggleAnonymity = (props: Props) => {
   const {settingsRef, className} = props
 
+  const {t} = useTranslation()
+
   const settings = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleAnonymity_settings on TeamMeetingSettings {
@@ -77,7 +80,7 @@ const NewMeetingSettingsToggleAnonymity = (props: Props) => {
   }
   return (
     <ButtonRow onClick={toggleCheckIn} className={className}>
-      <Label>{'Anonymous reflections'}</Label>
+      <Label>{t('NewMeetingSettingsToggleAnonymity.AnonymousReflections')}</Label>
       <StyledCheckbox active={!disableAnonymity} />
     </ButtonRow>
   )

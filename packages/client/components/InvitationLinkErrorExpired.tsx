@@ -1,13 +1,14 @@
-import {InvitationLinkErrorExpired_massInvitation} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import {InvitationLinkErrorExpired_massInvitation} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InviteDialog from './InviteDialog'
 
 interface Props {
   massInvitation: InvitationLinkErrorExpired_massInvitation
@@ -20,16 +21,26 @@ const TeamName = styled('span')({
 
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation} = props
+
+  //FIXME i18n: Invitation Link
+  const {t} = useTranslation()
+
   const {teamName, inviterName} = massInvitation
   useDocumentTitle(`Token Expired | Invitation Link`, 'Invitation Link')
   return (
     <InviteDialog>
-      <DialogTitle>Invitation Link Expired</DialogTitle>
+      <DialogTitle>{t('InvitationLinkErrorExpired.InvitationLinkExpired')}</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          The invitation to <TeamName>{teamName}</TeamName> has expired.
+          {t('InvitationLinkErrorExpired.TheInvitationTo')}
+          <TeamName>{teamName}</TeamName>
+          {t('InvitationLinkErrorExpired.HasExpired.')}
         </InvitationDialogCopy>
-        <InvitationDialogCopy>Reach out to {inviterName} to request a new one</InvitationDialogCopy>
+        <InvitationDialogCopy>
+          {t('InvitationLinkErrorExpired.ReachOutTo')}
+          {inviterName}
+          {t('InvitationLinkErrorExpired.ToRequestANewOne')}
+        </InvitationDialogCopy>
       </DialogContent>
     </InviteDialog>
   )

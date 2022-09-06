@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -109,6 +110,10 @@ const validateIssue = (issue: string) => {
 
 const NewAzureIssueInput = (props: Props) => {
   const {isEditing, meetingId, setIsEditing, viewerRef} = props
+
+  //FIXME i18n: New issue title
+  const {t} = useTranslation()
+
   const viewer = useFragment(
     graphql`
       fragment NewAzureIssueInput_viewer on User {
@@ -232,7 +237,7 @@ const NewAzureIssueInput = (props: Props) => {
           </Form>
           <StyledButton ref={originRef} onMouseDown={togglePortal}>
             <StyledLink>{selectedProjectName}</StyledLink>
-            <StyledIcon>expand_more</StyledIcon>
+            <StyledIcon>{t('NewAzureIssueInput.ExpandMore')}</StyledIcon>
           </StyledButton>
         </Issue>
       </Item>

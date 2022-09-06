@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {RetroVotePhase_meeting} from '~/__generated__/RetroVotePhase_meeting.graphql'
+import useCallbackRef from '../hooks/useCallbackRef'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
@@ -14,7 +16,6 @@ import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import RetroVoteMetaHeader from './RetroVoteMetaHeader'
 import StageTimerDisplay from './StageTimerDisplay'
-import useCallbackRef from '../hooks/useCallbackRef'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroVotePhase_meeting
@@ -22,6 +23,9 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroVotePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  const {t} = useTranslation()
+
   const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, showSidebar} = meeting
 
@@ -35,7 +39,7 @@ const RetroVotePhase = (props: Props) => {
         >
           <PhaseHeaderTitle>{phaseLabelLookup.vote}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
-            {'Vote on the topics you want to discuss'}
+            {t('RetroVotePhase.VoteOnTheTopicsYouWantToDiscuss')}
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>

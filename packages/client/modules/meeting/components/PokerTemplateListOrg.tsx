@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -55,6 +56,9 @@ const query = graphql`
 `
 const PokerTemplateListOrg = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<PokerTemplateListOrgQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -67,7 +71,11 @@ const PokerTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'poker')
 
   if (edges.length === 0) {
-    return <Message>{'No other teams in your organization are sharing a template.'}</Message>
+    return (
+      <Message>
+        {t('PokerTemplateListOrg.NoOtherTeamsInYourOrganizationAreSharingATemplate.')}
+      </Message>
+    )
   }
   return (
     <TemplateList>
@@ -77,7 +85,7 @@ const PokerTemplateListOrg = (props: Props) => {
             key={template.id}
             template={template}
             isActive={template.id === activeTemplateId}
-            lowestScope={'ORGANIZATION'}
+            lowestScope={t('PokerTemplateListOrg.Organization')}
             teamId={teamId}
           />
         )

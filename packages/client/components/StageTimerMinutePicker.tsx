@@ -1,8 +1,9 @@
 import React from 'react'
-import Menu from './Menu'
+import {useTranslation} from 'react-i18next'
 import {MenuProps} from '../hooks/useMenu'
-import MenuItem from './MenuItem'
 import plural from '../utils/plural'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   minuteTimeLimit: number
@@ -14,10 +15,13 @@ const options = [...Array(9).keys()].map((n) => n + 1)
 
 const StageTimerMinutePicker = (props: Props) => {
   const {menuProps, minuteTimeLimit, setMinuteTimeLimit} = props
+
+  const {t} = useTranslation()
+
   return (
     <Menu
       {...menuProps}
-      ariaLabel={'Select a time limit'}
+      ariaLabel={t('StageTimerMinutePicker.SelectATimeLimit')}
       defaultActiveIdx={options.findIndex((n) => n === minuteTimeLimit)}
     >
       {options.map((n) => {

@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {Repo} from '~/hooks/useGetRepoContributions'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
@@ -20,6 +21,10 @@ const getValue = (item: Repo) => item.nameWithOwner
 const NewGitHubIssueMenu = (props: Props) => {
   const {handleSelectNameWithOwner, menuProps, repos} = props
 
+  //FIXME i18n: Select GitHub project
+  //FIXME i18n: Search GitHub
+  const {t} = useTranslation()
+
   const {
     query,
     filteredItems: filteredRepos,
@@ -35,7 +40,9 @@ const NewGitHubIssueMenu = (props: Props) => {
     >
       <SearchMenuItem placeholder='Search GitHub' onChange={onQueryChange} value={query} />
       {query && filteredRepos.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No repos found!</EmptyDropdownMenuItemLabel>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          {t('NewGitHubIssueMenu.NoReposFound!')}
+        </EmptyDropdownMenuItemLabel>
       )}
       {filteredRepos.slice(0, 10).map((repo) => {
         const {nameWithOwner} = repo

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import MeetingCopy from '~/modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '~/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import StyledLink from './StyledLink'
@@ -33,13 +34,16 @@ interface Props {
 
 const EstimatePhaseEmptyState = (props: Props) => {
   const {meetingId} = props
+
+  const {t} = useTranslation()
+
   return (
     <EmptyStateContainer>
-      <StyledHeading>No items to estimate?</StyledHeading>
-      <StyledCopy>It looks like you haven't added any items yet.</StyledCopy>
+      <StyledHeading>{t('EstimatePhaseEmptyState.NoItemsToEstimate?')}</StyledHeading>
+      <StyledCopy>{t('EstimatePhaseEmptyState.ItLooksLikeYouHavenTAddedAnyItemsYet.')}</StyledCopy>
       <StyledCopy>
-        Try adding them
-        <Link to={`/meet/${meetingId}/scope`}>{' here.'}</Link>
+        {t('EstimatePhaseEmptyState.TryAddingThem')}
+        <Link to={`/meet/${meetingId}/scope`}>{t('EstimatePhaseEmptyState.Here.')}</Link>
       </StyledCopy>
     </EmptyStateContainer>
   )

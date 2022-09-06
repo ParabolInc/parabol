@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import useModal from '../hooks/useModal'
@@ -47,6 +48,9 @@ interface Props {
 
 const InviteTeamMemberAvatar = (props: Props) => {
   const {meetingId, teamId} = props
+
+  const {t} = useTranslation()
+
   const teamMembers = useFragment(
     graphql`
       fragment InviteTeamMemberAvatar_teamMembers on TeamMember @relay(plural: true) {
@@ -64,7 +68,7 @@ const InviteTeamMemberAvatar = (props: Props) => {
             <PersonAdd />
           </StyledIcon>
         </IconWrapper>
-        <Label>Invite</Label>
+        <Label>{t('InviteTeamMemberAvatar.Invite')}</Label>
       </Wrapper>
       {modalPortal(
         <AddTeamMemberModal

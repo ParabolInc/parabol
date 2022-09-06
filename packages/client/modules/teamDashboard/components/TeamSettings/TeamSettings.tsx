@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -62,6 +63,11 @@ const query = graphql`
 
 const TeamSettings = (props: Props) => {
   const {queryRef} = props
+
+  //FIXME i18n: Team Settings
+  //FIXME i18n: Danger Zone
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -80,7 +86,7 @@ const TeamSettings = (props: Props) => {
         {tier === 'personal' && (
           <Panel>
             <StyledRow>
-              <div>{'This team is currently on a personal plan.'}</div>
+              <div>{t('TeamSettings.ThisTeamIsCurrentlyOnAPersonalPlan.')}</div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
                 {`Upgrade Team to ${TierLabel.PRO}`}
               </PrimaryButton>

@@ -6,6 +6,7 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -101,6 +102,9 @@ export const templateIdxs = {
 
 const ReflectTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settingsRef} = props
+
+  const {t} = useTranslation()
+
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
@@ -158,7 +162,7 @@ const ReflectTemplateList = (props: Props) => {
 
   return (
     <TemplateSidebar isDesktop={isDesktop}>
-      <Label>Retro Templates</Label>
+      <Label>{t('ReflectTemplateList.RetroTemplates')}</Label>
       <StyledTabsBar activeIdx={activeIdx}>
         <FullTab
           label={
@@ -166,7 +170,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>
                 <GroupIcon />
               </TabIcon>{' '}
-              Team
+              {t('ReflectTemplateList.Team')}
             </TabLabel>
           }
           onClick={() => goToTab('TEAM')}
@@ -177,7 +181,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>
                 <BusinessIcon />
               </TabIcon>{' '}
-              Organization
+              {t('ReflectTemplateList.Organization')}
             </TabLabel>
           }
           onClick={() => goToTab('ORGANIZATION')}
@@ -188,7 +192,7 @@ const ReflectTemplateList = (props: Props) => {
               <TabIcon>
                 <PublicIcon />
               </TabIcon>{' '}
-              Public
+              {t('ReflectTemplateList.Public')}
             </TabLabel>
           }
           onClick={() => goToTab('PUBLIC')}

@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import {ExternalLinks, LocalStorageKey} from '~/types/constEnums'
 import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
@@ -87,6 +88,13 @@ const makeFeatureRow = (featureIconFile: string, featureCopy: string, idx: numbe
 
 const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
   const {isDemo, dataCy} = props
+
+  //FIXME i18n: Go to My Dashboard
+  //FIXME i18n: Create a Free Account
+  //FIXME i18n: Head on over to your dashboard
+  //FIXME i18n: In just a few seconds you’ll have access
+  const {t} = useTranslation()
+
   if (!isDemo) return null
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
@@ -96,18 +104,22 @@ const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
     : 'In just a few seconds you’ll have access'
   const copyLineTwo = isLoggedIn ? (
     <span>
-      to run <b>a real retrospective</b> with your team.
+      {t('CreateAccountSection.ToRun')}
+      <b>{t('CreateAccountSection.ARealRetrospective')}</b>
+      {t('CreateAccountSection.WithYourTeam.')}
     </span>
   ) : (
     <span>
-      to run <b>unlimited retrospectives</b> with your team.
+      {t('CreateAccountSection.ToRun')}
+      <b>{t('CreateAccountSection.UnlimitedRetrospectives')}</b>
+      {t('CreateAccountSection.WithYourTeam.')}
     </span>
   )
   return (
     <>
       <tr data-cy={dataCy}>
         <td style={headingStyle} align='center'>
-          {'Thanks for playing!'}
+          {t('CreateAccountSection.ThanksForPlaying!')}
         </td>
       </tr>
       <tr data-cy={dataCy}>
@@ -135,7 +147,7 @@ const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
       </tr>
       <tr data-cy={dataCy}>
         <td align='center' style={subHeadingStyle}>
-          {'The Parabol Difference'}
+          {t('CreateAccountSection.TheParabolDifference')}
         </td>
       </tr>
       <tr data-cy={dataCy}>

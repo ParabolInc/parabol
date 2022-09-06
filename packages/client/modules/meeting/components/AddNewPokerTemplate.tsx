@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import LinkButton from '../../../components/LinkButton'
 import TooltipStyled from '../../../components/TooltipStyled'
@@ -34,6 +35,12 @@ interface Props {
 
 const AddNewPokerTemplate = (props: Props) => {
   const {gotoTeamTemplates, teamId, pokerTemplates} = props
+
+  //FIXME i18n: *New Template
+  //FIXME i18n: You already have a new template. Try renaming that one first.
+  //FIXME i18n: *New Template
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
@@ -45,7 +52,11 @@ const AddNewPokerTemplate = (props: Props) => {
   const addNewTemplate = () => {
     if (submitting) return
     if (pokerTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error(`You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`))
+      onError(
+        new Error(
+          `You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`
+        )
+      )
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
       }, 8000)
@@ -70,7 +81,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        {'Create New Template'}
+        {t('AddNewPokerTemplate.CreateNewTemplate')}
       </AddPokerTemplateLink>
     </div>
   )

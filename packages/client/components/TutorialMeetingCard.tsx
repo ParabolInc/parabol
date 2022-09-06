@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useCallback} from 'react'
+import {useTranslation} from 'react-i18next'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -100,6 +101,10 @@ const TopLine = styled('div')({
 const THUMBNAIL = 'http://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
 
 const TutorialMeetingCard = () => {
+  //FIXME i18n: Tutorial Meeting Card Opened
+  //FIXME i18n: Tutorial Meeting Card Closed
+  const {t} = useTranslation()
+
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
 
@@ -117,14 +122,14 @@ const TutorialMeetingCard = () => {
       <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={toggleModal}>
         <MeetingImgWrapper>
           <MeetingImgBackground />
-          <MeetingTypeLabel>Tutorial</MeetingTypeLabel>
+          <MeetingTypeLabel>{t('TutorialMeetingCard.Tutorial')}</MeetingTypeLabel>
           <MeetingImg src={THUMBNAIL} alt='' />
         </MeetingImgWrapper>
         <MeetingInfo>
           <TopLine>
-            <Name>Starting a Sprint Poker Meeting</Name>
+            <Name>{t('TutorialMeetingCard.StartingASprintPokerMeeting')}</Name>
           </TopLine>
-          <Meta>Video tutorial</Meta>
+          <Meta>{t('TutorialMeetingCard.VideoTutorial')}</Meta>
         </MeetingInfo>
       </CardWrapper>
       {modalPortal(<MeetingsDashTutorialModal />)}

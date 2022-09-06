@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DialogContainer from '../../../../components/DialogContainer'
@@ -25,6 +26,8 @@ interface Props {
 }
 
 const RemoveTeamMemberModal = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {closePortal, teamMember} = props
   const {teamMemberId, preferredName} = teamMember
@@ -34,9 +37,11 @@ const RemoveTeamMemberModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>Are you sure?</DialogTitle>
+      <DialogTitle>{t('RemoveTeamMemberModal.AreYouSure?')}</DialogTitle>
       <DialogContent>
-        This will remove {preferredName} from the team.
+        {t('RemoveTeamMemberModal.ThisWillRemove')}
+        {preferredName}
+        {t('RemoveTeamMemberModal.FromTheTeam.')}
         <br />
         <StyledButton size='medium' onClick={handleClick}>
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />

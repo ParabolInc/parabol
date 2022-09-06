@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import DialogContent from './DialogContent'
@@ -8,6 +9,9 @@ import StyledError from './StyledError'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
+  //FIXME i18n: Error logging in
+  const {t} = useTranslation()
+
   const [error, setError] = useState('')
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -42,7 +46,7 @@ const SAMLRedirect = () => {
     return (
       <TeamInvitationMeetingAbstract>
         <InviteDialog>
-          <DialogTitle>SSO Login</DialogTitle>
+          <DialogTitle>{t('SAMLRedirect.SsoLogin')}</DialogTitle>
           <DialogContent>
             {errors.map((error, idx) => (
               <StyledError key={idx}>{error}</StyledError>

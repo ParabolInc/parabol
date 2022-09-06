@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Chat} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
@@ -35,6 +36,9 @@ interface Props {
 
 const BeginDemoModal = (props: Props) => {
   const {closePortal} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere() as unknown as LocalAtmosphere
   const {clientGraphQLServer} = atmosphere
   const {startBot} = clientGraphQLServer
@@ -49,11 +53,12 @@ const BeginDemoModal = (props: Props) => {
     <StyledDialogContainer>
       <StyledIcon />
       <StyledCopy>
-        Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
-        colleagues
+        {t(
+          'BeginDemoModal.TryParabolForYourselfByHoldingA2MinuteRetrospectiveMeetingWithOurSimulatedColleagues'
+        )}
       </StyledCopy>
       <PrimaryButton dataCy='start-demo-button' onClick={onClick} size='medium'>
-        Start Demo
+        {t('BeginDemoModal.StartDemo')}
       </PrimaryButton>
     </StyledDialogContainer>
   )

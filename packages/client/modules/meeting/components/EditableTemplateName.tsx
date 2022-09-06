@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -28,6 +29,12 @@ const StyledEditableText = styled(EditableText)({
 })
 const EditableTemplateName = (props: Props) => {
   const {name, templateId, teamTemplates, isOwner} = props
+
+  //FIXME i18n: Please enter a template name
+  //FIXME i18n: That name is probably long enough
+  //FIXME i18n: That name is taken
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -72,7 +79,7 @@ const EditableTemplateName = (props: Props) => {
         initialValue={name}
         maxLength={100}
         validate={validate}
-        placeholder={'*New Template'}
+        placeholder={t('EditableTemplateName.NewTemplate')}
       />
     </InheritedStyles>
   )

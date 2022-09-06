@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
@@ -47,6 +48,12 @@ const getValue = (item: {fullPath?: string}) => {
 
 const GitLabScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, queryRef} = props
+
+  //FIXME i18n: Define the GitLab search query
+  //FIXME i18n: Search GitLab projects
+  //FIXME i18n: Selected Poker Scope Project Filter
+  const {t} = useTranslation()
+
   const query = usePreloadedQuery<GitLabScopingSearchFilterMenuQuery>(
     graphql`
       query GitLabScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
@@ -125,7 +132,9 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
         value={searchQuery}
       />
       {visibleProjects.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          {t('GitLabScopingSearchFilterMenu.NoProjectsFound!')}
+        </EmptyDropdownMenuItemLabel>
       )}
       {visibleProjects.map((project) => {
         const {id: projectId, fullPath} = project

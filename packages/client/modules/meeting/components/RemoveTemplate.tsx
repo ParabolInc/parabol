@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import DetailAction from '../../../components/DetailAction'
@@ -21,6 +22,9 @@ interface Props {
 
 const RemoveTemplate = (props: Props) => {
   const {gotoPublicTemplates, templateId, teamId, teamTemplates, type} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
 
@@ -48,7 +52,13 @@ const RemoveTemplate = (props: Props) => {
       : RemovePokerTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
   }
 
-  return <DetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
+  return (
+    <DetailAction
+      icon={t('RemoveTemplate.Delete')}
+      tooltip={t('RemoveTemplate.DeleteTemplate')}
+      onClick={removeTemplate}
+    />
+  )
 }
 export default createFragmentContainer(RemoveTemplate, {
   teamTemplates: graphql`

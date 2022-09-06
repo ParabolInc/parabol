@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
@@ -190,6 +191,10 @@ const query = graphql`
 
 const Invoice = (props: Props) => {
   const {queryRef} = props
+
+  //FIXME i18n: noopener noreferrer
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<InvoiceQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -225,7 +230,7 @@ const Invoice = (props: Props) => {
         <Panel>
           <InvoiceFailedStamp status={status} />
           <InvoiceTag status={status} />
-          <Label>{'Invoice'}</Label>
+          <Label>{t('Invoice.Invoice')}</Label>
           <Subject>{subject}</Subject>
 
           <SectionHeader>
@@ -251,8 +256,8 @@ const Invoice = (props: Props) => {
             <>
               <SectionHeader>
                 <Heading>
-                  {'Last month’s adjustments'}
-                  <EmphasisTag>{'Prorated'}</EmphasisTag>
+                  {t('Invoice.LastMonthSAdjustments')}
+                  <EmphasisTag>{t('Invoice.Prorated')}</EmphasisTag>
                 </Heading>
                 <Meta>{chargeDates}</Meta>
               </SectionHeader>
@@ -265,30 +270,30 @@ const Invoice = (props: Props) => {
             {startingBalance !== 0 && (
               <div>
                 <AmountLineSub>
-                  <div>{'Total'}</div>
+                  <div>{t('Invoice.Total')}</div>
                   <div>{invoiceLineFormat(total)}</div>
                 </AmountLineSub>
                 <AmountLineSub>
-                  <div>{'Previous Balance'}</div>
+                  <div>{t('Invoice.PreviousBalance')}</div>
                   <div>{invoiceLineFormat(startingBalance)}</div>
                 </AmountLineSub>
               </div>
             )}
             <AmountLine>
-              <div>{'Amount due'}</div>
+              <div>{t('Invoice.AmountDue')}</div>
               <div>{invoiceLineFormat(amountDue)}</div>
             </AmountLine>
             {creditCard && (
               <Meta isError={status === 'FAILED'}>
                 {chargeStatus[status]}
-                {' to '}
-                <b>{creditCard.brand}</b> {'ending in '}
+                {t('Invoice.To')}
+                <b>{creditCard.brand}</b> {t('Invoice.EndingIn')}
                 <b>{creditCard.last4}</b>
               </Meta>
             )}
             {status === 'PENDING' && payUrl && (
               <PayURLText href={payUrl} rel='noopener noreferrer' target='_blank'>
-                <span>PAY NOW</span>
+                <span>{t('Invoice.PayNow')}</span>
                 <span>{payUrl}</span>
               </PayURLText>
             )}

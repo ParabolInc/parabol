@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import relativeDate from '../../utils/date/relativeDate'
-import Ellipsis from '../Ellipsis/Ellipsis'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
+import Ellipsis from '../Ellipsis/Ellipsis'
 import {TimestampType} from './EditingStatus'
 
 interface Props {
@@ -13,9 +14,10 @@ interface Props {
 }
 
 const useTimeFrom = (timestamp: string) => {
-  const makeTimeFrom = useCallback(() => relativeDate(timestamp, {smallDiff: 'just now'}), [
-    timestamp
-  ])
+  const makeTimeFrom = useCallback(
+    () => relativeDate(timestamp, {smallDiff: 'just now'}),
+    [timestamp]
+  )
   const [timeFrom, setTimeFrom] = useState(makeTimeFrom)
   const timeoutRef = useRef<number | undefined>()
   useEffect(() => {
@@ -31,6 +33,9 @@ const useTimeFrom = (timestamp: string) => {
 
 const EditingStatusText = (props: Props) => {
   const {editors, isEditing, timestamp, timestampType, isArchived} = props
+
+  const {t} = useTranslation()
+
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated '
   const timeFrom = useTimeFrom(timestamp)
   if (isArchived) {
@@ -40,7 +45,7 @@ const EditingStatusText = (props: Props) => {
     if (isEditing) {
       return (
         <span>
-          {'Editing'}
+          {t('EditingStatusText.Editing')}
           <Ellipsis />
         </span>
       )
@@ -54,7 +59,7 @@ const EditingStatusText = (props: Props) => {
     return (
       <span>
         {editor}
-        {' is editing'}
+        {t('EditingStatusText.IsEditing')}
         {isEditing ? ' too' : ''}
         <Ellipsis />
       </span>
@@ -64,7 +69,7 @@ const EditingStatusText = (props: Props) => {
     if (isEditing) {
       return (
         <span>
-          several people are editing
+          {t('EditingStatusText.SeveralPeopleAreEditing')}
           <Ellipsis />
         </span>
       )
@@ -78,7 +83,7 @@ const EditingStatusText = (props: Props) => {
   }
   return (
     <span>
-      {'Several people are editing'}
+      {t('EditingStatusText.SeveralPeopleAreEditing')}
       <Ellipsis />
     </span>
   )

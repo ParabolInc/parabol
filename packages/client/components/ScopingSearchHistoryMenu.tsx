@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {MouseEvent} from 'react'
+import {useTranslation} from 'react-i18next'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -47,19 +48,22 @@ interface Props {
 
 const ScopingSearchHistoryMenu = (props: Props) => {
   const {menuProps, searchQueries} = props
+
+  const {t} = useTranslation()
+
   const {portalStatus, isDropdown, closePortal} = menuProps
 
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Select a search query'}
+      ariaLabel={t('ScopingSearchHistoryMenu.SelectASearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       closePortal={closePortal}
     >
       {searchQueries.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          No saved queries yet!
+          {t('ScopingSearchHistoryMenu.NoSavedQueriesYet!')}
         </EmptyDropdownMenuItemLabel>
       )}
       {searchQueries.map(({id, labelFirstLine, labelSecondLine, onClick, onDelete}) => {
@@ -81,7 +85,7 @@ const ScopingSearchHistoryMenu = (props: Props) => {
                   {labelSecondLine && <Filter>{labelSecondLine}</Filter>}
                 </StyledMenuItemContent>
                 <DeleteIconButton
-                  aria-label={'Remove this search query'}
+                  aria-label={t('ScopingSearchHistoryMenu.RemoveThisSearchQuery')}
                   icon='cancel'
                   onClick={handleDelete}
                   palette='midGray'

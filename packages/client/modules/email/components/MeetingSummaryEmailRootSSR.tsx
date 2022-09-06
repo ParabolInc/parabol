@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {QueryRenderer} from 'react-relay'
 import {Environment} from 'relay-runtime'
 import makeAppURL from '../../../utils/makeAppURL'
@@ -35,6 +36,8 @@ export const meetingSummaryUrlParams = {
 const MeetingSummaryEmailRootSSR = (props: Props) => {
   const {appOrigin, environment, meetingId} = props
 
+  const {t} = useTranslation()
+
   return (
     <QueryRenderer<MeetingSummaryEmailRootSSRQuery>
       environment={environment}
@@ -56,7 +59,7 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         return (
           <MeetingSummaryEmail
             meeting={newMeeting}
-            referrer={'email'}
+            referrer={t('MeetingSummaryEmailRootSSR.Email')}
             teamDashUrl={teamDashUrl}
             meetingUrl={meetingUrl}
             referrerUrl={referrerUrl}

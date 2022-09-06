@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -43,13 +44,18 @@ interface Props {
 
 const PokerTemplateListTeam = (props: Props) => {
   const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
+
+  const {t} = useTranslation()
+
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'poker')
   if (teamTemplates.length === 0) {
     return (
       <Message>
-        <span>Your custom templates will show up here. Get started with a </span>
-        <StyledLink onClick={showPublicTemplates}>Public Template</StyledLink>
+        <span>{t('PokerTemplateListTeam.YourCustomTemplatesWillShowUpHereGetStartedWithA')}</span>
+        <StyledLink onClick={showPublicTemplates}>
+          {t('PokerTemplateListTeam.PublicTemplate')}
+        </StyledLink>
       </Message>
     )
   }
@@ -61,7 +67,7 @@ const PokerTemplateListTeam = (props: Props) => {
             key={template.id}
             template={template}
             isActive={template.id === activeTemplateId}
-            lowestScope={'TEAM'}
+            lowestScope={t('PokerTemplateListTeam.Team')}
             teamId={teamId}
           />
         )

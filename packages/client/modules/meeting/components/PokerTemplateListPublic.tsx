@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PokerTemplateListPublicQuery} from '../../../__generated__/PokerTemplateListPublicQuery.graphql'
@@ -43,6 +44,9 @@ const query = graphql`
 
 const PokerTemplateListPublic = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<PokerTemplateListPublicQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -61,7 +65,7 @@ const PokerTemplateListPublic = (props: Props) => {
             key={template.id}
             template={template}
             isActive={template.id === activeTemplateId}
-            lowestScope={'PUBLIC'}
+            lowestScope={t('PokerTemplateListPublic.Public')}
             teamId={teamId}
           />
         )

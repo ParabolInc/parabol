@@ -1,23 +1,24 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
-import {ThreadedPollBase_poll$key} from '~/__generated__/ThreadedPollBase_poll.graphql'
 import {ThreadedPollBase_discussion$key} from '~/__generated__/ThreadedPollBase_discussion.graphql'
-import {DiscussionThreadables} from './DiscussionThreadList'
-import Poll from './Poll/Poll'
-import PollTitle from './Poll/PollTitle'
+import {ThreadedPollBase_poll$key} from '~/__generated__/ThreadedPollBase_poll.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {addLocalPollOption} from './Poll/local/newPoll'
 import CreatePollMutation from '../mutations/CreatePollMutation'
-import {Polls, PollsAriaLabels} from '../types/constEnums'
-import {getPollState} from './Poll/PollState'
-import styled from '@emotion/styled'
-import PollOption from './Poll/PollOption'
-import PlainButton from './PlainButton/PlainButton'
 import {PALETTE} from '../styles/paletteV3'
+import {Polls, PollsAriaLabels} from '../types/constEnums'
+import {DiscussionThreadables} from './DiscussionThreadList'
+import PlainButton from './PlainButton/PlainButton'
 import {AddPollOptionButton} from './Poll/AddPollOptionButton'
-import EditablePollTitle from './Poll/EditablePollTitle'
 import EditablePollOption from './Poll/EditablePollOption'
+import EditablePollTitle from './Poll/EditablePollTitle'
+import {addLocalPollOption} from './Poll/local/newPoll'
+import Poll from './Poll/Poll'
+import PollOption from './Poll/PollOption'
+import {getPollState} from './Poll/PollState'
+import PollTitle from './Poll/PollTitle'
 
 const PollOptions = styled('div')({
   fontSize: '14px',
@@ -81,6 +82,9 @@ interface Props {
 
 const ThreadedPollBase = (props: Props) => {
   const {pollRef, discussionRef} = props
+
+  const {t} = useTranslation()
+
   const poll = useFragment(
     graphql`
       fragment ThreadedPollBase_poll on Poll {
@@ -181,7 +185,7 @@ const ThreadedPollBase = (props: Props) => {
                 onClick={createPoll}
                 disabled={!canCreatePoll}
               >
-                Start
+                {t('ThreadedPollBase.Start')}
               </StartPollButton>
             </StartPollWrapper>
           </PollActions>
@@ -202,7 +206,7 @@ const ThreadedPollBase = (props: Props) => {
         <PollActions>
           {selectedOptionId && (
             <SubmitVoteButton aria-label={PollsAriaLabels.POLL_SUBMIT_VOTE} onClick={submitVote}>
-              Submit and view results
+              {t('ThreadedPollBase.SubmitAndViewResults')}
             </SubmitVoteButton>
           )}
         </PollActions>

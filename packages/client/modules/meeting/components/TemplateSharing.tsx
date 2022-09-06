@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
@@ -74,6 +75,10 @@ interface Props {
 
 const TemplateSharing = (props: Props) => {
   const {template, teamId} = props
+
+  //FIXME i18n: Sharing publicly
+  const {t} = useTranslation()
+
   const {scope, team} = template
   const {name: teamName, organization, isLead} = team
   const {name: orgName} = organization
@@ -124,7 +129,7 @@ const TemplateSharing = (props: Props) => {
         </DropdownIcon>
       </DropdownBlock>
       {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
-      {tooltipPortal(<div>Must be Team Lead to change</div>)}
+      {tooltipPortal(<div>{t('TemplateSharing.MustBeTeamLeadToChange')}</div>)}
     </>
   )
 }

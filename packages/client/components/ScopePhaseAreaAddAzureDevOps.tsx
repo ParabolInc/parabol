@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import AzureDevOpsClientManager from '~/utils/AzureDevOpsClientManager'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -38,6 +39,8 @@ interface Props {
 }
 
 const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
@@ -80,11 +83,16 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
   }
   return (
     <AddAzureDevOpsArea>
-      <AddAzureDevOpsButton onClick={authAzureDevOps} size={'medium'}>
+      <AddAzureDevOpsButton
+        onClick={authAzureDevOps}
+        size={t('ScopePhaseAreaAddAzureDevOps.Medium')}
+      >
         <AzureDevOpsSVG />
-        Import issues from Azure DevOps
+        {t('ScopePhaseAreaAddAzureDevOps.ImportIssuesFromAzureDevops')}
       </AddAzureDevOpsButton>
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
+      <StyledLink onClick={gotoParabol}>
+        {t('ScopePhaseAreaAddAzureDevOps.OrAddNewTasksInParabol')}
+      </StyledLink>
     </AddAzureDevOpsArea>
   )
 }

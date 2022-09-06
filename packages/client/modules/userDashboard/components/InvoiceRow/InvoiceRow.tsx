@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {InvoiceRow_invoice} from '~/__generated__/InvoiceRow_invoice.graphql'
@@ -74,6 +75,12 @@ const InvoiceRow = (props: Props) => {
   const {
     invoice: {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status}
   } = props
+
+  //FIXME i18n: noopener noreferrer
+  //FIXME i18n: *Current estimate.
+  //FIXME i18n: noopener noreferrer
+  const {t} = useTranslation()
+
   const isEstimate = status === 'UPCOMING'
   return (
     <Row>
@@ -100,7 +107,7 @@ const InvoiceRow = (props: Props) => {
             )}
             {status === 'PAID' && (
               <StyledDate styledPaid>
-                {'Paid on '}
+                {t('InvoiceRow.PaidOn')}
                 {makeDateString(paidAt)}
               </StyledDate>
             )}
@@ -108,7 +115,7 @@ const InvoiceRow = (props: Props) => {
               <StyledDate styledPaid={status === 'PENDING'}>
                 {payUrl ? (
                   <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>
-                    {'PAY NOW'}
+                    {t('InvoiceRow.PayNow')}
                   </PayURL>
                 ) : (
                   `Status: ${status}`

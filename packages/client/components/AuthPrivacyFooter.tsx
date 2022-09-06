@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../styles/paletteV3'
 
 const color = PALETTE.SKY_500
@@ -23,18 +24,22 @@ const FooterCopy = styled('div')({
 })
 
 const AuthPrivacyFooter = () => {
+  //FIXME i18n: noopener noreferrer
+  //FIXME i18n: Privacy Policy
+  const {t} = useTranslation()
+
   return (
     <FooterCopy>
-      {'By creating an account, you agree to our '}
+      {t('AuthPrivacyFooter.ByCreatingAnAccountYouAgreeToOur')}
       <Link
         href='https://www.parabol.co/privacy'
         rel='noopener noreferrer'
         target='_blank'
         title='Privacy Policy'
       >
-        {'Privacy Policy'}
+        {t('AuthPrivacyFooter.PrivacyPolicy')}
       </Link>
-      .
+      {t('AuthPrivacyFooter..')}
     </FooterCopy>
   )
 }

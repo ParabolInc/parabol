@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import LinkButton from '../../../components/LinkButton'
 import Menu from '../../../components/Menu'
@@ -43,6 +44,9 @@ const StyledMenu = styled(Menu)({
 
 const SelectScaleDropdown = (props: Props) => {
   const {menuProps, dimension} = props
+
+  const {t} = useTranslation()
+
   const {closePortal} = menuProps
   const {selectedScale, team} = dimension
   const {id: seletedScaleId} = selectedScale
@@ -71,7 +75,7 @@ const SelectScaleDropdown = (props: Props) => {
 
   return (
     <StyledMenu
-      ariaLabel={'Select the scale for this dimension'}
+      ariaLabel={t('SelectScaleDropdown.SelectTheScaleForThisDimension')}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
@@ -91,7 +95,7 @@ const SelectScaleDropdown = (props: Props) => {
           label={
             <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
               <AddScaleLinkPlus />
-              Create a Scale
+              {t('SelectScaleDropdown.CreateAScale')}
             </AddScaleLink>
           }
         />

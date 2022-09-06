@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
@@ -31,6 +32,11 @@ const FirstCallWrapper = styled('div')({
 
 const ActionMeetingFirstCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  //FIXME i18n: Nothing to see here
+  //FIXME i18n: Now, what do you need?
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {endedAt, facilitator, facilitatorUserId, phases, showSidebar} = meeting
@@ -67,7 +73,8 @@ const ActionMeetingFirstCall = (props: Props) => {
                 <AgendaShortcutHint />
                 {!isFacilitating && (
                   <MeetingFacilitationHint>
-                    {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
+                    {t('ActionMeetingFirstCall.WaitingFor')} <b>{preferredName}</b>{' '}
+                    {`to start the ${phaseName}`}
                   </MeetingFacilitationHint>
                 )}
               </>

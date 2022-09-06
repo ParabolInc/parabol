@@ -1,11 +1,12 @@
 import React from 'react'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
 import {MenuMutationProps} from '../hooks/useMutationProps'
+import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   menuProps: MenuProps
@@ -15,6 +16,11 @@ interface Props {
 
 const AtlassianConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
+
+  //FIXME i18n: Refresh token
+  //FIXME i18n: Remove Atlassian
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -27,7 +33,7 @@ const AtlassianConfigMenu = (props: Props) => {
     RemoveAtlassianAuthMutation(atmosphere, {teamId}, {onError, onCompleted})
   }
   return (
-    <Menu ariaLabel={'Configure your Atlassian integration'} {...menuProps}>
+    <Menu ariaLabel={t('AtlassianConfigMenu.ConfigureYourAtlassianIntegration')} {...menuProps}>
       <MenuItem label='Refresh token' onClick={openOAuth} />
       <MenuItem label='Remove Atlassian' onClick={removeAtlassian} />
     </Menu>

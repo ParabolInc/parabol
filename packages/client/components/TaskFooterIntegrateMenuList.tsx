@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -42,6 +43,9 @@ const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
   const {mutationProps, menuProps, placeholder, repoIntegrations, task, label} = props
+
+  const {t} = useTranslation()
+
   const {hasMore} = repoIntegrations
   const items = repoIntegrations.items || []
   const {id: taskId, teamId, userId} = task
@@ -64,7 +68,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Export the task'}
+      ariaLabel={t('TaskFooterIntegrateMenuList.ExportTheTask')}
       {...menuProps}
       resetActiveOnChanges={[allItems]}
     >
@@ -77,7 +81,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
       {(query && allItems.length === 0 && status !== 'loading' && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          No integrations found!
+          {t('TaskFooterIntegrateMenuList.NoIntegrationsFound!')}
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}

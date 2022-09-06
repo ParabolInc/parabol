@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import {Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import StyledError from '../../../components/StyledError'
@@ -50,6 +51,9 @@ interface Props {
 
 const SelectTemplate = (props: Props) => {
   const {template, closePortal, teamId} = props
+
+  const {t} = useTranslation()
+
   const {id: templateId} = template
   const atmosphere = useAtmosphere()
   const {submitting, error} = useMutationProps()
@@ -62,7 +66,7 @@ const SelectTemplate = (props: Props) => {
       {error && <StyledError>{error.message}</StyledError>}
       <Button onClick={selectTemplate} palette='blue' waiting={submitting}>
         <StyledIcon />
-        {'Use Template'}
+        {t('SelectTemplate.UseTemplate')}
       </Button>
     </ButtonBlock>
   )

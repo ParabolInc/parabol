@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {RouteComponentProps} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
@@ -18,6 +19,10 @@ interface Props
 
 const VerifyEmail = (props: Props) => {
   const {history, match} = props
+
+  //FIXME i18n: You’re almost in!
+  const {t} = useTranslation()
+
   const {params} = match
   const {verificationToken, invitationToken} = params
   const atmosphere = useAtmosphere()
@@ -34,13 +39,13 @@ const VerifyEmail = (props: Props) => {
   return (
     <TeamInvitationWrapper>
       <InviteDialog>
-        <DialogTitle>Email Verification</DialogTitle>
+        <DialogTitle>{t('VerifyEmail.EmailVerification')}</DialogTitle>
         <DialogContent>
           <InvitationDialogCopy>{error ? error.message : 'You’re almost in!'}</InvitationDialogCopy>
           <InvitationCenteredCopy>
             {!error && (
               <PrimaryButton size='medium' waiting>
-                <span>Verifying now</span>
+                <span>{t('VerifyEmail.VerifyingNow')}</span>
                 <Ellipsis />
               </PrimaryButton>
             )}

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 import {OrgBillingDangerZone_organization} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
@@ -48,6 +49,12 @@ interface Props {
 }
 const OrgBillingDangerZone = (props: Props) => {
   const {organization} = props
+
+  //FIXME i18n: Danger Zone
+  //FIXME i18n: mailto:love@parabol.co?subject=Instant Unsubscribe from Pro
+  //FIXME i18n: Instant Unsubscribe from Pro
+  const {t} = useTranslation()
+
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
   const isPersonal = tier === 'personal'
@@ -58,12 +65,12 @@ const OrgBillingDangerZone = (props: Props) => {
           <ArchiveOrganization organization={organization} />
         ) : (
           <Unsubscribe>
-            <span>{'Need to cancel? It’s painless. '}</span>
+            <span>{t('OrgBillingDangerZone.NeedToCancelItSPainless.')}</span>
             <a
               href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
               title='Instant Unsubscribe from Pro'
             >
-              <u>{'Contact us'}</u>
+              <u>{t('OrgBillingDangerZone.ContactUs')}</u>
               <EnvelopeIcon>
                 <EmailIcon />
               </EnvelopeIcon>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {ArchiveTeam_team} from '~/__generated__/ArchiveTeam_team.graphql'
 import IconLabel from '../../../../components/IconLabel'
@@ -20,6 +21,11 @@ const Hint = styled('div')({
 
 const ArchiveTeam = (props: Props) => {
   const {team} = props
+
+  //FIXME i18n: Click to permanently delete this team.
+  //FIXME i18n: Delete Team
+  const {t} = useTranslation()
+
   const [showConfirmationField, setShowConfirmationField] = useState(false)
   const handleClick = () => {
     setShowConfirmationField(true)
@@ -39,7 +45,9 @@ const ArchiveTeam = (props: Props) => {
             <IconLabel icon='remove_circle' label='Delete Team' />
           </LinkButton>
           <Hint>
-            <b>Note</b>: {'This can’t be undone.'}
+            <b>{t('ArchiveTeam.Note')}</b>
+            {t('ArchiveTeam.:')}
+            {t('ArchiveTeam.ThisCanTBeUndone.')}
           </Hint>
         </div>
       ) : (

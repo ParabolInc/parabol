@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useRefreshInterval from '~/hooks/useRefreshInterval'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
@@ -24,6 +25,8 @@ interface Props {
 const RELATIVE_DATES_UPDATE_INTERVAL_MS = 1000
 
 export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props) {
+  const {t} = useTranslation()
+
   useRefreshInterval(RELATIVE_DATES_UPDATE_INTERVAL_MS)
 
   const {
@@ -48,7 +51,7 @@ export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props)
       </Hover>
       {isEdited && (
         <Hover onMouseEnter={showUpdatedTime} onMouseLeave={closeUpdatedTime} ref={updatedTimeRef}>
-          {' · Edited'}
+          {t('TeamPromptLastUpdatedTime.Edited')}
           {updatedTimePortal(absoluteDate(updatedAt))}
         </Hover>
       )}

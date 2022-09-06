@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import {JiraScopingSearchCurrentFilters_meeting$key} from '../__generated__/JiraScopingSearchCurrentFilters_meeting.graphql'
@@ -37,6 +38,9 @@ interface Props {
 
 const JiraScopingSearchCurrentFilters = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment JiraScopingSearchCurrentFilters_meeting on PokerMeeting {
@@ -71,7 +75,7 @@ const JiraScopingSearchCurrentFilters = (props: Props) => {
 
   return (
     <Wrapper>
-      <Description>Current filters:</Description>
+      <Description>{t('JiraScopingSearchCurrentFilters.CurrentFilters:')}</Description>
       <Items>{currentFilters}</Items>
     </Wrapper>
   )

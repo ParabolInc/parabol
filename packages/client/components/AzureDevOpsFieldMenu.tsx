@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -30,6 +31,9 @@ interface MenuOption {
 
 const AzureDevOpsFieldMenu = (props: Props) => {
   const {menuProps, stageRef, submitScore} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
@@ -168,7 +172,7 @@ const AzureDevOpsFieldMenu = (props: Props) => {
   return (
     <>
       <Menu
-        ariaLabel={'Select where to publish the estimate'}
+        ariaLabel={t('AzureDevOpsFieldMenu.SelectWhereToPublishTheEstimate')}
         portalStatus={portalStatus}
         isDropdown={isDropdown}
         defaultActiveIdx={defaultActiveIdx}

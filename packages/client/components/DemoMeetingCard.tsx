@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useCallback} from 'react'
+import {useTranslation} from 'react-i18next'
 import {Link} from 'react-router-dom'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -103,6 +104,9 @@ const TopLine = styled('div')({
 })
 
 const DemoMeetingCard = () => {
+  //FIXME i18n: Demo Meeting Card Clicked
+  const {t} = useTranslation()
+
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
 
@@ -115,14 +119,14 @@ const DemoMeetingCard = () => {
       <Link to={`/retrospective-demo`}>
         <MeetingImgWrapper>
           <MeetingImgBackground meetingType='retrospective' />
-          <MeetingTypeLabel>Retro</MeetingTypeLabel>
+          <MeetingTypeLabel>{t('DemoMeetingCard.Retro')}</MeetingTypeLabel>
           <MeetingImg src={retrospective} alt='' />
         </MeetingImgWrapper>
         <MeetingInfo>
           <TopLine>
-            <Name>Retrospective Demo</Name>
+            <Name>{t('DemoMeetingCard.RetrospectiveDemo')}</Name>
           </TopLine>
-          <Meta>Demo team • Reflect</Meta>
+          <Meta>{t('DemoMeetingCard.DemoTeamReflect')}</Meta>
         </MeetingInfo>
       </Link>
     </CardWrapper>

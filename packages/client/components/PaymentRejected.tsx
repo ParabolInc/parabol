@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import useRouter from '../hooks/useRouter'
@@ -11,6 +12,9 @@ interface Props {
 }
 const PaymentRejected = (props: Props) => {
   const {notification} = props
+
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {organization} = notification
   const {id: orgId, creditCard} = organization
@@ -22,7 +26,12 @@ const PaymentRejected = (props: Props) => {
     <NotificationTemplate
       message={`Your ${brand} card ending in ${last4} was rejected`}
       notification={notification}
-      action={<NotificationAction label={'Updated billing information'} onClick={addBilling} />}
+      action={
+        <NotificationAction
+          label={t('PaymentRejected.UpdatedBillingInformation')}
+          onClick={addBilling}
+        />
+      }
     />
   )
 }

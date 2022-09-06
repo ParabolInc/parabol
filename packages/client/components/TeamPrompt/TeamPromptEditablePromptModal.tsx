@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Close, Info} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useForm from '~/hooks/useForm'
@@ -117,6 +118,11 @@ interface Props {
 
 const TeamPromptEditablePromptModal = (props: Props) => {
   const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error} = props
+
+  //FIXME i18n: A prompt is required to start the activity
+  //FIXME i18n: Prompts should be at least two characters long
+  const {t} = useTranslation()
+
   const {
     validateField,
     setDirtyField,
@@ -151,7 +157,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>
-        {'Prompt'}
+        {t('TeamPromptEditablePromptModal.Prompt')}
         <StyledCloseButton onClick={onCloseModal}>
           <CloseIcon />
         </StyledCloseButton>
@@ -160,13 +166,13 @@ const TeamPromptEditablePromptModal = (props: Props) => {
         <TextArea
           {...fields.meetingPrompt}
           onFocus={(e) => e.target.select()}
-          name={'meetingPrompt'}
+          name={t('TeamPromptEditablePromptModal.Meetingprompt')}
           isDesktop={isDesktop}
           autoFocus={true}
           maxLength={500}
           maxRows={3}
           onChange={onChangePrompt}
-          placeholder={'What are you working on today? Stuck on anything?'}
+          placeholder={t('TeamPromptEditablePromptModal.WhatAreYouWorkingOnTodayStuckOnAnything?')}
         />
         {displayError && (
           <ErrorWrapper>
@@ -174,14 +180,16 @@ const TeamPromptEditablePromptModal = (props: Props) => {
             {displayError}
           </ErrorWrapper>
         )}
-        <SuggestedPromptsHeader>Suggestions</SuggestedPromptsHeader>
+        <SuggestedPromptsHeader>
+          {t('TeamPromptEditablePromptModal.Suggestions')}
+        </SuggestedPromptsHeader>
         {SUGGESTED_PROMPTS.map((prompt, i) => (
           <SuggestedPromptWrapper
             isDesktop={isDesktop}
             key={i}
             onClick={() => setValue('meetingPrompt', prompt)}
           >
-            <LightbulbWrapper>💡</LightbulbWrapper>
+            <LightbulbWrapper>{t('TeamPromptEditablePromptModal.\udca1')}</LightbulbWrapper>
             {prompt}
           </SuggestedPromptWrapper>
         ))}
@@ -190,9 +198,9 @@ const TeamPromptEditablePromptModal = (props: Props) => {
             disabled={!!fields.meetingPrompt.error}
             onClick={handleSubmitUpdate}
             size='medium'
-            palette={'blue'}
+            palette={t('TeamPromptEditablePromptModal.Blue')}
           >
-            Use prompt
+            {t('TeamPromptEditablePromptModal.UsePrompt')}
           </StyledRaisedButton>
         </UpdatePromptFooter>
       </DialogContent>

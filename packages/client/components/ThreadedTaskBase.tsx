@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {PALETTE} from '~/styles/paletteV3'
@@ -55,6 +56,9 @@ const ThreadedTaskBase = (props: Props) => {
     dataCy,
     viewer
   } = props
+
+  const {t} = useTranslation()
+
   const isReply = !!props.isReply
   const {id: discussionId, replyingToCommentId} = discussion
   const {id: taskId, createdByUser, threadParentId} = task
@@ -73,7 +77,10 @@ const ThreadedTaskBase = (props: Props) => {
     <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
-        <ThreadedItemHeaderDescription title={preferredName} subTitle={'added a Task'}>
+        <ThreadedItemHeaderDescription
+          title={preferredName}
+          subTitle={t('ThreadedTaskBase.AddedATask')}
+        >
           <HeaderActions>
             <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
           </HeaderActions>

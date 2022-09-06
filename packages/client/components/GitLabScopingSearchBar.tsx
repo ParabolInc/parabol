@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
 import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
@@ -13,6 +14,8 @@ interface Props {
 
 const GitLabScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
 
   const meeting = useFragment(
     graphql`
@@ -57,11 +60,11 @@ const GitLabScopingSearchBar = (props: Props) => {
     <ScopingSearchBar currentFilters={currentFilters}>
       <ScopingSearchHistoryToggle />
       <ScopingSearchInput
-        placeholder={'Search GitLab issues...'}
+        placeholder={t('GitLabScopingSearchBar.SearchGitlabIssues.')}
         queryString={queryString}
         meetingId={meetingId}
-        linkedRecordName={'gitlabSearchQuery'}
-        service={'gitlab'}
+        linkedRecordName={t('GitLabScopingSearchBar.Gitlabsearchquery')}
+        service={t('GitLabScopingSearchBar.Gitlab')}
       />
       <GitLabScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

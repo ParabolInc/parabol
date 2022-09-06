@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {OrganizationRow_organization} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -89,6 +90,9 @@ interface Props {
 
 const OrganizationRow = (props: Props) => {
   const {organization} = props
+
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {
     id: orgId,
@@ -106,7 +110,7 @@ const OrganizationRow = (props: Props) => {
   const showUpgradeCTA = tier === 'personal'
   const upgradeCTALabel = (
     <span>
-      {'Upgrade to '}
+      {t('OrganizationRow.UpgradeTo')}
       <b>{TierLabel.PRO}</b>
     </span>
   )
@@ -134,7 +138,7 @@ const OrganizationRow = (props: Props) => {
         </StyledRowInfo>
         <RowActions>
           {showUpgradeCTA && (
-            <StyledFlatButton onClick={onRowClick} palette={'blue'}>
+            <StyledFlatButton onClick={onRowClick} palette={t('OrganizationRow.Blue')}>
               {upgradeCTALabel}
             </StyledFlatButton>
           )}

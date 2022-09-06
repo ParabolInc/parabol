@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -108,6 +109,9 @@ interface Props {
 
 const AgendaItem = (props: Props) => {
   const {agendaItem, gotoStageId, isDragging, meeting} = props
+
+  const {t} = useTranslation()
+
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
@@ -189,7 +193,7 @@ const AgendaItem = (props: Props) => {
           {content}
         </MeetingSubnavItem>
         <DeleteIconButton
-          aria-label={'Remove this agenda topic'}
+          aria-label={t('AgendaItem.RemoveThisAgendaTopic')}
           disabled={!!endedAt}
           icon='cancel'
           onClick={handleRemove}

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardContent, {
@@ -69,6 +70,9 @@ const getHeaderFields = (
 
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage} = props
+
+  const {t} = useTranslation()
+
   const {task} = stage
   if (!task) {
     return <PokerEstimateHeaderCardError />
@@ -82,7 +86,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
   // it's an integrated task, but the service might be down
   const headerFields = getHeaderFields(integration)
   if (!headerFields) {
-    return <PokerEstimateHeaderCardError service={'Integration'} />
+    return <PokerEstimateHeaderCardError service={t('PokerEstimateHeaderCard.Integration')} />
   }
   return <PokerEstimateHeaderCardContent {...headerFields} />
 }

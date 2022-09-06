@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {TimelineEventTeamCreated_timelineEvent} from '../__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
 import StyledLink from './StyledLink'
@@ -18,6 +19,10 @@ const Link = styled(StyledLink)({
 
 const TimelineEventTeamCreated = (props: Props) => {
   const {timelineEvent} = props
+
+  //FIXME i18n: But now it is archived. What a wild ride!
+  const {t} = useTranslation()
+
   const {team} = timelineEvent
   const {id: teamId, name: teamName, isArchived} = team
   return (
@@ -31,8 +36,8 @@ const TimelineEventTeamCreated = (props: Props) => {
           'But now it is archived. What a wild ride!'
         ) : (
           <>
-            {'Visit your '}
-            <Link to={`/team/${teamId}`}>team dashboard</Link>
+            {t('TimelineEventTeamCreated.VisitYour')}
+            <Link to={`/team/${teamId}`}>{t('TimelineEventTeamCreated.TeamDashboard')}</Link>
           </>
         )}
       </TimelineEventBody>

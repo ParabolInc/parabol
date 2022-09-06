@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
@@ -22,6 +23,10 @@ const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.na
 
 const NewJiraIssueMenu = (props: Props) => {
   const {handleSelectProjectKey, menuProps, projectsRef} = props
+
+  //FIXME i18n: Select Jira project
+  //FIXME i18n: Search Jira
+  const {t} = useTranslation()
 
   const projects = useFragment(
     graphql`
@@ -48,7 +53,9 @@ const NewJiraIssueMenu = (props: Props) => {
     >
       <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       {query && projects.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          {t('NewJiraIssueMenu.NoProjectsFound!')}
+        </EmptyDropdownMenuItemLabel>
       )}
 
       {filteredProjects.slice(0, 10).map((project) => {

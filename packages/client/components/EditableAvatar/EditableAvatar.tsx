@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Edit as EditIcon} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {panelShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import Avatar from '../Avatar/Avatar'
@@ -66,12 +67,15 @@ interface Props {
 
 const EditableAvatar = (props: Props) => {
   const {hasPanel, onClick, picture, size, unstyled} = props
+
+  const {t} = useTranslation()
+
   const avatarSize = hasPanel ? size - panelPaddingHorizontal : size
   return (
     <EditableAvatarRoot hasPanel={hasPanel} size={size}>
       <EditableAvatarEditOverlay hasPanel={hasPanel} onClick={onClick} size={size}>
         <EditIcon />
-        <span>{'EDIT'}</span>
+        <span>{t('EditableAvatar.Edit')}</span>
       </EditableAvatarEditOverlay>
       <EditableAvatarImgBlock hasPanel={hasPanel} size={size}>
         <Avatar picture={picture} size={avatarSize} sansRadius={unstyled} sansShadow={unstyled} />

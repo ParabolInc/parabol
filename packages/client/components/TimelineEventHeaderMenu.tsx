@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import Menu from '~/components/Menu'
 import MenuItem from '~/components/MenuItem'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -26,15 +27,18 @@ const TimelineEventMenuItemLabel = styled('div')({
 
 const TimelineEventHeaderMenu = (props: Props) => {
   const {menuProps, timelineEventId} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   return (
-    <Menu ariaLabel={'Change the status of the timeline event'} {...menuProps}>
+    <Menu ariaLabel={t('TimelineEventHeaderMenu.ChangeTheStatusOfTheTimelineEvent')} {...menuProps}>
       <MenuItem
         key='archive'
         label={
           <TimelineEventMenuItemLabel>
             <StyledIcon />
-            <span>{'Archive meeting'}</span>
+            <span>{t('TimelineEventHeaderMenu.ArchiveMeeting')}</span>
           </TimelineEventMenuItemLabel>
         }
         onClick={() => ArchiveTimelineEventMutation(atmosphere, {timelineEventId})}

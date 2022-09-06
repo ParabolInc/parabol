@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 
 const Wrapper = styled('div')({
@@ -22,8 +23,11 @@ interface Props {
 
 const PhaseCompleteTag = (props: Props) => {
   const {isComplete} = props
+
+  const {t} = useTranslation()
+
   if (!isComplete) return null
-  return <Wrapper>Phase Completed</Wrapper>
+  return <Wrapper>{t('PhaseCompleteTag.PhaseCompleted')}</Wrapper>
 }
 
 export default PhaseCompleteTag

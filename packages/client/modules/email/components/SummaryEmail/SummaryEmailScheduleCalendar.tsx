@@ -1,13 +1,11 @@
-import {
-  createGoogleCalendarInviteURL,
-  makeIcsUrl
-} from 'parabol-client/utils/makeCalendarInvites'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {createGoogleCalendarInviteURL, makeIcsUrl} from 'parabol-client/utils/makeCalendarInvites'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {ExternalLinks} from '../../../../types/constEnums'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import {emailFontFamily} from '../../styles'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
 
 const message = {
   color: PALETTE.SLATE_700,
@@ -73,6 +71,11 @@ const sectionStart = {
 
 const SummaryEmailScheduleCalendar = (props: Props) => {
   const {createdAt, isDemo, meetingUrl, meetingNumber, teamName} = props
+
+  //FIXME i18n: noopener noreferrer
+  //FIXME i18n: noopener noreferrer
+  const {t} = useTranslation()
+
   if (meetingNumber > 2 || isDemo) return null
   return (
     <>
@@ -80,7 +83,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
         <td align='center' style={sectionStart}>
           <div style={message}>
             <div>
-              <span>{'Tap here to schedule your next meeting:'}</span>
+              <span>{t('SummaryEmailScheduleCalendar.TapHereToScheduleYourNextMeeting:')}</span>
               <br />
               <div style={iconLinkBlock}>
                 <a
@@ -96,7 +99,9 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                     height={iconSize}
                     width={iconSize}
                   />
-                  <span style={iconLinkLabel}>{'Google Calendar'}</span>
+                  <span style={iconLinkLabel}>
+                    {t('SummaryEmailScheduleCalendar.GoogleCalendar')}
+                  </span>
                 </a>
               </div>
               <div style={iconLinkBlock}>
@@ -113,14 +118,14 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                     height={iconSize}
                     width={iconSize}
                   />
-                  <span style={iconLinkLabel}>{'Outlook, etc.'}</span>
+                  <span style={iconLinkLabel}>{t('SummaryEmailScheduleCalendar.OutlookEtc.')}</span>
                 </a>
               </div>
             </div>
-            {'Or, make your own and include this link as the location:'}
+            {t('SummaryEmailScheduleCalendar.OrMakeYourOwnAndIncludeThisLinkAsTheLocation:')}
             <EmptySpace height={8} />
             {/*
-            // @ts-ignore*/}
+          // @ts-ignore*/}
             <table align='center' style={meetingLinkTable} width='80%'>
               <tbody>
                 <tr>

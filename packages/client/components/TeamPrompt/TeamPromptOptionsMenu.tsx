@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Flag, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
@@ -39,6 +40,8 @@ interface Props {
 const TeamPromptOptionsMenu = (props: Props) => {
   const {meetingRef, menuProps} = props
 
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment TeamPromptOptionsMenu_meeting on TeamPromptMeeting {
@@ -68,7 +71,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
   return (
-    <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+    <Menu ariaLabel={t('TeamPromptOptionsMenu.EditTheMeeting')} {...menuProps}>
       {recurrence && (
         <MenuItem
           key='copy'
@@ -76,7 +79,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
           label={
             <OptionMenuItem>
               <ReplayIcon />
-              {hasRecurrenceEnabled ? <span>{'Stop repeating'}</span> : <span>{'Repeat M-F'}</span>}
+              {hasRecurrenceEnabled ? (
+                <span>{t('TeamPromptOptionsMenu.StopRepeating')}</span>
+              ) : (
+                <span>{t('TeamPromptOptionsMenu.RepeatMF')}</span>
+              )}
             </OptionMenuItem>
           }
           onClick={() => {
@@ -96,7 +103,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         label={
           <OptionMenuItem>
             <FlagIcon />
-            <span>{'End this activity'}</span>
+            <span>{t('TeamPromptOptionsMenu.EndThisActivity')}</span>
           </OptionMenuItem>
         }
         onClick={() => {

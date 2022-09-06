@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
@@ -64,6 +65,9 @@ interface Props {
 const TeamPromptTopBar = (props: Props) => {
   const {meetingRef, isDesktop} = props
 
+  //FIXME i18n: Back to Meetings
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
@@ -94,14 +98,14 @@ const TeamPromptTopBar = (props: Props) => {
             isWrap
             maxLength={50}
             validate={validate}
-            placeholder={'Best Meeting Ever!'}
+            placeholder={t('TeamPromptTopBar.BestMeetingEver!')}
           />
         ) : (
           <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
         )}
       </TeamPromptHeader>
       <IconGroupBlock>
-        {isDesktop && <BetaBadge>BETA</BetaBadge>}
+        {isDesktop && <BetaBadge>{t('TeamPromptTopBar.Beta')}</BetaBadge>}
         <NewMeetingAvatarGroup meeting={meeting} />
         <ButtonContainer>
           <TeamPromptOptions meetingRef={meeting} />

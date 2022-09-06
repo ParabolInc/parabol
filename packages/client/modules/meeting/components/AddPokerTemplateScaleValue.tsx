@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import LinkButton from '../../../components/LinkButton'
 
@@ -30,10 +31,13 @@ interface Props {
 
 const AddTemplateScaleValue = (props: Props) => {
   const {onClick} = props
+
+  const {t} = useTranslation()
+
   return (
     <AddScaleValueLink palette='blue' onClick={onClick}>
       <AddScaleValueLinkPlus />
-      <div>Add value</div>
+      <div>{t('AddTemplateScaleValue.AddValue')}</div>
     </AddScaleValueLink>
   )
 }

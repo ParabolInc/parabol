@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {TeamInvitationErrorAccepted_verifiedInvitation} from '../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
@@ -20,29 +21,37 @@ const InlineCopy = styled(InvitationDialogCopy)({
 
 const TeamInvitationErrorAccepted = (props: Props) => {
   const {verifiedInvitation} = props
+
+  //FIXME i18n: Team Invitation
+  //FIXME i18n: Visit the Team Dashboard
+  const {t} = useTranslation()
+
   const {meetingId, meetingName, teamInvitation, teamName} = verifiedInvitation
   useDocumentTitle(`Token already accepted | Team Invitation`, 'Team Invitation')
   if (!teamInvitation || teamName === null) return null
   const {teamId} = teamInvitation
   return (
     <InviteDialog>
-      <DialogTitle>Invitation Already Accepted</DialogTitle>
+      <DialogTitle>{t('TeamInvitationErrorAccepted.InvitationAlreadyAccepted')}</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          The invitation to {teamName} has already been redeemed.
+          {t('TeamInvitationErrorAccepted.TheInvitationTo')}
+          {teamName}
+          {t('TeamInvitationErrorAccepted.HasAlreadyBeenRedeemed.')}
         </InvitationDialogCopy>
         {meetingName ? (
           <>
             <StyledLink to={`/meet/${meetingId}`} title={`Join ${meetingName}`}>
-              Join {meetingName}
+              {t('TeamInvitationErrorAccepted.Join')}
+              {meetingName}
             </StyledLink>{' '}
-            <InlineCopy>in progress…</InlineCopy>
+            <InlineCopy>{t('TeamInvitationErrorAccepted.InProgress…')}</InlineCopy>
           </>
         ) : (
           <>
-            <InlineCopy>Visit the</InlineCopy>{' '}
+            <InlineCopy>{t('TeamInvitationErrorAccepted.VisitThe')}</InlineCopy>{' '}
             <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
-              Team Dashboard
+              {t('TeamInvitationErrorAccepted.TeamDashboard')}
             </StyledLink>
           </>
         )}

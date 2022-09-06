@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
@@ -51,6 +52,9 @@ const getValue = (item: ReflectTemplateListTeam_settings['teamTemplates'][0]) =>
 
 const ReflectTemplateListTeam = (props: Props) => {
   const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef} = props
+
+  const {t} = useTranslation()
+
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateListTeam_settings on RetrospectiveMeetingSettings {
@@ -72,8 +76,10 @@ const ReflectTemplateListTeam = (props: Props) => {
   if (teamTemplates.length === 0) {
     return (
       <Message>
-        <span>Your custom templates will show up here. Get started with a </span>
-        <StyledLink onClick={showPublicTemplates}>Public Template</StyledLink>
+        <span>{t('ReflectTemplateListTeam.YourCustomTemplatesWillShowUpHereGetStartedWithA')}</span>
+        <StyledLink onClick={showPublicTemplates}>
+          {t('ReflectTemplateListTeam.PublicTemplate')}
+        </StyledLink>
       </Message>
     )
   }
@@ -88,7 +94,7 @@ const ReflectTemplateListTeam = (props: Props) => {
             key={template.id}
             template={template}
             isActive={template.id === activeTemplateId}
-            lowestScope={'TEAM'}
+            lowestScope={t('ReflectTemplateListTeam.Team')}
             teamId={teamId}
             templateSearchQuery={searchQuery}
           />

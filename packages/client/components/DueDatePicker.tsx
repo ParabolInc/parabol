@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import DayPicker, {DayModifiers} from 'react-day-picker'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -38,6 +39,10 @@ const Hint = styled('div')({
 
 const DueDatePicker = (props: Props) => {
   const {menuProps, task, useTaskChild} = props
+
+  //FIXME i18n: Pick a due date
+  const {t} = useTranslation()
+
   const {id: taskId, dueDate} = task
   useTaskChild('dueDate')
   const atmosphere = useAtmosphere()
@@ -57,8 +62,8 @@ const DueDatePicker = (props: Props) => {
   const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1))
   return (
     <TallMenu ariaLabel='Pick a due date' {...menuProps}>
-      <PickerTitle>{'Change Due Date'}</PickerTitle>
-      {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
+      <PickerTitle>{t('DueDatePicker.ChangeDueDate')}</PickerTitle>
+      {showHint && <Hint>{t('DueDatePicker.ToRemoveTapSelectedDate')}</Hint>}
       <DayPicker
         disabledDays={{before: now}}
         fromMonth={now}

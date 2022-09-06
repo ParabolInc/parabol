@@ -1,9 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import upgradeLaterSvg from '../../../static/images/illustrations/conversion_prompt-upgrade_later.svg'
+import DialogContainer from './DialogContainer'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
-import DialogContainer from './DialogContainer'
-import upgradeLaterSvg from '../../../static/images/illustrations/conversion_prompt-upgrade_later.svg'
 
 const Illustration = styled('img')({
   display: 'block ',
@@ -33,20 +34,23 @@ interface Props {
 
 const UpgradeLater = (props: Props) => {
   const {closePortal} = props
+
+  const {t} = useTranslation()
+
   return (
     <Container>
       <Illustration src={upgradeLaterSvg} />
-      <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
+      <InvitationDialogCopy>{t('UpgradeLater.YourOrganizationHasExceeded')}</InvitationDialogCopy>
       <InvitationDialogCopy>
-        {'the free tier limit of '}
-        <b>{'2 teams'}</b>
-        {'.'}
+        {t('UpgradeLater.TheFreeTierLimitOf')}
+        <b>{t('UpgradeLater.2Teams')}</b>
+        {t('UpgradeLater..')}
       </InvitationDialogCopy>
-      <CopySpacer>{'We’ll send you an email so'}</CopySpacer>
-      <InvitationDialogCopy>{'you can upgrade later'}</InvitationDialogCopy>
+      <CopySpacer>{t('UpgradeLater.WeLlSendYouAnEmailSo')}</CopySpacer>
+      <InvitationDialogCopy>{t('UpgradeLater.YouCanUpgradeLater')}</InvitationDialogCopy>
       <ButtonBlock>
         <ModalButton size='large' onClick={closePortal}>
-          {'Back to Business'}
+          {t('UpgradeLater.BackToBusiness')}
         </ModalButton>
       </ButtonBlock>
     </Container>

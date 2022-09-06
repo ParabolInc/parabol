@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Error} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -64,6 +65,9 @@ const Label = styled('div')({
 
 const AddMissingJiraFieldModal = (props: Props) => {
   const {stage, closePortal, submitScore} = props
+
+  const {t} = useTranslation()
+
   const {meetingId, id: stageId, teamId} = stage
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
@@ -102,11 +106,13 @@ const AddMissingJiraFieldModal = (props: Props) => {
 
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Oops!'}</DialogTitle>
+      <DialogTitle>{t('AddMissingJiraFieldModal.Oops!')}</DialogTitle>
       <DialogContent>
         <div>
           <StyledTip>
-            {'You do not have this field configured in Jira, do you want us to fix it for you?'}
+            {t(
+              'AddMissingJiraFieldModal.YouDoNotHaveThisFieldConfiguredInJiraDoYouWantUsToFixItForYou?'
+            )}
           </StyledTip>
 
           {error && (
@@ -117,7 +123,7 @@ const AddMissingJiraFieldModal = (props: Props) => {
           )}
           <ButtonGroup>
             <SecondaryButton onClick={closePortal} size='medium' disabled={submitting}>
-              Cancel
+              {t('AddMissingJiraFieldModal.Cancel')}
             </SecondaryButton>
             <StyledPrimaryButton
               onClick={onFixItForMeClicked}
@@ -125,7 +131,7 @@ const AddMissingJiraFieldModal = (props: Props) => {
               waiting={submitting}
               disabled={submitting}
             >
-              Fix it for me
+              {t('AddMissingJiraFieldModal.FixItForMe')}
             </StyledPrimaryButton>
           </ButtonGroup>
         </div>

@@ -1,10 +1,14 @@
 import React, {useEffect, useState} from 'react'
-import InviteDialog from './InviteDialog'
-import DialogTitle from './DialogTitle'
+import {useTranslation} from 'react-i18next'
 import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InviteDialog from './InviteDialog'
 import StyledError from './StyledError'
 
 const AuthProvider = () => {
+  //FIXME i18n: Error logging in
+  const {t} = useTranslation()
+
   const [error, setError] = useState('')
   useEffect(() => {
     const callOpener = async () => {
@@ -32,7 +36,7 @@ const AuthProvider = () => {
   if (!error) return null
   return (
     <InviteDialog>
-      <DialogTitle>{'Authentication Error'}</DialogTitle>
+      <DialogTitle>{t('AuthProvider.AuthenticationError')}</DialogTitle>
       <DialogContent>
         <StyledError>{error}</StyledError>
       </DialogContent>

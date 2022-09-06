@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -36,10 +37,12 @@ interface Props {
 }
 
 const SpotlightTopBar = (prop: Props) => {
+  const {t} = useTranslation()
+
   const {closeSpotlight} = prop
   return (
     <TopRow>
-      <Title>Find cards with similar reflections</Title>
+      <Title>{t('SpotlightTopBar.FindCardsWithSimilarReflections')}</Title>
       <StyledCloseButton onClick={closeSpotlight}>
         <CloseIcon />
       </StyledCloseButton>

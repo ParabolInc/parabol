@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
@@ -79,6 +80,12 @@ interface Props {
 
 const CreditCardForm = (props: Props) => {
   const {activeUserCount, actionType, onSuccess, onLater, orgId} = props
+
+  //FIXME i18n: Credit Card Modal Opened
+  //FIXME i18n: Invalid details
+  //FIXME i18n: Card number
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const isStripeLoaded = useScript('https://js.stripe.com/v2/')
   const [stripeClientManager] = useState(() => new StripeClientManager())
@@ -190,7 +197,7 @@ const CreditCardForm = (props: Props) => {
           autoFocus
           iconName='credit_card'
           maxLength={20}
-          name={'creditCardNumber'}
+          name={t('CreditCardForm.Creditcardnumber')}
           onBlur={() => setDirtyField('creditCardNumber')}
           onChange={onChange}
           placeholder='Card number'
@@ -201,7 +208,7 @@ const CreditCardForm = (props: Props) => {
             autoComplete='cc-exp'
             iconName='date_range'
             maxLength={5}
-            name={'expiry'}
+            name={t('CreditCardForm.Expiry')}
             onChange={onChange}
             onBlur={() => setDirtyField('expiry')}
             placeholder='MM/YY'
@@ -209,8 +216,8 @@ const CreditCardForm = (props: Props) => {
           <CardCvc
             {...fields.cvc}
             autoComplete='cc-csc'
-            iconName={'lock'}
-            name={'cvc'}
+            iconName={t('CreditCardForm.Lock')}
+            name={t('CreditCardForm.Cvc')}
             maxLength={5}
             onBlur={() => setDirtyField('cvc')}
             onChange={onChange}
@@ -220,9 +227,16 @@ const CreditCardForm = (props: Props) => {
         <CreditCardPricingLine activeUserCount={activeUserCount} actionType={actionType} />
         <ButtonGroup>
           {actionType === 'squeeze' && (
-            <UpgradeLaterButton onClick={onLater}>Upgrade Later</UpgradeLaterButton>
+            <UpgradeLaterButton onClick={onLater}>
+              {t('CreditCardForm.UpgradeLater')}
+            </UpgradeLaterButton>
           )}
-          <UpgradeButton size='medium' onClick={handleSubmit} waiting={submitting} type={'submit'}>
+          <UpgradeButton
+            size='medium'
+            onClick={handleSubmit}
+            waiting={submitting}
+            type={t('CreditCardForm.Submit')}
+          >
             {CTALabel[actionType]}
           </UpgradeButton>
         </ButtonGroup>

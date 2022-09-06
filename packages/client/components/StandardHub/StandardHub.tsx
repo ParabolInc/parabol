@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {VerifiedUser as VerifiedUserIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
 import PlainButton from '~/components/PlainButton/PlainButton'
@@ -95,6 +96,9 @@ const DEFAULT_VIEWER = {
 
 const StandardHub = (props: Props) => {
   const {handleMenuClick, viewer} = props
+
+  const {t} = useTranslation()
+
   const {email, picture, preferredName, tier} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
   const {history} = useRouter()
@@ -119,7 +123,7 @@ const StandardHub = (props: Props) => {
         <Upgrade onClick={handleUpgradeClick}>
           <VerifiedUserIcon />
           <UpgradeCTA>
-            {'Upgrade to '}
+            {t('StandardHub.UpgradeTo')}
             <b>{TierLabel.PRO}</b>
           </UpgradeCTA>
         </Upgrade>

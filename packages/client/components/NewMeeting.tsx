@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -119,6 +120,9 @@ const query = graphql`
 
 const NewMeeting = (props: Props) => {
   const {teamId, queryRef, onClose} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<NewMeetingQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -175,7 +179,7 @@ const NewMeeting = (props: Props) => {
   return (
     <NewMeetingDialog>
       <Title>
-        New meeting
+        {t('NewMeeting.NewMeeting')}
         <CloseButton onClick={onClose}>
           <IconLabel icon='close' iconLarge />
         </CloseButton>

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Forum} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
@@ -30,6 +31,9 @@ interface Props {
 
 const NewMeetingActionsCurrentMeetings = (props: Props) => {
   const {team} = props
+
+  const {t} = useTranslation()
+
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.LOWER_RIGHT,
     {
@@ -47,7 +51,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
         onClick={togglePortal}
         ref={originRef}
         hasMeetings={meetingCount > 0}
-        size={'large'}
+        size={t('NewMeetingActionsCurrentMeetings.Large')}
       >
         <ForumIcon />
         {label}

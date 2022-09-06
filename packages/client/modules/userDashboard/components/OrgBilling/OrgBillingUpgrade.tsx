@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {OrgBillingUpgrade_organization} from '~/__generated__/OrgBillingUpgrade_organization.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -43,6 +44,9 @@ interface Props {
 
 const OrgBillingUpgrade = (props: Props) => {
   const {organization, invoiceListRefetch} = props
+
+  const {t} = useTranslation()
+
   const {id: orgId, tier, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {togglePortal, closePortal, modalPortal} = useModal()
@@ -52,7 +56,7 @@ const OrgBillingUpgrade = (props: Props) => {
       {modalPortal(
         <CreditCardModal
           onUpgrade={onUpgrade}
-          actionType={'upgrade'}
+          actionType={t('OrgBillingUpgrade.Upgrade')}
           closePortal={closePortal}
           orgId={orgId}
           activeUserCount={activeUserCount}
@@ -61,11 +65,13 @@ const OrgBillingUpgrade = (props: Props) => {
       {tier === 'personal' && (
         <Panel>
           <Inner>
-            <Title>Upgrade to Pro</Title>
+            <Title>{t('OrgBillingUpgrade.UpgradeToPro')}</Title>
             <Quotes />
             <UpgradeBenefits />
             <ButtonBlock>
-              <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
+              <StyledPrimaryButton onClick={togglePortal}>
+                {t('OrgBillingUpgrade.UpgradeNow')}
+              </StyledPrimaryButton>
             </ButtonBlock>
           </Inner>
         </Panel>

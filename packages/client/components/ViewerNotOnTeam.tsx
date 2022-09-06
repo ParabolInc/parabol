@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
@@ -36,6 +37,10 @@ const query = graphql`
 
 const ViewerNotOnTeam = (props: Props) => {
   const {queryRef} = props
+
+  //FIXME i18n: Invitation Required
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -68,14 +73,18 @@ const ViewerNotOnTeam = (props: Props) => {
   return (
     <TeamInvitationWrapper>
       <InviteDialog>
-        <DialogTitle>Invitation Required</DialogTitle>
+        <DialogTitle>{t('ViewerNotOnTeam.InvitationRequired')}</DialogTitle>
         <DialogContent>
-          <InvitationDialogCopy>You’re almost on the team!</InvitationDialogCopy>
-          <InvitationDialogCopy>Just ask a team member for an invitation.</InvitationDialogCopy>
-          <InvitationDialogCopy>This page will redirect automatically.</InvitationDialogCopy>
+          <InvitationDialogCopy>{t('ViewerNotOnTeam.YouReAlmostOnTheTeam!')}</InvitationDialogCopy>
+          <InvitationDialogCopy>
+            {t('ViewerNotOnTeam.JustAskATeamMemberForAnInvitation.')}
+          </InvitationDialogCopy>
+          <InvitationDialogCopy>
+            {t('ViewerNotOnTeam.ThisPageWillRedirectAutomatically.')}
+          </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <PrimaryButton size='medium' waiting>
-              <span>Waiting for Invitation</span>
+              <span>{t('ViewerNotOnTeam.WaitingForInvitation')}</span>
               <Ellipsis />
             </PrimaryButton>
           </InvitationCenteredCopy>

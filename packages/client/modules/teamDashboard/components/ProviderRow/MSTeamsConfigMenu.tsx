@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -15,6 +16,10 @@ interface Props {
 
 const MSTeamsConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, providerId} = props
+
+  //FIXME i18n: Remove Microsoft Teams
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -27,7 +32,7 @@ const MSTeamsConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Microsoft Teams integration'} {...menuProps}>
+    <Menu ariaLabel={t('MSTeamsConfigMenu.ConfigureYourMicrosoftTeamsIntegration')} {...menuProps}>
       <MenuItem label='Remove Microsoft Teams' onClick={removeMSTeamsAuth} />
     </Menu>
   )

@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import 'emoji-mart/css/emoji-mart.css'
+import appleEmojis from 'emoji-mart/data/apple.json'
 import NimblePicker from 'emoji-mart/dist-modern/components/picker/nimble-picker'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
-import appleEmojis from 'emoji-mart/data/apple.json'
 
 const TallMenu = styled(Menu)({
   maxHeight: 354
@@ -18,6 +19,10 @@ interface Props {
 
 const ReactjiPicker = (props: Props) => {
   const {menuProps, onClick} = props
+
+  //FIXME i18n: Pick a reactji
+  const {t} = useTranslation()
+
   const {closePortal} = menuProps
   const handleClick = (emoji) => {
     onClick(emoji.id)
@@ -26,7 +31,7 @@ const ReactjiPicker = (props: Props) => {
   return (
     <TallMenu ariaLabel='Pick a reactji' {...menuProps}>
       <NimblePicker
-        set={'apple'}
+        set={t('ReactjiPicker.Apple')}
         data={appleEmojis}
         color={PALETTE.SKY_500}
         darkMode={false}

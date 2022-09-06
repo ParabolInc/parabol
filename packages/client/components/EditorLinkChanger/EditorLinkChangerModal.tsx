@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {MenuPosition} from '../../hooks/useCoords'
 import useForm from '../../hooks/useForm'
 import useMenu from '../../hooks/useMenu'
@@ -57,6 +58,13 @@ interface Props {
 
 const EditorLinkChangerModal = (props: Props) => {
   const {originCoords, removeModal, link, text, handleSubmit, handleEscape} = props
+
+  //FIXME i18n: Maybe give it a name?
+  //FIXME i18n: That name is looking pretty long
+  //FIXME i18n: No link provided
+  //FIXME i18n: Not looking too linky
+  const {t} = useTranslation()
+
   const trimmedText = text ? text.trim() : ''
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
     isDropdown: true,
@@ -115,14 +123,14 @@ const EditorLinkChangerModal = (props: Props) => {
       <form onSubmit={onSubmit}>
         {trimmedText !== null && (
           <TextBlock>
-            <InputLabel>{'Text'}</InputLabel>
+            <InputLabel>{t('EditorLinkChangerModal.Text')}</InputLabel>
             <InputBlock>
               <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
             </InputBlock>
           </TextBlock>
         )}
         <TextBlock>
-          <InputLabel>{'Link'}</InputLabel>
+          <InputLabel>{t('EditorLinkChangerModal.Link')}</InputLabel>
           <InputBlock>
             <BasicInput
               {...fields.link}

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -26,6 +27,13 @@ interface Props {
 
 const EditableTemplatePrompt = (props: Props) => {
   const {isOwner, promptId, isHover, question, isEditingDescription} = props
+
+  //FIXME i18n: Please enter a prompt question
+  //FIXME i18n: That question is probably long enough
+  //FIXME i18n: That question was already asked
+  //FIXME i18n: New prompt #
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -71,7 +79,7 @@ const EditableTemplatePrompt = (props: Props) => {
       initialValue={question}
       maxLength={100}
       validate={validate}
-      placeholder={'New Prompt'}
+      placeholder={t('EditableTemplatePrompt.NewPrompt')}
     />
   )
 }

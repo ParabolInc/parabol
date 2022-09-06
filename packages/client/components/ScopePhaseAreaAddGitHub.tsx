@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -37,6 +38,8 @@ interface Props {
 }
 
 const ScopePhaseAreaAddGitHub = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
@@ -56,11 +59,13 @@ const ScopePhaseAreaAddGitHub = (props: Props) => {
   }
   return (
     <AddGitHubArea>
-      <AddGitHubButton onClick={authGitHub} size={'medium'}>
+      <AddGitHubButton onClick={authGitHub} size={t('ScopePhaseAreaAddGitHub.Medium')}>
         <GitHubSVG />
-        Import issues from GitHub
+        {t('ScopePhaseAreaAddGitHub.ImportIssuesFromGithub')}
       </AddGitHubButton>
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
+      <StyledLink onClick={gotoParabol}>
+        {t('ScopePhaseAreaAddGitHub.OrAddNewTasksInParabol')}
+      </StyledLink>
     </AddGitHubArea>
   )
 }

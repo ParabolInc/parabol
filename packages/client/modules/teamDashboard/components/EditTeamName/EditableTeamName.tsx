@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import EditableText from '../../../../components/EditableText'
@@ -21,6 +22,8 @@ const InheritedStyles = styled('div')({
 })
 
 const EditableTeamName = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const handleSubmit = (rawName) => {
     const {
@@ -72,7 +75,7 @@ const EditableTeamName = (props: Props) => {
         initialValue={teamName}
         maxLength={50}
         validate={validate}
-        placeholder={'Team Name'}
+        placeholder={t('EditableTeamName.TeamName')}
       />
     </InheritedStyles>
   )

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
@@ -19,6 +20,11 @@ const EditableOrgText = styled(EditableText)({
 })
 
 const EditableOrgName = (props: Props) => {
+  //FIXME i18n: “The nameless wonder” is better than nothing
+  //FIXME i18n: The “A Team” had a longer name than that
+  //FIXME i18n: That isn’t very memorable. Maybe shorten it up?
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const handleSubmit = (rawName) => {
     const {onError, onCompleted, setDirty, submitMutation, submitting, organization} = props
@@ -60,7 +66,7 @@ const EditableOrgName = (props: Props) => {
       initialValue={name}
       maxLength={50}
       validate={validate}
-      placeholder={'Organization Name'}
+      placeholder={t('EditableOrgName.OrganizationName')}
     />
   )
 }

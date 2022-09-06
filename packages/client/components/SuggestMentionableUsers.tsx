@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import stringScore from 'string-score'
 import {BBox} from '../types/animations'
@@ -34,6 +35,9 @@ const query = graphql`
 const SuggestMentionableUsers = (props: Props) => {
   const {active, handleSelect, originCoords, suggestions, setSuggestions, triggerWord, queryRef} =
     props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<SuggestMentionableUsersQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -75,7 +79,7 @@ const SuggestMentionableUsers = (props: Props) => {
       handleSelect={(item) => handleSelect(item)}
       originCoords={originCoords}
       suggestions={suggestions}
-      suggestionType={'mention'}
+      suggestionType={t('SuggestMentionableUsers.Mention')}
     />
   )
 }

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
@@ -57,6 +58,9 @@ const Title = styled('div')({
 
 const MobileDashTopBar = (props: Props) => {
   const {toggle, queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = useFragment(
     graphql`
       fragment MobileDashTopBar_query on Query {
@@ -80,7 +84,12 @@ const MobileDashTopBar = (props: Props) => {
       </LeftNavHeader>
       <TopBarIcons>
         {/* Disable search in mobile for now */}
-        {false && <TopBarIcon icon={'search'} ariaLabel={'Search'} />}
+        {false && (
+          <TopBarIcon
+            icon={t('MobileDashTopBar.Search')}
+            ariaLabel={t('MobileDashTopBar.Search')}
+          />
+        )}
         <TopBarHelp />
         <TopBarNotifications queryRef={data || null} />
       </TopBarIcons>

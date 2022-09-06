@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Threshold} from '~/types/constEnums'
@@ -35,6 +36,8 @@ interface Props extends WithMutationProps {
 }
 
 const AddTemplatePrompt = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const addPrompt = () => {
     const {prompts, templateId, onError, onCompleted, submitMutation, submitting} = props
@@ -60,7 +63,7 @@ const AddTemplatePrompt = (props: Props) => {
   return (
     <AddPromptLink palette='blue' onClick={addPrompt} waiting={submitting}>
       <AddPromptLinkPlus />
-      <div>Add another prompt</div>
+      <div>{t('AddTemplatePrompt.AddAnotherPrompt')}</div>
     </AddPromptLink>
   )
 }

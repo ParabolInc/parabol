@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
@@ -70,6 +71,9 @@ const deletedTask = {
 
 const TaskInvolves = (props: Props) => {
   const {notification} = props
+
+  const {t} = useTranslation()
+
   const {id: notificationId, task, team, involvement, changeAuthor} = notification
   const {content, status, tags, user} = task || deletedTask
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
@@ -97,7 +101,11 @@ const TaskInvolves = (props: Props) => {
       avatar={changeAuthorPicture}
       message={`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
       notification={notification}
-      action={task ? <NotificationAction onClick={gotoBoard} label={'See the task'} /> : undefined}
+      action={
+        task ? (
+          <NotificationAction onClick={gotoBoard} label={t('TaskInvolves.SeeTheTask')} />
+        ) : undefined
+      }
     >
       <TaskListView>
         <IndicatorsBlock>

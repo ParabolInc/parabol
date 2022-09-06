@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import LinkButton from '../../../components/LinkButton'
@@ -35,6 +36,9 @@ interface Props {
 
 const AddPokerTemplateDimension = (props: Props) => {
   const {dimensions, templateId} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -60,7 +64,7 @@ const AddPokerTemplateDimension = (props: Props) => {
   return (
     <AddDimensionLink palette='blue' onClick={addDimension} waiting={submitting}>
       <AddDimensionLinkPlus />
-      <div>Add another dimension</div>
+      <div>{t('AddPokerTemplateDimension.AddAnotherDimension')}</div>
     </AddDimensionLink>
   )
 }

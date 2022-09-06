@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import plural from '../utils/plural'
 import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
@@ -23,6 +24,9 @@ const Link = styled(StyledLink)({
 
 const TimelineEventCompletedRetroMeeting = (props: Props) => {
   const {timelineEvent} = props
+
+  const {t} = useTranslation()
+
   const {meeting, team} = timelineEvent
   const {
     id: meetingId,
@@ -40,29 +44,33 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
       <TimelineEventBody>
-        {'Your team shared '}
+        {t('TimelineEventCompletedRetroMeeting.YourTeamShared')}
         <CountItem>
           {reflectionCount} {plural(reflectionCount, 'reflection')}
         </CountItem>
-        {' and grouped them into '}
+        {t('TimelineEventCompletedRetroMeeting.AndGroupedThemInto')}
         <CountItem>
           {topicCount} {plural(topicCount, 'topic')}
         </CountItem>
-        {'.'}
+        {t('TimelineEventCompletedRetroMeeting..')}
         <br />
-        {'You added '}
+        {t('TimelineEventCompletedRetroMeeting.YouAdded')}
         <CountItem>
           {commentCount} {plural(commentCount, 'comment')}
         </CountItem>
-        {' and created '}
+        {t('TimelineEventCompletedRetroMeeting.AndCreated')}
         <CountItem>
           {taskCount} {plural(taskCount, 'task')}
         </CountItem>
-        {'.'}
+        {t('TimelineEventCompletedRetroMeeting..')}
         <br />
-        <Link to={`/meet/${meetingId}/discuss/1`}>See the discussion</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        <Link to={`/meet/${meetingId}/discuss/1`}>
+          {t('TimelineEventCompletedRetroMeeting.SeeTheDiscussion')}
+        </Link>
+        {t('TimelineEventCompletedRetroMeeting.InYourMeetingOr')}
+        <Link to={`/new-summary/${meetingId}`}>
+          {t('TimelineEventCompletedRetroMeeting.ReviewASummary')}
+        </Link>
       </TimelineEventBody>
     </TimelineEventCard>
   )

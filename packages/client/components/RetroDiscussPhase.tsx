@@ -3,6 +3,7 @@ import {ThumbUp} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
@@ -136,6 +137,9 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  const {t} = useTranslation()
+
   const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, localStage, showSidebar, organization} = meeting
   const {reflectionGroup, discussionId} = localStage
@@ -175,7 +179,7 @@ const RetroDiscussPhase = (props: Props) => {
         >
           <PhaseHeaderTitle>{phaseLabelLookup.discuss}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
-            {'Create takeaway task cards to capture next steps'}
+            {t('RetroDiscussPhase.CreateTakeawayTaskCardsToCaptureNextSteps')}
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
@@ -213,7 +217,9 @@ const RetroDiscussPhase = (props: Props) => {
                   meetingContentRef={phaseRef}
                   discussionId={discussionId!}
                   header={
-                    <DiscussionThreadHeader>{'Discussion & Takeaway Tasks'}</DiscussionThreadHeader>
+                    <DiscussionThreadHeader>
+                      {t('RetroDiscussPhase.DiscussionTakeawayTasks')}
+                    </DiscussionThreadHeader>
                   }
                   emptyState={
                     <DiscussionThreadListEmptyState

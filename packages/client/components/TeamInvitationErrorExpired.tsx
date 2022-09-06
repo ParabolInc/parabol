@@ -1,14 +1,15 @@
-import {TeamInvitationErrorExpired_verifiedInvitation} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import {PALETTE} from '../styles/paletteV3'
+import {TeamInvitationErrorExpired_verifiedInvitation} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InviteDialog from './InviteDialog'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation
@@ -25,22 +26,32 @@ const TeamName = styled('span')({
 
 const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
+
+  //FIXME i18n: Team Invitation
+  const {t} = useTranslation()
+
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
   useDocumentTitle(`Token Expired | Team Invitation`, 'Team Invitation')
   return (
     <InviteDialog>
-      <DialogTitle>Invitation Expired</DialogTitle>
+      <DialogTitle>{t('TeamInvitationErrorExpired.InvitationExpired')}</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          The invitation to <TeamName>{teamName}</TeamName> has expired.
+          {t('TeamInvitationErrorExpired.TheInvitationTo')}
+          <TeamName>{teamName}</TeamName>
+          {t('TeamInvitationErrorExpired.HasExpired.')}
         </InvitationDialogCopy>
         <InvitationDialogCopy>
-          Reach out to {inviterName} at{' '}
+          {t('TeamInvitationErrorExpired.ReachOutTo')}
+          {inviterName}
+          {t('TeamInvitationErrorExpired.At')}{' '}
           <StyledEmailLink href={`mailto:${inviterEmail}`} title={`Email ${inviterEmail}`}>
             {inviterEmail}
           </StyledEmailLink>
         </InvitationDialogCopy>
-        <InvitationDialogCopy>to request a new one</InvitationDialogCopy>
+        <InvitationDialogCopy>
+          {t('TeamInvitationErrorExpired.ToRequestANewOne')}
+        </InvitationDialogCopy>
       </DialogContent>
     </InviteDialog>
   )

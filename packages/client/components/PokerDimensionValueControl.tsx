@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Dispatch, MutableRefObject, SetStateAction, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
@@ -94,6 +95,12 @@ const PokerDimensionValueControl = (props: Props) => {
     setCardScore,
     cardScore
   } = props
+
+  //FIXME i18n: The field selected only accepts numbers
+  //FIXME i18n: Final Score (set by facilitator)
+  //FIXME i18n: Final Score
+  const {t} = useTranslation()
+
   const {dimensionRef, serviceField, task} = stage
   const finalScore = stage.finalScore || ''
   const {type: serviceFieldType} = serviceField
@@ -178,11 +185,15 @@ const PokerDimensionValueControl = (props: Props) => {
           <>
             {isStale ? (
               <>
-                <StyledLinkButton onClick={onSubmitScore}>{'Update'}</StyledLinkButton>
+                <StyledLinkButton onClick={onSubmitScore}>
+                  {t('PokerDimensionValueControl.Update')}
+                </StyledLinkButton>
                 {errorStr && <ErrorMessage>{errorStr}</ErrorMessage>}
               </>
             ) : (
-              <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
+              <StyledLinkButton onClick={handleLabelClick}>
+                {t('PokerDimensionValueControl.EditScore')}
+              </StyledLinkButton>
             )}
           </>
         )}

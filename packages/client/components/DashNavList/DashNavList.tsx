@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, Fragment} from 'react'
+import React, {Fragment, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
-import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
-import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
+import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
 const DashNavListStyles = styled('div')({
   paddingRight: 8,
@@ -45,6 +46,9 @@ interface Props {
 
 const DashNavList = (props: Props) => {
   const {className, onClick, viewer} = props
+
+  const {t} = useTranslation()
+
   const teams = viewer?.teams
 
   const teamsByOrgKey = useMemo(() => {
@@ -64,7 +68,7 @@ const DashNavList = (props: Props) => {
   if (!teams || !teamsByOrgKey) return null
 
   if (teams.length === 0) {
-    return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
+    return <EmptyTeams>{t('DashNavList.ItAppearsYouAreNotAMemberOfAnyTeam!')}</EmptyTeams>
   }
 
   // const team = Object.values(teamsByOrgKey)

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
@@ -85,6 +86,9 @@ interface Props {
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isOpen, meeting, onToggle} = props
+
+  const {t} = useTranslation()
+
   const {endedAt, localStage} = meeting
   const {discussionId} = localStage
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment']
@@ -92,7 +96,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
       <Header>
-        <HeaderLabel>{'Discussion'}</HeaderLabel>
+        <HeaderLabel>{t('EstimatePhaseDiscussionDrawer.Discussion')}</HeaderLabel>
         <StyledCloseButton onClick={onToggle}>
           <CloseIcon />
         </StyledCloseButton>
@@ -101,7 +105,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         <DiscussionThreadRoot
           allowedThreadables={allowedThreadables}
           discussionId={discussionId!}
-          width={'100%'}
+          width={t('EstimatePhaseDiscussionDrawer.100%')}
           emptyState={
             <DiscussionThreadListEmptyState
               allowTasks={false}

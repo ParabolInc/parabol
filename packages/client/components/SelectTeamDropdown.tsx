@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {SelectTeamDropdown_teams} from '~/__generated__/SelectTeamDropdown_teams.graphql'
 import {MenuProps} from '../hooks/useMenu'
@@ -21,9 +22,15 @@ const TeamMenu = styled(Menu)({
 
 const SelectTeamDropdown = (props: Props) => {
   const {teams, menuProps, teamHandleClick} = props
+
+  const {t} = useTranslation()
+
   return (
-    <TeamMenu ariaLabel={'Select the team associated with the new task'} {...menuProps}>
-      <DropdownMenuLabel>Select Team:</DropdownMenuLabel>
+    <TeamMenu
+      ariaLabel={t('SelectTeamDropdown.SelectTheTeamAssociatedWithTheNewTask')}
+      {...menuProps}
+    >
+      <DropdownMenuLabel>{t('SelectTeamDropdown.SelectTeam:')}</DropdownMenuLabel>
       {teams.map((team) => {
         return (
           <MenuItem

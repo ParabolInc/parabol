@@ -4,6 +4,7 @@ import {Editor as EditorState} from '@tiptap/core'
 import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
@@ -119,6 +120,9 @@ interface Props {
 
 const PromptResponseEditor = (props: Props) => {
   const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder, teamId} = props
+
+  const {t} = useTranslation()
+
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -224,19 +228,19 @@ const PromptResponseEditor = (props: Props) => {
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 isActive={editor.isActive('bold')}
               >
-                <b>B</b>
+                <b>{t('PromptResponseEditor.B')}</b>
               </BubbleMenuButton>
               <BubbleMenuButton
                 onClick={() => editor.chain().focus().toggleItalic().run()}
                 isActive={editor.isActive('italic')}
               >
-                <i>I</i>
+                <i>{t('PromptResponseEditor.I')}</i>
               </BubbleMenuButton>
               <BubbleMenuButton
                 onClick={() => editor.chain().focus().toggleStrike().run()}
                 isActive={editor.isActive('strike')}
               >
-                <s>S</s>
+                <s>{t('PromptResponseEditor.S')}</s>
               </BubbleMenuButton>
               <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
                 <LinkIcon />
@@ -276,7 +280,7 @@ const PromptResponseEditor = (props: Props) => {
         <SubmissionButtonWrapper>
           {!!content && isEditing && (
             <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
-              Cancel
+              {t('PromptResponseEditor.Cancel')}
             </CancelButton>
           )}
           {(!content || isEditing) && (

@@ -1,12 +1,13 @@
+import styled from '@emotion/styled'
 import React from 'react'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
+import {useTranslation} from 'react-i18next'
 import DialogContainer from '~/components/DialogContainer'
 import DialogContent from '~/components/DialogContent'
 import DialogTitle from '~/components/DialogTitle'
-import PrimaryButton from '~/components/PrimaryButton'
 import FlatButton from '~/components/FlatButton'
-import styled from '@emotion/styled'
+import PrimaryButton from '~/components/PrimaryButton'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import {PALETTE} from '~/styles/paletteV3'
 
 interface Props {
@@ -29,19 +30,27 @@ const StyledButton = styled(FlatButton)({
 
 const UndoableGroupPhaseDialog = (props: Props) => {
   const {closePortal, meetingId} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const handleConfirm = () => {
     ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId}) && closePortal()
   }
   return (
     <DialogContainer>
-      <DialogTitle>Reset meeting and edit groups?</DialogTitle>
+      <DialogTitle>{t('UndoableGroupPhaseDialog.ResetMeetingAndEditGroups?')}</DialogTitle>
       <DialogContent>
-        <p><b>Danger zone</b>: to edit groups you must reset the meeting to this point.</p>
-        <p>All votes and discussion will be lost.</p>
+        <p>
+          <b>{t('UndoableGroupPhaseDialog.DangerZone')}</b>
+          {t('UndoableGroupPhaseDialog.ToEditGroupsYouMustResetTheMeetingToThisPoint.')}
+        </p>
+        <p>{t('UndoableGroupPhaseDialog.AllVotesAndDiscussionWillBeLost.')}</p>
         <ButtonGroup>
-          <StyledButton onClick={closePortal}>Cancel</StyledButton>
-          <PrimaryButton onClick={handleConfirm}>Confirm Reset</PrimaryButton>
+          <StyledButton onClick={closePortal}>{t('UndoableGroupPhaseDialog.Cancel')}</StyledButton>
+          <PrimaryButton onClick={handleConfirm}>
+            {t('UndoableGroupPhaseDialog.ConfirmReset')}
+          </PrimaryButton>
         </ButtonGroup>
       </DialogContent>
     </DialogContainer>

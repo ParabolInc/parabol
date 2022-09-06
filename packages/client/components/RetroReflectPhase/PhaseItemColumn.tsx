@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -141,6 +142,9 @@ interface Props {
 
 const PhaseItemColumn = (props: Props) => {
   const {idx, meeting, phaseRef, prompt, isDesktop} = props
+
+  const {t} = useTranslation()
+
   const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups, endedAt} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
@@ -212,7 +216,7 @@ const PhaseItemColumn = (props: Props) => {
                 <ColorSpacer />
                 {question}
               </RetroPrompt>
-              {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
+              {tooltipPortal(<div>{t('PhaseItemColumn.TapToHighlightPromptForEverybody')}</div>)}
               <Description>{description}</Description>
             </PromptHeader>
             <EditorSection data-cy={`editor-section-${question}`}>

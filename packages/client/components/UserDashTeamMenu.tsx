@@ -1,19 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useRouter from '~/hooks/useRouter'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {UserDashTeamMenu_viewer} from '~/__generated__/UserDashTeamMenu_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
-import useRouter from '~/hooks/useRouter'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import {UserTaskViewFilterLabels} from '~/types/constEnums'
-import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
-import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
@@ -21,6 +22,9 @@ interface Props {
 }
 
 const UserDashTeamMenu = (props: Props) => {
+  //FIXME i18n: Search teams
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {menuProps, viewer} = props
   const oldTeamsRef = useRef<UserDashTeamMenu_viewer['teams']>([])
@@ -52,20 +56,22 @@ const UserDashTeamMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Select the team to filter by'}
+      ariaLabel={t('UserDashTeamMenu.SelectTheTeamToFilterBy')}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{'Filter by team:'}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('UserDashTeamMenu.FilterByTeam:')}</DropdownMenuLabel>
       {filteredTeams.length > 5 && (
         <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={query} />
       )}
       {query && matchedFilteredTeams.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No teams found!</EmptyDropdownMenuItemLabel>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          {t('UserDashTeamMenu.NoTeamsFound!')}
+        </EmptyDropdownMenuItemLabel>
       )}
       {query === '' && showAllTeams && (
         <MenuItem
-          key={'teamFilterNULL'}
+          key={t('UserDashTeamMenu.Teamfilternull')}
           label={UserTaskViewFilterLabels.ALL_TEAMS}
           onClick={() =>
             history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))

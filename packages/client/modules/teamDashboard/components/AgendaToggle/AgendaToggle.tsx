@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Chat} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -43,6 +44,8 @@ interface Props extends WithMutationProps {
 }
 
 const AgendaToggle = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onError, onCompleted, teamId} = props
   const toggleHide = () => {
@@ -60,7 +63,7 @@ const AgendaToggle = (props: Props) => {
       <IconWrapper>
         <StyledIcon />
       </IconWrapper>
-      <Label>Agenda</Label>
+      <Label>{t('AgendaToggle.Agenda')}</Label>
     </Wrapper>
   )
 }

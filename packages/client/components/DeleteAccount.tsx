@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useModal from '../hooks/useModal'
 import {PALETTE} from '../styles/paletteV3'
 import lazyPreload from '../utils/lazyPreload'
 import IconLabel from './IconLabel'
 import LinkButton from './LinkButton'
 
-const DeleteAccountModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
+const DeleteAccountModal = lazyPreload(
+  () => import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
 )
 
 const Hint = styled('div')({
@@ -17,6 +18,10 @@ const Hint = styled('div')({
 })
 
 const DeleteAccount = () => {
+  //FIXME i18n: Click to permanently delete your account.
+  //FIXME i18n: Delete Account
+  const {t} = useTranslation()
+
   const {togglePortal, modalPortal} = useModal()
   return (
     <>
@@ -29,7 +34,9 @@ const DeleteAccount = () => {
           <IconLabel icon='remove_circle' label='Delete Account' />
         </LinkButton>
         <Hint>
-          <b>Note</b>: {'This can’t be undone.'}
+          <b>{t('DeleteAccount.Note')}</b>
+          {t('DeleteAccount.:')}
+          {t('DeleteAccount.ThisCanTBeUndone.')}
         </Hint>
       </div>
       {modalPortal(<DeleteAccountModal />)}

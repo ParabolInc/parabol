@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -77,6 +78,9 @@ interface Props {
 
 const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, toggleSidebar, meeting} = props
+
+  const {t} = useTranslation()
+
   const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
   const {id: teamId, name: teamName} = team
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
@@ -98,16 +102,18 @@ const NewMeetingSidebar = (props: Props) => {
               isWrap
               maxLength={50}
               validate={validate}
-              placeholder={'Best Meeting Ever!'}
+              placeholder={t('NewMeetingSidebar.BestMeetingEver!')}
             />
           ) : (
             <MeetingName>{meetingName}</MeetingName>
           )}
           <TeamDashboardLink to={teamLink}>
-            {'Team: '}
+            {t('NewMeetingSidebar.Team:')}
             {teamName}
           </TeamDashboardLink>
-          {endedAt && <MeetingCompletedTag>Meeting Completed</MeetingCompletedTag>}
+          {endedAt && (
+            <MeetingCompletedTag>{t('NewMeetingSidebar.MeetingCompleted')}</MeetingCompletedTag>
+          )}
         </div>
       </SidebarHeader>
       <Facilitator meetingRef={meeting} />

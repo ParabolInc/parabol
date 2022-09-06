@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {PALETTE} from '../styles/paletteV3'
@@ -14,6 +15,8 @@ interface Props extends WithMutationProps, RouteComponentProps<{[x: string]: str
 }
 
 const SuggestedActionCreateNewTeam = (props: Props) => {
+  const {t} = useTranslation()
+
   const onClick = () => {
     const {history} = props
     history.push('/newteam')
@@ -27,8 +30,12 @@ const SuggestedActionCreateNewTeam = (props: Props) => {
       iconName='group_add'
       suggestedActionId={suggestedActionId}
     >
-      <SuggestedActionCopy>Create a new team to collaborate with other groups</SuggestedActionCopy>
-      <SuggestedActionButton onClick={onClick}>Create New Team</SuggestedActionButton>
+      <SuggestedActionCopy>
+        {t('SuggestedActionCreateNewTeam.CreateANewTeamToCollaborateWithOtherGroups')}
+      </SuggestedActionCopy>
+      <SuggestedActionButton onClick={onClick}>
+        {t('SuggestedActionCreateNewTeam.CreateNewTeam')}
+      </SuggestedActionButton>
     </SuggestedActionCard>
   )
 }

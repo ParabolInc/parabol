@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import FlatButton from '../../../../components/FlatButton'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -118,6 +119,9 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
     seeHowItWorksUrl,
     children
   } = props
+
+  const {t} = useTranslation()
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ProviderCard>
@@ -126,13 +130,14 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
         <RowInfo>
           <ProviderName>{providerName}</ProviderName>
           <RowInfoCopy>
-            {providerDescription}.{' '}
+            {providerDescription}
+            {t('ProviderRowBase..')}{' '}
             {seeHowItWorksUrl && (
               <>
                 <HowItWorksLink href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
-                  See how it works
+                  {t('ProviderRowBase.SeeHowItWorks')}
                 </HowItWorksLink>
-                .
+                {t('ProviderRowBase..')}
               </>
             )}
           </RowInfoCopy>
@@ -147,7 +152,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
                     <StatusIcon>
                       <DoneIcon />
                     </StatusIcon>
-                    <StatusLabel>Connected</StatusLabel>
+                    <StatusLabel>{t('ProviderRowBase.Connected')}</StatusLabel>
                   </StatusWrapper>
                   <SmallMenuButton onClick={togglePortal} ref={menuRef}>
                     <MenuSmallIcon>

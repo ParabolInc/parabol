@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useGotoStageId from '~/hooks/useGotoStageId'
@@ -50,6 +51,9 @@ interface Props extends PokerMeetingPhaseProps {
 
 const PokerEstimatePhase = (props: Props) => {
   const {avatarGroup, meeting, toggleSidebar, gotoStageId} = props
+
+  const {t} = useTranslation()
+
   const {
     id: meetingId,
     localStage,
@@ -73,7 +77,9 @@ const PokerEstimatePhase = (props: Props) => {
           toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
-          <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
+          <PhaseHeaderDescription>
+            {t('PokerEstimatePhase.EstimateEachStoryAsATeam')}
+          </PhaseHeaderDescription>
         </MeetingTopBar>
         <StoryAndEstimateWrapper>
           <ErrorBoundary>

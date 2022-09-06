@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -79,6 +80,8 @@ const MAX_AVATARS_DESKTOP = 7
 const MAX_AVATARS_MOBILE = 3
 const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting} = props
@@ -96,9 +99,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             meetingMember.user.isConnected)
         )
       })
-      .sort((a, b) =>
-        a.userId === viewerId ? -1 : a.user.lastSeenAt < b.user.lastSeenAt ? -1 : 1
-      )
+      .sort((a, b) => (a.userId === viewerId ? -1 : a.user.lastSeenAt < b.user.lastSeenAt ? -1 : 1))
       .map((tm) => ({
         ...tm,
         key: tm.userId
@@ -119,7 +120,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
       {tranChildren.map((meetingMember) => {
         if (meetingMember.child.key === 'overflow') {
           return (
-            <OverlappingBlock key={'overflow'}>
+            <OverlappingBlock key={t('NewMeetingAvatarGroup.Overflow')}>
               <OverflowCount
                 status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
                 onTransitionEnd={meetingMember.onTransitionEnd}

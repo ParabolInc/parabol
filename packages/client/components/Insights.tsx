@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
@@ -23,6 +24,10 @@ const StatsPanel = styled(Panel)({
 
 const Insights = (props: Props) => {
   const {queryRef} = props
+
+  //FIXME i18n: Viewed domain stats
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<InsightsQuery>(
     graphql`
       query InsightsQuery {
@@ -50,7 +55,7 @@ const Insights = (props: Props) => {
   return (
     <div>
       {domains.length === 0 && (
-        <StatsPanel>Usage stats are only available for qualified customers</StatsPanel>
+        <StatsPanel>{t('Insights.UsageStatsAreOnlyAvailableForQualifiedCustomers')}</StatsPanel>
       )}
       {domains.map((domain) => {
         return (

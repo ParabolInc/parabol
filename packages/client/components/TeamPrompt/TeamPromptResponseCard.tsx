@@ -3,6 +3,7 @@ import {Editor as EditorState} from '@tiptap/core'
 import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -115,6 +116,10 @@ interface Props {
 
 const TeamPromptResponseCard = (props: Props) => {
   const {stageRef, status, onTransitionEnd, displayIdx} = props
+
+  //FIXME i18n: No response, yet...
+  const {t} = useTranslation()
+
   const responseStage = useFragment(
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
@@ -258,7 +263,7 @@ const TeamPromptResponseCard = (props: Props) => {
               handleSubmit={handleSubmit}
               content={contentJSON}
               readOnly={!isCurrentViewer}
-              placeholder={'Share your response...'}
+              placeholder={t('TeamPromptResponseCard.ShareYourResponse.')}
             />
             {!!plaintextContent && (
               <ResponseCardFooter>

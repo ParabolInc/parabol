@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {JiraServerScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraServerScopingSearchHistoryToggle_meeting.graphql'
 import JiraUniversalScopingSearchHistoryToggle from './JiraUniversalScopingSearchHistoryToggle'
@@ -10,6 +11,9 @@ interface Props {
 
 const JiraServerScopingSearchHistoryToggle = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment JiraServerScopingSearchHistoryToggle_meeting on PokerMeeting {
@@ -39,7 +43,7 @@ const JiraServerScopingSearchHistoryToggle = (props: Props) => {
 
   return (
     <JiraUniversalScopingSearchHistoryToggle
-      service={'jiraServer'}
+      service={t('JiraServerScopingSearchHistoryToggle.Jiraserver')}
       jiraSearchQueries={searchQueries}
       meetingId={meetingId}
       teamId={teamId}

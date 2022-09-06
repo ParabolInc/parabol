@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -55,6 +56,8 @@ interface Props {
 }
 
 const EstimateDimensionColumn = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, stage} = props
@@ -84,18 +87,24 @@ const EstimateDimensionColumn = (props: Props) => {
         <DimensionName>{name}</DimensionName>
         {error && <StyledError>{error.message}</StyledError>}
         {!isVoting && isFacilitator && !endedAt && (
-          <StyledLinkButton onClick={reset} palette={'blue'}>
-            {'Team Revote'}
+          <StyledLinkButton onClick={reset} palette={t('EstimateDimensionColumn.Blue')}>
+            {t('EstimateDimensionColumn.TeamRevote')}
           </StyledLinkButton>
         )}
         {isVoting && !endedAt && isSpectating && (
-          <StyledLinkButton onClick={setSpectating(false)} palette={'blue'}>
-            {'Let me vote!'}
+          <StyledLinkButton
+            onClick={setSpectating(false)}
+            palette={t('EstimateDimensionColumn.Blue')}
+          >
+            {t('EstimateDimensionColumn.LetMeVote!')}
           </StyledLinkButton>
         )}
         {isVoting && !endedAt && !isSpectating && (
-          <StyledLinkButton onClick={setSpectating(true)} palette={'blue'}>
-            {'I don’t vote'}
+          <StyledLinkButton
+            onClick={setSpectating(true)}
+            palette={t('EstimateDimensionColumn.Blue')}
+          >
+            {t('EstimateDimensionColumn.IDonTVote')}
           </StyledLinkButton>
         )}
       </DimensionHeader>

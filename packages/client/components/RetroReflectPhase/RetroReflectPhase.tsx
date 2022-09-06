@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroReflectPhase_meeting} from '~/__generated__/RetroReflectPhase_meeting.graphql'
@@ -24,6 +25,9 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroReflectPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  const {t} = useTranslation()
+
   const [callbackRef, phaseRef] = useCallbackRef()
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -42,7 +46,7 @@ const RetroReflectPhase = (props: Props) => {
         >
           <PhaseHeaderTitle>{phaseLabelLookup.reflect}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
-            {'Add anonymous reflections for each prompt'}
+            {t('RetroReflectPhase.AddAnonymousReflectionsForEachPrompt')}
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>

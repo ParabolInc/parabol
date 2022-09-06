@@ -1,10 +1,11 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {meetingAvatarMediaQueries} from '../styles/meeting'
-import LinkButton from './LinkButton'
-import GiftSVG from './GiftSVG'
 import useBreakpoint from '../hooks/useBreakpoint'
+import {meetingAvatarMediaQueries} from '../styles/meeting'
+import GiftSVG from './GiftSVG'
+import LinkButton from './LinkButton'
 
 const StyledButton = styled(LinkButton)({
   fontSize: 13,
@@ -25,12 +26,15 @@ const Label = styled('div')({
 
 const DemoCreateAccountButton = (props: RouteComponentProps) => {
   const {history} = props
+
+  const {t} = useTranslation()
+
   const handleClick = () => history.push('/create-account?from=demo')
   const isBreakpoint = useBreakpoint(480)
   return (
     <StyledButton palette='blue' onClick={handleClick}>
       <GiftSVG />
-      {isBreakpoint && <Label>{'Create Free Account'}</Label>}
+      {isBreakpoint && <Label>{t('DemoCreateAccountButton.CreateFreeAccount')}</Label>}
     </StyledButton>
   )
 }

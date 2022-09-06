@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
@@ -66,6 +67,9 @@ interface Props {
 
 const PokerTemplateScalePicker = (props: Props) => {
   const {dimension, isOwner} = props
+
+  const {t} = useTranslation()
+
   const {selectedScale} = dimension
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
@@ -100,7 +104,7 @@ const PokerTemplateScalePicker = (props: Props) => {
         <DropdownIcon />
       </DropdownBlock>
       {menuPortal(<SelectScaleDropdown menuProps={menuProps} dimension={dimension} />)}
-      {tooltipPortal(<div>Must be the template owner to change</div>)}
+      {tooltipPortal(<div>{t('PokerTemplateScalePicker.MustBeTheTemplateOwnerToChange')}</div>)}
     </>
   )
 }

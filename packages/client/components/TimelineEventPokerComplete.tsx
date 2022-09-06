@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import plural from '../utils/plural'
 import {TimelineEventPokerComplete_timelineEvent} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
@@ -24,6 +25,9 @@ const Link = styled(StyledLink)({
 
 const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent} = props
+
+  const {t} = useTranslation()
+
   const {meeting, team} = timelineEvent
   const {id: meetingId, name: meetingName, commentCount, storyCount} = meeting
   const {name: teamName} = team
@@ -34,19 +38,23 @@ const TimelineEventPokerComplete = (props: Props) => {
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
       <TimelineEventBody>
-        {'You voted on '}
+        {t('TimelineEventPokerComplete.YouVotedOn')}
         <CountItem>
           {storyCount} {plural(storyCount, 'story', 'stories')}
         </CountItem>
-        {' and added '}
+        {t('TimelineEventPokerComplete.AndAdded')}
         <CountItem>
           {commentCount} {plural(commentCount, 'comment')}
         </CountItem>
-        {'.'}
+        {t('TimelineEventPokerComplete..')}
         <br />
-        <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        <Link to={`/meet/${meetingId}/estimate/1`}>
+          {t('TimelineEventPokerComplete.SeeTheEstimates')}
+        </Link>
+        {t('TimelineEventPokerComplete.InYourMeetingOr')}
+        <Link to={`/new-summary/${meetingId}`}>
+          {t('TimelineEventPokerComplete.ReviewASummary')}
+        </Link>
       </TimelineEventBody>
     </TimelineEventCard>
   )

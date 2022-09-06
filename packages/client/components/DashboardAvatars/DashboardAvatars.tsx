@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
@@ -75,6 +76,9 @@ type Avatar = DashboardAvatars_team['teamMembers'][0]
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
+
+  const {t} = useTranslation()
+
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const atmosphere = useAtmosphere()
@@ -136,7 +140,9 @@ const DashboardAvatars = (props: Props) => {
           </OverflowWrapper>
         )}
       </AvatarsWrapper>
-      <StyledButton onClick={() => handleClick(false)}>Manage Team</StyledButton>
+      <StyledButton onClick={() => handleClick(false)}>
+        {t('DashboardAvatars.ManageTeam')}
+      </StyledButton>
     </AvatarsList>
   )
 }

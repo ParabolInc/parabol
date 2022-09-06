@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -78,6 +79,9 @@ interface Props {
 
 const ManageTeamMember = (props: Props) => {
   const {isViewerLead, manageTeamMemberId} = props
+
+  const {t} = useTranslation()
+
   const teamMember = useFragment(
     graphql`
       fragment ManageTeamMember_teamMember on TeamMember {
@@ -120,7 +124,7 @@ const ManageTeamMember = (props: Props) => {
       <Avatar size={24} picture={picture} />
       <Content>
         <Name>{preferredName}</Name>
-        <TeamLeadLabel isLead={isLead}>Team Lead</TeamLeadLabel>
+        <TeamLeadLabel isLead={isLead}>{t('ManageTeamMember.TeamLead')}</TeamLeadLabel>
       </Content>
       <StyledButton
         showMenuButton={showMenuButton}

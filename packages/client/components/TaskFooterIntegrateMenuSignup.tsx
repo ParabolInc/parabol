@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
@@ -34,6 +35,9 @@ const Label = styled('div')({
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
   const {menuProps, mutationProps, teamId, label, integrationsRef} = props
+
+  const {t} = useTranslation()
+
   const {submitting} = mutationProps
   const integrations = useFragment(
     graphql`
@@ -51,7 +55,7 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
   return (
-    <NarrowMenu ariaLabel={'Integrate with a Service'} {...menuProps}>
+    <NarrowMenu ariaLabel={t('TaskFooterIntegrateMenuSignup.IntegrateWithAService')} {...menuProps}>
       {label && (
         <>
           <Label>{label}</Label>

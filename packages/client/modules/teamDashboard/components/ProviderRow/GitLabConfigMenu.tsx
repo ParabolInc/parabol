@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -15,6 +16,10 @@ interface Props {
 
 const GitLabConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
+
+  //FIXME i18n: Remove GitLab
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -31,7 +36,7 @@ const GitLabConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your GitLab integration'} {...menuProps}>
+    <Menu ariaLabel={t('GitLabConfigMenu.ConfigureYourGitlabIntegration')} {...menuProps}>
       <MenuItem label='Remove GitLab' onClick={removeGitLabAuth} />
     </Menu>
   )

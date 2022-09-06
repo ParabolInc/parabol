@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
@@ -22,11 +23,15 @@ export interface UpcomingInvoiceEmailProps {
 
 const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
   const {appOrigin, periodEndStr, newUsers, memberUrl} = props
+
+  //FIXME i18n: Organization Settings
+  const {t} = useTranslation()
+
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{'Hello, '}</p>
+        <p style={emailCopyStyle}>{t('UpcomingInvoiceEmail.Hello,')}</p>
         <p style={emailCopyStyle}>
           {`Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}.`}
         </p>
@@ -34,25 +39,25 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
           {newUsers.map((newUser) => (
             <li key={newUser.email} style={listItemStyle}>
               <b>{`${newUser.name}`}</b>
-              {' ('}
+              {t('UpcomingInvoiceEmail.(')}
               <a href={`mailto:${newUser.email}`} style={emailLinkStyle}>{`${newUser.email}`}</a>
-              {')'}
+              {t('UpcomingInvoiceEmail.)')}
             </li>
           ))}
         </ul>
         <p style={emailCopyStyle}>
-          {'If any of these users were added by mistake, simply remove them under: '}
+          {t('UpcomingInvoiceEmail.IfAnyOfTheseUsersWereAddedByMistakeSimplyRemoveThemUnder:')}
           <a href={memberUrl} style={emailLinkStyle} title='Organization Settings'>
-            {'Organization Settings'}
+            {t('UpcomingInvoiceEmail.OrganizationSettings')}
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {'Get in touch if we can help in any way,'}
+          {t('UpcomingInvoiceEmail.GetInTouchIfWeCanHelpInAnyWay,')}
           <br />
           {emailProductTeamSignature}
           <br />
           <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
-            {'love@parabol.co'}
+            {t('UpcomingInvoiceEmail.LoveParabolCo')}
           </a>
         </p>
         <EmptySpace height={16} />

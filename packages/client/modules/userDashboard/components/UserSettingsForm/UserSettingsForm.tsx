@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {lazy} from 'react'
+import {useTranslation} from 'react-i18next'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -67,6 +68,10 @@ interface UserSettingsProps extends WithFormProps<'preferredName'> {
 
 function UserSettings(props: UserSettingsProps) {
   const {fields, onChange, validateField, viewer} = props
+
+  //FIXME i18n: My name
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const onSubmit = (e: React.FormEvent) => {
@@ -106,7 +111,7 @@ function UserSettings(props: UserSettingsProps) {
               placeholder='My name'
             />
           </FieldBlock>
-          <StyledButton size='medium'>{'Update'}</StyledButton>
+          <StyledButton size='medium'>{t('UserSettings.Update')}</StyledButton>
         </ControlBlock>
         <NotificationErrorMessage error={error} />
       </InfoBlock>

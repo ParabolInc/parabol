@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
@@ -31,6 +32,8 @@ const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
 }))
 
 const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
+  const {t} = useTranslation()
+
   const location = useLocation()
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
@@ -41,7 +44,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   return (
     <Button isOpen={isOpen} onClick={onClick}>
       <MeetingIcon />
-      <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>
+      <MeetingLabel isOpen={isOpen}>{t('SideBarStartMeetingButton.AddMeeting')}</MeetingLabel>
     </Button>
   )
 }

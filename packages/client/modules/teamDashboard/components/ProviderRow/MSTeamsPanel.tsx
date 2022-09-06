@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
@@ -65,6 +66,13 @@ const StyledButton = styled(FlatButton)({
 
 const MSTeamsPanel = (props: Props) => {
   const {teamId, viewerRef} = props
+
+  //FIXME i18n: No link provided
+  //FIXME i18n: Not looking too linky
+  //FIXME i18n: Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook
+  //FIXME i18n: Enter your webhook URL here...
+  const {t} = useTranslation()
+
   const viewer = useFragment(
     graphql`
       fragment MSTeamsPanel_viewer on User {
@@ -176,12 +184,12 @@ const MSTeamsPanel = (props: Props) => {
   return (
     <MSTeamsPanelStyles>
       <ConnectionGroup>
-        <Heading>Connection</Heading>
+        <Heading>{t('MSTeamsPanel.Connection')}</Heading>
       </ConnectionGroup>
       <form onSubmit={onSubmit}>
         <Row>
           <Label onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
-            Microsoft Teams Webhook
+            {t('MSTeamsPanel.MicrosoftTeamsWebhook')}
           </Label>
           {tooltipPortal(
             'Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook'
@@ -194,7 +202,7 @@ const MSTeamsPanel = (props: Props) => {
             placeholder='Enter your webhook URL here...'
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
-            Update
+            {t('MSTeamsPanel.Update')}
           </StyledButton>
         </Row>
         {fieldError && <StyledError>{fieldError}</StyledError>}

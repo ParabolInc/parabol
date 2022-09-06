@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubScopingSearchBar_meeting$key} from '../__generated__/GitHubScopingSearchBar_meeting.graphql'
@@ -14,6 +15,8 @@ interface Props {
 
 const GitHubScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
 
   graphql`
     fragment GitHubScopingSearchBarGitHubIntegration on GitHubIntegration {
@@ -57,12 +60,12 @@ const GitHubScopingSearchBar = (props: Props) => {
     <ScopingSearchBar>
       <GitHubScopingSearchHistoryToggle meetingRef={meeting} />
       <ScopingSearchInput
-        placeholder={'Search GitHub issues...'}
+        placeholder={t('GitHubScopingSearchBar.SearchGithubIssues.')}
         queryString={queryString}
         meetingId={meeting.id}
-        linkedRecordName={'githubSearchQuery'}
+        linkedRecordName={t('GitHubScopingSearchBar.Githubsearchquery')}
         defaultInput={defaultInput}
-        service={'github'}
+        service={t('GitHubScopingSearchBar.Github')}
       />
       <GitHubScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

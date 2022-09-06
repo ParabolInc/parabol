@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -96,6 +97,9 @@ interface Props {
 
 const RetroVoteMetaHeader = (props: Props) => {
   const {meeting} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {viewerMeetingMember, endedAt, facilitatorUserId} = meeting
@@ -108,12 +112,14 @@ const RetroVoteMetaHeader = (props: Props) => {
   return (
     <VoteMeta>
       <FirstVoteMetaBlock>
-        <VoteLabelHeading>{'My Votes'}</VoteLabelHeading>
-        <VoteCountLabel data-cy={'my-votes-remaining'}>{myVotesRemaining}</VoteCountLabel>
+        <VoteLabelHeading>{t('RetroVoteMetaHeader.MyVotes')}</VoteLabelHeading>
+        <VoteCountLabel data-cy={t('RetroVoteMetaHeader.MyVotesRemaining')}>
+          {myVotesRemaining}
+        </VoteCountLabel>
       </FirstVoteMetaBlock>
       <FollowingVoteMetaBlock>
-        <VoteLabelHeading>{'Team Votes'}</VoteLabelHeading>
-        <TeamVotesCountLabel data-cy={'team-votes-remaining'}>
+        <VoteLabelHeading>{t('RetroVoteMetaHeader.TeamVotes')}</VoteLabelHeading>
+        <TeamVotesCountLabel data-cy={t('RetroVoteMetaHeader.TeamVotesRemaining')}>
           {teamVotesRemaining}
         </TeamVotesCountLabel>
       </FollowingVoteMetaBlock>
@@ -124,7 +130,7 @@ const RetroVoteMetaHeader = (props: Props) => {
             onClick={togglePortal}
             onMouseEnter={VoteSettingsMenu.preload}
           >
-            <FacilitatorLabel>{'Vote Settings'}</FacilitatorLabel>
+            <FacilitatorLabel>{t('RetroVoteMetaHeader.VoteSettings')}</FacilitatorLabel>
             <FacilitatorDropdownIcon />
           </FacilitatorVoteBlock>
           {menuPortal(<VoteSettingsMenu meeting={meeting} menuProps={menuProps} />)}

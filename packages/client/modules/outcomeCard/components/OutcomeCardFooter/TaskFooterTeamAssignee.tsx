@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
@@ -49,14 +50,18 @@ interface Props {
   useTaskChild: UseTaskChild
 }
 
-const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TaskFooterTeamAssigneeMenuRoot' */ '../TaskFooterTeamAssigneeMenuRoot'
-  )
+const TaskFooterTeamAssigneeMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TaskFooterTeamAssigneeMenuRoot' */ '../TaskFooterTeamAssigneeMenuRoot'
+    )
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
   const {canAssign, task: taskRef, useTaskChild} = props
+
+  //FIXME i18n: Assign this task to another team
+  const {t} = useTranslation()
 
   const task = useFragment(
     graphql`
@@ -75,9 +80,12 @@ const TaskFooterTeamAssignee = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     id: 'taskFooterTeamAssigneeMenu'
   })
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <TooltipToggle onClick={closeTooltip} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
@@ -91,7 +99,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
           {teamName}
         </TeamToggleButton>
       </TooltipToggle>
-      {tooltipPortal(<div>{'Reassign Team'}</div>)}
+      {tooltipPortal(<div>{t('TaskFooterTeamAssignee.ReassignTeam')}</div>)}
       {menuPortal(
         <TaskFooterTeamAssigneeMenuRoot
           menuProps={menuProps}

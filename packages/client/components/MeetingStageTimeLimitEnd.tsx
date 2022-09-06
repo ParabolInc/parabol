@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import useRouter from '../hooks/useRouter'
@@ -12,6 +13,9 @@ interface Props {
 
 const MeetingStageTimeLimitEnd = (props: Props) => {
   const {notification} = props
+
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {meeting} = notification
   const {id: meetingId, name: meetingName, team} = meeting
@@ -24,7 +28,9 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
     <NotificationTemplate
       message={`Your meeting ${meetingName} with ${teamName} is ready to move forward`}
       notification={notification}
-      action={<NotificationAction label={'Go to meeting'} onClick={goThere} />}
+      action={
+        <NotificationAction label={t('MeetingStageTimeLimitEnd.GoToMeeting')} onClick={goThere} />
+      }
     />
   )
 }

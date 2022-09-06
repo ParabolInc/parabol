@@ -1,5 +1,6 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 interface Props {
@@ -24,6 +25,10 @@ const EmptyMessage = styled('div')({
 
 const AgendaListEmptyState = (props: Props) => {
   const {isComplete, isMeeting} = props
+
+  //FIXME i18n: next meeting
+  const {t} = useTranslation()
+
   const meetingContext = isMeeting ? 'meeting' : 'next meeting'
 
   if (isComplete) return null
@@ -32,9 +37,9 @@ const AgendaListEmptyState = (props: Props) => {
       <EmptyMessage>
         {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
         <b>
-          <i>{'upcoming vacation'}</i>
+          <i>{t('AgendaListEmptyState.UpcomingVacation')}</i>
         </b>
-        {'.”'}
+        {t('AgendaListEmptyState.”')}
       </EmptyMessage>
     </EmptyBlock>
   )

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useResizeFontForElement from '../../hooks/useResizeFontForElement'
 import {BezierCurve} from '../../types/constEnums'
@@ -54,6 +55,9 @@ interface Props {
 
 const TeamPromptOverflowAvatar = (props: Props) => {
   const {overflowCount, offset, status, onTransitionEnd, isAnimated, width, borderColor} = props
+
+  const {t} = useTranslation()
+
   const ref = useRef<HTMLDivElement>(null)
   const label = overflowCount >= 99 ? 99 : overflowCount
   useResizeFontForElement<HTMLDivElement>(ref, label, 11, 12, 4)
@@ -67,7 +71,8 @@ const TeamPromptOverflowAvatar = (props: Props) => {
         isAnimated={isAnimated}
         borderColor={borderColor}
       >
-        +{label}
+        {t('TeamPromptOverflowAvatar.+')}
+        {label}
       </OverflowCount>
     </Wrapper>
   )

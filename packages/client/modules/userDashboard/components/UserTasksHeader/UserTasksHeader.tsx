@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import Checkbox from '~/components/Checkbox'
 import LinkButton from '~/components/LinkButton'
@@ -22,18 +23,20 @@ import lazyPreload from '../../../../utils/lazyPreload'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const UserDashTeamMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'UserDashTeamMenu' */
-    '../../../../components/UserDashTeamMenu'
-  )
+const UserDashTeamMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMenu' */
+      '../../../../components/UserDashTeamMenu'
+    )
 )
 
-const UserDashTeamMemberMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'UserDashTeamMemberMenu' */
-    '../../../../components/UserDashTeamMemberMenu'
-  )
+const UserDashTeamMemberMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMemberMenu' */
+      '../../../../components/UserDashTeamMemberMenu'
+    )
 )
 
 const StyledDashFilterToggle = styled(DashFilterToggle)({
@@ -75,6 +78,9 @@ interface Props {
 }
 
 const UserTasksHeader = (props: Props) => {
+  //FIXME i18n: Team Member
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -192,7 +198,7 @@ const UserTasksHeader = (props: Props) => {
           dataCy='archived-checkbox'
         >
           <StyledCheckbox active={showArchived} />
-          {'Archived'}
+          {t('UserTasksHeader.Archived')}
         </StyledLinkButton>
       </UserTasksHeaderDashSectionControls>
     </DashSectionHeader>

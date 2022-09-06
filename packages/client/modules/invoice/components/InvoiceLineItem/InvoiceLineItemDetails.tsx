@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {InvoiceLineItemDetails_details} from '~/__generated__/InvoiceLineItemDetails_details.graphql'
 import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
@@ -66,13 +67,18 @@ interface Props {
 
 const InvoiceLineItemDetails = (props: Props) => {
   const {details, type} = props
+
+  //FIXME i18n: Hide Details
+  //FIXME i18n: View Details
+  const {t} = useTranslation()
+
   const [isOpen, setIsOpen] = useState(false)
   const toggleDetails = () => {
     setIsOpen(!isOpen)
   }
   if (!details) return null
   return (
-    <Details className={'hide-print'}>
+    <Details className={t('InvoiceLineItemDetails.HidePrint')}>
       <DetailsToggle onClick={toggleDetails}>
         {isOpen ? 'Hide Details' : 'View Details'}
       </DetailsToggle>

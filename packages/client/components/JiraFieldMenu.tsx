@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -18,6 +19,9 @@ interface Props {
 
 const JiraFieldMenu = (props: Props) => {
   const {menuProps, stage, submitScore} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
@@ -39,8 +43,15 @@ const JiraFieldMenu = (props: Props) => {
 
   if (possibleEstimationFieldNames.length === 0) {
     return (
-      <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
-        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
+      <Menu
+        ariaLabel={t('JiraFieldMenu.Loading')}
+        portalStatus={portalStatus}
+        isDropdown={isDropdown}
+      >
+        <MenuItem
+          key={t('JiraFieldMenu.Noresults')}
+          label={t('JiraFieldMenu.CannotConnectToJira>')}
+        />
       </Menu>
     )
   }
@@ -66,7 +77,7 @@ const JiraFieldMenu = (props: Props) => {
   }
   return (
     <Menu
-      ariaLabel={'Select the Jira Field to push to'}
+      ariaLabel={t('JiraFieldMenu.SelectTheJiraFieldToPushTo')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}
@@ -76,12 +87,12 @@ const JiraFieldMenu = (props: Props) => {
       })}
       <MenuItemHR />
       <MenuItem
-        key={'__comment'}
+        key={t('JiraFieldMenu.Comment')}
         label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
       />
       <MenuItem
-        key={'__null'}
+        key={t('JiraFieldMenu.Null')}
         label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
       />

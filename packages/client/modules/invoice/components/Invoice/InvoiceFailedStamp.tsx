@@ -1,6 +1,7 @@
-import React from 'react'
-import {InvoiceStatusEnum} from '~/__generated__/InvoiceRow_invoice.graphql'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {InvoiceStatusEnum} from '~/__generated__/InvoiceRow_invoice.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 
@@ -29,9 +30,12 @@ interface Props {
 }
 const InvoiceFailedStamp = (props: Props) => {
   const {status} = props
+
+  const {t} = useTranslation()
+
   if (status !== 'FAILED') return null
 
-  return <FailedStamp>{'Payment Failed'}</FailedStamp>
+  return <FailedStamp>{t('InvoiceFailedStamp.PaymentFailed')}</FailedStamp>
 }
 
 export default InvoiceFailedStamp

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {JiraScopingSearchInput_meeting$key} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
 import ScopingSearchInput from './ScopingSearchInput'
@@ -10,6 +11,10 @@ interface Props {
 
 const JiraScopingSearchInput = (props: Props) => {
   const {meetingRef} = props
+
+  //FIXME i18n: Search issues on Jira
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment JiraScopingSearchInput_meeting on PokerMeeting {
@@ -33,8 +38,8 @@ const JiraScopingSearchInput = (props: Props) => {
       placeholder={placeholder}
       queryString={queryString}
       meetingId={meetingId}
-      linkedRecordName={'jiraSearchQuery'}
-      service={'jira'}
+      linkedRecordName={t('JiraScopingSearchInput.Jirasearchquery')}
+      service={t('JiraScopingSearchInput.Jira')}
     />
   )
 }

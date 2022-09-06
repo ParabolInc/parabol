@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -32,6 +33,14 @@ const BillingLeaderActionMenu = (props: Props) => {
     toggleLeave,
     toggleRemove
   } = props
+
+  //FIXME i18n: Remove Billing Leader role
+  //FIXME i18n: Promote to Billing Leader
+  //FIXME i18n: Leave Organization
+  //FIXME i18n: Refund and Remove
+  //FIXME i18n: Remove from Organization
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {id: orgId, tier} = organization
   const {viewerId} = atmosphere
@@ -50,7 +59,7 @@ const BillingLeaderActionMenu = (props: Props) => {
 
   return (
     <>
-      <Menu ariaLabel={'Select your action'} {...menuProps}>
+      <Menu ariaLabel={t('BillingLeaderActionMenu.SelectYourAction')} {...menuProps}>
         {isBillingLeader && !isViewerLastBillingLeader && (
           <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
         )}

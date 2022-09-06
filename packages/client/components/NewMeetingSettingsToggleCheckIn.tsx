@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsToggleCheckIn_settings$key} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -52,6 +53,9 @@ interface Props {
 
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {
   const {settingsRef, className} = props
+
+  const {t} = useTranslation()
+
   const settings = useFragment(
     graphql`
       fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
@@ -76,7 +80,7 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
   }
   return (
     <ButtonRow onClick={toggleCheckIn} className={className}>
-      <Label>{'Include Icebreaker'}</Label>
+      <Label>{t('NewMeetingSettingsToggleCheckIn.IncludeIcebreaker')}</Label>
       <StyledCheckbox active={hasCheckIn} />
     </ButtonRow>
   )

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../../hooks/useMenu'
@@ -26,29 +27,48 @@ const StyledLabel = styled(MenuItemLabel)({
 
 const TeamMemberAvatarMenu = (props: Props) => {
   const {isViewerLead, teamMember, menuProps, togglePromote, toggleRemove, toggleLeave} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {preferredName, userId} = teamMember
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
 
   return (
-    <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
+    <Menu ariaLabel={t('TeamMemberAvatarMenu.SelectWhatToDoWithThisTeamMember')} {...menuProps}>
       {isViewerLead && !isSelf && (
         <MenuItem
           key='promote'
           onClick={togglePromote}
-          label={<StyledLabel>Promote {preferredName} to Team Lead</StyledLabel>}
+          label={
+            <StyledLabel>
+              {t('TeamMemberAvatarMenu.Promote')}
+              {preferredName}
+              {t('TeamMemberAvatarMenu.ToTeamLead')}
+            </StyledLabel>
+          }
         />
       )}
       {isViewerLead && !isSelf && (
         <MenuItem
           key='remove'
           onClick={toggleRemove}
-          label={<StyledLabel>Remove {preferredName} from Team</StyledLabel>}
+          label={
+            <StyledLabel>
+              {t('TeamMemberAvatarMenu.Remove')}
+              {preferredName}
+              {t('TeamMemberAvatarMenu.FromTeam')}
+            </StyledLabel>
+          }
         />
       )}
       {!isViewerLead && isSelf && (
-        <MenuItem key='leave' onClick={toggleLeave} label={<StyledLabel>Leave Team</StyledLabel>} />
+        <MenuItem
+          key='leave'
+          onClick={toggleLeave}
+          label={<StyledLabel>{t('TeamMemberAvatarMenu.LeaveTeam')}</StyledLabel>}
+        />
       )}
     </Menu>
   )

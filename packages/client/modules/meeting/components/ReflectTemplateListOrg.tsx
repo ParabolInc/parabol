@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
@@ -63,6 +64,9 @@ const query = graphql`
 
 const ReflectTemplateListOrg = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<ReflectTemplateListOrgQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -77,7 +81,11 @@ const ReflectTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
-    return <Message>{'No other teams in your organization are sharing a template.'}</Message>
+    return (
+      <Message>
+        {t('ReflectTemplateListOrg.NoOtherTeamsInYourOrganizationAreSharingATemplate.')}
+      </Message>
+    )
   }
   if (filteredEdges.length === 0) {
     return (
@@ -92,7 +100,7 @@ const ReflectTemplateListOrg = (props: Props) => {
             key={template.id}
             template={template}
             isActive={template.id === activeTemplateId}
-            lowestScope={'ORGANIZATION'}
+            lowestScope={t('ReflectTemplateListOrg.Organization')}
             teamId={teamId}
             templateSearchQuery={searchQuery}
           />

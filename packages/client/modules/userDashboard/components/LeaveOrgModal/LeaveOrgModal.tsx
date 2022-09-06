@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -24,6 +25,10 @@ const StyledDialogContainer = styled(DialogContainer)({
 
 const LeaveOrgModal = (props: Props) => {
   const {orgId} = props
+
+  //FIXME i18n: Leave the organization
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -40,11 +45,11 @@ const LeaveOrgModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Are you sure?'}</DialogTitle>
+      <DialogTitle>{t('LeaveOrgModal.AreYouSure?')}</DialogTitle>
       <DialogContent>
-        {'This will remove you from the organization and all teams under it! '}
+        {t('LeaveOrgModal.ThisWillRemoveYouFromTheOrganizationAndAllTeamsUnderIt!')}
         <br />
-        {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}
+        {t('LeaveOrgModal.ToUndoItYouLlHaveToAskAnotherBillingLeaderToReAddYou.')}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
           <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
         </StyledButton>

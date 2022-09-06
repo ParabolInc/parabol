@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
@@ -82,6 +83,9 @@ interface Props {
 }
 
 const AgendaInput = (props: Props) => {
+  //FIXME i18n: Add Agenda Topic…
+  const {t} = useTranslation()
+
   const inputRef = useRef<HTMLInputElement>(null)
   const focusInput = (e?: React.KeyboardEvent | KeyboardEvent) => {
     e && e.preventDefault()
@@ -143,9 +147,9 @@ const AgendaInput = (props: Props) => {
     >
       {tooltipPortal(
         <div style={{textAlign: 'center'}}>
-          {'Add meeting topics to discuss,'}
+          {t('AgendaInput.AddMeetingTopicsToDiscuss,')}
           <br />
-          {'like “upcoming vacation”'}
+          {t('AgendaInput.LikeUpcomingVacation”')}
         </div>
       )}
       <InputForm disabled={disabled} onSubmit={handleSubmit}>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -37,6 +38,8 @@ interface Props {
 }
 
 const ScopePhaseAreaAddJiraServer = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
@@ -76,11 +79,13 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
 
   return (
     <AddJiraServerArea>
-      <AddJiraServerButton onClick={openOAuth} size={'medium'}>
+      <AddJiraServerButton onClick={openOAuth} size={t('ScopePhaseAreaAddJiraServer.Medium')}>
         <JiraServerSVG />
-        Import issues from Jira Server
+        {t('ScopePhaseAreaAddJiraServer.ImportIssuesFromJiraServer')}
       </AddJiraServerButton>
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
+      <StyledLink onClick={gotoParabol}>
+        {t('ScopePhaseAreaAddJiraServer.OrAddNewTasksInParabol')}
+      </StyledLink>
     </AddJiraServerArea>
   )
 }

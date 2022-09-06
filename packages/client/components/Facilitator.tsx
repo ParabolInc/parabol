@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {Facilitator_meeting$key} from '~/__generated__/Facilitator_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -98,6 +99,9 @@ const FacilitatorMenu = lazyPreload(
 
 const Facilitator = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment Facilitator_meeting on NewMeeting {
@@ -157,7 +161,7 @@ const Facilitator = (props: Props) => {
           <Avatar alt='' src={picture} />
         </AvatarBlock>
         <div>
-          <Label>Facilitator</Label>
+          <Label>{t('Facilitator.Facilitator')}</Label>
           <Subtext>{preferredName}</Subtext>
         </div>
         {!isReadOnly && (

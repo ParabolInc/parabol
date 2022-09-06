@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -55,6 +56,9 @@ const Description = styled('div')({
 
 const ReportErrorFeedback = (props: Props) => {
   const {closePortal, eventId} = props
+
+  const {t} = useTranslation()
+
   const [text, setText] = useState('')
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const nextValue = e.target.value
@@ -81,13 +85,13 @@ const ReportErrorFeedback = (props: Props) => {
 
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>Report Error</StyledDialogTitle>
-      <Description>What were you doing when the error happened?</Description>
+      <StyledDialogTitle>{t('ReportErrorFeedback.ReportError')}</StyledDialogTitle>
+      <Description>{t('ReportErrorFeedback.WhatWereYouDoingWhenTheErrorHappened?')}</Description>
       <StyledDialogContent>
         <BasicTextArea autoFocus name='errorReport' onChange={onChange} value={text} />
         <ButtonGroup>
           <PrimaryButton onClick={onSubmit} disabled={text.length === 0} size='medium'>
-            {'Submit Report'}
+            {t('ReportErrorFeedback.SubmitReport')}
           </PrimaryButton>
         </ButtonGroup>
       </StyledDialogContent>

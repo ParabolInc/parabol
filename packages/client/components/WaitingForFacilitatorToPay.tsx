@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {LiveHelp} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import DialogContainer from './DialogContainer'
 import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationDialogCopy from './InvitationDialogCopy'
@@ -23,13 +24,16 @@ interface Props {
 
 const WaitingForFacilitatorToPay = (props: Props) => {
   const {facilitatorName} = props
+
+  const {t} = useTranslation()
+
   return (
     <Container>
       <HelpIcon />
       <InvitationDialogCopy>
-        {'Waiting for '}
+        {t('WaitingForFacilitatorToPay.WaitingFor')}
         <b>{facilitatorName}</b>
-        {' to continue'}
+        {t('WaitingForFacilitatorToPay.ToContinue')}
         <Ellipsis />
       </InvitationDialogCopy>
     </Container>

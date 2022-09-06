@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
@@ -23,6 +24,9 @@ interface Props {
 
 const AzureDevOpsScopingSearchResults = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
+
   const {queryRef} = props
 
   const query = usePreloadedQuery(
@@ -115,8 +119,14 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   if (edges.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New User Story'} />
+        <IntegrationScopingNoResults
+          error={error?.message}
+          msg={t('AzureDevOpsScopingSearchResults.NoIssuesMatchThatQuery')}
+        />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('AzureDevOpsScopingSearchResults.NewUserStory')}
+        />
       </>
     )
   }
@@ -134,7 +144,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         {edges.map(({node}) => (
           <ScopingSearchResultItem
             key={node.id}
-            service={'azureDevOps'}
+            service={t('AzureDevOpsScopingSearchResults.Azuredevops')}
             usedServiceTaskIds={usedServiceTaskIds}
             serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
             meetingId={meetingId}
@@ -146,7 +156,10 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         ))}
       </ResultScroller>
       {!isEditing && (
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('AzureDevOpsScopingSearchResults.NewIssue')}
+        />
       )}
     </>
   )

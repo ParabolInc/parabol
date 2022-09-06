@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
@@ -26,6 +27,9 @@ interface Props {
 
 const NewMeetingTeamPicker = (props: Props) => {
   const {selectedTeamRef, teamsRef} = props
+
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
@@ -69,7 +73,7 @@ const NewMeetingTeamPicker = (props: Props) => {
         onMouseEnter={SelectTeamDropdown.preload}
         disabled={teams.length === 0}
         ref={originRef}
-        title={'Team'}
+        title={t('NewMeetingTeamPicker.Team')}
         opened={[PortalStatus.Entering, PortalStatus.Entered].includes(portalStatus)}
       />
       {menuPortal(

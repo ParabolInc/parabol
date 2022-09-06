@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
@@ -20,6 +21,8 @@ interface Props {
 }
 
 const TopBarNotifications = ({queryRef}: Props) => {
+  const {t} = useTranslation()
+
   const data = useFragment(
     graphql`
       fragment TopBarNotifications_query on Query {
@@ -54,9 +57,9 @@ const TopBarNotifications = ({queryRef}: Props) => {
         ref={originRef}
         onClick={togglePortal}
         onMouseEnter={NotificationDropdown.preload}
-        icon={'notifications'}
+        icon={t('TopBarNotifications.Notifications')}
         hasBadge={hasNotifications}
-        ariaLabel={'Notifications'}
+        ariaLabel={t('TopBarNotifications.Notifications')}
       />
       {menuPortal(
         <NotificationDropdown parentRef={menuContentRef} menuProps={menuProps} queryRef={data} />

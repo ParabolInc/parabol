@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -26,6 +27,9 @@ const StyledDialogContainer = styled(DialogContainer)({
 
 const RemoveFromOrgModal = (props: Props) => {
   const {orgId, preferredName, userId} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -35,7 +39,7 @@ const RemoveFromOrgModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Are you sure?'}</DialogTitle>
+      <DialogTitle>{t('RemoveFromOrgModal.AreYouSure?')}</DialogTitle>
       <DialogContent>
         {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
         to the team leads. Any time remaining on their subscription will be refunded on the next

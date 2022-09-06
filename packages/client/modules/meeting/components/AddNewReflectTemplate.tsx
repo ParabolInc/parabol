@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import LinkButton from '../../../components/LinkButton'
 import TooltipStyled from '../../../components/TooltipStyled'
@@ -34,6 +35,13 @@ interface Props {
 
 const AddNewReflectTemplate = (props: Props) => {
   const {gotoTeamTemplates, teamId, reflectTemplates} = props
+
+  //FIXME i18n: You may only have 20 templates per team. Please remove one first.
+  //FIXME i18n: *New Template
+  //FIXME i18n: You already have a new template. Try renaming that one first.
+  //FIXME i18n: *New Template
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
@@ -65,12 +73,13 @@ const AddNewReflectTemplate = (props: Props) => {
 
   const containsNewTemplate = reflectTemplates.find((template) => template.name === '*New Template')
 
-  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate) return null
+  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate)
+    return null
   return (
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddRetroTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        {'Create New Template'}
+        {t('AddNewReflectTemplate.CreateNewTemplate')}
       </AddRetroTemplateLink>
     </div>
   )

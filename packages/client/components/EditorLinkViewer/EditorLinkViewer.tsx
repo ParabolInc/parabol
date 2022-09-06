@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import textOverflow from '../../styles/helpers/textOverflow'
@@ -44,6 +45,10 @@ interface Props {
 
 const EditorLinkViewer = (props: Props) => {
   const {href, addHyperlink, removeModal, onRemove, originCoords} = props
+
+  //FIXME i18n: noopener noreferrer
+  const {t} = useTranslation()
+
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
     isDropdown: true,
     originCoords
@@ -66,10 +71,10 @@ const EditorLinkViewer = (props: Props) => {
         </LinkText>
       </UrlSpan>
       <FlatButton onClick={changeLink} palette='mid'>
-        {'Change'}
+        {t('EditorLinkViewer.Change')}
       </FlatButton>
       <FlatButton onClick={handleRemove} palette='mid'>
-        {'Remove'}
+        {t('EditorLinkViewer.Remove')}
       </FlatButton>
     </MenuStyles>
   )

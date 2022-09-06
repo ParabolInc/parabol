@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {AssignmentInd as AssignmentIndIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import BaseButton from '../../../../components/BaseButton'
@@ -113,6 +114,10 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(
 
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
+
+  //FIXME i18n: Assign this task to a teammate
+  const {t} = useTranslation()
+
   const {user} = task
   const userImage = user?.picture || avatarUser
   const preferredName = user?.preferredName || 'Unassigned'
@@ -149,7 +154,7 @@ const TaskFooterUserAssignee = (props: Props) => {
           <AvatarLabel>{preferredName}</AvatarLabel>
         </AvatarButton>
       </TooltipToggle>
-      {tooltipPortal(<div>{'Reassign Responsibility'}</div>)}
+      {tooltipPortal(<div>{t('TaskFooterUserAssignee.ReassignResponsibility')}</div>)}
       {menuPortal(
         <TaskFooterUserAssigneeMenuRoot
           menuProps={menuProps}

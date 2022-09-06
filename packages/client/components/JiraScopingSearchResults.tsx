@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -68,6 +69,9 @@ const query = graphql`
 
 const JiraScopingSearchResults = (props: Props) => {
   const {queryRef, meeting} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<JiraScopingSearchResultsQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -89,8 +93,14 @@ const JiraScopingSearchResults = (props: Props) => {
   if (edges.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+        <IntegrationScopingNoResults
+          error={error?.message}
+          msg={t('JiraScopingSearchResults.NoIssuesMatchThatQuery')}
+        />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('JiraScopingSearchResults.NewIssue')}
+        />
       </>
     )
   }
@@ -135,7 +145,7 @@ const JiraScopingSearchResults = (props: Props) => {
           return (
             <ScopingSearchResultItem
               key={id}
-              service={'jira'}
+              service={t('JiraScopingSearchResults.Jira')}
               usedServiceTaskIds={usedServiceTaskIds}
               serviceTaskId={id}
               meetingId={meetingId}
@@ -149,7 +159,10 @@ const JiraScopingSearchResults = (props: Props) => {
         })}
       </ResultScroller>
       {!isEditing && (
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('JiraScopingSearchResults.NewIssue')}
+        />
       )}
     </>
   )

@@ -4,6 +4,7 @@
  */
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
@@ -83,6 +84,12 @@ const validateEmail = (email) => {
 
 const ForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
+
+  //FIXME i18n: We couldn’t find that email. Please try again.
+  //FIXME i18n: Too many reset password attempts. Please try again later.
+  //FIXME i18n: noopener noreferrer
+  const {t} = useTranslation()
+
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
@@ -139,35 +146,36 @@ const ForgotPasswordPage = (props: Props) => {
   const prettyError = error ? errorMessage[error.message] : undefined
   return (
     <AuthenticationDialog>
-      <DialogTitle>{'Forgot your password?'}</DialogTitle>
+      <DialogTitle>{t('ForgotPasswordPage.ForgotYourPassword?')}</DialogTitle>
       <DialogSubTitle>
-        <span>{'Remember it? '}</span>
-        <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
+        <span>{t('ForgotPasswordPage.RememberIt?')}</span>
+        <BrandedLink onClick={gotoSignIn}>{t('ForgotPasswordPage.SignInWithPassword')}</BrandedLink>
       </DialogSubTitle>
       <Container>
         <P>
-          {
-            'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-          }
+          {t(
+            'ForgotPasswordPage.ConfirmYourEmailAddressAndWeLlSendYouAnEmailWithPasswordRecoveryInstructions.'
+          )}
         </P>
         <Form onSubmit={onSubmit}>
           <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
           <SubmitButton size='medium' waiting={submitting}>
-            {'Send Email'}
+            {t('ForgotPasswordPage.SendEmail')}
           </SubmitButton>
           {error && (
             <ErrorMessage>
               {prettyError || (
                 <>
-                  {'Oh no! Something went wrong. Try again or '}{' '}
+                  {t('ForgotPasswordPage.OhNoSomethingWentWrongTryAgainOr')}{' '}
                   <a
-                    href={'mailto:love@parabol.co'}
+                    href={t('ForgotPasswordPage.MailtoLoveParabolCo')}
                     rel='noopener noreferrer'
                     target='_blank'
                     style={linkStyle}
-                    title={'love@parabol.co'}
+                    title={t('ForgotPasswordPage.LoveParabolCo')}
                   >
-                    {'contact us'}.
+                    {t('ForgotPasswordPage.ContactUs')}
+                    {t('ForgotPasswordPage..')}
                   </a>
                 </>
               )}

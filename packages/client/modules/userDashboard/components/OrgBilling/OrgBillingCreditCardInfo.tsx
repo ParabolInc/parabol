@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {CreditCard} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {OrgBillingCreditCardInfo_organization} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
@@ -67,6 +68,10 @@ interface Props {
 
 const OrgBillingCreditCardInfo = (props: Props) => {
   const {organization} = props
+
+  //FIXME i18n: Credit Card Information
+  const {t} = useTranslation()
+
   const {creditCard, id: orgId, orgUserCount} = organization
   const {modalPortal, closePortal, togglePortal} = useModal()
   if (!creditCard) return null
@@ -81,24 +86,26 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             <div>
               <CreditCardProvider>{brand}</CreditCardProvider>
               <CreditCardNumber>
-                {'•••• •••• •••• '}
+                {t('OrgBillingCreditCardInfo.•')}
                 {last4}
               </CreditCardNumber>
             </div>
             <div>
-              <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
+              <CreditCardExpiresLabel>
+                {t('OrgBillingCreditCardInfo.Expires')}
+              </CreditCardExpiresLabel>
               <span>{expiry}</span>
             </div>
           </InfoBlocks>
         </CreditCardInfo>
         <SecondaryButton onClick={togglePortal} onMouseEnter={CreditCardModal.preload}>
-          {'Update'}
+          {t('OrgBillingCreditCardInfo.Update')}
         </SecondaryButton>
         {modalPortal(
           <CreditCardModal
             activeUserCount={activeUserCount}
             orgId={orgId}
-            actionType={'update'}
+            actionType={t('OrgBillingCreditCardInfo.Update')}
             closePortal={closePortal}
           />
         )}

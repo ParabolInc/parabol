@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks, LocalStorageKey} from '../types/constEnums'
@@ -56,6 +57,8 @@ const StyledCopy = styled('p')({
 })
 
 const DeleteAccountModal = () => {
+  const {t} = useTranslation()
+
   const [reason, setReason] = useState('')
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -72,13 +75,15 @@ const DeleteAccountModal = () => {
 
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>How could we do better?</StyledDialogTitle>
+      <StyledDialogTitle>{t('DeleteAccountModal.HowCouldWeDoBetter?')}</StyledDialogTitle>
       <StyledDialogContent>
         <Fields>
           <StyledCopy>
-            {'We’re on a mission to make every meeting worth the time invested.'}
+            {t('DeleteAccountModal.WeReOnAMissionToMakeEveryMeetingWorthTheTimeInvested.')}
           </StyledCopy>
-          <StyledCopy>{'If there is anything we can do to improve, let us know below.'}</StyledCopy>
+          <StyledCopy>
+            {t('DeleteAccountModal.IfThereIsAnythingWeCanDoToImproveLetUsKnowBelow.')}
+          </StyledCopy>
           <BasicTextArea
             autoFocus
             name='reason'
@@ -88,7 +93,7 @@ const DeleteAccountModal = () => {
           />
           <ButtonGroup>
             <PrimaryButton onClick={handleDelete} disabled={!reason} size='medium'>
-              {'Goodbye forever'}
+              {t('DeleteAccountModal.GoodbyeForever')}
             </PrimaryButton>
           </ButtonGroup>
         </Fields>

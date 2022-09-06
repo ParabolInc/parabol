@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
@@ -35,6 +36,9 @@ interface Props {
 
 const JiraServerScopingSearchResults = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
+
   const {queryRef} = props
   const atmosphere = useAtmosphere()
 
@@ -150,8 +154,14 @@ const JiraServerScopingSearchResults = (props: Props) => {
   if (edges.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+        <IntegrationScopingNoResults
+          error={error?.message}
+          msg={t('JiraServerScopingSearchResults.NoIssuesMatchThatQuery')}
+        />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('JiraServerScopingSearchResults.NewIssue')}
+        />
       </>
     )
   }
@@ -188,7 +198,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
         return (
           <ScopingSearchResultItem
             key={node.id}
-            service={'jiraServer'}
+            service={t('JiraServerScopingSearchResults.Jiraserver')}
             usedServiceTaskIds={usedServiceTaskIds}
             serviceTaskId={node.id}
             meetingId={meetingId}
@@ -202,7 +212,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
       })}
       {lastItem}
       {hasNext && (
-        <LoadingNext key={'loadingNext'}>
+        <LoadingNext key={t('JiraServerScopingSearchResults.Loadingnext')}>
           <Ellipsis />
         </LoadingNext>
       )}

@@ -3,6 +3,7 @@ import {Close} from '@mui/icons-material'
 import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -102,6 +103,8 @@ interface Props {
 }
 
 const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment TeamPromptDiscussionDrawer_meeting on TeamPromptMeeting {
@@ -214,7 +217,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
           <DiscussionThreadRoot
             discussionId={discussionId}
             allowedThreadables={['comment', 'task']}
-            width={'100%'}
+            width={t('TeamPromptDiscussionDrawer.100%')}
             header={
               <DiscussionHeaderWrapper>
                 <PromptResponseEditor content={contentJSON} readOnly={true} />

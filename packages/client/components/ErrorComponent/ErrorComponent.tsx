@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'
@@ -30,6 +31,9 @@ interface Props {
 
 const ErrorComponent = (props: Props) => {
   const {error, eventId} = props
+
+  const {t} = useTranslation()
+
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
   const isOldBrowserErr = isOldBrowserError(error.message)
@@ -38,10 +42,10 @@ const ErrorComponent = (props: Props) => {
     const url = 'https://browser-update.org/update-browser.html'
     return (
       <ErrorBlock>
-        {"Oh no! You've found a bug because the browser you're using needs to be updated."}
+        {t('ErrorComponent.OhNoYouVeFoundABugBecauseTheBrowserYouReUsingNeedsToBeUpdated.')}
         <Button>
           <Link href={url} target='_blank' rel='noreferrer'>
-            Update now
+            {t('ErrorComponent.UpdateNow')}
           </Link>
         </Button>
       </ErrorBlock>
@@ -49,8 +53,8 @@ const ErrorComponent = (props: Props) => {
   }
   return (
     <ErrorBlock>
-      {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      {eventId && <Button onClick={openPortal}>Report Feedback</Button>}
+      {t('ErrorComponent.AnErrorHasOccurredWeVeAlertedTheDevelopersTryRefreshingThePage')}
+      {eventId && <Button onClick={openPortal}>{t('ErrorComponent.ReportFeedback')}</Button>}
       {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
     </ErrorBlock>
   )

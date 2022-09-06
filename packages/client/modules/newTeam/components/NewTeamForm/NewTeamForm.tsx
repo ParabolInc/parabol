@@ -1,27 +1,28 @@
-import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
-import React, {useState, ChangeEvent, FormEvent} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {ChangeEvent, FormEvent, useState} from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
+import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
-import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
+import StyledError from '../../../../components/StyledError'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useForm from '../../../../hooks/useForm'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import useRouter from '../../../../hooks/useRouter'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
+import linkify from '../../../../utils/linkify'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
+import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
+import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
 import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
-import StyledError from '../../../../components/StyledError'
-import DashHeaderTitle from '../../../../components/DashHeaderTitle'
-import linkify from '../../../../utils/linkify'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useRouter from '../../../../hooks/useRouter'
-import useForm from '../../../../hooks/useForm'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -70,6 +71,18 @@ interface Props {
 
 const NewTeamForm = (props: Props) => {
   const {isInitiallyNewOrg, organizations} = props
+
+  //FIXME i18n: Your new org needs a name!
+  //FIXME i18n: C’mon, you call that an organization?
+  //FIXME i18n: Maybe just the legal name?
+  //FIXME i18n: Try using a name, not a link!
+  //FIXME i18n: Add Team to…
+  //FIXME i18n: an existing organization:
+  //FIXME i18n: My new organization
+  //FIXME i18n: Create Team & Org
+  //FIXME i18n: Create Team
+  const {t} = useTranslation()
+
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
 
@@ -144,7 +157,7 @@ const NewTeamForm = (props: Props) => {
   return (
     <StyledForm onSubmit={onSubmit}>
       <Header>
-        <FormHeading>{'Create a New Team'}</FormHeading>
+        <FormHeading>{t('NewTeamForm.CreateANewTeam')}</FormHeading>
       </Header>
       <StyledPanel>
         <FormInner>

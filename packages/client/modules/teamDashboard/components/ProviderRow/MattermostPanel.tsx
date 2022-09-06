@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
@@ -79,6 +80,13 @@ const StyledButton = styled(FlatButton)({
 
 const MattermostPanel = (props: Props) => {
   const {teamId, viewerRef} = props
+
+  //FIXME i18n: No link provided
+  //FIXME i18n: Not looking too linky
+  //FIXME i18n: Configure in Mattermost: Main Menu > Integrations > Incoming Webhook
+  //FIXME i18n: Enter your webhook URL here...
+  const {t} = useTranslation()
+
   const viewer = useFragment(
     graphql`
       fragment MattermostPanel_viewer on User {
@@ -190,12 +198,12 @@ const MattermostPanel = (props: Props) => {
   return (
     <MattermostPanelStyles>
       <ConnectionGroup>
-        <Heading>Connection</Heading>
+        <Heading>{t('MattermostPanel.Connection')}</Heading>
       </ConnectionGroup>
       <form onSubmit={onSubmit}>
         <Row>
           <Label>
-            Mattermost Webhook
+            {t('MattermostPanel.MattermostWebhook')}
             <StyledIcon onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
               <InfoIcon />
             </StyledIcon>
@@ -209,7 +217,7 @@ const MattermostPanel = (props: Props) => {
             placeholder='Enter your webhook URL here...'
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
-            Update
+            {t('MattermostPanel.Update')}
           </StyledButton>
         </Row>
         {fieldError && <StyledError>{fieldError}</StyledError>}

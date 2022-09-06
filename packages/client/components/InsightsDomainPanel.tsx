@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
@@ -104,6 +105,12 @@ const tooltipTextLookup = {
 
 const InsightsDomainPanel = (props: Props) => {
   const {domainRef} = props
+
+  //FIXME i18n: Active Team
+  //FIXME i18n: Active Member
+  //FIXME i18n: Total Meeting
+  const {t} = useTranslation()
+
   const domain = useFragment(
     graphql`
       fragment InsightsDomainPanel_domain on Company {
@@ -163,7 +170,7 @@ const InsightsDomainPanel = (props: Props) => {
               {plural(activeOrganizationCount, 'Organization')}
               <IconBlock ref={orgRef}>
                 <StyledIcon onMouseOver={orgOpenTooltip} onMouseOut={orgCloseTooltip}>
-                  {'info'}
+                  {t('InsightsDomainPanel.Info')}
                 </StyledIcon>
               </IconBlock>
             </StatBlockLabel>
@@ -175,7 +182,7 @@ const InsightsDomainPanel = (props: Props) => {
               {plural(activeOrganizationCount, 'Active Team')}
               <IconBlock ref={teamRef}>
                 <StyledIcon onMouseOver={teamOpenTooltip} onMouseOut={teamCloseTooltip}>
-                  {'info'}
+                  {t('InsightsDomainPanel.Info')}
                 </StyledIcon>
               </IconBlock>
             </StatBlockLabel>
@@ -187,7 +194,7 @@ const InsightsDomainPanel = (props: Props) => {
               {plural(activeOrganizationCount, 'Active Member')}
               <IconBlock ref={memberRef}>
                 <StyledIcon onMouseOver={memberOpenTooltip} onMouseOut={memberCloseTooltip}>
-                  {'info'}
+                  {t('InsightsDomainPanel.Info')}
                 </StyledIcon>
               </IconBlock>
             </StatBlockLabel>
@@ -199,7 +206,7 @@ const InsightsDomainPanel = (props: Props) => {
               {plural(activeOrganizationCount, 'Total Meeting')}
               <IconBlock ref={meetingRef}>
                 <StyledIcon onMouseOver={meetingOpenTooltip} onMouseOut={meetingCloseTooltip}>
-                  {'info'}
+                  {t('InsightsDomainPanel.Info')}
                 </StyledIcon>
               </IconBlock>
             </StatBlockLabel>

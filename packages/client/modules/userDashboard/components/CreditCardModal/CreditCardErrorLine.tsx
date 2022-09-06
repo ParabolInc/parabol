@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Error as ErrorIcon, Lock as LockIcon} from '@mui/icons-material'
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import CreditCardIcon from '../../../../components/CreditCardIcon'
 import {UseFormField} from '../../../../hooks/useForm'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -48,6 +49,9 @@ const Message = styled('div')({
 
 const CreditCardErrorLine = (props: Props) => {
   const {fields, serverError, stripeClientManager} = props
+
+  const {t} = useTranslation()
+
   const [cardTypeIcon, setCardTypeIcon] = useState<CardTypeIcon>()
   const {creditCardNumber, cvc, expiry} = fields
   const primaryError =
@@ -66,8 +70,8 @@ const CreditCardErrorLine = (props: Props) => {
         <Message>
           {primaryError || (
             <>
-              {'Secured by '}
-              <b>Stripe</b>
+              {t('CreditCardErrorLine.SecuredBy')}
+              <b>{t('CreditCardErrorLine.Stripe')}</b>
             </>
           )}
         </Message>

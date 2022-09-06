@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import plural from '../utils/plural'
 import {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
@@ -23,6 +24,9 @@ const Link = styled(StyledLink)({
 
 const TimelineEventTeamPromptComplete = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
+
+  const {t} = useTranslation()
+
   const timelineEvent = useFragment(
     graphql`
       fragment TimelineEventTeamPromptComplete_timelineEvent on TimelineEventTeamPromptComplete {
@@ -59,25 +63,29 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
       title={<TimelineEventTitle>{`${meetingName} with ${teamName}`}</TimelineEventTitle>}
     >
       <TimelineEventBody>
-        {'Your team shared '}
+        {t('TimelineEventTeamPromptComplete.YourTeamShared')}
         <CountItem>
           {responseCount} {plural(responseCount, 'response', 'responses')}
         </CountItem>
-        {'.'}
+        {t('TimelineEventTeamPromptComplete..')}
         <br />
-        {'You all wrote '}
+        {t('TimelineEventTeamPromptComplete.YouAllWrote')}
         <CountItem>
           {commentCount} {plural(commentCount, 'comment', 'comments')}
         </CountItem>
-        {' and assigned '}
+        {t('TimelineEventTeamPromptComplete.AndAssigned')}
         <CountItem>
           {taskCount} {plural(taskCount, 'task', 'tasks')}
         </CountItem>
-        {'.'}
+        {t('TimelineEventTeamPromptComplete..')}
         <br />
-        <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
-        {' or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        <Link to={`/meet/${meetingId}/responses`}>
+          {t('TimelineEventTeamPromptComplete.SeeResponsesAndDiscussions')}
+        </Link>
+        {t('TimelineEventTeamPromptComplete.Or')}
+        <Link to={`/new-summary/${meetingId}`}>
+          {t('TimelineEventTeamPromptComplete.ReviewASummary')}
+        </Link>
       </TimelineEventBody>
     </TimelineEventCard>
   )

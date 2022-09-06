@@ -1,12 +1,13 @@
-import React from 'react'
-import {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
-import {useFragment} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import {updateLocalPollOption} from './local/newPoll'
-import {Polls, PollsAriaLabels} from '../../types/constEnums'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {useFragment} from 'react-relay'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {PALETTE} from '../../styles/paletteV3'
+import {Polls, PollsAriaLabels} from '../../types/constEnums'
+import {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
+import {updateLocalPollOption} from './local/newPoll'
 
 const PollOptionInputRoot = styled('div')({
   position: 'relative',
@@ -50,6 +51,9 @@ interface Props {
 
 const EditablePollOption = (props: Props) => {
   const {optionRef, shouldAutoFocus, placeholder} = props
+
+  const {t} = useTranslation()
+
   const pollOption = useFragment(
     graphql`
       fragment EditablePollOption_option on PollOption {
@@ -86,7 +90,9 @@ const EditablePollOption = (props: Props) => {
         autoFocus={shouldAutoFocus}
       />
       <Counter isVisible={isCounterVisible} isMax={title.length >= Polls.MAX_OPTION_TITLE_LENGTH}>
-        {title.length}/{Polls.MAX_OPTION_TITLE_LENGTH}
+        {title.length}
+        {t('EditablePollOption./')}
+        {Polls.MAX_OPTION_TITLE_LENGTH}
       </Counter>
     </PollOptionInputRoot>
   )

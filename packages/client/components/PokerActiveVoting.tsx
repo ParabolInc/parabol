@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
@@ -97,6 +98,11 @@ interface Props {
 
 const PokerActiveVoting = (props: Props) => {
   const {isClosing, meeting, stage, isInitialStageRender} = props
+
+  //FIXME i18n: Votes are automatically revealed once everyone has voted.
+  //FIXME i18n: Tap a card to vote. Swipe to view each dimension.
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {facilitatorUserId, id: meetingId, meetingMembers} = meeting
@@ -151,7 +157,7 @@ const PokerActiveVoting = (props: Props) => {
               <CheckIcon />
             </RevealButtonIcon>
             <RevealLabel color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_600}>
-              {'Reveal Votes'}
+              {t('PokerActiveVoting.RevealVotes')}
             </RevealLabel>
           </RevealButton>
         )}

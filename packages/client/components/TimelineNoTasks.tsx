@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
 import {PALETTE} from '../styles/paletteV3'
 
@@ -24,10 +25,12 @@ const RallyLink = styled('span')({
 })
 
 const TimelineNoTasks = () => {
+  const {t} = useTranslation()
+
   return (
     <Wrapper>
       <ThumbsUp />
-      {'You’re all caught up!'}
+      {t('TimelineNoTasks.YouReAllCaughtUp!')}
       <RallyLink>{getRallyLink()}</RallyLink>
     </Wrapper>
   )

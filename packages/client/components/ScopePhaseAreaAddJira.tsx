@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -37,6 +38,8 @@ interface Props {
 }
 
 const ScopePhaseAreaAddJira = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
@@ -55,11 +58,13 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   }
   return (
     <AddJiraArea>
-      <AddJiraButton onClick={authJira} size={'medium'}>
+      <AddJiraButton onClick={authJira} size={t('ScopePhaseAreaAddJira.Medium')}>
         <JiraSVG />
-        Import issues from Jira
+        {t('ScopePhaseAreaAddJira.ImportIssuesFromJira')}
       </AddJiraButton>
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
+      <StyledLink onClick={gotoParabol}>
+        {t('ScopePhaseAreaAddJira.OrAddNewTasksInParabol')}
+      </StyledLink>
     </AddJiraArea>
   )
 }

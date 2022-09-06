@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import LinkButton from '../../../../components/LinkButton'
 import Panel from '../../../../components/Panel/Panel'
@@ -34,6 +35,10 @@ const query = graphql`
 `
 
 const Organizations = (props: Props) => {
+  //FIXME i18n: Tap to create a new organzation
+  //FIXME i18n: My Organizations | Parabol
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {queryRef} = props
   const data = usePreloadedQuery<OrganizationsQuery>(query, queryRef, {
@@ -46,7 +51,7 @@ const Organizations = (props: Props) => {
   }
   const addNewOrg = () => (
     <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam} palette='blue'>
-      {'Add New Organization'}
+      {t('Organizations.AddNewOrganization')}
     </LinkButton>
   )
   useDocumentTitle('My Organizations | Parabol', 'Organizations')

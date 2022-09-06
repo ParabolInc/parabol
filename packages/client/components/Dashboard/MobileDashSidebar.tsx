@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
@@ -71,6 +72,9 @@ const FooterBottom = styled('div')({})
 
 const MobileDashSidebar = (props: Props) => {
   const {handleMenuClick, viewer} = props
+
+  const {t} = useTranslation()
+
   return (
     <DashSidebarStyles>
       <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
@@ -79,21 +83,21 @@ const MobileDashSidebar = (props: Props) => {
           <NavItemsWrap>
             <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'forum'}
-              href={'/meetings'}
-              label={'Meetings'}
+              icon={t('MobileDashSidebar.Forum')}
+              href={t('MobileDashSidebar.Meetings')}
+              label={t('MobileDashSidebar.Meetings')}
             />
             <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'timeline'}
-              href={'/me'}
-              label={'Timeline'}
+              icon={t('MobileDashSidebar.Timeline')}
+              href={t('MobileDashSidebar.Me')}
+              label={t('MobileDashSidebar.Timeline')}
             />
             <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'playlist_add_check'}
-              href={'/me/tasks'}
-              label={'Tasks'}
+              icon={t('MobileDashSidebar.PlaylistAddCheck')}
+              href={t('MobileDashSidebar.MeTasks')}
+              label={t('MobileDashSidebar.Tasks')}
             />
           </NavItemsWrap>
           <DashHR />
@@ -105,18 +109,18 @@ const MobileDashSidebar = (props: Props) => {
             <NavItemsWrap>
               <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'add'}
-                href={'/newteam/1'}
-                label={'Add a Team'}
+                icon={t('MobileDashSidebar.Add')}
+                href={t('MobileDashSidebar.Newteam1')}
+                label={t('MobileDashSidebar.AddATeam')}
               />
             </NavItemsWrap>
             <FooterBottom>
               <NavItemsWrap>
                 <LeftDashNavItem
                   onClick={handleMenuClick}
-                  icon={'exit_to_app'}
-                  href={'/signout'}
-                  label={'Sign out'}
+                  icon={t('MobileDashSidebar.ExitToApp')}
+                  href={t('MobileDashSidebar.Signout')}
+                  label={t('MobileDashSidebar.SignOut')}
                 />
               </NavItemsWrap>
               <LeftDashParabol />

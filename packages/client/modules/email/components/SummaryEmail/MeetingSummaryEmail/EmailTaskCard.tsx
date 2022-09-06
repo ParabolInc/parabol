@@ -6,6 +6,7 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import {EmailTaskCard_task} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import React, {useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 
@@ -41,6 +42,9 @@ const statusStyle = (status: TaskStatusEnum) => ({
 
 const EmailTaskCard = (props: Props) => {
   const {task} = props
+
+  const {t} = useTranslation()
+
   const {content, status} = task
   const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
   const editorStateRef = useRef<EditorState>()
@@ -58,7 +62,7 @@ const EmailTaskCard = (props: Props) => {
           <tbody>
             <tr>
               <td>
-                <table align='left' width={'20%'}>
+                <table align='left' width={t('EmailTaskCard.20%')}>
                   <tbody>
                     <tr>
                       <td style={statusStyle(status)} height={4} />

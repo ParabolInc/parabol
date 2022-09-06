@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
@@ -54,6 +55,9 @@ const query = graphql`
 
 const MassInvitationTokenLink = (props: Props) => {
   const {meetingId, queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<MassInvitationTokenLinkQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -82,8 +86,8 @@ const MassInvitationTokenLink = (props: Props) => {
       icon='link'
       url={url}
       label={linkLabel}
-      title={'Copy invite link'}
-      tooltip={'Copied! Valid for 30 days'}
+      title={t('MassInvitationTokenLink.CopyInviteLink')}
+      tooltip={t('MassInvitationTokenLink.CopiedValidFor30Days')}
     />
   )
 }

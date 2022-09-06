@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import useForm from '../hooks/useForm'
 import DialogContainer from './DialogContainer'
@@ -53,6 +54,9 @@ const LabelTemplateInput = styled(BasicInput)({
 
 const EditGitHubLabelTemplateModal = (props: Props) => {
   const {closePortal, defaultValue, placeholder, updateLabelTemplate} = props
+
+  const {t} = useTranslation()
+
   const INPUT_NAME = 'labelTemplate'
   const {fields, onChange, setValue} = useForm({
     [INPUT_NAME]: {
@@ -71,31 +75,35 @@ const EditGitHubLabelTemplateModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Edit GitHub Label'}</DialogTitle>
+      <DialogTitle>{t('EditGitHubLabelTemplateModal.EditGithubLabel')}</DialogTitle>
       <DialogContent>
         <div>
           <LabelTemplateInput
             autoFocus
             name={INPUT_NAME}
             placeholder={placeholder}
-            type={'text'}
-            autoComplete={'off'}
+            type={t('EditGitHubLabelTemplateModal.Text')}
+            autoComplete={t('EditGitHubLabelTemplateModal.Off')}
             onChange={onChange}
             value={value}
             error={undefined}
           />
-          <StyledTip>{'Use '}</StyledTip>
+          <StyledTip>{t('EditGitHubLabelTemplateModal.Use')}</StyledTip>
           <PlainButton onClick={addWildcard}>
-            <WildcardTip>{'{{#}}'}</WildcardTip>
+            <WildcardTip>{t('EditGitHubLabelTemplateModal.}')}</WildcardTip>
           </PlainButton>
-          <StyledTip>{' as the value wildcard'}</StyledTip>
+          <StyledTip>{t('EditGitHubLabelTemplateModal.AsTheValueWildcard')}</StyledTip>
 
           <ButtonGroup>
             <SecondaryButton onClick={closePortal} size='medium'>
-              Cancel
+              {t('EditGitHubLabelTemplateModal.Cancel')}
             </SecondaryButton>
-            <StyledRaisedButton onClick={onSave} size='medium' palette={'blue'}>
-              Save
+            <StyledRaisedButton
+              onClick={onSave}
+              size='medium'
+              palette={t('EditGitHubLabelTemplateModal.Blue')}
+            >
+              {t('EditGitHubLabelTemplateModal.Save')}
             </StyledRaisedButton>
           </ButtonGroup>
         </div>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject} from 'react'
+import {useTranslation} from 'react-i18next'
 import {usePaginationFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useTimeout from '~/hooks/useTimeout'
@@ -38,6 +39,10 @@ const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDro
 
 const NotificationDropdown = (props: Props) => {
   const {queryRef, menuProps, parentRef} = props
+
+  //FIXME i18n: Notification Menu Opened
+  const {t} = useTranslation()
+
   const paginationRes = usePaginationFragment<
     NotificationDropdownPaginationQuery,
     NotificationDropdown_query$key
@@ -75,9 +80,13 @@ const NotificationDropdown = (props: Props) => {
   const atmosphere = useAtmosphere()
   useSegmentTrack('Notification Menu Opened', {})
   return (
-    <Menu ariaLabel={'Select a notification'} {...menuProps}>
+    <Menu ariaLabel={t('NotificationDropdown.SelectANotification')} {...menuProps}>
       {!hasNotifications && (
-        <MenuItem label={<NoNotifications>{'You’re all caught up! 💯'}</NoNotifications>} />
+        <MenuItem
+          label={
+            <NoNotifications>{t('NotificationDropdown.YouReAllCaughtUp\udcaf')}</NoNotifications>
+          }
+        />
       )}
       {edges.map(({node}) => {
         const {id: notificationId, status} = node
@@ -98,7 +107,9 @@ const NotificationDropdown = (props: Props) => {
           />
         )
       })}
-      {hasNotifications && timeOut && <MenuItem key={'last'} label={lastItem} />}
+      {hasNotifications && timeOut && (
+        <MenuItem key={t('NotificationDropdown.Last')} label={lastItem} />
+      )}
     </Menu>
   )
 }

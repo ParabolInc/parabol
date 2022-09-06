@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -15,6 +16,10 @@ interface Props {
 
 const MattermostConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, providerId} = props
+
+  //FIXME i18n: Remove Mattermost
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
@@ -27,7 +32,7 @@ const MattermostConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Mattermost integration'} {...menuProps}>
+    <Menu ariaLabel={t('MattermostConfigMenu.ConfigureYourMattermostIntegration')} {...menuProps}>
       <MenuItem label='Remove Mattermost' onClick={removeMattermostAuth} />
     </Menu>
   )

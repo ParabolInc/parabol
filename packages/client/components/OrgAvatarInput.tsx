@@ -1,14 +1,15 @@
+import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React from 'react'
-import styled from '@emotion/styled'
+import {useTranslation} from 'react-i18next'
+import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
+import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
-import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
-import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
-import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
-import svgToPng from '../utils/svgToPng'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
@@ -41,6 +42,10 @@ interface Props {
 
 const OrgAvatarInput = (props: Props) => {
   const {picture, orgId} = props
+
+  //FIXME i18n: File is too large (1MB Max)
+  const {t} = useTranslation()
+
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
 
@@ -70,7 +75,7 @@ const OrgAvatarInput = (props: Props) => {
 
   return (
     <ModalBoundary>
-      <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
+      <StyledDialogTitle>{t('OrgAvatarInput.UploadANewPhoto')}</StyledDialogTitle>
       <AvatarBlock>
         <Avatar picture={picture} size={96} />
       </AvatarBlock>

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Close as CloseIcon, PersonAdd as PersonAddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -58,6 +59,9 @@ const query = graphql`
 
 const MeetingCardOptionsMenu = (props: Props) => {
   const {menuProps, popTooltip, queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -73,7 +77,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
 
   const {closePortal} = menuProps
   return (
-    <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+    <Menu ariaLabel={t('MeetingCardOptionsMenu.EditTheMeeting')} {...menuProps}>
       <MenuItem
         key='copy'
         label={
@@ -81,7 +85,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
             <StyledIcon>
               <PersonAddIcon />
             </StyledIcon>
-            <span>{'Copy invite link'}</span>
+            <span>{t('MeetingCardOptionsMenu.CopyInviteLink')}</span>
           </OptionMenuItem>
         }
         onClick={async () => {
@@ -99,7 +103,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
               <StyledIcon>
                 <CloseIcon />
               </StyledIcon>
-              <span>{'End the meeting'}</span>
+              <span>{t('MeetingCardOptionsMenu.EndTheMeeting')}</span>
             </OptionMenuItem>
           }
           onClick={() => {

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
@@ -43,6 +44,10 @@ const gqlQuery = graphql`
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, queryRef} = props
+
+  //FIXME i18n: Search team members
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -75,17 +80,17 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Assign this task to a teammate'}
+      ariaLabel={t('TaskFooterUserAssigneeMenu.AssignThisTaskToATeammate')}
       defaultActiveIdx={userId ? taskUserIdx : undefined}
       {...menuProps}
     >
-      <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('TaskFooterUserAssigneeMenu.AssignTo:')}</DropdownMenuLabel>
       {assignees.length > 5 && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedAssignees.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          No team members found!
+          {t('TaskFooterUserAssigneeMenu.NoTeamMembersFound!')}
         </EmptyDropdownMenuItemLabel>
       )}
       {matchedAssignees.map((assignee) => {

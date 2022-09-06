@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -27,6 +28,10 @@ interface Props {
 
 const LeaveTeamModal = (props: Props) => {
   const {closePortal, teamMember} = props
+
+  //FIXME i18n: Leave the team
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {teamMemberId} = teamMember
@@ -37,11 +42,11 @@ const LeaveTeamModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Are you sure?'}</DialogTitle>
+      <DialogTitle>{t('LeaveTeamModal.AreYouSure?')}</DialogTitle>
       <DialogContent>
-        {'This will remove you from the team.'}
+        {t('LeaveTeamModal.ThisWillRemoveYouFromTheTeam.')}
         <br />
-        {'All of your tasks will be given to the team lead.'}
+        {t('LeaveTeamModal.AllOfYourTasksWillBeGivenToTheTeamLead.')}
         <StyledButton size='medium' onClick={handleClick}>
           <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
         </StyledButton>

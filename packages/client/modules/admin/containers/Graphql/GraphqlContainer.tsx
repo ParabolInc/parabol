@@ -4,6 +4,7 @@ import GraphiQL, {GraphiQLProps} from 'graphiql'
 import {ToolbarSelect, ToolbarSelectOption} from 'graphiql/dist/components/ToolbarSelect'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
@@ -45,6 +46,10 @@ const persistSchemaForTab = (currentSchema: SchemaType) => {
 }
 
 const GraphqlContainer = () => {
+  //FIXME i18n: Prettify Query (Shift-Ctrl-P)
+  //FIXME i18n: Show History
+  const {t} = useTranslation()
+
   const [currentSchema, setCurrentSchema] = useState<SchemaType>(() => {
     return (window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) as SchemaType) || 'Public'
   })
@@ -104,7 +109,7 @@ const GraphqlContainer = () => {
             label='History'
           />
           <GraphiQL.Group>
-            <span>Schema: </span>
+            <span>{t('GraphqlContainer.Schema:')}</span>
             <ToolbarSelect title='Schema' label='Schema'>
               <ToolbarSelectOption
                 label='Public'

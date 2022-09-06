@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -36,6 +37,10 @@ const LastCallWrapper = styled('div')({
 
 const ActionMeetingLastCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  //FIXME i18n: End Meeting
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -54,9 +59,10 @@ const ActionMeetingLastCall = (props: Props) => {
   }
 
   const getHeadingText = () => {
-    if (endedAt && agendaItemsCompleted === 0) return <span>Nothing to see here</span>
+    if (endedAt && agendaItemsCompleted === 0)
+      return <span>{t('ActionMeetingLastCall.NothingToSeeHere')}</span>
     else if (agendaItemsCompleted === 0) return <span>{`No ${labelAgendaItems}?`}</span>
-    else return <span>{'Last Call:'}</span>
+    else return <span>{t('ActionMeetingLastCall.LastCall:')}</span>
   }
 
   const getMeetingCopy = () => {
@@ -69,15 +75,15 @@ const ActionMeetingLastCall = (props: Props) => {
           <br />
           {`You can add ${labelAgendaItems} in the left sidebar before ending the meeting.`}
           <br />
-          {'Simply tap on any items you create to process them.'}
+          {t('ActionMeetingLastCall.SimplyTapOnAnyItemsYouCreateToProcessThem.')}
         </span>
       )
     } else {
       return (
         <span>
-          {'We’ve worked on '}
+          {t('ActionMeetingLastCall.WeVeWorkedOn')}
           <b>{`${agendaItemsCompleted} ${plural(agendaItemsCompleted, AGENDA_ITEM_LABEL)}`}</b>
-          {' so far—need anything else?'}
+          {t('ActionMeetingLastCall.SoFarNeedAnythingElse?')}
         </span>
       )
     }
@@ -104,11 +110,11 @@ const ActionMeetingLastCall = (props: Props) => {
               onClick={endMeeting}
               disabled={!!endedAt}
             >
-              End Check-in Meeting
+              {t('ActionMeetingLastCall.EndCheckInMeeting')}
             </PrimaryButton>
           ) : !endedAt ? (
             <MeetingFacilitationHint>
-              {'Waiting for'} <b>{preferredName}</b> {`to end the meeting`}
+              {t('ActionMeetingLastCall.WaitingFor')} <b>{preferredName}</b> {`to end the meeting`}
             </MeetingFacilitationHint>
           ) : null}
         </LastCallWrapper>

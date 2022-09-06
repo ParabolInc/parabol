@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {matchPath, RouteProps} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -74,6 +75,9 @@ const setSearch = (atmosphere: Atmosphere, value: string) => {
 
 const TopBarSearch = (props: Props) => {
   const {viewer} = props
+
+  const {t} = useTranslation()
+
   const dashSearch = viewer?.dashSearch ?? ''
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
@@ -88,7 +92,12 @@ const TopBarSearch = (props: Props) => {
   }
   return (
     <Wrapper location={location}>
-      <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
+      <SearchInput
+        ref={inputRef}
+        onChange={onChange}
+        placeholder={t('TopBarSearch.Search')}
+        value={dashSearch}
+      />
       <SearchIcon onClick={onClick}>
         {
           {

@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -16,6 +17,11 @@ interface Props {
 
 const GitHubConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
+
+  //FIXME i18n: Refresh token
+  //FIXME i18n: Remove GitHub
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -31,7 +37,7 @@ const GitHubConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your GitHub integration'} {...menuProps}>
+    <Menu ariaLabel={t('GitHubConfigMenu.ConfigureYourGithubIntegration')} {...menuProps}>
       <MenuItem label='Refresh token' onClick={openOAuth} />
       <MenuItem label='Remove GitHub' onClick={removeGitHub} />
     </Menu>

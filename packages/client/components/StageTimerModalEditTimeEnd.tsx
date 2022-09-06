@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Stop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -51,6 +52,9 @@ const StyledIcon = styled(Stop)({
 
 const StageTimerModalEditTimeEnd = (props: Props) => {
   const {meetingId, closePortal, facilitator, stage} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const endTimer = () => {
@@ -63,7 +67,10 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
     <Modal>
       <EndTimer onClick={endTimer}>
         <StyledIcon />
-        <Label>End {MeetingLabels.TIME_LIMIT}</Label>
+        <Label>
+          {t('StageTimerModalEditTimeEnd.End')}
+          {MeetingLabels.TIME_LIMIT}
+        </Label>
       </EndTimer>
       <HR />
       <StageTimerModalEndTime

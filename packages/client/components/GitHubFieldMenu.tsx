@@ -2,6 +2,7 @@ import styled from '@emotion/styled-base'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -76,6 +77,9 @@ interface Props {
 
 const GitHubFieldMenu = (props: Props) => {
   const {menuProps, stageRef, submitScore} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
@@ -156,7 +160,7 @@ const GitHubFieldMenu = (props: Props) => {
   return (
     <>
       <Menu
-        ariaLabel={'Select where to publish the estimate'}
+        ariaLabel={t('GitHubFieldMenu.SelectWhereToPublishTheEstimate')}
         portalStatus={portalStatus}
         isDropdown={isDropdown}
         defaultActiveIdx={defaultActiveIdx}
@@ -165,7 +169,7 @@ const GitHubFieldMenu = (props: Props) => {
           label={
             <LabelOptionRoot>
               <LabelOptionBlock>
-                <LabelOptionName>{'As a label'}</LabelOptionName>
+                <LabelOptionName>{t('GitHubFieldMenu.AsALabel')}</LabelOptionName>
                 <LabelOptionSub>{serviceFieldTemplate}</LabelOptionSub>
               </LabelOptionBlock>
               <EditButtonGroup>

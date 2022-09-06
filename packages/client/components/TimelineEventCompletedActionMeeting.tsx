@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
 import relativeDate from '../utils/date/relativeDate'
@@ -25,6 +26,11 @@ const CountItem = styled('span')({
 
 const TimelineEventCompletedActionMeeting = (props: Props) => {
   const {timelineEvent} = props
+
+  //FIXME i18n: less than a minute
+  //FIXME i18n: agenda item
+  const {t} = useTranslation()
+
   const {meeting, team} = timelineEvent
   const {
     id: meetingId,
@@ -51,14 +57,18 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
       <TimelineEventBody>
         {`It lasted ${meetingDuration} and generated `}
         <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
-        {', '}
+        {t('TimelineEventCompletedActionMeeting.,')}
         <CountItem>{`${agendaItemCount} ${plural(agendaItemCount, 'agenda item')}`}</CountItem>
-        {' and '}
+        {t('TimelineEventCompletedActionMeeting.And')}
         <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
         <br />
-        <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        <Link to={`/meet/${meetingId}/agendaitems/1`}>
+          {t('TimelineEventCompletedActionMeeting.SeeTheDiscussion')}
+        </Link>
+        {t('TimelineEventCompletedActionMeeting.InYourMeetingOr')}
+        <Link to={`/new-summary/${meetingId}`}>
+          {t('TimelineEventCompletedActionMeeting.ReviewASummary')}
+        </Link>
       </TimelineEventBody>
     </TimelineEventCard>
   )

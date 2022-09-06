@@ -3,6 +3,7 @@ import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState, SelectionState} from 'draft-js'
 import React, {useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {NewCheckInQuestion_meeting} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
@@ -53,6 +54,10 @@ interface Props {
 }
 
 const NewCheckInQuestion = (props: Props) => {
+  //FIXME i18n: Tap to customize the Icebreaker
+  //FIXME i18n: e.g. How are you?
+  const {t} = useTranslation()
+
   const editorRef = useRef<HTMLTextAreaElement>()
   const atmosphere = useAtmosphere()
   const {meeting} = props
@@ -111,7 +116,7 @@ const NewCheckInQuestion = (props: Props) => {
     <QuestionBlock>
       {/* cannot set min width because iPhone 5 has a width of 320*/}
       <EditorInputWrapper
-        ariaLabel={'Edit the icebreaker'}
+        ariaLabel={t('NewCheckInQuestion.EditTheIcebreaker')}
         editorState={editorState}
         setEditorState={updateQuestion}
         readOnly={!isFacilitating}
@@ -131,7 +136,7 @@ const NewCheckInQuestion = (props: Props) => {
               <CreateIcon />
             </CogIcon>
           </PlainButton>
-          <PlainButton aria-label={'Refresh'} onClick={refresh}>
+          <PlainButton aria-label={t('NewCheckInQuestion.Refresh')} onClick={refresh}>
             <CogIcon>
               <RefreshIcon />
             </CogIcon>

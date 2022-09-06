@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {PALETTE} from '../styles/paletteV3'
@@ -13,6 +14,8 @@ interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
 }
 
 const SuggestedActionTryRetroMeeting = (props: Props) => {
+  const {t} = useTranslation()
+
   const onClick = () => {
     const {history, suggestedAction} = props
     const {team} = suggestedAction
@@ -29,8 +32,13 @@ const SuggestedActionTryRetroMeeting = (props: Props) => {
       iconName='history'
       suggestedActionId={suggestedActionId}
     >
-      <SuggestedActionCopy>Hold your first Retro Meeting with {teamName}</SuggestedActionCopy>
-      <SuggestedActionButton onClick={onClick}>Start Retro Meeting</SuggestedActionButton>
+      <SuggestedActionCopy>
+        {t('SuggestedActionTryRetroMeeting.HoldYourFirstRetroMeetingWith')}
+        {teamName}
+      </SuggestedActionCopy>
+      <SuggestedActionButton onClick={onClick}>
+        {t('SuggestedActionTryRetroMeeting.StartRetroMeeting')}
+      </SuggestedActionButton>
     </SuggestedActionCard>
   )
 }

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
@@ -38,6 +39,8 @@ interface Props {
 
 const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
+
+  const {t} = useTranslation()
 
   const query = usePreloadedQuery(
     graphql`
@@ -148,8 +151,14 @@ const GitLabScopingSearchResults = (props: Props) => {
   if (issues.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults error={errorMessage} msg={'No issues match that query'} />
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+        <IntegrationScopingNoResults
+          error={errorMessage}
+          msg={t('GitLabScopingSearchResults.NoIssuesMatchThatQuery')}
+        />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('GitLabScopingSearchResults.NewIssue')}
+        />
       </>
     )
   }
@@ -178,7 +187,7 @@ const GitLabScopingSearchResults = (props: Props) => {
           return (
             <ScopingSearchResultItem
               key={id}
-              service={'gitlab'}
+              service={t('GitLabScopingSearchResults.Gitlab')}
               usedServiceTaskIds={usedServiceTaskIds}
               serviceTaskId={GitLabIssueId.join(providerId, id ?? '')}
               meetingId={meetingId}
@@ -191,13 +200,16 @@ const GitLabScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
         {hasNext && (
-          <LoadingNext key={'loadingNext'}>
+          <LoadingNext key={t('GitLabScopingSearchResults.Loadingnext')}>
             <Ellipsis />
           </LoadingNext>
         )}
       </ResultScroller>
       {!isEditing && (
-        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={t('GitLabScopingSearchResults.NewIssue')}
+        />
       )}
     </>
   )

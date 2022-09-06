@@ -1,6 +1,7 @@
-import React from 'react'
-import parabolMark from '../../../../styles/theme/images/brand/mark-color.svg'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import parabolMark from '../../../../styles/theme/images/brand/mark-color.svg'
 import {ContactInfo} from '../../../../types/constEnums'
 
 const Footer = styled('div')({
@@ -31,26 +32,30 @@ const FinePrint = styled('div')({
 })
 
 const InvoiceFooter = () => {
+  //FIXME i18n: Contact Us
+  //FIXME i18n: Logo for Parabol
+  const {t} = useTranslation()
+
   return (
     <Footer>
-      <Heading>{'Thank you for using Parabol!'}</Heading>
+      <Heading>{t('InvoiceFooter.ThankYouForUsingParabol!')}</Heading>
       <Copy>
-        {'Questions? Concerns?'}
+        {t('InvoiceFooter.QuestionsConcerns?')}
         <br />
-        {'Get in touch: '}
+        {t('InvoiceFooter.GetInTouch:')}
         <a href='mailto:billing@parabol.co' title='Contact Us'>
           <b>{ContactInfo.EMAIL_BILLING}</b>
         </a>
       </Copy>
       <Lockup crossOrigin='' alt='Logo for Parabol' src={parabolMark} />
       <FinePrint>
-        {'Parabol, Inc.'}
+        {t('InvoiceFooter.ParabolInc.')}
         <br />
-        {'2900 W Shorb St'}
+        {t('InvoiceFooter.2900WShorbSt')}
         <br />
-        {'Alhambra, CA, 91803'}
+        {t('InvoiceFooter.AlhambraCa91803')}
         <br />
-        {'United States'}
+        {t('InvoiceFooter.UnitedStates')}
         <br />
         <a
           href={`tel:${ContactInfo.TELEPHONE.replace('-', '')}`}

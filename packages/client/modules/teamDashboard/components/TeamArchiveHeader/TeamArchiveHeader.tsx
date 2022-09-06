@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -35,13 +36,17 @@ interface Props {
 
 const TeamArchiveHeader = (props: Props) => {
   const {teamId} = props
+
+  //FIXME i18n: Back to Team Tasks
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const goToTeamDash = () => history.push(`/team/${teamId}/`)
   return (
     <RootBlock>
       <HeadingBlock>
         <StyledIcon />
-        <Heading>Archived Tasks</Heading>
+        <Heading>{t('TeamArchiveHeader.ArchivedTasks')}</Heading>
       </HeadingBlock>
       <DashNavControl icon='arrow_back' label='Back to Team Tasks' onClick={goToTeamDash} />
     </RootBlock>

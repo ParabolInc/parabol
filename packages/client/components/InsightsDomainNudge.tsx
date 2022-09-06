@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
@@ -50,6 +51,12 @@ interface Props {
 
 const InsightsDomainNudge = (props: Props) => {
   const {domainRef} = props
+
+  //FIXME i18n: Contact Us
+  //FIXME i18n: mailto:love@parabol.co?subject=Increase Usage Limits
+  //FIXME i18n: Clicked Domain Stats CTA
+  const {t} = useTranslation()
+
   const domain = useFragment(
     graphql`
       fragment InsightsDomainNudge_domain on Company {
@@ -99,7 +106,7 @@ const InsightsDomainNudge = (props: Props) => {
           // will be null if they successfully upgraded their last free org
           activeUserCount={biggestOrganization?.orgUserCount?.activeUserCount ?? 0}
           orgId={biggestOrganization?.id ?? ''}
-          actionType={'upgrade'}
+          actionType={t('InsightsDomainNudge.Upgrade')}
           closePortal={closePortal}
         />
       )}
@@ -107,11 +114,13 @@ const InsightsDomainNudge = (props: Props) => {
         <NudgeBlock>
           <OverLimitBlock>
             <OverLimitCopy>
-              <b>{domainId}</b> is over the limit of <b>2 Free Teams</b>
+              <b>{domainId}</b>
+              {t('InsightsDomainNudge.IsOverTheLimitOf')}
+              <b>{t('InsightsDomainNudge.2FreeTeams')}</b>
             </OverLimitCopy>
           </OverLimitBlock>
           <ButtonBlock>
-            <CTA size={'large'} onClick={onClickCTA}>
+            <CTA size={t('InsightsDomainNudge.Large')} onClick={onClickCTA}>
               {CTACopy}
             </CTA>
           </ButtonBlock>

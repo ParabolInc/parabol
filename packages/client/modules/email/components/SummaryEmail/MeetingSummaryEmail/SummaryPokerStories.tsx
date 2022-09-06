@@ -3,6 +3,7 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import AnchorIfEmail from './AnchorIfEmail'
@@ -46,6 +47,10 @@ interface Props {
 
 const SummaryPokerStories = (props: Props) => {
   const {appOrigin, isEmail, meeting} = props
+
+  //FIXME i18n: summary email
+  const {t} = useTranslation()
+
   const {id: meetingId, phases} = meeting
   if (meeting.__typename !== 'PokerMeeting') return null
   const estimatePhase = phases?.find((phase) => phase?.__typename === 'EstimatePhase')
@@ -56,7 +61,13 @@ const SummaryPokerStories = (props: Props) => {
     <>
       <tr>
         <td>
-          <table width='80%' height='100%' align='center' bgcolor={'#FFFFFF'} style={tableStyles}>
+          <table
+            width='80%'
+            height='100%'
+            align='center'
+            bgcolor={t('SummaryPokerStories.Ffffff')}
+            style={tableStyles}
+          >
             <tbody>
               {stages.map((stage, idx) => {
                 const {id, task, finalScore, taskId} = stage
@@ -87,7 +98,7 @@ const SummaryPokerStories = (props: Props) => {
                         {title}
                       </AnchorIfEmail>
                     </td>
-                    <td align={'center'} style={scoreStyle(isLast)}>
+                    <td align={t('SummaryPokerStories.Center')} style={scoreStyle(isLast)}>
                       {finalScore || '—'}
                     </td>
                   </tr>

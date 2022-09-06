@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
@@ -54,6 +55,9 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  const {t} = useTranslation()
+
   const {showSidebar, endedAt, localStage} = meeting
   const {agendaItem, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -85,7 +89,9 @@ const ActionMeetingAgendaItems = (props: Props) => {
               discussionId={discussionId!}
               allowedThreadables={allowedThreadables}
               header={
-                <DiscussionThreadHeader>{'Discussion & Takeaway Tasks'}</DiscussionThreadHeader>
+                <DiscussionThreadHeader>
+                  {t('ActionMeetingAgendaItems.DiscussionTakeawayTasks')}
+                </DiscussionThreadHeader>
               }
               emptyState={
                 <DiscussionThreadListEmptyState

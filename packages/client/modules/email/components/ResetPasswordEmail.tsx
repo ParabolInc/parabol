@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
@@ -15,24 +16,28 @@ interface ResetPasswordEmailProps {
 
 const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
   const {appOrigin, resetURL} = props
+
+  //FIXME i18n: Reset Password
+  const {t} = useTranslation()
+
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{'Forget your password?'}</p>
+        <p style={emailCopyStyle}>{t('ResetPasswordEmail.ForgetYourPassword?')}</p>
         <p style={emailCopyStyle}>{`No problem, just click the link below.`}</p>
         <p style={emailCopyStyle}>
           <a href={resetURL} style={emailLinkStyle} title='Reset Password'>
-            {'Reset Password'}
+            {t('ResetPasswordEmail.ResetPassword')}
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {'Get in touch if we can help in any way,'}
+          {t('ResetPasswordEmail.GetInTouchIfWeCanHelpInAnyWay,')}
           <br />
           {emailProductTeamSignature}
           <br />
           <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
-            {'love@parabol.co'}
+            {t('ResetPasswordEmail.LoveParabolCo')}
           </a>
         </p>
         <EmptySpace height={16} />

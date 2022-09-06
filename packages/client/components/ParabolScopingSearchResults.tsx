@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -27,6 +28,9 @@ interface Props {
 
 const ParabolScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
+
+  const {t} = useTranslation()
+
   const viewerRef = usePreloadedQuery<ParabolScopingSearchResultsQuery>(
     graphql`
       query ParabolScopingSearchResultsQuery(
@@ -136,8 +140,11 @@ const ParabolScopingSearchResults = (props: Props) => {
   if (edges.length === 0 && !isEditing)
     return viewer ? (
       <>
-        <IntegrationScopingNoResults msg={'No tasks match that query'} />
-        <NewIntegrationRecordButton labelText={'New Task'} onClick={handleAddTaskClick} />
+        <IntegrationScopingNoResults msg={t('ParabolScopingSearchResults.NoTasksMatchThatQuery')} />
+        <NewIntegrationRecordButton
+          labelText={t('ParabolScopingSearchResults.NewTask')}
+          onClick={handleAddTaskClick}
+        />
       </>
     ) : null
 
@@ -164,7 +171,10 @@ const ParabolScopingSearchResults = (props: Props) => {
         {lastItem}
       </ResultScroller>
       {!isEditing && (
-        <NewIntegrationRecordButton labelText={'New Task'} onClick={handleAddTaskClick} />
+        <NewIntegrationRecordButton
+          labelText={t('ParabolScopingSearchResults.NewTask')}
+          onClick={handleAddTaskClick}
+        />
       )}
     </>
   )

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {ParabolScopingSearchBar_meeting$key} from '../__generated__/ParabolScopingSearchBar_meeting.graphql'
 import ParabolScopingSearchFilterToggle from './ParabolScopingSearchFilterToggle'
@@ -13,6 +14,8 @@ interface Props {
 
 const ParabolScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
 
   const meeting = useFragment(
     graphql`
@@ -36,11 +39,11 @@ const ParabolScopingSearchBar = (props: Props) => {
     <ScopingSearchBar currentFilters={currentFilters}>
       <ScopingSearchHistoryToggle />
       <ScopingSearchInput
-        placeholder={'Search Parabol tasks'}
+        placeholder={t('ParabolScopingSearchBar.SearchParabolTasks')}
         queryString={queryString ?? ''}
         meetingId={meetingId}
-        linkedRecordName={'parabolSearchQuery'}
-        service={'PARABOL'}
+        linkedRecordName={t('ParabolScopingSearchBar.Parabolsearchquery')}
+        service={t('ParabolScopingSearchBar.Parabol')}
       />
       <ParabolScopingSearchFilterToggle meeting={meeting} />
     </ScopingSearchBar>

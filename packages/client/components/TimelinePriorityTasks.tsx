@@ -3,6 +3,7 @@ import {Whatshot} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import DraggableTask from '../containers/TaskCard/DraggableTask'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -47,6 +48,9 @@ const PriorityTaskBody = styled('div')({
 
 const TimelinePriorityTasks = (props: Props) => {
   const {viewer} = props
+
+  const {t} = useTranslation()
+
   const {tasks} = viewer
   const atmosphere = useAtmosphere()
   const activeTasks = useMemo(() => {
@@ -88,7 +92,7 @@ const TimelinePriorityTasks = (props: Props) => {
           <TaskList>
             <PriorityTasksHeader>
               <ActiveIcon />
-              Active Tasks
+              {t('TimelinePriorityTasks.ActiveTasks')}
             </PriorityTasksHeader>
             <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
               {activeTasks.map((task, idx) => (

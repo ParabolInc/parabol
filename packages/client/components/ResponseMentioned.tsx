@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import useRouter from '../hooks/useRouter'
@@ -12,6 +13,9 @@ interface Props {
 
 const ResponseMentioned = (props: Props) => {
   const {notification: notificationRef} = props
+
+  const {t} = useTranslation()
+
   const notification = useFragment(
     graphql`
       fragment ResponseMentioned_notification on NotifyResponseMentioned {
@@ -46,7 +50,9 @@ const ResponseMentioned = (props: Props) => {
       avatar={authorPicture}
       message={`${authorName} mentioned you in their response in ${meetingName}.`}
       notification={notification}
-      action={<NotificationAction label={'See their response'} onClick={goThere} />}
+      action={
+        <NotificationAction label={t('ResponseMentioned.SeeTheirResponse')} onClick={goThere} />
+      }
     />
   )
 }

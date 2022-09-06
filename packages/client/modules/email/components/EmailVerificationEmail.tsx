@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
@@ -15,24 +16,30 @@ interface ResetPasswordEmailProps {
 
 const EmailVerificationEmail = (props: ResetPasswordEmailProps) => {
   const {appOrigin, verificationURL} = props
+
+  //FIXME i18n: Verify My Email
+  const {t} = useTranslation()
+
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{'Hello 👋'}</p>
-        <p style={emailCopyStyle}>{'Tap the link below to verify your email.'}</p>
+        <p style={emailCopyStyle}>{t('EmailVerificationEmail.Hello\udc4b')}</p>
+        <p style={emailCopyStyle}>
+          {t('EmailVerificationEmail.TapTheLinkBelowToVerifyYourEmail.')}
+        </p>
         <p style={emailCopyStyle}>
           <a href={verificationURL} style={emailLinkStyle} title='Verify My Email'>
-            {'Verify My Email'}
+            {t('EmailVerificationEmail.VerifyMyEmail')}
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {'Get in touch if we can help in any way,'}
+          {t('EmailVerificationEmail.GetInTouchIfWeCanHelpInAnyWay,')}
           <br />
           {emailProductTeamSignature}
           <br />
           <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
-            {'love@parabol.co'}
+            {t('EmailVerificationEmail.LoveParabolCo')}
           </a>
         </p>
         <EmptySpace height={16} />

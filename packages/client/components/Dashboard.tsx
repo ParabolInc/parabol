@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Location} from 'history'
 import React, {lazy, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route, Switch, useLocation} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -97,6 +98,9 @@ const SkipLink = styled('a')({
 
 const Dashboard = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
       query DashboardQuery($first: Int!, $after: DateTime) {
@@ -138,7 +142,7 @@ const Dashboard = (props: Props) => {
 
   return (
     <DashLayout>
-      <SkipLink href='#main'>Skip to content</SkipLink>
+      <SkipLink href='#main'>{t('Dashboard.SkipToContent')}</SkipLink>
       {isDesktop ? (
         <DashTopBar queryRef={data} toggle={toggle} />
       ) : (

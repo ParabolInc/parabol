@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
-import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
 import UpdatePokerTemplateScopeMutation from '../mutations/UpdatePokerTemplateScopeMutation'
+import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
 import {SelectSharingScopeDropdown_template} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
 import Menu from './Menu'
@@ -18,6 +19,9 @@ interface Props {
 
 const SelectSharingScopeDropdown = (props: Props) => {
   const {menuProps, template} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {id: templateId, scope, team, type} = template
@@ -41,24 +45,40 @@ const SelectSharingScopeDropdown = (props: Props) => {
     }
   }
   return (
-    <Menu ariaLabel={'Select the suitable scope for sharing'} {...menuProps}>
+    <Menu
+      ariaLabel={t('SelectSharingScopeDropdown.SelectTheSuitableScopeForSharing')}
+      {...menuProps}
+    >
       {scope === 'TEAM' ? null : (
         <MenuItem
-          label={<DropdownMenuIconItemLabel label={`Share only with ${teamName}`} icon={'group'} />}
+          label={
+            <DropdownMenuIconItemLabel
+              label={`Share only with ${teamName}`}
+              icon={t('SelectSharingScopeDropdown.Group')}
+            />
+          }
           onClick={setScope('TEAM')}
         />
       )}
       {scope === 'ORGANIZATION' ? null : (
         <MenuItem
           label={
-            <DropdownMenuIconItemLabel label={`Share with all of ${orgName}`} icon={'business'} />
+            <DropdownMenuIconItemLabel
+              label={`Share with all of ${orgName}`}
+              icon={t('SelectSharingScopeDropdown.Business')}
+            />
           }
           onClick={setScope('ORGANIZATION')}
         />
       )}
       {scope === 'PUBLIC' ? null : (
         <MenuItem
-          label={<DropdownMenuIconItemLabel label={`Share with the world`} icon={'public'} />}
+          label={
+            <DropdownMenuIconItemLabel
+              label={`Share with the world`}
+              icon={t('SelectSharingScopeDropdown.Public')}
+            />
+          }
           onClick={setScope('PUBLIC')}
         />
       )}

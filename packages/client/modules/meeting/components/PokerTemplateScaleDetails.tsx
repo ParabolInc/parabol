@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import FlatButton from '../../../components/FlatButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -86,6 +87,10 @@ interface Props {
 
 const PokerTemplateScaleDetails = (props: Props) => {
   const {team} = props
+
+  //FIXME i18n: Back to Template
+  const {t} = useTranslation()
+
   const {id: teamId, scales, editingScaleId} = team
   const scale = scales.find((scale) => scale.id === editingScaleId)!
   const {values} = scale
@@ -104,7 +109,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
         <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
           <BackIcon />
         </IconButton>
-        <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
+        <ScaleDetailsTitle>{t('PokerTemplateScaleDetails.EditScale')}</ScaleDetailsTitle>
       </ScaleDetailHeader>
       <ScaleHeader>
         <ScaleNameAndValues>
@@ -115,7 +120,9 @@ const PokerTemplateScaleDetails = (props: Props) => {
             isOwner={isOwner}
           />
           <ScaleValues>{scaleValueString(values)}</ScaleValues>
-          <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
+          <ScaleValues>
+            {t('PokerTemplateScaleDetails.NoteAllScalesIncludeAndPassCards')}
+          </ScaleValues>
         </ScaleNameAndValues>
       </ScaleHeader>
       <TemplateScaleValueList scale={scale} isOwner={isOwner} />

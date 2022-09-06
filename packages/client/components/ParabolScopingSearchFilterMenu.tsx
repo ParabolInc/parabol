@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ParabolSearchQuery} from '~/types/clientSchema'
@@ -29,6 +30,9 @@ interface Props {
 
 const ParabolScopingSearchFilterMenu = (props: Props) => {
   const {meeting, menuProps} = props
+
+  const {t} = useTranslation()
+
   const {portalStatus, isDropdown} = menuProps
   const {parabolSearchQuery, id: meetingId} = meeting
   const {statusFilters} = parabolSearchQuery
@@ -36,18 +40,17 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Define the Parabol search query'}
+      ariaLabel={t('ParabolScopingSearchFilterMenu.DefineTheParabolSearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
-      <FilterLabel>Filter by status:</FilterLabel>
+      <FilterLabel>{t('ParabolScopingSearchFilterMenu.FilterByStatus:')}</FilterLabel>
       {taskScopingStatusFilters.map((status) => {
         const toggleStatusFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const meeting = store.get(meetingId)!
-            const parabolSearchQuery = meeting.getLinkedRecord<ParabolSearchQuery>(
-              'parabolSearchQuery'
-            )
+            const parabolSearchQuery =
+              meeting.getLinkedRecord<ParabolSearchQuery>('parabolSearchQuery')
             const statusFiltersProxy = parabolSearchQuery.getValue('statusFilters').slice()
             const keyIdx = statusFiltersProxy.indexOf(status)
             keyIdx !== -1 ? statusFiltersProxy.splice(keyIdx, 1) : statusFiltersProxy.push(status)

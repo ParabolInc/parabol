@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
@@ -46,6 +47,13 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationGoogleCreateAccount = (props: Props) => {
+  //FIXME i18n: Team Invitation
+  //FIXME i18n: Join Team
+  //FIXME i18n: to the team meeting for:
+  //FIXME i18n: to your team:
+  //FIXME i18n: 1rem 0 0
+  const {t} = useTranslation()
+
   const [isEmailFallback, setIsEmailFallback] = useState(false)
   const {match} = useRouter<{token: string}>()
   const {params} = match
@@ -65,9 +73,11 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
       <DialogTitle>{meetingName ? `Join ${meetingName}` : 'Join Team'}</DialogTitle>
       <StyledContent>
         <CopyMargins>
-          <InvitationDialogCopy>It looks like your email is hosted by Google.</InvitationDialogCopy>
           <InvitationDialogCopy>
-            Tap below for immediate access
+            {t('TeamInvitationGoogleCreateAccount.ItLooksLikeYourEmailIsHostedByGoogle.')}
+          </InvitationDialogCopy>
+          <InvitationDialogCopy>
+            {t('TeamInvitationGoogleCreateAccount.TapBelowForImmediateAccess')}
             {meetingName ? ' to the team meeting for: ' : ' to your team: '}
             <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
@@ -77,7 +87,9 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
           {isEmailFallback ? (
             <HorizontalSeparator margin='1rem 0 0' text='or' />
           ) : (
-            <UseEmailFallback onClick={useEmail}>Sign up without Google</UseEmailFallback>
+            <UseEmailFallback onClick={useEmail}>
+              {t('TeamInvitationGoogleCreateAccount.SignUpWithoutGoogle')}
+            </UseEmailFallback>
           )}
           {isEmailFallback && (
             <EmailPasswordAuthForm email={email} invitationToken={invitationToken} />

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import adam from '~/styles/theme/images/adam.jpeg'
 import cliff from '~/styles/theme/images/cliff.jpeg'
 import ian from '~/styles/theme/images/ian.png'
@@ -13,15 +14,13 @@ const quotes = [
     title: 'GM of Platform at Quartz'
   },
   {
-    text:
-      'We’re big fans of Parabol. It really helps our retrospectives be more efficient and more effective.',
+    text: 'We’re big fans of Parabol. It really helps our retrospectives be more efficient and more effective.',
     picture: cliff,
     name: 'Cliff des Ligneris',
     title: 'Senior Product Manager at Doodle'
   },
   {
-    text:
-      'In 4 weeks we were running like a top: priorities and accountabilities are clear, and frankly, our meetings have been a lot more enjoyable.',
+    text: 'In 4 weeks we were running like a top: priorities and accountabilities are clear, and frankly, our meetings have been a lot more enjoyable.',
     picture: adam,
     name: 'Adam Pisoni',
     title: 'Founder and CEO at Abl Schools'
@@ -99,13 +98,17 @@ interface Props {
 
 const OrgBillingReassuranceQuote = (props: Props) => {
   const {className} = props
+
+  const {t} = useTranslation()
+
   const [quoteNumber] = useState(() => Math.floor(Math.random() * quotes.length))
   const {text, picture, name, title} = quotes[quoteNumber]!
   return (
     <Quote className={className}>
       <Text>
-        <HangQuote>“</HangQuote>
-        {text}”
+        <HangQuote>{t('OrgBillingReassuranceQuote.“')}</HangQuote>
+        {text}
+        {t('OrgBillingReassuranceQuote.”')}
       </Text>
       <Signature>
         <PictureBlock>

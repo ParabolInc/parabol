@@ -6,6 +6,7 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import Tab from '../../../components/Tab/Tab'
@@ -81,6 +82,9 @@ interface Props {
 
 const PokerTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
+
+  const {t} = useTranslation()
+
   const {team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
@@ -101,7 +105,7 @@ const PokerTemplateList = (props: Props) => {
 
   return (
     <TemplateSidebar isDesktop={isDesktop}>
-      <Label>Sprint Poker Templates</Label>
+      <Label>{t('PokerTemplateList.SprintPokerTemplates')}</Label>
       <StyledTabsBar activeIdx={activeIdx}>
         <FullTab
           label={
@@ -109,7 +113,7 @@ const PokerTemplateList = (props: Props) => {
               <TabIcon>
                 <GroupIcon />
               </TabIcon>{' '}
-              Team
+              {t('PokerTemplateList.Team')}
             </TabLabel>
           }
           onClick={gotoTeamTemplates}
@@ -120,7 +124,7 @@ const PokerTemplateList = (props: Props) => {
               <TabIcon>
                 <BusinessIcon />
               </TabIcon>{' '}
-              Organization
+              {t('PokerTemplateList.Organization')}
             </TabLabel>
           }
           onClick={() => setActiveIdx(1)}
@@ -131,7 +135,7 @@ const PokerTemplateList = (props: Props) => {
               <TabIcon>
                 <PublicIcon />
               </TabIcon>{' '}
-              Public
+              {t('PokerTemplateList.Public')}
             </TabLabel>
           }
           onClick={gotoPublicTemplates}

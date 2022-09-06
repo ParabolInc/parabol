@@ -2,6 +2,7 @@ import {ClassNames} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
@@ -11,6 +12,7 @@ import DashSectionControls from '../../../../components/Dashboard/DashSectionCon
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
+import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useRouter from '../../../../hooks/useRouter'
@@ -18,7 +20,6 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
-import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -70,11 +71,12 @@ const secondLink = {
   marginLeft: 8
 }
 
-const TeamDashTeamMemberMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TeamDashTeamMemberMenu' */
-    '../../../../components/TeamDashTeamMemberMenu'
-  )
+const TeamDashTeamMemberMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TeamDashTeamMemberMenu' */
+      '../../../../components/TeamDashTeamMemberMenu'
+    )
 )
 
 const TeamHeaderAndAvatars = styled('div')({
@@ -104,6 +106,12 @@ interface Props {
 
 const TeamTasksHeader = (props: Props) => {
   const {team} = props
+
+  //FIXME i18n: All team members
+  //FIXME i18n: Team Member
+  //FIXME i18n: Archived Tasks
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {organization, id: teamId, name: teamName, teamMemberFilter, teamMembers} = team
   const teamMemberFilterName =
@@ -131,16 +139,16 @@ const TeamTasksHeader = (props: Props) => {
                 )
               }}
             </ClassNames>
-            {'•'}
+            {t('TeamTasksHeader.•')}
             <ClassNames>
               {({css}) => {
                 return (
                   <NavLink
                     className={css(secondLink)}
-                    title={'Settings & Integrations'}
+                    title={t('TeamTasksHeader.SettingsIntegrations')}
                     to={`/team/${teamId}/settings/`}
                   >
-                    {'Settings & Integrations'}
+                    {t('TeamTasksHeader.SettingsIntegrations')}
                   </NavLink>
                 )
               }}

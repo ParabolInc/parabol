@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import IconLabel from '../../components/IconLabel'
@@ -67,6 +68,12 @@ interface Props {
 
 const NewTeam = (props: Props) => {
   const {defaultOrgId, queryRef} = props
+
+  //FIXME i18n: New Team | Parabol
+  //FIXME i18n: New Team
+  //FIXME i18n: Learn More
+  const {t} = useTranslation()
+
   const isDesktop = useBreakpoint(1280)
   useDocumentTitle('New Team | Parabol', 'New Team')
   const data = usePreloadedQuery<NewTeamQuery>(
@@ -93,7 +100,7 @@ const NewTeam = (props: Props) => {
         {isDesktop && (
           <HelpLayout>
             <HelpBlock>
-              <HelpHeading>{'What’s an Organization?'}</HelpHeading>
+              <HelpHeading>{t('NewTeam.WhatSAnOrganization?')}</HelpHeading>
               <HelpCopy>
                 {`It’s the billing entity for a group of teams
                 such as a company, non-profit, or

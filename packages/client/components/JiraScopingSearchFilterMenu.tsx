@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -69,6 +70,10 @@ const MAX_PROJECTS = 10
 // Reusable for both Jira and Jira Server.
 const JiraScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
+
+  //FIXME i18n: Search Jira
+  const {t} = useTranslation()
+
   const isLoading = meetingId === null
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
@@ -105,30 +110,32 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   return (
     <StyledMenu
       keepParentFocus
-      ariaLabel={'Define the Jira search query'}
+      ariaLabel={t('JiraScopingSearchFilterMenu.DefineTheJiraSearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       resetActiveOnChanges={[selectedAndFilteredProjects]}
     >
       <MenuItem
-        key={'isJQL'}
+        key={t('JiraScopingSearchFilterMenu.Isjql')}
         label={
           <MenuItemLabel>
             <StyledCheckBox active={isJQL} />
-            <UseJQLLabel>{'Use JQL'}</UseJQLLabel>
+            <UseJQLLabel>{t('JiraScopingSearchFilterMenu.UseJql')}</UseJQLLabel>
           </MenuItemLabel>
         }
         onClick={toggleJQL}
       />
       <MenuItemHR />
       {isLoading && <MockFieldList />}
-      {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
+      {selectedAndFilteredProjects.length > 0 && (
+        <FilterLabel>{t('JiraScopingSearchFilterMenu.FilterByProject:')}</FilterLabel>
+      )}
       {showSearch && (
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          No Jira Projects found!
+          {t('JiraScopingSearchFilterMenu.NoJiraProjectsFound!')}
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}

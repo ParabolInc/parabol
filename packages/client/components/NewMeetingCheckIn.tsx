@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {RecordVoiceOver} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {NewMeetingCheckIn_meeting} from '~/__generated__/NewMeetingCheckIn_meeting.graphql'
@@ -44,6 +45,9 @@ interface Props {
 
 const NewMeetingCheckIn = (props: Props) => {
   const {avatarGroup, meeting, toggleSidebar} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {endedAt, showSidebar, localStage, phases} = meeting
   const {id: localStageId} = localStage
@@ -71,7 +75,7 @@ const NewMeetingCheckIn = (props: Props) => {
               <Hint>
                 <StyledIcon />
                 <MeetingFacilitationHint>
-                  {'Verbally share your response with the team'}
+                  {t('NewMeetingCheckIn.VerballyShareYourResponseWithTheTeam')}
                 </MeetingFacilitationHint>
               </Hint>
             )}

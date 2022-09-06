@@ -4,6 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
  *
  */
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
@@ -25,6 +26,9 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroGroupPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+
+  const {t} = useTranslation()
+
   const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, showSidebar} = meeting
 
@@ -37,7 +41,9 @@ const RetroGroupPhase = (props: Props) => {
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
-          <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
+          <PhaseHeaderDescription>
+            {t('RetroGroupPhase.DragCardsToGroupByCommonTopics')}
+          </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />

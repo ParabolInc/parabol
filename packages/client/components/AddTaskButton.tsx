@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {TaskAltOutlined} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -37,10 +38,12 @@ interface Props {
 const AddTaskButton = (props: Props) => {
   const {onClick, dataCy, disabled} = props
 
+  const {t} = useTranslation()
+
   return (
     <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
       <AddTaskIcon />
-      <AddTaskLabel>Add a task</AddTaskLabel>
+      <AddTaskLabel>{t('AddTaskButton.AddATask')}</AddTaskLabel>
     </StyledPlainButton>
   )
 }

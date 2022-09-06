@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -19,6 +20,10 @@ const getValue = (item: {fullPath?: string}) => {
 const NewGitLabIssueMenu = (props: Props) => {
   const {handleSelectFullPath, menuProps, gitlabProjects} = props
 
+  //FIXME i18n: Select GitLab project
+  //FIXME i18n: Search GitLab
+  const {t} = useTranslation()
+
   const {
     query,
     filteredItems: filteredProjects,
@@ -29,7 +34,9 @@ const NewGitLabIssueMenu = (props: Props) => {
     <Menu ariaLabel='Select GitLab project' keepParentFocus {...menuProps}>
       <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} value={query} />
       {filteredProjects.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          {t('NewGitLabIssueMenu.NoProjectsFound!')}
+        </EmptyDropdownMenuItemLabel>
       )}
       {filteredProjects.slice(0, 10).map((project) => {
         const {id: projectId, fullPath} = project

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import Menu from '../components/Menu'
 import MenuItem from '../components/MenuItem'
@@ -16,6 +17,9 @@ interface Props {
 
 const FacilitatorMenu = (props: Props) => {
   const {menuProps, meeting} = props
+
+  const {t} = useTranslation()
+
   const {id: meetingId, facilitatorUserId, meetingMembers} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -35,16 +39,16 @@ const FacilitatorMenu = (props: Props) => {
     })
   }
   return (
-    <Menu ariaLabel={'Change the facilitator role'} {...menuProps}>
+    <Menu ariaLabel={t('FacilitatorMenu.ChangeTheFacilitatorRole')} {...menuProps}>
       {viewerId !== facilitatorUserId && (
         <MenuItem
-          label={<MenuItemLabel>{'Take the facilitator role'}</MenuItemLabel>}
+          label={<MenuItemLabel>{t('FacilitatorMenu.TakeTheFacilitatorRole')}</MenuItemLabel>}
           onClick={promoteViewerToFacilitator}
         />
       )}
       {facilitatorCandidateIds.length >= 1 && (
         <MenuItem
-          label={<MenuItemLabel>{'Randomize facilitator'}</MenuItemLabel>}
+          label={<MenuItemLabel>{t('FacilitatorMenu.RandomizeFacilitator')}</MenuItemLabel>}
           onClick={promoteRandomPersonToFacilitator}
         />
       )}

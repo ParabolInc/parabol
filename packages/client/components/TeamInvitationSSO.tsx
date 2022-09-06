@@ -1,17 +1,18 @@
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import useMutationProps from '../hooks/useMutationProps'
+import useRouter from '../hooks/useRouter'
+import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import getTokenFromSSO from '../utils/getTokenFromSSO'
-import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
-import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
-import DialogTitle from './DialogTitle'
 import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
-import useDocumentTitle from '../hooks/useDocumentTitle'
 import StyledError from './StyledError'
-import Ellipsis from './Ellipsis/Ellipsis'
-import useRouter from '../hooks/useRouter'
 
 interface Props {
   ssoURL: string
@@ -19,6 +20,12 @@ interface Props {
 
 const TeamInvitationSSO = (props: Props) => {
   const {ssoURL} = props
+
+  //FIXME i18n: Error logging in
+  //FIXME i18n: SSO Login | Team Invitation
+  //FIXME i18n: Team Invitation
+  const {t} = useTranslation()
+
   const {onCompleted, submitMutation, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -40,11 +47,11 @@ const TeamInvitationSSO = (props: Props) => {
 
   return (
     <InviteDialog>
-      <DialogTitle>SSO Login</DialogTitle>
+      <DialogTitle>{t('TeamInvitationSSO.SsoLogin')}</DialogTitle>
       <DialogContent>
         {!error && (
           <InvitationDialogCopy>
-            Logging in to your secure SSO Provider
+            {t('TeamInvitationSSO.LoggingInToYourSecureSsoProvider')}
             <Ellipsis />
           </InvitationDialogCopy>
         )}

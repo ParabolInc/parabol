@@ -1,10 +1,11 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import DialogContainer from '~/components/DialogContainer'
-import DialogTitle from '~/components/DialogTitle'
-import SecondaryButton from '~/components/SecondaryButton'
-import PrimaryButton from '~/components/PrimaryButton'
 import DialogContent from '~/components/DialogContent'
+import DialogTitle from '~/components/DialogTitle'
+import PrimaryButton from '~/components/PrimaryButton'
+import SecondaryButton from '~/components/SecondaryButton'
 
 interface Props {
   onClose: () => void
@@ -37,22 +38,30 @@ const StyledPrimaryButton = styled(PrimaryButton)({
 const TaskFooterTeamAssigneeAddIntegrationDialog = (props: Props) => {
   const {onClose, onConfirm, serviceName, teamName} = props
 
+  const {t} = useTranslation()
+
   return (
     <StyledDialogContainer>
       <DialogTitle>
-        {serviceName} integration for {teamName}
+        {serviceName}
+        {t('TaskFooterTeamAssigneeAddIntegrationDialog.IntegrationFor')}
+        {teamName}
       </DialogTitle>
       <DialogContent>
         <div>
           <StyledTip>
-            You don't have {serviceName} configured for {teamName}. Do you want to add it now?
+            {t('TaskFooterTeamAssigneeAddIntegrationDialog.YouDonTHave')}
+            {serviceName}
+            {t('TaskFooterTeamAssigneeAddIntegrationDialog.ConfiguredFor')}
+            {teamName}
+            {t('TaskFooterTeamAssigneeAddIntegrationDialog.DoYouWantToAddItNow?')}
           </StyledTip>
           <ButtonGroup>
             <SecondaryButton onClick={onClose} size='medium'>
-              Cancel
+              {t('TaskFooterTeamAssigneeAddIntegrationDialog.Cancel')}
             </SecondaryButton>
             <StyledPrimaryButton onClick={onConfirm} size='medium'>
-              Add it now
+              {t('TaskFooterTeamAssigneeAddIntegrationDialog.AddItNow')}
             </StyledPrimaryButton>
           </ButtonGroup>
         </div>

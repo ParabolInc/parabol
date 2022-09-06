@@ -1,13 +1,14 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
 import RemovePokerTemplateScaleMutation from '../../../mutations/RemovePokerTemplateScaleMutation'
-import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {Threshold} from '../../../types/constEnums'
 import {ScaleActions_scale} from '../../../__generated__/ScaleActions_scale.graphql'
 
 const CloneAndDelete = styled('div')({
@@ -23,6 +24,11 @@ interface Props {
 
 const ScaleActions = (props: Props) => {
   const {scale, scaleCount, teamId} = props
+
+  //FIXME i18n: Clone default scale
+  //FIXME i18n: Too many team templates! Remove one first
+  const {t} = useTranslation()
+
   const {id: scaleId, isStarter} = scale
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -58,14 +64,22 @@ const ScaleActions = (props: Props) => {
       {isStarter ? (
         <DetailAction
           disabled={!canClone}
-          icon={'content_copy'}
+          icon={t('ScaleActions.ContentCopy')}
           tooltip={cloneTooltip}
           onClick={cloneScale}
         />
       ) : (
         <>
-          <DetailAction icon={'edit'} tooltip={'Edit scale'} onClick={editScale} />
-          <DetailAction icon={'delete'} tooltip={'Delete scale'} onClick={deleteScale} />
+          <DetailAction
+            icon={t('ScaleActions.Edit')}
+            tooltip={t('ScaleActions.EditScale')}
+            onClick={editScale}
+          />
+          <DetailAction
+            icon={t('ScaleActions.Delete')}
+            tooltip={t('ScaleActions.DeleteScale')}
+            onClick={deleteScale}
+          />
         </>
       )}
     </CloneAndDelete>

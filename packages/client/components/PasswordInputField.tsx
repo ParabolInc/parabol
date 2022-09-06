@@ -1,5 +1,6 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import UnderlineInput from './InputField/UnderlineInput'
 import TinyLabel from './TinyLabel'
 
@@ -19,11 +20,14 @@ const Label = styled(TinyLabel)({
 
 const PasswordInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
+
+  const {t} = useTranslation()
+
   return (
     <React.Fragment>
-      <Label>Password</Label>
+      <Label>{t('PasswordInputField.Password')}</Label>
       <UnderlineInput
-        ariaLabel={'Password'}
+        ariaLabel={t('PasswordInputField.Password')}
         autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='password'

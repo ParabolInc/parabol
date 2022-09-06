@@ -1,5 +1,6 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import UnderlineInput from './InputField/UnderlineInput'
 import TinyLabel from './TinyLabel'
 
@@ -19,18 +20,21 @@ const Label = styled(TinyLabel)({
 
 const EmailInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
+
+  const {t} = useTranslation()
+
   return (
     <React.Fragment>
-      <Label>Email</Label>
+      <Label>{t('EmailInputField.Email')}</Label>
       <UnderlineInput
-        ariaLabel={'Email'}
+        ariaLabel={t('EmailInputField.Email')}
         autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='email'
         onBlur={onBlur}
         onChange={onChange}
         placeholder='you@company.co'
-        type={'email'}
+        type={t('EmailInputField.Email')}
         value={value}
       />
     </React.Fragment>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {TeamInvitationEmailSignin_verifiedInvitation} from '../__generated__/TeamInvitationEmailSignin_verifiedInvitation.graphql'
@@ -28,6 +29,11 @@ const TeamName = styled('span')({
 
 const TeamInvitationEmailSignin = (props: Props) => {
   const {invitationToken, verifiedInvitation} = props
+
+  //FIXME i18n: Sign in
+  //FIXME i18n: for immediate access to your team:
+  const {t} = useTranslation()
+
   const {meetingName, user, teamInvitation, teamName} = verifiedInvitation
   useDocumentTitle(`Sign in | Team Invitation`, 'Sign in')
   if (!user || !teamInvitation) return null
@@ -35,10 +41,14 @@ const TeamInvitationEmailSignin = (props: Props) => {
   const {email} = teamInvitation
   return (
     <StyledDialog>
-      <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
+      <DialogTitle>
+        {t('TeamInvitationEmailSignin.WelcomeBack,')}
+        {preferredName}
+        {t('TeamInvitationEmailSignin.!')}
+      </DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          Enter your password
+          {t('TeamInvitationEmailSignin.EnterYourPassword')}
           {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>

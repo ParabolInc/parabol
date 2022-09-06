@@ -1,6 +1,7 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 
 const bannerLink = {
@@ -20,6 +21,9 @@ interface Props {
 
 const ViewInBrowserHeader = (props: Props) => {
   const {referrer, referrerUrl} = props
+
+  const {t} = useTranslation()
+
   if (referrer !== 'email') return null
   return (
     <table align='center' width='100%'>
@@ -27,7 +31,7 @@ const ViewInBrowserHeader = (props: Props) => {
         <tr>
           <td align='center'>
             <a href={referrerUrl} style={bannerLink}>
-              {'View this in your browser'}
+              {t('ViewInBrowserHeader.ViewThisInYourBrowser')}
             </a>
           </td>
         </tr>

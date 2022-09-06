@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
@@ -32,12 +33,16 @@ interface Props {
 }
 const MeetingsDashNewUser = (props: Props) => {
   const {name} = props
+
+  const {t} = useTranslation()
+
   return (
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
       <Copy>
-        Looks like you have no upcoming meetings 😎 Start one now or check out these tips and
-        tricks.
+        {t(
+          'MeetingsDashNewUser.LooksLikeYouHaveNoUpcomingMeetingsStartOneNowOrCheckOutTheseTipsAndTricks.'
+        )}
       </Copy>
     </Section>
   )

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useLazyLoadQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {JiraScopingSearchFilterMenuRootQuery} from '../__generated__/JiraScopingSearchFilterMenuRootQuery.graphql'
@@ -41,6 +42,8 @@ interface Props {
 const JiraScopingSearchFilterMenuRoot = (props: Props) => {
   const {menuProps, teamId, meetingId} = props
 
+  const {t} = useTranslation()
+
   const data = useLazyLoadQuery<JiraScopingSearchFilterMenuRootQuery>(
     query,
     {
@@ -62,7 +65,7 @@ const JiraScopingSearchFilterMenuRoot = (props: Props) => {
       jiraSearchQuery={jiraSearchQuery}
       projects={projects}
       menuProps={menuProps}
-      service={'jira'}
+      service={t('JiraScopingSearchFilterMenuRoot.Jira')}
     />
   )
 }

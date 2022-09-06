@@ -1,16 +1,17 @@
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import filterTeamMember from '../utils/relay/filterTeamMember'
+import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {MenuProps} from '../hooks/useMenu'
-import DropdownMenuLabel from './DropdownMenuLabel'
-import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import filterTeamMember from '../utils/relay/filterTeamMember'
 import {SearchMenuItem} from './SearchMenuItem'
-import useSearchFilter from '~/hooks/useSearchFilter'
-import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
@@ -18,6 +19,9 @@ interface Props {
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
+  //FIXME i18n: Search team members
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {menuProps, team} = props
   const {id: teamId, teamMembers, teamMemberFilter} = team
@@ -34,23 +38,23 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Select the team member to filter by'}
+      ariaLabel={t('TeamDashTeamMemberMenu.SelectTheTeamMemberToFilterBy')}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('TeamDashTeamMemberMenu.FilterByTeamMember:')}</DropdownMenuLabel>
       {teamMembers.length > 5 && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedTeamMembers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          No team members found!
+          {t('TeamDashTeamMemberMenu.NoTeamMembersFound!')}
         </EmptyDropdownMenuItemLabel>
       )}
       {query === '' && (
         <MenuItem
-          key={'teamMemberFilterNULL'}
-          label={'All team members'}
+          key={t('TeamDashTeamMemberMenu.Teammemberfilternull')}
+          label={t('TeamDashTeamMemberMenu.AllTeamMembers')}
           onClick={() => filterTeamMember(atmosphere, teamId, null)}
         />
       )}

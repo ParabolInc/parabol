@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -37,6 +38,9 @@ graphql`
 
 const GitLabProviderRow = (props: Props) => {
   const {teamId, viewerRef} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {submitting} = mutationProps
@@ -82,8 +86,8 @@ const GitLabProviderRow = (props: Props) => {
         submitting={submitting}
         togglePortal={togglePortal}
         menuRef={menuRef}
-        providerName={'GitLab'}
-        providerDescription={'Use GitLab Issues from within Parabol'}
+        providerName={t('GitLabProviderRow.Gitlab')}
+        providerDescription={t('GitLabProviderRow.UseGitlabIssuesFromWithinParabol')}
         providerLogo={<GitLabProviderLogo />}
       />
       {menuPortal(

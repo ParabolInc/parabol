@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {RouteComponentProps} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -47,6 +48,9 @@ const validatePassword = (password: string) => {
 
 const SetNewPassword = (props: Props) => {
   const {history, match} = props
+
+  const {t} = useTranslation()
+
   const {params} = match
   const {token} = params
   const atmosphere = useAtmosphere()
@@ -78,9 +82,9 @@ const SetNewPassword = (props: Props) => {
   return (
     <TeamInvitationWrapper>
       <AuthenticationDialog>
-        <DialogTitle>{'Reset Password'}</DialogTitle>
+        <DialogTitle>{t('SetNewPassword.ResetPassword')}</DialogTitle>
         <Container>
-          <P>{'Type your new password below'}</P>
+          <P>{t('SetNewPassword.TypeYourNewPasswordBelow')}</P>
           {error && <ErrorAlert message={error.message} />}
           <Form onSubmit={onSubmit}>
             <PasswordInputField
@@ -90,7 +94,7 @@ const SetNewPassword = (props: Props) => {
               onBlur={handleBlur}
             />
             <SubmitButton size='medium' waiting={submitting}>
-              {'Reset Password'}
+              {t('SetNewPassword.ResetPassword')}
             </SubmitButton>
           </Form>
         </Container>

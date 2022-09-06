@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {emailCopyStyle, emailTableBase, emailTextColorLight} from '../../styles'
 import EmptySpace from '../EmptySpace/EmptySpace'
 
@@ -24,6 +25,9 @@ const linkStyle = {
 const year = new Date().getFullYear()
 
 const EmailFooter = () => {
+  //FIXME i18n: Get in touch
+  const {t} = useTranslation()
+
   return (
     <table align='left' width='100%' style={emailTableBase}>
       <tbody>
@@ -33,10 +37,10 @@ const EmailFooter = () => {
             <div style={copyStyle}>
               {`©${year} Parabol, Inc.`}
               <br />
-              <span style={boldCopyStyle}>{'Get in touch'}</span>
-              {': '}
+              <span style={boldCopyStyle}>{t('EmailFooter.GetInTouch')}</span>
+              {t('EmailFooter.:')}
               <a href='mailto:love@parabol.co' title='Get in touch' style={linkStyle}>
-                {'love@parabol.co'}
+                {t('EmailFooter.LoveParabolCo')}
               </a>
             </div>
             <EmptySpace height={8} />

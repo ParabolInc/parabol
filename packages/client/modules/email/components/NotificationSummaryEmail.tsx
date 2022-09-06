@@ -1,6 +1,7 @@
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import makeAppURL from '../../../utils/makeAppURL'
 import {emailCopyStyle, emailLinkStyle} from '../styles'
 import Button from './Button'
@@ -28,6 +29,9 @@ export interface NotificationSummaryProps {
 }
 export default function NotificationSummaryEmail(props: NotificationSummaryProps) {
   const {appOrigin, notificationCount, preferredName} = props
+
+  const {t} = useTranslation()
+
   const tasksURL = makeAppURL(appOrigin, 'me/tasks')
   return (
     <Layout maxWidth={544}>
@@ -35,27 +39,27 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
         <Header appOrigin={appOrigin} />
         <p style={copyStyle}>{`Hi ${preferredName} -`}</p>
         <p style={copyStyle}>
-          {'You have '}
+          {t('NotificationSummaryEmail.YouHave')}
           <span style={{fontWeight: 600}}>
             {`${notificationCount} new ${plural(notificationCount, 'notification')}`}
           </span>
-          {' — see what’s changed with your teams.'}
+          {t('NotificationSummaryEmail.SeeWhatSChangedWithYourTeams.')}
         </p>
-        <Button url={tasksURL}>{'See My Dashboard'}</Button>
+        <Button url={tasksURL}>{t('NotificationSummaryEmail.SeeMyDashboard')}</Button>
         <EmptySpace height={24} />
         <p style={copyStyle}>
-          {'If you need anything from us, don’t hesitate to reach out at '}
+          {t('NotificationSummaryEmail.IfYouNeedAnythingFromUsDonTHesitateToReachOutAt')}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {ContactInfo.EMAIL_LOVE}
           </a>
-          {'.'}
+          {t('NotificationSummaryEmail..')}
         </p>
         <p style={copyStyle}>
-          {'Have fun & do great work,'}
+          {t('NotificationSummaryEmail.HaveFunDoGreatWork,')}
           <br />
-          {'- '}
+          {t('NotificationSummaryEmail.-')}
           <a style={linkStyle} href={ExternalLinks.TEAM}>
-            {'Parabol Team'}
+            {t('NotificationSummaryEmail.ParabolTeam')}
           </a>
         </p>
         <EmptySpace height={16} />

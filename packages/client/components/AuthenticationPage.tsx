@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
@@ -20,6 +21,10 @@ interface Props {
 }
 
 const AuthenticationPage = (props: Props) => {
+  //FIXME i18n: Sign Up for Free Online Retrospectives | Parabol
+  //FIXME i18n: Sign Up
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {page} = props
   const atmosphere = useAtmosphere()
@@ -40,10 +45,13 @@ const AuthenticationPage = (props: Props) => {
     <TeamInvitationWrapper>
       <CopyBlock>
         <h1>
-          Better Meetings, <br />
-          Less Effort
+          {t('AuthenticationPage.BetterMeetings,')}
+          <br />
+          {t('AuthenticationPage.LessEffort')}
         </h1>
-        <p>92&#37; of users agreed that Parabol improves the efficiency of their meetings.</p>
+        <p>
+          {t('AuthenticationPage.92OfUsersAgreedThatParabolImprovesTheEfficiencyOfTheirMeetings.')}
+        </p>
       </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>

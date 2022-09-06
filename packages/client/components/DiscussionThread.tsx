@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode, RefObject, useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
@@ -39,6 +40,9 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState} = props
+
+  const {t} = useTranslation()
+
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
@@ -94,7 +98,7 @@ const DiscussionThread = (props: Props) => {
     [viewerId, discussion]
   )
   if (!discussion) {
-    return <div>No discussion found!</div>
+    return <div>{t('DiscussionThread.NoDiscussionFound!')}</div>
   }
 
   const {replyingToCommentId, thread} = discussion

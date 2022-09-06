@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -42,9 +43,13 @@ const VideoEmbed = styled('iframe')({
 })
 
 const MeetingsDashTutorialModal = () => {
+  const {t} = useTranslation()
+
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>Starting a Sprint Poker Meeting</StyledDialogTitle>
+      <StyledDialogTitle>
+        {t('MeetingsDashTutorialModal.StartingASprintPokerMeeting')}
+      </StyledDialogTitle>
       <StyledDialogContent>
         <VideoEmbed src={URL} allow='fullscreen' />
       </StyledDialogContent>

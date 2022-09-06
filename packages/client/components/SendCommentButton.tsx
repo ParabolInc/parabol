@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {ArrowUpward} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
@@ -48,6 +49,9 @@ interface Props {
 
 const SendCommentButton = (props: Props) => {
   const {commentSubmitState, onSubmit, dataCy} = props
+
+  const {t} = useTranslation()
+
   const {
     tooltipPortal,
     openTooltip,
@@ -68,7 +72,7 @@ const SendCommentButton = (props: Props) => {
       >
         <SendIcon commentSubmitState={commentSubmitState} />
       </StyledPlainButton>
-      {tooltipPortal(<div>{'Send comment'}</div>)}
+      {tooltipPortal(<div>{t('SendCommentButton.SendComment')}</div>)}
     </>
   )
 }

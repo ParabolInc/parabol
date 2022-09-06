@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import FlatButton from '~/components/FlatButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
@@ -29,6 +30,10 @@ const UndoableGroupPhaseDialog = lazyPreload(
 
 const UndoableGroupPhaseControl = (props: Props) => {
   const {meetingId} = props
+
+  //FIXME i18n: i d i d n t m e a n t o
+  const {t} = useTranslation()
+
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
   useHotkey('i d i d n t m e a n t o', () => {
@@ -37,9 +42,9 @@ const UndoableGroupPhaseControl = (props: Props) => {
   })
   return (
     <>
-      <StyledButton onClick={toggleModal} palette={'blue'}>
+      <StyledButton onClick={toggleModal} palette={t('UndoableGroupPhaseControl.Blue')}>
         <StyledIcon />
-        {' Edit Groups'}
+        {t('UndoableGroupPhaseControl.EditGroups')}
       </StyledButton>
       {modalPortal(<UndoableGroupPhaseDialog closePortal={closeModal} meetingId={meetingId} />)}
     </>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -36,6 +37,12 @@ const Error = styled(StyledError)({
 
 const VoteSettingsMenu = (props: Props) => {
   const {menuProps, meeting} = props
+
+  //FIXME i18n: Adjust the vote count
+  //FIXME i18n: Votes per participant
+  //FIXME i18n: Votes per topic
+  const {t} = useTranslation()
+
   const {id: meetingId, totalVotes, maxVotesPerGroup} = meeting
   const {error, onError, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -73,7 +80,7 @@ const VoteSettingsMenu = (props: Props) => {
   return (
     <Menu ariaLabel='Adjust the vote count' {...menuProps}>
       <VoteOption>
-        <Label>Votes per participant</Label>
+        <Label>{t('VoteSettingsMenu.VotesPerParticipant')}</Label>
         <VoteStepper
           aria-label='Votes per participant'
           value={totalVotes}
@@ -83,7 +90,7 @@ const VoteSettingsMenu = (props: Props) => {
       </VoteOption>
       {error && <Error>{error?.message}</Error>}
       <VoteOption>
-        <Label>Votes per topic</Label>
+        <Label>{t('VoteSettingsMenu.VotesPerTopic')}</Label>
         <VoteStepper
           aria-label='Votes per topic'
           value={maxVotesPerGroup}

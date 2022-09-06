@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
 import {Breakpoint} from '../types/constEnums'
@@ -60,6 +61,9 @@ interface Props {
 
 const NewMeetingActions = (props: Props) => {
   const {teamRef, onStartMeetingClick, submitting, error} = props
+
+  const {t} = useTranslation()
+
   const team = useFragment(
     graphql`
       fragment NewMeetingActions_team on Team {
@@ -78,7 +82,7 @@ const NewMeetingActions = (props: Props) => {
       </ActiveMeetingsBlock>
       <ButtonBlock>
         <StartButton onClick={onStartMeetingClick} waiting={submitting}>
-          Start Meeting
+          {t('NewMeetingActions.StartMeeting')}
         </StartButton>
       </ButtonBlock>
     </ActionRow>

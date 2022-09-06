@@ -1,5 +1,6 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
@@ -75,6 +76,12 @@ const TeamInvite = (props: TeamInviteProps) => {
     teamName,
     inviteLink
   } = props
+
+  //FIXME i18n: Retro 101
+  //FIXME i18n: Getting Started: Retro 101
+  //FIXME i18n: Leveling Up: Check-in 101
+  const {t} = useTranslation()
+
   const inviteeEmailBlock = (
     <a href={`mailto:${inviteeEmail}`} style={emailCopyStyle}>
       {inviteeEmail}
@@ -88,49 +95,52 @@ const TeamInvite = (props: TeamInviteProps) => {
         {meeting ? (
           <div>
             <p style={emailCopyStyle}>
-              {'Hi '}
+              {t('TeamInvite.Hi')}
               <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {','}
+              {t('TeamInvite.,')}
             </p>
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
-              {' ('}
+              {t('TeamInvite.(')}
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>
               {`) has started ${meetingCopyLabelLookup[meeting.meetingType]} for your team (`}
               <b>{teamName}</b>
-              {'). Just a few clicks and you’re in!'}
+              {t('TeamInvite.JustAFewClicksAndYouReIn!')}
             </p>
-            <Button url={inviteLink}>Join {meeting.name}</Button>
+            <Button url={inviteLink}>
+              {t('TeamInvite.Join')}
+              {meeting.name}
+            </Button>
           </div>
         ) : (
           <div>
             <p style={emailCopyStyle}>
-              {'Hi '}
+              {t('TeamInvite.Hi')}
               <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {','}
+              {t('TeamInvite.,')}
             </p>
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
-              {' ('}
+              {t('TeamInvite.(')}
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>
-              {') has invited you to join a team ('}
+              {t('TeamInvite.HasInvitedYouToJoinATeam(')}
               <b>{teamName}</b>
-              {') on Parabol.'}
+              {t('TeamInvite.OnParabol.')}
             </p>
-            <Button url={inviteLink}>Join Team</Button>
+            <Button url={inviteLink}>{t('TeamInvite.JoinTeam')}</Button>
           </div>
         )}
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
-          <span style={boldStyle}>{'New to Parabol?'}</span>
+          <span style={boldStyle}>{t('TeamInvite.NewToParabol?')}</span>
           <br />
-          {
-            'Parabol is software for remote teams to run online retrospective and check-in meetings. See the video and links below:'
-          }
+          {t(
+            'TeamInvite.ParabolIsSoftwareForRemoteTeamsToRunOnlineRetrospectiveAndCheckInMeetingsSeeTheVideoAndLinksBelow:'
+          )}
         </p>
         <a
           href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
@@ -141,14 +151,14 @@ const TeamInvite = (props: TeamInviteProps) => {
         </a>
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
-          {'Learn more about Parabol meetings:'}
+          {t('TeamInvite.LearnMoreAboutParabolMeetings:')}
           <br />
           <a
             href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
             style={emailLinkStyle}
             title='Getting Started: Retro 101'
           >
-            {'Getting Started: Retro 101'}
+            {t('TeamInvite.GettingStartedRetro101')}
           </a>
           <br />
           <a
@@ -156,16 +166,16 @@ const TeamInvite = (props: TeamInviteProps) => {
             style={emailLinkStyle}
             title='Leveling Up: Check-in 101'
           >
-            {'Leveling Up: Check-in 101'}
+            {t('TeamInvite.LevelingUpCheckIn101')}
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {'Get in touch if we can help in any way,'}
+          {t('TeamInvite.GetInTouchIfWeCanHelpInAnyWay,')}
           <br />
           {emailProductTeamSignature}
           <br />
           <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
-            {'love@parabol.co'}
+            {t('TeamInvite.LoveParabolCo')}
           </a>
         </p>
         <EmptySpace height={16} />

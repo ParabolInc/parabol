@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
@@ -110,6 +111,10 @@ interface Props {
 }
 const BottomControlBarTips = (props: Props) => {
   const {cancelConfirm, meeting: meetingRef, status, onTransitionEnd} = props
+
+  //FIXME i18n: Meeting tips
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
@@ -159,7 +164,11 @@ const BottomControlBarTips = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
+      <BottomNavIconLabel
+        icon='help_outline'
+        iconColor='midGray'
+        label={t('BottomControlBarTips.Tips')}
+      />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
           <MenuContent meetingType={meetingType} />

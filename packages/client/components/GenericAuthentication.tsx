@@ -1,8 +1,8 @@
-import React, {useRef} from 'react'
 import styled from '@emotion/styled'
-import EmailPasswordAuthForm from './EmailPasswordAuthForm'
-import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
-import PlainButton from './PlainButton/PlainButton'
+import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
+import useRouter from '../hooks/useRouter'
+import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {
   CREATE_ACCOUNT_LABEL,
@@ -10,14 +10,15 @@ import {
   SIGNIN_LABEL,
   SIGNIN_SLUG
 } from '../utils/constants'
-import AuthPrivacyFooter from './AuthPrivacyFooter'
-import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
-import DialogTitle from './DialogTitle'
 import AuthenticationDialog from './AuthenticationDialog'
+import AuthPrivacyFooter from './AuthPrivacyFooter'
+import DialogTitle from './DialogTitle'
+import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordPage from './ForgotPasswordPage'
+import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
+import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
+import PlainButton from './PlainButton/PlainButton'
 import SubmittedForgotPasswordPage from './SubmittedForgotPasswordPage'
-import useRouter from '../hooks/useRouter'
-import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 
 export type AuthPageSlug =
   | 'create-account'
@@ -65,6 +66,12 @@ const DialogSubTitle = styled('div')({
 
 const GenericAuthentication = (props: Props) => {
   const {goToPage, invitationToken, page, teamName} = props
+
+  //FIXME i18n: Already have an account?
+  //FIXME i18n: New to Parabol?
+  //FIXME i18n: 1rem 0 0
+  const {t} = useTranslation()
+
   const emailRef = useRef<{email: () => string}>()
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
@@ -103,13 +110,13 @@ const GenericAuthentication = (props: Props) => {
           {counterAction}
         </BrandedLink>
       </DialogSubTitle>
-      {isGoogleAuthEnabled && <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />}
-      {
-        (isGoogleAuthEnabled && (isInternalAuthEnabled || isSSOAuthEnabled)) &&
+      {isGoogleAuthEnabled && (
+        <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
+      )}
+      {isGoogleAuthEnabled && (isInternalAuthEnabled || isSSOAuthEnabled) && (
         <HorizontalSeparator margin='1rem 0 0' text='or' />
-      }
-      {
-        (isInternalAuthEnabled || isSSOAuthEnabled) &&
+      )}
+      {(isInternalAuthEnabled || isSSOAuthEnabled) && (
         <EmailPasswordAuthForm
           email={email || ''}
           isSignin={!isCreate}
@@ -117,11 +124,15 @@ const GenericAuthentication = (props: Props) => {
           ref={emailRef}
           goToPage={goToPage}
         />
-      }
+      )}
       {isCreate ? (
         <AuthPrivacyFooter />
-      ) : isInternalAuthEnabled && (
-        <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
+      ) : (
+        isInternalAuthEnabled && (
+          <ForgotPasswordLink onClick={onForgot}>
+            {t('GenericAuthentication.ForgotYourPassword?')}
+          </ForgotPasswordLink>
+        )
       )}
     </AuthenticationDialog>
   )

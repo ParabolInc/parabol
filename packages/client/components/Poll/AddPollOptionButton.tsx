@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {AddOutlined} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PollsAriaLabels} from '~/types/constEnums'
 import {PALETTE} from '../../styles/paletteV3'
 import PlainButton from '../PlainButton/PlainButton'
@@ -37,6 +38,8 @@ interface Props {
 export const AddPollOptionButton = (props: Props) => {
   const {onClick, disabled} = props
 
+  const {t} = useTranslation()
+
   return (
     <StyledPlainButton
       aria-label={PollsAriaLabels.POLL_ADD_OPTION}
@@ -44,7 +47,7 @@ export const AddPollOptionButton = (props: Props) => {
       disabled={disabled}
     >
       <AddPollOptionIcon />
-      <AddPollOptionLabel>Add another choice</AddPollOptionLabel>
+      <AddPollOptionLabel>{t('AddPollOptionButton.AddAnotherChoice')}</AddPollOptionLabel>
     </StyledPlainButton>
   )
 }

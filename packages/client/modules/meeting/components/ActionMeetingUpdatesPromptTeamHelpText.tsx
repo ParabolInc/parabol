@@ -1,7 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember.graphql'
@@ -20,6 +21,9 @@ interface Props {
 
 const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   const {currentMeetingMember} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const handleAgendaControl = () => {
     atmosphere.eventEmitter.emit('focusAgendaInput')
@@ -30,8 +34,10 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   return (
     <span>
       <span>{isConnected === false ? '(' : `(${preferredName} is sharing. `}</span>
-      <AgendaControl onClick={handleAgendaControl}>{'Add agenda items'}</AgendaControl>
-      {' for discussion.)'}
+      <AgendaControl onClick={handleAgendaControl}>
+        {t('ActionMeetingUpdatesPromptTeamHelpText.AddAgendaItems')}
+      </AgendaControl>
+      {t('ActionMeetingUpdatesPromptTeamHelpText.ForDiscussion)')}
     </span>
   )
 }

@@ -1,11 +1,12 @@
 import React from 'react'
-import MenuItem from './MenuItem'
-import Menu from './Menu'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import SlackClientManager from '../utils/SlackClientManager'
 import RemoveSlackAuthMutation from '../mutations/RemoveSlackAuthMutation'
+import SlackClientManager from '../utils/SlackClientManager'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   menuProps: MenuProps
@@ -15,6 +16,11 @@ interface Props {
 
 const SlackConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
+
+  //FIXME i18n: Refresh token
+  //FIXME i18n: Remove Slack
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -27,7 +33,7 @@ const SlackConfigMenu = (props: Props) => {
     RemoveSlackAuthMutation(atmosphere, {teamId}, {onCompleted, onError})
   }
   return (
-    <Menu ariaLabel={'Configure your Slack integration'} {...menuProps}>
+    <Menu ariaLabel={t('SlackConfigMenu.ConfigureYourSlackIntegration')} {...menuProps}>
       <MenuItem label='Refresh token' onClick={openOAuth} />
       <MenuItem label='Remove Slack' onClick={removeSlack} />
     </Menu>

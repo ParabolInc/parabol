@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -16,6 +17,8 @@ interface Props extends WithMutationProps, RouteComponentProps<{[x: string]: str
 }
 
 const SuggestedActionTryTheDemo = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const onClick = () => {
     const {history, submitting, submitMutation, suggestedAction, onError, onCompleted} = props
@@ -35,9 +38,11 @@ const SuggestedActionTryTheDemo = (props: Props) => {
       suggestedActionId={suggestedActionId}
     >
       <SuggestedActionCopy>
-        Run a 2-minute demo retrospective with a scripted team
+        {t('SuggestedActionTryTheDemo.RunA2MinuteDemoRetrospectiveWithAScriptedTeam')}
       </SuggestedActionCopy>
-      <SuggestedActionButton onClick={onClick}>Try the Demo</SuggestedActionButton>
+      <SuggestedActionButton onClick={onClick}>
+        {t('SuggestedActionTryTheDemo.TryTheDemo')}
+      </SuggestedActionButton>
     </SuggestedActionCard>
   )
 }

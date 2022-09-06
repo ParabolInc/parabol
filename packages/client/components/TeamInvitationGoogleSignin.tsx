@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
@@ -22,6 +23,10 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationGoogleSignin = (props: Props) => {
+  //FIXME i18n: Sign in
+  //FIXME i18n: for immediate access to your team:
+  const {t} = useTranslation()
+
   const {match} = useRouter<{token: string}>()
   const {params} = match
   const {token: invitationToken} = params
@@ -33,11 +38,17 @@ const TeamInvitationGoogleSignin = (props: Props) => {
   const {email, preferredName} = user
   return (
     <InviteDialog>
-      <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
+      <DialogTitle>
+        {t('TeamInvitationGoogleSignin.WelcomeBack,')}
+        {preferredName}
+        {t('TeamInvitationGoogleSignin.!')}
+      </DialogTitle>
       <DialogContent>
-        <InvitationDialogCopy>You last signed in with Google. </InvitationDialogCopy>
         <InvitationDialogCopy>
-          Tap below
+          {t('TeamInvitationGoogleSignin.YouLastSignedInWithGoogle.')}
+        </InvitationDialogCopy>
+        <InvitationDialogCopy>
+          {t('TeamInvitationGoogleSignin.TapBelow')}
           {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Error as ErrorIcon, Warning} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -122,6 +123,11 @@ const IllustrationBlock = () => {
 
 const AddTeamMemberModal = (props: Props) => {
   const {closePortal, meetingId, teamMembers, teamId} = props
+
+  //FIXME i18n: Send Invitation
+  //FIXME i18n: email@example.co, another@example.co
+  const {t} = useTranslation()
+
   const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
   const [successfulInvitations, setSuccessfulInvitations] = useState<string[] | null>(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -220,15 +226,15 @@ const AddTeamMemberModal = (props: Props) => {
     <StyledDialogContainer>
       <IllustrationBlock />
       <StyledDialogRightColumn>
-        <StyledDialogTitle>{'Invite to Team'}</StyledDialogTitle>
+        <StyledDialogTitle>{t('AddTeamMemberModal.InviteToTeam')}</StyledDialogTitle>
         <StyledDialogContent>
           <Fields>
-            <StyledHeading>{'Share this link'}</StyledHeading>
-            <StyledTip>{'This link expires in 30 days.'}</StyledTip>
+            <StyledHeading>{t('AddTeamMemberModal.ShareThisLink')}</StyledHeading>
+            <StyledTip>{t('AddTeamMemberModal.ThisLinkExpiresIn30Days.')}</StyledTip>
             <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
-            <StyledHeading>{'Or, send invites by email'}</StyledHeading>
-            <StyledTip>{'Email invitations expire in 30 days.'}</StyledTip>
+            <StyledHeading>{t('AddTeamMemberModal.OrSendInvitesByEmail')}</StyledHeading>
+            <StyledTip>{t('AddTeamMemberModal.EmailInvitationsExpireIn30Days.')}</StyledTip>
             <BasicTextArea
               autoFocus
               name='rawInvitees'

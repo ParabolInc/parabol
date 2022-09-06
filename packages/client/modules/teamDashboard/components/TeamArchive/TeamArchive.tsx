@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
@@ -100,6 +101,12 @@ interface Props {
 
 const TeamArchive = (props: Props) => {
   const {returnToTeamId, queryRef, teamRef} = props
+
+  //FIXME i18n: translate(-50%, 0)
+  //FIXME i18n: 1rem 0.5rem
+  //FIXME i18n: 1 1 auto
+  const {t} = useTranslation()
+
   const queryData = usePreloadedQuery<TeamArchiveQuery>(
     graphql`
       query TeamArchiveQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
@@ -280,7 +287,7 @@ const TeamArchive = (props: Props) => {
                   transform: 'translate(-50%, 0)'
                 }}
               >
-                🎉 That's all folks! There are no further tasks in the archive.
+                {t('TeamArchive.ThatSAllFolksThereAreNoFurtherTasksInTheArchive.')}
               </NoMoreMsg>
             )
           }
@@ -363,10 +370,13 @@ const TeamArchive = (props: Props) => {
           ) : (
             <EmptyMsg>
               <span>
-                {'🤓'}
-                {' Hi there! There are zero archived tasks. '}
-                {'Nothing to see here. How about a fun rally video? '}
-                <LinkSpan>{getRallyLink()}!</LinkSpan>
+                {t('TeamArchive.\udd13')}
+                {t('TeamArchive.HiThereThereAreZeroArchivedTasks.')}
+                {t('TeamArchive.NothingToSeeHereHowAboutAFunRallyVideo?')}
+                <LinkSpan>
+                  {getRallyLink()}
+                  {t('TeamArchive.!')}
+                </LinkSpan>
               </span>
             </EmptyMsg>
           )}

@@ -1,6 +1,7 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {ExternalLinks} from '../../../../../types/constEnums'
 
 const logoStyle = {
@@ -16,16 +17,23 @@ const taglineStyle = {
 }
 
 const LogoFooter = () => {
+  const {t} = useTranslation()
+
   return (
     <>
       <tr>
         <td align='center' style={logoStyle}>
-          <img crossOrigin='' src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`} height='32' width='34' />
+          <img
+            crossOrigin=''
+            src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
+            height='32'
+            width='34'
+          />
         </td>
       </tr>
       <tr>
         <td align='center' style={taglineStyle}>
-          {'Crafted with care by the folks at Parabol'}
+          {t('LogoFooter.CraftedWithCareByTheFolksAtParabol')}
         </td>
       </tr>
     </>

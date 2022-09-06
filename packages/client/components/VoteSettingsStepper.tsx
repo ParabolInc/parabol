@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Add, Remove} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {MeetingSettingsThreshold} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
@@ -46,16 +47,19 @@ const Value = styled('span')({
 
 const VoteStepper = (props: Props) => {
   const {increase, decrease, value} = props
+
+  const {t} = useTranslation()
+
   const canDecrease = value > 1
   const canIncrease = value < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_MAX
 
   return (
     <Wrapper>
-      <Stepper isDisabled={!canDecrease} aria-label={'Decrease'} onClick={decrease}>
+      <Stepper isDisabled={!canDecrease} aria-label={t('VoteStepper.Decrease')} onClick={decrease}>
         <RemoveIcon />
       </Stepper>
       <Value aria-label={props['aria-label']}>{value}</Value>
-      <Stepper isDisabled={!canIncrease} aria-label={'Increase'} onClick={increase}>
+      <Stepper isDisabled={!canIncrease} aria-label={t('VoteStepper.Increase')} onClick={increase}>
         <AddIcon />
       </Stepper>
     </Wrapper>

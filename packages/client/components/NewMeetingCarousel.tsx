@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useEffect, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {FreeMode, Keyboard, Mousewheel} from 'swiper'
 import 'swiper/css'
 import 'swiper/css/free-mode'
@@ -105,6 +106,9 @@ interface Props {
 
 const NewMeetingCarousel = (props: Props) => {
   const {idx, setIdx, meetingOrder, onStartMeetingClick} = props
+
+  const {t} = useTranslation()
+
   const cardRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -173,7 +177,7 @@ const NewMeetingCarousel = (props: Props) => {
                 <MeetingImage src={src} key={meetingType} />
                 <Title isActive={isActive}>{title}</Title>
                 <Description isActive={isActive}>{description}</Description>
-                {meetingType === 'teamPrompt' && <Badge>Beta</Badge>}
+                {meetingType === 'teamPrompt' && <Badge>{t('NewMeetingCarousel.Beta')}</Badge>}
               </Card>
             </SwiperSlide>
           )

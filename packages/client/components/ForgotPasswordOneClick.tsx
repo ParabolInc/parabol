@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EmailPasswordResetMutation from '~/mutations/EmailPasswordResetMutation'
@@ -26,6 +27,9 @@ const MessageSent = styled('div')({
 
 const ForgotPasswordOneClick = (props: Props) => {
   const {email} = props
+
+  const {t} = useTranslation()
+
   const [isSent, setIsSent] = useState(false)
   const {submitMutation, submitting, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -40,14 +44,17 @@ const ForgotPasswordOneClick = (props: Props) => {
   if (isSent) {
     return (
       <MessageSent>
-        <div>Message sent to {email}</div>
-        <div>Check your inbox!</div>
+        <div>
+          {t('ForgotPasswordOneClick.MessageSentTo')}
+          {email}
+        </div>
+        <div>{t('ForgotPasswordOneClick.CheckYourInbox!')}</div>
       </MessageSent>
     )
   }
   return (
     <ForgotButton onClick={onClick} waiting={submitting}>
-      Forgot your password?
+      {t('ForgotPasswordOneClick.ForgotYourPassword?')}
     </ForgotButton>
   )
 }

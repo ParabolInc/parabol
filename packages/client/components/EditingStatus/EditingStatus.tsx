@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
@@ -41,6 +42,9 @@ interface Props {
 
 const EditingStatus = (props: Props) => {
   const {children, isTaskHovered, task, useTaskChild, isArchived} = props
+
+  const {t} = useTranslation()
+
   const {createdAt, updatedAt, editors} = task
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -52,10 +56,12 @@ const EditingStatus = (props: Props) => {
     closeTooltip()
     setTimestampType(timestampType === 'createdAt' ? 'updatedAt' : 'createdAt')
   }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {disabled: isEditing}
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {disabled: isEditing})
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>
@@ -76,7 +82,7 @@ const EditingStatus = (props: Props) => {
             timestampType={timestampType}
           />
         </EditingText>
-        {tooltipPortal(<div>{'Toggle Timestamp'}</div>)}
+        {tooltipPortal(<div>{t('EditingStatus.ToggleTimestamp')}</div>)}
       </div>
       <DueDateToggle
         cardIsActive={isEditing || isTaskHovered}

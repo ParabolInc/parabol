@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsRetrospectiveSettings_settings$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_settings.graphql'
 import {MenuPosition} from '../hooks/useCoords'
@@ -26,6 +27,9 @@ interface Props {
 
 const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
   const {settingsRef} = props
+
+  const {t} = useTranslation()
+
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
@@ -47,8 +51,8 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
   return (
     <>
       <NewMeetingDropdown
-        dropdownIcon={'keyboard_arrow_down'}
-        label={'Settings'}
+        dropdownIcon={t('NewMeetingSettingsRetrospectiveSettings.KeyboardArrowDown')}
+        label={t('NewMeetingSettingsRetrospectiveSettings.Settings')}
         onClick={togglePortal}
         ref={originRef}
         opened={[PortalStatus.Entering, PortalStatus.Entered].includes(portalStatus)}

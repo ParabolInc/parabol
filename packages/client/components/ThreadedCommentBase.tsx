@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState} from 'draft-js'
 import React, {ReactNode, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'
@@ -60,6 +61,9 @@ const ThreadedCommentBase = (props: Props) => {
     dataCy,
     viewer
   } = props
+
+  const {t} = useTranslation()
+
   const isReply = !!props.isReply
   const {id: discussionId, meetingId, replyingToCommentId, teamId} = discussion
   const {
@@ -179,7 +183,7 @@ const ThreadedCommentBase = (props: Props) => {
               onBlur={onSubmit}
               onSubmit={onSubmit}
               readOnly={!isEditing}
-              placeholder={'Edit your comment'}
+              placeholder={t('ThreadedCommentBase.EditYourComment')}
             />
           </EditorWrapper>
         )}

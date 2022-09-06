@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -8,10 +9,11 @@ import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import lazyPreload from '../../../../utils/lazyPreload'
 
-const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot'
-  )
+const TaskFooterIntegrateMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot'
+    )
 )
 
 interface Props {
@@ -23,15 +25,21 @@ interface Props {
 
 const TaskFooterIntegrateToggle = (props: Props) => {
   const {mutationProps, task, useTaskChild, dataCy} = props
+
+  const {t} = useTranslation()
+
   const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {
       loadingWidth: 200
     }
   )
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <CardButton
@@ -48,7 +56,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
           ref={tipRef}
         />
       </CardButton>
-      {tooltipPortal(<div>{'Push to Integration'}</div>)}
+      {tooltipPortal(<div>{t('TaskFooterIntegrateToggle.PushToIntegration')}</div>)}
       {menuPortal(
         <TaskFooterIntegrateMenuRoot
           menuProps={menuProps}

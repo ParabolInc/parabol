@@ -1,9 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import TagBlock from '../../../../components/Tag/TagBlock'
-import makeDateString from '../../../../utils/makeDateString'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
+import makeDateString from '../../../../utils/makeDateString'
 
 const StyledTagBlock = styled(TagBlock)({
   display: 'block'
@@ -24,9 +25,12 @@ interface Props {
 
 const OrganizationDetails = (props: Props) => {
   const {createdAt, tier} = props
+
+  const {t} = useTranslation()
+
   return (
     <OrgDetails>
-      {'Created '}
+      {t('OrganizationDetails.Created')}
       {makeDateString(createdAt)}
       {tier !== 'personal' && (
         <StyledTagBlock>

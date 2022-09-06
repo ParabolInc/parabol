@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../styles/paletteV3'
 
 const SearchBar = styled('div')({
@@ -49,12 +50,15 @@ interface Props {
 
 const ScopingSearchBar = (props: Props) => {
   const {children, currentFilters} = props
+
+  const {t} = useTranslation()
+
   return (
     <SearchBar>
       <SearchBarWrapper>{children}</SearchBarWrapper>
       {currentFilters && (
         <CurrentFiltersWrapper>
-          <Description>Current filters:</Description>
+          <Description>{t('ScopingSearchBar.CurrentFilters:')}</Description>
           <Items>{currentFilters}</Items>
         </CurrentFiltersWrapper>
       )}

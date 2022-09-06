@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {JiraServerScopingSearchBar_meeting$key} from '../__generated__/JiraServerScopingSearchBar_meeting.graphql'
 import JiraServerScopingSearchFilterToggle from './JiraServerScopingSearchFilterToggle'
@@ -13,6 +14,9 @@ interface Props {
 
 const JiraServerScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  //FIXME i18n: Search issues on Jira Server
+  const {t} = useTranslation()
 
   const meeting = useFragment(
     graphql`
@@ -63,8 +67,8 @@ const JiraServerScopingSearchBar = (props: Props) => {
         placeholder={placeholder}
         queryString={queryString}
         meetingId={meetingId}
-        linkedRecordName={'jiraServerSearchQuery'}
-        service={'jiraServer'}
+        linkedRecordName={t('JiraServerScopingSearchBar.Jiraserversearchquery')}
+        service={t('JiraServerScopingSearchBar.Jiraserver')}
       />
       <JiraServerScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

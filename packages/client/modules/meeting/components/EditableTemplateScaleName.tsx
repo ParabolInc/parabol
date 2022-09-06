@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
-import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 import EditableText from '../../../components/EditableText'
-import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
-import Legitity from '../../../validation/Legitity'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
+import Legitity from '../../../validation/Legitity'
+import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 
 interface Props {
   name: string
@@ -30,6 +31,12 @@ const StyledEditableText = styled(EditableText)({
 
 const EditableTemplateScaleName = (props: Props) => {
   const {name, scaleId, scales, isOwner} = props
+
+  //FIXME i18n: Please enter a scale name
+  //FIXME i18n: That scale name is probably long enough
+  //FIXME i18n: That scale name is already taken
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -75,7 +82,7 @@ const EditableTemplateScaleName = (props: Props) => {
         initialValue={name}
         maxLength={50}
         validate={validate}
-        placeholder={'*New Scale'}
+        placeholder={t('EditableTemplateScaleName.NewScale')}
       />
     </InheritedStyles>
   )

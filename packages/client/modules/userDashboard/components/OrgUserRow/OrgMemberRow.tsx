@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, Ref} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -96,6 +97,9 @@ const RemoveFromOrgModal = lazyPreload(
 )
 
 const OrgMemberRow = (props: Props) => {
+  //FIXME i18n: Send an email
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {billingLeaderCount, organizationUser, organization} = props
   const {orgId, isViewerBillingLeader} = organization
@@ -127,9 +131,11 @@ const OrgMemberRow = (props: Props) => {
       <StyledRowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>}
-          {inactive && !isBillingLeader && <InactiveTag>{'Inactive'}</InactiveTag>}
-          {new Date(newUserUntil) > new Date() && <EmphasisTag>{'New'}</EmphasisTag>}
+          {isBillingLeader && <RoleTag>{t('OrgMemberRow.BillingLeader')}</RoleTag>}
+          {inactive && !isBillingLeader && <InactiveTag>{t('OrgMemberRow.Inactive')}</InactiveTag>}
+          {new Date(newUserUntil) > new Date() && (
+            <EmphasisTag>{t('OrgMemberRow.New')}</EmphasisTag>
+          )}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}
@@ -139,7 +145,7 @@ const OrgMemberRow = (props: Props) => {
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
             <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
-              Leave Organization
+              {t('OrgMemberRow.LeaveOrganization')}
             </StyledFlatButton>
           )}
           {isViewerLastBillingLeader && userId === viewerId && (
@@ -151,9 +157,9 @@ const OrgMemberRow = (props: Props) => {
             >
               {tooltipPortal(
                 <div>
-                  {'You need to promote another Billing Leader'}
+                  {t('OrgMemberRow.YouNeedToPromoteAnotherBillingLeader')}
                   <br />
-                  {'before you can leave this role or Organization.'}
+                  {t('OrgMemberRow.BeforeYouCanLeaveThisRoleOrOrganization.')}
                 </div>
               )}
               <MenuButton disabled />

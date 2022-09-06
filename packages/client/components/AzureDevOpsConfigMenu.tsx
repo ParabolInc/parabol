@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -17,6 +18,11 @@ interface Props {
 
 const AzureDevOpsConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId, provider} = props
+
+  //FIXME i18n: Refresh token
+  //FIXME i18n: Remove Azure DevOps
+  const {t} = useTranslation()
+
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
@@ -36,7 +42,7 @@ const AzureDevOpsConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={'Configure your Azure DevOps integration'} {...menuProps}>
+    <Menu ariaLabel={t('AzureDevOpsConfigMenu.ConfigureYourAzureDevopsIntegration')} {...menuProps}>
       <MenuItem label='Refresh token' onClick={openOAuth} />
       <MenuItem label='Remove Azure DevOps' onClick={removeAzureDevOps} />
     </Menu>

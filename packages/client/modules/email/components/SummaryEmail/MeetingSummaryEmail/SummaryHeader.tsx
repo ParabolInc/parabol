@@ -4,6 +4,7 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import makeDateString from 'parabol-client/utils/makeDateString'
 import {SummaryHeader_meeting} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 
@@ -40,6 +41,10 @@ interface Props {
 
 const SummaryHeader = (props: Props) => {
   const {meeting, isDemo} = props
+
+  //FIXME i18n: Parabol Logo
+  const {t} = useTranslation()
+
   const {createdAt, name: meetingName, team} = meeting
   const {name: teamName} = team
   const meetingDate = makeDateString(createdAt, {showDay: true})
@@ -59,7 +64,7 @@ const SummaryHeader = (props: Props) => {
         </tr>
         <tr>
           <td align='center' style={meetingSummaryLabel}>
-            {'Meeting Summary'}
+            {t('SummaryHeader.MeetingSummary')}
           </td>
         </tr>
         <tr>

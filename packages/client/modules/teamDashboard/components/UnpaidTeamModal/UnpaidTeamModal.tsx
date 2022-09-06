@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
@@ -44,6 +45,10 @@ const query = graphql`
 
 const UnpaidTeamModal = (props: Props) => {
   const {queryRef} = props
+
+  //FIXME i18n: Take me there
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<UnpaidTeamModalQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -74,7 +79,7 @@ const UnpaidTeamModal = (props: Props) => {
     : `Try reaching out to ${billingLeaderName} at ${email}`
   return (
     <DashModal>
-      <DialogTitle>{'Oh dear…'}</DialogTitle>
+      <DialogTitle>{t('UnpaidTeamModal.OhDear…')}</DialogTitle>
       <DialogContent>
         {problem}
         <br />

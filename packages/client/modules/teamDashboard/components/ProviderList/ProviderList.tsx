@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -111,6 +112,12 @@ const query = graphql`
 
 const ProviderList = (props: Props) => {
   const {queryRef, retry, teamId} = props
+
+  //FIXME i18n: Jira Server
+  //FIXME i18n: Azure DevOps
+  //FIXME i18n: MS Teams
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -180,15 +187,18 @@ const ProviderList = (props: Props) => {
   return (
     <StyledWrapper>
       <Note>
-        Each team member must add the integrations they want to use. Integrations are scoped to the
-        team where you add them.
+        {t(
+          'ProviderList.EachTeamMemberMustAddTheIntegrationsTheyWantToUseIntegrationsAreScopedToTheTeamWhereYouAddThem.'
+        )}
       </Note>
 
-      {connectedIntegrations.length > 0 && <Heading>Connected</Heading>}
+      {connectedIntegrations.length > 0 && <Heading>{t('ProviderList.Connected')}</Heading>}
 
       {connectedIntegrations}
 
-      {availableIntegrations.length > 0 && <AvailableHeading>Available</AvailableHeading>}
+      {availableIntegrations.length > 0 && (
+        <AvailableHeading>{t('ProviderList.Available')}</AvailableHeading>
+      )}
 
       {availableIntegrations}
     </StyledWrapper>

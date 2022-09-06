@@ -2,6 +2,7 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {MEETING_NAME} from 'parabol-client/utils/constants'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 
 const promptStyle = {
   color: PALETTE.SLATE_700,
@@ -32,6 +33,12 @@ interface Props {
 }
 const ContactUsFooter = (props: Props) => {
   const {hasLearningLink, isDemo, prompt, tagline} = props
+
+  //FIXME i18n: Email us: love@parabol.co
+  //FIXME i18n: noopener noreferrer
+  //FIXME i18n: Navigate uncertainty with the Parabol Rhythm
+  const {t} = useTranslation()
+
   if (isDemo) return null
   return (
     <>
@@ -47,9 +54,9 @@ const ContactUsFooter = (props: Props) => {
       </tr>
       <tr>
         <td align='center' style={textStyle}>
-          {'Email us:'}&nbsp;
+          {t('ContactUsFooter.EmailUs:')}&nbsp;
           <a href='mailto:love@parabol.co' style={linkStyle} title='Email us: love@parabol.co'>
-            {'love@parabol.co'}
+            {t('ContactUsFooter.LoveParabolCo')}
           </a>
         </td>
       </tr>
@@ -63,7 +70,7 @@ const ContactUsFooter = (props: Props) => {
               target='_blank'
               title='Navigate uncertainty with the Parabol Rhythm'
             >
-              Learn More
+              {t('ContactUsFooter.LearnMore')}
             </a>
             {` about the ${MEETING_NAME} Process.`}
           </td>

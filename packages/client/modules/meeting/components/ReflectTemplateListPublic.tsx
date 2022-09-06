@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import {PALETTE} from '~/styles/paletteV3'
@@ -64,6 +65,9 @@ const query = graphql`
 
 const ReflectTemplateListPublic = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<ReflectTemplateListPublicQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -87,7 +91,7 @@ const ReflectTemplateListPublic = (props: Props) => {
             key={template.id}
             template={template}
             isActive={template.id === activeTemplateId}
-            lowestScope={'PUBLIC'}
+            lowestScope={t('ReflectTemplateListPublic.Public')}
             teamId={teamId}
             templateSearchQuery={searchQuery}
           />

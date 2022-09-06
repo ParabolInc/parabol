@@ -1,16 +1,17 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import DialogTitle from './DialogTitle'
-import AuthenticationDialog from './AuthenticationDialog'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useRouter from '../hooks/useRouter'
-import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
-import {PALETTE} from '../styles/paletteV3'
-import PlainButton from './PlainButton/PlainButton'
-import PrimaryButton from './PrimaryButton'
-import IconLabel from './IconLabel'
-import {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
+import {PALETTE} from '../styles/paletteV3'
+import AuthenticationDialog from './AuthenticationDialog'
+import DialogTitle from './DialogTitle'
+import {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
+import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
+import IconLabel from './IconLabel'
+import PlainButton from './PlainButton/PlainButton'
+import PrimaryButton from './PrimaryButton'
 
 const P = styled('p')({
   fontSize: 14,
@@ -56,6 +57,15 @@ interface Props {
 
 const SubmittedForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
+
+  //FIXME i18n: noopener noreferrer
+  //FIXME i18n: It looks like you may have signed-up with Gmail.
+  //FIXME i18n: It looks like you may have signed-up using SSO.
+  //FIXME i18n: You’re all set!
+  //FIXME i18n: We’ve sent you an email with password recovery instructions.
+  //FIXME i18n: Back to Sign In
+  const {t} = useTranslation()
+
   const {match, location} = useRouter<{token: string}>()
   const params = new URLSearchParams(location.search)
   const forgotPasswordResType = params.get('type') || ForgotPasswordResType.SUCCESS
@@ -64,15 +74,15 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const contactSupportCopy = (
     <>
       <a
-        href={'mailto:love@parabol.co'}
+        href={t('SubmittedForgotPasswordPage.MailtoLoveParabolCo')}
         rel='noopener noreferrer'
         target='_blank'
         style={emailLinkStyle}
-        title={'love@parabol.co'}
+        title={t('SubmittedForgotPasswordPage.LoveParabolCo')}
       >
-        {'click here '}
+        {t('SubmittedForgotPasswordPage.ClickHere')}
       </a>
-      {'to contact support.'}
+      {t('SubmittedForgotPasswordPage.ToContactSupport.')}
     </>
   )
 
@@ -107,7 +117,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       ),
       button: (
         <StyledPrimaryButton onClick={() => goToPage('signin', '?sso=true')} size='medium'>
-          {'Sign In with SSO'}
+          {t('SubmittedForgotPasswordPage.SignInWithSso')}
         </StyledPrimaryButton>
       )
     },
@@ -116,11 +126,11 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       descriptionOne: 'We’ve sent you an email with password recovery instructions.',
       descriptionTwo: (
         <>
-          {'Didn’t get it? Check your spam folder, or '}
+          {t('SubmittedForgotPasswordPage.DidnTGetItCheckYourSpamFolderOr')}
           <LinkButton onClick={() => goToPageWithEmail('forgot-password', email)}>
-            click here
+            {t('SubmittedForgotPasswordPage.ClickHere')}
           </LinkButton>
-          {' to try again.'}
+          {t('SubmittedForgotPasswordPage.ToTryAgain.')}
         </>
       ),
       button: (

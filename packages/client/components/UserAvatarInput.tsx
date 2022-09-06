@@ -1,14 +1,15 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
+import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
-import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
-import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
-import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
@@ -40,6 +41,10 @@ interface Props {
 
 const UserAvatarInput = (props: Props) => {
   const {picture} = props
+
+  //FIXME i18n: File is too large (1MB Max)
+  const {t} = useTranslation()
+
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
 
@@ -69,7 +74,7 @@ const UserAvatarInput = (props: Props) => {
 
   return (
     <ModalBoundary>
-      <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
+      <StyledDialogTitle>{t('UserAvatarInput.UploadANewPhoto')}</StyledDialogTitle>
       <AvatarBlock>
         <Avatar picture={picture} size={96} />
       </AvatarBlock>

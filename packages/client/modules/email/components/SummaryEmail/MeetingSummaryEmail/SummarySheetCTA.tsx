@@ -2,6 +2,7 @@ import {buttonShadow} from 'parabol-client/styles/elevation'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import AnchorIfEmail from './AnchorIfEmail'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 
@@ -33,10 +34,13 @@ const buttonCellStyle = {
 
 const SummarySheetCTA = (props: Props) => {
   const {isDemo, referrer, teamDashUrl} = props
+
+  const {t} = useTranslation()
+
   if (isDemo) return null
   return (
     <tr>
-      <td align={'center'} style={buttonCellStyle}>
+      <td align={t('SummarySheetCTA.Center')} style={buttonCellStyle}>
         <AnchorIfEmail
           isEmail={referrer === 'email'}
           href={teamDashUrl}

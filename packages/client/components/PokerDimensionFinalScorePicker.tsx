@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
@@ -79,6 +80,11 @@ interface Props {
 
 const PokerDimensionFinalScorePicker = (props: Props) => {
   const {inputRef, isFacilitator, canUpdate, error, stageRef, clearError, submitScore} = props
+
+  //FIXME i18n: Jira Server
+  //FIXME i18n: Azure DevOps
+  const {t} = useTranslation()
+
   const stage = useFragment(
     graphql`
       fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
@@ -113,15 +119,23 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     <Wrapper>
       {isFacilitator ? (
         canUpdate ? (
-          <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
+          <StyledLinkButton onClick={submitScore}>
+            {t('PokerDimensionFinalScorePicker.Update')}
+          </StyledLinkButton>
         ) : (
-          <StyledLinkButton onClick={focusInput}>{'Edit Score'}</StyledLinkButton>
+          <StyledLinkButton onClick={focusInput}>
+            {t('PokerDimensionFinalScorePicker.EditScore')}
+          </StyledLinkButton>
         )
       ) : null}
       <Mapper isDesktop={isDesktop}>
         {error && <ErrorMessage isDesktop={isDesktop}>{error}</ErrorMessage>}
         <ControlWrapper>
-          {isDesktop ? <Label>{`${title} Label: `}</Label> : <MobileLabel>{'Label:'}</MobileLabel>}
+          {isDesktop ? (
+            <Label>{`${title} Label: `}</Label>
+          ) : (
+            <MobileLabel>{t('PokerDimensionFinalScorePicker.Label:')}</MobileLabel>
+          )}
 
           {integrationType === '_xGitHubIssue' && (
             <GitHubFieldDimensionDropdown

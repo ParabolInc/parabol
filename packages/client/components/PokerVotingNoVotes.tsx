@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerCards} from '../types/constEnums'
 
@@ -12,7 +13,9 @@ const NoVotesHeaderLabel = styled('div')({
 })
 
 const PokerVotingNoVotes = () => {
-  return <NoVotesHeaderLabel>{'No Votes'}</NoVotesHeaderLabel>
+  const {t} = useTranslation()
+
+  return <NoVotesHeaderLabel>{t('PokerVotingNoVotes.NoVotes')}</NoVotesHeaderLabel>
 }
 
 export default PokerVotingNoVotes

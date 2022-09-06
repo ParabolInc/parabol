@@ -1,13 +1,14 @@
-import React, {useEffect} from 'react'
-import useModal from '../hooks/useModal'
-import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
+import {DiscussPhaseSqueeze_meeting} from '~/__generated__/DiscussPhaseSqueeze_meeting.graphql'
 import {DiscussPhaseSqueeze_organization} from '~/__generated__/DiscussPhaseSqueeze_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import WaitingForFacilitatorToPay from './WaitingForFacilitatorToPay'
+import useModal from '../hooks/useModal'
+import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
-import {DiscussPhaseSqueeze_meeting} from '~/__generated__/DiscussPhaseSqueeze_meeting.graphql'
+import WaitingForFacilitatorToPay from './WaitingForFacilitatorToPay'
 
 interface Props {
   meeting: DiscussPhaseSqueeze_meeting
@@ -16,6 +17,9 @@ interface Props {
 
 const DiscussPhaseSqueeze = (props: Props) => {
   const {organization, meeting} = props
+
+  const {t} = useTranslation()
+
   const {id: meetingId, facilitatorUserId, facilitator, showConversionModal} = meeting
   const {id: orgId, orgUserCount} = organization
   const {preferredName: facilitatorName} = facilitator
@@ -41,7 +45,7 @@ const DiscussPhaseSqueeze = (props: Props) => {
       <CreditCardModal
         activeUserCount={activeUserCount}
         orgId={orgId}
-        actionType={'squeeze'}
+        actionType={t('DiscussPhaseSqueeze.Squeeze')}
         closePortal={closePortal}
         meetingId={meetingId}
       />

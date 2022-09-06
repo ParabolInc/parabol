@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {AccountBalance, AccountBox, BarChart, ExitToApp, Star} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {MenuProps} from '../hooks/useMenu'
@@ -40,6 +41,9 @@ interface Props {
 
 const StandardHubUserMenu = (props: Props) => {
   const {menuProps, viewerRef} = props
+
+  const {t} = useTranslation()
+
   const viewer = useFragment(
     graphql`
       fragment StandardHubUserMenu_viewer on User {
@@ -62,36 +66,36 @@ const StandardHubUserMenu = (props: Props) => {
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 
   return (
-    <TallMenu ariaLabel={'Select your settings'} {...menuProps}>
+    <TallMenu ariaLabel={t('StandardHubUserMenu.SelectYourSettings')} {...menuProps}>
       <DropdownMenuLabel>{email}</DropdownMenuLabel>
       <MenuItem
         label={
-          <MenuItemLink to={'/me/profile'}>
+          <MenuItemLink to={t('StandardHubUserMenu.MeProfile')}>
             <MenuItemIcon>
               <AccountBox />
             </MenuItemIcon>
-            {'Profile'}
+            {t('StandardHubUserMenu.Profile')}
           </MenuItemLink>
         }
       />
       <MenuItem
         label={
-          <MenuItemLink to={'/me/organizations'}>
+          <MenuItemLink to={t('StandardHubUserMenu.MeOrganizations')}>
             <MenuItemIcon>
               <AccountBalance />
             </MenuItemIcon>
-            {'Organizations'}
+            {t('StandardHubUserMenu.Organizations')}
           </MenuItemLink>
         }
       />
       {insights && (
         <MenuItem
           label={
-            <MenuItemLink to={'/usage'}>
+            <MenuItemLink to={t('StandardHubUserMenu.Usage')}>
               <MenuItemIcon>
                 <BarChart />
               </MenuItemIcon>
-              {'Usage'}
+              {t('StandardHubUserMenu.Usage')}
             </MenuItemLink>
           }
         />
@@ -105,7 +109,7 @@ const StandardHubUserMenu = (props: Props) => {
                 <Star />
               </UpgradeIcon>
               <UpgradeCTA>
-                {'Upgrade to '}
+                {t('StandardHubUserMenu.UpgradeTo')}
                 <b>{TierLabel.PRO}</b>
               </UpgradeCTA>
             </MenuItemLink>

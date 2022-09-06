@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -39,6 +40,9 @@ type AzureDevOpsSearchQuery = NonNullable<
 
 const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   const {meeting, menuProps} = props
+
+  const {t} = useTranslation()
+
   const {portalStatus, isDropdown} = menuProps
   const {viewerMeetingMember, azureDevOpsSearchQuery, id: meetingId} = meeting
   const {isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
@@ -58,22 +62,24 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Define the Azure DevOps search query'}
+      ariaLabel={t('AzureDevOpsScopingSearchFilterMenu.DefineTheAzureDevopsSearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
       <MenuItem
-        key={'isWIQL'}
+        key={t('AzureDevOpsScopingSearchFilterMenu.Iswiql')}
         label={
           <MenuItemLabel>
             <StyledCheckBox active={isWIQL} />
-            <UseWIQLLabel>{'Use WIQL'}</UseWIQLLabel>
+            <UseWIQLLabel>{t('AzureDevOpsScopingSearchFilterMenu.UseWiql')}</UseWIQLLabel>
           </MenuItemLabel>
         }
         onClick={toggleWIQL}
       />
 
-      {projects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
+      {projects.length > 0 && (
+        <FilterLabel>{t('AzureDevOpsScopingSearchFilterMenu.FilterByProject:')}</FilterLabel>
+      )}
       {projects.map((project) => {
         const {id: globalProjectKey, name} = project
         const toggleProjectKeyFilter = () => {

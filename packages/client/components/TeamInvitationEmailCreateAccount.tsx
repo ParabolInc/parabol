@@ -1,16 +1,17 @@
-import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '../__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '../__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
+import AuthPrivacyFooter from './AuthPrivacyFooter'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
-import AuthPrivacyFooter from './AuthPrivacyFooter'
-import useDocumentTitle from '../hooks/useDocumentTitle'
+import InviteDialog from './InviteDialog'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
@@ -28,6 +29,13 @@ const TeamName = styled('span')({
 
 const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {invitationToken, verifiedInvitation} = props
+
+  //FIXME i18n: Sign Up
+  //FIXME i18n: Join Team
+  //FIXME i18n: to the team meeting for:
+  //FIXME i18n: to your team:
+  const {t} = useTranslation()
+
   const {meetingName, teamName, teamInvitation} = verifiedInvitation
   useDocumentTitle(`Sign up | Team Invitation`, 'Sign Up')
   if (!teamInvitation) return null
@@ -37,7 +45,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
       <DialogTitle>{meetingName ? `Join ${meetingName}` : 'Join Team'}</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          Choose a password for immediate access
+          {t('TeamInvitationEmailCreateAccount.ChooseAPasswordForImmediateAccess')}
           {meetingName ? ' to the team meeting for: ' : ' to your team: '}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>

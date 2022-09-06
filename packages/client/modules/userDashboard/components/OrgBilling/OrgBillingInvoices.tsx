@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {usePaginationFragment} from 'react-relay'
 import {OrgBillingInvoices_query$key} from '~/__generated__/OrgBillingInvoices_query.graphql'
 import Panel from '../../../../components/Panel/Panel'
@@ -23,6 +24,9 @@ interface Props {
 
 const OrgBillingInvoices = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const paginationRes = usePaginationFragment<
     OrgBillingInvoicesPaginationQuery,
     OrgBillingInvoices_query$key
@@ -66,7 +70,7 @@ const OrgBillingInvoices = (props: Props) => {
         ))}
         {hasNext && (
           <MoreGutter>
-            <LoadMoreButton onClick={loadMore}>{'Load More'}</LoadMoreButton>
+            <LoadMoreButton onClick={loadMore}>{t('OrgBillingInvoices.LoadMore')}</LoadMoreButton>
           </MoreGutter>
         )}
       </div>

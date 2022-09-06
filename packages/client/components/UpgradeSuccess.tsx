@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react'
 import styled from '@emotion/styled'
+import React, {useEffect, useState} from 'react'
+import {useTranslation} from 'react-i18next'
+import paymentSuccessSvg from '../../../static/images/illustrations/conversion_prompt-payment_success.svg'
 import {PRO_LABEL} from '../utils/constants'
 import Confetti from './Confetti'
+import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
-import DialogContainer from './DialogContainer'
-import paymentSuccessSvg from '../../../static/images/illustrations/conversion_prompt-payment_success.svg'
 const Illustration = styled('img')({
   display: 'block ',
   maxWidth: 256
@@ -34,6 +35,8 @@ interface Props {
 }
 
 const UpgradeSuccess = (props: Props) => {
+  const {t} = useTranslation()
+
   const [active, setActive] = useState(false)
   useEffect(() => {
     setTimeout(() => {
@@ -44,16 +47,16 @@ const UpgradeSuccess = (props: Props) => {
   return (
     <Container>
       <Illustration src={paymentSuccessSvg} />
-      <StyledDialogTitle>{'Upgraded!'}</StyledDialogTitle>
-      <InvitationDialogCopy>{'Your organization is'}</InvitationDialogCopy>
+      <StyledDialogTitle>{t('UpgradeSuccess.Upgraded!')}</StyledDialogTitle>
+      <InvitationDialogCopy>{t('UpgradeSuccess.YourOrganizationIs')}</InvitationDialogCopy>
       <InvitationDialogCopy>
-        {'now on the '}
+        {t('UpgradeSuccess.NowOnThe')}
         <b>{PRO_LABEL}</b>
-        {' tier'}
+        {t('UpgradeSuccess.Tier')}
       </InvitationDialogCopy>
       <ButtonBlock>
         <ModalButton size='large' onClick={closePortal}>
-          {'Back to Business'}
+          {t('UpgradeSuccess.BackToBusiness')}
         </ModalButton>
       </ButtonBlock>
       <Confetti active={active} />

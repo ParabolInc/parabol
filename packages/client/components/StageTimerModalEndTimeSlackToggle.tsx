@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -61,6 +62,9 @@ const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator} = props
+
+  const {t} = useTranslation()
+
   const {integrations, teamId} = facilitator
   const {mattermost, slack, msTeams} = integrations
   const notifications = slack?.notifications ?? []
@@ -95,11 +99,13 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
       {(slack?.isActive || noActiveIntegrations) && (
         <ButtonRow onClick={onClick}>
           <StyledCheckbox active={slackToggleActive} />
-          <Label>{'Notify team via Slack'}</Label>
+          <Label>{t('StageTimerModalEndTimeSlackToggle.NotifyTeamViaSlack')}</Label>
         </ButtonRow>
       )}
-      {isMattermostActive && <Note>{'Notifying via Mattermost'}</Note>}
-      {isMSTeamsActive && <Note>{'Notifying via MS Teams'}</Note>}
+      {isMattermostActive && (
+        <Note>{t('StageTimerModalEndTimeSlackToggle.NotifyingViaMattermost')}</Note>
+      )}
+      {isMSTeamsActive && <Note>{t('StageTimerModalEndTimeSlackToggle.NotifyingViaMsTeams')}</Note>}
       <StyledNotificationErrorMessage error={error} />
     </Block>
   )

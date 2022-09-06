@@ -1,12 +1,13 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import useRouter from '../hooks/useRouter'
+import GoogleClientManager from '../utils/GoogleClientManager'
+import GoogleOAuthButton from './GoogleOAuthButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
-import GoogleOAuthButton from './GoogleOAuthButton'
-import GoogleClientManager from '../utils/GoogleClientManager'
-import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
 
 interface Props {
   invitationToken?: string
@@ -29,6 +30,11 @@ const HelpMessage = styled(StyledTip)({
 
 const GoogleOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint} = props
+
+  //FIXME i18n: Sign up with Google
+  //FIXME i18n: Sign in with Google
+  const {t} = useTranslation()
+
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -41,7 +47,9 @@ const GoogleOAuthButtonBlock = (props: Props) => {
     <React.Fragment>
       <GoogleOAuthButton label={label} onClick={openOAuth} waiting={submitting} />
       {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
-      {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
+      {submitting && (
+        <HelpMessage>{t('GoogleOAuthButtonBlock.ContinueThroughTheLoginPopup')}</HelpMessage>
+      )}
     </React.Fragment>
   )
 }

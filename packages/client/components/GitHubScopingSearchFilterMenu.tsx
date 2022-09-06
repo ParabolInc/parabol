@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -47,6 +48,11 @@ const getValue = (item: {nameWithOwner?: string}) => {
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, queryRef} = props
+
+  //FIXME i18n: Define the GitHub search query
+  //FIXME i18n: Search your GitHub repos
+  const {t} = useTranslation()
+
   const query = usePreloadedQuery<GitHubScopingSearchFilterMenuQuery>(
     graphql`
       query GitHubScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
@@ -106,7 +112,9 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         value={searchQuery}
       />
       {repoContributions.length === 0 && (
-        <EmptyDropdownMenuItemLabel key='no-results'>No repos found!</EmptyDropdownMenuItemLabel>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          {t('GitHubScopingSearchFilterMenu.NoReposFound!')}
+        </EmptyDropdownMenuItemLabel>
       )}
       {selectedAndFilteredRepos.map((repo) => {
         const isSelected = selectedRepos.includes(repo)

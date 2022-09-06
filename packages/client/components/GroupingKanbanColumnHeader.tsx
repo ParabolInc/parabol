@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Add, UnfoldLess, UnfoldMore} from '@mui/icons-material'
 import React, {MouseEvent} from 'react'
+import {useTranslation} from 'react-i18next'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
@@ -86,6 +87,9 @@ const GroupingKanbanColumnHeader = (props: Props) => {
     submitting,
     toggleWidth
   } = props
+
+  const {t} = useTranslation()
+
   const {
     tooltipPortal: addReflectionPortal,
     openTooltip: openReflectionTooltip,
@@ -112,7 +116,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
           {phaseType === 'group' && (
             <AddReflectionButton
               dataCy={`add-reflection-${question}`}
-              aria-label={'Add a reflection'}
+              aria-label={t('GroupingKanbanColumnHeader.AddAReflection')}
               disabled={!canAdd}
               onClick={handleClick}
               onMouseEnter={openReflectionTooltip}
@@ -123,7 +127,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
               <Add />
             </AddReflectionButton>
           )}
-          {addReflectionPortal(<div>Add new reflection</div>)}
+          {addReflectionPortal(<div>{t('GroupingKanbanColumnHeader.AddNewReflection')}</div>)}
           {isDesktop && (
             <>
               <ExpandButton

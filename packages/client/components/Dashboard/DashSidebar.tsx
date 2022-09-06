@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
@@ -58,15 +59,30 @@ const Wrapper = styled('div')({
 
 const DashSidebar = (props: Props) => {
   const {isOpen, viewer} = props
+
+  const {t} = useTranslation()
+
   return (
     <Wrapper>
       <SideBarStartMeetingButton isOpen={isOpen} />
       <Nav isOpen={isOpen}>
         <Contents>
           <NavItemsWrap>
-            <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
-            <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
+            <NavItem
+              icon={t('DashSidebar.Forum')}
+              href={t('DashSidebar.Meetings')}
+              label={t('DashSidebar.Meetings')}
+            />
+            <NavItem
+              icon={t('DashSidebar.Timeline')}
+              href={t('DashSidebar.Me')}
+              label={t('DashSidebar.Timeline')}
+            />
+            <NavItem
+              icon={t('DashSidebar.PlaylistAddCheck')}
+              href={t('DashSidebar.MeTasks')}
+              label={t('DashSidebar.Tasks')}
+            />
           </NavItemsWrap>
           <DashHR />
           <NavMain>
@@ -74,7 +90,11 @@ const DashSidebar = (props: Props) => {
           </NavMain>
           <DashHR />
           <NavItemsWrap>
-            <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+            <NavItem
+              icon={t('DashSidebar.Add')}
+              href={t('DashSidebar.Newteam1')}
+              label={t('DashSidebar.AddATeam')}
+            />
           </NavItemsWrap>
         </Contents>
       </Nav>

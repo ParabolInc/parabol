@@ -1,12 +1,13 @@
-import {NewTeamOrgDropdown_organizations} from '../__generated__/NewTeamOrgDropdown_organizations.graphql'
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
+import {MenuProps} from '../hooks/useMenu'
+import {NewTeamOrgDropdown_organizations} from '../__generated__/NewTeamOrgDropdown_organizations.graphql'
 import DropdownMenuItemLabel from './DropdownMenuItemLabel'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {MenuProps} from '../hooks/useMenu'
 import TierTag from './Tag/TierTag'
 
 interface Props {
@@ -18,13 +19,16 @@ interface Props {
 
 const NewTeamOrgDropdown = (props: Props) => {
   const {defaultActiveIdx, onChange, organizations, menuProps} = props
+
+  const {t} = useTranslation()
+
   return (
     <Menu
-      ariaLabel={'Select the organization the new team belongs to'}
+      ariaLabel={t('NewTeamOrgDropdown.SelectTheOrganizationTheNewTeamBelongsTo')}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx + 1}
     >
-      <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('NewTeamOrgDropdown.SelectOrganization:')}</DropdownMenuLabel>
       {organizations.map((anOrg) => {
         const {id, tier, name} = anOrg
         return (
