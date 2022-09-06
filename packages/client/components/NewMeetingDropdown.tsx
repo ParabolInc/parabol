@@ -10,12 +10,14 @@ interface Props {
   label: string
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
-  onMouseEnter: () => void
-  title: string
+  onMouseEnter?: () => void
+  title?: string
+  opened?: boolean
 }
 
 const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
-  const {className, icon, dropdownIcon, label, disabled, onClick, onMouseEnter, title} = props
+  const {className, icon, dropdownIcon, label, disabled, onClick, onMouseEnter, title, opened} =
+    props
   return (
     <DropdownToggleV2
       className={className}
@@ -24,6 +26,7 @@ const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
       onClick={onClick}
       disabled={disabled}
       ref={ref}
+      opened={opened}
     >
       <DropdownToggleInner icon={icon} label={label} title={title} />
     </DropdownToggleV2>

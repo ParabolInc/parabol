@@ -13,6 +13,7 @@ import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import {RemoteReflection_meeting} from '../../__generated__/RemoteReflection_meeting.graphql'
 import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
+import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import getBBox from '../RetroReflectPhase/getBBox'
@@ -157,8 +158,8 @@ interface Props {
 
 const RemoteReflection = (props: Props) => {
   const {meeting, reflection, style, animation} = props
-  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
-  const {meetingMembers, localPhase} = meeting
+  const {id: reflectionId, content, isDropping, reflectionGroupId, creator} = reflection
+  const {meetingMembers, localPhase, disableAnonymity} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection['remoteDrag']
   >
@@ -220,7 +221,14 @@ const RemoteReflection = (props: Props) => {
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
-          <ReflectionEditorWrapper editorState={editorState} readOnly />
+          <ReflectionEditorWrapper
+            editorState={editorState}
+            readOnly
+            disableAnonymity={disableAnonymity}
+          />
+          {disableAnonymity && (
+            <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>
+          )}
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform && (
@@ -256,12 +264,16 @@ export default createFragmentContainer(RemoteReflection, {
         targetOffsetX
         targetOffsetY
       }
+      creator {
+        preferredName
+      }
     }
   `,
   meeting: graphql`
     fragment RemoteReflection_meeting on RetrospectiveMeeting {
       ...useSpotlightResults_meeting
       id
+      disableAnonymity
       localPhase {
         phaseType
       }

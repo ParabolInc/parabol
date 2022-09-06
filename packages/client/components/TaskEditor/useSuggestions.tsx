@@ -1,19 +1,20 @@
+import {EditorProps, EditorState} from 'draft-js'
 import React, {lazy, Suspense, useState} from 'react'
-import getWordAt from './getWordAt'
-import resolvers from './resolvers'
+import useForceUpdate from '../../hooks/useForceUpdate'
+import {SetEditorState} from '../../types/draft'
 import completeEntity from '../../utils/draftjs/completeEntity'
 import getDraftCoords from '../../utils/getDraftCoords'
 import getAnchorLocation from './getAnchorLocation'
-import {EditorProps, EditorState} from 'draft-js'
-import {SetEditorState} from '../../types/draft'
-import useForceUpdate from '../../hooks/useForceUpdate'
+import getWordAt from './getWordAt'
+import resolvers from './resolvers'
 
-const EditorSuggestions = lazy(() =>
-  import(/* webpackChunkName: 'EditorSuggestions' */ '../EditorSuggestions/EditorSuggestions')
+const EditorSuggestions = lazy(
+  () => import(/* webpackChunkName: 'EditorSuggestions' */ '../EditorSuggestions/EditorSuggestions')
 )
 
-const SuggestMentionableUsersRoot = lazy(() =>
-  import(/* webpackChunkName: 'SuggestMentionableUsersRoot' */ '../SuggestMentionableUsersRoot')
+const SuggestMentionableUsersRoot = lazy(
+  () =>
+    import(/* webpackChunkName: 'SuggestMentionableUsersRoot' */ '../SuggestMentionableUsersRoot')
 )
 
 type Handlers = Pick<EditorProps, 'handleReturn' | 'onChange' | 'keyBindingFn'>
@@ -22,7 +23,7 @@ interface CustomProps {
   teamId: string
 }
 
-interface BaseSuggestion {
+export interface BaseSuggestion {
   id: string
 }
 
@@ -30,7 +31,7 @@ interface TagSuggestion extends BaseSuggestion {
   name: string
 }
 
-interface MentionSuggestion extends BaseSuggestion {
+export interface MentionSuggestion extends BaseSuggestion {
   preferredName: string
 }
 
@@ -67,9 +68,7 @@ const useSuggestions = (
     }
   }
 
-  const handleSelect = (idx) => (e) => {
-    e.preventDefault()
-    const item = suggestions![idx]
+  const handleSelect = (item: BaseSuggestion) => {
     if (suggestionType === 'tag') {
       const {name} = item as TagSuggestion
       setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`))
@@ -94,7 +93,8 @@ const useSuggestions = (
       e.preventDefault()
       setActive(Math.min(active + 1, suggestions!.length - 1))
     } else if (e.key === 'Tab') {
-      handleSelect(active)(e)
+      e.preventDefault()
+      handleSelect(suggestions[active]!)
     }
     return null
   }
@@ -103,7 +103,8 @@ const useSuggestions = (
     if (handleReturn) {
       handleReturn(e, editorState)
     }
-    handleSelect(active)(e)
+    if (active === undefined) return 'not-handled'
+    handleSelect(suggestions[active]!)
     return 'handled'
   }
 
@@ -123,7 +124,7 @@ const useSuggestions = (
     return false
   }
 
-  const makeSuggestions = async (triggerWord: string, resolveType: SuggestionType) => {
+  const makeSuggestions = async (triggerWord: string, resolveType: 'tag') => {
     const resolve = resolvers[resolveType]
     const suggestions = await resolve(triggerWord)
     if (suggestions.length > 0) {
@@ -163,7 +164,7 @@ const useSuggestions = (
             active={active || 0}
             handleSelect={handleSelect}
             setSuggestions={setSuggestions}
-            suggestions={suggestions}
+            suggestions={suggestions as MentionSuggestion[]}
             triggerWord={triggerWord}
             teamId={teamId}
             originCoords={coords}

@@ -39,7 +39,7 @@ const MenuToggleTitle = styled('div')({
 interface Props {
   label: string
   icon?: React.ReactElement
-  title: string
+  title?: string
 }
 const DropdownToggleInner = forwardRef((props: Props, ref: any) => {
   const {icon, label, title} = props
@@ -47,7 +47,7 @@ const DropdownToggleInner = forwardRef((props: Props, ref: any) => {
     <Container ref={ref}>
       {icon && <IconContainer>{icon}</IconContainer>}
       <MenuToggleLabelContainer>
-        <MenuToggleTitle>{title}</MenuToggleTitle>
+        {title && <MenuToggleTitle>{title}</MenuToggleTitle>}
         <MenuToggleLabel>{label}</MenuToggleLabel>
       </MenuToggleLabelContainer>
     </Container>
