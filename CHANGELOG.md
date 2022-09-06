@@ -5,6 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.73.0 2022-September-06
+
+### Added
+
+- feat(dd sourcemaps): add source maps to deploy (#7063)
+- feat(devops): Bundle used node_modules in the server compilation (#6965)
+- feat(metrics): clean up some properties for Task Created events (#7067)
+- feat(metrics): Add Task Estimate Set event (#7117)
+- feat(metrics): identify if user is patient 0 upon login (#7129)
+- feat: usage stats clarity improvements (#7112)
+- feat(standups): Recurrence - restart recurrence in startRecurrence mutation (#7049)
+- feat(dx): createFragmentContainer -> useFragment codeshift automation (#7135)
+- feat: allow disable anonymity for retrospective meeting reflections (#7076)
+- feat(standups/tiptap): Client-side mentions (#7118)
+
+### Fixed
+
+- fix(DX): Fix the PR labeler (#7109)
+- fix: empty discuss phase (#7070)
+- fix: increase line-height of text in Standups responses (#7115)
+- fix(New meeting dialog): truncate template dropdown text (#7096)
+- fix: azure work item id & change item link to project name (#7093)
+- fix: azure refresh auth (#7097)
+- fix: Changed copy on /create-account page (#7132)
+- fix: Facilitator's name is tiny and hard to read (#7113)
+- fix: turn on noImplicitAny for server (#7011)
+
+### Changed
+
+- style: increase font size of standup meeting title (#7142)
+- chore: add pull-request-stats github workflow (#7111)
+
 ## 6.72.1 2022-August-26
 
 ### Fixed
