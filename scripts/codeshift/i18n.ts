@@ -61,6 +61,7 @@ const transform: Transform = (fileInfo, api, options) => {
   fdeclarations.forEach(fd => {
     if (isComponent(fd)) {
       let addHook = false
+      const translationComments = [] as string[]
 
       visit(fd.node, {
         visitLiteral(fe) {
@@ -90,14 +91,10 @@ const transform: Transform = (fileInfo, api, options) => {
             fe.replace(callExpression)
             addTranslation(component, key, text)
           }
-          // likelihood is high that this is display text
+          // likelihood is high that this is display text, let's add a comment to the hook
           else if(text.includes(' ')) {
-            if (!fe.node.comments) {
-              fe.node.comments = []
-            }
-            fe.node.comments.push(j.commentLine.from({
-              value: 'FIXME i18n: does this need translation?'
-            }))
+            // just add a comment as otherwise we need to check for attributes etc.
+            translationComments.push(`FIXME i18n: ${text}`)
           }
           return false
         }
@@ -124,6 +121,9 @@ const transform: Transform = (fileInfo, api, options) => {
             })
           ]
         })
+        if (translationComments.length) {
+          hook.comments = translationComments.map((comment) => (j.commentLine(comment)))
+        }
 
         // put useTranslation after props deconstruction
         // this will fail for funcitons without a body, i.e. () => (<></>) but it's not worth fixing for a one shot script
