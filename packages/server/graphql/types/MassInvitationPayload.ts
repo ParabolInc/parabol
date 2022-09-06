@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLObjectType, GraphQLString} from 'graphql'
-import TeamInvitationErrorEnum from './TeamInvitationErrorEnum'
 import {GQLContext} from '../graphql'
+import TeamInvitationErrorEnum from './TeamInvitationErrorEnum'
 
 const MassInvitationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'MassInvitationPayload',
@@ -12,6 +12,11 @@ const MassInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLString,
       description:
         'The name of the person that sent the invitation, present if errorType is expired'
+    },
+    inviterEmail: {
+      type: GraphQLString,
+      description:
+        'The email of the person that sent the invitation, present if errorType is expired'
     },
     teamId: {
       type: GraphQLID,
