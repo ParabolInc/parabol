@@ -1,5 +1,6 @@
 import React from 'react'
 import {render} from 'react-dom'
+import './i18n'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
 import './types/modules.d'

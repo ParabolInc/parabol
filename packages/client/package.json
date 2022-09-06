@@ -88,6 +88,8 @@
     "graphql-typed": "^0.6.1",
     "hoist-non-react-statics": "^3.3.0",
     "i18next": "^21.9.1",
+    "i18next-browser-languagedetector": "^6.1.5",
+    "i18next-http-backend": "^1.4.1",
     "immutable": "3.8.2",
     "json2csv": "5.0.5",
     "jwt-decode": "^2.1.0",
