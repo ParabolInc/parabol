@@ -8,7 +8,6 @@ interface Input {
 const phaseTypes = [
   'additems',
   'checkin',
-  'updates',
   'firstcall',
   'agendaitems',
   'lastcall'
