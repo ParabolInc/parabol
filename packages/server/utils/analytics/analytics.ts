@@ -2,12 +2,19 @@ import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
+import {TaskServiceEnum} from '../../database/types/Task'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
+
+export type MeetingSeriesAnalyticsProperties = Pick<
+  MeetingSeries,
+  'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'title'
+> & {teamId: string; facilitatorId: string}
 
 export type OrgTierChangeEventProperties = {
   orgId: string
@@ -26,6 +33,15 @@ export type TaskProperties = {
   inMeeting: boolean
 }
 
+export type TaskEstimateProperties = {
+  taskId: string
+  meetingId: string
+  dimensionName: string
+  service?: TaskServiceEnum
+  success: boolean
+  errorMessage?: string
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -35,6 +51,7 @@ export type AnalyticsEvent =
   | 'Response Added'
   | 'Reactji Interacted'
   | 'Meeting Recurrence Started'
+  | 'Meeting Recurrence Stopped'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -46,6 +63,7 @@ export type AnalyticsEvent =
   // task
   | 'Task Created'
   | 'Task Published'
+  | 'Task Estimate Set'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -119,17 +137,25 @@ class Analytics {
     this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
   }
 
-  recurrenceStarted = (userId: string, meeting: Meeting) => {
-    // :TODO: (jmtaber129): Add properties related to recurrence settings (duration, frequency,
-    // etc.) after we support configuring those.
-    this.track(userId, 'Meeting Recurrence Started', createMeetingProperties(meeting))
+  recurrenceStarted = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
+    this.track(userId, 'Meeting Recurrence Started', meetingSeries)
+  }
+
+  recurrenceStopped = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
+    this.track(userId, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
   meetingJoined = (userId: string, meeting: Meeting) => {
     this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
   }
 
-  commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {
+  commentAdded = (
+    userId: string,
+    meeting: Meeting,
+    isAnonymous: boolean,
+    isAsync: boolean,
+    isReply: boolean
+  ) => {
     this.track(userId, 'Comment Added', {
       meetingId: meeting.id,
       meetingType: meeting.meetingType,
@@ -251,6 +277,10 @@ class Analytics {
 
   taskCreated = (userId: string, taskProperties: TaskProperties) => {
     this.track(userId, 'Task Created', taskProperties)
+  }
+
+  taskEstimateSet = (userId: string, taskEstimateProperties: TaskEstimateProperties) => {
+    this.track(userId, 'Task Estimate Set', taskEstimateProperties)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>

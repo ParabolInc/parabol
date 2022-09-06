@@ -3,7 +3,7 @@
 import {BBox} from '../../types/animations'
 
 const cache = new Map<RectElement, BBox>()
-let timer
+let timer: number | undefined
 
 export interface RectElement {
   getBoundingClientRect: HTMLElement['getBoundingClientRect']
@@ -15,7 +15,7 @@ const getBBox = (el: RectElement | null | Text) => {
     const {height, width, top, left} = el.getBoundingClientRect()
     cache.set(el, {height, width, top, left})
     if (!timer) {
-      timer = setTimeout(() => {
+      timer = window.setTimeout(() => {
         timer = undefined
         cache.clear()
       })

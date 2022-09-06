@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import Notification from '../../database/types/Notification'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
@@ -77,7 +78,7 @@ const moveToOrg = async (
       notifications: r
         .table('Notification')
         .filter({teamId})
-        .filter((notification) => notification('orgId').default(null).ne(null))
+        .filter((notification: RDatum) => notification('orgId').default(null).ne(null))
         .update({orgId}) as unknown as Notification[],
       templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
         orgId
@@ -86,7 +87,7 @@ const moveToOrg = async (
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})
-        .filter((teamMember) => {
+        .filter((teamMember: RDatum) => {
           return r
             .table('OrganizationUser')
             .getAll(teamMember('userId'), {index: 'userId'})

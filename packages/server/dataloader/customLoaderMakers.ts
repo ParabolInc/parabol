@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import OrganizationUser from '../database/types/OrganizationUser'
@@ -180,30 +181,32 @@ export const userTasks = (parent: RootDataLoader) => {
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
           if (userIds?.length) {
-            teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
+            teamTaskPartial = teamTaskPartial.filter((row: RDatum) =>
+              r(userIds).contains(row('userId'))
+            )
           }
           if (statusFilters?.length) {
-            teamTaskPartial = teamTaskPartial.filter((row) =>
+            teamTaskPartial = teamTaskPartial.filter((row: RDatum) =>
               r(statusFilters).contains(row('status'))
             )
           }
           if (filterQuery) {
             // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
             teamTaskPartial = teamTaskPartial.filter(
-              (row) => row('plaintextContent').match(filterQuery) as any
+              (row: RDatum) => row('plaintextContent').match(filterQuery) as any
             )
           }
 
           return {
             key: serializeUserTasksKey(key),
             data: await teamTaskPartial
-              .filter((task) => task('updatedAt').lt(dbAfter))
-              .filter((task) =>
+              .filter((task: RDatum) => task('updatedAt').lt(dbAfter))
+              .filter((task: RDatum) =>
                 archived
                   ? task('tags').contains('archived')
                   : task('tags').contains('archived').not()
               )
-              .filter((task) => {
+              .filter((task: RDatum) => {
                 if (includeUnassigned) return true
                 return task('userId').ne(null)
               })
@@ -486,7 +489,7 @@ export const taskIdsByTeamAndGitHubRepo = (parent: RootDataLoader) => {
           return r
             .table('Task')
             .getAll(teamId, {index: 'teamId'})
-            .filter((row) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
+            .filter((row: RDatum) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
             .run()
         })
       )

@@ -1,6 +1,7 @@
 import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
+import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 
 export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
@@ -68,11 +69,7 @@ export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
     return r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) =>
-        row('endedAt')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row: RDatum) => row('endedAt').default(null).ne(null))
       .orderBy(r.desc('endedAt'))
       .run()
   }
@@ -108,10 +105,7 @@ export const meetingMembersByMeetingId = new RethinkForeignKeyLoaderMaker(
   'meetingId',
   async (meetingIds) => {
     const r = await getRethink()
-    return r
-      .table('MeetingMember')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .run()
+    return r.table('MeetingMember').getAll(r.args(meetingIds), {index: 'meetingId'}).run()
   }
 )
 
@@ -120,10 +114,7 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   'userId',
   async (userIds) => {
     const r = await getRethink()
-    return r
-      .table('MeetingMember')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .run()
+    return r.table('MeetingMember').getAll(r.args(userIds), {index: 'userId'}).run()
   }
 )
 
@@ -132,10 +123,7 @@ export const organizationsByActiveDomain = new RethinkForeignKeyLoaderMaker(
   'activeDomain',
   async (activeDomains) => {
     const r = await getRethink()
-    return r
-      .table('Organization')
-      .getAll(r.args(activeDomains), {index: 'activeDomain'})
-      .run()
+    return r.table('Organization').getAll(r.args(activeDomains), {index: 'activeDomain'}).run()
   }
 )
 export const organizationUsersByOrgId = new RethinkForeignKeyLoaderMaker(
@@ -210,11 +198,7 @@ export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
     return r
       .table('TemplateScale')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-      )
+      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
       .orderBy('sortOrder')
       .run()
   }
@@ -267,10 +251,7 @@ export const slackAuthByUserId = new RethinkForeignKeyLoaderMaker(
   'userId',
   async (userIds) => {
     const r = await getRethink()
-    return r
-      .table('SlackAuth')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .run()
+    return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'}).run()
   }
 )
 
@@ -279,10 +260,7 @@ export const slackNotificationsByTeamId = new RethinkForeignKeyLoaderMaker(
   'teamId',
   async (teamIds) => {
     const r = await getRethink()
-    return r
-      .table('SlackNotification')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .run()
+    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'}).run()
   }
 )
 
@@ -323,11 +301,7 @@ export const tasksByTeamId = new RethinkForeignKeyLoaderMaker(
     return r
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((task) =>
-        task('tags')
-          .contains('archived')
-          .not()
-      )
+      .filter((task: RDatum) => task('tags').contains('archived').not())
       .run()
   }
 )
@@ -342,7 +316,7 @@ export const teamInvitationsByTeamId = new RethinkForeignKeyLoaderMaker(
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({acceptedAt: null})
-      .filter((row) => row('expiresAt').ge(now))
+      .filter((row: RDatum) => row('expiresAt').ge(now))
       .run()
   }
 )
