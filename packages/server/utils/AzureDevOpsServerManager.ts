@@ -117,10 +117,19 @@ export interface WorkItemBatchResponse {
   value: WorkItem[]
 }
 
+interface WorkItemFields {
+  'System.Title': string
+  'System.State': string
+  'System.WorkItemType': string
+  'System.Description'?: string
+  'Microsoft.VSTS.Scheduling.StoryPoints': string
+  'Microsoft.VSTS.Scheduling.OriginalEstimate': string
+}
+
 export interface WorkItem {
   _links: ReferenceLinks
   commentVersionRef: WorkItemCommentVersionRef
-  fields: object
+  fields: WorkItemFields
   id: number
   relations: WorkItemRelations[]
   rev: number
@@ -136,7 +145,9 @@ export interface CreateTaskIssueRes {
 }
 
 export interface ReferenceLinks {
-  links: object
+  html?: {
+    href: string
+  }
 }
 
 export interface WorkItemCommentVersionRef {
@@ -205,8 +216,34 @@ interface WorkItemAddFieldResponse {
   id: number
   rev: number
   fields: object
-  _links: object
+  _links: ReferenceLinks
   url: string
+}
+
+export interface ProjectRes {
+  id: string
+  name: string
+  url: string
+  state: string
+  revision: number
+  _links: {
+    self: {
+      href: string
+    }
+    collection: {
+      href: string
+    }
+    web: {
+      href: string
+    }
+  }
+  visibility: string
+  defaultTeam: {
+    id: string
+    name: string
+    url: string
+  }
+  lastUpdateTime: Date
 }
 
 const MAX_REQUEST_TIME = 8000
@@ -262,7 +299,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       controller.abort()
     }, MAX_REQUEST_TIME)
     try {
-      const res = await fetch(url, {...options, signal})
+      const res = await fetch(url, {...options, signal} as any)
       clearTimeout(timeout)
       return res
     } catch (e) {
@@ -599,6 +636,11 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       firstError = result
     }
     return {error: firstError, process: result.name}
+  }
+
+  async getProject(instanceId: string, projectId: string) {
+    const uri = `https://${instanceId}/_apis/projects/${projectId}`
+    return this.get<ProjectRes>(uri)
   }
 
   async getAccountProjects(accountName: string) {

@@ -230,6 +230,7 @@ const PhaseItemColumn = (props: Props) => {
                   promptId={promptId}
                   stackTopRef={stackTopRef}
                   readOnly={!!endedAt}
+                  meetingRef={meeting}
                 />
               </EditorAndStatus>
             </EditorSection>
@@ -270,6 +271,7 @@ export default createFragmentContainer(PhaseItemColumn, {
   meeting: graphql`
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       ...ReflectionStack_meeting
+      ...PhaseItemEditor_meeting
       facilitatorUserId
       id
       endedAt

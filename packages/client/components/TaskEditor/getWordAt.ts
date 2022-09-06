@@ -1,4 +1,4 @@
-const getWordAt = (str, pos, willBreakAfterAnchor) => {
+const getWordAt = (str: string, pos: number, willBreakAfterAnchor?: boolean) => {
   // find the last nonwhitespace char before the position. if str ends in a space, this is -1
   const left = str.slice(0, pos + 1).search(/\S+$/)
 

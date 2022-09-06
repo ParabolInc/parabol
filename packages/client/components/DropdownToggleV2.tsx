@@ -4,15 +4,17 @@ import React, {forwardRef, ReactNode, Ref} from 'react'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 
-const DropdownIcon = styled('div')({
+const DropdownIcon = styled('div')<{opened: boolean | undefined}>(({opened}) => ({
   color: PALETTE.SLATE_600,
   height: 36,
   width: 36,
   '& svg': {
     fontSize: 36
   },
-  alignSelf: 'center'
-})
+  alignSelf: 'center',
+  transform: opened ? 'rotateX(180deg)' : 'none',
+  transition: 'transform 0.2s'
+}))
 
 const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   background: PALETTE.SLATE_200,
@@ -37,10 +39,11 @@ interface Props {
   onClick: ReturnType<typeof useMenu>['togglePortal']
   onMouseEnter?: () => void
   children: ReactNode
+  opened?: boolean
 }
 
 const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, children, icon, onClick, onMouseEnter, disabled} = props
+  const {className, children, icon, onClick, onMouseEnter, disabled, opened} = props
   return (
     <DropdownBlock
       className={className}
@@ -51,7 +54,9 @@ const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
     >
       {children}
       {!disabled && (
-        <DropdownIcon>{icon ? <KeyboardArrowRight /> : <ExpandMoreIcon />}</DropdownIcon>
+        <DropdownIcon opened={opened}>
+          {icon ? <KeyboardArrowRight /> : <ExpandMoreIcon />}
+        </DropdownIcon>
       )}
     </DropdownBlock>
   )

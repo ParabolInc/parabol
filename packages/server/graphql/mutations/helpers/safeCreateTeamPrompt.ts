@@ -1,13 +1,15 @@
+import {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import generateUID from '../../../generateUID'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {DataLoaderWorker} from '../../graphql'
 import createNewMeetingPhases from './createNewMeetingPhases'
 
 const safeCreateTeamPrompt = async (
-  teamId,
-  facilitatorId,
-  r,
-  dataLoader,
+  teamId: string,
+  facilitatorId: string,
+  r: ParabolR,
+  dataLoader: DataLoaderWorker,
   meetingOverrideProps = {}
 ) => {
   const meetingType: MeetingTypeEnum = 'teamPrompt'

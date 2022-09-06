@@ -1,13 +1,15 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Notification, {notificationInterfaceFields} from './Notification'
-import TeamNotification from './TeamNotification'
-import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
+import NewMeeting from './NewMeeting'
+import Notification, {notificationInterfaceFields} from './Notification'
+import {NotificationEnumType} from './NotificationEnum'
+import TeamNotification from './TeamNotification'
 
 const NotificationMeetingStageTimeLimitEnd = new GraphQLObjectType<any, GQLContext>({
   name: 'NotificationMeetingStageTimeLimitEnd',
   description: 'A notification sent to a facilitator that the stage time limit has ended',
   interfaces: () => [Notification, TeamNotification],
+  isTypeOf: ({type}: {type: NotificationEnumType}) => type === 'MEETING_STAGE_TIME_LIMIT_END',
   fields: () => ({
     ...notificationInterfaceFields,
     meetingId: {

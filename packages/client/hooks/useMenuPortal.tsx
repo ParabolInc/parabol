@@ -1,15 +1,15 @@
-import React, {ReactElement, ReactPortal, RefObject, Suspense, useEffect} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactElement, ReactNode, ReactPortal, RefObject, Suspense, useEffect} from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import Menu from '../components/Menu'
 import MenuContents from '../components/MenuContents'
 import ModalError from '../components/ModalError'
+import {Duration, ZIndex} from '../types/constEnums'
 import MenuBackground from './MenuBackground'
 import {MenuPosition, UseCoordsValue} from './useCoords'
 import {LoadingDelayRef} from './useLoadingDelay'
 import {PortalStatus} from './usePortal'
-import {Duration, ZIndex} from '../types/constEnums'
 
 const MenuBlock = styled('div')({
   // no margins or paddings since they could force it too low & cause a scrollbar to appear
@@ -46,7 +46,7 @@ const useMenuPortal = (
       isMounted = false
     }
   }, [portalStatus, setPortalStatus])
-  return (reactEl) => {
+  return (reactEl: ReactNode) => {
     return portal(
       <MenuBlock ref={targetRef} style={{...coords}}>
         <MenuBackground

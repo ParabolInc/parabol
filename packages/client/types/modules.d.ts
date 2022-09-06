@@ -8,6 +8,7 @@ declare module '*.png' {
 declare module '*.svg'
 declare module '*.woff2'
 declare module 'json2csv/lib/JSON2CSVParser'
+declare module 'string-score'
 
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string

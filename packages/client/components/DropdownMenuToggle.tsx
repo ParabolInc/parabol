@@ -28,7 +28,7 @@ interface InputStyleProps {
 const InputBlock = styled('div')<InputStyleProps>(
   ({disabled, size}) => ({
     ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles[size],
+    ...ui.fieldSizeStyles[size!],
     ...makeFieldColorPalette('white', !disabled),
     cursor: 'pointer',
     position: 'relative',

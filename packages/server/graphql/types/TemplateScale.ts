@@ -7,6 +7,7 @@ import {
   GraphQLString
 } from 'graphql'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import TemplateScaleDB from '../../database/types/TemplateScale'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
@@ -64,7 +65,9 @@ const TemplateScale = new GraphQLObjectType<TemplateScaleDB, GQLContext>({
         return r
           .table('TemplateDimension')
           .getAll(teamId, {index: 'teamId'})
-          .filter((row) => row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId)))
+          .filter((row: RDatum) =>
+            row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId))
+          )
           .run()
       }
     },

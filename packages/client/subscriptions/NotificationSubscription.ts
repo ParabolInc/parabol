@@ -25,6 +25,7 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
+import {upsertTeamPromptResponseNotificationUpdater} from '../mutations/UpsertTeamPromptResponseMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
 import {
@@ -80,6 +81,7 @@ const subscription = graphql`
       ...InvalidateSessionsMutation_notification @relay(mask: false)
       ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
       ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
+      ...UpsertTeamPromptResponseMutation_notification @relay(mask: false)
 
       ... on AuthTokenPayload {
         id
@@ -284,6 +286,9 @@ const NotificationSubscription = (
           break
         case 'ArchiveTimelineEventSuccess':
           archiveTimelineEventNotificationUpdater(payload, context)
+          break
+        case 'UpsertTeamPromptResponseSuccess':
+          upsertTeamPromptResponseNotificationUpdater(payload, context)
           break
         default:
           console.error('NotificationSubscription case fail', type)

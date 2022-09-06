@@ -41,9 +41,7 @@ const InputField = styled('input')<{disabled: boolean}>(
   {
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
-    borderRadius: 4,
     boxShadow: 'none',
-    color: PALETTE.SKY_500,
     cursor: 'not-allowed',
     display: 'block',
     fontSize: 14,

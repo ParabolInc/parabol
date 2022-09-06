@@ -13,14 +13,6 @@ type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends Data
   ? NonNullable<T>
   : any
 
-type LoaderKeyType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends DataLoader<
-  infer KeyT,
-  any,
-  infer KeyT
->
-  ? KeyT
-  : any
-
 /**
  * Used to register loaders for types by foreign key.
  *
@@ -34,10 +26,12 @@ export function foreignKeyLoaderMaker<
 >(
   primaryLoaderKey: LoaderName,
   foreignKey: KeyName,
-  fetchFn: (keys: readonly LoaderType<LoaderName>[KeyName][]) => Promise<LoaderType<LoaderName>[]>
+  fetchFn: (
+    keys: readonly LoaderType<LoaderName>[KeyName][]
+  ) => Promise<(LoaderType<LoaderName> & {id: string | number})[]>
 ) {
   type T = LoaderType<LoaderName>
-  type PrimaryKeyT = LoaderKeyType<LoaderName>
+  type PrimaryKeyT = string | number
   type KeyValue = T[KeyName]
   return (parent: RootDataLoader) => {
     const primaryLoader = parent.get(primaryLoaderKey) as DataLoader<PrimaryKeyT, T, PrimaryKeyT>
@@ -45,7 +39,7 @@ export function foreignKeyLoaderMaker<
       async (ids) => {
         const items = await fetchFn(ids)
         items.forEach((item) => {
-          const key = item?.['id']
+          const key = item?.id
           if (key) {
             primaryLoader.clear(key).prime(key, item)
           }
