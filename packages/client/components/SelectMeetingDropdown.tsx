@@ -43,12 +43,14 @@ const StyledIcon = styled(Forum)({
   marginRight: 16
 })
 
-const NoMeetingItem = () => (
-  <NoMeetings>
-    <StyledIcon />
-    {'Start a New Meeting'}
-  </NoMeetings>
-)
+const NoMeetingItem = () => {
+  return (
+    <NoMeetings>
+      <StyledIcon />
+      {'Start a New Meeting'}
+    </NoMeetings>
+  )
+}
 
 const SelectMeetingDropdown = (props: Props) => {
   const {meetings, menuProps} = props

@@ -1,5 +1,5 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const color = PALETTE.SKY_500
@@ -22,19 +22,21 @@ const FooterCopy = styled('div')({
   textAlign: 'center'
 })
 
-const AuthPrivacyFooter = () => (
-  <FooterCopy>
-    {'By creating an account, you agree to our '}
-    <Link
-      href='https://www.parabol.co/privacy'
-      rel='noopener noreferrer'
-      target='_blank'
-      title='Privacy Policy'
-    >
-      {'Privacy Policy'}
-    </Link>
-    .
-  </FooterCopy>
-)
+const AuthPrivacyFooter = () => {
+  return (
+    <FooterCopy>
+      {'By creating an account, you agree to our '}
+      <Link
+        href='https://www.parabol.co/privacy'
+        rel='noopener noreferrer'
+        target='_blank'
+        title='Privacy Policy'
+      >
+        {'Privacy Policy'}
+      </Link>
+      .
+    </FooterCopy>
+  )
+}
 
 export default AuthPrivacyFooter
