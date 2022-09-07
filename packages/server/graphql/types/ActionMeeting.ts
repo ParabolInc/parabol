@@ -1,5 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import MeetingAction from '../../database/types/MeetingAction'
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
@@ -93,6 +95,24 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember || null
+      }
+    },
+    lastMeeting: {
+      type: NewMeeting,
+      description: 'The last action meeting before this one',
+      resolve: async ({id: meetingId, teamId}, _args: unknown) => {
+        const r = await getRethink()
+        return (
+          ((await r
+            .table('NewMeeting')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({meetingType: 'action'})
+            .filter((row: any) => row('id').ne(meetingId))
+            .orderBy(r.desc('createdAt'))
+            .nth(0)
+            .default(null)
+            .run()) as MeetingAction) || null
+        )
       }
     }
   })

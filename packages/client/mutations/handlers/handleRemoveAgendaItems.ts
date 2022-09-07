@@ -1,8 +1,8 @@
-import pluralizeHandler from './pluralizeHandler'
-import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveAgendaItem = (
   agendaItemId: string,
@@ -18,6 +18,7 @@ const handleRemoveAgendaItem = (
   if (meetingId) {
     const meeting = store.get<ActionMeeting_meeting>(meetingId)
     if (!meeting) return
+    safeRemoveNodeFromArray(agendaItemId, meeting, 'agendaItems')
     const phases = meeting.getLinkedRecords('phases')
     if (!phases) return
     const agendaItemPhase = phases.find((phase) => phase.getValue('phaseType') === 'agendaitems')

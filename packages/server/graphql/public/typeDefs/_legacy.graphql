@@ -5160,6 +5160,8 @@ type ActionMeeting implements NewMeeting {
   """
   id: ID!
 
+  lastMeeting: NewMeeting
+
   """
   The timestamp the meeting was created
   """

@@ -11,6 +11,7 @@ graphql`
     agendaItem {
       id
       content
+      isActive
       descriptionContent
       pinned
       sortOrder
@@ -50,7 +51,8 @@ export const addAgendaItemUpdater: SharedUpdater<
 > = (payload, {store}) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
   if (!agendaItem) return
-  handleAddAgendaItems(agendaItem, store)
+  const meeting = payload.getLinkedRecord('meeting')
+  handleAddAgendaItems(agendaItem, meeting, store)
 }
 
 const AddAgendaItemMutation: StandardMutation<TAddAgendaItemMutation> = (

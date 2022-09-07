@@ -9,6 +9,7 @@ graphql`
   fragment RemoveAgendaItemMutation_team on RemoveAgendaItemPayload {
     agendaItem {
       id
+      isActive
     }
     meeting {
       id
