@@ -8,7 +8,6 @@ import {
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
@@ -66,9 +65,6 @@ interface Props {
 
 const SelectMeetingDropdownItem = (props: Props) => {
   const {meeting} = props
-
-  const {t} = useTranslation()
-
   const {history} = useRouter()
   const {name, team, id: meetingId, meetingType, phases} = meeting
   if (!team) {
@@ -108,9 +104,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
       <MeetingInfo>
         <Title>{name}</Title>
         <Subtitle>
-          {meetingPhaseLabel}
-          {t('SelectMeetingDropdownItem.')}
-          {teamName}
+          {meetingPhaseLabel} • {teamName}
         </Subtitle>
       </MeetingInfo>
       <Action>

@@ -370,13 +370,10 @@ const TeamArchive = (props: Props) => {
           ) : (
             <EmptyMsg>
               <span>
-                {t('TeamArchive.')}
+                {'🤓'}
                 {t('TeamArchive.HiThereThereAreZeroArchivedTasks')}
                 {t('TeamArchive.NothingToSeeHereHowAboutAFunRallyVideo')}
-                <LinkSpan>
-                  {getRallyLink()}
-                  {t('TeamArchive.')}
-                </LinkSpan>
+                <LinkSpan>{getRallyLink()}!</LinkSpan>
               </span>
             </EmptyMsg>
           )}

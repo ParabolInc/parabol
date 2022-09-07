@@ -189,7 +189,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
             key={i}
             onClick={() => setValue('meetingPrompt', prompt)}
           >
-            <LightbulbWrapper>{t('TeamPromptEditablePromptModal.')}</LightbulbWrapper>
+            <LightbulbWrapper>💡</LightbulbWrapper>
             {prompt}
           </SuggestedPromptWrapper>
         ))}

@@ -40,8 +40,7 @@ const TeamInvitationGoogleSignin = (props: Props) => {
     <InviteDialog>
       <DialogTitle>
         {t('TeamInvitationGoogleSignin.WelcomeBack')}
-        {preferredName}
-        {t('TeamInvitationGoogleSignin.')}
+        {preferredName}!
       </DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>

@@ -9,7 +9,7 @@ const AgendaShortcutHint = () => {
   return (
     <MeetingCopy>
       {t('AgendaShortcutHint.Press')}
-      <b>{t('AgendaShortcutHint.')}</b>
+      <b>{'+'}</b>
       {`” to add an ${AGENDA_ITEM_LABEL} to the left column.`}
     </MeetingCopy>
   )

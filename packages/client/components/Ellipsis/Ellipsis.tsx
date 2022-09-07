@@ -1,7 +1,6 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import React from 'react'
-import {useTranslation} from 'react-i18next'
 
 const keyframesOpacity = keyframes`
   0% {
@@ -29,13 +28,11 @@ const GroupStyle = styled('span')({
 })
 
 const Ellipsis = () => {
-  const {t} = useTranslation()
-
   return (
     <GroupStyle>
-      <DotSpan dotNumber={0}>{t('Ellipsis.')}</DotSpan>
-      <DotSpan dotNumber={1}>{t('Ellipsis.')}</DotSpan>
-      <DotSpan dotNumber={2}>{t('Ellipsis.')}</DotSpan>
+      <DotSpan dotNumber={0}>.</DotSpan>
+      <DotSpan dotNumber={1}>.</DotSpan>
+      <DotSpan dotNumber={2}>.</DotSpan>
     </GroupStyle>
   )
 }

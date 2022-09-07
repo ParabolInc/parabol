@@ -38,7 +38,7 @@ const EmailFooter = () => {
               {`©${year} Parabol, Inc.`}
               <br />
               <span style={boldCopyStyle}>{t('EmailFooter.GetInTouch')}</span>
-              {t('EmailFooter.')}
+              {': '}
               <a href='mailto:love@parabol.co' title='Get in touch' style={linkStyle}>
                 {t('EmailFooter.LoveParabolCo')}
               </a>

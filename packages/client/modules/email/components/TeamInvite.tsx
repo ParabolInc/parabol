@@ -97,11 +97,11 @@ const TeamInvite = (props: TeamInviteProps) => {
             <p style={emailCopyStyle}>
               {t('TeamInvite.Hi')}
               <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {t('TeamInvite.')}
+              {','}
             </p>
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
-              {t('TeamInvite.')}
+              {' ('}
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>
@@ -119,11 +119,11 @@ const TeamInvite = (props: TeamInviteProps) => {
             <p style={emailCopyStyle}>
               {t('TeamInvite.Hi')}
               <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {t('TeamInvite.')}
+              {','}
             </p>
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
-              {t('TeamInvite.')}
+              {' ('}
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>

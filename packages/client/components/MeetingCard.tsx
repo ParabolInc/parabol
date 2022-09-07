@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import action from '../../../static/images/illustrations/action.png'
@@ -156,9 +155,6 @@ const MEETING_TYPE_LABEL = {
 
 const MeetingCard = (props: Props) => {
   const {meeting, status, onTransitionEnd, displayIdx} = props
-
-  const {t} = useTranslation()
-
   const {name, team, id: meetingId, meetingType, phases} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const meetingPhase = getMeetingPhase(phases)
@@ -214,9 +210,7 @@ const MeetingCard = (props: Props) => {
         </TopLine>
         <Link to={`/meet/${meetingId}`}>
           <Meta>
-            {teamName}
-            {t('MeetingCard.')}
-            {meetingPhaseLabel}
+            {teamName} • {meetingPhaseLabel}
           </Meta>
         </Link>
         <AvatarList users={connectedUsers} size={28} />

@@ -52,7 +52,7 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
         <CountItem>
           {topicCount} {plural(topicCount, 'topic')}
         </CountItem>
-        {t('TimelineEventCompletedRetroMeeting.')}
+        {'.'}
         <br />
         {t('TimelineEventCompletedRetroMeeting.YouAdded')}
         <CountItem>
@@ -62,7 +62,7 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
         <CountItem>
           {taskCount} {plural(taskCount, 'task')}
         </CountItem>
-        {t('TimelineEventCompletedRetroMeeting.')}
+        {'.'}
         <br />
         <Link to={`/meet/${meetingId}/discuss/1`}>
           {t('TimelineEventCompletedRetroMeeting.SeeTheDiscussion')}

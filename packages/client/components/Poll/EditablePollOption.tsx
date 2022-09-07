@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {PALETTE} from '../../styles/paletteV3'
@@ -51,9 +50,6 @@ interface Props {
 
 const EditablePollOption = (props: Props) => {
   const {optionRef, shouldAutoFocus, placeholder} = props
-
-  const {t} = useTranslation()
-
   const pollOption = useFragment(
     graphql`
       fragment EditablePollOption_option on PollOption {
@@ -90,9 +86,7 @@ const EditablePollOption = (props: Props) => {
         autoFocus={shouldAutoFocus}
       />
       <Counter isVisible={isCounterVisible} isMax={title.length >= Polls.MAX_OPTION_TITLE_LENGTH}>
-        {title.length}
-        {t('EditablePollOption.')}
-        {Polls.MAX_OPTION_TITLE_LENGTH}
+        {title.length}/{Polls.MAX_OPTION_TITLE_LENGTH}
       </Counter>
     </PollOptionInputRoot>
   )

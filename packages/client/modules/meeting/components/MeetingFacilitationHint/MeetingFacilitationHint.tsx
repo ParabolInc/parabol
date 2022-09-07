@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {useTranslation} from 'react-i18next'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import {PALETTE} from '../../../../styles/paletteV3'
 
@@ -13,15 +12,12 @@ const Hint = styled('div')({
 })
 const MeetingFacilitationHint = (props) => {
   const {children} = props
-
-  const {t} = useTranslation()
-
   return (
     <Hint>
-      {t('MeetingFacilitationHint.')}
+      {'('}
       {children}
       <Ellipsis />
-      {t('MeetingFacilitationHint.')}
+      {')'}
     </Hint>
   )
 }

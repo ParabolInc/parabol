@@ -45,9 +45,7 @@ const ArchiveOrganization = (props: Props) => {
             <IconLabel icon='remove_circle' label='Delete organization' />
           </LinkButton>
           <Hint>
-            <b>{t('ArchiveOrganization.Note')}</b>
-            {t('ArchiveOrganization.')}
-            {t('ArchiveOrganization.ThisCanTBeUndone')}
+            <b>{t('ArchiveOrganization.Note')}</b>: {t('ArchiveOrganization.ThisCanTBeUndone')}
           </Hint>
         </div>
       ) : (

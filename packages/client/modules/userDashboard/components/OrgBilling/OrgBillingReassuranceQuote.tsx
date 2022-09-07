@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
-import {useTranslation} from 'react-i18next'
 import adam from '~/styles/theme/images/adam.jpeg'
 import cliff from '~/styles/theme/images/cliff.jpeg'
 import ian from '~/styles/theme/images/ian.png'
@@ -98,17 +97,13 @@ interface Props {
 
 const OrgBillingReassuranceQuote = (props: Props) => {
   const {className} = props
-
-  const {t} = useTranslation()
-
   const [quoteNumber] = useState(() => Math.floor(Math.random() * quotes.length))
   const {text, picture, name, title} = quotes[quoteNumber]!
   return (
     <Quote className={className}>
       <Text>
-        <HangQuote>{t('OrgBillingReassuranceQuote.')}</HangQuote>
-        {text}
-        {t('OrgBillingReassuranceQuote.')}
+        <HangQuote>“</HangQuote>
+        {text}”
       </Text>
       <Signature>
         <PictureBlock>

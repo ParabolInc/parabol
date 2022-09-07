@@ -57,7 +57,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
       <TimelineEventBody>
         {`It lasted ${meetingDuration} and generated `}
         <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
-        {t('TimelineEventCompletedActionMeeting.')}
+        {', '}
         <CountItem>{`${agendaItemCount} ${plural(agendaItemCount, 'agenda item')}`}</CountItem>
         {t('TimelineEventCompletedActionMeeting.And')}
         <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>

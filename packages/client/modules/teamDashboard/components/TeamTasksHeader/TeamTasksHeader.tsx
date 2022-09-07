@@ -139,7 +139,7 @@ const TeamTasksHeader = (props: Props) => {
                 )
               }}
             </ClassNames>
-            {t('TeamTasksHeader.')}
+            {'•'}
             <ClassNames>
               {({css}) => {
                 return (

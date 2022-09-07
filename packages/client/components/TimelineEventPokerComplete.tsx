@@ -46,7 +46,7 @@ const TimelineEventPokerComplete = (props: Props) => {
         <CountItem>
           {commentCount} {plural(commentCount, 'comment')}
         </CountItem>
-        {t('TimelineEventPokerComplete.')}
+        {'.'}
         <br />
         <Link to={`/meet/${meetingId}/estimate/1`}>
           {t('TimelineEventPokerComplete.SeeTheEstimates')}

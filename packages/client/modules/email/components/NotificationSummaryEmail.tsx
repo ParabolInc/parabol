@@ -52,12 +52,12 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {ContactInfo.EMAIL_LOVE}
           </a>
-          {t('NotificationSummaryEmail.')}
+          {'.'}
         </p>
         <p style={copyStyle}>
           {t('NotificationSummaryEmail.HaveFunDoGreatWork')}
           <br />
-          {t('NotificationSummaryEmail.')}
+          {'- '}
           <a style={linkStyle} href={ExternalLinks.TEAM}>
             {t('NotificationSummaryEmail.ParabolTeam')}
           </a>

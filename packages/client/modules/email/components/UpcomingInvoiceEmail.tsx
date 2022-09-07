@@ -39,9 +39,9 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
           {newUsers.map((newUser) => (
             <li key={newUser.email} style={listItemStyle}>
               <b>{`${newUser.name}`}</b>
-              {t('UpcomingInvoiceEmail.')}
+              {' ('}
               <a href={`mailto:${newUser.email}`} style={emailLinkStyle}>{`${newUser.email}`}</a>
-              {t('UpcomingInvoiceEmail.')}
+              {')'}
             </li>
           ))}
         </ul>

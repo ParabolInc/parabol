@@ -174,8 +174,7 @@ const ForgotPasswordPage = (props: Props) => {
                     style={linkStyle}
                     title={t('ForgotPasswordPage.LoveParabolCo')}
                   >
-                    {t('ForgotPasswordPage.ContactUs')}
-                    {t('ForgotPasswordPage.')}
+                    {t('ForgotPasswordPage.ContactUs')}.
                   </a>
                 </>
               )}

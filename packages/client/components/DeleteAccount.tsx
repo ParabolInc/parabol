@@ -34,9 +34,7 @@ const DeleteAccount = () => {
           <IconLabel icon='remove_circle' label='Delete Account' />
         </LinkButton>
         <Hint>
-          <b>{t('DeleteAccount.Note')}</b>
-          {t('DeleteAccount.')}
-          {t('DeleteAccount.ThisCanTBeUndone')}
+          <b>{t('DeleteAccount.Note')}</b>: {t('DeleteAccount.ThisCanTBeUndone')}
         </Hint>
       </div>
       {modalPortal(<DeleteAccountModal />)}

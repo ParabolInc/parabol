@@ -90,7 +90,7 @@ const EditGitHubLabelTemplateModal = (props: Props) => {
           />
           <StyledTip>{t('EditGitHubLabelTemplateModal.Use')}</StyledTip>
           <PlainButton onClick={addWildcard}>
-            <WildcardTip>{t('EditGitHubLabelTemplateModal.')}</WildcardTip>
+            <WildcardTip>{'{{#}}'}</WildcardTip>
           </PlainButton>
           <StyledTip>{t('EditGitHubLabelTemplateModal.AsTheValueWildcard')}</StyledTip>
 

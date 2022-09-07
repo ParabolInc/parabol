@@ -39,7 +39,7 @@ const AgendaListEmptyState = (props: Props) => {
         <b>
           <i>{t('AgendaListEmptyState.UpcomingVacation')}</i>
         </b>
-        {t('AgendaListEmptyState.')}
+        {'.”'}
       </EmptyMessage>
     </EmptyBlock>
   )

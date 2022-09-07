@@ -86,7 +86,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             <div>
               <CreditCardProvider>{brand}</CreditCardProvider>
               <CreditCardNumber>
-                {t('OrgBillingCreditCardInfo.')}
+                {'•••• •••• •••• '}
                 {last4}
               </CreditCardNumber>
             </div>

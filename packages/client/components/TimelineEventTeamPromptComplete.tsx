@@ -67,7 +67,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         <CountItem>
           {responseCount} {plural(responseCount, 'response', 'responses')}
         </CountItem>
-        {t('TimelineEventTeamPromptComplete.')}
+        {'.'}
         <br />
         {t('TimelineEventTeamPromptComplete.YouAllWrote')}
         <CountItem>
@@ -77,7 +77,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         <CountItem>
           {taskCount} {plural(taskCount, 'task', 'tasks')}
         </CountItem>
-        {t('TimelineEventTeamPromptComplete.')}
+        {'.'}
         <br />
         <Link to={`/meet/${meetingId}/responses`}>
           {t('TimelineEventTeamPromptComplete.SeeResponsesAndDiscussions')}

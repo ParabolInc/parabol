@@ -39,7 +39,7 @@ const AuthPrivacyFooter = () => {
       >
         {t('AuthPrivacyFooter.PrivacyPolicy')}
       </Link>
-      {t('AuthPrivacyFooter.')}
+      .
     </FooterCopy>
   )
 }
