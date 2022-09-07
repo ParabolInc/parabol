@@ -18,11 +18,12 @@ const getFunctionName = (fd: ASTPath<Function>) => {
 }
 
 const isUpperCase = (s: string) => /^[A-Z].*$/.test(s)
+
 var camelSentence = function camelSentence(str) {
   return  (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr)
   {
     return chr.toUpperCase();
-  });
+  }).replace(/[^0-9A-Z]+/gi,"")
 }
 
 const isComponent = (fd: ASTPath<Function>) => {
@@ -31,16 +32,15 @@ const isComponent = (fd: ASTPath<Function>) => {
 
 const readTranslations = () => {
   try {
-    const data = fs.readFileSync('i18n/en.json')
+    const data = fs.readFileSync('static/translations/en.json')
     return JSON.parse(data.toString())
   } catch(e) {// does not exist
-    fs.mkdirSync('i18n')
     return {}
   }
 }
 const translations = readTranslations()
 const writeTranslations = () => {
-  fs.writeFileSync('i18n/en.json', JSON.stringify(translations, undefined, 2))
+  fs.writeFileSync('static/translations/en.json', JSON.stringify(translations, undefined, 2))
 }
 const addTranslation = (component: string, key: string, text: string) => {
   translations[component] = {
@@ -66,11 +66,12 @@ const transform: Transform = (fileInfo, api, options) => {
       visit(fd.node, {
         visitLiteral(fe) {
           const text = fe.value.value?.toString().trim()
+          const key = camelSentence(text)
+
           // skip whitespace
-          if (!text) return false
+          if (!text || !key) return false
 
           const component = getFunctionName(fd)
-          const key = camelSentence(text)
 
           const callExpression = j.callExpression.from({
             callee: j.identifier('t'),

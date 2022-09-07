@@ -215,7 +215,7 @@ const MeetingCard = (props: Props) => {
         <Link to={`/meet/${meetingId}`}>
           <Meta>
             {teamName}
-            {t('MeetingCard.•')}
+            {t('MeetingCard.')}
             {meetingPhaseLabel}
           </Meta>
         </Link>

@@ -43,7 +43,7 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
           <span style={{fontWeight: 600}}>
             {`${notificationCount} new ${plural(notificationCount, 'notification')}`}
           </span>
-          {t('NotificationSummaryEmail.SeeWhatSChangedWithYourTeams.')}
+          {t('NotificationSummaryEmail.SeeWhatSChangedWithYourTeams')}
         </p>
         <Button url={tasksURL}>{t('NotificationSummaryEmail.SeeMyDashboard')}</Button>
         <EmptySpace height={24} />
@@ -52,12 +52,12 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {ContactInfo.EMAIL_LOVE}
           </a>
-          {t('NotificationSummaryEmail..')}
+          {t('NotificationSummaryEmail.')}
         </p>
         <p style={copyStyle}>
-          {t('NotificationSummaryEmail.HaveFunDoGreatWork,')}
+          {t('NotificationSummaryEmail.HaveFunDoGreatWork')}
           <br />
-          {t('NotificationSummaryEmail.-')}
+          {t('NotificationSummaryEmail.')}
           <a style={linkStyle} href={ExternalLinks.TEAM}>
             {t('NotificationSummaryEmail.ParabolTeam')}
           </a>

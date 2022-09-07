@@ -38,18 +38,18 @@ const InvoiceFooter = () => {
 
   return (
     <Footer>
-      <Heading>{t('InvoiceFooter.ThankYouForUsingParabol!')}</Heading>
+      <Heading>{t('InvoiceFooter.ThankYouForUsingParabol')}</Heading>
       <Copy>
-        {t('InvoiceFooter.QuestionsConcerns?')}
+        {t('InvoiceFooter.QuestionsConcerns')}
         <br />
-        {t('InvoiceFooter.GetInTouch:')}
+        {t('InvoiceFooter.GetInTouch')}
         <a href='mailto:billing@parabol.co' title='Contact Us'>
           <b>{ContactInfo.EMAIL_BILLING}</b>
         </a>
       </Copy>
       <Lockup crossOrigin='' alt='Logo for Parabol' src={parabolMark} />
       <FinePrint>
-        {t('InvoiceFooter.ParabolInc.')}
+        {t('InvoiceFooter.ParabolInc')}
         <br />
         {t('InvoiceFooter.2900WShorbSt')}
         <br />

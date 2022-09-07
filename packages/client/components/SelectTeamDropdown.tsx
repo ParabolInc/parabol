@@ -30,7 +30,7 @@ const SelectTeamDropdown = (props: Props) => {
       ariaLabel={t('SelectTeamDropdown.SelectTheTeamAssociatedWithTheNewTask')}
       {...menuProps}
     >
-      <DropdownMenuLabel>{t('SelectTeamDropdown.SelectTeam:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('SelectTeamDropdown.SelectTeam')}</DropdownMenuLabel>
       {teams.map((team) => {
         return (
           <MenuItem

@@ -54,7 +54,7 @@ const ContactUsFooter = (props: Props) => {
       </tr>
       <tr>
         <td align='center' style={textStyle}>
-          {t('ContactUsFooter.EmailUs:')}&nbsp;
+          {t('ContactUsFooter.EmailUs')}&nbsp;
           <a href='mailto:love@parabol.co' style={linkStyle} title='Email us: love@parabol.co'>
             {t('ContactUsFooter.LoveParabolCo')}
           </a>

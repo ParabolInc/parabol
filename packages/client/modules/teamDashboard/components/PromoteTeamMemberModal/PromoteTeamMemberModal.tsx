@@ -38,7 +38,7 @@ const PromoteTeamMemberModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('PromoteTeamMemberModal.AreYouSure?')}</DialogTitle>
+      <DialogTitle>{t('PromoteTeamMemberModal.AreYouSure')}</DialogTitle>
       <DialogContent>
         {`You will be removed as the team leader and promote ${preferredName}. You will no longer be able to change team membership. This cannot be undone!`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>

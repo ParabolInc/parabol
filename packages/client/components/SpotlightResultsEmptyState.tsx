@@ -56,12 +56,12 @@ const SpotlightResultsEmptyState = (props: Props) => {
 
   return (
     <EmptyState height={height}>
-      <Emoji>{t('SpotlightResultsEmptyState.\ude14')}</Emoji>
+      <Emoji>{t('SpotlightResultsEmptyState.')}</Emoji>
       <Content>
         <Img src={purpleLines} />
         <MessageWrapper>
-          <Message>{t('SpotlightResultsEmptyState.NoReflectionsMatchThisCard.')}</Message>
-          <Message>{t('SpotlightResultsEmptyState.TrySearchingForSpecificKeywords.')}</Message>
+          <Message>{t('SpotlightResultsEmptyState.NoReflectionsMatchThisCard')}</Message>
+          <Message>{t('SpotlightResultsEmptyState.TrySearchingForSpecificKeywords')}</Message>
         </MessageWrapper>
         <Img isFlipped src={purpleLines} />
       </Content>

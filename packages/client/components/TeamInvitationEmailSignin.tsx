@@ -42,9 +42,9 @@ const TeamInvitationEmailSignin = (props: Props) => {
   return (
     <StyledDialog>
       <DialogTitle>
-        {t('TeamInvitationEmailSignin.WelcomeBack,')}
+        {t('TeamInvitationEmailSignin.WelcomeBack')}
         {preferredName}
-        {t('TeamInvitationEmailSignin.!')}
+        {t('TeamInvitationEmailSignin.')}
       </DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>

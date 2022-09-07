@@ -75,14 +75,14 @@ const DeleteAccountModal = () => {
 
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>{t('DeleteAccountModal.HowCouldWeDoBetter?')}</StyledDialogTitle>
+      <StyledDialogTitle>{t('DeleteAccountModal.HowCouldWeDoBetter')}</StyledDialogTitle>
       <StyledDialogContent>
         <Fields>
           <StyledCopy>
-            {t('DeleteAccountModal.WeReOnAMissionToMakeEveryMeetingWorthTheTimeInvested.')}
+            {t('DeleteAccountModal.WeReOnAMissionToMakeEveryMeetingWorthTheTimeInvested')}
           </StyledCopy>
           <StyledCopy>
-            {t('DeleteAccountModal.IfThereIsAnythingWeCanDoToImproveLetUsKnowBelow.')}
+            {t('DeleteAccountModal.IfThereIsAnythingWeCanDoToImproveLetUsKnowBelow')}
           </StyledCopy>
           <BasicTextArea
             autoFocus

@@ -63,7 +63,7 @@ const ScopingSearchHistoryMenu = (props: Props) => {
     >
       {searchQueries.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('ScopingSearchHistoryMenu.NoSavedQueriesYet!')}
+          {t('ScopingSearchHistoryMenu.NoSavedQueriesYet')}
         </EmptyDropdownMenuItemLabel>
       )}
       {searchQueries.map(({id, labelFirstLine, labelSecondLine, onClick, onDelete}) => {

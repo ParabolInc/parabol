@@ -97,17 +97,17 @@ const TeamInvite = (props: TeamInviteProps) => {
             <p style={emailCopyStyle}>
               {t('TeamInvite.Hi')}
               <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {t('TeamInvite.,')}
+              {t('TeamInvite.')}
             </p>
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
-              {t('TeamInvite.(')}
+              {t('TeamInvite.')}
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>
               {`) has started ${meetingCopyLabelLookup[meeting.meetingType]} for your team (`}
               <b>{teamName}</b>
-              {t('TeamInvite.JustAFewClicksAndYouReIn!')}
+              {t('TeamInvite.JustAFewClicksAndYouReIn')}
             </p>
             <Button url={inviteLink}>
               {t('TeamInvite.Join')}
@@ -119,27 +119,27 @@ const TeamInvite = (props: TeamInviteProps) => {
             <p style={emailCopyStyle}>
               {t('TeamInvite.Hi')}
               <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {t('TeamInvite.,')}
+              {t('TeamInvite.')}
             </p>
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
-              {t('TeamInvite.(')}
+              {t('TeamInvite.')}
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>
-              {t('TeamInvite.HasInvitedYouToJoinATeam(')}
+              {t('TeamInvite.HasInvitedYouToJoinATeam')}
               <b>{teamName}</b>
-              {t('TeamInvite.OnParabol.')}
+              {t('TeamInvite.OnParabol')}
             </p>
             <Button url={inviteLink}>{t('TeamInvite.JoinTeam')}</Button>
           </div>
         )}
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
-          <span style={boldStyle}>{t('TeamInvite.NewToParabol?')}</span>
+          <span style={boldStyle}>{t('TeamInvite.NewToParabol')}</span>
           <br />
           {t(
-            'TeamInvite.ParabolIsSoftwareForRemoteTeamsToRunOnlineRetrospectiveAndCheckInMeetingsSeeTheVideoAndLinksBelow:'
+            'TeamInvite.ParabolIsSoftwareForRemoteTeamsToRunOnlineRetrospectiveAndCheckInMeetingsSeeTheVideoAndLinksBelow'
           )}
         </p>
         <a
@@ -151,7 +151,7 @@ const TeamInvite = (props: TeamInviteProps) => {
         </a>
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
-          {t('TeamInvite.LearnMoreAboutParabolMeetings:')}
+          {t('TeamInvite.LearnMoreAboutParabolMeetings')}
           <br />
           <a
             href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
@@ -170,7 +170,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {t('TeamInvite.GetInTouchIfWeCanHelpInAnyWay,')}
+          {t('TeamInvite.GetInTouchIfWeCanHelpInAnyWay')}
           <br />
           {emailProductTeamSignature}
           <br />

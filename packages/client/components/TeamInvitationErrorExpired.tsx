@@ -39,7 +39,7 @@ const TeamInvitationErrorExpired = (props: Props) => {
         <InvitationDialogCopy>
           {t('TeamInvitationErrorExpired.TheInvitationTo')}
           <TeamName>{teamName}</TeamName>
-          {t('TeamInvitationErrorExpired.HasExpired.')}
+          {t('TeamInvitationErrorExpired.HasExpired')}
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           {t('TeamInvitationErrorExpired.ReachOutTo')}

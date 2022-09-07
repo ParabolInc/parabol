@@ -10,8 +10,8 @@
     "hooks",
     "polyfills.ts",
     "components/promptResponse/PromptResponseEditor.tsx",
-    "components/EstimatePhaseEmptyState.tsx",
     "components/JiraScopingSearchCurrentFilters.tsx",
+    "components/EstimatePhaseEmptyState.tsx",
     "mutations/AddFeatureFlagMutation.ts"
   ]
 }

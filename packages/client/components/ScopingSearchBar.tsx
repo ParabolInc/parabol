@@ -58,7 +58,7 @@ const ScopingSearchBar = (props: Props) => {
       <SearchBarWrapper>{children}</SearchBarWrapper>
       {currentFilters && (
         <CurrentFiltersWrapper>
-          <Description>{t('ScopingSearchBar.CurrentFilters:')}</Description>
+          <Description>{t('ScopingSearchBar.CurrentFilters')}</Description>
           <Items>{currentFilters}</Items>
         </CurrentFiltersWrapper>
       )}

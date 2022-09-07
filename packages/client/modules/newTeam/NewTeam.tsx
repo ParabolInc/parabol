@@ -100,7 +100,7 @@ const NewTeam = (props: Props) => {
         {isDesktop && (
           <HelpLayout>
             <HelpBlock>
-              <HelpHeading>{t('NewTeam.WhatSAnOrganization?')}</HelpHeading>
+              <HelpHeading>{t('NewTeam.WhatSAnOrganization')}</HelpHeading>
               <HelpCopy>
                 {`It’s the billing entity for a group of teams
                 such as a company, non-profit, or

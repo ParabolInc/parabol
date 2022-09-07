@@ -109,7 +109,7 @@ const GraphqlContainer = () => {
             label='History'
           />
           <GraphiQL.Group>
-            <span>{t('GraphqlContainer.Schema:')}</span>
+            <span>{t('GraphqlContainer.Schema')}</span>
             <ToolbarSelect title='Schema' label='Schema'>
               <ToolbarSelectOption
                 label='Public'

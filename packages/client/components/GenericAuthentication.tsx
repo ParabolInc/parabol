@@ -130,7 +130,7 @@ const GenericAuthentication = (props: Props) => {
       ) : (
         isInternalAuthEnabled && (
           <ForgotPasswordLink onClick={onForgot}>
-            {t('GenericAuthentication.ForgotYourPassword?')}
+            {t('GenericAuthentication.ForgotYourPassword')}
           </ForgotPasswordLink>
         )
       )}

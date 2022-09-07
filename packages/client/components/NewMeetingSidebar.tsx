@@ -102,13 +102,13 @@ const NewMeetingSidebar = (props: Props) => {
               isWrap
               maxLength={50}
               validate={validate}
-              placeholder={t('NewMeetingSidebar.BestMeetingEver!')}
+              placeholder={t('NewMeetingSidebar.BestMeetingEver')}
             />
           ) : (
             <MeetingName>{meetingName}</MeetingName>
           )}
           <TeamDashboardLink to={teamLink}>
-            {t('NewMeetingSidebar.Team:')}
+            {t('NewMeetingSidebar.Team')}
             {teamName}
           </TeamDashboardLink>
           {endedAt && (

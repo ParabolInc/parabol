@@ -46,8 +46,8 @@ const ArchiveOrganization = (props: Props) => {
           </LinkButton>
           <Hint>
             <b>{t('ArchiveOrganization.Note')}</b>
-            {t('ArchiveOrganization.:')}
-            {t('ArchiveOrganization.ThisCanTBeUndone.')}
+            {t('ArchiveOrganization.')}
+            {t('ArchiveOrganization.ThisCanTBeUndone')}
           </Hint>
         </div>
       ) : (

@@ -98,7 +98,7 @@ const DiscussionThread = (props: Props) => {
     [viewerId, discussion]
   )
   if (!discussion) {
-    return <div>{t('DiscussionThread.NoDiscussionFound!')}</div>
+    return <div>{t('DiscussionThread.NoDiscussionFound')}</div>
   }
 
   const {replyingToCommentId, thread} = discussion

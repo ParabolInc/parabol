@@ -91,7 +91,7 @@ const EditablePollOption = (props: Props) => {
       />
       <Counter isVisible={isCounterVisible} isMax={title.length >= Polls.MAX_OPTION_TITLE_LENGTH}>
         {title.length}
-        {t('EditablePollOption./')}
+        {t('EditablePollOption.')}
         {Polls.MAX_OPTION_TITLE_LENGTH}
       </Counter>
     </PollOptionInputRoot>

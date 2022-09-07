@@ -217,7 +217,7 @@ const TeamPromptDiscussionDrawer = ({meetingRef, isDesktop}: Props) => {
           <DiscussionThreadRoot
             discussionId={discussionId}
             allowedThreadables={['comment', 'task']}
-            width={t('TeamPromptDiscussionDrawer.100%')}
+            width={t('TeamPromptDiscussionDrawer.100')}
             header={
               <DiscussionHeaderWrapper>
                 <PromptResponseEditor content={contentJSON} readOnly={true} />

@@ -73,7 +73,7 @@ const PokerTemplateListOrg = (props: Props) => {
   if (edges.length === 0) {
     return (
       <Message>
-        {t('PokerTemplateListOrg.NoOtherTeamsInYourOrganizationAreSharingATemplate.')}
+        {t('PokerTemplateListOrg.NoOtherTeamsInYourOrganizationAreSharingATemplate')}
       </Message>
     )
   }

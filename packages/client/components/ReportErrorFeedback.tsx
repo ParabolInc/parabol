@@ -86,7 +86,7 @@ const ReportErrorFeedback = (props: Props) => {
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>{t('ReportErrorFeedback.ReportError')}</StyledDialogTitle>
-      <Description>{t('ReportErrorFeedback.WhatWereYouDoingWhenTheErrorHappened?')}</Description>
+      <Description>{t('ReportErrorFeedback.WhatWereYouDoingWhenTheErrorHappened')}</Description>
       <StyledDialogContent>
         <BasicTextArea autoFocus name='errorReport' onChange={onChange} value={text} />
         <ButtonGroup>

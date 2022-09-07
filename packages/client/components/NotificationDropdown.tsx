@@ -83,9 +83,7 @@ const NotificationDropdown = (props: Props) => {
     <Menu ariaLabel={t('NotificationDropdown.SelectANotification')} {...menuProps}>
       {!hasNotifications && (
         <MenuItem
-          label={
-            <NoNotifications>{t('NotificationDropdown.YouReAllCaughtUp\udcaf')}</NoNotifications>
-          }
+          label={<NoNotifications>{t('NotificationDropdown.YouReAllCaughtUp')}</NoNotifications>}
         />
       )}
       {edges.map(({node}) => {

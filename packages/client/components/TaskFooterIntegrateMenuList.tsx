@@ -81,7 +81,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
       {(query && allItems.length === 0 && status !== 'loading' && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('TaskFooterIntegrateMenuList.NoIntegrationsFound!')}
+          {t('TaskFooterIntegrateMenuList.NoIntegrationsFound')}
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}

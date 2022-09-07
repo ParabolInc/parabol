@@ -54,7 +54,7 @@ const TaskFooterTeamAssigneeAddIntegrationDialog = (props: Props) => {
             {serviceName}
             {t('TaskFooterTeamAssigneeAddIntegrationDialog.ConfiguredFor')}
             {teamName}
-            {t('TaskFooterTeamAssigneeAddIntegrationDialog.DoYouWantToAddItNow?')}
+            {t('TaskFooterTeamAssigneeAddIntegrationDialog.DoYouWantToAddItNow')}
           </StyledTip>
           <ButtonGroup>
             <SecondaryButton onClick={onClose} size='medium'>

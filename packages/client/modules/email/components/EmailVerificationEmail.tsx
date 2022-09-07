@@ -24,17 +24,15 @@ const EmailVerificationEmail = (props: ResetPasswordEmailProps) => {
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{t('EmailVerificationEmail.Hello\udc4b')}</p>
-        <p style={emailCopyStyle}>
-          {t('EmailVerificationEmail.TapTheLinkBelowToVerifyYourEmail.')}
-        </p>
+        <p style={emailCopyStyle}>{t('EmailVerificationEmail.Hello')}</p>
+        <p style={emailCopyStyle}>{t('EmailVerificationEmail.TapTheLinkBelowToVerifyYourEmail')}</p>
         <p style={emailCopyStyle}>
           <a href={verificationURL} style={emailLinkStyle} title='Verify My Email'>
             {t('EmailVerificationEmail.VerifyMyEmail')}
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {t('EmailVerificationEmail.GetInTouchIfWeCanHelpInAnyWay,')}
+          {t('EmailVerificationEmail.GetInTouchIfWeCanHelpInAnyWay')}
           <br />
           {emailProductTeamSignature}
           <br />

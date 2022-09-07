@@ -37,7 +37,7 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
       <AgendaControl onClick={handleAgendaControl}>
         {t('ActionMeetingUpdatesPromptTeamHelpText.AddAgendaItems')}
       </AgendaControl>
-      {t('ActionMeetingUpdatesPromptTeamHelpText.ForDiscussion)')}
+      {t('ActionMeetingUpdatesPromptTeamHelpText.ForDiscussion')}
     </span>
   )
 }

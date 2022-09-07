@@ -34,7 +34,7 @@ const InvitationLinkErrorExpired = (props: Props) => {
         <InvitationDialogCopy>
           {t('InvitationLinkErrorExpired.TheInvitationTo')}
           <TeamName>{teamName}</TeamName>
-          {t('InvitationLinkErrorExpired.HasExpired.')}
+          {t('InvitationLinkErrorExpired.HasExpired')}
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           {t('InvitationLinkErrorExpired.ReachOutTo')}

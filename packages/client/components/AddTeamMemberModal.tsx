@@ -230,11 +230,11 @@ const AddTeamMemberModal = (props: Props) => {
         <StyledDialogContent>
           <Fields>
             <StyledHeading>{t('AddTeamMemberModal.ShareThisLink')}</StyledHeading>
-            <StyledTip>{t('AddTeamMemberModal.ThisLinkExpiresIn30Days.')}</StyledTip>
+            <StyledTip>{t('AddTeamMemberModal.ThisLinkExpiresIn30Days')}</StyledTip>
             <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
             <StyledHeading>{t('AddTeamMemberModal.OrSendInvitesByEmail')}</StyledHeading>
-            <StyledTip>{t('AddTeamMemberModal.EmailInvitationsExpireIn30Days.')}</StyledTip>
+            <StyledTip>{t('AddTeamMemberModal.EmailInvitationsExpireIn30Days')}</StyledTip>
             <BasicTextArea
               autoFocus
               name='rawInvitees'

@@ -60,7 +60,7 @@ const GitHubScopingSearchBar = (props: Props) => {
     <ScopingSearchBar>
       <GitHubScopingSearchHistoryToggle meetingRef={meeting} />
       <ScopingSearchInput
-        placeholder={t('GitHubScopingSearchBar.SearchGithubIssues.')}
+        placeholder={t('GitHubScopingSearchBar.SearchGithubIssues')}
         queryString={queryString}
         meetingId={meeting.id}
         linkedRecordName={t('GitHubScopingSearchBar.Githubsearchquery')}

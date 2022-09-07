@@ -37,7 +37,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         <InvitationDialogCopy>
           {t('TeamInvitationErrorAccepted.TheInvitationTo')}
           {teamName}
-          {t('TeamInvitationErrorAccepted.HasAlreadyBeenRedeemed.')}
+          {t('TeamInvitationErrorAccepted.HasAlreadyBeenRedeemed')}
         </InvitationDialogCopy>
         {meetingName ? (
           <>
@@ -45,7 +45,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
               {t('TeamInvitationErrorAccepted.Join')}
               {meetingName}
             </StyledLink>{' '}
-            <InlineCopy>{t('TeamInvitationErrorAccepted.InProgress…')}</InlineCopy>
+            <InlineCopy>{t('TeamInvitationErrorAccepted.InProgress')}</InlineCopy>
           </>
         ) : (
           <>

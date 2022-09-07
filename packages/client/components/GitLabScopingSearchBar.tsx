@@ -60,7 +60,7 @@ const GitLabScopingSearchBar = (props: Props) => {
     <ScopingSearchBar currentFilters={currentFilters}>
       <ScopingSearchHistoryToggle />
       <ScopingSearchInput
-        placeholder={t('GitLabScopingSearchBar.SearchGitlabIssues.')}
+        placeholder={t('GitLabScopingSearchBar.SearchGitlabIssues')}
         queryString={queryString}
         meetingId={meetingId}
         linkedRecordName={t('GitLabScopingSearchBar.Gitlabsearchquery')}

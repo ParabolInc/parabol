@@ -98,7 +98,7 @@ const TeamPromptTopBar = (props: Props) => {
             isWrap
             maxLength={50}
             validate={validate}
-            placeholder={t('TeamPromptTopBar.BestMeetingEver!')}
+            placeholder={t('TeamPromptTopBar.BestMeetingEver')}
           />
         ) : (
           <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>

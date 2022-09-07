@@ -18,10 +18,10 @@ const MeetingFacilitationHint = (props) => {
 
   return (
     <Hint>
-      {t('MeetingFacilitationHint.(')}
+      {t('MeetingFacilitationHint.')}
       {children}
       <Ellipsis />
-      {t('MeetingFacilitationHint.)')}
+      {t('MeetingFacilitationHint.')}
     </Hint>
   )
 }

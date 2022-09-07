@@ -71,7 +71,7 @@ const TeamPromptOverflowAvatar = (props: Props) => {
         isAnimated={isAnimated}
         borderColor={borderColor}
       >
-        {t('TeamPromptOverflowAvatar.+')}
+        {t('TeamPromptOverflowAvatar.')}
         {label}
       </OverflowCount>
     </Wrapper>

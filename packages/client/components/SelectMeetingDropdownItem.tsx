@@ -109,7 +109,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
         <Title>{name}</Title>
         <Subtitle>
           {meetingPhaseLabel}
-          {t('SelectMeetingDropdownItem.•')}
+          {t('SelectMeetingDropdownItem.')}
           {teamName}
         </Subtitle>
       </MeetingInfo>

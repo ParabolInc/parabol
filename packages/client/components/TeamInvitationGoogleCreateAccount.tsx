@@ -74,7 +74,7 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
       <StyledContent>
         <CopyMargins>
           <InvitationDialogCopy>
-            {t('TeamInvitationGoogleCreateAccount.ItLooksLikeYourEmailIsHostedByGoogle.')}
+            {t('TeamInvitationGoogleCreateAccount.ItLooksLikeYourEmailIsHostedByGoogle')}
           </InvitationDialogCopy>
           <InvitationDialogCopy>
             {t('TeamInvitationGoogleCreateAccount.TapBelowForImmediateAccess')}

@@ -68,7 +68,7 @@ const DashNavList = (props: Props) => {
   if (!teams || !teamsByOrgKey) return null
 
   if (teams.length === 0) {
-    return <EmptyTeams>{t('DashNavList.ItAppearsYouAreNotAMemberOfAnyTeam!')}</EmptyTeams>
+    return <EmptyTeams>{t('DashNavList.ItAppearsYouAreNotAMemberOfAnyTeam')}</EmptyTeams>
   }
 
   // const team = Object.values(teamsByOrgKey)

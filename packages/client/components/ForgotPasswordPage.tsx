@@ -146,15 +146,15 @@ const ForgotPasswordPage = (props: Props) => {
   const prettyError = error ? errorMessage[error.message] : undefined
   return (
     <AuthenticationDialog>
-      <DialogTitle>{t('ForgotPasswordPage.ForgotYourPassword?')}</DialogTitle>
+      <DialogTitle>{t('ForgotPasswordPage.ForgotYourPassword')}</DialogTitle>
       <DialogSubTitle>
-        <span>{t('ForgotPasswordPage.RememberIt?')}</span>
+        <span>{t('ForgotPasswordPage.RememberIt')}</span>
         <BrandedLink onClick={gotoSignIn}>{t('ForgotPasswordPage.SignInWithPassword')}</BrandedLink>
       </DialogSubTitle>
       <Container>
         <P>
           {t(
-            'ForgotPasswordPage.ConfirmYourEmailAddressAndWeLlSendYouAnEmailWithPasswordRecoveryInstructions.'
+            'ForgotPasswordPage.ConfirmYourEmailAddressAndWeLlSendYouAnEmailWithPasswordRecoveryInstructions'
           )}
         </P>
         <Form onSubmit={onSubmit}>
@@ -175,7 +175,7 @@ const ForgotPasswordPage = (props: Props) => {
                     title={t('ForgotPasswordPage.LoveParabolCo')}
                   >
                     {t('ForgotPasswordPage.ContactUs')}
-                    {t('ForgotPasswordPage..')}
+                    {t('ForgotPasswordPage.')}
                   </a>
                 </>
               )}

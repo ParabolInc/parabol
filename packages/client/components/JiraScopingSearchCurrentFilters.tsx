@@ -75,7 +75,7 @@ const JiraScopingSearchCurrentFilters = (props: Props) => {
 
   return (
     <Wrapper>
-      <Description>{t('JiraScopingSearchCurrentFilters.CurrentFilters:')}</Description>
+      <Description>{t('JiraScopingSearchCurrentFilters.CurrentFilters')}</Description>
       <Items>{currentFilters}</Items>
     </Wrapper>
   )

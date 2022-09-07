@@ -42,13 +42,13 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{t('TeamDashTeamMemberMenu.FilterByTeamMember:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('TeamDashTeamMemberMenu.FilterByTeamMember')}</DropdownMenuLabel>
       {teamMembers.length > 5 && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedTeamMembers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('TeamDashTeamMemberMenu.NoTeamMembersFound!')}
+          {t('TeamDashTeamMemberMenu.NoTeamMembersFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {query === '' && (

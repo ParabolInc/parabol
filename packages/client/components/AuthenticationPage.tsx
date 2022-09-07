@@ -45,12 +45,12 @@ const AuthenticationPage = (props: Props) => {
     <TeamInvitationWrapper>
       <CopyBlock>
         <h1>
-          {t('AuthenticationPage.BetterMeetings,')}
+          {t('AuthenticationPage.BetterMeetings')}
           <br />
           {t('AuthenticationPage.LessEffort')}
         </h1>
         <p>
-          {t('AuthenticationPage.92OfUsersAgreedThatParabolImprovesTheEfficiencyOfTheirMeetings.')}
+          {t('AuthenticationPage.92OfUsersAgreedThatParabolImprovesTheEfficiencyOfTheirMeetings')}
         </p>
       </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />

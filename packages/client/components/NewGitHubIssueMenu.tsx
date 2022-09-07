@@ -41,7 +41,7 @@ const NewGitHubIssueMenu = (props: Props) => {
       <SearchMenuItem placeholder='Search GitHub' onChange={onQueryChange} value={query} />
       {query && filteredRepos.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('NewGitHubIssueMenu.NoReposFound!')}
+          {t('NewGitHubIssueMenu.NoReposFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {filteredRepos.slice(0, 10).map((repo) => {

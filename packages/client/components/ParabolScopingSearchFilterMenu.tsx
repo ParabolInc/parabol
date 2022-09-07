@@ -44,7 +44,7 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
-      <FilterLabel>{t('ParabolScopingSearchFilterMenu.FilterByStatus:')}</FilterLabel>
+      <FilterLabel>{t('ParabolScopingSearchFilterMenu.FilterByStatus')}</FilterLabel>
       {taskScopingStatusFilters.map((status) => {
         const toggleStatusFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {

@@ -78,7 +78,7 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
       />
 
       {projects.length > 0 && (
-        <FilterLabel>{t('AzureDevOpsScopingSearchFilterMenu.FilterByProject:')}</FilterLabel>
+        <FilterLabel>{t('AzureDevOpsScopingSearchFilterMenu.FilterByProject')}</FilterLabel>
       )}
       {projects.map((project) => {
         const {id: globalProjectKey, name} = project

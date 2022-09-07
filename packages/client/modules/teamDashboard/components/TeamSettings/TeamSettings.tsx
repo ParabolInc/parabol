@@ -86,7 +86,7 @@ const TeamSettings = (props: Props) => {
         {tier === 'personal' && (
           <Panel>
             <StyledRow>
-              <div>{t('TeamSettings.ThisTeamIsCurrentlyOnAPersonalPlan.')}</div>
+              <div>{t('TeamSettings.ThisTeamIsCurrentlyOnAPersonalPlan')}</div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
                 {`Upgrade Team to ${TierLabel.PRO}`}
               </PrimaryButton>

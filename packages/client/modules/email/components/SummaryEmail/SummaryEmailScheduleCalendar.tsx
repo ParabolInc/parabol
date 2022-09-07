@@ -83,7 +83,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
         <td align='center' style={sectionStart}>
           <div style={message}>
             <div>
-              <span>{t('SummaryEmailScheduleCalendar.TapHereToScheduleYourNextMeeting:')}</span>
+              <span>{t('SummaryEmailScheduleCalendar.TapHereToScheduleYourNextMeeting')}</span>
               <br />
               <div style={iconLinkBlock}>
                 <a
@@ -118,11 +118,11 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                     height={iconSize}
                     width={iconSize}
                   />
-                  <span style={iconLinkLabel}>{t('SummaryEmailScheduleCalendar.OutlookEtc.')}</span>
+                  <span style={iconLinkLabel}>{t('SummaryEmailScheduleCalendar.OutlookEtc')}</span>
                 </a>
               </div>
             </div>
-            {t('SummaryEmailScheduleCalendar.OrMakeYourOwnAndIncludeThisLinkAsTheLocation:')}
+            {t('SummaryEmailScheduleCalendar.OrMakeYourOwnAndIncludeThisLinkAsTheLocation')}
             <EmptySpace height={8} />
             {/*
           // @ts-ignore*/}

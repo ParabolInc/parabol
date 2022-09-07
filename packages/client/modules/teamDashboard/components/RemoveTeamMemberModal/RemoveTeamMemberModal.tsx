@@ -37,11 +37,11 @@ const RemoveTeamMemberModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('RemoveTeamMemberModal.AreYouSure?')}</DialogTitle>
+      <DialogTitle>{t('RemoveTeamMemberModal.AreYouSure')}</DialogTitle>
       <DialogContent>
         {t('RemoveTeamMemberModal.ThisWillRemove')}
         {preferredName}
-        {t('RemoveTeamMemberModal.FromTheTeam.')}
+        {t('RemoveTeamMemberModal.FromTheTeam')}
         <br />
         <StyledButton size='medium' onClick={handleClick}>
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />

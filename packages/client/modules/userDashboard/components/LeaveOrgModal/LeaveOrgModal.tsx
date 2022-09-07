@@ -45,11 +45,11 @@ const LeaveOrgModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('LeaveOrgModal.AreYouSure?')}</DialogTitle>
+      <DialogTitle>{t('LeaveOrgModal.AreYouSure')}</DialogTitle>
       <DialogContent>
-        {t('LeaveOrgModal.ThisWillRemoveYouFromTheOrganizationAndAllTeamsUnderIt!')}
+        {t('LeaveOrgModal.ThisWillRemoveYouFromTheOrganizationAndAllTeamsUnderIt')}
         <br />
-        {t('LeaveOrgModal.ToUndoItYouLlHaveToAskAnotherBillingLeaderToReAddYou.')}
+        {t('LeaveOrgModal.ToUndoItYouLlHaveToAskAnotherBillingLeaderToReAddYou')}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
           <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
         </StyledButton>

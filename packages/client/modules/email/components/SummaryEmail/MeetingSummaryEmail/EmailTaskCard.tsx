@@ -62,7 +62,7 @@ const EmailTaskCard = (props: Props) => {
           <tbody>
             <tr>
               <td>
-                <table align='left' width={t('EmailTaskCard.20%')}>
+                <table align='left' width={t('EmailTaskCard.20')}>
                   <tbody>
                     <tr>
                       <td style={statusStyle(status)} height={4} />

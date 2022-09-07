@@ -134,7 +134,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
           {isDesktop ? (
             <Label>{`${title} Label: `}</Label>
           ) : (
-            <MobileLabel>{t('PokerDimensionFinalScorePicker.Label:')}</MobileLabel>
+            <MobileLabel>{t('PokerDimensionFinalScorePicker.Label')}</MobileLabel>
           )}
 
           {integrationType === '_xGitHubIssue' && (

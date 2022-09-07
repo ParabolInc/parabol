@@ -182,13 +182,13 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       defaultActiveIdx={taskTeamIdx}
       ariaLabel={t('TaskFooterTeamAssigneeMenu.AssignThisTaskToAnotherTeam')}
     >
-      <DropdownMenuLabel>{t('TaskFooterTeamAssigneeMenu.MoveTo:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('TaskFooterTeamAssigneeMenu.MoveTo')}</DropdownMenuLabel>
       {assignableTeams.length > 5 && (
         <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
       )}
       {query && matchedAssignableTeams.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('TaskFooterTeamAssigneeMenu.NoTeamsFound!')}
+          {t('TaskFooterTeamAssigneeMenu.NoTeamsFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {matchedAssignableTeams.map((team) => {

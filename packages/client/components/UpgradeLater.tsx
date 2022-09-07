@@ -44,7 +44,7 @@ const UpgradeLater = (props: Props) => {
       <InvitationDialogCopy>
         {t('UpgradeLater.TheFreeTierLimitOf')}
         <b>{t('UpgradeLater.2Teams')}</b>
-        {t('UpgradeLater..')}
+        {t('UpgradeLater.')}
       </InvitationDialogCopy>
       <CopySpacer>{t('UpgradeLater.WeLlSendYouAnEmailSo')}</CopySpacer>
       <InvitationDialogCopy>{t('UpgradeLater.YouCanUpgradeLater')}</InvitationDialogCopy>

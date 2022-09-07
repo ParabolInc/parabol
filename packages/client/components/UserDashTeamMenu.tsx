@@ -60,13 +60,13 @@ const UserDashTeamMenu = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{t('UserDashTeamMenu.FilterByTeam:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('UserDashTeamMenu.FilterByTeam')}</DropdownMenuLabel>
       {filteredTeams.length > 5 && (
         <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={query} />
       )}
       {query && matchedFilteredTeams.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('UserDashTeamMenu.NoTeamsFound!')}
+          {t('UserDashTeamMenu.NoTeamsFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {query === '' && showAllTeams && (

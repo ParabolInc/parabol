@@ -50,7 +50,7 @@ const JiraFieldMenu = (props: Props) => {
       >
         <MenuItem
           key={t('JiraFieldMenu.Noresults')}
-          label={t('JiraFieldMenu.CannotConnectToJira>')}
+          label={t('JiraFieldMenu.CannotConnectToJira')}
         />
       </Menu>
     )

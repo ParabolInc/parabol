@@ -26,7 +26,7 @@ const TopBarHelpMenu = (props: Props) => {
     window.open(ExternalLinks.CONTACT, '_blank', 'noreferrer')
   }
   return (
-    <Menu ariaLabel={t('TopBarHelpMenu.HowMayWeHelp?')} {...menuProps}>
+    <Menu ariaLabel={t('TopBarHelpMenu.HowMayWeHelp')} {...menuProps}>
       <MenuItem
         label={
           <MenuItemWithIcon

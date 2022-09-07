@@ -128,14 +128,14 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       <MenuItemHR />
       {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && (
-        <FilterLabel>{t('JiraScopingSearchFilterMenu.FilterByProject:')}</FilterLabel>
+        <FilterLabel>{t('JiraScopingSearchFilterMenu.FilterByProject')}</FilterLabel>
       )}
       {showSearch && (
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('JiraScopingSearchFilterMenu.NoJiraProjectsFound!')}
+          {t('JiraScopingSearchFilterMenu.NoJiraProjectsFound')}
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}

@@ -79,7 +79,7 @@ const UnpaidTeamModal = (props: Props) => {
     : `Try reaching out to ${billingLeaderName} at ${email}`
   return (
     <DashModal>
-      <DialogTitle>{t('UnpaidTeamModal.OhDear…')}</DialogTitle>
+      <DialogTitle>{t('UnpaidTeamModal.OhDear')}</DialogTitle>
       <DialogContent>
         {problem}
         <br />

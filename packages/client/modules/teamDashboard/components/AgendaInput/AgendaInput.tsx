@@ -147,9 +147,9 @@ const AgendaInput = (props: Props) => {
     >
       {tooltipPortal(
         <div style={{textAlign: 'center'}}>
-          {t('AgendaInput.AddMeetingTopicsToDiscuss,')}
+          {t('AgendaInput.AddMeetingTopicsToDiscuss')}
           <br />
-          {t('AgendaInput.LikeUpcomingVacation”')}
+          {t('AgendaInput.LikeUpcomingVacation')}
         </div>
       )}
       <InputForm disabled={disabled} onSubmit={handleSubmit}>

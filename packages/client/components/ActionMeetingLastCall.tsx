@@ -62,7 +62,7 @@ const ActionMeetingLastCall = (props: Props) => {
     if (endedAt && agendaItemsCompleted === 0)
       return <span>{t('ActionMeetingLastCall.NothingToSeeHere')}</span>
     else if (agendaItemsCompleted === 0) return <span>{`No ${labelAgendaItems}?`}</span>
-    else return <span>{t('ActionMeetingLastCall.LastCall:')}</span>
+    else return <span>{t('ActionMeetingLastCall.LastCall')}</span>
   }
 
   const getMeetingCopy = () => {
@@ -75,7 +75,7 @@ const ActionMeetingLastCall = (props: Props) => {
           <br />
           {`You can add ${labelAgendaItems} in the left sidebar before ending the meeting.`}
           <br />
-          {t('ActionMeetingLastCall.SimplyTapOnAnyItemsYouCreateToProcessThem.')}
+          {t('ActionMeetingLastCall.SimplyTapOnAnyItemsYouCreateToProcessThem')}
         </span>
       )
     } else {
@@ -83,7 +83,7 @@ const ActionMeetingLastCall = (props: Props) => {
         <span>
           {t('ActionMeetingLastCall.WeVeWorkedOn')}
           <b>{`${agendaItemsCompleted} ${plural(agendaItemsCompleted, AGENDA_ITEM_LABEL)}`}</b>
-          {t('ActionMeetingLastCall.SoFarNeedAnythingElse?')}
+          {t('ActionMeetingLastCall.SoFarNeedAnythingElse')}
         </span>
       )
     }

@@ -41,7 +41,7 @@ const MeetingsDashNewUser = (props: Props) => {
       <Heading>{`Hi ${name},`}</Heading>
       <Copy>
         {t(
-          'MeetingsDashNewUser.LooksLikeYouHaveNoUpcomingMeetingsStartOneNowOrCheckOutTheseTipsAndTricks.'
+          'MeetingsDashNewUser.LooksLikeYouHaveNoUpcomingMeetingsStartOneNowOrCheckOutTheseTipsAndTricks'
         )}
       </Copy>
     </Section>

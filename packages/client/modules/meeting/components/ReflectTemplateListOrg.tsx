@@ -83,7 +83,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   if (edges.length === 0) {
     return (
       <Message>
-        {t('ReflectTemplateListOrg.NoOtherTeamsInYourOrganizationAreSharingATemplate.')}
+        {t('ReflectTemplateListOrg.NoOtherTeamsInYourOrganizationAreSharingATemplate')}
       </Message>
     )
   }

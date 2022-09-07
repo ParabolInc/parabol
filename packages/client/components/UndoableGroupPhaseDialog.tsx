@@ -39,13 +39,13 @@ const UndoableGroupPhaseDialog = (props: Props) => {
   }
   return (
     <DialogContainer>
-      <DialogTitle>{t('UndoableGroupPhaseDialog.ResetMeetingAndEditGroups?')}</DialogTitle>
+      <DialogTitle>{t('UndoableGroupPhaseDialog.ResetMeetingAndEditGroups')}</DialogTitle>
       <DialogContent>
         <p>
           <b>{t('UndoableGroupPhaseDialog.DangerZone')}</b>
-          {t('UndoableGroupPhaseDialog.ToEditGroupsYouMustResetTheMeetingToThisPoint.')}
+          {t('UndoableGroupPhaseDialog.ToEditGroupsYouMustResetTheMeetingToThisPoint')}
         </p>
-        <p>{t('UndoableGroupPhaseDialog.AllVotesAndDiscussionWillBeLost.')}</p>
+        <p>{t('UndoableGroupPhaseDialog.AllVotesAndDiscussionWillBeLost')}</p>
         <ButtonGroup>
           <StyledButton onClick={closePortal}>{t('UndoableGroupPhaseDialog.Cancel')}</StyledButton>
           <PrimaryButton onClick={handleConfirm}>

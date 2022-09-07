@@ -287,7 +287,7 @@ const TeamArchive = (props: Props) => {
                   transform: 'translate(-50%, 0)'
                 }}
               >
-                {t('TeamArchive.ThatSAllFolksThereAreNoFurtherTasksInTheArchive.')}
+                {t('TeamArchive.ThatSAllFolksThereAreNoFurtherTasksInTheArchive')}
               </NoMoreMsg>
             )
           }
@@ -370,12 +370,12 @@ const TeamArchive = (props: Props) => {
           ) : (
             <EmptyMsg>
               <span>
-                {t('TeamArchive.\udd13')}
-                {t('TeamArchive.HiThereThereAreZeroArchivedTasks.')}
-                {t('TeamArchive.NothingToSeeHereHowAboutAFunRallyVideo?')}
+                {t('TeamArchive.')}
+                {t('TeamArchive.HiThereThereAreZeroArchivedTasks')}
+                {t('TeamArchive.NothingToSeeHereHowAboutAFunRallyVideo')}
                 <LinkSpan>
                   {getRallyLink()}
-                  {t('TeamArchive.!')}
+                  {t('TeamArchive.')}
                 </LinkSpan>
               </span>
             </EmptyMsg>

@@ -82,7 +82,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       >
         {t('SubmittedForgotPasswordPage.ClickHere')}
       </a>
-      {t('SubmittedForgotPasswordPage.ToContactSupport.')}
+      {t('SubmittedForgotPasswordPage.ToContactSupport')}
     </>
   )
 
@@ -130,7 +130,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
           <LinkButton onClick={() => goToPageWithEmail('forgot-password', email)}>
             {t('SubmittedForgotPasswordPage.ClickHere')}
           </LinkButton>
-          {t('SubmittedForgotPasswordPage.ToTryAgain.')}
+          {t('SubmittedForgotPasswordPage.ToTryAgain')}
         </>
       ),
       button: (

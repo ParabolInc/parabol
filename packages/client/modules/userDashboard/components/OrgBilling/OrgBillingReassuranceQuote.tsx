@@ -106,9 +106,9 @@ const OrgBillingReassuranceQuote = (props: Props) => {
   return (
     <Quote className={className}>
       <Text>
-        <HangQuote>{t('OrgBillingReassuranceQuote.“')}</HangQuote>
+        <HangQuote>{t('OrgBillingReassuranceQuote.')}</HangQuote>
         {text}
-        {t('OrgBillingReassuranceQuote.”')}
+        {t('OrgBillingReassuranceQuote.')}
       </Text>
       <Signature>
         <PictureBlock>

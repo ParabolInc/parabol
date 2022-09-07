@@ -65,7 +65,7 @@ const OrgBillingDangerZone = (props: Props) => {
           <ArchiveOrganization organization={organization} />
         ) : (
           <Unsubscribe>
-            <span>{t('OrgBillingDangerZone.NeedToCancelItSPainless.')}</span>
+            <span>{t('OrgBillingDangerZone.NeedToCancelItSPainless')}</span>
             <a
               href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
               title='Instant Unsubscribe from Pro'

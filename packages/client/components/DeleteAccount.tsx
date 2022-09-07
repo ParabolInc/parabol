@@ -35,8 +35,8 @@ const DeleteAccount = () => {
         </LinkButton>
         <Hint>
           <b>{t('DeleteAccount.Note')}</b>
-          {t('DeleteAccount.:')}
-          {t('DeleteAccount.ThisCanTBeUndone.')}
+          {t('DeleteAccount.')}
+          {t('DeleteAccount.ThisCanTBeUndone')}
         </Hint>
       </div>
       {modalPortal(<DeleteAccountModal />)}

@@ -26,7 +26,7 @@ const TeamInvitationErrorNotFound = (props: Props) => {
       <DialogTitle>{t('TeamInvitationErrorNotFound.InvalidInvitation')}</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          {t('TeamInvitationErrorNotFound.TheInvitationTokenIsNotValid.')}
+          {t('TeamInvitationErrorNotFound.TheInvitationTokenIsNotValid')}
         </InvitationDialogCopy>
         <InvitationDialogCopy>{tip}</InvitationDialogCopy>
       </DialogContent>

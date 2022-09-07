@@ -47,7 +47,7 @@ const UpgradeSuccess = (props: Props) => {
   return (
     <Container>
       <Illustration src={paymentSuccessSvg} />
-      <StyledDialogTitle>{t('UpgradeSuccess.Upgraded!')}</StyledDialogTitle>
+      <StyledDialogTitle>{t('UpgradeSuccess.Upgraded')}</StyledDialogTitle>
       <InvitationDialogCopy>{t('UpgradeSuccess.YourOrganizationIs')}</InvitationDialogCopy>
       <InvitationDialogCopy>
         {t('UpgradeSuccess.NowOnThe')}

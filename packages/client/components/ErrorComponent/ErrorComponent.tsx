@@ -42,7 +42,7 @@ const ErrorComponent = (props: Props) => {
     const url = 'https://browser-update.org/update-browser.html'
     return (
       <ErrorBlock>
-        {t('ErrorComponent.OhNoYouVeFoundABugBecauseTheBrowserYouReUsingNeedsToBeUpdated.')}
+        {t('ErrorComponent.OhNoYouVeFoundABugBecauseTheBrowserYouReUsingNeedsToBeUpdated')}
         <Button>
           <Link href={url} target='_blank' rel='noreferrer'>
             {t('ErrorComponent.UpdateNow')}

@@ -172,7 +172,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
           maxLength={500}
           maxRows={3}
           onChange={onChangePrompt}
-          placeholder={t('TeamPromptEditablePromptModal.WhatAreYouWorkingOnTodayStuckOnAnything?')}
+          placeholder={t('TeamPromptEditablePromptModal.WhatAreYouWorkingOnTodayStuckOnAnything')}
         />
         {displayError && (
           <ErrorWrapper>
@@ -189,7 +189,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
             key={i}
             onClick={() => setValue('meetingPrompt', prompt)}
           >
-            <LightbulbWrapper>{t('TeamPromptEditablePromptModal.\udca1')}</LightbulbWrapper>
+            <LightbulbWrapper>{t('TeamPromptEditablePromptModal.')}</LightbulbWrapper>
             {prompt}
           </SuggestedPromptWrapper>
         ))}

@@ -131,13 +131,13 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
           <ProviderName>{providerName}</ProviderName>
           <RowInfoCopy>
             {providerDescription}
-            {t('ProviderRowBase..')}{' '}
+            {t('ProviderRowBase.')}{' '}
             {seeHowItWorksUrl && (
               <>
                 <HowItWorksLink href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
                   {t('ProviderRowBase.SeeHowItWorks')}
                 </HowItWorksLink>
-                {t('ProviderRowBase..')}
+                {t('ProviderRowBase.')}
               </>
             )}
           </RowInfoCopy>

@@ -84,13 +84,13 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
       defaultActiveIdx={userId ? taskUserIdx : undefined}
       {...menuProps}
     >
-      <DropdownMenuLabel>{t('TaskFooterUserAssigneeMenu.AssignTo:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('TaskFooterUserAssigneeMenu.AssignTo')}</DropdownMenuLabel>
       {assignees.length > 5 && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedAssignees.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('TaskFooterUserAssigneeMenu.NoTeamMembersFound!')}
+          {t('TaskFooterUserAssigneeMenu.NoTeamMembersFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {matchedAssignees.map((assignee) => {

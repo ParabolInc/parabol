@@ -188,7 +188,7 @@ const ProviderList = (props: Props) => {
     <StyledWrapper>
       <Note>
         {t(
-          'ProviderList.EachTeamMemberMustAddTheIntegrationsTheyWantToUseIntegrationsAreScopedToTheTeamWhereYouAddThem.'
+          'ProviderList.EachTeamMemberMustAddTheIntegrationsTheyWantToUseIntegrationsAreScopedToTheTeamWhereYouAddThem'
         )}
       </Note>
 

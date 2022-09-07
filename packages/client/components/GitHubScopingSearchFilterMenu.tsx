@@ -113,7 +113,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       />
       {repoContributions.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('GitHubScopingSearchFilterMenu.NoReposFound!')}
+          {t('GitHubScopingSearchFilterMenu.NoReposFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {selectedAndFilteredRepos.map((repo) => {

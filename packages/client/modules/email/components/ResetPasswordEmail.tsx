@@ -24,7 +24,7 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{t('ResetPasswordEmail.ForgetYourPassword?')}</p>
+        <p style={emailCopyStyle}>{t('ResetPasswordEmail.ForgetYourPassword')}</p>
         <p style={emailCopyStyle}>{`No problem, just click the link below.`}</p>
         <p style={emailCopyStyle}>
           <a href={resetURL} style={emailLinkStyle} title='Reset Password'>
@@ -32,7 +32,7 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {t('ResetPasswordEmail.GetInTouchIfWeCanHelpInAnyWay,')}
+          {t('ResetPasswordEmail.GetInTouchIfWeCanHelpInAnyWay')}
           <br />
           {emailProductTeamSignature}
           <br />

@@ -76,13 +76,13 @@ const UserDashTeamMemberMenu = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{t('UserDashTeamMemberMenu.FilterByTeamMember:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('UserDashTeamMemberMenu.FilterByTeamMember')}</DropdownMenuLabel>
       {filteredTeamMembers.length > 5 && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedFilteredTeamMembers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('UserDashTeamMemberMenu.NoTeamMembersFound!')}
+          {t('UserDashTeamMemberMenu.NoTeamMembersFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {query === '' && showAllTeamMembers && (

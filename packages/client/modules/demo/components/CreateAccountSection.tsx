@@ -106,20 +106,20 @@ const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
     <span>
       {t('CreateAccountSection.ToRun')}
       <b>{t('CreateAccountSection.ARealRetrospective')}</b>
-      {t('CreateAccountSection.WithYourTeam.')}
+      {t('CreateAccountSection.WithYourTeam')}
     </span>
   ) : (
     <span>
       {t('CreateAccountSection.ToRun')}
       <b>{t('CreateAccountSection.UnlimitedRetrospectives')}</b>
-      {t('CreateAccountSection.WithYourTeam.')}
+      {t('CreateAccountSection.WithYourTeam')}
     </span>
   )
   return (
     <>
       <tr data-cy={dataCy}>
         <td style={headingStyle} align='center'>
-          {t('CreateAccountSection.ThanksForPlaying!')}
+          {t('CreateAccountSection.ThanksForPlaying')}
         </td>
       </tr>
       <tr data-cy={dataCy}>

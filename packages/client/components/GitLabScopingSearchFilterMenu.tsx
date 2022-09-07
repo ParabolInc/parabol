@@ -133,7 +133,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
       />
       {visibleProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('GitLabScopingSearchFilterMenu.NoProjectsFound!')}
+          {t('GitLabScopingSearchFilterMenu.NoProjectsFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {visibleProjects.map((project) => {

@@ -42,11 +42,11 @@ const LeaveTeamModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('LeaveTeamModal.AreYouSure?')}</DialogTitle>
+      <DialogTitle>{t('LeaveTeamModal.AreYouSure')}</DialogTitle>
       <DialogContent>
-        {t('LeaveTeamModal.ThisWillRemoveYouFromTheTeam.')}
+        {t('LeaveTeamModal.ThisWillRemoveYouFromTheTeam')}
         <br />
-        {t('LeaveTeamModal.AllOfYourTasksWillBeGivenToTheTeamLead.')}
+        {t('LeaveTeamModal.AllOfYourTasksWillBeGivenToTheTeamLead')}
         <StyledButton size='medium' onClick={handleClick}>
           <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
         </StyledButton>

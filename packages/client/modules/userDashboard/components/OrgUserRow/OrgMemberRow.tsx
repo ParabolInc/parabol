@@ -159,7 +159,7 @@ const OrgMemberRow = (props: Props) => {
                 <div>
                   {t('OrgMemberRow.YouNeedToPromoteAnotherBillingLeader')}
                   <br />
-                  {t('OrgMemberRow.BeforeYouCanLeaveThisRoleOrOrganization.')}
+                  {t('OrgMemberRow.BeforeYouCanLeaveThisRoleOrOrganization')}
                 </div>
               )}
               <MenuButton disabled />

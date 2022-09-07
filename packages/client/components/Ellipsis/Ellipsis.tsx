@@ -33,9 +33,9 @@ const Ellipsis = () => {
 
   return (
     <GroupStyle>
-      <DotSpan dotNumber={0}>{t('Ellipsis..')}</DotSpan>
-      <DotSpan dotNumber={1}>{t('Ellipsis..')}</DotSpan>
-      <DotSpan dotNumber={2}>{t('Ellipsis..')}</DotSpan>
+      <DotSpan dotNumber={0}>{t('Ellipsis.')}</DotSpan>
+      <DotSpan dotNumber={1}>{t('Ellipsis.')}</DotSpan>
+      <DotSpan dotNumber={2}>{t('Ellipsis.')}</DotSpan>
     </GroupStyle>
   )
 }

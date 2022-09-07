@@ -54,7 +54,7 @@ const NewJiraIssueMenu = (props: Props) => {
       <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('NewJiraIssueMenu.NoProjectsFound!')}
+          {t('NewJiraIssueMenu.NoProjectsFound')}
         </EmptyDropdownMenuItemLabel>
       )}
 

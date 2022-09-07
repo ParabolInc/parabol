@@ -39,7 +39,7 @@ const RemoveFromOrgModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('RemoveFromOrgModal.AreYouSure?')}</DialogTitle>
+      <DialogTitle>{t('RemoveFromOrgModal.AreYouSure')}</DialogTitle>
       <DialogContent>
         {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
         to the team leads. Any time remaining on their subscription will be refunded on the next

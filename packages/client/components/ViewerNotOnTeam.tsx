@@ -75,12 +75,12 @@ const ViewerNotOnTeam = (props: Props) => {
       <InviteDialog>
         <DialogTitle>{t('ViewerNotOnTeam.InvitationRequired')}</DialogTitle>
         <DialogContent>
-          <InvitationDialogCopy>{t('ViewerNotOnTeam.YouReAlmostOnTheTeam!')}</InvitationDialogCopy>
+          <InvitationDialogCopy>{t('ViewerNotOnTeam.YouReAlmostOnTheTeam')}</InvitationDialogCopy>
           <InvitationDialogCopy>
-            {t('ViewerNotOnTeam.JustAskATeamMemberForAnInvitation.')}
+            {t('ViewerNotOnTeam.JustAskATeamMemberForAnInvitation')}
           </InvitationDialogCopy>
           <InvitationDialogCopy>
-            {t('ViewerNotOnTeam.ThisPageWillRedirectAutomatically.')}
+            {t('ViewerNotOnTeam.ThisPageWillRedirectAutomatically')}
           </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <PrimaryButton size='medium' waiting>

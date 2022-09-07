@@ -48,13 +48,13 @@ const ForgotPasswordOneClick = (props: Props) => {
           {t('ForgotPasswordOneClick.MessageSentTo')}
           {email}
         </div>
-        <div>{t('ForgotPasswordOneClick.CheckYourInbox!')}</div>
+        <div>{t('ForgotPasswordOneClick.CheckYourInbox')}</div>
       </MessageSent>
     )
   }
   return (
     <ForgotButton onClick={onClick} waiting={submitting}>
-      {t('ForgotPasswordOneClick.ForgotYourPassword?')}
+      {t('ForgotPasswordOneClick.ForgotYourPassword')}
     </ForgotButton>
   )
 }

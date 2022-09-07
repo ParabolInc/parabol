@@ -54,7 +54,7 @@ const NewAzureIssueMenu = (props: Props) => {
       <SearchMenuItem placeholder='Search Azure' onChange={onQueryChange} value={query} />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('NewAzureIssueMenu.NoProjectsFound!')}
+          {t('NewAzureIssueMenu.NoProjectsFound')}
         </EmptyDropdownMenuItemLabel>
       )}
 

@@ -28,7 +28,7 @@ const NewTeamOrgDropdown = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx + 1}
     >
-      <DropdownMenuLabel>{t('NewTeamOrgDropdown.SelectOrganization:')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('NewTeamOrgDropdown.SelectOrganization')}</DropdownMenuLabel>
       {organizations.map((anOrg) => {
         const {id, tier, name} = anOrg
         return (

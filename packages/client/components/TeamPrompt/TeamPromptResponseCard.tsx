@@ -263,7 +263,7 @@ const TeamPromptResponseCard = (props: Props) => {
               handleSubmit={handleSubmit}
               content={contentJSON}
               readOnly={!isCurrentViewer}
-              placeholder={t('TeamPromptResponseCard.ShareYourResponse.')}
+              placeholder={t('TeamPromptResponseCard.ShareYourResponse')}
             />
             {!!plaintextContent && (
               <ResponseCardFooter>

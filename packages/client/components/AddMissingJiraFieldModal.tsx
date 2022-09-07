@@ -106,12 +106,12 @@ const AddMissingJiraFieldModal = (props: Props) => {
 
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('AddMissingJiraFieldModal.Oops!')}</DialogTitle>
+      <DialogTitle>{t('AddMissingJiraFieldModal.Oops')}</DialogTitle>
       <DialogContent>
         <div>
           <StyledTip>
             {t(
-              'AddMissingJiraFieldModal.YouDoNotHaveThisFieldConfiguredInJiraDoYouWantUsToFixItForYou?'
+              'AddMissingJiraFieldModal.YouDoNotHaveThisFieldConfiguredInJiraDoYouWantUsToFixItForYou'
             )}
           </StyledTip>
 

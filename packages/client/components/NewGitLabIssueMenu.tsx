@@ -35,7 +35,7 @@ const NewGitLabIssueMenu = (props: Props) => {
       <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} value={query} />
       {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
-          {t('NewGitLabIssueMenu.NoProjectsFound!')}
+          {t('NewGitLabIssueMenu.NoProjectsFound')}
         </EmptyDropdownMenuItemLabel>
       )}
       {filteredProjects.slice(0, 10).map((project) => {

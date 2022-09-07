@@ -37,7 +37,7 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
       suggestedActionId={suggestedActionId}
     >
       <SuggestedActionCopy>
-        {t('SuggestedActionInviteYourTeam.InviteYourTeammatesTo:')}
+        {t('SuggestedActionInviteYourTeam.InviteYourTeammatesTo')}
         <TeamName>{teamName}</TeamName>
       </SuggestedActionCopy>
       <SuggestedActionButton onClick={togglePortal}>

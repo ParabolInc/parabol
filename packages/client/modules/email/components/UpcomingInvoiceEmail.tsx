@@ -31,7 +31,7 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{t('UpcomingInvoiceEmail.Hello,')}</p>
+        <p style={emailCopyStyle}>{t('UpcomingInvoiceEmail.Hello')}</p>
         <p style={emailCopyStyle}>
           {`Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}.`}
         </p>
@@ -39,20 +39,20 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
           {newUsers.map((newUser) => (
             <li key={newUser.email} style={listItemStyle}>
               <b>{`${newUser.name}`}</b>
-              {t('UpcomingInvoiceEmail.(')}
+              {t('UpcomingInvoiceEmail.')}
               <a href={`mailto:${newUser.email}`} style={emailLinkStyle}>{`${newUser.email}`}</a>
-              {t('UpcomingInvoiceEmail.)')}
+              {t('UpcomingInvoiceEmail.')}
             </li>
           ))}
         </ul>
         <p style={emailCopyStyle}>
-          {t('UpcomingInvoiceEmail.IfAnyOfTheseUsersWereAddedByMistakeSimplyRemoveThemUnder:')}
+          {t('UpcomingInvoiceEmail.IfAnyOfTheseUsersWereAddedByMistakeSimplyRemoveThemUnder')}
           <a href={memberUrl} style={emailLinkStyle} title='Organization Settings'>
             {t('UpcomingInvoiceEmail.OrganizationSettings')}
           </a>
         </p>
         <p style={emailCopyStyle}>
-          {t('UpcomingInvoiceEmail.GetInTouchIfWeCanHelpInAnyWay,')}
+          {t('UpcomingInvoiceEmail.GetInTouchIfWeCanHelpInAnyWay')}
           <br />
           {emailProductTeamSignature}
           <br />
