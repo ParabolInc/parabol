@@ -79,8 +79,8 @@ const ActionMeetingAgendaItems = (props: Props) => {
   )
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
-  const {content, teamMember, descriptionContent} = agendaItem
-  const {picture, preferredName} = teamMember
+  const {content, teamMember} = agendaItem
+  const {picture} = teamMember
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   return (
     <MeetingContent ref={meetingContentRef}>
@@ -97,7 +97,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <Avatar picture={picture} size={64} />
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
-          {contentJSON && (
+          {contentJSON && Object.keys(contentJSON).length > 0 && (
             <DescriptionWrapper>
               <PromptResponseEditor content={contentJSON} readOnly={true} />
             </DescriptionWrapper>

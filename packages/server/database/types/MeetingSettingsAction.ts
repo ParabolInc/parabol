@@ -5,13 +5,7 @@ interface Input {
   id?: string
 }
 
-const phaseTypes = [
-  'additems',
-  'checkin',
-  'firstcall',
-  'agendaitems',
-  'lastcall'
-] as NewMeetingPhaseTypeEnum[]
+const phaseTypes = ['additems', 'checkin', 'agendaitems', 'lastcall'] as NewMeetingPhaseTypeEnum[]
 export default class MeetingSettingsAction extends MeetingSettings {
   constructor(input: Input) {
     const {teamId, id} = input

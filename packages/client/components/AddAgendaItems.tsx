@@ -1,4 +1,6 @@
 import styled from '@emotion/styled'
+import {generateJSON} from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -23,6 +25,7 @@ import Icon from './Icon'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
+import NullableTask from './NullableTask/NullableTask'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PlainButton from './PlainButton/PlainButton'
@@ -95,6 +98,10 @@ const DescriptionButtonWrapper = styled(PlainButton)(({isClickable}: {isClickabl
   }
 }))
 
+const TaskWrapper = styled(PlainButton)({
+  marginTop: '10px'
+})
+
 const ItemHeader = styled('div')({
   display: 'flex',
   flexDirection: 'row',
@@ -103,8 +110,11 @@ const ItemHeader = styled('div')({
   fontSize: '20px',
   paddingTop: '8px',
   paddingBottom: '8px',
-  marginBottom: '8px',
-  borderBottom: '1px solid #E0DDEC'
+  marginBottom: '8px'
+})
+const ItemBody = styled('div')({
+  borderTop: '1px solid #E0DDEC',
+  paddingTop: '8px'
 })
 const StyledCloseButton = styled(PlainButton)({
   height: 24,
@@ -145,13 +155,28 @@ const AddAgendaItems = (props: Props) => {
     if (submitting) return
     submitMutation()
     const newAgendaItem = {
-      content: `Copied: ${item.content}`,
+      content: item.content,
       descriptionContent: item.descriptionContent,
       pinned: false,
       sortOrder: agendaItems.length + 1,
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)
     }
+    AddAgendaItemMutation(atmosphere, {newAgendaItem}, {onError, onCompleted})
+  }
+
+  const addAgendaItemFromTask = (task) => {
+    if (submitting) return
+    submitMutation()
+    const newAgendaItem = {
+      content: `Task Re: ${task.agendaItem.content}`,
+      descriptionContent: JSON.stringify(generateJSON(task.plaintextContent, [StarterKit])),
+      pinned: false,
+      sortOrder: agendaItems.length + 1,
+      teamId,
+      teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)
+    }
+    console.log(newAgendaItem)
     AddAgendaItemMutation(atmosphere, {newAgendaItem}, {onError, onCompleted})
   }
 
@@ -190,7 +215,11 @@ const AddAgendaItems = (props: Props) => {
                             <CloseIcon>close</CloseIcon>
                           </StyledCloseButton>
                         </ItemHeader>
-                        <PromptResponseEditor content={contentJSON} readOnly={true} />
+                        {contentJSON && Object.keys(contentJSON).length > 0 && (
+                          <ItemBody>
+                            <PromptResponseEditor content={contentJSON} readOnly={true} />
+                          </ItemBody>
+                        )}
                       </DescriptionButtonWrapper>
                     )
                   })}
@@ -200,7 +229,7 @@ const AddAgendaItems = (props: Props) => {
             {lastMeeting?.agendaItems && (
               <AgendaList>
                 <h2>Last meetings's agenda</h2>
-                Click an agenda item from last meeting to copy it to this one
+                Click an item from last meeting to add it to the agenda
                 <OverflowWrapper>
                   {lastMeeting?.agendaItems &&
                     lastMeeting.agendaItems.map((item) => {
@@ -218,10 +247,29 @@ const AddAgendaItems = (props: Props) => {
                             <Avatar picture={item.teamMember.picture} size={48} />
                             {item.content}
                           </ItemHeader>
-                          <PromptResponseEditor content={contentJSON} readOnly={true} />
+                          {contentJSON && Object.keys(contentJSON).length > 0 && (
+                            <ItemBody>
+                              <PromptResponseEditor content={contentJSON} readOnly={true} />
+                            </ItemBody>
+                          )}
                         </DescriptionButtonWrapper>
                       )
                     })}
+                </OverflowWrapper>
+              </AgendaList>
+            )}
+            {lastMeeting?.tasks && (
+              <AgendaList>
+                <h2>Last meetings's tasks</h2>
+                Click a task from last meeting to add it as an agenda item
+                <OverflowWrapper>
+                  {lastMeeting?.tasks &&
+                    lastMeeting.tasks.map((task) => (
+                      <TaskWrapper key={task.id} onClick={() => addAgendaItemFromTask(task)}>
+                        {task.agendaItem?.content}
+                        <NullableTask area='meeting' task={task} dataCy={task.id} />
+                      </TaskWrapper>
+                    ))}
                 </OverflowWrapper>
               </AgendaList>
             )}
@@ -253,6 +301,10 @@ export default createFragmentContainer(AddAgendaItems, {
         ... on ActionMeeting {
           tasks {
             id
+            agendaItem {
+              content
+            }
+            plaintextContent
             ...NullableTask_task
           }
           agendaItems {
