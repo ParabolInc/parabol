@@ -5,37 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.73.0 2022-September-06
+## 6.73.0 2022-September-08
 
 ### Added
 
-- feat(dd sourcemaps): add source maps to deploy (#7063)
-- feat(devops): Bundle used node_modules in the server compilation (#6965)
-- feat(metrics): clean up some properties for Task Created events (#7067)
-- feat(metrics): Add Task Estimate Set event (#7117)
-- feat(metrics): identify if user is patient 0 upon login (#7129)
-- feat: usage stats clarity improvements (#7112)
-- feat(standups): Recurrence - restart recurrence in startRecurrence mutation (#7049)
-- feat(dx): createFragmentContainer -> useFragment codeshift automation (#7135)
-- feat: allow disable anonymity for retrospective meeting reflections (#7076)
-- feat(standups/tiptap): Client-side mentions (#7118)
+- Datadog sourcemaps: add source maps to deploy (#7063)
+- **Metrics**: clean up some properties for Task Created events (#7067)
+- **Metrics**: Add Task Estimate Set event (#7117)
+- **Metrics**: identify if user is patient 0 upon login (#7129)
+- Usage stats clarity improvements (#7112)
+- **Standups recurrence**: restart recurrence in startRecurrence mutation (#7049)
+- Allow disable anonymity for retrospective meeting reflections (#7076)
+- **Standups/tiptap**: Client-side mentions (#7118)
+- **DX**: createFragmentContainer -> useFragment codeshift automation (#7135)
 
 ### Fixed
 
-- fix(DX): Fix the PR labeler (#7109)
-- fix: empty discuss phase (#7070)
-- fix: increase line-height of text in Standups responses (#7115)
-- fix(New meeting dialog): truncate template dropdown text (#7096)
-- fix: azure work item id & change item link to project name (#7093)
-- fix: azure refresh auth (#7097)
-- fix: Changed copy on /create-account page (#7132)
-- fix: Facilitator's name is tiny and hard to read (#7113)
-- fix: turn on noImplicitAny for server (#7011)
+- Fix empty discuss phase (#7070)
+- Increase line-height of text in Standups responses (#7115)
+- **New meeting dialog**: fixed truncated template dropdown text (#7096)
+- Fixed azure work item id & change item link to project name (#7093)
+- Fixed azure refresh auth (#7097)
+- Fixed facilitator's name is tiny and hard to read (#7113)
+- Increase font size of standup meeting title (#7142)
+- **DX**: Turn on noImplicitAny for server (#7011)
+- **DX**: Fix the PR labeler (#7109)
 
 ### Changed
 
-- style: increase font size of standup meeting title (#7142)
-- chore: add pull-request-stats github workflow (#7111)
+- Changed copy on /create-account page (#7132)
+- Add pull-request-stats github workflow (#7111)
 
 ## 6.72.1 2022-August-26
 
