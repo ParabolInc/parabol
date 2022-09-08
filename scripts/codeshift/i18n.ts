@@ -7,6 +7,8 @@
 import {Transform, ASTPath, Function} from 'jscodeshift/src/core'
 import { visit } from "ast-types"
 import fs from 'fs'
+import stringify from 'json-stable-stringify'
+import _ from 'lodash'
 
 const getFunctionName = (fd: ASTPath<Function>) => {
   if (fd.value.type === 'ArrowFunctionExpression') {
@@ -18,17 +20,14 @@ const getFunctionName = (fd: ASTPath<Function>) => {
 }
 
 const isUpperCase = (s: string) => /^[A-Z].*$/.test(s)
-
-var camelSentence = function camelSentence(str) {
-  return  (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr)
-  {
-    return chr.toUpperCase();
-  }).replace(/[^0-9A-Z]+/gi,"")
-}
+const isUpperCaseWord = (s: string) => /^[A-Z][a-z]*$/.test(s)
 
 const isComponent = (fd: ASTPath<Function>) => {
   return isUpperCase(getFunctionName(fd))
 }
+
+const camelCase = (s: string): string => _.camelCase(s)
+const pascalCase = (s: string): string => _.upperFirst(_.camelCase(s))
 
 const readTranslations = () => {
   try {
@@ -40,7 +39,7 @@ const readTranslations = () => {
 }
 const translations = readTranslations()
 const writeTranslations = () => {
-  fs.writeFileSync('static/translations/en.json', JSON.stringify(translations, undefined, 2))
+  fs.writeFileSync('static/translations/en.json', stringify(translations, {space: 2}))
 }
 const addTranslation = (component: string, key: string, text: string) => {
   translations[component] = {
@@ -66,7 +65,7 @@ const transform: Transform = (fileInfo, api, options) => {
       visit(fd.node, {
         visitLiteral(fe) {
           const text = fe.value.value?.toString().trim()
-          const key = camelSentence(text)
+          const key = pascalCase(text)
 
           // skip whitespace
           if (!text || !key) return false
@@ -92,13 +91,61 @@ const transform: Transform = (fileInfo, api, options) => {
             fe.replace(callExpression)
             addTranslation(component, key, text)
           }
-          // likelihood is high that this is display text, let's add a comment to the hook
-          else if(text.includes(' ')) {
-            // just add a comment as otherwise we need to check for attributes etc.
-            translationComments.push(`FIXME i18n: ${text}`)
+          // likelihood is high that this is display text, let's wrap it, easier to remove than add
+          else if(text.includes(' ') || isUpperCaseWord(text)) {
+            // skip strings which are keys of objects
+            if (fe.parentPath.value.type === 'ObjectProperty' && fe.parentPath.value.value !== fe.value) {
+              return false
+            }
+            addHook = true
+            if (fe.parentPath.value.type === 'JSXAttribute') {
+              fe.replace(j.jsxExpressionContainer(callExpression))
+            }
+            else {
+              fe.replace(callExpression)
+            }
+            addTranslation(component, key, text)
           }
           return false
-        }
+        },
+        visitTemplateLiteral(fe) {
+          if (fe.parentPath.value.type === 'TaggedTemplateExpression') {//graphql`
+            return false
+          }
+          addHook = true
+          let text = ''
+          const expressions = j.objectExpression([])
+
+          let i = 0
+          for (; i < fe.value.expressions.length; ++i) {
+            const expression = fe.value.expressions[i]
+            const expressionKey = camelCase(j(expression).toSource())
+            text += fe.value.quasis[i].value.cooked
+            text += `{{${expressionKey}}}`
+
+            expressions.properties.push(j.objectProperty.from({
+              key: j.identifier(expressionKey),
+              value: expression,
+              shorthand: expression.type === 'Identifier' && expression.name === expressionKey
+            }))
+          }
+          text += fe.value.quasis[i].value.cooked
+
+          const key = pascalCase(text)
+          const component = getFunctionName(fd)
+
+          const callExpression = j.callExpression.from({
+            callee: j.identifier('t'),
+            arguments: [
+              j.literal(`${component}.${key}`),
+              expressions
+            ]
+          })
+
+          fe.replace(callExpression)
+          addTranslation(component, key, text)
+          return false
+        },
       })
 
       if (addHook) {
