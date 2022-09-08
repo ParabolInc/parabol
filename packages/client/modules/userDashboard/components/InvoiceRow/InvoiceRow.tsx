@@ -76,15 +76,18 @@ const InvoiceRow = (props: Props) => {
     invoice: {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status}
   } = props
 
-  //FIXME i18n: noopener noreferrer
-  //FIXME i18n: *Current estimate.
-  //FIXME i18n: noopener noreferrer
   const {t} = useTranslation()
 
   const isEstimate = status === 'UPCOMING'
   return (
     <Row>
-      <RowLink rel='noopener noreferrer' target='_blank' to={`/invoice/${invoiceId}`}>
+      <RowLink
+        rel='noopener noreferrer'
+        target='_blank'
+        to={t('InvoiceRow.InvoiceInvoiceId', {
+          invoiceId
+        })}
+      >
         <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>
           <InfoRow>
@@ -99,10 +102,14 @@ const InvoiceRow = (props: Props) => {
           <InfoRow>
             {status === 'UPCOMING' && (
               <StyledDate styledToPay>
-                {isEstimate && '*Current estimate. '}
+                {isEstimate && t('InvoiceRow.CurrentEstimate')}
                 {creditCard
-                  ? `Card will be charged on ${makeDateString(endAt)}`
-                  : `Make sure to add billing info before ${makeDateString(endAt)}!`}
+                  ? t('InvoiceRow.CardWillBeChargedOnMakeDateStringEndAt', {
+                      makeDateStringEndAt: makeDateString(endAt)
+                    })
+                  : t('InvoiceRow.MakeSureToAddBillingInfoBeforeMakeDateStringEndAt', {
+                      makeDateStringEndAt: makeDateString(endAt)
+                    })}
               </StyledDate>
             )}
             {status === 'PAID' && (
@@ -118,7 +125,9 @@ const InvoiceRow = (props: Props) => {
                     {t('InvoiceRow.PayNow')}
                   </PayURL>
                 ) : (
-                  `Status: ${status}`
+                  t('InvoiceRow.StatusStatus', {
+                    status
+                  })
                 )}
               </StyledDate>
             )}

@@ -83,7 +83,7 @@ const GitLabFieldMenu = (props: Props) => {
 
   return (
     <Menu
-      ariaLabel={t('GitLabFieldMenu.SelectWhetherToPublishEstimateAsACommentInGitlab')}
+      ariaLabel={t('GitLabFieldMenu.SelectWhetherToPublishEstimateAsACommentInGitLab')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveIdx}

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {parseWebPath} from '~/utils/parseWebPath'
 import {PALETTE} from '../styles/paletteV3'
@@ -30,12 +31,17 @@ interface Props {
 
 const TaskIntegrationLink = (props: Props) => {
   const {integration, dataCy, className, children, showJiraLabelPrefix} = props
+
+  const {t} = useTranslation()
+
   if (!integration) return null
   if (integration.__typename === 'JiraIssue') {
     const {issueKey, projectKey, cloudName} = integration
     return (
       <JiraIssueLink
-        dataCy={`${dataCy}-jira-issue-link`}
+        dataCy={t('TaskIntegrationLink.DataCyJiraIssueLink', {
+          dataCy
+        })}
         issueKey={issueKey}
         projectKey={projectKey}
         cloudName={cloudName}
@@ -52,10 +58,15 @@ const TaskIntegrationLink = (props: Props) => {
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`Jira Server Issue #${issueKey} on ${projectKey}`}
+        title={t('TaskIntegrationLink.JiraServerIssueIssueKeyOnProjectKey', {
+          issueKey,
+          projectKey
+        })}
         className={className}
       >
-        {`Issue #${issueKey}`}
+        {t('TaskIntegrationLink.IssueIssueKey', {
+          issueKey
+        })}
         {children}
       </StyledLink>
     )
@@ -65,16 +76,24 @@ const TaskIntegrationLink = (props: Props) => {
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
         ? 'https://github.com/ParabolInc/parabol'
-        : `https://www.github.com/${nameWithOwner}/issues/${number}`
+        : t('TaskIntegrationLink.HttpsWwwGithubComNameWithOwnerIssuesNumber', {
+            nameWithOwner,
+            number
+          })
     return (
       <StyledLink
         href={href}
         rel='noopener noreferrer'
         target='_blank'
-        title={`GitHub Issue #${number} on ${nameWithOwner}`}
+        title={t('TaskIntegrationLink.GitHubIssueNumberOnNameWithOwner', {
+          number,
+          nameWithOwner
+        })}
         className={className}
       >
-        {`Issue #${number}`}
+        {t('TaskIntegrationLink.IssueNumber', {
+          number
+        })}
         {children}
       </StyledLink>
     )
@@ -86,25 +105,38 @@ const TaskIntegrationLink = (props: Props) => {
         href={webUrl}
         rel='noopener noreferrer'
         target='_blank'
-        title={`GitLab Issue #${iid} on ${fullPath}`}
+        title={t('TaskIntegrationLink.GitLabIssueIidOnFullPath', {
+          iid,
+          fullPath
+        })}
         className={className}
       >
-        {`Issue #${iid}`}
+        {t('TaskIntegrationLink.IssueIid', {
+          iid
+        })}
         {children}
       </StyledLink>
     )
   } else if (integration.__typename === 'AzureDevOpsWorkItem') {
     const {id, teamProject, url, type} = integration
-    const integrationType = type.includes('Issue') ? 'Issue' : type
+    const integrationType = type.includes(t('TaskIntegrationLink.Issue'))
+      ? t('TaskIntegrationLink.Issue')
+      : type
     return (
       <StyledLink
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`Azure Item #${id} on ${teamProject}`}
+        title={t('TaskIntegrationLink.AzureItemIdOnTeamProject', {
+          id,
+          teamProject
+        })}
         className={className}
       >
-        {`${integrationType} #${id}`}
+        {t('TaskIntegrationLink.IntegrationTypeId', {
+          integrationType,
+          id
+        })}
         {children}
       </StyledLink>
     )

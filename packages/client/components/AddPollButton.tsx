@@ -41,7 +41,13 @@ const AddPollButton = (props: Props) => {
   const {t} = useTranslation()
 
   return (
-    <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
+    <StyledPlainButton
+      data-cy={t('AddPollButton.DataCyAdd', {
+        dataCy
+      })}
+      onClick={onClick}
+      disabled={disabled}
+    >
       <AddPollIcon />
       <AddPollLabel>{t('AddPollButton.AddAPoll')}</AddPollLabel>
     </StyledPlainButton>

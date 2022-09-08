@@ -20,7 +20,6 @@ interface Props
 const VerifyEmail = (props: Props) => {
   const {history, match} = props
 
-  //FIXME i18n: You’re almost in!
   const {t} = useTranslation()
 
   const {params} = match
@@ -41,7 +40,9 @@ const VerifyEmail = (props: Props) => {
       <InviteDialog>
         <DialogTitle>{t('VerifyEmail.EmailVerification')}</DialogTitle>
         <DialogContent>
-          <InvitationDialogCopy>{error ? error.message : 'You’re almost in!'}</InvitationDialogCopy>
+          <InvitationDialogCopy>
+            {error ? error.message : t('VerifyEmail.YoureAlmostIn')}
+          </InvitationDialogCopy>
           <InvitationCenteredCopy>
             {!error && (
               <PrimaryButton size='medium' waiting>

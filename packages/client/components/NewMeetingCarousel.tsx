@@ -129,7 +129,7 @@ const NewMeetingCarousel = (props: Props) => {
         const newIdx = idx + 1
         setIdx(newIdx)
       }
-    } else if (key === 'Enter') {
+    } else if (key === t('NewMeetingCarousel.Enter')) {
       onStartMeetingClick()
     }
   }

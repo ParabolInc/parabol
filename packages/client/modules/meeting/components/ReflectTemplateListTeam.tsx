@@ -84,7 +84,13 @@ const ReflectTemplateListTeam = (props: Props) => {
     )
   }
   if (filteredTemplates.length === 0) {
-    return <Message>{`No team templates match your search query "${searchQuery}"`}</Message>
+    return (
+      <Message>
+        {t('ReflectTemplateListTeam.NoTeamTemplatesMatchYourSearchQuerySearchQuery', {
+          searchQuery
+        })}
+      </Message>
+    )
   }
   return (
     <TemplateList>

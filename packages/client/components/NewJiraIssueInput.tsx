@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -110,6 +111,9 @@ const validateIssue = (issue: string) => {
 
 const NewJiraIssueInput = (props: Props) => {
   const {isEditing, meetingRef, setIsEditing, viewerRef} = props
+
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment NewJiraIssueInput_meeting on PokerMeeting {
@@ -192,7 +196,11 @@ const NewJiraIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      content: convertToTaskContent(
+        t('NewJiraIssueInput.NewIssueTitleArchived', {
+          newIssueTitle
+        })
+      ),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
@@ -241,7 +249,7 @@ const NewJiraIssueInput = (props: Props) => {
               onChange={onChange}
               maxLength={254}
               name='newIssue'
-              placeholder='New issue title'
+              placeholder={t('NewJiraIssueInput.NewIssueTitle')}
               ref={ref}
               type='text'
             />

@@ -32,8 +32,6 @@ const FinePrint = styled('div')({
 })
 
 const InvoiceFooter = () => {
-  //FIXME i18n: Contact Us
-  //FIXME i18n: Logo for Parabol
   const {t} = useTranslation()
 
   return (
@@ -43,11 +41,11 @@ const InvoiceFooter = () => {
         {t('InvoiceFooter.QuestionsConcerns')}
         <br />
         {t('InvoiceFooter.GetInTouch')}
-        <a href='mailto:billing@parabol.co' title='Contact Us'>
+        <a href='mailto:billing@parabol.co' title={t('InvoiceFooter.ContactUs')}>
           <b>{ContactInfo.EMAIL_BILLING}</b>
         </a>
       </Copy>
-      <Lockup crossOrigin='' alt='Logo for Parabol' src={parabolMark} />
+      <Lockup crossOrigin='' alt={t('InvoiceFooter.LogoForParabol')} src={parabolMark} />
       <FinePrint>
         {t('InvoiceFooter.ParabolInc')}
         <br />
@@ -58,13 +56,24 @@ const InvoiceFooter = () => {
         {t('InvoiceFooter.UnitedStates')}
         <br />
         <a
-          href={`tel:${ContactInfo.TELEPHONE.replace('-', '')}`}
-          title={`Call us: ${ContactInfo.TELEPHONE}`}
+          href={t('InvoiceFooter.TelContactInfoTelephoneReplace', {
+            contactInfoTelephoneReplace: ContactInfo.TELEPHONE.replace('-', '')
+          })}
+          title={t('InvoiceFooter.CallUsContactInfoTelephone', {
+            contactInfoTelephone: ContactInfo.TELEPHONE
+          })}
         >
           {ContactInfo.TELEPHONE}
         </a>
         <br />
-        <a href={`mailto:${ContactInfo.EMAIL_LOVE}`} title={`Email us: ${ContactInfo.EMAIL_LOVE}`}>
+        <a
+          href={t('InvoiceFooter.MailtoContactInfoEmailLove', {
+            contactInfoEmailLove: ContactInfo.EMAIL_LOVE
+          })}
+          title={t('InvoiceFooter.EmailUsContactInfoEmailLove', {
+            contactInfoEmailLove: ContactInfo.EMAIL_LOVE
+          })}
+        >
           {ContactInfo.EMAIL_LOVE}
         </a>
       </FinePrint>

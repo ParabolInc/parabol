@@ -54,8 +54,6 @@ interface Props {
 }
 
 const NewCheckInQuestion = (props: Props) => {
-  //FIXME i18n: Tap to customize the Icebreaker
-  //FIXME i18n: e.g. How are you?
   const {t} = useTranslation()
 
   const editorRef = useRef<HTMLTextAreaElement>()
@@ -97,7 +95,7 @@ const NewCheckInQuestion = (props: Props) => {
   }
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
-  const tip = 'Tap to customize the Icebreaker'
+  const tip = t('NewCheckInQuestion.TapToCustomizeTheIcebreaker')
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,
@@ -120,7 +118,7 @@ const NewCheckInQuestion = (props: Props) => {
         editorState={editorState}
         setEditorState={updateQuestion}
         readOnly={!isFacilitating}
-        placeholder='e.g. How are you?'
+        placeholder={t('NewCheckInQuestion.EGHowAreYou')}
         editorRef={editorRef}
       />
       {isFacilitating && (

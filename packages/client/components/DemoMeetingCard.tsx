@@ -104,19 +104,18 @@ const TopLine = styled('div')({
 })
 
 const DemoMeetingCard = () => {
-  //FIXME i18n: Demo Meeting Card Clicked
   const {t} = useTranslation()
 
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
 
   const onOpen = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Demo Meeting Card Clicked')
+    SendClientSegmentEventMutation(atmospehere, t('DemoMeetingCard.DemoMeetingCardClicked'))
   }, [])
 
   return (
     <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={onOpen}>
-      <Link to={`/retrospective-demo`}>
+      <Link to={t('DemoMeetingCard.RetrospectiveDemo', {})}>
         <MeetingImgWrapper>
           <MeetingImgBackground meetingType='retrospective' />
           <MeetingTypeLabel>{t('DemoMeetingCard.Retro')}</MeetingTypeLabel>

@@ -27,7 +27,7 @@ const LeftDashParabol = () => {
 
   return (
     <Parabol>
-      <img crossOrigin='' alt='Parabol' src={parabolLogo} />
+      <img crossOrigin='' alt={t('LeftDashParabol.Parabol')} src={parabolLogo} />
       <Label>{t('LeftDashParabol.Parabol')}</Label>
     </Parabol>
   )

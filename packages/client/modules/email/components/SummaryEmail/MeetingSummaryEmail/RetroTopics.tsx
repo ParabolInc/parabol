@@ -5,6 +5,7 @@ import {RETRO_TOPIC_LABEL} from 'parabol-client/utils/constants'
 import plural from 'parabol-client/utils/plural'
 import {RetroTopics_meeting} from 'parabol-client/__generated__/RetroTopics_meeting.graphql'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import makeAppURL from '../../../../../utils/makeAppURL'
@@ -39,17 +40,22 @@ interface Props {
 
 const RetroTopics = (props: Props) => {
   const {isDemo, isEmail, appOrigin, meeting} = props
+
+  const {t} = useTranslation()
+
   const {id: meetingId, phases, reflectionGroups} = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
   if (!discussPhase || !discussPhase.stages) return null
   // filter out the dummy one when the meeting is first created
   const stages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
 
-  const meetingPath = `/meet/${meetingId}`
+  const meetingPath = t('RetroTopics.MeetMeetingId', {
+    meetingId
+  })
   const meetingUrl = isEmail
     ? makeAppURL(appOrigin, meetingPath, {
         searchParams: {
-          utm_source: 'summary email',
+          utm_source: t('RetroTopics.SummaryEmail'),
           utm_medium: 'email',
           utm_campaign: 'after-meeting'
         }
@@ -65,11 +71,14 @@ const RetroTopics = (props: Props) => {
       </tr>
       {stages.length
         ? stages.map((stage, idx) => {
-            const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
+            const topicUrlPath = t('RetroTopics.MeetMeetingIdDiscussIdx1', {
+              meetingId,
+              idx1: idx + 1
+            })
             const topicUrl = isEmail
               ? makeAppURL(appOrigin, topicUrlPath, {
                   searchParams: {
-                    utm_source: 'summary email',
+                    utm_source: t('RetroTopics.SummaryEmail'),
                     utm_medium: 'email',
                     utm_campaign: 'after-meeting'
                   }

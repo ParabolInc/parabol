@@ -1,21 +1,22 @@
-import SecondaryButton from './SecondaryButton'
-import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import {StageTimerModalEndTime_stage} from '../__generated__/StageTimerModalEndTime_stage.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
+import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
+import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
+import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import '../styles/daypicker.css'
+import {MeetingLabels} from '../types/constEnums'
+import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
+import {StageTimerModalEndTime_facilitator} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
+import {StageTimerModalEndTime_stage} from '../__generated__/StageTimerModalEndTime_stage.graphql'
+import SecondaryButton from './SecondaryButton'
 import StageTimerModalEndTimeDate from './StageTimerModalEndTimeDate'
 import StageTimerModalEndTimeHour from './StageTimerModalEndTimeHour'
 import StageTimerModalEndTimeSlackToggle from './StageTimerModalEndTimeSlackToggle'
-import {StageTimerModalEndTime_facilitator} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
-import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
-import {MeetingLabels} from '../types/constEnums'
 
 interface Props {
   closePortal: () => void
@@ -52,6 +53,9 @@ const TOMORROW = roundDateToNearestHalfHour(new Date(Date.now() + DEFAULT_DURATI
 
 const StageTimerModalEndTime = (props: Props) => {
   const {closePortal, facilitator, meetingId, stage} = props
+
+  const {t} = useTranslation()
+
   const scheduledEndTime = stage.scheduledEndTime as string | null
   const suggestedEndTime = stage.suggestedEndTime as string | null
   const [endTime, setEndTime] = useState(new Date(scheduledEndTime || suggestedEndTime || TOMORROW))
@@ -63,7 +67,7 @@ const StageTimerModalEndTime = (props: Props) => {
   const startTimer = () => {
     if (submitting || endTime === new Date(scheduledEndTime || 0)) return
     if (endTime.getTime() <= Date.now()) {
-      onError(new Error('Time must be in the future'))
+      onError(new Error(t('StageTimerModalEndTime.TimeMustBeInTheFuture')))
       return
     }
     submitMutation()
@@ -88,7 +92,7 @@ const StageTimerModalEndTime = (props: Props) => {
       </Row>
       <ErrorMessage error={error} />
       <StyledButton onClick={startTimer}>
-        {scheduledEndTime ? 'Update ' : 'Start '}
+        {scheduledEndTime ? t('StageTimerModalEndTime.Update') : t('StageTimerModalEndTime.Start')}
         {MeetingLabels.TIME_LIMIT}
       </StyledButton>
     </SetLimit>

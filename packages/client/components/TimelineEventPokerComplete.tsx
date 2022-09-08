@@ -35,7 +35,14 @@ const TimelineEventPokerComplete = (props: Props) => {
     <TimelineEventCard
       IconSVG={<CardsSVG />}
       timelineEvent={timelineEvent}
-      title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
+      title={
+        <TimelineEventTitle>
+          {t('TimelineEventPokerComplete.MeetingNameWithTeamNameComplete', {
+            meetingName,
+            teamName
+          })}
+        </TimelineEventTitle>
+      }
     >
       <TimelineEventBody>
         {t('TimelineEventPokerComplete.YouVotedOn')}
@@ -48,11 +55,19 @@ const TimelineEventPokerComplete = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/estimate/1`}>
+        <Link
+          to={t('TimelineEventPokerComplete.MeetMeetingIdEstimate1', {
+            meetingId
+          })}
+        >
           {t('TimelineEventPokerComplete.SeeTheEstimates')}
         </Link>
         {t('TimelineEventPokerComplete.InYourMeetingOr')}
-        <Link to={`/new-summary/${meetingId}`}>
+        <Link
+          to={t('TimelineEventPokerComplete.NewSummaryMeetingId', {
+            meetingId
+          })}
+        >
           {t('TimelineEventPokerComplete.ReviewASummary')}
         </Link>
       </TimelineEventBody>

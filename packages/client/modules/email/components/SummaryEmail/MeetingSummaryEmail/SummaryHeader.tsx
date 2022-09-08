@@ -42,7 +42,6 @@ interface Props {
 const SummaryHeader = (props: Props) => {
   const {meeting, isDemo} = props
 
-  //FIXME i18n: Parabol Logo
   const {t} = useTranslation()
 
   const {createdAt, name: meetingName, team} = meeting
@@ -55,8 +54,10 @@ const SummaryHeader = (props: Props) => {
           <td align='center' style={{paddingTop: 16}}>
             <img
               crossOrigin=''
-              alt='Parabol Logo'
-              src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
+              alt={t('SummaryHeader.ParabolLogo')}
+              src={t('SummaryHeader.ExternalLinksEmailCdnMarkColor3XPng', {
+                externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+              })}
               height='32'
               width='34'
             />
@@ -74,7 +75,12 @@ const SummaryHeader = (props: Props) => {
         </tr>
         <tr>
           <td align='center' style={dateLabel}>
-            {isDemo ? meetingDate : `${teamName} • ${meetingDate}`}
+            {isDemo
+              ? meetingDate
+              : t('SummaryHeader.TeamNameMeetingDate', {
+                  teamName,
+                  meetingDate
+                })}
           </td>
         </tr>
       </tbody>

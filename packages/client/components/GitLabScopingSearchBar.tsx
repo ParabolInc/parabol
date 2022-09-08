@@ -54,16 +54,18 @@ const GitLabScopingSearchBar = (props: Props) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.fullPath
     if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
   })
-  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+  const currentFilters = selectedProjectsPaths.length
+    ? selectedProjectsPaths.join(', ')
+    : t('GitLabScopingSearchBar.None')
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
       <ScopingSearchHistoryToggle />
       <ScopingSearchInput
-        placeholder={t('GitLabScopingSearchBar.SearchGitlabIssues')}
+        placeholder={t('GitLabScopingSearchBar.SearchGitLabIssues')}
         queryString={queryString}
         meetingId={meetingId}
-        linkedRecordName={t('GitLabScopingSearchBar.Gitlabsearchquery')}
+        linkedRecordName={t('GitLabScopingSearchBar.GitlabSearchQuery')}
         service={t('GitLabScopingSearchBar.Gitlab')}
       />
       <GitLabScopingSearchFilterToggle meetingRef={meeting} />

@@ -1,16 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
-import EditableText from '../../../components/EditableText'
-import Legitity from '../../../validation/Legitity'
-import {PALETTE} from '~/styles/paletteV3'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
-import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import {PALETTE} from '~/styles/paletteV3'
 import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
+import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
+import Legitity from '../../../validation/Legitity'
 
 const StyledEditableText = styled(EditableText)<{disabled: boolean | undefined}>(({disabled}) => ({
   fontFamily: PALETTE.SLATE_700,
@@ -28,6 +29,9 @@ interface Props {
 
 const EditableTemplateScaleValueLabel = (props: Props) => {
   const {isHover, scaleValue, scale} = props
+
+  const {t} = useTranslation()
+
   const {id: scaleId} = scale
   const {id: scaleValueId, label, color} = scaleValue
   const atmosphere = useAtmosphere()
@@ -51,17 +55,17 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
   const legitify = (value: string) => {
     return new Legitity(value)
       .trim()
-      .required('Please enter a value')
-      .max(2, 'Value cannot be longer than 2 characters')
+      .required(t('EditableTemplateScaleValueLabel.PleaseEnterAValue'))
+      .max(2, t('EditableTemplateScaleValueLabel.ValueCannotBeLongerThan2Characters'))
       .test((mVal) => {
         const isDupe = mVal
           ? scale.values.find(
-            (aScaleValue) =>
-              aScaleValue.id !== scaleValueId &&
-              aScaleValue.label.toLowerCase() === mVal.toLowerCase()
-          )
+              (aScaleValue) =>
+                aScaleValue.id !== scaleValueId &&
+                aScaleValue.label.toLowerCase() === mVal.toLowerCase()
+            )
           : undefined
-        return isDupe ? 'That value already exists' : undefined
+        return isDupe ? t('EditableTemplateScaleValueLabel.ThatValueAlreadyExists') : undefined
       })
   }
 

@@ -82,7 +82,11 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <Avatar picture={picture} size={64} />
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
-          <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
+          <StyledCopy>
+            {t('ActionMeetingAgendaItems.PreferredNameWhatDoYouNeed', {
+              preferredName
+            })}
+          </StyledCopy>
           <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}

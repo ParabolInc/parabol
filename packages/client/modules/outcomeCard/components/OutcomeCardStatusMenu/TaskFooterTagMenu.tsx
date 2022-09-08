@@ -38,7 +38,6 @@ interface Props {
 const TaskFooterTagMenu = (props: Props) => {
   const {area, menuProps, editorState, isAgenda, task, useTaskChild} = props
 
-  //FIXME i18n: Set as
   const {t} = useTranslation()
 
   useTaskChild('tag')
@@ -69,7 +68,7 @@ const TaskFooterTagMenu = (props: Props) => {
           <MenuItemLabel>
             <MenuItemDot color={PALETTE.GOLD_300} />
             <span>
-              {isPrivate ? 'Remove ' : 'Set as '}
+              {isPrivate ? t('TaskFooterTagMenu.Remove') : t('TaskFooterTagMenu.SetAs')}
               <b>{t('TaskFooterTagMenu.Private')}</b>
             </span>
           </MenuItemLabel>

@@ -17,7 +17,6 @@ interface Props {
 const GitLabConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
 
-  //FIXME i18n: Remove GitLab
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -36,8 +35,8 @@ const GitLabConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={t('GitLabConfigMenu.ConfigureYourGitlabIntegration')} {...menuProps}>
-      <MenuItem label='Remove GitLab' onClick={removeGitLabAuth} />
+    <Menu ariaLabel={t('GitLabConfigMenu.ConfigureYourGitLabIntegration')} {...menuProps}>
+      <MenuItem label={t('GitLabConfigMenu.RemoveGitLab')} onClick={removeGitLabAuth} />
     </Menu>
   )
 }

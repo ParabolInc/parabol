@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Close, Search as SearchIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
 import {ReflectTemplateSearchBar_settings$key} from '~/__generated__/ReflectTemplateSearchBar_settings.graphql'
@@ -81,6 +82,9 @@ interface Props {
 
 const ReflectTemplateSearchBar = (props: Props) => {
   const {templateType, clearSearch, settingsRef} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const settings = useFragment(
     graphql`
@@ -100,7 +104,7 @@ const ReflectTemplateSearchBar = (props: Props) => {
 
   const inputRef = useRef<HTMLInputElement>(null)
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && inputRef.current) {
+    if (e.key === t('ReflectTemplateSearchBar.Escape') && inputRef.current) {
       e.stopPropagation()
       e.preventDefault()
       inputRef.current.blur()
@@ -123,7 +127,9 @@ const ReflectTemplateSearchBar = (props: Props) => {
             onKeyDown={onKeyDown}
             autoComplete='off'
             name='search'
-            placeholder={`Search ${normalizedTempType} templates...`}
+            placeholder={t('ReflectTemplateSearchBar.SearchNormalizedTempTypeTemplates', {
+              normalizedTempType
+            })}
             type='text'
             onChange={onChange}
             ref={inputRef}

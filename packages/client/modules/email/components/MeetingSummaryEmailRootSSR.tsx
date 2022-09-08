@@ -52,10 +52,34 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         const {team} = newMeeting
         const {id: teamId} = team
         const options = {searchParams: meetingSummaryUrlParams}
-        const referrerUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
-        const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
-        const teamDashUrl = makeAppURL(appOrigin, `team/${teamId}`, options)
-        const emailCSVUrl = makeAppURL(appOrigin, `new-summary/${meetingId}/csv`, options)
+        const referrerUrl = makeAppURL(
+          appOrigin,
+          t('MeetingSummaryEmailRootSSR.NewSummaryMeetingId', {
+            meetingId
+          }),
+          options
+        )
+        const meetingUrl = makeAppURL(
+          appOrigin,
+          t('MeetingSummaryEmailRootSSR.MeetMeetingId', {
+            meetingId
+          }),
+          options
+        )
+        const teamDashUrl = makeAppURL(
+          appOrigin,
+          t('MeetingSummaryEmailRootSSR.TeamTeamId', {
+            teamId
+          }),
+          options
+        )
+        const emailCSVUrl = makeAppURL(
+          appOrigin,
+          t('MeetingSummaryEmailRootSSR.NewSummaryMeetingIdCsv', {
+            meetingId
+          }),
+          options
+        )
         return (
           <MeetingSummaryEmail
             meeting={newMeeting}

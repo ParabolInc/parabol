@@ -30,7 +30,9 @@ const TopBarHelpMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemWithIcon
-            dataCy={`${dataCy}`}
+            dataCy={t('TopBarHelpMenu.DataCy', {
+              dataCy
+            })}
             label={t('TopBarHelpMenu.Documentation')}
             icon={t('TopBarHelpMenu.Bookmark')}
           />
@@ -41,7 +43,9 @@ const TopBarHelpMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemWithIcon
-              dataCy={`${dataCy}`}
+              dataCy={t('TopBarHelpMenu.DataCy', {
+                dataCy
+              })}
               label={t('TopBarHelpMenu.KeyboardShortcuts')}
               icon={t('TopBarHelpMenu.Keyboard')}
             />
@@ -52,7 +56,9 @@ const TopBarHelpMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemWithIcon
-            dataCy={`${dataCy}`}
+            dataCy={t('TopBarHelpMenu.DataCy', {
+              dataCy
+            })}
             label={t('TopBarHelpMenu.GetHelp')}
             icon={t('TopBarHelpMenu.Comment')}
           />

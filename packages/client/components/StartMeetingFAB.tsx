@@ -94,7 +94,12 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
+    history.replace(
+      t('StartMeetingFAB.NewMeetingTeamId', {
+        teamId
+      }),
+      {backgroundLocation: location}
+    )
   }
   // We use the SideBarStartMeetingButton in this case
   if (isDesktop) {

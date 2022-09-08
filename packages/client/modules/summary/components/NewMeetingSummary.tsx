@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
@@ -34,6 +35,9 @@ const query = graphql`
 
 const NewMeetingSummary = (props: Props) => {
   const {urlAction, queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -50,14 +54,26 @@ const NewMeetingSummary = (props: Props) => {
   }
   const {id: meetingId, name: meetingName, team} = newMeeting
   const {id: teamId, name: teamName} = team
-  const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
+  const title = t('NewMeetingSummary.MeetingNameMeetingSummaryLabelTeamName', {
+    meetingName,
+    meetingSummaryLabel: MEETING_SUMMARY_LABEL,
+    teamName
+  })
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useDocumentTitle(title, 'Summary')
-  const meetingUrl = makeHref(`/meet/${meetingId}`)
-  const teamDashUrl = `/team/${teamId}`
+  useDocumentTitle(title, t('NewMeetingSummary.Summary'))
+  const meetingUrl = makeHref(
+    t('NewMeetingSummary.MeetMeetingId', {
+      meetingId
+    })
+  )
+  const teamDashUrl = t('NewMeetingSummary.TeamTeamId', {
+    teamId
+  })
   const emailCSVUrl = isDemoRoute()
-    ? `/retrospective-demo-summary/csv`
-    : `/new-summary/${meetingId}/csv`
+    ? t('NewMeetingSummary.RetrospectiveDemoSummaryCsv', {})
+    : t('NewMeetingSummary.NewSummaryMeetingIdCsv', {
+        meetingId
+      })
   return (
     <div style={{backgroundColor: PALETTE.SLATE_200, minHeight: '100vh'}}>
       <MeetingSummaryEmail

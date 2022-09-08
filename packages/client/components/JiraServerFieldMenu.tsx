@@ -99,7 +99,7 @@ const JiraServerFieldMenu = (props: Props) => {
   }
   return (
     <Menu
-      ariaLabel={t('JiraServerFieldMenu.SelectTheJiraserverFieldToPushTo')}
+      ariaLabel={t('JiraServerFieldMenu.SelectTheJiraServerFieldToPushTo')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}

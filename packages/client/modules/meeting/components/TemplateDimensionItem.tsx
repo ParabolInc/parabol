@@ -3,6 +3,7 @@ import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -66,6 +67,9 @@ const DimensionAndDescription = styled('div')({
 
 const TemplateDimensionItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, dimension, dimensions} = props
+
+  const {t} = useTranslation()
+
   const {id: dimensionId, name: dimensionName} = dimension
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
@@ -81,7 +85,7 @@ const TemplateDimensionItem = (props: Props) => {
   const removeDimension = () => {
     if (submitting) return
     if (!canRemove) {
-      onError(new Error('You must have at least 1 dimension'))
+      onError(new Error(t('TemplateDimensionItem.YouMustHaveAtLeast1Dimension')))
       return
     }
     submitMutation()

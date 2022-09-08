@@ -106,9 +106,6 @@ const tooltipTextLookup = {
 const InsightsDomainPanel = (props: Props) => {
   const {domainRef} = props
 
-  //FIXME i18n: Active Team
-  //FIXME i18n: Active Member
-  //FIXME i18n: Total Meeting
   const {t} = useTranslation()
 
   const domain = useFragment(
@@ -162,12 +159,16 @@ const InsightsDomainPanel = (props: Props) => {
   return (
     <Wrapper>
       <StatsPanel>
-        <DomainName>{`${domainId} Usage`}</DomainName>
+        <DomainName>
+          {t('InsightsDomainPanel.DomainIdUsage', {
+            domainId
+          })}
+        </DomainName>
         <StatBlocks>
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{activeOrganizationCount}</StatBlockNumber>
             <StatBlockLabel>
-              {plural(activeOrganizationCount, 'Organization')}
+              {plural(activeOrganizationCount, t('InsightsDomainPanel.Organization'))}
               <IconBlock ref={orgRef}>
                 <StyledIcon onMouseOver={orgOpenTooltip} onMouseOut={orgCloseTooltip}>
                   {t('InsightsDomainPanel.Info')}
@@ -179,7 +180,7 @@ const InsightsDomainPanel = (props: Props) => {
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{activeTeamCount}</StatBlockNumber>
             <StatBlockLabel>
-              {plural(activeOrganizationCount, 'Active Team')}
+              {plural(activeOrganizationCount, t('InsightsDomainPanel.ActiveTeam'))}
               <IconBlock ref={teamRef}>
                 <StyledIcon onMouseOver={teamOpenTooltip} onMouseOut={teamCloseTooltip}>
                   {t('InsightsDomainPanel.Info')}
@@ -191,7 +192,7 @@ const InsightsDomainPanel = (props: Props) => {
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{activeUserCount}</StatBlockNumber>
             <StatBlockLabel>
-              {plural(activeOrganizationCount, 'Active Member')}
+              {plural(activeOrganizationCount, t('InsightsDomainPanel.ActiveMember'))}
               <IconBlock ref={memberRef}>
                 <StyledIcon onMouseOver={memberOpenTooltip} onMouseOut={memberCloseTooltip}>
                   {t('InsightsDomainPanel.Info')}
@@ -203,7 +204,7 @@ const InsightsDomainPanel = (props: Props) => {
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{meetingCount}</StatBlockNumber>
             <StatBlockLabel>
-              {plural(activeOrganizationCount, 'Total Meeting')}
+              {plural(activeOrganizationCount, t('InsightsDomainPanel.TotalMeeting'))}
               <IconBlock ref={meetingRef}>
                 <StyledIcon onMouseOver={meetingOpenTooltip} onMouseOut={meetingCloseTooltip}>
                   {t('InsightsDomainPanel.Info')}

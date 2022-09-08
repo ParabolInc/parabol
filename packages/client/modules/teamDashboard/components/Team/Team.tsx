@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, ReactNode, Suspense} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {Layout} from '~/types/constEnums'
 import DashContent from '../../../../components/Dashboard/DashContent'
@@ -56,6 +57,8 @@ const SettingsHeader = styled('div')({
 })
 
 const Team = (props: Props) => {
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {children, isSettings, team} = props
   const teamId = team?.id
@@ -63,7 +66,11 @@ const Team = (props: Props) => {
   const {isPaid} = team
 
   const goToTeamDashboard = () => {
-    history.push(`/team/${teamId}/`)
+    history.push(
+      t('Team.TeamTeamId', {
+        teamId
+      })
+    )
   }
 
   const hasOverlay = !isPaid
@@ -74,7 +81,11 @@ const Team = (props: Props) => {
         <SettingsHeader>
           <TeamDashHeaderInner>
             <>
-              <IconButton aria-label='Back to Team Dashboard' key='1' onClick={goToTeamDashboard}>
+              <IconButton
+                aria-label={t('Team.BackToTeamDashboard')}
+                key='1'
+                onClick={goToTeamDashboard}
+              >
                 <BackIcon />
               </IconButton>
               <EditableTeamName team={team} />

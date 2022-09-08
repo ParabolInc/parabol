@@ -43,7 +43,7 @@ const JiraServerScopingSearchHistoryToggle = (props: Props) => {
 
   return (
     <JiraUniversalScopingSearchHistoryToggle
-      service={t('JiraServerScopingSearchHistoryToggle.Jiraserver')}
+      service={t('JiraServerScopingSearchHistoryToggle.JiraServer')}
       jiraSearchQueries={searchQueries}
       meetingId={meetingId}
       teamId={teamId}

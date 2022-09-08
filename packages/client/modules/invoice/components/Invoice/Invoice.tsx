@@ -192,7 +192,6 @@ const query = graphql`
 const Invoice = (props: Props) => {
   const {queryRef} = props
 
-  //FIXME i18n: noopener noreferrer
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<InvoiceQuery>(query, queryRef, {
@@ -202,7 +201,12 @@ const Invoice = (props: Props) => {
   const {invoiceDetails} = viewer
   const endAt = invoiceDetails && invoiceDetails.endAt
   const subject = makeMonthString(endAt)
-  useDocumentTitle(`Invoice | ${subject}`, 'Invoices')
+  useDocumentTitle(
+    t('Invoice.InvoiceSubject', {
+      subject
+    }),
+    t('Invoice.Invoices')
+  )
   if (!invoiceDetails) return null
 
   const {
@@ -219,8 +223,14 @@ const Invoice = (props: Props) => {
   } = invoiceDetails
   const status = invoiceDetails.status as InvoiceStatusEnum
   const {amount, interval, nextPeriodEnd} = nextPeriodCharges!
-  const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
-  const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
+  const chargeDates = t('Invoice.MakeDateStringStartAtToMakeDateStringEndAt', {
+    makeDateStringStartAt: makeDateString(startAt),
+    makeDateStringEndAt: makeDateString(endAt)
+  })
+  const nextChargesDates = t('Invoice.MakeDateStringEndAtToMakeDateStringNextPeriodEnd', {
+    makeDateStringEndAt: makeDateString(endAt),
+    makeDateStringNextPeriodEnd: makeDateString(nextPeriodEnd)
+  })
   const amountOff = coupon && (coupon.amountOff || (coupon.percentOff! / 100) * amount)
   const discountedAmount = amountOff && invoiceLineFormat(-amountOff)
   return (
@@ -234,7 +244,11 @@ const Invoice = (props: Props) => {
           <Subject>{subject}</Subject>
 
           <SectionHeader>
-            <Heading>{`Next ${interval}’s usage`}</Heading>
+            <Heading>
+              {t('Invoice.NextIntervalSUsage', {
+                interval
+              })}
+            </Heading>
             <Meta>{nextChargesDates}</Meta>
           </SectionHeader>
           <NextPeriodChargesLineItem tier={tier} item={nextPeriodCharges} />
@@ -247,7 +261,13 @@ const Invoice = (props: Props) => {
           */}
           {coupon && (
             <InvoiceLineItemContent
-              description={<CouponEmphasis>{`Coupon: “${coupon.name}”`}</CouponEmphasis>}
+              description={
+                <CouponEmphasis>
+                  {t('Invoice.CouponCouponName', {
+                    couponName: coupon.name
+                  })}
+                </CouponEmphasis>
+              }
               amount={<CouponEmphasis>{discountedAmount}</CouponEmphasis>}
             />
           )}
@@ -256,7 +276,7 @@ const Invoice = (props: Props) => {
             <>
               <SectionHeader>
                 <Heading>
-                  {t('Invoice.LastMonthSAdjustments')}
+                  {t('Invoice.LastMonthsAdjustments')}
                   <EmphasisTag>{t('Invoice.Prorated')}</EmphasisTag>
                 </Heading>
                 <Meta>{chargeDates}</Meta>

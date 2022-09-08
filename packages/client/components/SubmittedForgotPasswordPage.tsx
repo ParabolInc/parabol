@@ -58,12 +58,6 @@ interface Props {
 const SubmittedForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
 
-  //FIXME i18n: noopener noreferrer
-  //FIXME i18n: It looks like you may have signed-up with Gmail.
-  //FIXME i18n: It looks like you may have signed-up using SSO.
-  //FIXME i18n: You’re all set!
-  //FIXME i18n: We’ve sent you an email with password recovery instructions.
-  //FIXME i18n: Back to Sign In
   const {t} = useTranslation()
 
   const {match, location} = useRouter<{token: string}>()
@@ -87,16 +81,23 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   )
 
   const goToPageWithEmail = (page: AuthPageSlug, email: string | null) => {
-    email ? goToPage(page, `?email=${email}`) : goToPage(page)
+    email
+      ? goToPage(
+          page,
+          t('SubmittedForgotPasswordPage.EmailEmail', {
+            email
+          })
+        )
+      : goToPage(page)
   }
 
   const copyTypes = {
     goog: {
       title: 'Oops!',
-      descriptionOne: 'It looks like you may have signed-up with Gmail.',
+      descriptionOne: t('SubmittedForgotPasswordPage.ItLooksLikeYouMayHaveSignedUpWithGmail'),
       descriptionTwo: (
         <>
-          {`Try signing in with Google or `}
+          {t('SubmittedForgotPasswordPage.TrySigningInWithGoogleOr', {})}
           {contactSupportCopy}
         </>
       ),
@@ -108,10 +109,10 @@ const SubmittedForgotPasswordPage = (props: Props) => {
     },
     saml: {
       title: 'Oops!',
-      descriptionOne: 'It looks like you may have signed-up using SSO.',
+      descriptionOne: t('SubmittedForgotPasswordPage.ItLooksLikeYouMayHaveSignedUpUsingSso'),
       descriptionTwo: (
         <>
-          {`Try signing in with SSO or `}
+          {t('SubmittedForgotPasswordPage.TrySigningInWithSsoOr', {})}
           {contactSupportCopy}
         </>
       ),
@@ -122,11 +123,13 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       )
     },
     success: {
-      title: 'You’re all set!',
-      descriptionOne: 'We’ve sent you an email with password recovery instructions.',
+      title: t('SubmittedForgotPasswordPage.YoureAllSet'),
+      descriptionOne: t(
+        'SubmittedForgotPasswordPage.WeveSentYouAnEmailWithPasswordRecoveryInstructions'
+      ),
       descriptionTwo: (
         <>
-          {t('SubmittedForgotPasswordPage.DidnTGetItCheckYourSpamFolderOr')}
+          {t('SubmittedForgotPasswordPage.DidntGetItCheckYourSpamFolderOr')}
           <LinkButton onClick={() => goToPageWithEmail('forgot-password', email)}>
             {t('SubmittedForgotPasswordPage.ClickHere')}
           </LinkButton>
@@ -135,7 +138,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       ),
       button: (
         <StyledPrimaryButton onClick={() => goToPageWithEmail('signin', email)} size='medium'>
-          <IconLabel icon='arrow_back' label='Back to Sign In' />
+          <IconLabel icon='arrow_back' label={t('SubmittedForgotPasswordPage.BackToSignIn')} />
         </StyledPrimaryButton>
       )
     }

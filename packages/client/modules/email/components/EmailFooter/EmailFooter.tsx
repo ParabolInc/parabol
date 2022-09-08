@@ -25,7 +25,6 @@ const linkStyle = {
 const year = new Date().getFullYear()
 
 const EmailFooter = () => {
-  //FIXME i18n: Get in touch
   const {t} = useTranslation()
 
   return (
@@ -35,11 +34,17 @@ const EmailFooter = () => {
           <td>
             <EmptySpace height={24} />
             <div style={copyStyle}>
-              {`©${year} Parabol, Inc.`}
+              {t('EmailFooter.YearParabolInc', {
+                year
+              })}
               <br />
               <span style={boldCopyStyle}>{t('EmailFooter.GetInTouch')}</span>
               {': '}
-              <a href='mailto:love@parabol.co' title='Get in touch' style={linkStyle}>
+              <a
+                href='mailto:love@parabol.co'
+                title={t('EmailFooter.GetInTouch')}
+                style={linkStyle}
+              >
                 {t('EmailFooter.LoveParabolCo')}
               </a>
             </div>

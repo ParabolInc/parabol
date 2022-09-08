@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ThreadedCommentFooter_reactjis} from '~/__generated__/ThreadedCommentFooter_reactjis.graphql'
@@ -28,11 +29,17 @@ interface Props {
 
 const ThreadedCommentFooter = (props: Props) => {
   const {onReply, onToggleReactji, reactjis} = props
+
+  const {t} = useTranslation()
+
   const hasReactjis = reactjis.length > 0
   if (!hasReactjis) return null
   return (
     <FooterActions>
-      <ThreadedReplyButton dataCy={`comment-footer`} onReply={onReply} />
+      <ThreadedReplyButton
+        dataCy={t('ThreadedCommentFooter.CommentFooter', {})}
+        onReply={onReply}
+      />
       <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
     </FooterActions>
   )

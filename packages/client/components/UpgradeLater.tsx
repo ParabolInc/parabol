@@ -46,7 +46,7 @@ const UpgradeLater = (props: Props) => {
         <b>{t('UpgradeLater.2Teams')}</b>
         {'.'}
       </InvitationDialogCopy>
-      <CopySpacer>{t('UpgradeLater.WeLlSendYouAnEmailSo')}</CopySpacer>
+      <CopySpacer>{t('UpgradeLater.WellSendYouAnEmailSo')}</CopySpacer>
       <InvitationDialogCopy>{t('UpgradeLater.YouCanUpgradeLater')}</InvitationDialogCopy>
       <ButtonBlock>
         <ModalButton size='large' onClick={closePortal}>

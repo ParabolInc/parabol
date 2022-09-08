@@ -48,7 +48,6 @@ interface Props {
 const SummaryPokerStories = (props: Props) => {
   const {appOrigin, isEmail, meeting} = props
 
-  //FIXME i18n: summary email
   const {t} = useTranslation()
 
   const {id: meetingId, phases} = meeting
@@ -81,11 +80,14 @@ const SummaryPokerStories = (props: Props) => {
                 } else if (integration?.__typename === '_xGitHubIssue') {
                   title = integration.title
                 }
-                const urlPath = `/meet/${meetingId}/estimate/${idx + 1}`
+                const urlPath = t('SummaryPokerStories.MeetMeetingIdEstimateIdx1', {
+                  meetingId,
+                  idx1: idx + 1
+                })
                 const to = isEmail
                   ? makeAppURL(appOrigin, urlPath, {
                       searchParams: {
-                        utm_source: 'summary email',
+                        utm_source: t('SummaryPokerStories.SummaryEmail'),
                         utm_medium: 'email',
                         utm_campaign: 'after-meeting'
                       }

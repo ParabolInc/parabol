@@ -89,7 +89,7 @@ const ScopePhaseAreaAddGitLab = (props: Props) => {
     <AddGitLabArea>
       <AddGitLabButton onClick={authGitLab} size={t('ScopePhaseAreaAddGitLab.Medium')}>
         <GitLabSVG />
-        {t('ScopePhaseAreaAddGitLab.ImportIssuesFromGitlab')}
+        {t('ScopePhaseAreaAddGitLab.ImportIssuesFromGitLab')}
       </AddGitLabButton>
       <StyledLink onClick={gotoParabol}>
         {t('ScopePhaseAreaAddGitLab.OrAddNewTasksInParabol')}

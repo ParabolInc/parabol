@@ -41,7 +41,9 @@ const TaskFooterTagMenuToggle = (props: Props) => {
   return (
     <>
       <CardButton
-        dataCy={`${dataCy}-button`}
+        dataCy={t('TaskFooterTagMenuToggle.DataCyButton', {
+          dataCy
+        })}
         onMouseEnter={TaskFooterTagMenu.preload}
         ref={originRef}
         onClick={togglePortal}

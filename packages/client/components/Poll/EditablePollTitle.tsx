@@ -1,12 +1,13 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {Polls, PollsAriaLabels} from '~/types/constEnums'
-import {updateLocalPoll} from './local/newPoll'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {EditablePollTitle_poll$key} from '../../__generated__/EditablePollTitle_poll.graphql'
+import {updateLocalPoll} from './local/newPoll'
 
 const PollTitleInput = styled('input')({
   padding: `10px 12px`,
@@ -27,6 +28,9 @@ interface Props {
 
 const EditablePollTitle = (props: Props) => {
   const {pollRef, onFocus, onBlur} = props
+
+  const {t} = useTranslation()
+
   const poll = useFragment(
     graphql`
       fragment EditablePollTitle_poll on Poll {
@@ -47,7 +51,7 @@ const EditablePollTitle = (props: Props) => {
       autoFocus
       value={poll.title}
       maxLength={Polls.MAX_TITLE_LENGTH}
-      placeholder='Ask a question...'
+      placeholder={t('EditablePollTitle.AskAQuestion')}
       onChange={handleTitleChange}
       onFocus={onFocus}
       onBlur={onBlur}

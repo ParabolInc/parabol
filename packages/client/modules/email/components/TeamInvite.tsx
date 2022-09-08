@@ -77,13 +77,15 @@ const TeamInvite = (props: TeamInviteProps) => {
     inviteLink
   } = props
 
-  //FIXME i18n: Retro 101
-  //FIXME i18n: Getting Started: Retro 101
-  //FIXME i18n: Leveling Up: Check-in 101
   const {t} = useTranslation()
 
   const inviteeEmailBlock = (
-    <a href={`mailto:${inviteeEmail}`} style={emailCopyStyle}>
+    <a
+      href={t('TeamInvite.MailtoInviteeEmail', {
+        inviteeEmail
+      })}
+      style={emailCopyStyle}
+    >
       {inviteeEmail}
     </a>
   )
@@ -102,12 +104,20 @@ const TeamInvite = (props: TeamInviteProps) => {
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
               {' ('}
-              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+              <a
+                href={t('TeamInvite.MailtoInviterEmail', {
+                  inviterEmail
+                })}
+                style={emailLinkStyle}
+              >
                 {inviterEmail}
               </a>
-              {`) has started ${meetingCopyLabelLookup[meeting.meetingType]} for your team (`}
+              {t('TeamInvite.HasStartedMeetingCopyLabelLookupMeetingMeetingTypeForYourTeam', {
+                meetingCopyLabelLookupMeetingMeetingType:
+                  meetingCopyLabelLookup[meeting.meetingType]
+              })}
               <b>{teamName}</b>
-              {t('TeamInvite.JustAFewClicksAndYouReIn')}
+              {t('TeamInvite.JustAFewClicksAndYoureIn')}
             </p>
             <Button url={inviteLink}>
               {t('TeamInvite.Join')}
@@ -124,7 +134,12 @@ const TeamInvite = (props: TeamInviteProps) => {
             <p style={emailCopyStyle}>
               <span style={boldStyle}>{inviterName}</span>
               {' ('}
-              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+              <a
+                href={t('TeamInvite.MailtoInviterEmail', {
+                  inviterEmail
+                })}
+                style={emailLinkStyle}
+              >
                 {inviterEmail}
               </a>
               {t('TeamInvite.HasInvitedYouToJoinATeam')}
@@ -145,7 +160,7 @@ const TeamInvite = (props: TeamInviteProps) => {
         <a
           href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
           style={videoLinkStyle}
-          title='Retro 101'
+          title={t('TeamInvite.Retro101')}
         >
           <img crossOrigin='' alt='' src={videoGraphicSrc} style={videoGraphicStyle} />
         </a>
@@ -156,7 +171,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           <a
             href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
             style={emailLinkStyle}
-            title='Getting Started: Retro 101'
+            title={t('TeamInvite.GettingStartedRetro101')}
           >
             {t('TeamInvite.GettingStartedRetro101')}
           </a>
@@ -164,7 +179,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           <a
             href={appendUTM(ExternalLinks.GETTING_STARTED_CHECK_INS)}
             style={emailLinkStyle}
-            title='Leveling Up: Check-in 101'
+            title={t('TeamInvite.LevelingUpCheckIn101')}
           >
             {t('TeamInvite.LevelingUpCheckIn101')}
           </a>

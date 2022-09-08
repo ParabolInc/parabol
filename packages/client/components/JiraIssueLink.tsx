@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
 
@@ -26,11 +27,25 @@ interface Props {
 }
 
 const JiraIssueLink = (props: Props) => {
-  const {dataCy, className, cloudName, issueKey, projectKey, children, showLabelPrefix = true} = props
+  const {
+    dataCy,
+    className,
+    cloudName,
+    issueKey,
+    projectKey,
+    children,
+    showLabelPrefix = true
+  } = props
+
+  const {t} = useTranslation()
+
   const href =
     cloudName === 'jira-demo'
       ? 'https://www.parabol.co/features/integrations'
-      : `https://${cloudName}.atlassian.net/browse/${issueKey}`
+      : t('JiraIssueLink.HttpsCloudNameAtlassianNetBrowseIssueKey', {
+          cloudName,
+          issueKey
+        })
   return (
     <StyledLink
       className={className}
@@ -38,10 +53,15 @@ const JiraIssueLink = (props: Props) => {
       href={href}
       rel='noopener noreferrer'
       target='_blank'
-      title={`Jira Issue #${issueKey} on ${projectKey}`}
+      title={t('JiraIssueLink.JiraIssueIssueKeyOnProjectKey', {
+        issueKey,
+        projectKey
+      })}
     >
-      {`${showLabelPrefix ? 'Issue #' : ''}
-      ${issueKey}`}
+      {t('JiraIssueLink.ShowLabelPrefixIssueIssueKey', {
+        showLabelPrefixIssue: showLabelPrefix ? 'Issue #' : '',
+        issueKey
+      })}
       {children}
     </StyledLink>
   )

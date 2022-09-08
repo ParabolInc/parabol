@@ -12,7 +12,6 @@ interface Props {
 const JiraScopingSearchInput = (props: Props) => {
   const {meetingRef} = props
 
-  //FIXME i18n: Search issues on Jira
   const {t} = useTranslation()
 
   const meeting = useFragment(
@@ -31,14 +30,16 @@ const JiraScopingSearchInput = (props: Props) => {
   const {id: meetingId, jiraSearchQuery} = meeting
   const {isJQL, queryString} = jiraSearchQuery
 
-  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira'
+  const placeholder = isJQL
+    ? t('JiraScopingSearchInput.SprintFunAndProjectDev', {})
+    : t('JiraScopingSearchInput.SearchIssuesOnJira')
 
   return (
     <ScopingSearchInput
       placeholder={placeholder}
       queryString={queryString}
       meetingId={meetingId}
-      linkedRecordName={t('JiraScopingSearchInput.Jirasearchquery')}
+      linkedRecordName={t('JiraScopingSearchInput.JiraSearchQuery')}
       service={t('JiraScopingSearchInput.Jira')}
     />
   )

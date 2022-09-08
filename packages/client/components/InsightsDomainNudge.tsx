@@ -52,9 +52,6 @@ interface Props {
 const InsightsDomainNudge = (props: Props) => {
   const {domainRef} = props
 
-  //FIXME i18n: Contact Us
-  //FIXME i18n: mailto:love@parabol.co?subject=Increase Usage Limits
-  //FIXME i18n: Clicked Domain Stats CTA
   const {t} = useTranslation()
 
   const domain = useFragment(
@@ -85,15 +82,19 @@ const InsightsDomainNudge = (props: Props) => {
   const suggestPro = suggestedTier === 'pro' && tier === 'personal'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
   const showNudge = suggestPro || suggestEnterprise
-  const CTACopy = suggestPro ? `Upgrade ${organizationName} to Pro` : 'Contact Us'
+  const CTACopy = suggestPro
+    ? t('InsightsDomainNudge.UpgradeOrganizationNameToPro', {
+        organizationName
+      })
+    : t('InsightsDomainNudge.ContactUs')
   const CTAType = suggestPro ? 'pro' : 'enterprise'
   const onClickCTA = () => {
     if (suggestPro) {
       togglePortal()
     } else if (suggestEnterprise) {
-      window.open('mailto:love@parabol.co?subject=Increase Usage Limits')
+      window.open(t('InsightsDomainNudge.MailtoLoveParabolCoSubjectIncreaseUsageLimits'))
     }
-    SendClientSegmentEventMutation(atmosphere, 'Clicked Domain Stats CTA', {
+    SendClientSegmentEventMutation(atmosphere, t('InsightsDomainNudge.ClickedDomainStatsCta'), {
       CTAType,
       domainId
     })

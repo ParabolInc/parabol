@@ -59,10 +59,6 @@ interface Props {
 const EditorLinkChangerModal = (props: Props) => {
   const {originCoords, removeModal, link, text, handleSubmit, handleEscape} = props
 
-  //FIXME i18n: Maybe give it a name?
-  //FIXME i18n: That name is looking pretty long
-  //FIXME i18n: No link provided
-  //FIXME i18n: Not looking too linky
   const {t} = useTranslation()
 
   const trimmedText = text ? text.trim() : ''
@@ -77,16 +73,16 @@ const EditorLinkChangerModal = (props: Props) => {
         new Legitity(value)
           .trim()
           .required()
-          .min(1, 'Maybe give it a name?')
-          .max(100, 'That name is looking pretty long')
+          .min(1, t('EditorLinkChangerModal.MaybeGiveItAName'))
+          .max(100, t('EditorLinkChangerModal.ThatNameIsLookingPrettyLong'))
     },
     link: {
       getDefault: () => link,
       validate: (value) =>
         new Legitity(value).test((maybeUrl) => {
-          if (!maybeUrl) return 'No link provided'
+          if (!maybeUrl) return t('EditorLinkChangerModal.NoLinkProvided')
           const links = linkify.match(maybeUrl)
-          return !links ? 'Not looking too linky' : undefined
+          return !links ? t('EditorLinkChangerModal.NotLookingTooLinky') : undefined
         })
     }
   })
@@ -110,14 +106,14 @@ const EditorLinkChangerModal = (props: Props) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === t('EditorLinkChangerModal.Escape')) {
       removeModal(true)
       handleEscape && handleEscape()
     }
   }
 
   const hasError = !!(fields.text.error || fields.link.error)
-  const label = !!trimmedText ? 'Update' : 'Add'
+  const label = !!trimmedText ? t('EditorLinkChangerModal.Update') : t('EditorLinkChangerModal.Add')
   return menuPortal(
     <ModalBoundary onBlur={handleBlur} onKeyDown={handleKeyDown} tabIndex={-1}>
       <form onSubmit={onSubmit}>

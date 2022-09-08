@@ -20,7 +20,6 @@ interface Props {
 const ReactjiPicker = (props: Props) => {
   const {menuProps, onClick} = props
 
-  //FIXME i18n: Pick a reactji
   const {t} = useTranslation()
 
   const {closePortal} = menuProps
@@ -29,7 +28,7 @@ const ReactjiPicker = (props: Props) => {
     closePortal()
   }
   return (
-    <TallMenu ariaLabel='Pick a reactji' {...menuProps}>
+    <TallMenu ariaLabel={t('ReactjiPicker.PickAReactji')} {...menuProps}>
       <NimblePicker
         set={t('ReactjiPicker.Apple')}
         data={appleEmojis}

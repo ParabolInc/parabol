@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {JiraScopingSearchBar_meeting$key} from '../__generated__/JiraScopingSearchBar_meeting.graphql'
 import JiraScopingSearchFilterToggle from './JiraScopingSearchFilterToggle'
@@ -13,6 +14,8 @@ interface Props {
 
 const JiraScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
 
   const meeting = useFragment(
     graphql`
@@ -51,7 +54,9 @@ const JiraScopingSearchBar = (props: Props) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
     if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
   })
-  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+  const currentFilters = selectedProjectsPaths.length
+    ? selectedProjectsPaths.join(', ')
+    : t('JiraScopingSearchBar.None')
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>

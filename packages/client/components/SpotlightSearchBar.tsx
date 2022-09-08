@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Search as SearchIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import Atmosphere from '../Atmosphere'
@@ -65,6 +66,9 @@ interface Props {
 
 const SpotlightSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  const {t} = useTranslation()
+
   const hasSearchedRef = useRef(false)
   const meeting = useFragment(
     graphql`
@@ -82,7 +86,7 @@ const SpotlightSearchBar = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSpotlightSearch(atmosphere, meetingId, e.currentTarget.value)
     if (!hasSearchedRef.current) {
-      SendClientSegmentEventMutation(atmosphere, 'Searched in Spotlight', {
+      SendClientSegmentEventMutation(atmosphere, t('SpotlightSearchBar.SearchedInSpotlight'), {
         reflectionId: spotlightReflectionId,
         meetingId
       })
@@ -92,7 +96,7 @@ const SpotlightSearchBar = (props: Props) => {
 
   const inputRef = useRef<HTMLInputElement>(null)
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && inputRef.current) {
+    if (e.key === t('SpotlightSearchBar.Escape') && inputRef.current) {
       e.stopPropagation()
       e.preventDefault()
       inputRef.current.blur()
@@ -110,7 +114,7 @@ const SpotlightSearchBar = (props: Props) => {
           autoFocus
           autoComplete='off'
           name='search'
-          placeholder='Or search for keywords...'
+          placeholder={t('SpotlightSearchBar.OrSearchForKeywords')}
           type='text'
           spellCheck={true}
           onChange={onChange}

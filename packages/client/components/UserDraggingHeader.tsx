@@ -2,6 +2,7 @@ import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import BaseTag from './Tag/BaseTag'
@@ -62,9 +63,12 @@ interface Props {
 
 const UserDraggingHeader = (props: Props) => {
   const {arrow, userId, name, style} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const label = userId === viewerId ? 'Your ghost 👻' : name
+  const label = userId === viewerId ? t('UserDraggingHeader.YourGhost👻') : name
   const arrowEl = (
     <ArrowIcon>
       {

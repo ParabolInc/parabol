@@ -18,13 +18,20 @@ const PaymentRejected = (props: Props) => {
   const {history} = useRouter()
   const {organization} = notification
   const {id: orgId, creditCard} = organization
-  const {last4, brand} = creditCard || {last4: '****', brand: 'Unknown'}
+  const {last4, brand} = creditCard || {last4: '****', brand: t('PaymentRejected.Unknown')}
   const addBilling = () => {
-    history.push(`/me/organizations/${orgId}`)
+    history.push(
+      t('PaymentRejected.MeOrganizationsOrgId', {
+        orgId
+      })
+    )
   }
   return (
     <NotificationTemplate
-      message={`Your ${brand} card ending in ${last4} was rejected`}
+      message={t('PaymentRejected.YourBrandCardEndingInLast4WasRejected', {
+        brand,
+        last4
+      })}
       notification={notification}
       action={
         <NotificationAction

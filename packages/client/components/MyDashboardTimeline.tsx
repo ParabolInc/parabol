@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import useNewFeatureSnackbar from '../hooks/useNewFeatureSnackbar'
@@ -39,6 +40,9 @@ const FeedAndDrawer = styled('div')({
 
 const MyDashboardTimeline = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<MyDashboardTimelineQuery>(
     graphql`
       query MyDashboardTimelineQuery($first: Int!, $after: DateTime, $userIds: [ID!]) {
@@ -57,7 +61,7 @@ const MyDashboardTimeline = (props: Props) => {
   )
   const {viewer} = data
   useNewFeatureSnackbar(viewer)
-  useDocumentTitle('My Timeline | Parabol', 'Timeline')
+  useDocumentTitle(t('MyDashboardTimeline.MyTimelineParabol'), t('MyDashboardTimeline.Timeline'))
   return (
     <FeedAndDrawer>
       <TimelineFeed>

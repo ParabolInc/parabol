@@ -29,7 +29,6 @@ interface Props {
 const LeaveTeamModal = (props: Props) => {
   const {closePortal, teamMember} = props
 
-  //FIXME i18n: Leave the team
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -48,7 +47,7 @@ const LeaveTeamModal = (props: Props) => {
         <br />
         {t('LeaveTeamModal.AllOfYourTasksWillBeGivenToTheTeamLead')}
         <StyledButton size='medium' onClick={handleClick}>
-          <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
+          <IconLabel icon='arrow_forward' iconAfter label={t('LeaveTeamModal.LeaveTheTeam')} />
         </StyledButton>
       </DialogContent>
     </StyledDialogContainer>

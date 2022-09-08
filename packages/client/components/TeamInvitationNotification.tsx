@@ -38,7 +38,10 @@ const TeamInvitationNotification = (props: Props) => {
   return (
     <NotificationTemplate
       avatar={inviterPicture}
-      message={`${inviterName} invited you to the ${teamName} team`}
+      message={t('TeamInvitationNotification.InviterNameInvitedYouToTheTeamNameTeam', {
+        inviterName,
+        teamName
+      })}
       notification={notification}
       action={
         <NotificationAction

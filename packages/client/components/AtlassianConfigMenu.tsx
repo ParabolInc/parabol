@@ -17,8 +17,6 @@ interface Props {
 const AtlassianConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
 
-  //FIXME i18n: Refresh token
-  //FIXME i18n: Remove Atlassian
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -34,8 +32,8 @@ const AtlassianConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={t('AtlassianConfigMenu.ConfigureYourAtlassianIntegration')} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove Atlassian' onClick={removeAtlassian} />
+      <MenuItem label={t('AtlassianConfigMenu.RefreshToken')} onClick={openOAuth} />
+      <MenuItem label={t('AtlassianConfigMenu.RemoveAtlassian')} onClick={removeAtlassian} />
     </Menu>
   )
 }

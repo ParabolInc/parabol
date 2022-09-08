@@ -62,10 +62,17 @@ const SelectMeetingDropdown = (props: Props) => {
 
   const {history} = useRouter()
   const meetingCount = meetings.length
-  const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
+  const label = t('SelectMeetingDropdown.MeetingCountActivePluralMeetingCountMeeting', {
+    meetingCount,
+    pluralMeetingCountMeeting: plural(meetingCount, 'Meeting')
+  })
   const startMeeting = () => {
     const teamId = getTeamIdFromPathname()
-    history.push(`/new-meeting/${teamId}`)
+    history.push(
+      t('SelectMeetingDropdown.NewMeetingTeamId', {
+        teamId
+      })
+    )
   }
   return (
     <Menu ariaLabel={t('SelectMeetingDropdown.SelectTheMeetingToEnter')} {...menuProps}>
@@ -73,7 +80,11 @@ const SelectMeetingDropdown = (props: Props) => {
       {meetingCount === 0 && <MenuItem onClick={startMeeting} label={<NoMeetingItem />} />}
       {meetings.map((meeting) => {
         const handleClick = () => {
-          history.push(`/meet/${meeting.id}`)
+          history.push(
+            t('SelectMeetingDropdown.MeetMeetingId', {
+              meetingId: meeting.id
+            })
+          )
         }
         return (
           <MenuItem

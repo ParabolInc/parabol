@@ -21,8 +21,6 @@ const getValue = (item: Repo) => item.nameWithOwner
 const NewGitHubIssueMenu = (props: Props) => {
   const {handleSelectNameWithOwner, menuProps, repos} = props
 
-  //FIXME i18n: Select GitHub project
-  //FIXME i18n: Search GitHub
   const {t} = useTranslation()
 
   const {
@@ -33,12 +31,16 @@ const NewGitHubIssueMenu = (props: Props) => {
 
   return (
     <Menu
-      ariaLabel='Select GitHub project'
+      ariaLabel={t('NewGitHubIssueMenu.SelectGitHubProject')}
       keepParentFocus
       {...menuProps}
       resetActiveOnChanges={[filteredRepos]}
     >
-      <SearchMenuItem placeholder='Search GitHub' onChange={onQueryChange} value={query} />
+      <SearchMenuItem
+        placeholder={t('NewGitHubIssueMenu.SearchGitHub')}
+        onChange={onQueryChange}
+        value={query}
+      />
       {query && filteredRepos.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           {t('NewGitHubIssueMenu.NoReposFound')}

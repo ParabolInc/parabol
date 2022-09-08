@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {MoreVert} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
@@ -45,10 +46,15 @@ interface Props {
 
 const CommentAuthorOptionsButton = (props: Props) => {
   const {commentId, editComment, dataCy, meetingId} = props
+
+  const {t} = useTranslation()
+
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <StyledButton
-      data-cy={`${dataCy}-dropdown-menu`}
+      data-cy={t('CommentAuthorOptionsButton.DataCyDropdownMenu', {
+        dataCy
+      })}
       onMouseEnter={CommentAuthorOptionsDropdown.preload}
       ref={originRef}
       onClick={togglePortal}

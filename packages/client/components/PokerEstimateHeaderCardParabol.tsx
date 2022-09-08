@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
 import React, {useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useEditorState from '~/hooks/useEditorState'
@@ -70,6 +71,9 @@ interface Props {
 
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {task} = props
+
+  const {t} = useTranslation()
+
   const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(true)
@@ -116,7 +120,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
         <Content>
           <EditorWrapper isExpanded={isExpanded} onBlur={onBlur}>
             <StyledTaskEditor
-              dataCy={`task`}
+              dataCy={t('PokerEstimateHeaderCardParabol.Task', {})}
               editorRef={editorRef}
               editorState={editorState}
               setEditorState={setEditorState}

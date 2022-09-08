@@ -1,4 +1,5 @@
 import React, {Suspense} from 'react'
+import {useTranslation} from 'react-i18next'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
@@ -12,7 +13,14 @@ interface Props {
 }
 
 const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: Props) => {
-  useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
+  const {t} = useTranslation()
+
+  useDocumentTitle(
+    t('ArchiveTaskRoot.TeamArchiveTeamName', {
+      teamName: team.name
+    }),
+    t('ArchiveTaskRoot.Archive')
+  )
 
   const queryRef = useQueryLoaderNow<TeamArchiveQuery>(teamArchiveQuery, {
     userIds,

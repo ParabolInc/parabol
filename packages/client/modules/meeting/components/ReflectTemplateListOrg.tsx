@@ -89,7 +89,14 @@ const ReflectTemplateListOrg = (props: Props) => {
   }
   if (filteredEdges.length === 0) {
     return (
-      <Message>{`No template names in your organization match your search query "${searchQuery}"`}</Message>
+      <Message>
+        {t(
+          'ReflectTemplateListOrg.NoTemplateNamesInYourOrganizationMatchYourSearchQuerySearchQuery',
+          {
+            searchQuery
+          }
+        )}
+      </Message>
     )
   }
   return (

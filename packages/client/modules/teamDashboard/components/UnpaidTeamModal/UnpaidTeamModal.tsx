@@ -46,7 +46,6 @@ const query = graphql`
 const UnpaidTeamModal = (props: Props) => {
   const {queryRef} = props
 
-  //FIXME i18n: Take me there
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<UnpaidTeamModalQuery>(query, queryRef, {
@@ -69,14 +68,26 @@ const UnpaidTeamModal = (props: Props) => {
 
   const {id: orgId, billingLeaders, name: orgName} = organization
   const [firstBillingLeader] = billingLeaders
-  const billingLeaderName = firstBillingLeader?.preferredName ?? 'Unknown'
-  const email = firstBillingLeader?.email ?? 'Unknown'
+  const billingLeaderName = firstBillingLeader?.preferredName ?? t('UnpaidTeamModal.Unknown')
+  const email = firstBillingLeader?.email ?? t('UnpaidTeamModal.Unknown')
   const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
-  const handleClick = () => history.push(`/me/organizations/${orgId}`)
-  const problem = `There in an unpaid invoice for ${teamName}.`
+  const handleClick = () =>
+    history.push(
+      t('UnpaidTeamModal.MeOrganizationsOrgId', {
+        orgId
+      })
+    )
+  const problem = t('UnpaidTeamModal.ThereInAnUnpaidInvoiceForTeamName', {
+    teamName
+  })
   const solution = isALeader
-    ? `Head over to ${orgName} Settings to add a payment method`
-    : `Try reaching out to ${billingLeaderName} at ${email}`
+    ? t('UnpaidTeamModal.HeadOverToOrgNameSettingsToAddAPaymentMethod', {
+        orgName
+      })
+    : t('UnpaidTeamModal.TryReachingOutToBillingLeaderNameAtEmail', {
+        billingLeaderName,
+        email
+      })
   return (
     <DashModal>
       <DialogTitle>{t('UnpaidTeamModal.OhDear')}</DialogTitle>
@@ -86,7 +97,7 @@ const UnpaidTeamModal = (props: Props) => {
         {solution}
         {isALeader && (
           <StyledButton size='medium' onClick={handleClick}>
-            <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
+            <IconLabel icon='arrow_forward' iconAfter label={t('UnpaidTeamModal.TakeMeThere')} />
           </StyledButton>
         )}
       </DialogContent>

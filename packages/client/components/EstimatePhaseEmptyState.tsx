@@ -40,10 +40,16 @@ const EstimatePhaseEmptyState = (props: Props) => {
   return (
     <EmptyStateContainer>
       <StyledHeading>{t('EstimatePhaseEmptyState.NoItemsToEstimate')}</StyledHeading>
-      <StyledCopy>{t('EstimatePhaseEmptyState.ItLooksLikeYouHavenTAddedAnyItemsYet')}</StyledCopy>
+      <StyledCopy>{t('EstimatePhaseEmptyState.ItLooksLikeYouHaventAddedAnyItemsYet')}</StyledCopy>
       <StyledCopy>
         {t('EstimatePhaseEmptyState.TryAddingThem')}
-        <Link to={`/meet/${meetingId}/scope`}>{t('EstimatePhaseEmptyState.Here')}</Link>
+        <Link
+          to={t('EstimatePhaseEmptyState.MeetMeetingIdScope', {
+            meetingId
+          })}
+        >
+          {t('EstimatePhaseEmptyState.Here')}
+        </Link>
       </StyledCopy>
     </EmptyStateContainer>
   )

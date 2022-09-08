@@ -20,7 +20,11 @@ const SuggestedActionTryActionMeeting = (props: Props) => {
     const {history, suggestedAction} = props
     const {team} = suggestedAction
     const {id: teamId} = team
-    history.push(`/new-meeting/${teamId}`)
+    history.push(
+      t('SuggestedActionTryActionMeeting.NewMeetingTeamId', {
+        teamId
+      })
+    )
   }
 
   const {suggestedAction} = props

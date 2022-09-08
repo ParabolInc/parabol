@@ -124,8 +124,6 @@ const IllustrationBlock = () => {
 const AddTeamMemberModal = (props: Props) => {
   const {closePortal, meetingId, teamMembers, teamId} = props
 
-  //FIXME i18n: Send Invitation
-  //FIXME i18n: email@example.co, another@example.co
   const {t} = useTranslation()
 
   const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
@@ -148,8 +146,14 @@ const AddTeamMemberModal = (props: Props) => {
     if (invalidEmailExists) {
       const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
       lastValidEmail
-        ? onError(new Error(`Invalid email(s) after ${lastValidEmail}`))
-        : onError(new Error(`Invalid email(s)`))
+        ? onError(
+            new Error(
+              t('AddTeamMemberModal.InvalidEmailSAfterLastValidEmail', {
+                lastValidEmail
+              })
+            )
+          )
+        : onError(new Error(t('AddTeamMemberModal.InvalidEmailS', {})))
     } else {
       onCompleted()
     }
@@ -160,19 +164,35 @@ const AddTeamMemberModal = (props: Props) => {
     setInvitees(offTeamInvitees)
     if (!invalidEmailExists) {
       if (alreadyInvitedEmails.length === 1) {
-        onError(new Error(`${alreadyInvitedEmails} is already on the team`))
+        onError(
+          new Error(
+            t('AddTeamMemberModal.AlreadyInvitedEmailsIsAlreadyOnTheTeam', {
+              alreadyInvitedEmails
+            })
+          )
+        )
       } else if (alreadyInvitedEmails.length === 2) {
         onError(
           new Error(
-            `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails[1]} are already on the team`
+            t(
+              'AddTeamMemberModal.AlreadyInvitedEmails0AndAlreadyInvitedEmails1AreAlreadyOnTheTeam',
+              {
+                alreadyInvitedEmails0: alreadyInvitedEmails[0],
+                alreadyInvitedEmails1: alreadyInvitedEmails[1]
+              }
+            )
           )
         )
       } else if (alreadyInvitedEmails.length > 2) {
         onError(
           new Error(
-            `${alreadyInvitedEmails[0]} and ${
-              alreadyInvitedEmails.length - 1
-            } other emails are already on the team`
+            t(
+              'AddTeamMemberModal.AlreadyInvitedEmails0AndAlreadyInvitedEmailsLength1OtherEmailsAreAlreadyOnTheTeam',
+              {
+                alreadyInvitedEmails0: alreadyInvitedEmails[0],
+                alreadyInvitedEmailsLength1: alreadyInvitedEmails.length - 1
+              }
+            )
           )
         )
       }
@@ -196,7 +216,12 @@ const AddTeamMemberModal = (props: Props) => {
 
           onError(
             new Error(
-              `Could not send an invitation to the above ${plural(badInvitees.length, 'email')}`
+              t(
+                'AddTeamMemberModal.CouldNotSendAnInvitationToTheAbovePluralBadInviteesLengthEmail',
+                {
+                  pluralBadInviteesLengthEmail: plural(badInvitees.length, 'email')
+                }
+              )
             )
           )
           setInvitees(badInvitees)
@@ -221,7 +246,12 @@ const AddTeamMemberModal = (props: Props) => {
       />
     )
   }
-  const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
+  const title =
+    invitees.length <= 1
+      ? t('AddTeamMemberModal.SendInvitation')
+      : t('AddTeamMemberModal.SendInviteesLengthInvitations', {
+          inviteesLength: invitees.length
+        })
   return (
     <StyledDialogContainer>
       <IllustrationBlock />
@@ -239,7 +269,7 @@ const AddTeamMemberModal = (props: Props) => {
               autoFocus
               name='rawInvitees'
               onChange={onChange}
-              placeholder='email@example.co, another@example.co'
+              placeholder={t('AddTeamMemberModal.EmailExampleCoAnotherExampleCo')}
               value={rawInvitees}
             />
             {error && (

@@ -33,8 +33,6 @@ const FirstCallWrapper = styled('div')({
 const ActionMeetingFirstCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
 
-  //FIXME i18n: Nothing to see here
-  //FIXME i18n: Now, what do you need?
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -60,13 +58,17 @@ const ActionMeetingFirstCall = (props: Props) => {
           <FirstCallWrapper>
             <MeetingPhaseHeading>
               {endedAt && agendaItemsCompleted === 0
-                ? 'Nothing to see here'
-                : 'Now, what do you need?'}
+                ? t('ActionMeetingFirstCall.NothingToSeeHere')
+                : t('ActionMeetingFirstCall.NowWhatDoYouNeed')}
             </MeetingPhaseHeading>
             <MeetingCopy>
               {endedAt && agendaItemsCompleted === 0
-                ? `There were no ${AGENDA_ITEM_LABEL}s in this meeting.`
-                : `Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}
+                ? t('ActionMeetingFirstCall.ThereWereNoAgendaItemLabelSInThisMeeting', {
+                    agendaItemLabel: AGENDA_ITEM_LABEL
+                  })
+                : t('ActionMeetingFirstCall.TimeToAddYourAgendaItemLabelSToTheList', {
+                    agendaItemLabel: AGENDA_ITEM_LABEL
+                  })}
             </MeetingCopy>
             {!endedAt && (
               <>
@@ -74,7 +76,9 @@ const ActionMeetingFirstCall = (props: Props) => {
                 {!isFacilitating && (
                   <MeetingFacilitationHint>
                     {t('ActionMeetingFirstCall.WaitingFor')} <b>{preferredName}</b>{' '}
-                    {`to start the ${phaseName}`}
+                    {t('ActionMeetingFirstCall.ToStartThePhaseName', {
+                      phaseName
+                    })}
                   </MeetingFacilitationHint>
                 )}
               </>

@@ -198,7 +198,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
         return (
           <ScopingSearchResultItem
             key={node.id}
-            service={t('JiraServerScopingSearchResults.Jiraserver')}
+            service={t('JiraServerScopingSearchResults.JiraServer')}
             usedServiceTaskIds={usedServiceTaskIds}
             serviceTaskId={node.id}
             meetingId={meetingId}
@@ -206,13 +206,15 @@ const JiraServerScopingSearchResults = (props: Props) => {
             summary={node.summary}
             url={node.url}
             linkText={node.issueKey}
-            linkTitle={`Jira Server Issue #${node.issueKey}`}
+            linkTitle={t('JiraServerScopingSearchResults.JiraServerIssueNodeIssueKey', {
+              nodeIssueKey: node.issueKey
+            })}
           />
         )
       })}
       {lastItem}
       {hasNext && (
-        <LoadingNext key={t('JiraServerScopingSearchResults.Loadingnext')}>
+        <LoadingNext key={t('JiraServerScopingSearchResults.LoadingNext')}>
           <Ellipsis />
         </LoadingNext>
       )}

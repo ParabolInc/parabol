@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {KickedOut_notification} from '~/__generated__/KickedOut_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
@@ -10,13 +11,19 @@ interface Props {
 
 const KickedOut = (props: Props) => {
   const {notification} = props
+
+  const {t} = useTranslation()
+
   const {team, evictor} = notification
   const {name: teamName} = team
   const {preferredName: evictorName, picture: evictorPicture} = evictor
   return (
     <NotificationTemplate
       avatar={evictorPicture}
-      message={`${evictorName} removed you from the ${teamName} team`}
+      message={t('KickedOut.EvictorNameRemovedYouFromTheTeamNameTeam', {
+        evictorName,
+        teamName
+      })}
       notification={notification}
     />
   )

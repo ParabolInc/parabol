@@ -83,7 +83,6 @@ interface Props {
 }
 
 const AgendaInput = (props: Props) => {
-  //FIXME i18n: Add Agenda Topic…
   const {t} = useTranslation()
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -127,7 +126,7 @@ const AgendaInput = (props: Props) => {
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && inputRef.current) {
+    if (e.key === t('AgendaInput.Escape') && inputRef.current) {
       inputRef.current.blur()
     }
   }
@@ -161,7 +160,7 @@ const AgendaInput = (props: Props) => {
           name='newItem'
           onChange={onChange}
           onKeyDown={onKeyDown}
-          placeholder='Add Agenda Topic…'
+          placeholder={t('AgendaInput.AddAgendaTopic')}
           ref={inputRef}
           type='text'
           value={value}

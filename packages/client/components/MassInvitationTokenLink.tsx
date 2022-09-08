@@ -79,7 +79,10 @@ const MassInvitationTokenLink = (props: Props) => {
     doFetch().catch()
   }, [])
   const displayToken = isTokenValid ? token : '············'
-  const linkLabel = `${window.__ACTION__.prblIn}/${displayToken}`
+  const linkLabel = t('MassInvitationTokenLink.WindowActionPrblInDisplayToken', {
+    windowActionPrblIn: window.__ACTION__.prblIn,
+    displayToken
+  })
   const url = getMassInvitationUrl(displayToken)
   return (
     <StyledCopyShortLink

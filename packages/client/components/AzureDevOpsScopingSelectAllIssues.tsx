@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -9,10 +10,9 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {AzureDevOpsScopingSelectAllIssues_workItems} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
-
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -44,6 +44,9 @@ interface Props {
 
 const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, workItems, providerId} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const getProjectId = (url: URL) => {
@@ -54,7 +57,11 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
 
   const serviceTaskIds = workItems.map((userStory) => {
     const url = new URL(userStory.node.url)
-    return AzureDevOpsIssueId.join(AzureDevOpsClientManager.getInstanceId(url), getProjectId(url), userStory.node.id)
+    return AzureDevOpsIssueId.join(
+      AzureDevOpsClientManager.getInstanceId(url),
+      getProjectId(url),
+      userStory.node.id
+    )
   })
 
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
@@ -81,13 +88,12 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
       const workItem = workItems.find(
         (workItemEdge) => workItemEdge.node.id === update.serviceTaskId
       )
-      return workItem?.node.title ?? 'Unknown Work Item'
+      return workItem?.node.title ?? t('AzureDevOpsScopingSelectAllIssues.UnknownWorkItem')
     })
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
   if (workItems.length < 2) return null
   const title = getSelectAllTitle(workItems.length, usedServiceTaskIds.size, 'workItem')
-
 
   return (
     <>

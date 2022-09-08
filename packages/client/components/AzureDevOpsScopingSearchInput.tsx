@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import Atmosphere from '../Atmosphere'
@@ -47,13 +48,16 @@ interface Props {
 
 const AzureDevOpsScopingSearchInput = (props: Props) => {
   const {meeting} = props
+
+  const {t} = useTranslation()
+
   const {id: meetingId, azureDevOpsSearchQuery} = meeting
   const {isWIQL, queryString} = azureDevOpsSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   const placeholder = isWIQL
-    ? `[System.WorkItemType] = 'User Story' AND [System.State] <> 'Closed'`
-    : 'Search issues on Azure DevOps'
+    ? t('AzureDevOpsScopingSearchInput.SystemWorkItemTypeUserStoryAndSystemStateClosed', {})
+    : t('AzureDevOpsScopingSearchInput.SearchIssuesOnAzureDevOps')
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, meetingId, e.target.value)
   }

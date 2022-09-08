@@ -22,11 +22,13 @@ const TeamName = styled('span')({
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation} = props
 
-  //FIXME i18n: Invitation Link
   const {t} = useTranslation()
 
   const {teamName, inviterName} = massInvitation
-  useDocumentTitle(`Token Expired | Invitation Link`, 'Invitation Link')
+  useDocumentTitle(
+    t('InvitationLinkErrorExpired.TokenExpiredInvitationLink', {}),
+    t('InvitationLinkErrorExpired.InvitationLink')
+  )
   return (
     <InviteDialog>
       <DialogTitle>{t('InvitationLinkErrorExpired.InvitationLinkExpired')}</DialogTitle>

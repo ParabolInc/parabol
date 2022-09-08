@@ -25,8 +25,6 @@ interface Props {
 const ScaleActions = (props: Props) => {
   const {scale, scaleCount, teamId} = props
 
-  //FIXME i18n: Clone default scale
-  //FIXME i18n: Too many team templates! Remove one first
   const {t} = useTranslation()
 
   const {id: scaleId, isStarter} = scale
@@ -34,8 +32,8 @@ const ScaleActions = (props: Props) => {
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const canClone = scaleCount < Threshold.MAX_POKER_TEMPLATE_SCALES
   const cloneTooltip = canClone
-    ? 'Clone default scale'
-    : 'Too many team templates! Remove one first'
+    ? t('ScaleActions.CloneDefaultScale')
+    : t('ScaleActions.TooManyTeamTemplatesRemoveOneFirst')
   const cloneScale = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (submitting || !canClone) return

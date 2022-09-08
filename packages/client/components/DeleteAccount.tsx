@@ -18,8 +18,6 @@ const Hint = styled('div')({
 })
 
 const DeleteAccount = () => {
-  //FIXME i18n: Click to permanently delete your account.
-  //FIXME i18n: Delete Account
   const {t} = useTranslation()
 
   const {togglePortal, modalPortal} = useModal()
@@ -27,14 +25,14 @@ const DeleteAccount = () => {
     <>
       <div>
         <LinkButton
-          aria-label='Click to permanently delete your account.'
+          aria-label={t('DeleteAccount.ClickToPermanentlyDeleteYourAccount')}
           palette='red'
           onClick={togglePortal}
         >
-          <IconLabel icon='remove_circle' label='Delete Account' />
+          <IconLabel icon='remove_circle' label={t('DeleteAccount.DeleteAccount')} />
         </LinkButton>
         <Hint>
-          <b>{t('DeleteAccount.Note')}</b>: {t('DeleteAccount.ThisCanTBeUndone')}
+          <b>{t('DeleteAccount.Note')}</b>: {t('DeleteAccount.ThisCantBeUndone')}
         </Hint>
       </div>
       {modalPortal(<DeleteAccountModal />)}

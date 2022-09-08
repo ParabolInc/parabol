@@ -36,10 +36,18 @@ const EditingStatusText = (props: Props) => {
 
   const {t} = useTranslation()
 
-  const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated '
+  const timestampLabel =
+    timestampType === 'createdAt' ? t('EditingStatusText.Created') : t('EditingStatusText.Updated')
   const timeFrom = useTimeFrom(timestamp)
   if (isArchived) {
-    return <span>{`${timestampLabel}${timeFrom}`}</span>
+    return (
+      <span>
+        {t('EditingStatusText.TimestampLabelTimeFrom', {
+          timestampLabel,
+          timeFrom
+        })}
+      </span>
+    )
   }
   if (editors.length === 0) {
     if (isEditing) {
@@ -50,7 +58,14 @@ const EditingStatusText = (props: Props) => {
         </span>
       )
     }
-    return <span>{`${timestampLabel}${timeFrom}`}</span>
+    return (
+      <span>
+        {t('EditingStatusText.TimestampLabelTimeFrom', {
+          timestampLabel,
+          timeFrom
+        })}
+      </span>
+    )
   }
   const editorNames = editors.map((editor) => editor.preferredName)
   // one other is editing
@@ -76,7 +91,10 @@ const EditingStatusText = (props: Props) => {
     }
     return (
       <span>
-        {`${editorNames[0]} and ${editorNames[1]} are editing`}
+        {t('EditingStatusText.EditorNames0AndEditorNames1AreEditing', {
+          editorNames0: editorNames[0],
+          editorNames1: editorNames[1]
+        })}
         <Ellipsis />
       </span>
     )

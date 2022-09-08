@@ -115,7 +115,9 @@ const GroupingKanbanColumnHeader = (props: Props) => {
         <ButtonGroup>
           {phaseType === 'group' && (
             <AddReflectionButton
-              dataCy={`add-reflection-${question}`}
+              dataCy={t('GroupingKanbanColumnHeader.AddReflectionQuestion', {
+                question
+              })}
               aria-label={t('GroupingKanbanColumnHeader.AddAReflection')}
               disabled={!canAdd}
               onClick={handleClick}
@@ -138,7 +140,13 @@ const GroupingKanbanColumnHeader = (props: Props) => {
               >
                 <StyledIcon>{isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}</StyledIcon>
               </ExpandButton>
-              {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
+              {tooltipPortal(
+                <div>
+                  {t('GroupingKanbanColumnHeader.IsWidthExpandedMinimiseExpand', {
+                    isWidthExpandedMinimiseExpand: isWidthExpanded ? 'Minimise' : 'Expand'
+                  })}
+                </div>
+              )}
             </>
           )}
         </ButtonGroup>

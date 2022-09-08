@@ -20,7 +20,6 @@ const Link = styled(StyledLink)({
 const TimelineEventTeamCreated = (props: Props) => {
   const {timelineEvent} = props
 
-  //FIXME i18n: But now it is archived. What a wild ride!
   const {t} = useTranslation()
 
   const {team} = timelineEvent
@@ -29,15 +28,27 @@ const TimelineEventTeamCreated = (props: Props) => {
     <TimelineEventCard
       iconName='group_add'
       timelineEvent={timelineEvent}
-      title={<TimelineEventTitle>{`You created ${teamName}`}</TimelineEventTitle>}
+      title={
+        <TimelineEventTitle>
+          {t('TimelineEventTeamCreated.YouCreatedTeamName', {
+            teamName
+          })}
+        </TimelineEventTitle>
+      }
     >
       <TimelineEventBody>
         {isArchived ? (
-          'But now it is archived. What a wild ride!'
+          t('TimelineEventTeamCreated.ButNowItIsArchivedWhatAWildRide')
         ) : (
           <>
             {t('TimelineEventTeamCreated.VisitYour')}
-            <Link to={`/team/${teamId}`}>{t('TimelineEventTeamCreated.TeamDashboard')}</Link>
+            <Link
+              to={t('TimelineEventTeamCreated.TeamTeamId', {
+                teamId
+              })}
+            >
+              {t('TimelineEventTeamCreated.TeamDashboard')}
+            </Link>
           </>
         )}
       </TimelineEventBody>

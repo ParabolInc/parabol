@@ -289,7 +289,7 @@ const PromptResponseEditor = (props: Props) => {
               size='medium'
               disabled={!editor || editor.isEmpty}
             >
-              {!content ? 'Submit' : 'Update'}
+              {!content ? t('PromptResponseEditor.Submit') : t('PromptResponseEditor.Update')}
             </SubmitButton>
           )}
         </SubmissionButtonWrapper>

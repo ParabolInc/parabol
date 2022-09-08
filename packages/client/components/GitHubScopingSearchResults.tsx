@@ -217,7 +217,10 @@ const GitHubScopingSearchResults = (props: Props) => {
         {issues.map((node) => {
           const {repository, number, title, url} = node
           const {nameWithOwner} = repository
-          const linkText = `#${number} ${nameWithOwner}`
+          const linkText = t('GitHubScopingSearchResults.NumberNameWithOwner', {
+            number,
+            nameWithOwner
+          })
           return (
             <ScopingSearchResultItem
               key={node.id}
@@ -235,7 +238,7 @@ const GitHubScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
         {hasNext && (
-          <LoadingNext key={t('GitHubScopingSearchResults.Loadingnext')}>
+          <LoadingNext key={t('GitHubScopingSearchResults.LoadingNext')}>
             <Ellipsis />
           </LoadingNext>
         )}

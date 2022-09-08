@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'
 import {DECELERATE, fadeIn} from '../styles/animation'
@@ -32,10 +33,13 @@ const Gauge = styled('div')<{isTimeUp: boolean; isDesktop}>(({isTimeUp, isDeskto
 
 const StageTimerDisplayGauge = (props: Props) => {
   const {endTime} = props
+
+  const {t} = useTranslation()
+
   useRefreshInterval(1000)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const timeLeft = endTime && countdown(endTime)
-  const fromNow = timeLeft || 'Time’s Up!'
+  const fromNow = timeLeft || t('StageTimerDisplayGauge.TimesUp')
   return (
     <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
       {fromNow}

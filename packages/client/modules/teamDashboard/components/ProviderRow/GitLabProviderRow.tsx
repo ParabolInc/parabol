@@ -86,8 +86,8 @@ const GitLabProviderRow = (props: Props) => {
         submitting={submitting}
         togglePortal={togglePortal}
         menuRef={menuRef}
-        providerName={t('GitLabProviderRow.Gitlab')}
-        providerDescription={t('GitLabProviderRow.UseGitlabIssuesFromWithinParabol')}
+        providerName={t('GitLabProviderRow.GitLab')}
+        providerDescription={t('GitLabProviderRow.UseGitLabIssuesFromWithinParabol')}
         providerLogo={<GitLabProviderLogo />}
       />
       {menuPortal(

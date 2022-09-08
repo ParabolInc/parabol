@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 import {
   DragAttribute,
   ElementWidth,
@@ -21,6 +21,7 @@ import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
+import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -90,6 +91,9 @@ const ReflectionGroup = (props: Props) => {
     reflectionIdsToHide,
     isSpotlightEntering
   } = props
+
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment ReflectionGroup_meeting on RetrospectiveMeeting {
@@ -258,7 +262,9 @@ const ReflectionGroup = (props: Props) => {
       >
         {showHeader && (
           <ReflectionGroupHeader
-            dataCy={`${dataCy}-header`}
+            dataCy={t('ReflectionGroup.DataCyHeader', {
+              dataCy
+            })}
             ref={headerRef}
             meeting={meeting}
             reflectionGroup={reflectionGroup}
@@ -266,13 +272,22 @@ const ReflectionGroup = (props: Props) => {
             titleInputRef={titleInputRef}
           />
         )}
-        <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
+        <CardStack
+          data-cy={t('ReflectionGroup.DataCyStack', {
+            dataCy
+          })}
+          ref={stackRef}
+          onClick={onClick}
+        >
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
             return (
               <ReflectionWrapper
-                data-cy={`${dataCy}-card-${staticIdx}`}
+                data-cy={t('ReflectionGroup.DataCyCardStaticIdx', {
+                  dataCy,
+                  staticIdx
+                })}
                 key={reflectionId}
                 groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
@@ -280,7 +295,10 @@ const ReflectionGroup = (props: Props) => {
                 isHiddenSpotlightSource={isSpotlightSrcGroup && isBehindSpotlight}
               >
                 <DraggableReflectionCard
-                  dataCy={`${dataCy}-card-${staticIdx}`}
+                  dataCy={t('ReflectionGroup.DataCyCardStaticIdx', {
+                    dataCy,
+                    staticIdx
+                  })}
                   key={reflection.id}
                   staticIdx={staticIdx}
                   isClipped={staticIdx > 0 || isRemoteSpotlightSrc}

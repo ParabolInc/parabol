@@ -36,9 +36,6 @@ interface Props {
 const AddNewPokerTemplate = (props: Props) => {
   const {gotoTeamTemplates, teamId, pokerTemplates} = props
 
-  //FIXME i18n: *New Template
-  //FIXME i18n: You already have a new template. Try renaming that one first.
-  //FIXME i18n: *New Template
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -54,7 +51,12 @@ const AddNewPokerTemplate = (props: Props) => {
     if (pokerTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       onError(
         new Error(
-          `You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`
+          t(
+            'AddNewPokerTemplate.YouMayOnlyHaveThresholdMaxRetroTeamTemplatesTemplatesPerTeamPleaseRemoveOneFirst',
+            {
+              thresholdMaxRetroTeamTemplates: Threshold.MAX_RETRO_TEAM_TEMPLATES
+            }
+          )
         )
       )
       errorTimerId.current = window.setTimeout(() => {
@@ -62,8 +64,8 @@ const AddNewPokerTemplate = (props: Props) => {
       }, 8000)
       return
     }
-    if (pokerTemplates.find((template) => template.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
+    if (pokerTemplates.find((template) => template.name === t('AddNewPokerTemplate.NewTemplate'))) {
+      onError(new Error(t('AddNewPokerTemplate.YouAlreadyHaveANewTemplateTryRenamingThatOneFirst')))
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
       }, 8000)
@@ -74,7 +76,9 @@ const AddNewPokerTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
 
-  const containsNewTemplate = pokerTemplates.find((template) => template.name === '*New Template')
+  const containsNewTemplate = pokerTemplates.find(
+    (template) => template.name === t('AddNewPokerTemplate.NewTemplate')
+  )
 
   if (pokerTemplates.length > Threshold.MAX_POKER_TEAM_TEMPLATES || containsNewTemplate) return null
   return (

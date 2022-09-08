@@ -10,6 +10,10 @@ import fs from 'fs'
 import stringify from 'json-stable-stringify'
 import _ from 'lodash'
 
+const BLACKLIST = [
+  "noopener noreferrer"
+]
+
 const getFunctionName = (fd: ASTPath<Function>) => {
   if (fd.value.type === 'ArrowFunctionExpression') {
     return fd.parentPath.value.id?.name
@@ -92,7 +96,7 @@ const transform: Transform = (fileInfo, api, options) => {
             addTranslation(component, key, text)
           }
           // likelihood is high that this is display text, let's wrap it, easier to remove than add
-          else if(text.includes(' ') || isUpperCaseWord(text)) {
+          else if(!BLACKLIST.includes(text) && (text.includes(' ') || isUpperCaseWord(text))) {
             // skip strings which are keys of objects
             if (fe.parentPath.value.type === 'ObjectProperty' && fe.parentPath.value.value !== fe.value) {
               return false

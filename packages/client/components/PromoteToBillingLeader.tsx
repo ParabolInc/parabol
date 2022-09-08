@@ -21,13 +21,19 @@ const PromoteToBillingLeader = (props: Props) => {
   const {name: orgName, id: orgId, picture: orgPicture} = organization
 
   const goToOrg = () => {
-    history.push(`/me/organizations/${orgId}`)
+    history.push(
+      t('PromoteToBillingLeader.MeOrganizationsOrgId', {
+        orgId
+      })
+    )
   }
 
   return (
     <NotificationTemplate
       avatar={orgPicture || defaultOrgAvatar}
-      message={`You‘ve been promoted to billing leader for ${orgName}`}
+      message={t('PromoteToBillingLeader.YouVeBeenPromotedToBillingLeaderForOrgName', {
+        orgName
+      })}
       action={
         <NotificationAction label={t('PromoteToBillingLeader.SeeOrganization')} onClick={goToOrg} />
       }

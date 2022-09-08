@@ -30,12 +30,13 @@ const TeamName = styled('span')({
 const TeamInvitationEmailSignin = (props: Props) => {
   const {invitationToken, verifiedInvitation} = props
 
-  //FIXME i18n: Sign in
-  //FIXME i18n: for immediate access to your team:
   const {t} = useTranslation()
 
   const {meetingName, user, teamInvitation, teamName} = verifiedInvitation
-  useDocumentTitle(`Sign in | Team Invitation`, 'Sign in')
+  useDocumentTitle(
+    t('TeamInvitationEmailSignin.SignInTeamInvitation', {}),
+    t('TeamInvitationEmailSignin.SignIn')
+  )
   if (!user || !teamInvitation) return null
   const {preferredName} = user
   const {email} = teamInvitation
@@ -48,7 +49,11 @@ const TeamInvitationEmailSignin = (props: Props) => {
       <DialogContent>
         <InvitationDialogCopy>
           {t('TeamInvitationEmailSignin.EnterYourPassword')}
-          {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
+          {meetingName
+            ? t('TeamInvitationEmailSignin.ToJoinMeetingNameFor', {
+                meetingName
+              })
+            : t('TeamInvitationEmailSignin.ForImmediateAccessToYourTeam')}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>

@@ -60,7 +60,14 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     <TimelineEventCard
       iconName='group_work'
       timelineEvent={timelineEvent}
-      title={<TimelineEventTitle>{`${meetingName} with ${teamName}`}</TimelineEventTitle>}
+      title={
+        <TimelineEventTitle>
+          {t('TimelineEventTeamPromptComplete.MeetingNameWithTeamName', {
+            meetingName,
+            teamName
+          })}
+        </TimelineEventTitle>
+      }
     >
       <TimelineEventBody>
         {t('TimelineEventTeamPromptComplete.YourTeamShared')}
@@ -79,11 +86,19 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/responses`}>
+        <Link
+          to={t('TimelineEventTeamPromptComplete.MeetMeetingIdResponses', {
+            meetingId
+          })}
+        >
           {t('TimelineEventTeamPromptComplete.SeeResponsesAndDiscussions')}
         </Link>
         {t('TimelineEventTeamPromptComplete.Or')}
-        <Link to={`/new-summary/${meetingId}`}>
+        <Link
+          to={t('TimelineEventTeamPromptComplete.NewSummaryMeetingId', {
+            meetingId
+          })}
+        >
           {t('TimelineEventTeamPromptComplete.ReviewASummary')}
         </Link>
       </TimelineEventBody>

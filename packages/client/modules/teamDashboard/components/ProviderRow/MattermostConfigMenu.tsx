@@ -17,7 +17,6 @@ interface Props {
 const MattermostConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, providerId} = props
 
-  //FIXME i18n: Remove Mattermost
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -33,7 +32,7 @@ const MattermostConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={t('MattermostConfigMenu.ConfigureYourMattermostIntegration')} {...menuProps}>
-      <MenuItem label='Remove Mattermost' onClick={removeMattermostAuth} />
+      <MenuItem label={t('MattermostConfigMenu.RemoveMattermost')} onClick={removeMattermostAuth} />
     </Menu>
   )
 }

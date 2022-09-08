@@ -71,7 +71,9 @@ const JiraScopingSearchCurrentFilters = (props: Props) => {
     const projectName = projects?.find((project) => project?.id === projectId)?.name
     if (projectName) projectFilterNames.push(projectName)
   })
-  const currentFilters = projectFilterNames.length ? projectFilterNames.join(', ') : 'None'
+  const currentFilters = projectFilterNames.length
+    ? projectFilterNames.join(', ')
+    : t('JiraScopingSearchCurrentFilters.None')
 
   return (
     <Wrapper>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -40,6 +41,9 @@ interface Props {
 
 const JiraScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issues} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, error} = useMutationProps()
   const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
@@ -65,7 +69,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
     }
     const contents = updates.map((update) => {
       const issue = issues.find((issueEdge) => issueEdge.node.id === update.serviceTaskId)
-      return issue?.node.summary ?? 'Unknown Story'
+      return issue?.node.summary ?? t('JiraScopingSelectAllIssues.UnknownStory')
     })
     UpdatePokerScopeMutation(atmosphere, variables, {
       onError,

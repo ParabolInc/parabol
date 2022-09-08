@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {NextPeriodChargesLineItem_item} from '~/__generated__/NextPeriodChargesLineItem_item.graphql'
 import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
@@ -14,11 +15,19 @@ interface Props {
 
 const NextPeriodChargesLineItem = (props: Props) => {
   const {item, tier} = props
+
+  const {t} = useTranslation()
+
   const {unitPrice, quantity} = item
   const amount = invoiceLineFormat(item.amount)
   if (tier === 'enterprise') {
     return (
-      <InvoiceLineItemContent description={`${quantity} Enterprise Licenses`} amount={amount} />
+      <InvoiceLineItemContent
+        description={t('NextPeriodChargesLineItem.QuantityEnterpriseLicenses', {
+          quantity
+        })}
+        amount={amount}
+      />
     )
   }
   const unitPriceString = (unitPrice! / 100).toLocaleString('en-US', {
@@ -26,7 +35,14 @@ const NextPeriodChargesLineItem = (props: Props) => {
     currency: 'USD',
     minimumFractionDigits: 0
   })
-  const description = `${quantity} active ${plural(quantity, 'user')} (${unitPriceString} each)`
+  const description = t(
+    'NextPeriodChargesLineItem.QuantityActivePluralQuantityUserUnitPriceStringEach',
+    {
+      quantity,
+      pluralQuantityUser: plural(quantity, 'user'),
+      unitPriceString
+    }
+  )
   return <InvoiceLineItemContent description={description} amount={amount} />
 }
 

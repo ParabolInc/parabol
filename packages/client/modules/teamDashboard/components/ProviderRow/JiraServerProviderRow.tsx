@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {JiraServerProviderRow_viewer$key} from '~/__generated__/JiraServerProviderRow_viewer.graphql'
 import JiraServerConfigMenu from '../../../../components/JiraServerConfigMenu'
@@ -36,6 +37,9 @@ graphql`
 
 const JiraServerProviderRow = (props: Props) => {
   const {viewerRef, teamId} = props
+
+  const {t} = useTranslation()
+
   const viewer = useFragment(
     graphql`
       fragment JiraServerProviderRow_viewer on User {
@@ -76,7 +80,10 @@ const JiraServerProviderRow = (props: Props) => {
         providerLogo={<JiraServerProviderLogo />}
         contactUsUrl={ExternalLinks.INTEGRATIONS_JIRASERVER}
         onContactUsSubmit={() => {
-          SendClientSegmentEventMutation(atmosphere, 'Clicked Jira Server Request Button')
+          SendClientSegmentEventMutation(
+            atmosphere,
+            t('JiraServerProviderRow.ClickedJiraServerRequestButton')
+          )
         }}
         hasProvider={!!provider}
       />

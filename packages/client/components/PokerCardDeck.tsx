@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
@@ -45,6 +46,8 @@ const RADIUS_M = 105 // slope of radius
 const RADIUS_B = 435 // y-intercept of radius
 
 const PokerCardDeck = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, estimateAreaRef} = props
@@ -116,7 +119,7 @@ const PokerCardDeck = (props: Props) => {
     if (error) {
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'voteError',
-        message: error.message || 'Error submitting vote',
+        message: error.message || t('PokerCardDeck.ErrorSubmittingVote'),
         autoDismiss: 5
       })
     }
@@ -157,7 +160,9 @@ const PokerCardDeck = (props: Props) => {
       translateX > 0 ? Math.min(translateX, maxSlide) : Math.max(translateX, -maxSlide)
     // forceUpdate()
     // react isn't performant enough to make this smooth using state
-    deckRef.current.style.transform = `translateX(${swipe.translateX}px)`
+    deckRef.current.style.transform = t('PokerCardDeck.TranslateXSwipeTranslateXPx', {
+      swipeTranslateX: swipe.translateX
+    })
   })
 
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {

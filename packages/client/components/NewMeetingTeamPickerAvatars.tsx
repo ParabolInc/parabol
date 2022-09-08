@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
@@ -33,6 +34,8 @@ interface Props {
 
 const NewMeetingTeamPickerAvatars = (props: Props) => {
   const {teamRef} = props
+
+  const {t} = useTranslation()
 
   const team = useFragment(
     graphql`
@@ -71,7 +74,11 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
       {randomAvatars.map((teamMember) => {
         const {picture} = teamMember
         return (
-          <ErrorBoundary key={`pickerAvatar${teamMember.id}`}>
+          <ErrorBoundary
+            key={t('NewMeetingTeamPickerAvatars.PickerAvatarTeamMemberId', {
+              teamMemberId: teamMember.id
+            })}
+          >
             <AvatarWrapper count={randomAvatars.length}>
               <StyledAvatar {...teamMember} picture={picture || defaultUserAvatar} size={28} />
             </AvatarWrapper>

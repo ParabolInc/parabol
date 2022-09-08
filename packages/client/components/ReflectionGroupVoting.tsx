@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Add as AddIcon, Remove as RemoveIcon, ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -93,6 +94,9 @@ const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) =>
 
 const ReflectionGroupVoting = (props: Props) => {
   const {isExpanded, meeting, reflectionGroup} = props
+
+  const {t} = useTranslation()
+
   const {id: reflectionGroupId} = reflectionGroup
   const {id: meetingId, localStage, maxVotesPerGroup, viewerMeetingMember} = meeting
   const {isComplete} = localStage!
@@ -128,7 +132,7 @@ const ReflectionGroupVoting = (props: Props) => {
     <UpvoteColumn>
       <UpvoteRow data-cy='reflection-vote-row'>
         <UpvoteButton
-          aria-label={`Remove vote`}
+          aria-label={t('ReflectionGroupVoting.RemoveVote', {})}
           isExpanded={isExpanded}
           disabled={!canDownvote}
           color={isExpanded ? PALETTE.SKY_400 : PALETTE.SKY_500}
@@ -140,13 +144,13 @@ const ReflectionGroupVoting = (props: Props) => {
           <StyledIcon>
             <ThumbUpIcon />
           </StyledIcon>
-          <span data-cy={`completed-vote-count`}>{viewerVoteCount}</span>
+          <span data-cy={t('ReflectionGroupVoting.CompletedVoteCount', {})}>{viewerVoteCount}</span>
         </Votes>
         <UpvoteButton
-          aria-label={`Add vote`}
+          aria-label={t('ReflectionGroupVoting.AddVote', {})}
           isExpanded={isExpanded}
           disabled={!canUpvote}
-          color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.SLATE_600}
+          color={isExpanded ? t('ReflectionGroupVoting.Rgba25525525565') : PALETTE.SLATE_600}
           onClick={vote}
         >
           <AddIcon />

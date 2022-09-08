@@ -8,14 +8,15 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
-import completeEntity from '../../utils/draftjs/completeEntity'
-import linkify from '../../utils/linkify'
+import {useTranslation} from 'react-i18next'
 import {AriaLabels, Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
+import completeEntity from '../../utils/draftjs/completeEntity'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import lazyPreload from '../../utils/lazyPreload'
+import linkify from '../../utils/linkify'
 import blockStyleFn from './blockStyleFn'
 import './Draft.css'
 import useCommentPlugins from './useCommentPlugins'
@@ -26,8 +27,8 @@ const RootEditor = styled('div')({
   width: '100%'
 })
 
-const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -68,6 +69,9 @@ const CommentEditor = (props: Props) => {
     onFocus,
     dataCy
   } = props
+
+  const {t} = useTranslation()
+
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -136,7 +140,7 @@ const CommentEditor = (props: Props) => {
         return result
       }
     }
-    if (e.key === 'Escape') {
+    if (e.key === t('CommentEditor.Escape')) {
       e.preventDefault()
       onRemoveModal()
       return 'not-handled'
@@ -180,7 +184,7 @@ const CommentEditor = (props: Props) => {
     if (ensureCommenting) {
       ensureCommenting()
     }
-    if (e.key !== 'Enter' || e.shiftKey) return
+    if (e.key !== t('CommentEditor.Enter') || e.shiftKey) return
     e.preventDefault()
     onSubmit()
   }
@@ -193,7 +197,12 @@ const CommentEditor = (props: Props) => {
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor data-cy={`${dataCy}-editor`} data-private>
+    <RootEditor
+      data-cy={t('CommentEditor.DataCyEditor', {
+        dataCy
+      })}
+      data-private
+    >
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback

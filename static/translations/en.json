@@ -1,111 +1,380 @@
 {
   "ActionMeetingAgendaItems": {
-    "DiscussionTakeawayTasks": "Discussion & Takeaway Tasks"
+    "DiscussionTakeawayTasks": "Discussion & Takeaway Tasks",
+    "PreferredNameWhatDoYouNeed": "{{preferredName}}, what do you need?"
   },
   "ActionMeetingFirstCall": {
+    "NothingToSeeHere": "Nothing to see here",
+    "NowWhatDoYouNeed": "Now, what do you need?",
+    "ThereWereNoAgendaItemLabelSInThisMeeting": "There were no {{agendaItemLabel}}s in this meeting.",
+    "TimeToAddYourAgendaItemLabelSToTheList": "Time to add your {{agendaItemLabel}}s to the list.",
+    "ToStartThePhaseName": "to start the {{phaseName}}",
     "WaitingFor": "Waiting for"
   },
   "ActionMeetingLastCall": {
-    "NothingToSeeHere": "Nothing to see here",
-    "LastCall": "Last Call:",
-    "SimplyTapOnAnyItemsYouCreateToProcessThem": "Simply tap on any items you create to process them.",
-    "WeVeWorkedOn": "We’ve worked on",
-    "SoFarNeedAnythingElse": "so far—need anything else?",
+    "AgendaItemsCompletedPluralAgendaItemsCompletedAgendaItemLabel": "{{agendaItemsCompleted}} {{pluralAgendaItemsCompletedAgendaItemLabel}}",
     "EndCheckInMeeting": "End Check-in Meeting",
-    "WaitingFor": "Waiting for"
+    "EndMeeting": "End Meeting",
+    "LastCall": "Last Call:",
+    "LooksLikeYouDidntProcessAnyLabelAgendaItems": "Looks like you didn’t process any {{labelAgendaItems}}.",
+    "NoLabelAgendaItems": "No {{labelAgendaItems}}?",
+    "NothingToSeeHere": "Nothing to see here",
+    "SimplyTapOnAnyItemsYouCreateToProcessThem": "Simply tap on any items you create to process them.",
+    "SoFarNeedAnythingElse": "so far—need anything else?",
+    "ThereWereNoLabelAgendaItemsAddedToThisMeeting": "There were no {{labelAgendaItems}} added to this meeting.",
+    "ToEndTheMeeting": "to end the meeting",
+    "WaitingFor": "Waiting for",
+    "WeveWorkedOn": "We’ve worked on",
+    "YouCanAddLabelAgendaItemsInTheLeftSidebarBeforeEndingTheMeeting": "You can add {{labelAgendaItems}} in the left sidebar before ending the meeting."
+  },
+  "ActionMeetingUpdatesPrompt": {
+    "AddCardsToTrackYourCurrentWork": "Add cards to track your current work.",
+    "PreferredName": "{{preferredName}}, ",
+    "YourTurnToShareQuickUpdatesOnlyPlease": "Your turn to share! Quick updates only, please."
+  },
+  "ActionMeetingUpdatesPromptTeamHelpText": {
+    "AddAgendaItems": "Add agenda items",
+    "ForDiscussion": "for discussion.)",
+    "PreferredNameIsSharing": "({{preferredName}} is sharing. "
   },
   "AddMissingJiraFieldModal": {
-    "Oops": "Oops!",
-    "YouDoNotHaveThisFieldConfiguredInJiraDoYouWantUsToFixItForYou": "You do not have this field configured in Jira, do you want us to fix it for you?",
     "Cancel": "Cancel",
-    "FixItForMe": "Fix it for me"
+    "FixItForMe": "Fix it for me",
+    "Oops": "Oops!",
+    "YouDoNotHaveThisFieldConfiguredInJiraDoYouWantUsToFixItForYou": "You do not have this field configured in Jira, do you want us to fix it for you?"
+  },
+  "AddNewPokerTemplate": {
+    "CreateNewTemplate": "Create New Template",
+    "NewTemplate": "*New Template",
+    "YouAlreadyHaveANewTemplateTryRenamingThatOneFirst": "You already have a new template. Try renaming that one first.",
+    "YouMayOnlyHaveThresholdMaxRetroTeamTemplatesTemplatesPerTeamPleaseRemoveOneFirst": "You may only have {{thresholdMaxRetroTeamTemplates}} templates per team. Please remove one first."
+  },
+  "AddNewReflectTemplate": {
+    "CreateNewTemplate": "Create New Template",
+    "NewTemplate": "*New Template",
+    "YouAlreadyHaveANewTemplateTryRenamingThatOneFirst": "You already have a new template. Try renaming that one first.",
+    "YouMayOnlyHave20TemplatesPerTeamPleaseRemoveOneFirst": "You may only have 20 templates per team. Please remove one first."
+  },
+  "AddPokerTemplateDimension": {
+    "AddAnotherDimension": "Add another dimension"
   },
   "AddPollButton": {
-    "AddAPoll": "Add a poll"
+    "AddAPoll": "Add a poll",
+    "DataCyAdd": "{{dataCy}}-add"
+  },
+  "AddPollOptionButton": {
+    "AddAnotherChoice": "Add another choice"
   },
   "AddTaskButton": {
-    "AddATask": "Add a task"
+    "AddATask": "Add a task",
+    "DataCyAdd": "{{dataCy}}-add"
+  },
+  "AddTeamMemberAvatarButton": {
+    "InviteToTeam": "Invite to Team"
   },
   "AddTeamMemberModal": {
+    "AlreadyInvitedEmails0AndAlreadyInvitedEmails1AreAlreadyOnTheTeam": "{{alreadyInvitedEmails0}} and {{alreadyInvitedEmails1}} are already on the team",
+    "AlreadyInvitedEmails0AndAlreadyInvitedEmailsLength1OtherEmailsAreAlreadyOnTheTeam": "{{alreadyInvitedEmails0}} and {{alreadyInvitedEmailsLength1}} other emails are already on the team",
+    "AlreadyInvitedEmailsIsAlreadyOnTheTeam": "{{alreadyInvitedEmails}} is already on the team",
+    "CouldNotSendAnInvitationToTheAbovePluralBadInviteesLengthEmail": "Could not send an invitation to the above {{pluralBadInviteesLengthEmail}}",
+    "EmailExampleCoAnotherExampleCo": "email@example.co, another@example.co",
+    "EmailInvitationsExpireIn30Days": "Email invitations expire in 30 days.",
+    "InvalidEmailS": "Invalid email(s)",
+    "InvalidEmailSAfterLastValidEmail": "Invalid email(s) after {{lastValidEmail}}",
     "InviteToTeam": "Invite to Team",
-    "ShareThisLink": "Share this link",
-    "ThisLinkExpiresIn30Days": "This link expires in 30 days.",
     "OrSendInvitesByEmail": "Or, send invites by email",
-    "EmailInvitationsExpireIn30Days": "Email invitations expire in 30 days."
+    "SendInvitation": "Send Invitation",
+    "SendInviteesLengthInvitations": "Send {{inviteesLength}} Invitations",
+    "ShareThisLink": "Share this link",
+    "ThisLinkExpiresIn30Days": "This link expires in 30 days."
+  },
+  "AddTeamMemberModalDemo": {
+    "InviteYourTeammatesToATeamAndKickOffARealRetro": "Invite your teammates to a team and kick off a real Retro!",
+    "SignUpInviteYourTeammatesAndKickOffARealRetro": "Sign up, invite your teammates, and kick off a real Retro!"
+  },
+  "AddTemplatePrompt": {
+    "AddAnotherPrompt": "Add another prompt"
+  },
+  "AddTemplateScaleValue": {
+    "AddValue": "Add value"
+  },
+  "AgendaInput": {
+    "AddAgendaTopic": "Add Agenda Topic…",
+    "AddMeetingTopicsToDiscuss": "Add meeting topics to discuss,",
+    "Escape": "Escape",
+    "LikeUpcomingVacation": "like “upcoming vacation”"
+  },
+  "AgendaItem": {
+    "PinContentToEveryCheckIn": "Pin \"{{content}}\" to every check-in",
+    "RemoveThisAgendaTopic": "Remove this agenda topic",
+    "UnpinContentFromEveryCheckIn": "Unpin \"{{content}}\" from every check-in"
+  },
+  "AgendaListEmptyState": {
+    "NextMeeting": "next meeting",
+    "PssstAddTopicsForYourMeetingContextUseAPhraseLike": "Pssst. Add topics for your {{meetingContext}}! Use a phrase like “",
+    "UpcomingVacation": "upcoming vacation"
+  },
+  "AgendaShortcutHint": {
+    "Press": "Press “",
+    "ToAddAnAgendaItemLabelToTheLeftColumn": "” to add an {{agendaItemLabel}} to the left column."
+  },
+  "AgendaToggle": {
+    "Agenda": "Agenda"
+  },
+  "AnalyticsPage": {
+    "HtmlTranslatedLtrHtmlTranslatedRtlYaTrSpanMsttexthashXBergamotTranslated": "html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]",
+    "HttpsCdnSegmentComAnalyticsJsV1SegmentKeyAnalyticsMinJs": "https://cdn.segment.com/analytics.js/v1/{{segmentKey}}/analytics.min.js"
+  },
+  "AndroidEditorFallback": {
+    "Text": "Text"
+  },
+  "ArchiveOrganization": {
+    "ClickToPermanentlyDeleteThisOrganization": "Click to permanently delete this organization.",
+    "DeleteOrganization": "Delete organization",
+    "Note": "Note",
+    "ThisCantBeUndone": "This can’t be undone."
+  },
+  "ArchiveOrganizationForm": {
+    "EGMyOrganization": "E.g. \"My organization\"",
+    "EnterYourOrganizationNameAndHitEnterToDeleteIt": "Enter your organization name and hit Enter to delete it.",
+    "TheOrganizationNameEnteredWasIncorrect": "The organization name entered was incorrect."
+  },
+  "ArchiveTaskRoot": {
+    "Archive": "Archive",
+    "TeamArchiveTeamName": "Team Archive | {{teamName}}"
+  },
+  "ArchiveTeam": {
+    "ClickToPermanentlyDeleteThisTeam": "Click to permanently delete this team.",
+    "DeleteTeam": "Delete Team",
+    "Note": "Note",
+    "ThisCantBeUndone": "This can’t be undone."
+  },
+  "ArchiveTeamForm": {
+    "EGMyTeam": "E.g. \"My Team\"",
+    "EnterYourTeamNameAndHitEnterToDeleteIt": "Enter your team name and hit Enter to delete it.",
+    "TheTeamNameEnteredWasIncorrect": "The team name entered was incorrect."
   },
   "AtlassianConfigMenu": {
-    "ConfigureYourAtlassianIntegration": "Configure your Atlassian integration"
+    "ConfigureYourAtlassianIntegration": "Configure your Atlassian integration",
+    "RefreshToken": "Refresh token",
+    "RemoveAtlassian": "Remove Atlassian"
   },
   "AuthPrivacyFooter": {
     "ByCreatingAnAccountYouAgreeToOur": "By creating an account, you agree to our",
     "PrivacyPolicy": "Privacy Policy"
   },
   "AuthProvider": {
-    "AuthenticationError": "Authentication Error"
+    "AuthenticationError": "Authentication Error",
+    "ErrorLoggingIn": "Error logging in"
   },
   "AuthenticationPage": {
+    "92OfUsersAgreedThatParabolImprovesTheEfficiencyOfTheirMeetings": "92% of users agreed that Parabol improves the efficiency of their meetings.",
     "BetterMeetings": "Better Meetings,",
     "LessEffort": "Less Effort",
-    "92OfUsersAgreedThatParabolImprovesTheEfficiencyOfTheirMeetings": "92% of users agreed that Parabol improves the efficiency of their meetings."
+    "Page": "/{{page}}",
+    "PageSearch": "/{{page}}{{search}}",
+    "SignUp": "Sign Up",
+    "SignUpForFreeOnlineRetrospectivesParabol": "Sign Up for Free Online Retrospectives | Parabol"
+  },
+  "AvatarBadge": {
+    "Offline": "Offline",
+    "Online": "Online"
   },
   "AzureDevOpsConfigMenu": {
-    "ConfigureYourAzureDevopsIntegration": "Configure your Azure DevOps integration"
+    "ConfigureYourAzureDevOpsIntegration": "Configure your Azure DevOps integration",
+    "RefreshToken": "Refresh token",
+    "RemoveAzureDevOps": "Remove Azure DevOps"
   },
   "AzureDevOpsFieldMenu": {
     "SelectWhereToPublishTheEstimate": "Select where to publish the estimate"
   },
   "AzureDevOpsScopingSearchFilterMenu": {
-    "DefineTheAzureDevopsSearchQuery": "Define the Azure DevOps search query",
-    "Iswiql": "isWIQL",
-    "UseWiql": "Use WIQL",
-    "FilterByProject": "Filter by project:"
+    "DefineTheAzureDevOpsSearchQuery": "Define the Azure DevOps search query",
+    "FilterByProject": "Filter by project:",
+    "IsWiql": "isWIQL",
+    "UseWiql": "Use WIQL"
+  },
+  "AzureDevOpsScopingSearchInput": {
+    "SearchIssuesOnAzureDevOps": "Search issues on Azure DevOps",
+    "SystemWorkItemTypeUserStoryAndSystemStateClosed": "[System.WorkItemType] = 'User Story' AND [System.State] <> 'Closed'"
   },
   "AzureDevOpsScopingSearchResults": {
-    "NoIssuesMatchThatQuery": "No issues match that query",
+    "AzureDevOps": "azureDevOps",
+    "AzureDevOpsWorkItemNodeIssueKey": "Azure DevOps Work Item #{{nodeIssueKey}}",
+    "NewIssue": "New Issue",
     "NewUserStory": "New User Story",
-    "Azuredevops": "azureDevOps",
-    "NewIssue": "New Issue"
+    "NoIssuesMatchThatQuery": "No issues match that query",
+    "NodeIssueKeyNodeProjectName": "#{{nodeIssueKey}} {{nodeProjectName}}"
+  },
+  "AzureDevOpsScopingSelectAllIssues": {
+    "UnknownWorkItem": "Unknown Work Item"
   },
   "BeginDemoModal": {
-    "TryParabolForYourselfByHoldingA2MinuteRetrospectiveMeetingWithOurSimulatedColleagues": "Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated\n        colleagues",
-    "StartDemo": "Start Demo"
+    "StartDemo": "Start Demo",
+    "TryParabolForYourselfByHoldingA2MinuteRetrospectiveMeetingWithOurSimulatedColleagues": "Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated\n        colleagues"
   },
   "BillingLeaderActionMenu": {
+    "LeaveOrganization": "Leave Organization",
+    "PromoteToBillingLeader": "Promote to Billing Leader",
+    "RefundAndRemove": "Refund and Remove",
+    "RemoveBillingLeaderRole": "Remove Billing Leader role",
+    "RemoveFromOrganization": "Remove from Organization",
     "SelectYourAction": "Select your action"
+  },
+  "BillingMembersToggle": {
+    "Billing": "Billing",
+    "MatchUrlArea": "{{matchUrl}}/:area?",
+    "MeOrganizationsOrgIdBillingPage": "/me/organizations/{{orgId}}/{{billingPage}}",
+    "MeOrganizationsOrgIdMembersPage": "/me/organizations/{{orgId}}/{{membersPage}}",
+    "Members": "Members"
+  },
+  "BottomControlBarReady": {
+    "Next": "Next",
+    "NextPhase": "next-phase",
+    "Ready": "Ready",
+    "TapNextAgainToConfirm": "Tap 'Next' again to Confirm"
   },
   "BottomControlBarRejoin": {
     "Rejoin": "Rejoin"
   },
   "BottomControlBarTips": {
+    "MeetingTips": "Meeting tips",
+    "TipMenuToggle": "tip-menu-toggle",
     "Tips": "Tips"
   },
+  "CardsSVG": {
+    "002220": "0 0 22 20",
+    "M204698235L191298179V1082L215598496C219698394214998277204698235Zm0969765605L59297618C623976187769697619247739761926C79997619268269761921852976191L1589981605C1664981574171098151712981426C1713981417089813711699981345L11999815C117098073109698026101898025C99297602596697603194197604L205976345C10397638705497655040969765605Zm171198225C171198171957169091121086165340835786C1615890460714156502025151198025H136698L171198859": "M20.4698 2.35L19.1298 1.79V10.82L21.5598 4.96C21.9698 3.94 21.4998 2.77 20.4698 2.35ZM0.969765 6.05L5.92976 18C6.23976 18.77 6.96976 19.24 7.73976 19.26C7.99976 19.26 8.26976 19.21 8.52976 19.1L15.8998 16.05C16.6498 15.74 17.1098 15 17.1298 14.26C17.1398 14 17.0898 13.71 16.9998 13.45L11.9998 1.5C11.7098 0.73 10.9698 0.26 10.1898 0.25C9.92976 0.25 9.66976 0.31 9.41976 0.4L2.05976 3.45C1.03976 3.87 0.549765 5.04 0.969765 6.05ZM17.1198 2.25C17.1198 1.71957 16.9091 1.21086 16.534 0.835786C16.1589 0.460714 15.6502 0.25 15.1198 0.25H13.6698L17.1198 8.59"
+  },
+  "CloneTemplate": {
+    "CloneEditTemplate": "Clone & Edit Template",
+    "ContentCopy": "content_copy",
+    "TooManyTeamTemplatesRemoveOneFirst": "Too many team templates! Remove one first"
+  },
+  "CloseDrawer": {
+    "Close": "close"
+  },
+  "CommentAuthorOptionsButton": {
+    "DataCyDropdownMenu": "{{dataCy}}-dropdown-menu"
+  },
   "CommentAuthorOptionsDropdown": {
-    "SelectTheActionForYourComment": "Select the action for your comment",
-    "EditComment": "Edit Comment",
-    "Edit": "edit",
+    "Delete": "delete",
     "DeleteComment": "Delete Comment",
-    "Delete": "delete"
+    "Edit": "edit",
+    "EditComment": "Edit Comment",
+    "SelectTheActionForYourComment": "Select the action for your comment"
+  },
+  "CommentEditor": {
+    "DataCyEditor": "{{dataCy}}-editor",
+    "Enter": "Enter",
+    "Escape": "Escape"
+  },
+  "ConnectButton": {
+    "Connect": "Connect"
+  },
+  "ContactUsButton": {
+    "ContactUs": "Contact Us"
+  },
+  "ContactUsFooter": {
+    "AboutTheMeetingNameProcess": " about the {{meetingName}} Process.",
+    "EmailUs": "Email us:",
+    "EmailUsLoveParabolCo": "Email us: love@parabol.co",
+    "LearnMore": "Learn More",
+    "LoveParabolCo": "love@parabol.co",
+    "NavigateUncertaintyWithTheParabolRhythm": "Navigate uncertainty with the Parabol Rhythm"
+  },
+  "CreateAccountSection": {
+    "ARealRetrospective": "a real retrospective",
+    "CreateAFreeAccount": "Create a Free Account",
+    "GoToMyDashboard": "Go to My Dashboard",
+    "HeadOnOverToYourDashboard": "Head on over to your dashboard",
+    "InJustAFewSecondsYoullHaveAccess": "In just a few seconds you’ll have access",
+    "ThanksForPlaying": "Thanks for playing!",
+    "TheParabolDifference": "The Parabol Difference",
+    "ToRun": "to run",
+    "UnlimitedRetrospectives": "unlimited retrospectives",
+    "WithYourTeam": "with your team."
+  },
+  "CreditCardErrorLine": {
+    "SecuredBy": "Secured by",
+    "Stripe": "Stripe"
+  },
+  "CreditCardForm": {
+    "CardNumber": "Card number",
+    "CreditCardModalOpened": "Credit Card Modal Opened",
+    "CreditCardNumber": "creditCardNumber",
+    "Cvc": "cvc",
+    "Expiry": "expiry",
+    "InvalidDetails": "Invalid details",
+    "Lock": "lock",
+    "Submit": "submit",
+    "UpgradeLater": "Upgrade Later"
+  },
+  "CreditCardModal": {
+    "UpdateCreditCard": "Update Credit Card",
+    "UpgradeToPro": "Upgrade to Pro"
+  },
+  "CreditCardPricingLine": {
+    "ActiveUserCountActivePluralActiveUserCountUser": "{{activeUserCount}} Active {{pluralActiveUserCountUser}}",
+    "TotalPriceStringMo": "{{totalPriceString}}/mo",
+    "UnitPriceStringEa": "{{unitPriceString}}/ea"
+  },
+  "DashNavList": {
+    "ItAppearsYouAreNotAMemberOfAnyTeam": "It appears you are not a member of any team!",
+    "OrgNameOrgId": "{{orgName}}:{{orgId}}",
+    "TeamTeamId": "/team/{{teamId}}"
+  },
+  "DashSidebar": {
+    "Add": "add",
+    "AddATeam": "Add a Team",
+    "Forum": "forum",
+    "Me": "/me",
+    "MeTasks": "/me/tasks",
+    "Meetings": "Meetings",
+    "Newteam1": "/newteam/1",
+    "PlaylistAddCheck": "playlist_add_check",
+    "Tasks": "Tasks",
+    "Timeline": "Timeline"
+  },
+  "DashTopBar": {
+    "ParabolLogo": "Parabol logo",
+    "ToggleDashboardMenu": "Toggle dashboard menu"
   },
   "Dashboard": {
     "SkipToContent": "Skip to content"
   },
+  "DashboardAvatar": {
+    "UserAvatarUnavailableJsonStringifyTeamMember": "User Avatar unavailable. {{jsonStringifyTeamMember}}"
+  },
+  "DashboardAvatars": {
+    "DbAvatarTeamMemberId": "dbAvatar{{teamMemberId}}",
+    "ManageTeam": "Manage Team",
+    "OverflowCount": "+{{overflowCount}}"
+  },
   "DeleteAccount": {
+    "ClickToPermanentlyDeleteYourAccount": "Click to permanently delete your account.",
+    "DeleteAccount": "Delete Account",
     "Note": "Note",
-    "ThisCanTBeUndone": "This can’t be undone."
+    "ThisCantBeUndone": "This can’t be undone."
   },
   "DeleteAccountModal": {
+    "GoodbyeForever": "Goodbye forever",
     "HowCouldWeDoBetter": "How could we do better?",
-    "WeReOnAMissionToMakeEveryMeetingWorthTheTimeInvested": "We’re on a mission to make every meeting worth the time invested.",
     "IfThereIsAnythingWeCanDoToImproveLetUsKnowBelow": "If there is anything we can do to improve, let us know below.",
-    "GoodbyeForever": "Goodbye forever"
+    "WereOnAMissionToMakeEveryMeetingWorthTheTimeInvested": "We’re on a mission to make every meeting worth the time invested."
   },
   "DemoCreateAccountButton": {
     "CreateFreeAccount": "Create Free Account"
   },
+  "DemoCreateAccountPrimaryButton": {
+    "CreateFreeAccount": "Create Free Account",
+    "MyDashboard": "My Dashboard"
+  },
   "DemoMeetingCard": {
+    "DemoMeetingCardClicked": "Demo Meeting Card Clicked",
+    "DemoTeamReflect": "Demo team • Reflect",
     "Retro": "Retro",
-    "RetrospectiveDemo": "Retrospective Demo",
-    "DemoTeamReflect": "Demo team • Reflect"
+    "RetrospectiveDemo": "Retrospective Demo"
   },
   "DiscussPhaseSqueeze": {
     "Squeeze": "squeeze"
@@ -113,234 +382,700 @@
   "DiscussionThread": {
     "NoDiscussionFound": "No discussion found!"
   },
+  "DiscussionThreadListEmptyState": {
+    "NoCommentsOrTasksWereAddedHere": "No comments or tasks were added here",
+    "NoCommentsWereAddedHere": "No comments were added here",
+    "StartTheConversationAllowTasksOrAddTakeawayTaskCardsToCaptureNextSteps": "Start the conversation{{allowTasksOrAddTakeawayTaskCards}} to capture next steps."
+  },
+  "DraggableTask": {
+    "DraggableTask": "draggable-task"
+  },
   "DueDatePicker": {
     "ChangeDueDate": "Change Due Date",
+    "PickADueDate": "Pick a due date",
     "ToRemoveTapSelectedDate": "To remove, tap selected date"
   },
   "EditGitHubLabelTemplateModal": {
-    "EditGithubLabel": "Edit GitHub Label",
-    "Text": "text",
-    "Off": "off",
-    "Use": "Use",
     "AsTheValueWildcard": "as the value wildcard",
-    "Cancel": "Cancel",
     "Blue": "blue",
-    "Save": "Save"
+    "Cancel": "Cancel",
+    "EditGitHubLabel": "Edit GitHub Label",
+    "Off": "off",
+    "Save": "Save",
+    "Text": "text",
+    "Use": "Use",
+    "Value": "{{value}} {{#}}"
+  },
+  "EditableAvatar": {
+    "Edit": "EDIT"
   },
   "EditableOrgName": {
-    "OrganizationName": "Organization Name"
+    "OrganizationName": "Organization Name",
+    "ThatIsntVeryMemorableMaybeShortenItUp": "That isn’t very memorable. Maybe shorten it up?",
+    "TheATeamHadALongerNameThanThat": "The “A Team” had a longer name than that",
+    "TheNamelessWonderIsBetterThanNothing": "“The nameless wonder” is better than nothing"
+  },
+  "EditablePollTitle": {
+    "AskAQuestion": "Ask a question..."
+  },
+  "EditableTeamName": {
+    "TeamName": "Team Name"
+  },
+  "EditableTemplateDescription": {
+    "Description": "Description",
+    "ThatDescriptionIsProbablyLongEnough": "That description is probably long enough"
+  },
+  "EditableTemplateDimension": {
+    "NewDimension": "*New Dimension #",
+    "PleaseEnterADimensionName": "Please enter a dimension name",
+    "ThatDimensionAlreadyExists": "That dimension already exists",
+    "ThatDimensionNameIsProbablyLongEnough": "That dimension name is probably long enough"
+  },
+  "EditableTemplateName": {
+    "NewTemplate": "*New Template",
+    "PleaseEnterATemplateName": "Please enter a template name",
+    "ThatNameIsProbablyLongEnough": "That name is probably long enough",
+    "ThatNameIsTaken": "That name is taken"
+  },
+  "EditableTemplatePrompt": {
+    "NewPrompt": "New Prompt",
+    "PleaseEnterAPromptQuestion": "Please enter a prompt question",
+    "ThatQuestionIsProbablyLongEnough": "That question is probably long enough",
+    "ThatQuestionWasAlreadyAsked": "That question was already asked"
+  },
+  "EditableTemplateScaleName": {
+    "NewScale": "*New Scale",
+    "PleaseEnterAScaleName": "Please enter a scale name",
+    "ThatScaleNameIsAlreadyTaken": "That scale name is already taken",
+    "ThatScaleNameIsProbablyLongEnough": "That scale name is probably long enough"
+  },
+  "EditableTemplateScaleValueLabel": {
+    "PleaseEnterAValue": "Please enter a value",
+    "ThatValueAlreadyExists": "That value already exists",
+    "ValueCannotBeLongerThan2Characters": "Value cannot be longer than 2 characters"
+  },
+  "EditingStatus": {
+    "ToggleTimestamp": "Toggle Timestamp"
+  },
+  "EditingStatusText": {
+    "Created": "Created",
+    "Editing": "Editing",
+    "EditorNames0AndEditorNames1AreEditing": "{{editorNames0}} and {{editorNames1}} are editing",
+    "IsEditing": "is editing",
+    "SeveralPeopleAreEditing": "Several people are editing",
+    "TimestampLabelTimeFrom": "{{timestampLabel}}{{timeFrom}}",
+    "Updated": "Updated"
+  },
+  "EditorHelpModal": {
+    "Keyboard": "Keyboard",
+    "Markdown": "Markdown",
+    "ShortcutListListIndex1": "shortcutList{{listIndex1}}",
+    "ShortcutListShortcutIndex1": "{{shortcutList}}{{shortcutIndex1}}",
+    "TaskCardFormatting": "Task Card Formatting"
+  },
+  "EditorLinkChangerModal": {
+    "Add": "Add",
+    "Escape": "Escape",
+    "Link": "Link",
+    "MaybeGiveItAName": "Maybe give it a name?",
+    "NoLinkProvided": "No link provided",
+    "NotLookingTooLinky": "Not looking too linky",
+    "Text": "Text",
+    "ThatNameIsLookingPrettyLong": "That name is looking pretty long",
+    "Update": "Update"
+  },
+  "EditorLinkViewer": {
+    "Change": "Change",
+    "Remove": "Remove"
+  },
+  "EmailFooter": {
+    "GetInTouch": "Get in touch",
+    "LoveParabolCo": "love@parabol.co",
+    "YearParabolInc": "©{{year}} Parabol, Inc."
   },
   "EmailInputField": {
     "Email": "email"
   },
+  "EmailTaskCard": {
+    "20": "20%"
+  },
+  "EmailVerificationEmail": {
+    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
+    "Hello👋": "Hello 👋",
+    "LoveParabolCo": "love@parabol.co",
+    "TapTheLinkBelowToVerifyYourEmail": "Tap the link below to verify your email.",
+    "VerifyMyEmail": "Verify My Email"
+  },
+  "EmptySpace": {
+    "PropsHeightPx": "{{propsHeight}}px"
+  },
+  "ErrorComponent": {
+    "AnErrorHasOccurredWeveAlertedTheDevelopersTryRefreshingThePage": "An error has occurred! We’ve alerted the developers. Try refreshing the page",
+    "OhNoYouveFoundABugBecauseTheBrowserYoureUsingNeedsToBeUpdated": "Oh no! You've found a bug because the browser you're using needs to be updated.",
+    "ReportFeedback": "Report Feedback",
+    "UpdateNow": "Update now"
+  },
   "EstimateDimensionColumn": {
     "Blue": "blue",
-    "TeamRevote": "Team Revote",
+    "IDontVote": "I don’t vote",
     "LetMeVote": "Let me vote!",
-    "IDonTVote": "I don’t vote"
+    "TeamRevote": "Team Revote"
+  },
+  "EstimatePhaseArea": {
+    "04Px": "0 4px",
+    "08Px": "0 8px"
   },
   "EstimatePhaseDiscussionDrawer": {
     "100": "100%",
     "Discussion": "Discussion"
   },
   "EstimatePhaseEmptyState": {
+    "Here": "here.",
+    "ItLooksLikeYouHaventAddedAnyItemsYet": "It looks like you haven't added any items yet.",
+    "MeetMeetingIdScope": "/meet/{{meetingId}}/scope",
     "NoItemsToEstimate": "No items to estimate?",
-    "ItLooksLikeYouHavenTAddedAnyItemsYet": "It looks like you haven't added any items yet.",
-    "TryAddingThem": "Try adding them",
-    "Here": "here."
+    "TryAddingThem": "Try adding them"
+  },
+  "ExpandedReflectionStack": {
+    "Escape": "Escape"
+  },
+  "ExportToCSV": {
+    "Anonymous": "Anonymous",
+    "DateGetFullYearDateGetMonth1DateGetDate": "{{dateGetFullYear}}-{{dateGetMonth1}}-{{dateGetDate}}",
+    "ExternalLinksEmailCdnCloudDownloadPng": "{{externalLinksEmailCdn}}cloud_download.png",
+    "IntegrationIssueKeyIntegrationSummary": "{{integrationIssueKey}}: {{integrationSummary}}",
+    "IntegrationNumberIntegrationTitle": "{{integrationNumber}}: {{integrationTitle}}",
+    "ParabolLabelTeamNameNumDateCsv": "Parabol{{label}}_{{teamName}}_{{numDate}}.csv",
+    "Reflection": "Reflection",
+    "Reply": "Reply",
+    "Task": "Task"
+  },
+  "ExportToCSVButton": {
+    "ExternalLinksEmailCdnCloudDownloadPng": "{{externalLinksEmailCdn}}cloud_download.png"
   },
   "Facilitator": {
     "Facilitator": "Facilitator"
   },
   "FacilitatorMenu": {
     "ChangeTheFacilitatorRole": "Change the facilitator role",
-    "TakeTheFacilitatorRole": "Take the facilitator role",
-    "RandomizeFacilitator": "Randomize facilitator"
+    "RandomizeFacilitator": "Randomize facilitator",
+    "TakeTheFacilitatorRole": "Take the facilitator role"
   },
   "ForgotPasswordOneClick": {
-    "MessageSentTo": "Message sent to",
     "CheckYourInbox": "Check your inbox!",
-    "ForgotYourPassword": "Forgot your password?"
+    "ForgotYourPassword": "Forgot your password?",
+    "MessageSentTo": "Message sent to"
   },
   "ForgotPasswordPage": {
+    "ConfirmYourEmailAddressAndWellSendYouAnEmailWithPasswordRecoveryInstructions": "Confirm your email address, and we’ll send you an email with password recovery instructions.",
+    "ContactUs": "contact us",
     "ForgotYourPassword": "Forgot your password?",
-    "RememberIt": "Remember it?",
-    "SignInWithPassword": "Sign in with password",
-    "ConfirmYourEmailAddressAndWeLlSendYouAnEmailWithPasswordRecoveryInstructions": "Confirm your email address, and we’ll send you an email with password recovery instructions.",
-    "SendEmail": "Send Email",
-    "OhNoSomethingWentWrongTryAgainOr": "Oh no! Something went wrong. Try again or",
-    "MailtoLoveParabolCo": "mailto:love@parabol.co",
     "LoveParabolCo": "love@parabol.co",
-    "ContactUs": "contact us"
+    "MailtoLoveParabolCo": "mailto:love@parabol.co",
+    "OhNoSomethingWentWrongTryAgainOr": "Oh no! Something went wrong. Try again or",
+    "RememberIt": "Remember it?",
+    "SendEmail": "Send Email",
+    "SignInWithPassword": "Sign in with password",
+    "TooManyResetPasswordAttemptsPleaseTryAgainLater": "Too many reset password attempts. Please try again later.",
+    "WeCouldntFindThatEmailPleaseTryAgain": "We couldn’t find that email. Please try again."
   },
   "GenericAuthentication": {
-    "ForgotYourPassword": "Forgot your password?"
+    "1Rem00": "1rem 0 0",
+    "AlreadyHaveAnAccount": "Already have an account?",
+    "EmailEmailRefCurrentEmail": "?email={{emailRefCurrentEmail}}",
+    "ForgotYourPassword": "Forgot your password?",
+    "NewToParabol": "New to Parabol?",
+    "TeamNameIsWaiting": "{{teamName}} is waiting"
   },
   "GitHubConfigMenu": {
-    "ConfigureYourGithubIntegration": "Configure your GitHub integration"
+    "ConfigureYourGitHubIntegration": "Configure your GitHub integration",
+    "RefreshToken": "Refresh token",
+    "RemoveGitHub": "Remove GitHub"
   },
   "GitHubFieldMenu": {
-    "SelectWhereToPublishTheEstimate": "Select where to publish the estimate",
-    "AsALabel": "As a label"
+    "AsALabel": "As a label",
+    "DimensionName": "{{dimensionName}}: {{#}}",
+    "SelectWhereToPublishTheEstimate": "Select where to publish the estimate"
   },
   "GitHubScopingSearchBar": {
-    "SearchGithubIssues": "Search GitHub issues...",
-    "Githubsearchquery": "githubSearchQuery",
-    "Github": "github"
+    "Github": "github",
+    "GithubSearchQuery": "githubSearchQuery",
+    "SearchGitHubIssues": "Search GitHub issues..."
   },
   "GitHubScopingSearchFilterMenu": {
-    "NoReposFound": "No repos found!"
+    "DefineTheGitHubSearchQuery": "Define the GitHub search query",
+    "NoReposFound": "No repos found!",
+    "RepoName": "repo:{{name}}",
+    "SearchYourGitHubRepos": "Search your GitHub repos"
   },
   "GitHubScopingSearchResults": {
-    "NoIssuesMatchThatQuery": "No issues match that query",
-    "NewIssue": "New Issue",
     "Github": "github",
-    "Loadingnext": "loadingNext"
+    "LoadingNext": "loadingNext",
+    "NewIssue": "New Issue",
+    "NoIssuesMatchThatQuery": "No issues match that query",
+    "NumberNameWithOwner": "#{{number}} {{nameWithOwner}}"
+  },
+  "GitHubScopingSelectAllIssues": {
+    "UnknownStory": "Unknown Story"
+  },
+  "GitLabConfigMenu": {
+    "ConfigureYourGitLabIntegration": "Configure your GitLab integration",
+    "RemoveGitLab": "Remove GitLab"
   },
   "GitLabFieldMenu": {
-    "SelectWhetherToPublishEstimateAsACommentInGitlab": "Select whether to publish estimate as a comment in GitLab"
+    "SelectWhetherToPublishEstimateAsACommentInGitLab": "Select whether to publish estimate as a comment in GitLab"
+  },
+  "GitLabProviderRow": {
+    "GitLab": "GitLab",
+    "UseGitLabIssuesFromWithinParabol": "Use GitLab Issues from within Parabol"
   },
   "GitLabScopingSearchBar": {
-    "SearchGitlabIssues": "Search GitLab issues...",
-    "Gitlabsearchquery": "gitlabSearchQuery",
-    "Gitlab": "gitlab"
+    "Gitlab": "gitlab",
+    "GitlabSearchQuery": "gitlabSearchQuery",
+    "None": "None",
+    "SearchGitLabIssues": "Search GitLab issues..."
   },
   "GitLabScopingSearchFilterMenu": {
-    "NoProjectsFound": "No projects found!"
+    "DefineTheGitLabSearchQuery": "Define the GitLab search query",
+    "NoProjectsFound": "No projects found!",
+    "SearchGitLabProjects": "Search GitLab projects",
+    "SelectedPokerScopeProjectFilter": "Selected Poker Scope Project Filter"
   },
   "GitLabScopingSearchResults": {
-    "NoIssuesMatchThatQuery": "No issues match that query",
-    "NewIssue": "New Issue",
     "Gitlab": "gitlab",
-    "Loadingnext": "loadingNext"
+    "IidFullPath": "#{{iid}} {{fullPath}}",
+    "LoadingNext": "loadingNext",
+    "NewIssue": "New Issue",
+    "NoIssuesMatchThatQuery": "No issues match that query"
+  },
+  "GitLabScopingSelectAllIssues": {
+    "UnknownStory": "Unknown Story"
   },
   "GoogleOAuthButtonBlock": {
-    "ContinueThroughTheLoginPopup": "Continue through the login popup"
+    "ContinueThroughTheLoginPopup": "Continue through the login popup",
+    "SignInWithGoogle": "Sign in with Google",
+    "SignUpWithGoogle": "Sign up with Google"
+  },
+  "GraphqlContainer": {
+    "BearerAtmosphereAuthToken": "Bearer {{atmosphereAuthToken}}",
+    "History": "History",
+    "Parabol": "Parabol",
+    "Prettify": "Prettify",
+    "PrettifyQueryShiftCtrlP": "Prettify Query (Shift-Ctrl-P)",
+    "Private": "Private",
+    "Public": "Public",
+    "Schema": "Schema",
+    "ShowHistory": "Show History"
+  },
+  "GroupingKanban": {
+    "InvalidInvariantReflectionGroupReflectionsIsNull": "Invalid invariant: reflectionGroup.reflections is null"
+  },
+  "GroupingKanbanColumn": {
+    "GroupColumnQuestion": "group-column-{{question}}",
+    "GroupColumnQuestionBody": "group-column-{{question}}-body",
+    "PromptIdSubColumnIdx": "{{promptId}}-{{subColumnIdx}}",
+    "QuestionGroupIdx": "{{question}}-group-{{idx}}"
   },
   "GroupingKanbanColumnHeader": {
     "AddAReflection": "Add a reflection",
-    "AddNewReflection": "Add new reflection"
+    "AddNewReflection": "Add new reflection",
+    "AddReflectionQuestion": "add-reflection-{{question}}",
+    "IsWidthExpandedMinimiseExpand": "{{isWidthExpandedMinimiseExpand}}"
+  },
+  "Header": {
+    "ExternalLinksEmailCdnEmailHeaderBrandingColor3XPng": "{{externalLinksEmailCdn}}email-header-branding-color@3x.png",
+    "ParabolIncLogo": "Parabol, Inc. Logo"
+  },
+  "HelpMenuContent": {
+    "CloseHelpMenu": "Close help menu"
+  },
+  "Impersonate": {
+    "NoEmailOrUserIdProvided": "No email or userId provided!"
   },
   "Insights": {
-    "UsageStatsAreOnlyAvailableForQualifiedCustomers": "Usage stats are only available for qualified customers"
+    "UsageStatsAreOnlyAvailableForQualifiedCustomers": "Usage stats are only available for qualified customers",
+    "ViewedDomainStats": "Viewed domain stats"
   },
   "InsightsDomainNudge": {
-    "Upgrade": "upgrade",
-    "IsOverTheLimitOf": "is over the limit of",
     "2FreeTeams": "2 Free Teams",
-    "Large": "large"
+    "ClickedDomainStatsCta": "Clicked Domain Stats CTA",
+    "ContactUs": "Contact Us",
+    "IsOverTheLimitOf": "is over the limit of",
+    "Large": "large",
+    "MailtoLoveParabolCoSubjectIncreaseUsageLimits": "mailto:love@parabol.co?subject=Increase Usage Limits",
+    "Upgrade": "upgrade",
+    "UpgradeOrganizationNameToPro": "Upgrade {{organizationName}} to Pro"
   },
   "InsightsDomainPanel": {
-    "Info": "info"
+    "ActiveMember": "Active Member",
+    "ActiveTeam": "Active Team",
+    "DomainIdUsage": "{{domainId}} Usage",
+    "Info": "info",
+    "Organization": "Organization",
+    "TotalMeeting": "Total Meeting"
+  },
+  "IntegrationScopingNoResults": {
+    "NoRecordsFound": "No records found"
   },
   "InvitationLinkErrorExpired": {
-    "InvitationLinkExpired": "Invitation Link Expired",
-    "TheInvitationTo": "The invitation to",
     "HasExpired": "has expired.",
+    "InvitationLink": "Invitation Link",
+    "InvitationLinkExpired": "Invitation Link Expired",
     "ReachOutTo": "Reach out to",
-    "ToRequestANewOne": "to request a new one"
+    "TheInvitationTo": "The invitation to",
+    "ToRequestANewOne": "to request a new one",
+    "TokenExpiredInvitationLink": "Token Expired | Invitation Link"
   },
   "InviteTeamMemberAvatar": {
     "Invite": "Invite"
   },
+  "Invoice": {
+    "AmountDue": "Amount due",
+    "CouponCouponName": "Coupon: “{{couponName}}”",
+    "EndingIn": "ending in",
+    "Invoice": "Invoice",
+    "InvoiceSubject": "Invoice | {{subject}}",
+    "Invoices": "Invoices",
+    "LastMonthsAdjustments": "Last month’s adjustments",
+    "MakeDateStringEndAtToMakeDateStringNextPeriodEnd": "{{makeDateStringEndAt}} to {{makeDateStringNextPeriodEnd}}",
+    "MakeDateStringStartAtToMakeDateStringEndAt": "{{makeDateStringStartAt}} to {{makeDateStringEndAt}}",
+    "NextIntervalSUsage": "Next {{interval}}’s usage",
+    "PayNow": "PAY NOW",
+    "PreviousBalance": "Previous Balance",
+    "Prorated": "Prorated",
+    "To": "to",
+    "Total": "Total"
+  },
+  "InvoiceFailedStamp": {
+    "PaymentFailed": "Payment Failed"
+  },
+  "InvoiceFooter": {
+    "2900WShorbSt": "2900 W Shorb St",
+    "AlhambraCa91803": "Alhambra, CA, 91803",
+    "CallUsContactInfoTelephone": "Call us: {{contactInfoTelephone}}",
+    "ContactUs": "Contact Us",
+    "EmailUsContactInfoEmailLove": "Email us: {{contactInfoEmailLove}}",
+    "GetInTouch": "Get in touch:",
+    "LogoForParabol": "Logo for Parabol",
+    "MailtoContactInfoEmailLove": "mailto:{{contactInfoEmailLove}}",
+    "ParabolInc": "Parabol, Inc.",
+    "QuestionsConcerns": "Questions? Concerns?",
+    "TelContactInfoTelephoneReplace": "tel:{{contactInfoTelephoneReplace}}",
+    "ThankYouForUsingParabol": "Thank you for using Parabol!",
+    "UnitedStates": "United States"
+  },
+  "InvoiceHeader": {
+    "EmailEmail": "email{{email}}",
+    "LogoForOrgName": "Logo for {{orgName}}"
+  },
+  "InvoiceLineItemDetails": {
+    "HideDetails": "Hide Details",
+    "HidePrint": "hide-print",
+    "ViewDetails": "View Details"
+  },
+  "InvoiceRow": {
+    "CardWillBeChargedOnMakeDateStringEndAt": "Card will be charged on {{makeDateStringEndAt}}",
+    "CurrentEstimate": "*Current estimate.",
+    "InvoiceInvoiceId": "/invoice/{{invoiceId}}",
+    "MakeSureToAddBillingInfoBeforeMakeDateStringEndAt": "Make sure to add billing info before {{makeDateStringEndAt}}!",
+    "PaidOn": "Paid on",
+    "PayNow": "PAY NOW",
+    "StatusStatus": "Status: {{status}}"
+  },
   "JiraFieldMenu": {
-    "Loading": "Loading",
-    "Noresults": "noResults",
     "CannotConnectToJira": "<<Cannot connect to Jira>>",
-    "SelectTheJiraFieldToPushTo": "Select the Jira Field to push to",
     "Comment": "__comment",
-    "Null": "__null"
+    "Loading": "Loading",
+    "NoResults": "noResults",
+    "Null": "__null",
+    "SelectTheJiraFieldToPushTo": "Select the Jira Field to push to"
+  },
+  "JiraIssueLink": {
+    "HttpsCloudNameAtlassianNetBrowseIssueKey": "https://{{cloudName}}.atlassian.net/browse/{{issueKey}}",
+    "JiraIssueIssueKeyOnProjectKey": "Jira Issue #{{issueKey}} on {{projectKey}}",
+    "ShowLabelPrefixIssueIssueKey": "{{showLabelPrefixIssue}}\n      {{issueKey}}"
+  },
+  "JiraScopingSearchBar": {
+    "None": "None"
   },
   "JiraScopingSearchCurrentFilters": {
-    "CurrentFilters": "Current filters:"
+    "CurrentFilters": "Current filters:",
+    "None": "None"
   },
   "JiraScopingSearchFilterMenu": {
     "DefineTheJiraSearchQuery": "Define the Jira search query",
-    "Isjql": "isJQL",
-    "UseJql": "Use JQL",
     "FilterByProject": "Filter by project:",
-    "NoJiraProjectsFound": "No Jira Projects found!"
+    "IsJql": "isJQL",
+    "NoJiraProjectsFound": "No Jira Projects found!",
+    "SearchJira": "Search Jira",
+    "UseJql": "Use JQL"
+  },
+  "JiraScopingSearchFilterMenuRoot": {
+    "Jira": "jira"
   },
   "JiraScopingSearchHistoryToggle": {
     "Jira": "jira"
   },
   "JiraScopingSearchInput": {
-    "Jirasearchquery": "jiraSearchQuery",
-    "Jira": "jira"
+    "Jira": "jira",
+    "JiraSearchQuery": "jiraSearchQuery",
+    "SearchIssuesOnJira": "Search issues on Jira",
+    "SprintFunAndProjectDev": "SPRINT = fun AND PROJECT = dev"
   },
   "JiraScopingSearchResults": {
-    "NoIssuesMatchThatQuery": "No issues match that query",
+    "Jira": "jira",
+    "JiraIssueIssueKey": "Jira Issue #{{issueKey}}",
     "NewIssue": "New Issue",
-    "Jira": "jira"
+    "NoIssuesMatchThatQuery": "No issues match that query"
+  },
+  "JiraScopingSelectAllIssues": {
+    "UnknownStory": "Unknown Story"
   },
   "JiraServerConfigMenu": {
-    "ConfigureYourJiraServerintegration": "Configure your Jira Serverintegration"
+    "ConfigureYourJiraServerintegration": "Configure your Jira Serverintegration",
+    "RefreshToken": "Refresh token",
+    "RemoveJiraServer": "Remove Jira Server"
   },
   "JiraServerFieldMenu": {
-    "SelectTheJiraserverFieldToPushTo": "Select the JiraServer Field to push to",
-    "NoFieldsFound": "No fields found",
     "Comment": "__comment",
-    "Null": "__null"
+    "NoFieldsFound": "No fields found",
+    "Null": "__null",
+    "SelectTheJiraServerFieldToPushTo": "Select the JiraServer Field to push to"
+  },
+  "JiraServerProviderRow": {
+    "ClickedJiraServerRequestButton": "Clicked Jira Server Request Button"
   },
   "JiraServerScopingSearchBar": {
-    "Jiraserversearchquery": "jiraServerSearchQuery",
-    "Jiraserver": "jiraServer"
-  },
-  "JiraScopingSearchFilterMenuRoot": {
-    "Jira": "jira"
+    "JiraServer": "jiraServer",
+    "JiraServerSearchQuery": "jiraServerSearchQuery",
+    "None": "None",
+    "SearchIssuesOnJiraServer": "Search issues on Jira Server",
+    "SprintFunAndProjectDev": "SPRINT = fun AND PROJECT = dev"
   },
   "JiraServerScopingSearchHistoryToggle": {
-    "Jiraserver": "jiraServer"
+    "JiraServer": "jiraServer"
   },
   "JiraServerScopingSearchResults": {
-    "NoIssuesMatchThatQuery": "No issues match that query",
+    "JiraServer": "jiraServer",
+    "JiraServerIssueNodeIssueKey": "Jira Server Issue #{{nodeIssueKey}}",
+    "LoadingNext": "loadingNext",
     "NewIssue": "New Issue",
-    "Jiraserver": "jiraServer",
-    "Loadingnext": "loadingNext"
+    "NoIssuesMatchThatQuery": "No issues match that query"
+  },
+  "JiraUniversalScopingSearchHistoryToggle": {
+    "InProjectFilters": "in {{projectFilters}}",
+    "QueryString": "“{{queryString}}”"
+  },
+  "KickedOut": {
+    "EvictorNameRemovedYouFromTheTeamNameTeam": "{{evictorName}} removed you from the {{teamName}} team"
+  },
+  "LeaveOrgModal": {
+    "AreYouSure": "Are you sure?",
+    "LeaveTheOrganization": "Leave the organization",
+    "ThisWillRemoveYouFromTheOrganizationAndAllTeamsUnderIt": "This will remove you from the organization and all teams under it!",
+    "ToUndoItYoullHaveToAskAnotherBillingLeaderToReAddYou": "To undo it, you’ll have to ask another Billing Leader to re-add you."
+  },
+  "LeaveTeamModal": {
+    "AllOfYourTasksWillBeGivenToTheTeamLead": "All of your tasks will be given to the team lead.",
+    "AreYouSure": "Are you sure?",
+    "LeaveTheTeam": "Leave the team",
+    "ThisWillRemoveYouFromTheTeam": "This will remove you from the team."
+  },
+  "LeftDashParabol": {
+    "Parabol": "PARABOL"
+  },
+  "LogoBlock": {
+    "MyDashboard": "My Dashboard",
+    "Parabol": "Parabol"
+  },
+  "LogoFooter": {
+    "CraftedWithCareByTheFolksAtParabol": "Crafted with care by the folks at Parabol",
+    "ExternalLinksEmailCdnMarkColor3XPng": "{{externalLinksEmailCdn}}mark-color@3x.png"
+  },
+  "MSTeamsConfigMenu": {
+    "ConfigureYourMicrosoftTeamsIntegration": "Configure your Microsoft Teams integration",
+    "RemoveMicrosoftTeams": "Remove Microsoft Teams"
+  },
+  "MSTeamsPanel": {
+    "ConfigureInMicrosoftTeamsClickOnTheTeamConnectorsIncomingWebhook": "Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook",
+    "Connection": "Connection",
+    "EnterYourWebhookUrlHere": "Enter your webhook URL here...",
+    "MicrosoftTeamsWebhook": "Microsoft Teams Webhook",
+    "NoLinkProvided": "No link provided",
+    "NotLookingTooLinky": "Not looking too linky",
+    "Update": "Update"
+  },
+  "MSTeamsProviderRow": {
+    "Cancel": "Cancel",
+    "Connect": "Connect"
+  },
+  "ManageTeamMember": {
+    "TeamLead": "Team Lead"
+  },
+  "MassInvitationTokenLink": {
+    "CopiedValidFor30Days": "Copied! Valid for 30 days",
+    "CopyInviteLink": "Copy invite link",
+    "WindowActionPrblInDisplayToken": "{{windowActionPrblIn}}/{{displayToken}}"
+  },
+  "MattermostConfigMenu": {
+    "ConfigureYourMattermostIntegration": "Configure your Mattermost integration",
+    "RemoveMattermost": "Remove Mattermost"
+  },
+  "MattermostPanel": {
+    "ConfigureInMattermostMainMenuIntegrationsIncomingWebhook": "Configure in Mattermost: Main Menu > Integrations > Incoming Webhook",
+    "Connection": "Connection",
+    "EnterYourWebhookUrlHere": "Enter your webhook URL here...",
+    "MattermostWebhook": "Mattermost Webhook",
+    "NoLinkProvided": "No link provided",
+    "NotLookingTooLinky": "Not looking too linky",
+    "Update": "Update"
+  },
+  "MattermostProviderRow": {
+    "Cancel": "Cancel",
+    "Connect": "Connect"
+  },
+  "MeetingCard": {
+    "Complete": "Complete",
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "MissingTeamOnMeetingJsonStringifyErrObj": "Missing Team on Meeting {{jsonStringifyErrObj}}"
   },
   "MeetingCardOptionsMenu": {
-    "EditTheMeeting": "Edit the meeting",
     "CopyInviteLink": "Copy invite link",
+    "EditTheMeeting": "Edit the meeting",
     "EndTheMeeting": "End the meeting"
   },
+  "MeetingMemberTaskSummaryList": {
+    "DoneTasksLengthPluralDoneTasksLengthTaskDone": "{{doneTasksLength}} {{pluralDoneTasksLengthTask}} Done",
+    "NewTasksLengthNewPluralNewTasksLengthTask": "{{newTasksLength}} New {{pluralNewTasksLengthTask}}"
+  },
+  "MeetingSelector": {
+    "InvitationRequired": "/invitation-required",
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "RedirectToEncodeUriComponentWindowLocationPathnameMeetingIdMeetingId": "?redirectTo={{encodeUriComponentWindowLocationPathname}}&meetingId={{meetingId}}"
+  },
+  "MeetingStageTimeLimitEnd": {
+    "GoToMeeting": "Go to meeting",
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "YourMeetingMeetingNameWithTeamNameIsReadyToMoveForward": "Your meeting {{meetingName}} with {{teamName}} is ready to move forward"
+  },
+  "MeetingSummaryEmailRootSSR": {
+    "Email": "email",
+    "MeetMeetingId": "meet/{{meetingId}}",
+    "NewSummaryMeetingId": "new-summary/{{meetingId}}",
+    "NewSummaryMeetingIdCsv": "new-summary/{{meetingId}}/csv",
+    "TeamTeamId": "team/{{teamId}}"
+  },
+  "MeetingsDash": {
+    "Meetings": "Meetings",
+    "MeetingsParabol": "Meetings | Parabol"
+  },
   "MeetingsDashNewUser": {
-    "LooksLikeYouHaveNoUpcomingMeetingsStartOneNowOrCheckOutTheseTipsAndTricks": "Looks like you have no upcoming meetings 😎 Start one now or check out these tips and\n        tricks."
+    "HiName": "Hi {{name}},",
+    "LooksLikeYouHaveNoUpcomingMeetings😎StartOneNowOrCheckOutTheseTipsAndTricks": "Looks like you have no upcoming meetings 😎 Start one now or check out these tips and\n        tricks."
   },
   "MeetingsDashTutorialModal": {
     "StartingASprintPokerMeeting": "Starting a Sprint Poker Meeting"
   },
+  "MentionsTipTap": {
+    "Enter": "Enter",
+    "Escape": "Escape",
+    "Tab": "Tab"
+  },
+  "MenuItemWithIcon": {
+    "DataCy": "{{dataCy}}"
+  },
+  "MobileDashSidebar": {
+    "Add": "add",
+    "AddATeam": "Add a Team",
+    "ExitToApp": "exit_to_app",
+    "Forum": "forum",
+    "Me": "/me",
+    "MeTasks": "/me/tasks",
+    "Meetings": "Meetings",
+    "Newteam1": "/newteam/1",
+    "PlaylistAddCheck": "playlist_add_check",
+    "SignOut": "Sign out",
+    "Signout": "/signout",
+    "Tasks": "Tasks",
+    "Timeline": "Timeline"
+  },
   "MobileDashTopBar": {
+    "Parabol": "Parabol",
     "Search": "Search"
   },
+  "MyDashboardTimeline": {
+    "MyTimelineParabol": "My Timeline | Parabol",
+    "Timeline": "Timeline"
+  },
   "NewAzureIssueInput": {
-    "ExpandMore": "expand_more"
+    "ExpandMore": "expand_more",
+    "NewIssueTitle": "New issue title",
+    "NewIssueTitleArchived": "{{newIssueTitle}} #archived"
   },
   "NewAzureIssueMenu": {
-    "NoProjectsFound": "No projects found!"
+    "NoProjectsFound": "No projects found!",
+    "SearchAzure": "Search Azure",
+    "SelectAzureProject": "Select Azure project"
+  },
+  "NewCheckInQuestion": {
+    "EGHowAreYou": "e.g. How are you?",
+    "EditTheIcebreaker": "Edit the icebreaker",
+    "Refresh": "Refresh",
+    "TapToCustomizeTheIcebreaker": "Tap to customize the Icebreaker"
+  },
+  "NewGitHubIssueInput": {
+    "NewIssueTitle": "New issue title",
+    "NewIssueTitleArchived": "{{newIssueTitle}} #archived"
   },
   "NewGitHubIssueMenu": {
-    "NoReposFound": "No repos found!"
+    "NoReposFound": "No repos found!",
+    "SearchGitHub": "Search GitHub",
+    "SelectGitHubProject": "Select GitHub project"
+  },
+  "NewGitLabIssueInput": {
+    "NewIssueTitle": "New issue title",
+    "NewIssueTitleArchived": "{{newIssueTitle}} #archived"
   },
   "NewGitLabIssueMenu": {
-    "NoProjectsFound": "No projects found!"
+    "NoProjectsFound": "No projects found!",
+    "SearchGitLab": "Search GitLab",
+    "SelectGitLabProject": "Select GitLab project"
+  },
+  "NewJiraIssueInput": {
+    "NewIssueTitle": "New issue title",
+    "NewIssueTitleArchived": "{{newIssueTitle}} #archived"
   },
   "NewJiraIssueMenu": {
-    "NoProjectsFound": "No projects found!"
+    "NoProjectsFound": "No projects found!",
+    "SearchJira": "Search Jira",
+    "SelectJiraProject": "Select Jira project"
   },
   "NewMeeting": {
-    "NewMeeting": "New meeting"
+    "NewMeeting": "New meeting",
+    "NewMeetingFirstTeamId": "/new-meeting/{{firstTeamId}}"
   },
   "NewMeetingActions": {
     "StartMeeting": "Start Meeting"
   },
   "NewMeetingActionsCurrentMeetings": {
-    "Large": "large"
+    "Large": "large",
+    "MeetingCountActivePluralMeetingCountMeeting": "{{meetingCount}} Active {{pluralMeetingCountMeeting}}"
+  },
+  "NewMeetingAvatarGroup": {
+    "HiddenMeetingMemberCount": "+{{hiddenMeetingMemberCount}}",
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "Overflow": "overflow"
   },
   "NewMeetingCarousel": {
-    "Beta": "Beta"
+    "Beta": "Beta",
+    "Enter": "Enter"
   },
   "NewMeetingCheckIn": {
     "VerballyShareYourResponseWithTheTeam": "Verbally share your response with the team"
+  },
+  "NewMeetingCheckInGreeting": {
+    "ContentMeansHelloInLanguage": "{{content}} means “hello” in {{language}}",
+    "PreferredNameUnknownUser": ", {{preferredNameUnknownUser}}:"
   },
   "NewMeetingSettingsRetrospectiveSettings": {
     "KeyboardArrowDown": "keyboard_arrow_down",
@@ -354,81 +1089,462 @@
   },
   "NewMeetingSidebar": {
     "BestMeetingEver": "Best Meeting Ever!",
+    "MeetingCompleted": "Meeting Completed",
+    "Sidebar": "sidebar",
     "Team": "Team:",
-    "MeetingCompleted": "Meeting Completed"
+    "TeamTeamId": "/team/{{teamId}}"
+  },
+  "NewMeetingSummary": {
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "MeetingNameMeetingSummaryLabelTeamName": "{{meetingName}} {{meetingSummaryLabel}} | {{teamName}}",
+    "NewSummaryMeetingIdCsv": "/new-summary/{{meetingId}}/csv",
+    "RetrospectiveDemoSummaryCsv": "/retrospective-demo-summary/csv",
+    "Summary": "Summary",
+    "TeamTeamId": "/team/{{teamId}}"
   },
   "NewMeetingTeamPicker": {
+    "NewMeetingTeamId": "/new-meeting/{{teamId}}",
     "Team": "Team"
   },
+  "NewMeetingTeamPickerAvatars": {
+    "PickerAvatarTeamMemberId": "pickerAvatar{{teamMemberId}}"
+  },
+  "NewTeam": {
+    "ItsTheBillingEntityForAGroupOfTeamsSuchAsACompanyNonProfitOrForYourPersonalUseOnceCreatedYouCanCreateTeamsAndInviteOthersEvenIfTheyDontShareYourEmailDomainNewOrganizationsStartOutOnTheFreePersonalPlan": "It’s the billing entity for a group of teams\n                such as a company, non-profit, or\n                for your personal use. Once created, you can\n                create teams and invite others, even if they\n                don't share your email domain. New Organizations\n                start out on the Free Personal Plan.",
+    "LearnMore": "Learn More",
+    "NewTeam": "New Team",
+    "NewTeamParabol": "New Team | Parabol",
+    "WhatsAnOrganization": "What’s an Organization?"
+  },
+  "NewTeamForm": {
+    "AddTeamTo": "Add Team to…",
+    "AnExistingOrganization": "an existing organization:",
+    "CmonYouCallThatAnOrganization": "C’mon, you call that an organization?",
+    "CreateANewTeam": "Create a New Team",
+    "CreateTeam": "Create Team",
+    "CreateTeamOrg": "Create Team & Org",
+    "MaybeJustTheLegalName": "Maybe just the legal name?",
+    "MyNewOrganization": "My new organization",
+    "TryUsingANameNotALink": "Try using a name, not a link!",
+    "YourNewOrgNeedsAName": "Your new org needs a name!"
+  },
+  "NewTeamFormOrgName": {
+    "ANewOrganization": "a new organization:"
+  },
+  "NewTeamFormTeamName": {
+    "TeamName": "Team Name"
+  },
   "NewTeamOrgDropdown": {
-    "SelectTheOrganizationTheNewTeamBelongsTo": "Select the organization the new team belongs to",
-    "SelectOrganization": "Select Organization:"
+    "SelectOrganization": "Select Organization:",
+    "SelectTheOrganizationTheNewTeamBelongsTo": "Select the organization the new team belongs to"
+  },
+  "NewTemplateScaleValueLabelInput": {
+    "Escape": "Escape",
+    "PleaseEnterAValue": "Please enter a value",
+    "ThatValueAlreadyExists": "That value already exists",
+    "ValueCannotBeLongerThan2Characters": "Value cannot be longer than 2 characters"
+  },
+  "NextPeriodChargesLineItem": {
+    "QuantityActivePluralQuantityUserUnitPriceStringEach": "{{quantity}} active {{pluralQuantityUser}} ({{unitPriceString}} each)",
+    "QuantityEnterpriseLicenses": "{{quantity}} Enterprise Licenses"
+  },
+  "NoMeetingItem": {
+    "StartANewMeeting": "Start a New Meeting"
+  },
+  "NotFound": {
+    "003128": "0 0 31 28",
+    "404": "404",
+    "M178303332541C176044310841173773289441171483269241C170023256441168563244141167103231941C166626227937166151223814165677219693C164919213109164163206529163394200441C190144017640721536403285982325040656403C2507931712425889443794125475379774C25427484004125357388364125274492774C2525859362372524944771252213953342C25209595879425197696425925186496974C251223100074250504103224249703106394C249293107984248864109604248424111214C247554114334246614117494245603120644C245419121216245238121789245057122361C24475123339244442124316244114125294C2439912563724388312598324377612633C243673126661243571126992243453127324L243403127214C238994117384234033107694228604982941C22300488604121683379444121041470594C2096469532220887568458620811673859C2065366517522049636296820331360874C19994456584196514525041193033485541C192328477492191614469865190901462234C190461457538190022452841189584448041C18720342204118483439644182413372141C1815363007180577354234179656345459C179204341168178754336876178303332541Zm131766248418C133995250548136226252658138486254648C13971325574114095325678614219257828L142926258448C1434352588714394259309144446259749C145162260371145879260994146605261568C11985627983894646284908774963275038C592261264468511255237788552661201828C557556197548564563193188572656188788C57429218790357619618701857811318613C579236185604580371185077581458184548C587854181468594958178348602856175208C60686173618611157172028615552170438C624255167278633752164088644055160878C64625216021648389159537650525158863C653064158065655603157265658252156468C659338156145660339155827661328155509C6626115509866389215469665356154278L665955154398C709863164178759363173858813855183288C869153192888931152202088996057211038C100376212095101135213163101895214231C103463216436105032218642106696220758C110066225038113506229128116986233078C117637233815118295234519118951235222C11944523575119937236278120426236818C122805239398125176241948127576244378C128616245418129662246414130709247411L131766248418Z": "M17.8303 3.32541C17.6044 3.10841 17.3773 2.89441 17.1483 2.69241C17.0023 2.56441 16.8563 2.44141 16.7103 2.31941C16.6626 2.27937 16.6151 2.23814 16.5677 2.19693C16.4919 2.13109 16.4163 2.06529 16.3394 2.00441C19.0144 0.176407 21.5364 -0.328598 23.2504 0.656403C25.0793 1.7124 25.8894 4.37941 25.4753 7.9774C25.4274 8.40041 25.3573 8.83641 25.2744 9.2774C25.2585 9.36237 25.24 9.44771 25.2213 9.53342C25.2095 9.58794 25.1976 9.64259 25.1864 9.6974C25.1223 10.0074 25.0504 10.3224 24.9703 10.6394C24.9293 10.7984 24.8864 10.9604 24.8424 11.1214C24.7554 11.4334 24.6614 11.7494 24.5603 12.0644C24.5419 12.1216 24.5238 12.1789 24.5057 12.2361C24.475 12.3339 24.4442 12.4316 24.4114 12.5294C24.399 12.5637 24.3883 12.5983 24.3776 12.633C24.3673 12.6661 24.3571 12.6992 24.3453 12.7324L24.3403 12.7214C23.8994 11.7384 23.4033 10.7694 22.8604 9.82941C22.3004 8.86041 21.6833 7.94441 21.0414 7.0594C20.964 6.95322 20.8875 6.84586 20.811 6.73859C20.6536 6.51752 20.4963 6.2968 20.3313 6.0874C19.9944 5.6584 19.6514 5.25041 19.3033 4.85541C19.2328 4.77492 19.1614 4.69865 19.0901 4.62234C19.0461 4.57538 19.0022 4.52841 18.9584 4.48041C18.7203 4.22041 18.4834 3.9644 18.2413 3.72141C18.15 3.63007 18.0577 3.54234 17.9656 3.45459C17.9204 3.41168 17.8754 3.36876 17.8303 3.32541ZM13.1766 24.8418C13.3995 25.0548 13.6226 25.2658 13.8486 25.4648C13.9713 25.5741 14.0953 25.6786 14.219 25.7828L14.2926 25.8448C14.3435 25.887 14.394 25.9309 14.4446 25.9749C14.5162 26.0371 14.5879 26.0994 14.6605 26.1568C11.9856 27.9838 9.4646 28.4908 7.74963 27.5038C5.92261 26.4468 5.11255 23.7788 5.52661 20.1828C5.57556 19.7548 5.64563 19.3188 5.72656 18.8788C5.74292 18.7903 5.76196 18.7018 5.78113 18.613C5.79236 18.5604 5.80371 18.5077 5.81458 18.4548C5.87854 18.1468 5.94958 17.8348 6.02856 17.5208C6.0686 17.3618 6.11157 17.2028 6.15552 17.0438C6.24255 16.7278 6.33752 16.4088 6.44055 16.0878C6.46252 16.021 6.48389 15.9537 6.50525 15.8863C6.53064 15.8065 6.55603 15.7265 6.58252 15.6468C6.59338 15.6145 6.60339 15.5827 6.61328 15.5509C6.6261 15.5098 6.63892 15.469 6.65356 15.4278L6.65955 15.4398C7.09863 16.4178 7.59363 17.3858 8.13855 18.3288C8.69153 19.2888 9.31152 20.2088 9.96057 21.1038C10.0376 21.2095 10.1135 21.3163 10.1895 21.4231C10.3463 21.6436 10.5032 21.8642 10.6696 22.0758C11.0066 22.5038 11.3506 22.9128 11.6986 23.3078C11.7637 23.3815 11.8295 23.4519 11.8951 23.5222C11.9445 23.575 11.9937 23.6278 12.0426 23.6818C12.2805 23.9398 12.5176 24.1948 12.7576 24.4378C12.8616 24.5418 12.9662 24.6414 13.0709 24.7411L13.1766 24.8418Z",
+    "M466943191338C4652341922463513193063462305193906C16750517972601605860140786C011968619050399326522803849361C56190283246603101816661645496801761C6545979857266391679556767324279256L68649978826C71660277846174720576896177850376006C79439775556810475126826697747061C8586067387689119973106192419472386C92928572276893435172164939404720514C9491771834195892371617968799714261C971887713697491571292397793712248C9822147112929864571034199079670946L990613709729C9904427099819902477102719901710561C92750279706186850688836181390498286C758105107966709595117916664905127926C6597912907365456513021764934113136C637805133884626282136403616101138936C5958981440065776149026560803154006C557446155029554395156037551355157043C5493915769547437158337545398158986C534998162286524805165576516003168826C5111821706507019172358502844174122L501599174646C494397177556487598180456481702183326C477502185376473999187416470496189456C469446190077468188190707466943191338Zm25839811282C257528116032565281192725549812251C25527812320725507123899254862124591C25455912559625425712660125391812762C25223913259250408137624838914265C247358145243246185147801245012150363C2445115145724400915255224351815365C239038163712341781736722861818329C223179192732172582018721097821058C210958210612109392106421090821067C211279210604211639210522212210441C21234721036221269421028421304821022C213898210045214736209861215574209678C2163112095162170472093552177882092C221038208492242292077322736820692C22896920652305482060823211820564C235288204752383782037824141820277L24256202403C243503202124444920179824536920147C249618199972537681983925774819667C290948182283099991619130999914079C3099991210129324810187263788877C263657885768263481894678263306903581C263185909706263064915828262958921901C2626099422262258962401261838982901C261259101142605791040225986810691L259565108168C2591931097225882311126125839811282Z": "M4.66943 19.1338C4.65234 19.22 4.63513 19.3063 4.62305 19.3906C1.67505 17.9726 0 16.0586 0 14.0786C0 11.9686 1.90503 9.9326 5.22803 8.49361C5.61902 8.3246 6.03101 8.16661 6.45496 8.01761C6.5459 7.98572 6.63916 7.95567 6.73242 7.9256L6.86499 7.8826C7.16602 7.78461 7.47205 7.68961 7.78503 7.6006C7.94397 7.5556 8.104 7.5126 8.26697 7.47061C8.58606 7.3876 8.91199 7.31061 9.24194 7.2386C9.29285 7.22768 9.34351 7.2164 9.39404 7.20514C9.4917 7.18341 9.58923 7.1617 9.68799 7.14261C9.71887 7.136 9.74915 7.12923 9.7793 7.12248C9.82214 7.11292 9.8645 7.10341 9.90796 7.0946L9.90613 7.09729C9.90442 7.09981 9.90247 7.10271 9.901 7.10561C9.27502 7.97061 8.68506 8.88361 8.13904 9.8286C7.58105 10.7966 7.09595 11.7916 6.64905 12.7926C6.5979 12.9073 6.54565 13.0217 6.49341 13.136C6.37805 13.3884 6.26282 13.6403 6.16101 13.8936C5.95898 14.4006 5.776 14.9026 5.60803 15.4006C5.57446 15.5029 5.54395 15.6037 5.51355 15.7043C5.4939 15.769 5.47437 15.8337 5.45398 15.8986C5.34998 16.2286 5.24805 16.5576 5.16003 16.8826C5.11182 17.06 5.07019 17.2358 5.02844 17.4122L5.01599 17.4646C4.94397 17.7556 4.87598 18.0456 4.81702 18.3326C4.77502 18.5376 4.73999 18.7416 4.70496 18.9456C4.69446 19.0077 4.68188 19.0707 4.66943 19.1338ZM25.8398 11.282C25.7528 11.603 25.6528 11.927 25.5498 12.251C25.5278 12.3207 25.507 12.3899 25.4862 12.4591C25.4559 12.5596 25.4257 12.6601 25.3918 12.762C25.2239 13.259 25.0408 13.76 24.8389 14.265C24.7358 14.5243 24.6185 14.7801 24.5012 15.0363C24.451 15.1457 24.4009 15.2552 24.3518 15.365C23.9038 16.371 23.4178 17.367 22.8618 18.329C22.3179 19.273 21.7258 20.187 21.0978 21.058C21.0958 21.061 21.0939 21.064 21.0908 21.067C21.1279 21.0604 21.1639 21.0522 21.2 21.0441C21.2347 21.0362 21.2694 21.0284 21.3048 21.022C21.3898 21.0045 21.4736 20.9861 21.5574 20.9678C21.6311 20.9516 21.7047 20.9355 21.7788 20.92C22.1038 20.849 22.4229 20.773 22.7368 20.692C22.8969 20.65 23.0548 20.608 23.2118 20.564C23.5288 20.475 23.8378 20.378 24.1418 20.277L24.256 20.2403C24.3503 20.21 24.4449 20.1798 24.5369 20.147C24.9618 19.997 25.3768 19.839 25.7748 19.667C29.0948 18.228 30.9999 16.191 30.9999 14.079C30.9999 12.101 29.3248 10.187 26.3788 8.77C26.3657 8.85768 26.3481 8.94678 26.3306 9.03581C26.3185 9.09706 26.3064 9.15828 26.2958 9.21901C26.2609 9.422 26.2258 9.62401 26.1838 9.82901C26.1259 10.114 26.0579 10.402 25.9868 10.691L25.9565 10.8168C25.9193 10.972 25.8823 11.1261 25.8398 11.282Z",
+    "M595251713997L59101671553C584338718031577466720386570605722739C5623787255655417572837754631373143C5217164052316036131645317750120656311C83271503243189951201553049735230155304C1134310155304132322092730715202123903C1554422643311588622922316226232153C162957327336163638333502164324339699C164724343321165126346953165532350531C167871371531702113931317254241573C1737324273317492243923176112451331C178402474531806424984318288252303L183984535095C18469454282418540455056918610255853C18632856112418655956360518679566092C187048568878187308571671187562574631C18752257463118748257463118744157453C1657625521314363255393112196257653L119951578554C1165915819171132358527810991259003C10451259783992419607139408261763C930383619717920264622086910132624455C90426625832898376627208892419628531C857812636138234136439378991765273C777637656062765601659608753613663145C74725366502174089466689373452166873C7049196773367541568613646814695731C629358701642612329707809595251713997Zm25064221014L250918210039C251548209808252194209588252839209367C253702209073254564208779255387208459C257848241059249647265129232498275039C214208285589186787279079157977257719C154537255159151107252349147677249419C147031248869146389248285145745247701C145383247372145021247043144657246719C142228244539139797242299137378239939C136238238839135117237709133988236559C131658234199129358231759127068229249L12611228196C125376227393124645226591123927225769C123717225533123502225304123289225075C123004224771122721224468122448224149C122488224159122528224159122577224159C144108226349166538226179188058223969L190614223707C19379222338419697422306200088222619C205468221839210708220909215857219869C216963219644218042219392219124219139C219772218987220421218835221078218689C224408217949227727217199230938216349C232311215983233655215587234993215192L236677214699C239597213849242488212979245298212029C2471132114324887521078625064221014Z": "M5.95251 7.13997L5.91016 7.1553C5.84338 7.18031 5.77466 7.20386 5.70605 7.22739C5.62378 7.2556 5.54175 7.28377 5.46313 7.3143C5.21716 4.05231 6.03613 1.64531 7.75012 0.656311C8.32715 0.32431 8.99512 0.155304 9.73523 0.155304C11.3431 0.155304 13.2322 0.927307 15.2021 2.3903C15.5442 2.64331 15.8862 2.9223 16.2262 3.2153C16.2957 3.27336 16.3638 3.33502 16.4324 3.39699C16.4724 3.43321 16.5126 3.46953 16.5532 3.50531C16.7871 3.7153 17.0211 3.9313 17.2542 4.1573C17.3732 4.2733 17.4922 4.3923 17.6112 4.51331C17.8402 4.7453 18.0642 4.9843 18.2882 5.2303L18.3984 5.35095C18.4694 5.42824 18.5404 5.50569 18.6102 5.5853C18.6328 5.61124 18.6559 5.63605 18.679 5.66092C18.7048 5.68878 18.7308 5.71671 18.7562 5.74631C18.7522 5.74631 18.7482 5.74631 18.7441 5.7453C16.5762 5.5213 14.3632 5.53931 12.1962 5.7653L11.9951 5.78554C11.6591 5.81917 11.323 5.85278 10.9912 5.9003C10.4512 5.9783 9.92419 6.0713 9.4082 6.1763C9.30383 6.19717 9.20264 6.22086 9.10132 6.24455C9.0426 6.25832 8.98376 6.27208 8.92419 6.28531C8.57812 6.3613 8.23413 6.4393 7.89917 6.5273C7.77637 6.56062 7.65601 6.59608 7.53613 6.63145C7.47253 6.65021 7.40894 6.66893 7.34521 6.6873C7.04919 6.7733 6.75415 6.8613 6.46814 6.95731C6.29358 7.01642 6.12329 7.07809 5.95251 7.13997ZM25.0642 21.014L25.0918 21.0039C25.1548 20.9808 25.2194 20.9588 25.2839 20.9367C25.3702 20.9073 25.4564 20.8779 25.5387 20.8459C25.7848 24.1059 24.9647 26.5129 23.2498 27.5039C21.4208 28.5589 18.6787 27.9079 15.7977 25.7719C15.4537 25.5159 15.1107 25.2349 14.7677 24.9419C14.7031 24.8869 14.6389 24.8285 14.5745 24.7701C14.5383 24.7372 14.5021 24.7043 14.4657 24.6719C14.2228 24.4539 13.9797 24.2299 13.7378 23.9939C13.6238 23.8839 13.5117 23.7709 13.3988 23.6559C13.1658 23.4199 12.9358 23.1759 12.7068 22.9249L12.611 22.8196C12.5376 22.7393 12.4645 22.6591 12.3927 22.5769C12.3717 22.5533 12.3502 22.5304 12.3289 22.5075C12.3004 22.4771 12.2721 22.4468 12.2448 22.4149C12.2488 22.4159 12.2528 22.4159 12.2577 22.4159C14.4108 22.6349 16.6538 22.6179 18.8058 22.3969L19.0614 22.3707C19.3792 22.3384 19.6974 22.306 20.0088 22.2619C20.5468 22.1839 21.0708 22.0909 21.5857 21.9869C21.6963 21.9644 21.8042 21.9392 21.9124 21.9139C21.9772 21.8987 22.0421 21.8835 22.1078 21.8689C22.4408 21.7949 22.7727 21.7199 23.0938 21.6349C23.2311 21.5983 23.3655 21.5587 23.4993 21.5192L23.6677 21.4699C23.9597 21.3849 24.2488 21.2979 24.5298 21.2029C24.7113 21.143 24.8875 21.0786 25.0642 21.014Z",
+    "Union": "Union"
   },
   "NotificationDropdown": {
+    "Last": "last",
+    "NotificationMenuOpened": "Notification Menu Opened",
     "SelectANotification": "Select a notification",
-    "YouReAllCaughtUp": "You’re all caught up! 💯",
-    "Last": "last"
+    "YoureAllCaughtUp💯": "You’re all caught up! 💯"
+  },
+  "NotificationSummaryEmail": {
+    "HaveFunDoGreatWork": "Have fun & do great work,",
+    "HiPreferredName": "Hi {{preferredName}} -",
+    "IfYouNeedAnythingFromUsDontHesitateToReachOutAt": "If you need anything from us, don’t hesitate to reach out at",
+    "MailtoContactInfoEmailLove": "mailto:{{contactInfoEmailLove}}",
+    "NotificationCountNewPluralNotificationCountNotification": "{{notificationCount}} new {{pluralNotificationCountNotification}}",
+    "ParabolTeam": "Parabol Team",
+    "SeeMyDashboard": "See My Dashboard",
+    "SeeWhatsChangedWithYourTeams": "— see what’s changed with your teams.",
+    "YouHave": "You have"
+  },
+  "NullCard": {
+    "IsAddingATask": "is adding a Task"
+  },
+  "NullableTask": {
+    "DataCy": "{{dataCy}}"
   },
   "OrgAvatarInput": {
+    "FileIsTooLarge1MbMax": "File is too large (1MB Max)",
     "UploadANewPhoto": "Upload a New Photo"
   },
+  "OrgBillingCreditCardInfo": {
+    "CreditCardInformation": "Credit Card Information",
+    "Expires": "Expires",
+    "Update": "update"
+  },
+  "OrgBillingDangerZone": {
+    "ContactUs": "Contact us",
+    "DangerZone": "Danger Zone",
+    "InstantUnsubscribeFromPro": "Instant Unsubscribe from Pro",
+    "MailtoLoveParabolCoSubjectInstantUnsubscribeFromPro": "mailto:love@parabol.co?subject=Instant Unsubscribe from Pro",
+    "NeedToCancelItsPainless": "Need to cancel? It’s painless."
+  },
+  "OrgBillingInvoices": {
+    "InvoiceRowInvoiceId": "invoiceRow{{invoiceId}}",
+    "Invoices": "Invoices",
+    "LoadMore": "Load More"
+  },
+  "OrgBillingUpgrade": {
+    "Upgrade": "upgrade",
+    "UpgradeNow": "Upgrade Now",
+    "UpgradeToPro": "Upgrade to Pro"
+  },
+  "OrgMemberRow": {
+    "BeforeYouCanLeaveThisRoleOrOrganization": "before you can leave this role or Organization.",
+    "BillingLeader": "Billing Leader",
+    "Inactive": "Inactive",
+    "LeaveOrganization": "Leave Organization",
+    "MailtoEmail": "mailto:{{email}}",
+    "New": "New",
+    "SendAnEmail": "Send an email",
+    "YouNeedToPromoteAnotherBillingLeader": "You need to promote another Billing Leader"
+  },
+  "OrgMembers": {
+    "DateGetFullYearDateGetMonth1DateGetDate": "{{dateGetFullYear}}-{{dateGetMonth1}}-{{dateGetDate}}",
+    "OrganizationMembers": "Organization Members",
+    "ParabolOrgNameNumDateCsv": "Parabol_{{orgName}}_{{numDate}}.csv"
+  },
+  "Organization": {
+    "BackToOrganizations": "Back to Organizations",
+    "OrganizationSettingsOrgName": "Organization Settings | {{orgName}}",
+    "Unknown": "Unknown"
+  },
+  "OrganizationDetails": {
+    "Created": "Created"
+  },
+  "OrganizationPage": {
+    "MatchUrl": "{{matchUrl}}",
+    "MatchUrlBillingPage": "{{matchUrl}}/{{billingPage}}",
+    "MatchUrlMembersPage": "{{matchUrl}}/{{membersPage}}"
+  },
+  "OrganizationRow": {
+    "Blue": "blue",
+    "MeOrganizationsOrgId": "/me/organizations/{{orgId}}",
+    "Settings": "Settings",
+    "TotalUsersPluralTotalUsersUserActiveUserCountActive": "{{totalUsers}} {{pluralTotalUsersUser}} ({{activeUserCount}} Active)",
+    "UpgradeTo": "Upgrade to"
+  },
+  "Organizations": {
+    "AddNewOrganization": "Add New Organization",
+    "MyOrganizationsParabol": "My Organizations | Parabol",
+    "OrgRowOrganizationId": "orgRow{{organizationId}}",
+    "Organizations": "Organizations",
+    "TapToCreateANewOrganzation": "Tap to create a new organzation"
+  },
+  "PalettePicker": {
+    "PickAGroupColor": "Pick a group color"
+  },
   "ParabolScopingSearchBar": {
-    "SearchParabolTasks": "Search Parabol tasks",
-    "Parabolsearchquery": "parabolSearchQuery",
-    "Parabol": "PARABOL"
+    "None": "None",
+    "Parabol": "PARABOL",
+    "ParabolSearchQuery": "parabolSearchQuery",
+    "SearchParabolTasks": "Search Parabol tasks"
   },
   "ParabolScopingSearchFilterMenu": {
     "DefineTheParabolSearchQuery": "Define the Parabol search query",
     "FilterByStatus": "Filter by status:"
   },
+  "ParabolScopingSearchResultItem": {
+    "Task": "task"
+  },
   "ParabolScopingSearchResults": {
-    "NoTasksMatchThatQuery": "No tasks match that query",
-    "NewTask": "New Task"
+    "NewTask": "New Task",
+    "NoTasksMatchThatQuery": "No tasks match that query"
+  },
+  "ParabolScopingSelectAllTasks": {
+    "UnknownStory": "Unknown Story"
   },
   "PasswordInputField": {
     "Password": "Password"
   },
   "PaymentRejected": {
-    "UpdatedBillingInformation": "Updated billing information"
+    "MeOrganizationsOrgId": "/me/organizations/{{orgId}}",
+    "Unknown": "Unknown",
+    "UpdatedBillingInformation": "Updated billing information",
+    "YourBrandCardEndingInLast4WasRejected": "Your {{brand}} card ending in {{last4}} was rejected"
+  },
+  "PhaseCompleteTag": {
+    "PhaseCompleted": "Phase Completed"
+  },
+  "PhaseItemColumn": {
+    "EditorSectionQuestion": "editor-section-{{question}}",
+    "EditorStatusQuestion": "editor-status-{{question}}",
+    "PhaseItemEditorQuestion": "phase-item-editor-{{question}}",
+    "ReflectionColumnQuestion": "reflection-column-{{question}}",
+    "ReflectionStackQuestion": "reflection-stack-{{question}}",
+    "TapToHighlightPromptForEverybody": "Tap to highlight prompt for everybody"
+  },
+  "PhaseItemEditor": {
+    "DataCyWrapper": "{{dataCy}}-wrapper",
+    "EditThisReflection": "Edit this reflection",
+    "Enter": "Enter",
+    "ForgotToPressEnterClickHereToAdd👆": "Forgot to press enter? Click here to add 👆",
+    "MyReflectionPressEnterToAdd": "My reflection… (press enter to add)",
+    "PressEnterToAdd": "Press enter to add",
+    "TranslateLeftPxTopPx": "translate({{left}}px,{{top}}px)"
   },
   "PokerActiveVoting": {
-    "RevealVotes": "Reveal Votes"
+    "RevealVotes": "Reveal Votes",
+    "TapACardToVoteSwipeToViewEachDimension": "Tap a card to vote. Swipe to view each dimension.",
+    "VotesAreAutomaticallyRevealedOnceEveryoneHasVoted": "Votes are automatically revealed once everyone has voted."
+  },
+  "PokerCardDeck": {
+    "ErrorSubmittingVote": "Error submitting vote",
+    "TranslateXSwipeTranslateXPx": "translateX({{swipeTranslateX}}px)"
   },
   "PokerDimensionFinalScorePicker": {
-    "Update": "Update",
+    "AzureDevOps": "Azure DevOps",
     "EditScore": "Edit Score",
-    "Label": "Label:"
+    "Jira": "Jira",
+    "JiraServer": "Jira Server",
+    "Label": "Label:",
+    "TitleLabel": "{{title}} Label: ",
+    "Update": "Update"
   },
   "PokerDimensionValueControl": {
-    "Update": "Update",
-    "EditScore": "Edit Score"
+    "EditScore": "Edit Score",
+    "Enter": "Enter",
+    "Escape": "Escape",
+    "FinalScore": "Final Score",
+    "FinalScoreSetByFacilitator": "Final Score (set by facilitator)",
+    "Tab": "Tab",
+    "TheFieldSelectedOnlyAcceptsNumbers": "The field selected only accepts numbers",
+    "Update": "Update"
   },
   "PokerEstimateHeaderCard": {
     "Integration": "Integration"
   },
+  "PokerEstimateHeaderCardError": {
+    "CannotConnectToServiceNameVotingWillBeDisabledIfTheProblemPersistsPleaseReAddTheIssueOrReIntegrate": "Cannot connect to {{serviceName}}. Voting will be disabled. If the problem persists, please re-add the issue or re-integrate.",
+    "ServiceNameIsDown": "{{serviceName}} is Down!",
+    "ThatStoryDoesntExist": "That story doesn't exist!",
+    "TheStoryWasDeletedYouCanAddAnotherStoryInTheScopePhase": "The story was deleted. You can add another story in the Scope phase."
+  },
+  "PokerEstimateHeaderCardParabol": {
+    "Task": "task"
+  },
   "PokerEstimatePhase": {
     "EstimateEachStoryAsATeam": "Estimate each story as a team"
+  },
+  "PokerMeetingSidebar": {
+    "NewSummaryMeetingId": "/new-summary/{{meetingId}}"
+  },
+  "PokerTemplateList": {
+    "Organization": "Organization",
+    "Public": "Public",
+    "SprintPokerTemplates": "Sprint Poker Templates",
+    "Team": "Team"
+  },
+  "PokerTemplateListOrg": {
+    "NoOtherTeamsInYourOrganizationAreSharingATemplate": "No other teams in your organization are sharing a template.",
+    "Organization": "ORGANIZATION"
+  },
+  "PokerTemplateListPublic": {
+    "Public": "PUBLIC"
+  },
+  "PokerTemplateListTeam": {
+    "PublicTemplate": "Public Template",
+    "Team": "TEAM",
+    "YourCustomTemplatesWillShowUpHereGetStartedWithA": "Your custom templates will show up here. Get started with a"
+  },
+  "PokerTemplatePicker": {
+    "KeyboardArrowRight": "keyboard_arrow_right",
+    "Template": "Template"
+  },
+  "PokerTemplateScaleDetails": {
+    "BackToTemplate": "Back to Template",
+    "EditScale": "Edit Scale",
+    "NoteAllScalesIncludeAndPassCards": "Note: all scales include ? and Pass cards"
+  },
+  "PokerTemplateScalePicker": {
+    "MustBeTheTemplateOwnerToChange": "Must be the template owner to change"
   },
   "PokerVotingNoVotes": {
     "NoVotes": "No Votes"
   },
+  "Poll": {
+    "AddedAPoll": "added a Poll",
+    "IsCreatingAPoll": "is creating a Poll..."
+  },
+  "PromoteTeamMemberModal": {
+    "AreYouSure": "Are you sure?",
+    "YesPromotePreferredName": "Yes, promote {{preferredName}}",
+    "YouWillBeRemovedAsTheTeamLeaderAndPromotePreferredNameYouWillNoLongerBeAbleToChangeTeamMembershipThisCannotBeUndone": "You will be removed as the team leader and promote {{preferredName}}. You will no longer be able to change team membership. This cannot be undone!"
+  },
   "PromoteToBillingLeader": {
-    "SeeOrganization": "See organization"
+    "MeOrganizationsOrgId": "/me/organizations/{{orgId}}",
+    "SeeOrganization": "See organization",
+    "YouVeBeenPromotedToBillingLeaderForOrgName": "You‘ve been promoted to billing leader for {{orgName}}"
+  },
+  "PromptResponseEditor": {
+    "B": "B",
+    "Cancel": "Cancel",
+    "I": "I",
+    "S": "S",
+    "Submit": "Submit",
+    "Update": "Update"
+  },
+  "ProviderList": {
+    "Atlassian": "Atlassian",
+    "Available": "Available",
+    "AzureDevOps": "Azure DevOps",
+    "Connected": "Connected",
+    "EachTeamMemberMustAddTheIntegrationsTheyWantToUseIntegrationsAreScopedToTheTeamWhereYouAddThem": "Each team member must add the integrations they want to use. Integrations are scoped to the\n        team where you add them.",
+    "JiraServer": "Jira Server",
+    "Mattermost": "Mattermost",
+    "MsTeams": "MS Teams",
+    "Slack": "Slack"
+  },
+  "ProviderRowBase": {
+    "Connected": "Connected",
+    "SeeHowItWorks": "See how it works"
   },
   "ReactjiPicker": {
-    "Apple": "apple"
+    "Apple": "apple",
+    "PickAReactji": "Pick a reactji"
+  },
+  "ReflectTemplateList": {
+    "Organization": "Organization",
+    "Public": "Public",
+    "RetroTemplates": "Retro Templates",
+    "Team": "Team"
+  },
+  "ReflectTemplateListOrg": {
+    "NoOtherTeamsInYourOrganizationAreSharingATemplate": "No other teams in your organization are sharing a template.",
+    "NoTemplateNamesInYourOrganizationMatchYourSearchQuerySearchQuery": "No template names in your organization match your search query \"{{searchQuery}}\"",
+    "Organization": "ORGANIZATION"
+  },
+  "ReflectTemplateListPublic": {
+    "NoPublicTemplatesMatchYourSearchQuerySearchQuery": "No public templates match your search query \"{{searchQuery}}\"",
+    "Public": "PUBLIC"
+  },
+  "ReflectTemplateListTeam": {
+    "NoTeamTemplatesMatchYourSearchQuerySearchQuery": "No team templates match your search query \"{{searchQuery}}\"",
+    "PublicTemplate": "Public Template",
+    "Team": "TEAM",
+    "YourCustomTemplatesWillShowUpHereGetStartedWithA": "Your custom templates will show up here. Get started with a"
+  },
+  "ReflectTemplateSearchBar": {
+    "Escape": "Escape",
+    "SearchNormalizedTempTypeTemplates": "Search {{normalizedTempType}} templates..."
+  },
+  "ReflectionCard": {
+    "DataCyRoot": "{{dataCy}}-root",
+    "EditThisReflection": "Edit this reflection",
+    "EditorWrapper": "editor-wrapper",
+    "Enter": "Enter",
+    "Escape": "Escape",
+    "FindSimilar": "Find similar",
+    "MyReflectionPressEnterToAdd": "My reflection… (press enter to add)",
+    "NewReflection": "*New Reflection*",
+    "ReflectionDelete": "reflection-delete"
+  },
+  "ReflectionCardDeleteButton": {
+    "DeleteThisReflectionCard": "Delete this reflection card"
+  },
+  "ReflectionGroup": {
+    "DataCyCardStaticIdx": "{{dataCy}}-card-{{staticIdx}}",
+    "DataCyHeader": "{{dataCy}}-header",
+    "DataCyStack": "{{dataCy}}-stack"
+  },
+  "ReflectionGroupTitleEditor": {
+    "Enter": "Enter"
+  },
+  "ReflectionGroupVoting": {
+    "AddVote": "Add vote",
+    "CompletedVoteCount": "completed-vote-count",
+    "RemoveVote": "Remove vote",
+    "Rgba25525525565": "rgba(255, 255, 255, .65)"
+  },
+  "ReflectionStack": {
+    "DataCyCardIdx": "{{dataCy}}-card-{{idx}}",
+    "DataCyCardWrapperIdx": "{{dataCy}}-card-wrapper-{{idx}}"
+  },
+  "RemoveFromOrgModal": {
+    "AreYouSure": "Are you sure?",
+    "RemovePreferredName": "Remove {{preferredName}}",
+    "ThisWillRemovePreferredNameFromTheOrganizationAnyOutstandingTasksWillBeGivenToTheTeamLeadsAnyTimeRemainingOnTheirSubscriptionWillBeRefundedOnTheNextInvoice": "This will remove {{preferredName}} from the organization. Any outstanding tasks will be given\n        to the team leads. Any time remaining on their subscription will be refunded on the next\n        invoice."
+  },
+  "RemoveTeamMemberModal": {
+    "AreYouSure": "Are you sure?",
+    "FromTheTeam": "from the team.",
+    "RemovePreferredName": "Remove {{preferredName}}",
+    "ThisWillRemove": "This will remove"
+  },
+  "RemoveTemplate": {
+    "Delete": "delete",
+    "DeleteTemplate": "Delete template"
   },
   "ReportErrorFeedback": {
+    "HttpsSentryIoApiEmbedErrorPageDsnDsnEventIdEventId": "https://sentry.io/api/embed/error-page/?dsn={{dsn}}&eventId={{eventId}}",
     "ReportError": "Report Error",
-    "WhatWereYouDoingWhenTheErrorHappened": "What were you doing when the error happened?",
-    "SubmitReport": "Submit Report"
+    "SubmitReport": "Submit Report",
+    "WhatWereYouDoingWhenTheErrorHappened": "What were you doing when the error happened?"
+  },
+  "ResetPasswordEmail": {
+    "ForgetYourPassword": "Forget your password?",
+    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
+    "LoveParabolCo": "love@parabol.co",
+    "NoProblemJustClickTheLinkBelow": "No problem, just click the link below.",
+    "ResetPassword": "Reset Password"
   },
   "ResponseMentioned": {
+    "AuthorNameMentionedYouInTheirResponseInMeetingName": "{{authorName}} mentioned you in their response in {{meetingName}}.",
+    "MeetMeetingId": "/meet/{{meetingId}}",
     "SeeTheirResponse": "See their response"
   },
   "RetroDiscussPhase": {
     "CreateTakeawayTaskCardsToCaptureNextSteps": "Create takeaway task cards to capture next steps",
-    "DiscussionTakeawayTasks": "Discussion & Takeaway Tasks"
+    "DiscussionTakeawayTasks": "Discussion & Takeaway Tasks",
+    "NoReflectionsJsonStringifyErrObj": "NO REFLECTIONS {{jsonStringifyErrObj}}",
+    "Reflection": "Reflection",
+    "Title": "“{{title}}”"
+  },
+  "RetroGroupPhase": {
+    "DragCardsToGroupByCommonTopics": "Drag cards to group by common topics"
+  },
+  "RetroMeetingSidebar": {
+    "NewSummaryMeetingId": "/new-summary/{{meetingId}}"
+  },
+  "RetroReflectPhase": {
+    "AddAnonymousReflectionsForEachPrompt": "Add anonymous reflections for each prompt"
+  },
+  "RetroSidebarDiscussSection": {
+    "DiscussItemIdx": "discuss-item-{{idx}}"
+  },
+  "RetroTemplatePicker": {
+    "KeyboardArrowRight": "keyboard_arrow_right",
+    "Template": "Template"
+  },
+  "RetroTopic": {
+    "ExternalLinksEmailCdnIcon": "{{externalLinksEmailCdn}}{{icon}}",
+    "NoComments": "No Comments",
+    "See100Comments": "See 100+ Comments",
+    "SeeCommentCountPluralCommentCountComment": "See {{commentCount}} {{pluralCommentCountComment}}"
+  },
+  "RetroTopics": {
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "MeetMeetingIdDiscussIdx1": "/meet/{{meetingId}}/discuss/{{idx1}}",
+    "SummaryEmail": "summary email"
   },
   "RetroVoteMetaHeader": {
     "MyVotes": "My Votes",
@@ -441,83 +1557,159 @@
     "VoteOnTheTopicsYouWantToDiscuss": "Vote on the topics you want to discuss"
   },
   "SAMLRedirect": {
+    "ErrorLoggingIn": "Error logging in",
     "SsoLogin": "SSO Login"
+  },
+  "ScaleActions": {
+    "CloneDefaultScale": "Clone default scale",
+    "ContentCopy": "content_copy",
+    "Delete": "delete",
+    "DeleteScale": "Delete scale",
+    "Edit": "edit",
+    "EditScale": "Edit scale",
+    "TooManyTeamTemplatesRemoveOneFirst": "Too many team templates! Remove one first"
+  },
+  "ScaleValuePalettePicker": {
+    "PickAGroupColor": "Pick a group color"
   },
   "ScopePhase": {
     "AddTasksToBeEstimated": "Add tasks to be estimated"
   },
+  "ScopePhaseArea": {
+    "AzureDevOps": "Azure DevOps",
+    "Jira": "Jira",
+    "JiraServer": "Jira Server",
+    "Parabol": "Parabol"
+  },
   "ScopePhaseAreaAddAzureDevOps": {
+    "ImportIssuesFromAzureDevOps": "Import issues from Azure DevOps",
     "Medium": "medium",
-    "ImportIssuesFromAzureDevops": "Import issues from Azure DevOps",
     "OrAddNewTasksInParabol": "Or add new tasks in Parabol"
   },
   "ScopePhaseAreaAddGitHub": {
+    "ImportIssuesFromGitHub": "Import issues from GitHub",
     "Medium": "medium",
-    "ImportIssuesFromGithub": "Import issues from GitHub",
     "OrAddNewTasksInParabol": "Or add new tasks in Parabol"
   },
   "ScopePhaseAreaAddGitLab": {
+    "ImportIssuesFromGitLab": "Import issues from GitLab",
     "Medium": "medium",
-    "ImportIssuesFromGitlab": "Import issues from GitLab",
     "OrAddNewTasksInParabol": "Or add new tasks in Parabol"
   },
   "ScopePhaseAreaAddJira": {
-    "Medium": "medium",
     "ImportIssuesFromJira": "Import issues from Jira",
+    "Medium": "medium",
     "OrAddNewTasksInParabol": "Or add new tasks in Parabol"
   },
   "ScopePhaseAreaAddJiraServer": {
-    "Medium": "medium",
     "ImportIssuesFromJiraServer": "Import issues from Jira Server",
+    "Medium": "medium",
     "OrAddNewTasksInParabol": "Or add new tasks in Parabol"
   },
   "ScopingSearchBar": {
     "CurrentFilters": "Current filters:"
   },
   "ScopingSearchHistoryMenu": {
-    "SelectASearchQuery": "Select a search query",
     "NoSavedQueriesYet": "No saved queries yet!",
-    "RemoveThisSearchQuery": "Remove this search query"
+    "RemoveThisSearchQuery": "Remove this search query",
+    "SelectASearchQuery": "Select a search query"
   },
-  "NoMeetingItem": {
-    "StartANewMeeting": "Start a New Meeting"
+  "ScopingSearchInput": {
+    "ClearedPokerScopeSearch": "Cleared Poker Scope Search",
+    "StartedPokerScopeSearch": "Started Poker Scope Search"
   },
   "SelectMeetingDropdown": {
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "MeetingCountActivePluralMeetingCountMeeting": "{{meetingCount}} Active {{pluralMeetingCountMeeting}}",
+    "NewMeetingTeamId": "/new-meeting/{{teamId}}",
     "SelectTheMeetingToEnter": "Select the Meeting to enter"
   },
+  "SelectMeetingDropdownItem": {
+    "Complete": "Complete",
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "MissingTeamOnMeetingJsonStringifyErrObj": "Missing Team on Meeting {{jsonStringifyErrObj}}"
+  },
+  "SelectScaleDropdown": {
+    "CreateAScale": "Create a Scale",
+    "SelectTheScaleForThisDimension": "Select the scale for this dimension"
+  },
   "SelectSharingScopeDropdown": {
-    "SelectTheSuitableScopeForSharing": "Select the suitable scope for sharing",
-    "Group": "group",
     "Business": "business",
-    "Public": "public"
+    "Group": "group",
+    "Public": "public",
+    "SelectTheSuitableScopeForSharing": "Select the suitable scope for sharing",
+    "ShareOnlyWithTeamName": "Share only with {{teamName}}",
+    "ShareWithAllOfOrgName": "Share with all of {{orgName}}",
+    "ShareWithTheWorld": "Share with the world"
   },
   "SelectTeamDropdown": {
-    "SelectTheTeamAssociatedWithTheNewTask": "Select the team associated with the new task",
-    "SelectTeam": "Select Team:"
+    "SelectTeam": "Select Team:",
+    "SelectTheTeamAssociatedWithTheNewTask": "Select the team associated with the new task"
+  },
+  "SelectTemplate": {
+    "UseTemplate": "Use Template"
   },
   "SendCommentButton": {
+    "DataCySend": "{{dataCy}}-send",
     "SendComment": "Send comment"
   },
+  "SetNewPassword": {
+    "ResetPassword": "Reset Password",
+    "TypeYourNewPasswordBelow": "Type your new password below"
+  },
   "SideBarStartMeetingButton": {
-    "AddMeeting": "Add Meeting"
+    "AddMeeting": "Add Meeting",
+    "NewMeetingTeamId": "/new-meeting/{{teamId}}"
+  },
+  "SidebarToggle": {
+    "DataCyToggle": "{{dataCy}}-toggle",
+    "ToggleTheSidebar": "Toggle the sidebar"
   },
   "SlackChannelDropdown": {
     "SelectTheChannelToSendNotificationsTo": "Select the channel to send notifications to"
   },
+  "SlackChannelPicker": {
+    "TokenExpiredClickToRenew": "Token Expired! Click to renew"
+  },
   "SlackConfigMenu": {
-    "ConfigureYourSlackIntegration": "Configure your Slack integration"
+    "ConfigureYourSlackIntegration": "Configure your Slack integration",
+    "RefreshToken": "Refresh token",
+    "RemoveSlack": "Remove Slack"
+  },
+  "SlackNotificationList": {
+    "Parabol": "@Parabol",
+    "PrivateNotifications": "Private Notifications",
+    "TeamNotifications": "Team Notifications"
+  },
+  "Spinner": {
+    "00888800": "0 0 888 800",
+    "DelayIDelayMs": "{{delayIDelay}}ms",
+    "PathI": "path{{i}}"
+  },
+  "SpotlightResults": {
+    "RowRow0Id": "row-{{row0Id}}"
   },
   "SpotlightResultsEmptyState": {
     "NoReflectionsMatchThisCard": "No reflections match this card.",
-    "TrySearchingForSpecificKeywords": "Try searching for specific keywords."
+    "TrySearchingForSpecificKeywords": "Try searching for specific keywords.",
+    "😔": "😔"
+  },
+  "SpotlightSearchBar": {
+    "Escape": "Escape",
+    "OrSearchForKeywords": "Or search for keywords...",
+    "SearchedInSpotlight": "Searched in Spotlight"
   },
   "SpotlightTopBar": {
     "FindCardsWithSimilarReflections": "Find cards with similar reflections"
+  },
+  "StageTimerDisplayGauge": {
+    "TimesUp": "Time’s Up!"
   },
   "StageTimerHourPicker": {
     "SelectATimeLimit": "Select a time limit"
   },
   "StageTimerMinutePicker": {
+    "NPluralNMinute": "{{n}} {{pluralNMinute}}",
     "SelectATimeLimit": "Select a time limit"
   },
   "StageTimerModalEditTimeEnd": {
@@ -526,31 +1718,57 @@
   "StageTimerModalEditTimeLimit": {
     "End": "End"
   },
+  "StageTimerModalEndTime": {
+    "Start": "Start",
+    "TimeMustBeInTheFuture": "Time must be in the future",
+    "Update": "Update"
+  },
   "StageTimerModalEndTimeSlackToggle": {
     "NotifyTeamViaSlack": "Notify team via Slack",
     "NotifyingViaMattermost": "Notifying via Mattermost",
     "NotifyingViaMsTeams": "Notifying via MS Teams"
   },
-  "StandardHubUserMenu": {
-    "SelectYourSettings": "Select your settings",
-    "MeProfile": "/me/profile",
-    "Profile": "Profile",
+  "StageTimerModalTimeLimit": {
+    "AddTime": "Add Time",
+    "MinuteTimeLimitPluralMinuteTimeLimitMinute": "{{minuteTimeLimit}} {{pluralMinuteTimeLimitMinute}}",
+    "StartMeetingLabelsTimer": "Start {{meetingLabelsTimer}}"
+  },
+  "StandardHub": {
     "MeOrganizations": "/me/organizations",
-    "Organizations": "Organizations",
-    "Usage": "Usage",
     "UpgradeTo": "Upgrade to"
   },
+  "StandardHubUserMenu": {
+    "MeOrganizations": "/me/organizations",
+    "MeOrganizationsRouteSuffix": "/me/organizations{{routeSuffix}}",
+    "MeProfile": "/me/profile",
+    "Organizations": "Organizations",
+    "OwnedFreeOrgs0Id": "/{{ownedFreeOrgs0Id}}",
+    "Profile": "Profile",
+    "SelectYourSettings": "Select your settings",
+    "SignoutSlug": "/{{signoutSlug}}",
+    "UpgradeTo": "Upgrade to",
+    "Usage": "Usage"
+  },
   "StartMeetingFAB": {
-    "AddMeeting": "Add Meeting"
+    "AddMeeting": "Add Meeting",
+    "NewMeetingTeamId": "/new-meeting/{{teamId}}"
   },
   "SubmittedForgotPasswordPage": {
-    "MailtoLoveParabolCo": "mailto:love@parabol.co",
-    "LoveParabolCo": "love@parabol.co",
+    "BackToSignIn": "Back to Sign In",
     "ClickHere": "click here",
-    "ToContactSupport": "to contact support.",
+    "DidntGetItCheckYourSpamFolderOr": "Didn’t get it? Check your spam folder, or",
+    "EmailEmail": "?email={{email}}",
+    "ItLooksLikeYouMayHaveSignedUpUsingSso": "It looks like you may have signed-up using SSO.",
+    "ItLooksLikeYouMayHaveSignedUpWithGmail": "It looks like you may have signed-up with Gmail.",
+    "LoveParabolCo": "love@parabol.co",
+    "MailtoLoveParabolCo": "mailto:love@parabol.co",
     "SignInWithSso": "Sign In with SSO",
-    "DidnTGetItCheckYourSpamFolderOr": "Didn’t get it? Check your spam folder, or",
-    "ToTryAgain": "to try again."
+    "ToContactSupport": "to contact support.",
+    "ToTryAgain": "to try again.",
+    "TrySigningInWithGoogleOr": "Try signing in with Google or ",
+    "TrySigningInWithSsoOr": "Try signing in with SSO or ",
+    "WeveSentYouAnEmailWithPasswordRecoveryInstructions": "We’ve sent you an email with password recovery instructions.",
+    "YoureAllSet": "You’re all set!"
   },
   "SuggestMentionableUsers": {
     "Mention": "mention"
@@ -560,24 +1778,65 @@
     "CreateNewTeam": "Create New Team"
   },
   "SuggestedActionInviteYourTeam": {
-    "InviteYourTeammatesTo": "Invite your teammates to:",
-    "InviteYourTeammates": "Invite Your Teammates"
-  },
-  "MassInvitationTokenLink": {
-    "CopyInviteLink": "Copy invite link",
-    "CopiedValidFor30Days": "Copied! Valid for 30 days"
+    "InviteYourTeammates": "Invite Your Teammates",
+    "InviteYourTeammatesTo": "Invite your teammates to:"
   },
   "SuggestedActionTryActionMeeting": {
     "HoldYourFirstCheckInMeetingWith": "Hold your first Check-in Meeting with",
+    "NewMeetingTeamId": "/new-meeting/{{teamId}}",
     "StartCheckInMeeting": "Start Check-in Meeting"
   },
   "SuggestedActionTryRetroMeeting": {
     "HoldYourFirstRetroMeetingWith": "Hold your first Retro Meeting with",
+    "NewMeetingTeamId": "/new-meeting/{{teamId}}",
     "StartRetroMeeting": "Start Retro Meeting"
   },
   "SuggestedActionTryTheDemo": {
     "RunA2MinuteDemoRetrospectiveWithAScriptedTeam": "Run a 2-minute demo retrospective with a scripted team",
     "TryTheDemo": "Try the Demo"
+  },
+  "SummaryEmailScheduleCalendar": {
+    "ExternalLinksEmailCdnEventAvailable3XPng": "{{externalLinksEmailCdn}}event_available@3x.png",
+    "ExternalLinksEmailCdnGoogle3XPng": "{{externalLinksEmailCdn}}google@3x.png",
+    "GoogleCalendar": "Google Calendar",
+    "OrMakeYourOwnAndIncludeThisLinkAsTheLocation": "Or, make your own and include this link as the location:",
+    "OutlookEtc": "Outlook, etc.",
+    "TapHereToScheduleYourNextMeeting": "Tap here to schedule your next meeting:"
+  },
+  "SummaryHeader": {
+    "ExternalLinksEmailCdnMarkColor3XPng": "{{externalLinksEmailCdn}}mark-color@3x.png",
+    "MeetingSummary": "Meeting Summary",
+    "ParabolLogo": "Parabol Logo",
+    "TeamNameMeetingDate": "{{teamName}} • {{meetingDate}}"
+  },
+  "SummaryPokerStories": {
+    "Center": "center",
+    "Ffffff": "#FFFFFF",
+    "MeetMeetingIdEstimateIdx1": "/meet/{{meetingId}}/estimate/{{idx1}}",
+    "SummaryEmail": "summary email"
+  },
+  "SummarySheet": {
+    "HowdYourMeetingGo": "How’d your meeting go?",
+    "WereEagerForYourFeedback": "We’re eager for your feedback!"
+  },
+  "SummarySheetCTA": {
+    "Center": "center"
+  },
+  "TaskEditor": {
+    "DataCyEditor": "{{dataCy}}-editor",
+    "DescribeWhatDoneLooksLike": "Describe what “Done” looks like",
+    "Enter": "Enter",
+    "Escape": "Escape"
+  },
+  "TaskFooter": {
+    "DataCyIntegration": "{{dataCy}}-integration",
+    "DataCyTag": "{{dataCy}}-tag"
+  },
+  "TaskFooterIntegrateMenu": {
+    "NeitherYouNorAssigneeNameHasAnyIntegrationsForThisTeam": "Neither you nor {{assigneeName}} has any integrations for this team.",
+    "PushAsAssigneeName": "Push as {{assigneeName}}",
+    "PushWithYourCredentials": "Push with your credentials",
+    "YouDontHaveAnyIntegrationsForThisTeamYet": "You don't have any integrations for this team yet."
   },
   "TaskFooterIntegrateMenuList": {
     "ExportTheTask": "Export the task",
@@ -586,134 +1845,420 @@
   "TaskFooterIntegrateMenuSignup": {
     "IntegrateWithAService": "Integrate with a Service"
   },
+  "TaskFooterIntegrateToggle": {
+    "DataCyButton": "{{dataCy}}-button",
+    "PushToIntegration": "Push to Integration"
+  },
+  "TaskFooterTagMenu": {
+    "Archived": "#archived",
+    "ChangeTheStatusOfTheTask": "Change the status of the task",
+    "DeleteThisTask": "Delete this Task",
+    "Private": "#private",
+    "Remove": "Remove",
+    "SetAs": "Set as"
+  },
+  "TaskFooterTagMenuToggle": {
+    "DataCyButton": "{{dataCy}}-button",
+    "SetStatus": "Set Status"
+  },
+  "TaskFooterTeamAssignee": {
+    "AssignThisTaskToAnotherTeam": "Assign this task to another team",
+    "ReassignTeam": "Reassign Team"
+  },
+  "TaskFooterTeamAssigneeAddIntegrationDialog": {
+    "AddItNow": "Add it now",
+    "Cancel": "Cancel",
+    "ConfiguredFor": "configured for",
+    "DoYouWantToAddItNow": ". Do you want to add it now?",
+    "IntegrationFor": "integration for",
+    "YouDontHave": "You don't have"
+  },
+  "TaskFooterTeamAssigneeMenu": {
+    "AssignThisTaskToAnotherTeam": "Assign this task to another team",
+    "Jira": "Jira",
+    "MoveTo": "Move to:",
+    "NoTeamsFound": "No teams found!",
+    "SearchTeams": "Search teams"
+  },
+  "TaskFooterUserAssignee": {
+    "AssignThisTaskToATeammate": "Assign this task to a teammate",
+    "ReassignResponsibility": "Reassign Responsibility",
+    "Unassigned": "Unassigned"
+  },
+  "TaskFooterUserAssigneeMenu": {
+    "AssignThisTaskToATeammate": "Assign this task to a teammate",
+    "AssignTo": "Assign to:",
+    "NoTeamMembersFound": "No team members found!",
+    "SearchTeamMembers": "Search team members"
+  },
+  "TaskIntegrationLink": {
+    "AzureItemIdOnTeamProject": "Azure Item #{{id}} on {{teamProject}}",
+    "DataCyJiraIssueLink": "{{dataCy}}-jira-issue-link",
+    "GitHubIssueNumberOnNameWithOwner": "GitHub Issue #{{number}} on {{nameWithOwner}}",
+    "GitLabIssueIidOnFullPath": "GitLab Issue #{{iid}} on {{fullPath}}",
+    "HttpsWwwGithubComNameWithOwnerIssuesNumber": "https://www.github.com/{{nameWithOwner}}/issues/{{number}}",
+    "IntegrationTypeId": "{{integrationType}} #{{id}}",
+    "Issue": "Issue",
+    "IssueIid": "Issue #{{iid}}",
+    "IssueIssueKey": "Issue #{{issueKey}}",
+    "IssueNumber": "Issue #{{number}}",
+    "JiraServerIssueIssueKeyOnProjectKey": "Jira Server Issue #{{issueKey}} on {{projectKey}}"
+  },
   "TaskInvolves": {
-    "SeeTheTask": "See the task"
+    "Avatar": "Avatar",
+    "ChangeAuthorNameActionYouPrepositionATaskOnTheTeamNameTeam": "{{changeAuthorName}} {{action}} you {{preposition}} a task on the {{teamName}} team.",
+    "SeeTheTask": "See the task",
+    "TeamTeamIdArchiveSuffix": "/team/{{teamId}}{{archiveSuffix}}"
+  },
+  "Team": {
+    "BackToTeamDashboard": "Back to Team Dashboard",
+    "TeamTeamId": "/team/{{teamId}}/"
+  },
+  "TeamArchive": {
+    "11Auto": "1 1 auto",
+    "1Rem05Rem": "1rem 0.5rem",
+    "ArchiveTask": "archive-task",
+    "CardBlockForTaskId": "cardBlockFor{{taskId}}",
+    "HiThereThereAreZeroArchivedTasks": "Hi there! There are zero archived tasks.",
+    "NothingToSeeHereHowAboutAFunRallyVideo": "Nothing to see here. How about a fun rally video?",
+    "Translate500": "translate(-50%, 0)",
+    "🎉ThatsAllFolksThereAreNoFurtherTasksInTheArchive": "🎉 That's all folks! There are no further tasks in the archive.",
+    "🤓": "🤓"
+  },
+  "TeamArchiveHeader": {
+    "ArchivedTasks": "Archived Tasks",
+    "BackToTeamTasks": "Back to Team Tasks",
+    "TeamTeamId": "/team/{{teamId}}/"
+  },
+  "TeamArchived": {
+    "ArchivorNameArchivedTheTeamTeamName": "{{archivorName}} archived the team {{teamName}}"
+  },
+  "TeamDashMain": {
+    "TeamDashboardTeamName": "Team Dashboard | {{teamName}}"
   },
   "TeamDashTeamMemberMenu": {
-    "SelectTheTeamMemberToFilterBy": "Select the team member to filter by",
+    "AllTeamMembers": "All team members",
     "FilterByTeamMember": "Filter by team member:",
     "NoTeamMembersFound": "No team members found!",
-    "Teammemberfilternull": "teamMemberFilterNULL",
-    "AllTeamMembers": "All team members"
+    "SearchTeamMembers": "Search team members",
+    "SelectTheTeamMemberToFilterBy": "Select the team member to filter by",
+    "TeamMemberFilterNull": "teamMemberFilterNULL",
+    "TeamMemberFilterTeamMemberId": "teamMemberFilter{{teamMemberId}}"
+  },
+  "TeamDrawer": {
+    "ManageTeam": "Manage Team",
+    "TeamAgenda": "Team Agenda"
   },
   "TeamInvitationEmailCreateAccount": {
-    "ChooseAPasswordForImmediateAccess": "Choose a password for immediate access"
+    "ChooseAPasswordForImmediateAccess": "Choose a password for immediate access",
+    "JoinMeetingName": "Join {{meetingName}}",
+    "JoinTeam": "Join Team",
+    "SignUp": "Sign Up",
+    "SignUpTeamInvitation": "Sign up | Team Invitation",
+    "ToTheTeamMeetingFor": "to the team meeting for:",
+    "ToYourTeam": "to your team:"
   },
   "TeamInvitationEmailSignin": {
-    "WelcomeBack": "Welcome back,",
-    "EnterYourPassword": "Enter your password"
+    "EnterYourPassword": "Enter your password",
+    "ForImmediateAccessToYourTeam": "for immediate access to your team:",
+    "SignIn": "Sign in",
+    "SignInTeamInvitation": "Sign in | Team Invitation",
+    "ToJoinMeetingNameFor": " to join {{meetingName}} for: ",
+    "WelcomeBack": "Welcome back,"
   },
   "TeamInvitationErrorAccepted": {
-    "InvitationAlreadyAccepted": "Invitation Already Accepted",
-    "TheInvitationTo": "The invitation to",
     "HasAlreadyBeenRedeemed": "has already been redeemed.",
-    "Join": "Join",
     "InProgress": "in progress…",
+    "InvitationAlreadyAccepted": "Invitation Already Accepted",
+    "Join": "Join",
+    "JoinMeetingName": "Join {{meetingName}}",
+    "MeetMeetingId": "/meet/{{meetingId}}",
+    "TeamDashboard": "Team Dashboard",
+    "TeamInvitation": "Team Invitation",
+    "TeamTeamId": "/team/{{teamId}}",
+    "TheInvitationTo": "The invitation to",
+    "TokenAlreadyAcceptedTeamInvitation": "Token already accepted | Team Invitation",
     "VisitThe": "Visit the",
-    "TeamDashboard": "Team Dashboard"
+    "VisitTheTeamDashboard": "Visit the Team Dashboard"
   },
   "TeamInvitationErrorExpired": {
-    "InvitationExpired": "Invitation Expired",
-    "TheInvitationTo": "The invitation to",
-    "HasExpired": "has expired.",
-    "ReachOutTo": "Reach out to",
     "At": "at",
-    "ToRequestANewOne": "to request a new one"
+    "EmailInviterEmail": "Email {{inviterEmail}}",
+    "HasExpired": "has expired.",
+    "InvitationExpired": "Invitation Expired",
+    "MailtoInviterEmail": "mailto:{{inviterEmail}}",
+    "ReachOutTo": "Reach out to",
+    "TeamInvitation": "Team Invitation",
+    "TheInvitationTo": "The invitation to",
+    "ToRequestANewOne": "to request a new one",
+    "TokenExpiredTeamInvitation": "Token Expired | Team Invitation"
   },
   "TeamInvitationErrorNotFound": {
     "InvalidInvitation": "Invalid Invitation",
-    "TheInvitationTokenIsNotValid": "The invitation token is not valid."
+    "TeamInvitation": "Team Invitation",
+    "TheInvitationTokenIsNotValid": "The invitation token is not valid.",
+    "TokenNotFoundTeamInvitation": "Token not found | Team Invitation",
+    "TryCopyingTheLinkFromYourEmailAgain": "Try copying the link from your email again.",
+    "TryRequestingAnotherLink": "Try requesting another link."
   },
   "TeamInvitationGoogleCreateAccount": {
+    "1Rem00": "1rem 0 0",
     "ItLooksLikeYourEmailIsHostedByGoogle": "It looks like your email is hosted by Google.",
+    "JoinMeetingName": "Join {{meetingName}}",
+    "JoinTeam": "Join Team",
+    "SignUpWithGoogleTeamInvitation": "Sign up with Google | Team Invitation",
+    "SignUpWithoutGoogle": "Sign up without Google",
     "TapBelowForImmediateAccess": "Tap below for immediate access",
-    "SignUpWithoutGoogle": "Sign up without Google"
+    "TeamInvitation": "Team Invitation",
+    "ToTheTeamMeetingFor": "to the team meeting for:",
+    "ToYourTeam": "to your team:"
   },
   "TeamInvitationGoogleSignin": {
+    "ForImmediateAccessToYourTeam": "for immediate access to your team:",
+    "SignIn": "Sign in",
+    "SignInWithGoogleTeamInvitation": "Sign in with Google | Team Invitation",
+    "TapBelow": "Tap below",
+    "ToJoinMeetingNameFor": " to join {{meetingName}} for: ",
     "WelcomeBack": "Welcome back,",
-    "YouLastSignedInWithGoogle": "You last signed in with Google.",
-    "TapBelow": "Tap below"
+    "YouLastSignedInWithGoogle": "You last signed in with Google."
   },
   "TeamInvitationNotification": {
-    "AcceptInvitation": "Accept invitation"
+    "AcceptInvitation": "Accept invitation",
+    "InviterNameInvitedYouToTheTeamNameTeam": "{{inviterName}} invited you to the {{teamName}} team"
   },
   "TeamInvitationSSO": {
+    "ErrorLoggingIn": "Error logging in",
+    "LoggingInToYourSecureSsoProvider": "Logging in to your secure SSO Provider",
     "SsoLogin": "SSO Login",
-    "LoggingInToYourSecureSsoProvider": "Logging in to your secure SSO Provider"
+    "SsoLoginTeamInvitation": "SSO Login | Team Invitation",
+    "TeamInvitation": "Team Invitation"
+  },
+  "TeamInvite": {
+    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
+    "GettingStartedRetro101": "Getting Started: Retro 101",
+    "HasInvitedYouToJoinATeam": ") has invited you to join a team (",
+    "HasStartedMeetingCopyLabelLookupMeetingMeetingTypeForYourTeam": ") has started {{meetingCopyLabelLookupMeetingMeetingType}} for your team (",
+    "Hi": "Hi",
+    "Join": "Join",
+    "JoinTeam": "Join Team",
+    "JustAFewClicksAndYoureIn": "). Just a few clicks and you’re in!",
+    "LearnMoreAboutParabolMeetings": "Learn more about Parabol meetings:",
+    "LevelingUpCheckIn101": "Leveling Up: Check-in 101",
+    "LoveParabolCo": "love@parabol.co",
+    "MailtoInviteeEmail": "mailto:{{inviteeEmail}}",
+    "MailtoInviterEmail": "mailto:{{inviterEmail}}",
+    "NewToParabol": "New to Parabol?",
+    "OnParabol": ") on Parabol.",
+    "ParabolIsSoftwareForRemoteTeamsToRunOnlineRetrospectiveAndCheckInMeetingsSeeTheVideoAndLinksBelow": "Parabol is software for remote teams to run online retrospective and check-in meetings. See the video and links below:",
+    "Retro101": "Retro 101"
+  },
+  "TeamMemberAvatarMenu": {
+    "FromTeam": "from Team",
+    "LeaveTeam": "Leave Team",
+    "Promote": "Promote",
+    "Remove": "Remove",
+    "SelectWhatToDoWithThisTeamMember": "Select what to do with this team member",
+    "ToTeamLead": "to Team Lead"
+  },
+  "TeamPromptDiscussionDrawer": {
+    "100": "100%"
+  },
+  "TeamPromptEditablePromptModal": {
+    "APromptIsRequiredToStartTheActivity": "A prompt is required to start the activity",
+    "Blue": "blue",
+    "MeetingPrompt": "meetingPrompt",
+    "Prompt": "Prompt",
+    "PromptsShouldBeAtLeastTwoCharactersLong": "Prompts should be at least two characters long",
+    "Suggestions": "Suggestions",
+    "UsePrompt": "Use prompt",
+    "WhatAreYouWorkingOnTodayStuckOnAnything": "What are you working on today? Stuck on anything?",
+    "💡": "💡"
+  },
+  "TeamPromptLastUpdatedTime": {
+    "Edited": "· Edited"
+  },
+  "TeamPromptOptionsMenu": {
+    "EditTheMeeting": "Edit the meeting",
+    "EndThisActivity": "End this activity",
+    "RepeatMF": "Repeat M-F",
+    "StopRepeating": "Stop repeating"
+  },
+  "TeamPromptRepliesAvatarList": {
+    "UserIdOverflowCount": "{{userId}}:overflowCount"
+  },
+  "TeamPromptResponseCard": {
+    "NoResponseYet": "No response, yet...",
+    "Replies": "Replies",
+    "Reply": "Reply",
+    "ShareYourResponse": "Share your response..."
+  },
+  "TeamPromptTopBar": {
+    "BackToMeetings": "Back to Meetings",
+    "BestMeetingEver": "Best Meeting Ever!",
+    "Beta": "BETA"
+  },
+  "TeamSettings": {
+    "DangerZone": "Danger Zone",
+    "MeOrganizationsOrgId": "/me/organizations/{{orgId}}",
+    "TeamSettings": "Team Settings",
+    "TeamSettingsTeamName": "Team Settings | {{teamName}}",
+    "ThisTeamIsCurrentlyOnAPersonalPlan": "This team is currently on a personal plan.",
+    "UpgradeTeamToTierLabelPro": "Upgrade Team to {{tierLabelPro}}"
+  },
+  "TeamSettingsToggleNav": {
+    "16PxAuto0": "16px auto 0",
+    "Integrations": "Integrations",
+    "Team": "Team",
+    "TeamTeamIdSettingsArea": "/team/{{teamId}}/settings/{{area}}"
+  },
+  "TeamSettingsWrapper": {
+    "MatchUrlArea": "{{matchUrl}}/:area?",
+    "MatchUrlIntegrations": "{{matchUrl}}/integrations"
+  },
+  "TeamTasksHeader": {
+    "AllTeamMembers": "All team members",
+    "ArchivedTasks": "Archived Tasks",
+    "MeOrganizationsOrgId": "/me/organizations/{{orgId}}",
+    "SettingsIntegrations": "Settings & Integrations",
+    "TeamMember": "Team Member",
+    "TeamTeamIdArchive": "/team/{{teamId}}/archive",
+    "TeamTeamIdSettings": "/team/{{teamId}}/settings/"
+  },
+  "TemplateDimensionItem": {
+    "YouMustHaveAtLeast1Dimension": "You must have at least 1 dimension"
+  },
+  "TemplatePromptItem": {
+    "YouMustHaveAtLeast1Prompt": "You must have at least 1 prompt"
+  },
+  "TemplateSharing": {
+    "MustBeTeamLeadToChange": "Must be Team Lead to change",
+    "OnlyVisibleToTeamName": "Only visible to {{teamName}}",
+    "SharingPublicly": "Sharing publicly",
+    "SharingWithOrgName": "Sharing with {{orgName}}"
   },
   "ThreadedCommentBase": {
+    "DataCy": "{{dataCy}}",
+    "DataCyReply": "{{dataCy}}-reply",
+    "DataCyWrapper": "{{dataCy}}-wrapper",
     "EditYourComment": "Edit your comment"
   },
+  "ThreadedCommentFooter": {
+    "CommentFooter": "comment-footer"
+  },
+  "ThreadedCommentHeader": {
+    "DataCy": "{{dataCy}}"
+  },
+  "ThreadedItem": {
+    "Child": "child",
+    "Comment": "comment",
+    "Poll": "Poll",
+    "Task": "task"
+  },
+  "ThreadedItemReply": {
+    "DataCyInput": "{{dataCy}}-input"
+  },
   "ThreadedPollBase": {
+    "AddAChoiceIndex1IsOptionalOptional": "Add a choice {{index1}} {{isOptionalOptional}}...",
     "Start": "Start",
     "SubmitAndViewResults": "Submit and view results"
   },
+  "ThreadedRepliesList": {
+    "DataCyComment": "{{dataCy}}-comment",
+    "DataCyTask": "{{dataCy}}-task",
+    "Task": "Task"
+  },
   "ThreadedReplyButton": {
+    "DataCyReplyButton": "{{dataCy}}-reply-button",
     "Reply": "Reply"
   },
   "ThreadedTaskBase": {
-    "AddedATask": "added a Task"
+    "AddedATask": "added a Task",
+    "DataCy": "{{dataCy}}",
+    "DataCyReply": "{{dataCy}}-reply",
+    "DataCyWrapper": "{{dataCy}}-wrapper"
   },
   "TimelineEventCompletedActionMeeting": {
+    "AgendaItemCountPluralAgendaItemCountAgendaItem": "{{agendaItemCount}} {{pluralAgendaItemCountAgendaItem}}",
     "And": "and",
-    "SeeTheDiscussion": "See the discussion",
+    "CommentCountPluralCommentCountComment": "{{commentCount}} {{pluralCommentCountComment}}.",
     "InYourMeetingOr": "in your meeting or",
-    "ReviewASummary": "review a summary"
+    "ItLastedMeetingDurationAndGenerated": "It lasted {{meetingDuration}} and generated ",
+    "LessThanAMinute": "less than a minute",
+    "MeetMeetingIdAgendaitems1": "/meet/{{meetingId}}/agendaitems/1",
+    "MeetingNameWithTeamNameComplete": "{{meetingName}} with {{teamName}} Complete",
+    "NewSummaryMeetingId": "/new-summary/{{meetingId}}",
+    "ReviewASummary": "review a summary",
+    "SeeTheDiscussion": "See the discussion",
+    "TaskCountPluralTaskCountTask": "{{taskCount}} {{pluralTaskCountTask}}"
   },
   "TimelineEventCompletedRetroMeeting": {
-    "YourTeamShared": "Your team shared",
-    "AndGroupedThemInto": "and grouped them into",
-    "YouAdded": "You added",
     "AndCreated": "and created",
-    "SeeTheDiscussion": "See the discussion",
+    "AndGroupedThemInto": "and grouped them into",
     "InYourMeetingOr": "in your meeting or",
-    "ReviewASummary": "review a summary"
+    "MeetMeetingIdDiscuss1": "/meet/{{meetingId}}/discuss/1",
+    "MeetingNameWithTeamNameComplete": "{{meetingName}} with {{teamName}} Complete",
+    "NewSummaryMeetingId": "/new-summary/{{meetingId}}",
+    "ReviewASummary": "review a summary",
+    "SeeTheDiscussion": "See the discussion",
+    "YouAdded": "You added",
+    "YourTeamShared": "Your team shared"
   },
   "TimelineEventHeaderMenu": {
-    "ChangeTheStatusOfTheTimelineEvent": "Change the status of the timeline event",
-    "ArchiveMeeting": "Archive meeting"
+    "ArchiveMeeting": "Archive meeting",
+    "ChangeTheStatusOfTheTimelineEvent": "Change the status of the timeline event"
   },
   "TimelineEventJoinedParabol": {
-    "YouJoinedParabol": "You joined Parabol",
     "GetStartedByUpdatingYourNameAndAvatarInYour": "Get started by updating your name and avatar in your",
-    "UserProfile": "user profile"
+    "UserProfile": "user profile",
+    "YouJoinedParabol": "You joined Parabol"
   },
   "TimelineEventPokerComplete": {
-    "YouVotedOn": "You voted on",
     "AndAdded": "and added",
-    "SeeTheEstimates": "See the estimates",
     "InYourMeetingOr": "in your meeting or",
-    "ReviewASummary": "review a summary"
+    "MeetMeetingIdEstimate1": "/meet/{{meetingId}}/estimate/1",
+    "MeetingNameWithTeamNameComplete": "{{meetingName}} with {{teamName}} Complete",
+    "NewSummaryMeetingId": "/new-summary/{{meetingId}}",
+    "ReviewASummary": "review a summary",
+    "SeeTheEstimates": "See the estimates",
+    "YouVotedOn": "You voted on"
   },
   "TimelineEventTeamCreated": {
+    "ButNowItIsArchivedWhatAWildRide": "But now it is archived. What a wild ride!",
+    "TeamDashboard": "team dashboard",
+    "TeamTeamId": "/team/{{teamId}}",
     "VisitYour": "Visit your",
-    "TeamDashboard": "team dashboard"
+    "YouCreatedTeamName": "You created {{teamName}}"
   },
   "TimelineEventTeamPromptComplete": {
-    "YourTeamShared": "Your team shared",
-    "YouAllWrote": "You all wrote",
     "AndAssigned": "and assigned",
-    "SeeResponsesAndDiscussions": "See responses and discussions",
+    "MeetMeetingIdResponses": "/meet/{{meetingId}}/responses",
+    "MeetingNameWithTeamName": "{{meetingName}} with {{teamName}}",
+    "NewSummaryMeetingId": "/new-summary/{{meetingId}}",
     "Or": "or",
-    "ReviewASummary": "review a summary"
+    "ReviewASummary": "review a summary",
+    "SeeResponsesAndDiscussions": "See responses and discussions",
+    "YouAllWrote": "You all wrote",
+    "YourTeamShared": "Your team shared"
   },
   "TimelineNoTasks": {
-    "YouReAllCaughtUp": "You’re all caught up!"
+    "YoureAllCaughtUp": "You’re all caught up!"
   },
   "TimelinePriorityTasks": {
     "ActiveTasks": "Active Tasks"
   },
-  "RetroGroupPhase": {
-    "DragCardsToGroupByCommonTopics": "Drag cards to group by common topics"
+  "TopBarHelp": {
+    "HelpMenu": "Help menu",
+    "HelpOutline": "help_outline"
   },
   "TopBarHelpMenu": {
-    "HowMayWeHelp": "How may we help?",
-    "Documentation": "Documentation",
     "Bookmark": "bookmark",
-    "KeyboardShortcuts": "Keyboard Shortcuts",
-    "Keyboard": "keyboard",
+    "Comment": "comment",
+    "DataCy": "{{dataCy}}",
+    "Documentation": "Documentation",
     "GetHelp": "Get help",
-    "Comment": "comment"
+    "HowMayWeHelp": "How may we help?",
+    "Keyboard": "keyboard",
+    "KeyboardShortcuts": "Keyboard Shortcuts"
   },
   "TopBarNotifications": {
     "Notifications": "Notifications"
@@ -722,58 +2267,138 @@
     "Search": "Search"
   },
   "TutorialMeetingCard": {
-    "Tutorial": "Tutorial",
     "StartingASprintPokerMeeting": "Starting a Sprint Poker Meeting",
+    "Tutorial": "Tutorial",
+    "TutorialMeetingCardClosed": "Tutorial Meeting Card Closed",
+    "TutorialMeetingCardOpened": "Tutorial Meeting Card Opened",
     "VideoTutorial": "Video tutorial"
+  },
+  "TypeAheadLabel": {
+    "BB": "<b>$&</b>",
+    "MarkStyleBackgroundPaletteSky300Mark": "<mark style=\"background: {{paletteSky300}}\">$&</mark>"
   },
   "UndoableGroupPhaseControl": {
     "Blue": "blue",
-    "EditGroups": "Edit Groups"
+    "EditGroups": "Edit Groups",
+    "IDIDNTMEANTO": "i d i d n t m e a n t o"
   },
   "UndoableGroupPhaseDialog": {
-    "ResetMeetingAndEditGroups": "Reset meeting and edit groups?",
-    "DangerZone": "Danger zone",
-    "ToEditGroupsYouMustResetTheMeetingToThisPoint": ": to edit groups you must reset the meeting to this point.",
     "AllVotesAndDiscussionWillBeLost": "All votes and discussion will be lost.",
     "Cancel": "Cancel",
-    "ConfirmReset": "Confirm Reset"
+    "ConfirmReset": "Confirm Reset",
+    "DangerZone": "Danger zone",
+    "ResetMeetingAndEditGroups": "Reset meeting and edit groups?",
+    "ToEditGroupsYouMustResetTheMeetingToThisPoint": ": to edit groups you must reset the meeting to this point."
+  },
+  "UnpaidTeamModal": {
+    "HeadOverToOrgNameSettingsToAddAPaymentMethod": "Head over to {{orgName}} Settings to add a payment method",
+    "MeOrganizationsOrgId": "/me/organizations/{{orgId}}",
+    "OhDear": "Oh dear…",
+    "TakeMeThere": "Take me there",
+    "ThereInAnUnpaidInvoiceForTeamName": "There in an unpaid invoice for {{teamName}}.",
+    "TryReachingOutToBillingLeaderNameAtEmail": "Try reaching out to {{billingLeaderName}} at {{email}}",
+    "Unknown": "Unknown"
+  },
+  "UpcomingInvoiceEmail": {
+    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
+    "Hello": "Hello,",
+    "IfAnyOfTheseUsersWereAddedByMistakeSimplyRemoveThemUnder": "If any of these users were added by mistake, simply remove them under:",
+    "LoveParabolCo": "love@parabol.co",
+    "MailtoNewUserEmail": "mailto:{{newUserEmail}}",
+    "NewUserEmail": "{{newUserEmail}}",
+    "NewUserName": "{{newUserName}}",
+    "OrganizationSettings": "Organization Settings",
+    "YourTeamsHaveAddedTheFollowingUsersToYourOrganizationForTheBillingCycleEndingOnPeriodEndStr": "Your teams have added the following users to your organization for the billing cycle ending on {{periodEndStr}}."
+  },
+  "UpgradeBenefits": {
+    "ModalBulletCopyIdx1": "modalBulletCopy-{{idx1}}"
+  },
+  "UpgradeCreditCardFormField": {
+    "Enter": "Enter"
   },
   "UpgradeLater": {
-    "YourOrganizationHasExceeded": "Your organization has exceeded",
-    "TheFreeTierLimitOf": "the free tier limit of",
     "2Teams": "2 teams",
-    "WeLlSendYouAnEmailSo": "We’ll send you an email so",
+    "BackToBusiness": "Back to Business",
+    "TheFreeTierLimitOf": "the free tier limit of",
+    "WellSendYouAnEmailSo": "We’ll send you an email so",
     "YouCanUpgradeLater": "you can upgrade later",
-    "BackToBusiness": "Back to Business"
+    "YourOrganizationHasExceeded": "Your organization has exceeded"
   },
   "UpgradeSuccess": {
-    "Upgraded": "Upgraded!",
-    "YourOrganizationIs": "Your organization is",
+    "BackToBusiness": "Back to Business",
     "NowOnThe": "now on the",
     "Tier": "tier",
-    "BackToBusiness": "Back to Business"
+    "Upgraded": "Upgraded!",
+    "YourOrganizationIs": "Your organization is"
   },
   "UserAvatarInput": {
+    "FileIsTooLarge1MbMax": "File is too large (1MB Max)",
     "UploadANewPhoto": "Upload a New Photo"
   },
+  "UserDashMain": {
+    "MatchUrlTasks": "{{matchUrl}}/tasks"
+  },
+  "UserDashTeamMemberMenu": {
+    "FilterByTeamMember": "Filter by team member:",
+    "NoTeamMembersFound": "No team members found!",
+    "SearchTeamMembers": "Search team members",
+    "SelectTheTeamMemberToFilterBy": "Select the team member to filter by",
+    "TeamMemberFilterNull": "teamMemberFilterNULL",
+    "TeamMemberFilterTeamMemberUserId": "team-member-filter-{{teamMemberUserId}}"
+  },
   "UserDashTeamMenu": {
-    "SelectTheTeamToFilterBy": "Select the team to filter by",
     "FilterByTeam": "Filter by team:",
     "NoTeamsFound": "No teams found!",
-    "Teamfilternull": "teamFilterNULL"
+    "SearchTeams": "Search teams",
+    "SelectTheTeamToFilterBy": "Select the team to filter by",
+    "TeamFilterNull": "teamFilterNULL",
+    "TeamFilterTeamId": "team-filter-{{teamId}}"
+  },
+  "UserDashboard": {
+    "MatchUrlOrganizations": "{{matchUrl}}/organizations",
+    "MatchUrlOrganizationsOrgId": "{{matchUrl}}/organizations/:orgId",
+    "MatchUrlProfile": "{{matchUrl}}/profile"
+  },
+  "UserDraggingHeader": {
+    "YourGhost👻": "Your ghost 👻"
+  },
+  "UserProfile": {
+    "DangerZone": "Danger Zone",
+    "MyInformation": "My Information",
+    "MyProfile": "My Profile",
+    "MyProfileParabol": "My Profile | Parabol"
+  },
+  "UserSettings": {
+    "MyName": "My name",
+    "Name": "Name",
+    "Update": "Update"
+  },
+  "UserTaskViewRoot": {
+    "Tasks": "Tasks",
+    "TasksParabol": "Tasks | Parabol"
+  },
+  "UserTasksHeader": {
+    "Archived": "Archived",
+    "Team": "Team",
+    "TeamMember": "Team Member"
   },
   "VerifyEmail": {
     "EmailVerification": "Email Verification",
-    "VerifyingNow": "Verifying now"
+    "VerifyingNow": "Verifying now",
+    "YoureAlmostIn": "You’re almost in!"
+  },
+  "ViewInBrowserHeader": {
+    "ViewThisInYourBrowser": "View this in your browser"
   },
   "ViewerNotOnTeam": {
     "InvitationRequired": "Invitation Required",
-    "YouReAlmostOnTheTeam": "You’re almost on the team!",
     "JustAskATeamMemberForAnInvitation": "Just ask a team member for an invitation.",
     "ThisPageWillRedirectAutomatically": "This page will redirect automatically.",
-    "WaitingForInvitation": "Waiting for Invitation"
+    "WaitingForInvitation": "Waiting for Invitation",
+    "YoureAlmostOnTheTeam": "You’re almost on the team!"
   },
   "VoteSettingsMenu": {
+    "AdjustTheVoteCount": "Adjust the vote count",
     "VotesPerParticipant": "Votes per participant",
     "VotesPerTopic": "Votes per topic"
   },
@@ -782,589 +2407,7 @@
     "Increase": "Increase"
   },
   "WaitingForFacilitatorToPay": {
-    "WaitingFor": "Waiting for",
-    "ToContinue": "to continue"
-  },
-  "UserDashTeamMemberMenu": {
-    "SelectTheTeamMemberToFilterBy": "Select the team member to filter by",
-    "FilterByTeamMember": "Filter by team member:",
-    "NoTeamMembersFound": "No team members found!",
-    "Teammemberfilternull": "teamMemberFilterNULL"
-  },
-  "NewTeam": {
-    "WhatSAnOrganization": "What’s an Organization?"
-  },
-  "DashNavList": {
-    "ItAppearsYouAreNotAMemberOfAnyTeam": "It appears you are not a member of any team!"
-  },
-  "DashSidebar": {
-    "Forum": "forum",
-    "Meetings": "Meetings",
-    "Timeline": "Timeline",
-    "Me": "/me",
-    "PlaylistAddCheck": "playlist_add_check",
-    "MeTasks": "/me/tasks",
-    "Tasks": "Tasks",
-    "Add": "add",
-    "Newteam1": "/newteam/1",
-    "AddATeam": "Add a Team"
-  },
-  "LeftDashParabol": {
-    "Parabol": "PARABOL"
-  },
-  "MobileDashSidebar": {
-    "Forum": "forum",
-    "Meetings": "Meetings",
-    "Timeline": "Timeline",
-    "Me": "/me",
-    "PlaylistAddCheck": "playlist_add_check",
-    "MeTasks": "/me/tasks",
-    "Tasks": "Tasks",
-    "Add": "add",
-    "Newteam1": "/newteam/1",
-    "AddATeam": "Add a Team",
-    "ExitToApp": "exit_to_app",
-    "Signout": "/signout",
-    "SignOut": "Sign out"
-  },
-  "DashboardAvatars": {
-    "ManageTeam": "Manage Team"
-  },
-  "TeamMemberAvatarMenu": {
-    "SelectWhatToDoWithThisTeamMember": "Select what to do with this team member",
-    "Promote": "Promote",
-    "ToTeamLead": "to Team Lead",
-    "Remove": "Remove",
-    "FromTeam": "from Team",
-    "LeaveTeam": "Leave Team"
-  },
-  "EditableAvatar": {
-    "Edit": "EDIT"
-  },
-  "EditorHelpModal": {
-    "TaskCardFormatting": "Task Card Formatting",
-    "Keyboard": "Keyboard",
-    "Markdown": "Markdown"
-  },
-  "EditingStatus": {
-    "ToggleTimestamp": "Toggle Timestamp"
-  },
-  "EditingStatusText": {
-    "Editing": "Editing",
-    "IsEditing": "is editing",
-    "SeveralPeopleAreEditing": "Several people are editing"
-  },
-  "EditorLinkChangerModal": {
-    "Text": "Text",
-    "Link": "Link"
-  },
-  "EditorLinkViewer": {
-    "Change": "Change",
-    "Remove": "Remove"
-  },
-  "ErrorComponent": {
-    "OhNoYouVeFoundABugBecauseTheBrowserYouReUsingNeedsToBeUpdated": "Oh no! You've found a bug because the browser you're using needs to be updated.",
-    "UpdateNow": "Update now",
-    "AnErrorHasOccurredWeVeAlertedTheDevelopersTryRefreshingThePage": "An error has occurred! We’ve alerted the developers. Try refreshing the page",
-    "ReportFeedback": "Report Feedback"
-  },
-  "NotFound": {
-    "404": "404"
-  },
-  "NullCard": {
-    "IsAddingATask": "is adding a Task"
-  },
-  "AddPollOptionButton": {
-    "AddAnotherChoice": "Add another choice"
-  },
-  "SetNewPassword": {
-    "ResetPassword": "Reset Password",
-    "TypeYourNewPasswordBelow": "Type your new password below"
-  },
-  "PhaseItemColumn": {
-    "TapToHighlightPromptForEverybody": "Tap to highlight prompt for everybody"
-  },
-  "RetroReflectPhase": {
-    "AddAnonymousReflectionsForEachPrompt": "Add anonymous reflections for each prompt"
-  },
-  "StandardHub": {
-    "UpgradeTo": "Upgrade to"
-  },
-  "PhaseCompleteTag": {
-    "PhaseCompleted": "Phase Completed"
-  },
-  "TeamPromptDiscussionDrawer": {
-    "100": "100%"
-  },
-  "TeamPromptEditablePromptModal": {
-    "Prompt": "Prompt",
-    "Meetingprompt": "meetingPrompt",
-    "WhatAreYouWorkingOnTodayStuckOnAnything": "What are you working on today? Stuck on anything?",
-    "Suggestions": "Suggestions",
-    "Blue": "blue",
-    "UsePrompt": "Use prompt"
-  },
-  "TeamPromptLastUpdatedTime": {
-    "Edited": "· Edited"
-  },
-  "TeamPromptOptionsMenu": {
-    "EditTheMeeting": "Edit the meeting",
-    "StopRepeating": "Stop repeating",
-    "RepeatMF": "Repeat M-F",
-    "EndThisActivity": "End this activity"
-  },
-  "TeamPromptResponseCard": {
-    "ShareYourResponse": "Share your response..."
-  },
-  "TeamPromptTopBar": {
-    "BestMeetingEver": "Best Meeting Ever!",
-    "Beta": "BETA"
-  },
-  "PromptResponseEditor": {
-    "B": "B",
-    "I": "I",
-    "S": "S",
-    "Cancel": "Cancel"
-  },
-  "CreateAccountSection": {
-    "ToRun": "to run",
-    "ARealRetrospective": "a real retrospective",
-    "WithYourTeam": "with your team.",
-    "UnlimitedRetrospectives": "unlimited retrospectives",
-    "ThanksForPlaying": "Thanks for playing!",
-    "TheParabolDifference": "The Parabol Difference"
-  },
-  "EmailVerificationEmail": {
-    "Hello": "Hello 👋",
-    "TapTheLinkBelowToVerifyYourEmail": "Tap the link below to verify your email.",
-    "VerifyMyEmail": "Verify My Email",
-    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
-    "LoveParabolCo": "love@parabol.co"
-  },
-  "MeetingSummaryEmailRootSSR": {
-    "Email": "email"
-  },
-  "NotificationSummaryEmail": {
-    "YouHave": "You have",
-    "SeeWhatSChangedWithYourTeams": "— see what’s changed with your teams.",
-    "SeeMyDashboard": "See My Dashboard",
-    "IfYouNeedAnythingFromUsDonTHesitateToReachOutAt": "If you need anything from us, don’t hesitate to reach out at",
-    "HaveFunDoGreatWork": "Have fun & do great work,",
-    "ParabolTeam": "Parabol Team"
-  },
-  "ResetPasswordEmail": {
-    "ForgetYourPassword": "Forget your password?",
-    "ResetPassword": "Reset Password",
-    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
-    "LoveParabolCo": "love@parabol.co"
-  },
-  "UpcomingInvoiceEmail": {
-    "Hello": "Hello,",
-    "IfAnyOfTheseUsersWereAddedByMistakeSimplyRemoveThemUnder": "If any of these users were added by mistake, simply remove them under:",
-    "OrganizationSettings": "Organization Settings",
-    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
-    "LoveParabolCo": "love@parabol.co"
-  },
-  "TeamInvite": {
-    "Hi": "Hi",
-    "JustAFewClicksAndYouReIn": "). Just a few clicks and you’re in!",
-    "Join": "Join",
-    "HasInvitedYouToJoinATeam": ") has invited you to join a team (",
-    "OnParabol": ") on Parabol.",
-    "JoinTeam": "Join Team",
-    "NewToParabol": "New to Parabol?",
-    "ParabolIsSoftwareForRemoteTeamsToRunOnlineRetrospectiveAndCheckInMeetingsSeeTheVideoAndLinksBelow": "Parabol is software for remote teams to run online retrospective and check-in meetings. See the video and links below:",
-    "LearnMoreAboutParabolMeetings": "Learn more about Parabol meetings:",
-    "GettingStartedRetro101": "Getting Started: Retro 101",
-    "LevelingUpCheckIn101": "Leveling Up: Check-in 101",
-    "GetInTouchIfWeCanHelpInAnyWay": "Get in touch if we can help in any way,",
-    "LoveParabolCo": "love@parabol.co"
-  },
-  "ActionMeetingUpdatesPromptTeamHelpText": {
-    "AddAgendaItems": "Add agenda items",
-    "ForDiscussion": "for discussion.)"
-  },
-  "AddNewPokerTemplate": {
-    "CreateNewTemplate": "Create New Template"
-  },
-  "AddNewReflectTemplate": {
-    "CreateNewTemplate": "Create New Template"
-  },
-  "AddPokerTemplateDimension": {
-    "AddAnotherDimension": "Add another dimension"
-  },
-  "AddTemplateScaleValue": {
-    "AddValue": "Add value"
-  },
-  "AddTemplatePrompt": {
-    "AddAnotherPrompt": "Add another prompt"
-  },
-  "CloneTemplate": {
-    "ContentCopy": "content_copy"
-  },
-  "EditableTemplateDescription": {
-    "Description": "Description"
-  },
-  "EditableTemplateName": {
-    "NewTemplate": "*New Template"
-  },
-  "EditableTemplatePrompt": {
-    "NewPrompt": "New Prompt"
-  },
-  "EditableTemplateScaleName": {
-    "NewScale": "*New Scale"
-  },
-  "PokerTemplateList": {
-    "SprintPokerTemplates": "Sprint Poker Templates",
-    "Team": "Team",
-    "Organization": "Organization",
-    "Public": "Public"
-  },
-  "PokerTemplateListOrg": {
-    "NoOtherTeamsInYourOrganizationAreSharingATemplate": "No other teams in your organization are sharing a template.",
-    "Organization": "ORGANIZATION"
-  },
-  "PokerTemplateListPublic": {
-    "Public": "PUBLIC"
-  },
-  "PokerTemplateListTeam": {
-    "YourCustomTemplatesWillShowUpHereGetStartedWithA": "Your custom templates will show up here. Get started with a",
-    "PublicTemplate": "Public Template",
-    "Team": "TEAM"
-  },
-  "PokerTemplatePicker": {
-    "KeyboardArrowRight": "keyboard_arrow_right",
-    "Template": "Template"
-  },
-  "PokerTemplateScaleDetails": {
-    "EditScale": "Edit Scale",
-    "NoteAllScalesIncludeAndPassCards": "Note: all scales include ? and Pass cards"
-  },
-  "PokerTemplateScalePicker": {
-    "MustBeTheTemplateOwnerToChange": "Must be the template owner to change"
-  },
-  "ReflectTemplateList": {
-    "RetroTemplates": "Retro Templates",
-    "Team": "Team",
-    "Organization": "Organization",
-    "Public": "Public"
-  },
-  "ReflectTemplateListOrg": {
-    "NoOtherTeamsInYourOrganizationAreSharingATemplate": "No other teams in your organization are sharing a template.",
-    "Organization": "ORGANIZATION"
-  },
-  "ReflectTemplateListPublic": {
-    "Public": "PUBLIC"
-  },
-  "ReflectTemplateListTeam": {
-    "YourCustomTemplatesWillShowUpHereGetStartedWithA": "Your custom templates will show up here. Get started with a",
-    "PublicTemplate": "Public Template",
-    "Team": "TEAM"
-  },
-  "RemoveTemplate": {
-    "Delete": "delete",
-    "DeleteTemplate": "Delete template"
-  },
-  "RetroTemplatePicker": {
-    "KeyboardArrowRight": "keyboard_arrow_right",
-    "Template": "Template"
-  },
-  "ScaleActions": {
-    "ContentCopy": "content_copy",
-    "Edit": "edit",
-    "EditScale": "Edit scale",
-    "Delete": "delete",
-    "DeleteScale": "Delete scale"
-  },
-  "SelectScaleDropdown": {
-    "SelectTheScaleForThisDimension": "Select the scale for this dimension",
-    "CreateAScale": "Create a Scale"
-  },
-  "SelectTemplate": {
-    "UseTemplate": "Use Template"
-  },
-  "TemplateSharing": {
-    "MustBeTeamLeadToChange": "Must be Team Lead to change"
-  },
-  "GraphqlContainer": {
-    "Schema": "Schema:"
-  },
-  "EmailFooter": {
-    "GetInTouch": "Get in touch",
-    "LoveParabolCo": "love@parabol.co"
-  },
-  "SummaryEmailScheduleCalendar": {
-    "TapHereToScheduleYourNextMeeting": "Tap here to schedule your next meeting:",
-    "GoogleCalendar": "Google Calendar",
-    "OutlookEtc": "Outlook, etc.",
-    "OrMakeYourOwnAndIncludeThisLinkAsTheLocation": "Or, make your own and include this link as the location:"
-  },
-  "Invoice": {
-    "Invoice": "Invoice",
-    "LastMonthSAdjustments": "Last month’s adjustments",
-    "Prorated": "Prorated",
-    "Total": "Total",
-    "PreviousBalance": "Previous Balance",
-    "AmountDue": "Amount due",
-    "To": "to",
-    "EndingIn": "ending in",
-    "PayNow": "PAY NOW"
-  },
-  "InvoiceFailedStamp": {
-    "PaymentFailed": "Payment Failed"
-  },
-  "InvoiceFooter": {
-    "ThankYouForUsingParabol": "Thank you for using Parabol!",
-    "QuestionsConcerns": "Questions? Concerns?",
-    "GetInTouch": "Get in touch:",
-    "ParabolInc": "Parabol, Inc.",
-    "2900WShorbSt": "2900 W Shorb St",
-    "AlhambraCa91803": "Alhambra, CA, 91803",
-    "UnitedStates": "United States"
-  },
-  "InvoiceLineItemDetails": {
-    "HidePrint": "hide-print"
-  },
-  "NewTeamForm": {
-    "CreateANewTeam": "Create a New Team"
-  },
-  "AgendaShortcutHint": {
-    "Press": "Press “"
-  },
-  "NewMeetingAvatarGroup": {
-    "Overflow": "overflow"
-  },
-  "NewCheckInQuestion": {
-    "EditTheIcebreaker": "Edit the icebreaker",
-    "Refresh": "Refresh"
-  },
-  "TaskFooterTeamAssigneeAddIntegrationDialog": {
-    "IntegrationFor": "integration for",
-    "YouDonTHave": "You don't have",
-    "ConfiguredFor": "configured for",
-    "DoYouWantToAddItNow": ". Do you want to add it now?",
-    "Cancel": "Cancel",
-    "AddItNow": "Add it now"
-  },
-  "TaskFooterTeamAssigneeMenu": {
-    "AssignThisTaskToAnotherTeam": "Assign this task to another team",
-    "MoveTo": "Move to:",
-    "NoTeamsFound": "No teams found!"
-  },
-  "TaskFooterUserAssigneeMenu": {
-    "AssignThisTaskToATeammate": "Assign this task to a teammate",
-    "AssignTo": "Assign to:",
-    "NoTeamMembersFound": "No team members found!"
-  },
-  "TaskFooterIntegrateToggle": {
-    "PushToIntegration": "Push to Integration"
-  },
-  "TaskFooterTagMenuToggle": {
-    "SetStatus": "Set Status"
-  },
-  "TaskFooterTeamAssignee": {
-    "ReassignTeam": "Reassign Team"
-  },
-  "TaskFooterUserAssignee": {
-    "ReassignResponsibility": "Reassign Responsibility"
-  },
-  "TaskFooterTagMenu": {
-    "ChangeTheStatusOfTheTask": "Change the status of the task",
-    "Private": "#private",
-    "DeleteThisTask": "Delete this Task",
-    "SetAs": "Set as",
-    "Archived": "#archived"
-  },
-  "AgendaInput": {
-    "AddMeetingTopicsToDiscuss": "Add meeting topics to discuss,",
-    "LikeUpcomingVacation": "like “upcoming vacation”"
-  },
-  "AgendaItem": {
-    "RemoveThisAgendaTopic": "Remove this agenda topic"
-  },
-  "AgendaListEmptyState": {
-    "UpcomingVacation": "upcoming vacation"
-  },
-  "AgendaToggle": {
-    "Agenda": "Agenda"
-  },
-  "ArchiveOrganization": {
-    "Note": "Note",
-    "ThisCanTBeUndone": "This can’t be undone."
-  },
-  "ArchiveTeam": {
-    "Note": "Note",
-    "ThisCanTBeUndone": "This can’t be undone."
-  },
-  "CloseDrawer": {
-    "Close": "close"
-  },
-  "EditableTeamName": {
-    "TeamName": "Team Name"
-  },
-  "LeaveTeamModal": {
-    "AreYouSure": "Are you sure?",
-    "ThisWillRemoveYouFromTheTeam": "This will remove you from the team.",
-    "AllOfYourTasksWillBeGivenToTheTeamLead": "All of your tasks will be given to the team lead."
-  },
-  "ManageTeamMember": {
-    "TeamLead": "Team Lead"
-  },
-  "PromoteTeamMemberModal": {
-    "AreYouSure": "Are you sure?"
-  },
-  "ProviderList": {
-    "EachTeamMemberMustAddTheIntegrationsTheyWantToUseIntegrationsAreScopedToTheTeamWhereYouAddThem": "Each team member must add the integrations they want to use. Integrations are scoped to the\n        team where you add them.",
-    "Connected": "Connected",
-    "Available": "Available"
-  },
-  "GitLabConfigMenu": {
-    "ConfigureYourGitlabIntegration": "Configure your GitLab integration"
-  },
-  "GitLabProviderRow": {
-    "Gitlab": "GitLab",
-    "UseGitlabIssuesFromWithinParabol": "Use GitLab Issues from within Parabol"
-  },
-  "MSTeamsConfigMenu": {
-    "ConfigureYourMicrosoftTeamsIntegration": "Configure your Microsoft Teams integration"
-  },
-  "MSTeamsPanel": {
-    "Connection": "Connection",
-    "MicrosoftTeamsWebhook": "Microsoft Teams Webhook",
-    "Update": "Update"
-  },
-  "MattermostConfigMenu": {
-    "ConfigureYourMattermostIntegration": "Configure your Mattermost integration"
-  },
-  "MattermostPanel": {
-    "Connection": "Connection",
-    "MattermostWebhook": "Mattermost Webhook",
-    "Update": "Update"
-  },
-  "ProviderRowBase": {
-    "SeeHowItWorks": "See how it works",
-    "Connected": "Connected"
-  },
-  "SlackNotificationList": {
-    "TeamNotifications": "Team Notifications",
-    "PrivateNotifications": "Private Notifications",
-    "Parabol": "@Parabol"
-  },
-  "RemoveTeamMemberModal": {
-    "AreYouSure": "Are you sure?",
-    "ThisWillRemove": "This will remove",
-    "FromTheTeam": "from the team."
-  },
-  "TeamArchive": {
-    "ThatSAllFolksThereAreNoFurtherTasksInTheArchive": "🎉 That's all folks! There are no further tasks in the archive.",
-    "HiThereThereAreZeroArchivedTasks": "Hi there! There are zero archived tasks.",
-    "NothingToSeeHereHowAboutAFunRallyVideo": "Nothing to see here. How about a fun rally video?"
-  },
-  "MeetingStageTimeLimitEnd": {
-    "GoToMeeting": "Go to meeting"
-  },
-  "TeamArchiveHeader": {
-    "ArchivedTasks": "Archived Tasks"
-  },
-  "TeamSettings": {
-    "ThisTeamIsCurrentlyOnAPersonalPlan": "This team is currently on a personal plan."
-  },
-  "TeamTasksHeader": {
-    "SettingsIntegrations": "Settings & Integrations"
-  },
-  "UnpaidTeamModal": {
-    "OhDear": "Oh dear…"
-  },
-  "CreditCardErrorLine": {
-    "SecuredBy": "Secured by",
-    "Stripe": "Stripe"
-  },
-  "CreditCardForm": {
-    "Creditcardnumber": "creditCardNumber",
-    "Expiry": "expiry",
-    "Lock": "lock",
-    "Cvc": "cvc",
-    "UpgradeLater": "Upgrade Later",
-    "Submit": "submit"
-  },
-  "InvoiceRow": {
-    "PaidOn": "Paid on",
-    "PayNow": "PAY NOW"
-  },
-  "LeaveOrgModal": {
-    "AreYouSure": "Are you sure?",
-    "ThisWillRemoveYouFromTheOrganizationAndAllTeamsUnderIt": "This will remove you from the organization and all teams under it!",
-    "ToUndoItYouLlHaveToAskAnotherBillingLeaderToReAddYou": "To undo it, you’ll have to ask another Billing Leader to re-add you."
-  },
-  "OrgBillingCreditCardInfo": {
-    "Expires": "Expires",
-    "Update": "update"
-  },
-  "OrgBillingDangerZone": {
-    "NeedToCancelItSPainless": "Need to cancel? It’s painless.",
-    "ContactUs": "Contact us"
-  },
-  "OrgBillingInvoices": {
-    "LoadMore": "Load More"
-  },
-  "OrgBillingUpgrade": {
-    "Upgrade": "upgrade",
-    "UpgradeToPro": "Upgrade to Pro",
-    "UpgradeNow": "Upgrade Now"
-  },
-  "OrgMemberRow": {
-    "BillingLeader": "Billing Leader",
-    "Inactive": "Inactive",
-    "New": "New",
-    "LeaveOrganization": "Leave Organization",
-    "YouNeedToPromoteAnotherBillingLeader": "You need to promote another Billing Leader",
-    "BeforeYouCanLeaveThisRoleOrOrganization": "before you can leave this role or Organization."
-  },
-  "OrganizationDetails": {
-    "Created": "Created"
-  },
-  "OrganizationRow": {
-    "UpgradeTo": "Upgrade to",
-    "Blue": "blue"
-  },
-  "Organizations": {
-    "AddNewOrganization": "Add New Organization"
-  },
-  "RemoveFromOrgModal": {
-    "AreYouSure": "Are you sure?"
-  },
-  "UserSettings": {
-    "Update": "Update"
-  },
-  "UserTasksHeader": {
-    "Archived": "Archived"
-  },
-  "ContactUsFooter": {
-    "EmailUs": "Email us:",
-    "LoveParabolCo": "love@parabol.co",
-    "LearnMore": "Learn More"
-  },
-  "EmailTaskCard": {
-    "20": "20%"
-  },
-  "LogoFooter": {
-    "CraftedWithCareByTheFolksAtParabol": "Crafted with care by the folks at Parabol"
-  },
-  "SummaryHeader": {
-    "MeetingSummary": "Meeting Summary"
-  },
-  "SummaryPokerStories": {
-    "Ffffff": "#FFFFFF",
-    "Center": "center"
-  },
-  "SummarySheetCTA": {
-    "Center": "center"
-  },
-  "ViewInBrowserHeader": {
-    "ViewThisInYourBrowser": "View this in your browser"
-  },
-  "TopBarHelp": {
-    "HelpOutline": "help_outline",
-    "HelpMenu": "Help menu"
+    "ToContinue": "to continue",
+    "WaitingFor": "Waiting for"
   }
 }

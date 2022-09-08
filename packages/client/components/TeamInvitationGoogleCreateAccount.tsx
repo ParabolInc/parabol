@@ -47,11 +47,6 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationGoogleCreateAccount = (props: Props) => {
-  //FIXME i18n: Team Invitation
-  //FIXME i18n: Join Team
-  //FIXME i18n: to the team meeting for:
-  //FIXME i18n: to your team:
-  //FIXME i18n: 1rem 0 0
   const {t} = useTranslation()
 
   const [isEmailFallback, setIsEmailFallback] = useState(false)
@@ -65,12 +60,21 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
     setIsEmailFallback(true)
   }
 
-  useDocumentTitle(`Sign up with Google | Team Invitation`, 'Team Invitation')
+  useDocumentTitle(
+    t('TeamInvitationGoogleCreateAccount.SignUpWithGoogleTeamInvitation', {}),
+    t('TeamInvitationGoogleCreateAccount.TeamInvitation')
+  )
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (
     <StyledDialog>
-      <DialogTitle>{meetingName ? `Join ${meetingName}` : 'Join Team'}</DialogTitle>
+      <DialogTitle>
+        {meetingName
+          ? t('TeamInvitationGoogleCreateAccount.JoinMeetingName', {
+              meetingName
+            })
+          : t('TeamInvitationGoogleCreateAccount.JoinTeam')}
+      </DialogTitle>
       <StyledContent>
         <CopyMargins>
           <InvitationDialogCopy>
@@ -78,14 +82,16 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
           </InvitationDialogCopy>
           <InvitationDialogCopy>
             {t('TeamInvitationGoogleCreateAccount.TapBelowForImmediateAccess')}
-            {meetingName ? ' to the team meeting for: ' : ' to your team: '}
+            {meetingName
+              ? t('TeamInvitationGoogleCreateAccount.ToTheTeamMeetingFor')
+              : t('TeamInvitationGoogleCreateAccount.ToYourTeam')}
             <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
         </CopyMargins>
         <InvitationCenteredCopy>
           <GoogleOAuthButtonBlock isCreate loginHint={email} invitationToken={invitationToken} />
           {isEmailFallback ? (
-            <HorizontalSeparator margin='1rem 0 0' text='or' />
+            <HorizontalSeparator margin={t('TeamInvitationGoogleCreateAccount.1Rem00')} text='or' />
           ) : (
             <UseEmailFallback onClick={useEmail}>
               {t('TeamInvitationGoogleCreateAccount.SignUpWithoutGoogle')}

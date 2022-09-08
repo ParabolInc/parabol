@@ -31,12 +31,11 @@ const UndoableGroupPhaseDialog = lazyPreload(
 const UndoableGroupPhaseControl = (props: Props) => {
   const {meetingId} = props
 
-  //FIXME i18n: i d i d n t m e a n t o
   const {t} = useTranslation()
 
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  useHotkey('i d i d n t m e a n t o', () => {
+  useHotkey(t('UndoableGroupPhaseControl.IDIDNTMEANTO'), () => {
     console.log('didntmean')
     ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId})
   })

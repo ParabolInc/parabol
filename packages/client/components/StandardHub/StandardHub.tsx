@@ -103,7 +103,7 @@ const StandardHub = (props: Props) => {
   const userAvatar = picture || defaultUserAvatar
   const {history} = useRouter()
   const handleUpgradeClick = () => {
-    history.push(`/me/organizations`)
+    history.push(t('StandardHub.MeOrganizations', {}))
     handleMenuClick()
   }
   const gotoUserSettings = () => {

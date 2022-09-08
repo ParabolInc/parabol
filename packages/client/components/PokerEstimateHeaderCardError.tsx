@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -60,16 +61,22 @@ interface Props {
 }
 const PokerEstimateHeaderCardError = (props: Props) => {
   const {service} = props
+
+  const {t} = useTranslation()
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (!service) {
     return (
       <HeaderCardWrapper isDesktop={isDesktop}>
         <ErrorCard>
           <CardTitleWrapper>
-            <CardTitle>{`That story doesn't exist!`}</CardTitle>
+            <CardTitle>{t('PokerEstimateHeaderCardError.ThatStoryDoesntExist', {})}</CardTitle>
           </CardTitleWrapper>
           <CardDescription isExpanded={false}>
-            {`The story was deleted. You can add another story in the Scope phase.`}
+            {t(
+              'PokerEstimateHeaderCardError.TheStoryWasDeletedYouCanAddAnotherStoryInTheScopePhase',
+              {}
+            )}
           </CardDescription>
         </ErrorCard>
       </HeaderCardWrapper>
@@ -80,10 +87,19 @@ const PokerEstimateHeaderCardError = (props: Props) => {
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
         <CardTitleWrapper>
-          <CardTitle>{`${serviceName} is Down!`}</CardTitle>
+          <CardTitle>
+            {t('PokerEstimateHeaderCardError.ServiceNameIsDown', {
+              serviceName
+            })}
+          </CardTitle>
         </CardTitleWrapper>
         <CardDescription isExpanded>
-          {`Cannot connect to ${serviceName}. Voting will be disabled. If the problem persists, please re-add the issue or re-integrate.`}
+          {t(
+            'PokerEstimateHeaderCardError.CannotConnectToServiceNameVotingWillBeDisabledIfTheProblemPersistsPleaseReAddTheIssueOrReIntegrate',
+            {
+              serviceName
+            }
+          )}
         </CardDescription>
       </HeaderCard>
     </HeaderCardWrapper>

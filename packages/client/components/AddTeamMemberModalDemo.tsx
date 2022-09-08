@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import hasToken from '../utils/hasToken'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
@@ -29,9 +30,11 @@ const Illustration = styled('img')({
 })
 
 const AddTeamMemberModalDemo = () => {
+  const {t} = useTranslation()
+
   const copy = hasToken()
-    ? 'Invite your teammates to a team and kick off a real Retro!'
-    : 'Sign up, invite your teammates, and kick off a real Retro!'
+    ? t('AddTeamMemberModalDemo.InviteYourTeammatesToATeamAndKickOffARealRetro')
+    : t('AddTeamMemberModalDemo.SignUpInviteYourTeammatesAndKickOffARealRetro')
   return (
     <StyledDialogContainer>
       <Illustration alt='' src={modalTeamInvitePng} />

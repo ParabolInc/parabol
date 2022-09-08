@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import getSafeRegex from '~/utils/getSafeRegex'
 
@@ -17,7 +18,14 @@ const Span = styled('span')({
 
 const TypeAheadLabel = (props: Props) => {
   const {query, label, highlight} = props
-  const html = highlight ? `<mark style="background: ${PALETTE.SKY_300}">$&</mark>` : `<b>$&</b>`
+
+  const {t} = useTranslation()
+
+  const html = highlight
+    ? t('TypeAheadLabel.MarkStyleBackgroundPaletteSky300Mark', {
+        paletteSky300: PALETTE.SKY_300
+      })
+    : t('TypeAheadLabel.BB', {})
   return (
     <Span
       dangerouslySetInnerHTML={{

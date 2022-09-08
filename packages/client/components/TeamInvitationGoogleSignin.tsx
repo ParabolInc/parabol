@@ -23,8 +23,6 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationGoogleSignin = (props: Props) => {
-  //FIXME i18n: Sign in
-  //FIXME i18n: for immediate access to your team:
   const {t} = useTranslation()
 
   const {match} = useRouter<{token: string}>()
@@ -32,7 +30,10 @@ const TeamInvitationGoogleSignin = (props: Props) => {
   const {token: invitationToken} = params
   const {verifiedInvitation} = props
   const {meetingName, user, teamName} = verifiedInvitation
-  useDocumentTitle(`Sign in with Google | Team Invitation`, 'Sign in')
+  useDocumentTitle(
+    t('TeamInvitationGoogleSignin.SignInWithGoogleTeamInvitation', {}),
+    t('TeamInvitationGoogleSignin.SignIn')
+  )
 
   if (!user) return null
   const {email, preferredName} = user
@@ -48,7 +49,11 @@ const TeamInvitationGoogleSignin = (props: Props) => {
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           {t('TeamInvitationGoogleSignin.TapBelow')}
-          {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
+          {meetingName
+            ? t('TeamInvitationGoogleSignin.ToJoinMeetingNameFor', {
+                meetingName
+              })
+            : t('TeamInvitationGoogleSignin.ForImmediateAccessToYourTeam')}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>

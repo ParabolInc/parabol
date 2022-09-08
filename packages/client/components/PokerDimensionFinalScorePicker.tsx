@@ -81,8 +81,6 @@ interface Props {
 const PokerDimensionFinalScorePicker = (props: Props) => {
   const {inputRef, isFacilitator, canUpdate, error, stageRef, clearError, submitScore} = props
 
-  //FIXME i18n: Jira Server
-  //FIXME i18n: Azure DevOps
   const {t} = useTranslation()
 
   const stage = useFragment(
@@ -107,10 +105,10 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
 
   const titleByType = {
     _xGitHubIssue: 'GitHub',
-    JiraIssue: 'Jira',
-    JiraServerIssue: 'Jira Server',
+    JiraIssue: t('PokerDimensionFinalScorePicker.Jira'),
+    JiraServerIssue: t('PokerDimensionFinalScorePicker.JiraServer'),
     _xGitLabIssue: 'GitLab',
-    AzureDevOpsWorkItem: 'Azure DevOps'
+    AzureDevOpsWorkItem: t('PokerDimensionFinalScorePicker.AzureDevOps')
   }
   const title = titleByType[integrationType]
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -132,7 +130,11 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
         {error && <ErrorMessage isDesktop={isDesktop}>{error}</ErrorMessage>}
         <ControlWrapper>
           {isDesktop ? (
-            <Label>{`${title} Label: `}</Label>
+            <Label>
+              {t('PokerDimensionFinalScorePicker.TitleLabel', {
+                title
+              })}
+            </Label>
           ) : (
             <MobileLabel>{t('PokerDimensionFinalScorePicker.Label')}</MobileLabel>
           )}

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
@@ -43,12 +44,18 @@ interface Props {
 
 const DiscussionThreadListEmptyState = (props: Props) => {
   const {isReadOnly, allowTasks} = props
+
+  const {t} = useTranslation()
+
   const readOnlyMessage = allowTasks
-    ? 'No comments or tasks were added here'
-    : 'No comments were added here'
-  const message = `Start the conversation${
-    allowTasks ? ' or add takeaway task cards' : ''
-  } to capture next steps.`
+    ? t('DiscussionThreadListEmptyState.NoCommentsOrTasksWereAddedHere')
+    : t('DiscussionThreadListEmptyState.NoCommentsWereAddedHere')
+  const message = t(
+    'DiscussionThreadListEmptyState.StartTheConversationAllowTasksOrAddTakeawayTaskCardsToCaptureNextSteps',
+    {
+      allowTasksOrAddTakeawayTaskCards: allowTasks ? ' or add takeaway task cards' : ''
+    }
+  )
 
   return (
     <DiscussionThreadEmptyStateRoot>

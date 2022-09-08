@@ -17,7 +17,6 @@ interface ResetPasswordEmailProps {
 const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
   const {appOrigin, resetURL} = props
 
-  //FIXME i18n: Reset Password
   const {t} = useTranslation()
 
   return (
@@ -25,9 +24,9 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
         <p style={emailCopyStyle}>{t('ResetPasswordEmail.ForgetYourPassword')}</p>
-        <p style={emailCopyStyle}>{`No problem, just click the link below.`}</p>
+        <p style={emailCopyStyle}>{t('ResetPasswordEmail.NoProblemJustClickTheLinkBelow', {})}</p>
         <p style={emailCopyStyle}>
-          <a href={resetURL} style={emailLinkStyle} title='Reset Password'>
+          <a href={resetURL} style={emailLinkStyle} title={t('ResetPasswordEmail.ResetPassword')}>
             {t('ResetPasswordEmail.ResetPassword')}
           </a>
         </p>

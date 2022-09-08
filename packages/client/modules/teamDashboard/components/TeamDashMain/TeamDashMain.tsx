@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
+import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
-import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import TeamDrawer from './TeamDrawer'
 
 const AbsoluteFab = styled(StartMeetingFAB)({
@@ -49,6 +50,9 @@ interface Props {
 
 const TeamDashMain = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<TeamDashMainQuery>(
     graphql`
       query TeamDashMainQuery($teamId: ID!) {
@@ -69,7 +73,12 @@ const TeamDashMain = (props: Props) => {
   const {viewer} = data
   const team = viewer.team!
   const {name: teamName} = team
-  useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
+  useDocumentTitle(
+    t('TeamDashMain.TeamDashboardTeamName', {
+      teamName
+    }),
+    teamName
+  )
 
   return (
     <RootBlock>

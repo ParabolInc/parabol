@@ -81,7 +81,13 @@ const ReflectTemplateListPublic = (props: Props) => {
   const filteredEdges = useFilteredItems(searchQuery, edges, getValue)
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
   if (filteredEdges.length === 0) {
-    return <Message>{`No public templates match your search query "${searchQuery}"`}</Message>
+    return (
+      <Message>
+        {t('ReflectTemplateListPublic.NoPublicTemplatesMatchYourSearchQuerySearchQuery', {
+          searchQuery
+        })}
+      </Message>
+    )
   }
   return (
     <TemplateList>

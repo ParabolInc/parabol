@@ -19,7 +19,6 @@ interface Props {
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
-  //FIXME i18n: Search team members
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -44,7 +43,11 @@ const TeamDashTeamMemberMenu = (props: Props) => {
     >
       <DropdownMenuLabel>{t('TeamDashTeamMemberMenu.FilterByTeamMember')}</DropdownMenuLabel>
       {teamMembers.length > 5 && (
-        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+        <SearchMenuItem
+          placeholder={t('TeamDashTeamMemberMenu.SearchTeamMembers')}
+          onChange={onQueryChange}
+          value={query}
+        />
       )}
       {query && matchedTeamMembers.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
@@ -53,14 +56,16 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       )}
       {query === '' && (
         <MenuItem
-          key={t('TeamDashTeamMemberMenu.Teammemberfilternull')}
+          key={t('TeamDashTeamMemberMenu.TeamMemberFilterNull')}
           label={t('TeamDashTeamMemberMenu.AllTeamMembers')}
           onClick={() => filterTeamMember(atmosphere, teamId, null)}
         />
       )}
       {matchedTeamMembers.map((teamMember) => (
         <MenuItem
-          key={`teamMemberFilter${teamMember.id}`}
+          key={t('TeamDashTeamMemberMenu.TeamMemberFilterTeamMemberId', {
+            teamMemberId: teamMember.id
+          })}
           label={teamMember.preferredName}
           onClick={() => filterTeamMember(atmosphere, teamId, teamMember.id)}
         />

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import React, {ReactNode} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../../styles/paletteV3'
 
 const Content = styled('div')({
@@ -36,9 +37,16 @@ interface Props {
 
 const HelpMenuContent = (props: Props) => {
   const {children, closePortal} = props
+
+  const {t} = useTranslation()
+
   return (
     <Content>
-      <MenuClose data-cy='help-menu-close' onClick={closePortal} title='Close help menu'>
+      <MenuClose
+        data-cy='help-menu-close'
+        onClick={closePortal}
+        title={t('HelpMenuContent.CloseHelpMenu')}
+      >
         <CloseIcon />
       </MenuClose>
       {children}

@@ -62,7 +62,9 @@ const SendCommentButton = (props: Props) => {
   return (
     <>
       <StyledPlainButton
-        data-cy={`${dataCy}-send`}
+        data-cy={t('SendCommentButton.DataCySend', {
+          dataCy
+        })}
         onClick={onSubmit}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}

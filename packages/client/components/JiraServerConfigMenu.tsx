@@ -19,8 +19,6 @@ interface Props {
 const JiraServerConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId, providerId} = props
 
-  //FIXME i18n: Refresh token
-  //FIXME i18n: Remove Jira Server
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -43,8 +41,8 @@ const JiraServerConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={t('JiraServerConfigMenu.ConfigureYourJiraServerintegration')} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove Jira Server' onClick={removeJiraServer} />
+      <MenuItem label={t('JiraServerConfigMenu.RefreshToken')} onClick={openOAuth} />
+      <MenuItem label={t('JiraServerConfigMenu.RemoveJiraServer')} onClick={removeJiraServer} />
     </Menu>
   )
 }

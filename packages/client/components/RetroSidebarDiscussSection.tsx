@@ -3,6 +3,7 @@ import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGotoStageId from '~/hooks/useGotoStageId'
@@ -59,6 +60,8 @@ const ScrollWrapper = styled('div')({
 type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting['phases'][0]>
 
 const RetroSidebarDiscussSection = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {gotoStageId, handleMenuClick, meeting} = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
@@ -135,7 +138,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
                       {(dragProvided, dragSnapshot) => {
                         return (
                           <DraggableMeetingSubnavItem
-                            data-cy={`discuss-item-${idx}`}
+                            data-cy={t('RetroSidebarDiscussSection.DiscussItemIdx', {
+                              idx
+                            })}
                             isDragging={dragSnapshot.isDragging}
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}

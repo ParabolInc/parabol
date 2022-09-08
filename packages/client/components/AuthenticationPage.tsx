@@ -21,15 +21,16 @@ interface Props {
 }
 
 const AuthenticationPage = (props: Props) => {
-  //FIXME i18n: Sign Up for Free Online Retrospectives | Parabol
-  //FIXME i18n: Sign Up
   const {t} = useTranslation()
 
   const {history} = useRouter()
   const {page} = props
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
-  useDocumentTitle('Sign Up for Free Online Retrospectives | Parabol', 'Sign Up')
+  useDocumentTitle(
+    t('AuthenticationPage.SignUpForFreeOnlineRetrospectivesParabol'),
+    t('AuthenticationPage.SignUp')
+  )
   useCanonical(page)
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
@@ -38,7 +39,14 @@ const AuthenticationPage = (props: Props) => {
     return null
   }
   const goToPage: GotoAuthPage = (page, search?) => {
-    const url = search ? `/${page}${search}` : `/${page}`
+    const url = search
+      ? t('AuthenticationPage.PageSearch', {
+          page,
+          search
+        })
+      : t('AuthenticationPage.Page', {
+          page
+        })
     history.push(url)
   }
   return (

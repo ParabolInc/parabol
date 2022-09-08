@@ -102,9 +102,6 @@ interface Props {
 const TeamArchive = (props: Props) => {
   const {returnToTeamId, queryRef, teamRef} = props
 
-  //FIXME i18n: translate(-50%, 0)
-  //FIXME i18n: 1rem 0.5rem
-  //FIXME i18n: 1 1 auto
   const {t} = useTranslation()
 
   const queryData = usePreloadedQuery<TeamArchiveQuery>(
@@ -284,10 +281,10 @@ const TeamArchive = (props: Props) => {
                   width: 'auto',
                   height: 'auto',
                   left: '50%',
-                  transform: 'translate(-50%, 0)'
+                  transform: t('TeamArchive.Translate500')
                 }}
               >
-                {t('TeamArchive.ThatSAllFolksThereAreNoFurtherTasksInTheArchive')}
+                {t('TeamArchive.🎉ThatsAllFolksThereAreNoFurtherTasksInTheArchive')}
               </NoMoreMsg>
             )
           }
@@ -296,10 +293,17 @@ const TeamArchive = (props: Props) => {
             // put styles here because aphrodite is async
             <div
               ref={registerChild as any}
-              key={`cardBlockFor${task.id}`}
-              style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem'}}
+              key={t('TeamArchive.CardBlockForTaskId', {
+                taskId: task.id
+              })}
+              style={{...style, width: CARD_WIDTH, padding: t('TeamArchive.1Rem05Rem')}}
             >
-              <NullableTask dataCy={`archive-task`} key={key} area='teamDash' task={task} />
+              <NullableTask
+                dataCy={t('TeamArchive.ArchiveTask', {})}
+                key={key}
+                area='teamDash'
+                task={task}
+              />
             </div>
           )
         }}
@@ -336,7 +340,7 @@ const TeamArchive = (props: Props) => {
                 {({onRowsRendered, registerChild}) => {
                   _onRowsRenderedRef.current = onRowsRendered
                   return (
-                    <div style={{flex: '1 1 auto'}}>
+                    <div style={{flex: t('TeamArchive.11Auto')}}>
                       <AutoSizer>
                         {({height, width}) => {
                           return (
@@ -370,7 +374,7 @@ const TeamArchive = (props: Props) => {
           ) : (
             <EmptyMsg>
               <span>
-                {'🤓'}
+                {t('TeamArchive.🤓')}
                 {t('TeamArchive.HiThereThereAreZeroArchivedTasks')}
                 {t('TeamArchive.NothingToSeeHereHowAboutAFunRallyVideo')}
                 <LinkSpan>{getRallyLink()}!</LinkSpan>

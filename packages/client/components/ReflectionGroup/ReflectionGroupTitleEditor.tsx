@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -89,6 +90,8 @@ const getValidationError = (title: string | null, reflectionGroups, reflectionGr
 }
 
 const ReflectionGroupTitleEditor = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
   const {meeting, reflectionGroup, titleInputRef, isExpanded, readOnly} = props
@@ -106,11 +109,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
     })
     if (!dirtyRef.current) return
     const normalizedTitle = title.trim()
-    const validationError = getValidationError(
-      normalizedTitle,
-      reflectionGroups,
-      reflectionGroupId
-    )
+    const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId)
     if (!validationError) {
       if (error) {
         onCompleted()
@@ -142,7 +141,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   }
 
   const onKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
+    if (e.key !== t('ReflectionGroupTitleEditor.Enter') || e.shiftKey) return
     e.preventDefault()
     onSubmit(e as any)
   }
@@ -171,22 +170,19 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ReflectionGroupTitleEditor,
-  {
-    reflectionGroup: graphql`
-      fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+export default createFragmentContainer(ReflectionGroupTitleEditor, {
+  reflectionGroup: graphql`
+    fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+      id
+      title
+    }
+  `,
+  meeting: graphql`
+    fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
+      reflectionGroups {
         id
         title
       }
-    `,
-    meeting: graphql`
-      fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
-        reflectionGroups {
-          id
-          title
-        }
-      }
-    `
-  }
-)
+    }
+  `
+})

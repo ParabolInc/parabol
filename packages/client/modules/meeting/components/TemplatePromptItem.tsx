@@ -3,6 +3,7 @@ import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -65,6 +66,9 @@ const PromptAndDescription = styled('div')({
 
 const TemplatePromptItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, prompt, prompts} = props
+
+  const {t} = useTranslation()
+
   const {id: promptId, description, question} = prompt
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
@@ -80,7 +84,7 @@ const TemplatePromptItem = (props: Props) => {
   const removePrompt = () => {
     if (submitting) return
     if (!canRemove) {
-      onError(new Error('You must have at least 1 prompt'))
+      onError(new Error(t('TemplatePromptItem.YouMustHaveAtLeast1Prompt')))
       return
     }
     submitMutation()

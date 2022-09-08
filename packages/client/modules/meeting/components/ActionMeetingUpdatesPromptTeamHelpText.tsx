@@ -33,7 +33,13 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   const {preferredName} = teamMember
   return (
     <span>
-      <span>{isConnected === false ? '(' : `(${preferredName} is sharing. `}</span>
+      <span>
+        {isConnected === false
+          ? '('
+          : t('ActionMeetingUpdatesPromptTeamHelpText.PreferredNameIsSharing', {
+              preferredName
+            })}
+      </span>
       <AgendaControl onClick={handleAgendaControl}>
         {t('ActionMeetingUpdatesPromptTeamHelpText.AddAgendaItems')}
       </AgendaControl>

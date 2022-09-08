@@ -24,8 +24,6 @@ const getValue = (project: NewAzureIssueMenu_AzureDevOpsRemoteProjects[0]) => pr
 const NewAzureIssueMenu = (props: Props) => {
   const {setSelectedProjectName, menuProps, projectsRef} = props
 
-  //FIXME i18n: Select Azure project
-  //FIXME i18n: Search Azure
   const {t} = useTranslation()
 
   const projects = useFragment(
@@ -46,12 +44,16 @@ const NewAzureIssueMenu = (props: Props) => {
 
   return (
     <Menu
-      ariaLabel='Select Azure project'
+      ariaLabel={t('NewAzureIssueMenu.SelectAzureProject')}
       keepParentFocus
       {...menuProps}
       resetActiveOnChanges={[projects]}
     >
-      <SearchMenuItem placeholder='Search Azure' onChange={onQueryChange} value={query} />
+      <SearchMenuItem
+        placeholder={t('NewAzureIssueMenu.SearchAzure')}
+        onChange={onQueryChange}
+        value={query}
+      />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           {t('NewAzureIssueMenu.NoProjectsFound')}

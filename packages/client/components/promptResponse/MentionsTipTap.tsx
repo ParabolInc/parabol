@@ -2,6 +2,7 @@ import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
 import React, {Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import TeamMemberId from '../../shared/gqlIds/TeamMemberId'
 import SuggestMentionableUsersRoot from '../SuggestMentionableUsersRoot'
 import {MentionSuggestion} from '../TaskEditor/useSuggestions'
@@ -16,6 +17,9 @@ const pluginKey = new PluginKey('mentionMenu')
 
 const MentionsTipTap = (props: Props) => {
   const {tiptapEditor, teamId} = props
+
+  const {t} = useTranslation()
+
   const [openMentions, setOpenMentions] = useState(false)
   const [mentionQuery, setMentionQuery] = useState('')
   const [range, setRange] = useState<Range | null>(null)
@@ -103,7 +107,7 @@ const MentionsTipTap = (props: Props) => {
           setMentionQuery(query)
         },
         onKeyDown: ({event}) => {
-          if (event.key === 'Escape') {
+          if (event.key === t('MentionsTipTap.Escape')) {
             setOpenMentions(false)
             return true
           }
@@ -122,7 +126,7 @@ const MentionsTipTap = (props: Props) => {
             return true
           }
 
-          if (event.key === 'Enter' || event.key === 'Tab') {
+          if (event.key === t('MentionsTipTap.Enter') || event.key === t('MentionsTipTap.Tab')) {
             keyHandlerRef.current.enterHandler()
             return true
           }

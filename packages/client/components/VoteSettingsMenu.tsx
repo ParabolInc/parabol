@@ -38,9 +38,6 @@ const Error = styled(StyledError)({
 const VoteSettingsMenu = (props: Props) => {
   const {menuProps, meeting} = props
 
-  //FIXME i18n: Adjust the vote count
-  //FIXME i18n: Votes per participant
-  //FIXME i18n: Votes per topic
   const {t} = useTranslation()
 
   const {id: meetingId, totalVotes, maxVotesPerGroup} = meeting
@@ -78,11 +75,11 @@ const VoteSettingsMenu = (props: Props) => {
   }
 
   return (
-    <Menu ariaLabel='Adjust the vote count' {...menuProps}>
+    <Menu ariaLabel={t('VoteSettingsMenu.AdjustTheVoteCount')} {...menuProps}>
       <VoteOption>
         <Label>{t('VoteSettingsMenu.VotesPerParticipant')}</Label>
         <VoteStepper
-          aria-label='Votes per participant'
+          aria-label={t('VoteSettingsMenu.VotesPerParticipant')}
           value={totalVotes}
           increase={increaseTotalVotes}
           decrease={decreaseTotalVotes}
@@ -92,7 +89,7 @@ const VoteSettingsMenu = (props: Props) => {
       <VoteOption>
         <Label>{t('VoteSettingsMenu.VotesPerTopic')}</Label>
         <VoteStepper
-          aria-label='Votes per topic'
+          aria-label={t('VoteSettingsMenu.VotesPerTopic')}
           value={maxVotesPerGroup}
           increase={increaseMaxVotesPerGroup}
           decrease={decreaseMaxVotesPerGroup}

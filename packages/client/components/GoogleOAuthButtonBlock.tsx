@@ -31,14 +31,14 @@ const HelpMessage = styled(StyledTip)({
 const GoogleOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint} = props
 
-  //FIXME i18n: Sign up with Google
-  //FIXME i18n: Sign in with Google
   const {t} = useTranslation()
 
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  const label = isCreate ? 'Sign up with Google' : 'Sign in with Google'
+  const label = isCreate
+    ? t('GoogleOAuthButtonBlock.SignUpWithGoogle')
+    : t('GoogleOAuthButtonBlock.SignInWithGoogle')
   const openOAuth = () => {
     const mutationProps = {onError, onCompleted, submitMutation, submitting}
     GoogleClientManager.openOAuth(atmosphere, mutationProps, history, invitationToken, loginHint)

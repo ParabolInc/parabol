@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -40,6 +41,9 @@ interface Props {
 
 const GitHubScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issuesRef} = props
+
+  const {t} = useTranslation()
+
   const issues = useFragment(
     graphql`
       fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssue @relay(plural: true) {
@@ -84,7 +88,7 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
         (issue) =>
           GitHubIssueId.join(issue.repository.nameWithOwner, issue.number) === update.serviceTaskId
       )
-      return issue?.title ?? 'Unknown Story'
+      return issue?.title ?? t('GitHubScopingSelectAllIssues.UnknownStory')
     })
     UpdatePokerScopeMutation(atmosphere, variables, {
       onError,

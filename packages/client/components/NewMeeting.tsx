@@ -145,7 +145,11 @@ const NewMeeting = (props: Props) => {
     if (!teamId) {
       sendToMeRef.current = true
       const [firstTeam] = sortByTier(teams)
-      const nextPath = firstTeam ? `/new-meeting/${firstTeam.id}` : '/newteam'
+      const nextPath = firstTeam
+        ? t('NewMeeting.NewMeetingFirstTeamId', {
+            firstTeamId: firstTeam.id
+          })
+        : '/newteam'
       history.replace(nextPath, location.state)
     }
   }, [])

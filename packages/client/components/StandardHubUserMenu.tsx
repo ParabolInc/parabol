@@ -63,7 +63,12 @@ const StandardHubUserMenu = (props: Props) => {
   const {insights} = featureFlags
   const ownedFreeOrgs = organizations.filter((org) => org.tier === 'personal')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
-  const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
+  const routeSuffix =
+    ownedFreeOrgs.length === 1
+      ? t('StandardHubUserMenu.OwnedFreeOrgs0Id', {
+          ownedFreeOrgs0Id: ownedFreeOrgs[0]!.id
+        })
+      : ''
 
   return (
     <TallMenu ariaLabel={t('StandardHubUserMenu.SelectYourSettings')} {...menuProps}>
@@ -104,7 +109,11 @@ const StandardHubUserMenu = (props: Props) => {
       {showUpgradeCTA && (
         <MenuItem
           label={
-            <MenuItemLink to={`/me/organizations${routeSuffix}`}>
+            <MenuItemLink
+              to={t('StandardHubUserMenu.MeOrganizationsRouteSuffix', {
+                routeSuffix
+              })}
+            >
               <UpgradeIcon>
                 <Star />
               </UpgradeIcon>
@@ -119,7 +128,11 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItemHR key='HR1' />
       <MenuItem
         label={
-          <MenuItemLink to={`/${SIGNOUT_SLUG}`}>
+          <MenuItemLink
+            to={t('StandardHubUserMenu.SignoutSlug', {
+              signoutSlug: SIGNOUT_SLUG
+            })}
+          >
             <MenuItemIcon>
               <ExitToApp />
             </MenuItemIcon>

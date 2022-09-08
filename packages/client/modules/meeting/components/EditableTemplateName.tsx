@@ -30,9 +30,6 @@ const StyledEditableText = styled(EditableText)({
 const EditableTemplateName = (props: Props) => {
   const {name, templateId, teamTemplates, isOwner} = props
 
-  //FIXME i18n: Please enter a template name
-  //FIXME i18n: That name is probably long enough
-  //FIXME i18n: That name is taken
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -49,14 +46,14 @@ const EditableTemplateName = (props: Props) => {
   const legitify = (value) => {
     return new Legitity(value)
       .trim()
-      .required('Please enter a template name')
-      .max(100, 'That name is probably long enough')
+      .required(t('EditableTemplateName.PleaseEnterATemplateName'))
+      .max(100, t('EditableTemplateName.ThatNameIsProbablyLongEnough'))
       .test((mVal) => {
         const isDupe = teamTemplates.find(
           (template) =>
             template.id !== templateId && template.name.toLowerCase() === mVal.toLowerCase()
         )
-        return isDupe ? 'That name is taken' : undefined
+        return isDupe ? t('EditableTemplateName.ThatNameIsTaken') : undefined
       })
   }
 

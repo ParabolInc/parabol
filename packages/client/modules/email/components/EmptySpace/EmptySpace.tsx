@@ -1,12 +1,16 @@
 // EmptySpace:
 // Table-based way to add vertical space. Uses line-height.
-
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {emailTableBase} from '../../styles'
 
 const EmptySpace = (props: {height: number}) => {
+  const {t} = useTranslation()
+
   const cellStyle = {
-    lineHeight: `${props.height}px`,
+    lineHeight: t('EmptySpace.PropsHeightPx', {
+      propsHeight: props.height
+    }),
     fontSize: '1px',
     msoLineHeightRule: 'exactly',
     padding: 0
@@ -18,7 +22,9 @@ const EmptySpace = (props: {height: number}) => {
         <tr>
           <td
             dangerouslySetInnerHTML={{__html: '&nbsp;'}}
-            height={`${props.height}px`}
+            height={t('EmptySpace.PropsHeightPx', {
+              propsHeight: props.height
+            })}
             style={cellStyle}
             width='100%'
           />

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import ReflectTemplatePromptUpdateGroupColorMutation from '~/mutations/ReflectTemplatePromptUpdateGroupColorMutation'
 import {PalettePicker_prompt} from '~/__generated__/PalettePicker_prompt.graphql'
@@ -34,6 +35,9 @@ const PaletteList = styled('ul')({
 
 const PalettePicker = (props: Props) => {
   const {prompt, prompts, menuProps} = props
+
+  const {t} = useTranslation()
+
   const {closePortal} = menuProps
   const {id: promptId, groupColor} = prompt
   const atmosphere = useAtmosphere()
@@ -44,7 +48,7 @@ const PalettePicker = (props: Props) => {
   }
 
   return (
-    <PaletteDropDown ariaLabel='Pick a group color' {...menuProps}>
+    <PaletteDropDown ariaLabel={t('PalettePicker.PickAGroupColor')} {...menuProps}>
       <PaletteList>
         {palettePickerOptions.map((color) => {
           return (

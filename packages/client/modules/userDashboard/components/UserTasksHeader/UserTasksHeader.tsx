@@ -78,7 +78,6 @@ interface Props {
 }
 
 const UserTasksHeader = (props: Props) => {
-  //FIXME i18n: Team Member
   const {t} = useTranslation()
 
   const {history} = useRouter()
@@ -167,7 +166,7 @@ const UserTasksHeader = (props: Props) => {
     <DashSectionHeader>
       <UserTasksHeaderDashSectionControls>
         <StyledDashFilterToggle
-          label='Team'
+          label={t('UserTasksHeader.Team')}
           onClick={teamFilterTogglePortal}
           onMouseEnter={UserDashTeamMenu.preload}
           ref={teamFilterOriginRef}
@@ -179,7 +178,7 @@ const UserTasksHeader = (props: Props) => {
 
         {/* Filter by Owner */}
         <StyledDashFilterToggle
-          label='Team Member'
+          label={t('UserTasksHeader.TeamMember')}
           onClick={teamMemberFilterTogglePortal}
           onMouseEnter={UserDashTeamMemberMenu.preload}
           ref={teamMemberFilterOriginRef}

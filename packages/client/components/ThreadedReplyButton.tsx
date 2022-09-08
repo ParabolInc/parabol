@@ -23,7 +23,12 @@ const ThreadedReplyButton = (props: Props) => {
   const {t} = useTranslation()
 
   return (
-    <Reply data-cy={`${dataCy}-reply-button`} onClick={onReply}>
+    <Reply
+      data-cy={t('ThreadedReplyButton.DataCyReplyButton', {
+        dataCy
+      })}
+      onClick={onReply}
+    >
       {t('ThreadedReplyButton.Reply')}
     </Reply>
   )

@@ -15,7 +15,6 @@ interface Props {
 const JiraServerScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
 
-  //FIXME i18n: Search issues on Jira Server
   const {t} = useTranslation()
 
   const meeting = useFragment(
@@ -56,9 +55,13 @@ const JiraServerScopingSearchBar = (props: Props) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
     if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
   })
-  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+  const currentFilters = selectedProjectsPaths.length
+    ? selectedProjectsPaths.join(', ')
+    : t('JiraServerScopingSearchBar.None')
 
-  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira Server'
+  const placeholder = isJQL
+    ? t('JiraServerScopingSearchBar.SprintFunAndProjectDev', {})
+    : t('JiraServerScopingSearchBar.SearchIssuesOnJiraServer')
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
@@ -67,8 +70,8 @@ const JiraServerScopingSearchBar = (props: Props) => {
         placeholder={placeholder}
         queryString={queryString}
         meetingId={meetingId}
-        linkedRecordName={t('JiraServerScopingSearchBar.Jiraserversearchquery')}
-        service={t('JiraServerScopingSearchBar.Jiraserver')}
+        linkedRecordName={t('JiraServerScopingSearchBar.JiraServerSearchQuery')}
+        service={t('JiraServerScopingSearchBar.JiraServer')}
       />
       <JiraServerScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>

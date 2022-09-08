@@ -24,7 +24,6 @@ export interface UpcomingInvoiceEmailProps {
 const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
   const {appOrigin, periodEndStr, newUsers, memberUrl} = props
 
-  //FIXME i18n: Organization Settings
   const {t} = useTranslation()
 
   return (
@@ -33,21 +32,43 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
         <Header appOrigin={appOrigin} />
         <p style={emailCopyStyle}>{t('UpcomingInvoiceEmail.Hello')}</p>
         <p style={emailCopyStyle}>
-          {`Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}.`}
+          {t(
+            'UpcomingInvoiceEmail.YourTeamsHaveAddedTheFollowingUsersToYourOrganizationForTheBillingCycleEndingOnPeriodEndStr',
+            {
+              periodEndStr
+            }
+          )}
         </p>
         <ul>
           {newUsers.map((newUser) => (
             <li key={newUser.email} style={listItemStyle}>
-              <b>{`${newUser.name}`}</b>
+              <b>
+                {t('UpcomingInvoiceEmail.NewUserName', {
+                  newUserName: newUser.name
+                })}
+              </b>
               {' ('}
-              <a href={`mailto:${newUser.email}`} style={emailLinkStyle}>{`${newUser.email}`}</a>
+              <a
+                href={t('UpcomingInvoiceEmail.MailtoNewUserEmail', {
+                  newUserEmail: newUser.email
+                })}
+                style={emailLinkStyle}
+              >
+                {t('UpcomingInvoiceEmail.NewUserEmail', {
+                  newUserEmail: newUser.email
+                })}
+              </a>
               {')'}
             </li>
           ))}
         </ul>
         <p style={emailCopyStyle}>
           {t('UpcomingInvoiceEmail.IfAnyOfTheseUsersWereAddedByMistakeSimplyRemoveThemUnder')}
-          <a href={memberUrl} style={emailLinkStyle} title='Organization Settings'>
+          <a
+            href={memberUrl}
+            style={emailLinkStyle}
+            title={t('UpcomingInvoiceEmail.OrganizationSettings')}
+          >
             {t('UpcomingInvoiceEmail.OrganizationSettings')}
           </a>
         </p>

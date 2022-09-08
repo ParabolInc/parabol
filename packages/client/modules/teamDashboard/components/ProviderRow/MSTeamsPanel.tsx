@@ -67,10 +67,6 @@ const StyledButton = styled(FlatButton)({
 const MSTeamsPanel = (props: Props) => {
   const {teamId, viewerRef} = props
 
-  //FIXME i18n: No link provided
-  //FIXME i18n: Not looking too linky
-  //FIXME i18n: Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook
-  //FIXME i18n: Enter your webhook URL here...
   const {t} = useTranslation()
 
   const viewer = useFragment(
@@ -106,9 +102,9 @@ const MSTeamsPanel = (props: Props) => {
       getDefault: () => serverWebhookUrl,
       validate: (rawInput: string) => {
         return new Legitity(rawInput).test((maybeUrl) => {
-          if (!maybeUrl) return 'No link provided'
+          if (!maybeUrl) return t('MSTeamsPanel.NoLinkProvided')
           const links = linkify.match(maybeUrl)
-          return !links ? 'Not looking too linky' : ''
+          return !links ? t('MSTeamsPanel.NotLookingTooLinky') : ''
         })
       }
     }
@@ -192,14 +188,14 @@ const MSTeamsPanel = (props: Props) => {
             {t('MSTeamsPanel.MicrosoftTeamsWebhook')}
           </Label>
           {tooltipPortal(
-            'Configure in Microsoft Teams: Click ... on the team > Connectors > Incoming Webhook'
+            t('MSTeamsPanel.ConfigureInMicrosoftTeamsClickOnTheTeamConnectorsIncomingWebhook')
           )}
           <BasicInput
             value={fields.webhookUrl.value}
             error=''
             onChange={onChange}
             name='webhookUrl'
-            placeholder='Enter your webhook URL here...'
+            placeholder={t('MSTeamsPanel.EnterYourWebhookUrlHere')}
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             {t('MSTeamsPanel.Update')}

@@ -88,7 +88,7 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
         size={t('ScopePhaseAreaAddAzureDevOps.Medium')}
       >
         <AzureDevOpsSVG />
-        {t('ScopePhaseAreaAddAzureDevOps.ImportIssuesFromAzureDevops')}
+        {t('ScopePhaseAreaAddAzureDevOps.ImportIssuesFromAzureDevOps')}
       </AddAzureDevOpsButton>
       <StyledLink onClick={gotoParabol}>
         {t('ScopePhaseAreaAddAzureDevOps.OrAddNewTasksInParabol')}

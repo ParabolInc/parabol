@@ -211,10 +211,21 @@ const EditorHelpModal = (props: Props) => {
       </HeaderLabelBlock>
       {shortcutLists.map((shortcutList, listIndex) => {
         return (
-          <HelpList listIndex={listIndex} key={`shortcutList${listIndex + 1}`}>
+          <HelpList
+            listIndex={listIndex}
+            key={t('EditorHelpModal.ShortcutListListIndex1', {
+              listIndex1: listIndex + 1
+            })}
+          >
             {shortcutList.map((shortcut, shortcutIndex) => {
               return (
-                <HelpRow shortcutIndex={shortcutIndex} key={`${shortcutList}${shortcutIndex + 1}`}>
+                <HelpRow
+                  shortcutIndex={shortcutIndex}
+                  key={t('EditorHelpModal.ShortcutListShortcutIndex1', {
+                    shortcutList,
+                    shortcutIndex1: shortcutIndex + 1
+                  })}
+                >
                   <Icon>
                     <IconLabel icon={shortcut.icon} />
                   </Icon>

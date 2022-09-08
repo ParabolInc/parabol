@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
 import React, {MouseEvent, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import isDemoRoute from '~/utils/isDemoRoute'
@@ -88,6 +89,9 @@ const getReadOnly = (
 
 const ReflectionCard = (props: Props) => {
   const {meeting, reflection, isClipped, openSpotlight, stackCount, showReactji, dataCy} = props
+
+  const {t} = useTranslation()
+
   const {
     id: reflectionId,
     content,
@@ -202,9 +206,9 @@ const ReflectionCard = (props: Props) => {
   }
 
   const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Escape') {
+    if (e.key === t('ReflectionCard.Escape')) {
       editorRef.current && editorRef.current.blur()
-    } else if (e.key === 'Enter' && !e.shiftKey) {
+    } else if (e.key === t('ReflectionCard.Enter') && !e.shiftKey) {
       e.preventDefault()
       const {value} = e.currentTarget
       if (!value) return
@@ -263,23 +267,29 @@ const ReflectionCard = (props: Props) => {
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
-      data-cy={`${dataCy}-root`}
+      data-cy={t('ReflectionCard.DataCyRoot', {
+        dataCy
+      })}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
-        dataCy={`editor-wrapper`}
+        dataCy={t('ReflectionCard.EditorWrapper', {})}
         isClipped={isClipped}
-        ariaLabel='Edit this reflection'
+        ariaLabel={t('ReflectionCard.EditThisReflection')}
         editorRef={editorRef}
         editorState={editorState}
         onBlur={handleEditorBlur}
         onFocus={handleEditorFocus}
         handleReturn={handleReturn}
         handleKeyDownFallback={handleKeyDownFallback}
-        placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
+        placeholder={
+          isViewerCreator
+            ? t('ReflectionCard.MyReflectionPressEnterToAdd')
+            : t('ReflectionCard.NewReflection')
+        }
         readOnly={readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
@@ -288,7 +298,7 @@ const ReflectionCard = (props: Props) => {
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
         <ReflectionCardDeleteButton
-          dataCy={`reflection-delete`}
+          dataCy={t('ReflectionCard.ReflectionDelete', {})}
           meetingId={meetingId}
           reflectionId={reflectionId}
         />
@@ -304,7 +314,7 @@ const ReflectionCard = (props: Props) => {
       >
         <SpotlightIcon ref={tooltipRef} icon='search' />
       </SpotlightButton>
-      {tooltipPortal('Find similar')}
+      {tooltipPortal(t('ReflectionCard.FindSimilar'))}
     </ReflectionCardRoot>
   )
 }

@@ -1,7 +1,8 @@
-import React from 'react'
-import {PALETTE} from '../../styles/paletteV3'
-import srOnly from '../../styles/helpers/srOnly'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import srOnly from '../../styles/helpers/srOnly'
+import {PALETTE} from '../../styles/paletteV3'
 
 const size = 10 // 8 + border
 
@@ -30,7 +31,10 @@ interface Props {
 
 const AvatarBadge = (props: Props) => {
   const {isConnected} = props
-  const connection = isConnected ? 'Online' : 'Offline'
+
+  const {t} = useTranslation()
+
+  const connection = isConnected ? t('AvatarBadge.Online') : t('AvatarBadge.Offline')
   return (
     <Badge>
       <BadgeDot isConnected={isConnected as boolean} />

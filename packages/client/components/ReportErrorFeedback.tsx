@@ -67,7 +67,10 @@ const ReportErrorFeedback = (props: Props) => {
 
   const onSubmit = () => {
     const dsn = window.__ACTION__.sentry
-    const url = `https://sentry.io/api/embed/error-page/?dsn=${dsn}&eventId=${eventId}`
+    const url = t('ReportErrorFeedback.HttpsSentryIoApiEmbedErrorPageDsnDsnEventIdEventId', {
+      dsn,
+      eventId
+    })
     if (!text) return
     const body = new URLSearchParams()
     body.set('comments', text)

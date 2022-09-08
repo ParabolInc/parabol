@@ -20,8 +20,6 @@ const getValue = (item: {fullPath?: string}) => {
 const NewGitLabIssueMenu = (props: Props) => {
   const {handleSelectFullPath, menuProps, gitlabProjects} = props
 
-  //FIXME i18n: Select GitLab project
-  //FIXME i18n: Search GitLab
   const {t} = useTranslation()
 
   const {
@@ -31,8 +29,12 @@ const NewGitLabIssueMenu = (props: Props) => {
   } = useSearchFilter(gitlabProjects, getValue)
 
   return (
-    <Menu ariaLabel='Select GitLab project' keepParentFocus {...menuProps}>
-      <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} value={query} />
+    <Menu ariaLabel={t('NewGitLabIssueMenu.SelectGitLabProject')} keepParentFocus {...menuProps}>
+      <SearchMenuItem
+        placeholder={t('NewGitLabIssueMenu.SearchGitLab')}
+        onChange={onQueryChange}
+        value={query}
+      />
       {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           {t('NewGitLabIssueMenu.NoProjectsFound')}

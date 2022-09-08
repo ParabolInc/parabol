@@ -182,7 +182,10 @@ const GitLabScopingSearchResults = (props: Props) => {
         {issues.map((issue) => {
           const {id, iid, title, webUrl, webPath} = issue
           const {fullPath} = parseWebPath(webPath ?? '')
-          const linkText = `#${iid} ${fullPath}`
+          const linkText = t('GitLabScopingSearchResults.IidFullPath', {
+            iid,
+            fullPath
+          })
 
           return (
             <ScopingSearchResultItem
@@ -200,7 +203,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
         {hasNext && (
-          <LoadingNext key={t('GitLabScopingSearchResults.Loadingnext')}>
+          <LoadingNext key={t('GitLabScopingSearchResults.LoadingNext')}>
             <Ellipsis />
           </LoadingNext>
         )}

@@ -41,7 +41,14 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
     <TimelineEventCard
       iconName='history'
       timelineEvent={timelineEvent}
-      title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
+      title={
+        <TimelineEventTitle>
+          {t('TimelineEventCompletedRetroMeeting.MeetingNameWithTeamNameComplete', {
+            meetingName,
+            teamName
+          })}
+        </TimelineEventTitle>
+      }
     >
       <TimelineEventBody>
         {t('TimelineEventCompletedRetroMeeting.YourTeamShared')}
@@ -64,11 +71,19 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/discuss/1`}>
+        <Link
+          to={t('TimelineEventCompletedRetroMeeting.MeetMeetingIdDiscuss1', {
+            meetingId
+          })}
+        >
           {t('TimelineEventCompletedRetroMeeting.SeeTheDiscussion')}
         </Link>
         {t('TimelineEventCompletedRetroMeeting.InYourMeetingOr')}
-        <Link to={`/new-summary/${meetingId}`}>
+        <Link
+          to={t('TimelineEventCompletedRetroMeeting.NewSummaryMeetingId', {
+            meetingId
+          })}
+        >
           {t('TimelineEventCompletedRetroMeeting.ReviewASummary')}
         </Link>
       </TimelineEventBody>

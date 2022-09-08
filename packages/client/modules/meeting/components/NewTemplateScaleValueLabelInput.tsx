@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -82,6 +83,8 @@ interface Props {
 }
 
 const NewTemplateScaleValueLabelInput = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {error, onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const {closeAdding, scale} = props
@@ -102,14 +105,14 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   const legitify = (value: string) => {
     return new Legitity(value)
       .trim()
-      .required('Please enter a value')
-      .max(2, 'Value cannot be longer than 2 characters')
+      .required(t('NewTemplateScaleValueLabelInput.PleaseEnterAValue'))
+      .max(2, t('NewTemplateScaleValueLabelInput.ValueCannotBeLongerThan2Characters'))
       .test((mVal) => {
         if (!mVal) return undefined
         const isDupe = values.find(
           (scaleValue) => scaleValue.label.toLowerCase() === mVal.toLowerCase()
         )
-        return isDupe ? 'That value already exists' : undefined
+        return isDupe ? t('NewTemplateScaleValueLabelInput.ThatValueAlreadyExists') : undefined
       })
   }
 
@@ -131,7 +134,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === t('NewTemplateScaleValueLabelInput.Escape')) {
       e.preventDefault()
       e.stopPropagation()
       closeAdding()

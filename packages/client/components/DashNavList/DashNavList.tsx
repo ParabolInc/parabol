@@ -57,7 +57,10 @@ const DashNavList = (props: Props) => {
     teams.forEach((team) => {
       const {organization} = team
       const {id: orgId, name: orgName} = organization
-      const key = `${orgName}:${orgId}`
+      const key = t('DashNavList.OrgNameOrgId', {
+        orgName,
+        orgId
+      })
       teamsByOrgId[key] = teamsByOrgId[key] || []
       teamsByOrgId[key]!.push(team)
     })
@@ -82,7 +85,9 @@ const DashNavList = (props: Props) => {
               onClick={onClick}
               key={team.id}
               icon={team.isPaid ? 'group' : 'warning'}
-              href={`/team/${team.id}`}
+              href={t('DashNavList.TeamTeamId', {
+                teamId: team.id
+              })}
               label={team.name}
             />
           ))
@@ -98,7 +103,9 @@ const DashNavList = (props: Props) => {
                     onClick={onClick}
                     key={team.id}
                     icon={team.isPaid ? 'group' : 'warning'}
-                    href={`/team/${team.id}`}
+                    href={t('DashNavList.TeamTeamId', {
+                      teamId: team.id
+                    })}
                     label={team.name}
                   />
                 ))}

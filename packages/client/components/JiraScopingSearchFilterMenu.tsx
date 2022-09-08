@@ -71,7 +71,6 @@ const MAX_PROJECTS = 10
 const JiraScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
 
-  //FIXME i18n: Search Jira
   const {t} = useTranslation()
 
   const isLoading = meetingId === null
@@ -116,7 +115,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       resetActiveOnChanges={[selectedAndFilteredProjects]}
     >
       <MenuItem
-        key={t('JiraScopingSearchFilterMenu.Isjql')}
+        key={t('JiraScopingSearchFilterMenu.IsJql')}
         label={
           <MenuItemLabel>
             <StyledCheckBox active={isJQL} />
@@ -131,7 +130,11 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         <FilterLabel>{t('JiraScopingSearchFilterMenu.FilterByProject')}</FilterLabel>
       )}
       {showSearch && (
-        <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
+        <SearchMenuItem
+          placeholder={t('JiraScopingSearchFilterMenu.SearchJira')}
+          onChange={onQueryChange}
+          value={query}
+        />
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
         <EmptyDropdownMenuItemLabel key='no-results'>

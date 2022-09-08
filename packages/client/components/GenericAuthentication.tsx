@@ -67,9 +67,6 @@ const DialogSubTitle = styled('div')({
 const GenericAuthentication = (props: Props) => {
   const {goToPage, invitationToken, page, teamName} = props
 
-  //FIXME i18n: Already have an account?
-  //FIXME i18n: New to Parabol?
-  //FIXME i18n: 1rem 0 0
   const {t} = useTranslation()
 
   const emailRef = useRef<{email: () => string}>()
@@ -96,10 +93,21 @@ const GenericAuthentication = (props: Props) => {
   const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const counterAction = isCreate ? SIGNIN_LABEL : CREATE_ACCOUNT_LABEL
   const counterActionSlug = isCreate ? SIGNIN_SLUG : CREATE_ACCOUNT_SLUG
-  const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
-  const title = teamName ? `${teamName} is waiting` : action
+  const actionCopy = isCreate
+    ? t('GenericAuthentication.AlreadyHaveAnAccount')
+    : t('GenericAuthentication.NewToParabol')
+  const title = teamName
+    ? t('GenericAuthentication.TeamNameIsWaiting', {
+        teamName
+      })
+    : action
   const onForgot = () => {
-    goToPage('forgot-password', `?email=${emailRef.current?.email()}`)
+    goToPage(
+      'forgot-password',
+      t('GenericAuthentication.EmailEmailRefCurrentEmail', {
+        emailRefCurrentEmail: emailRef.current?.email()
+      })
+    )
   }
   return (
     <AuthenticationDialog>
@@ -114,7 +122,7 @@ const GenericAuthentication = (props: Props) => {
         <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       )}
       {isGoogleAuthEnabled && (isInternalAuthEnabled || isSSOAuthEnabled) && (
-        <HorizontalSeparator margin='1rem 0 0' text='or' />
+        <HorizontalSeparator margin={t('GenericAuthentication.1Rem00')} text='or' />
       )}
       {(isInternalAuthEnabled || isSSOAuthEnabled) && (
         <EmailPasswordAuthForm

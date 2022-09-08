@@ -9,7 +9,6 @@ import StyledError from './StyledError'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
-  //FIXME i18n: Error logging in
   const {t} = useTranslation()
 
   const [error, setError] = useState('')
@@ -33,7 +32,7 @@ const SAMLRedirect = () => {
     } else {
       // IdP-initiated
       if (!token) {
-        setError(error || 'Error logging in')
+        setError(error || t('SAMLRedirect.ErrorLoggingIn'))
       } else {
         atmosphere.setAuthToken(token)
         history.replace('/meetings')

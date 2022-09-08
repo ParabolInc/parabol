@@ -81,10 +81,6 @@ const StyledButton = styled(FlatButton)({
 const MattermostPanel = (props: Props) => {
   const {teamId, viewerRef} = props
 
-  //FIXME i18n: No link provided
-  //FIXME i18n: Not looking too linky
-  //FIXME i18n: Configure in Mattermost: Main Menu > Integrations > Incoming Webhook
-  //FIXME i18n: Enter your webhook URL here...
   const {t} = useTranslation()
 
   const viewer = useFragment(
@@ -120,9 +116,9 @@ const MattermostPanel = (props: Props) => {
       getDefault: () => serverWebhookUrl,
       validate: (rawInput: string) => {
         return new Legitity(rawInput).test((maybeUrl) => {
-          if (!maybeUrl) return 'No link provided'
+          if (!maybeUrl) return t('MattermostPanel.NoLinkProvided')
           const links = linkify.match(maybeUrl)
-          return !links ? 'Not looking too linky' : ''
+          return !links ? t('MattermostPanel.NotLookingTooLinky') : ''
         })
       }
     }
@@ -208,13 +204,15 @@ const MattermostPanel = (props: Props) => {
               <InfoIcon />
             </StyledIcon>
           </Label>
-          {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}
+          {tooltipPortal(
+            t('MattermostPanel.ConfigureInMattermostMainMenuIntegrationsIncomingWebhook')
+          )}
           <BasicInput
             value={fields.webhookUrl.value}
             error=''
             onChange={onChange}
             name='webhookUrl'
-            placeholder='Enter your webhook URL here...'
+            placeholder={t('MattermostPanel.EnterYourWebhookUrlHere')}
           />
           <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             {t('MattermostPanel.Update')}

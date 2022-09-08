@@ -25,7 +25,6 @@ const StatsPanel = styled(Panel)({
 const Insights = (props: Props) => {
   const {queryRef} = props
 
-  //FIXME i18n: Viewed domain stats
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<InsightsQuery>(
@@ -47,7 +46,7 @@ const Insights = (props: Props) => {
   const {domains} = viewer
   const atmosphere = useAtmosphere()
   domains.forEach(({id: domainId}) => {
-    SendClientSegmentEventMutation(atmosphere, 'Viewed domain stats', {
+    SendClientSegmentEventMutation(atmosphere, t('Insights.ViewedDomainStats'), {
       domainId
     })
   })

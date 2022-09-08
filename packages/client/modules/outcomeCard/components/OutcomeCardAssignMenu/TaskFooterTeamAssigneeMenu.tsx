@@ -65,7 +65,6 @@ const gqlQuery = graphql`
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {menuProps, task: taskRef, queryRef} = props
 
-  //FIXME i18n: Search teams
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef, {
@@ -184,7 +183,11 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     >
       <DropdownMenuLabel>{t('TaskFooterTeamAssigneeMenu.MoveTo')}</DropdownMenuLabel>
       {assignableTeams.length > 5 && (
-        <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
+        <SearchMenuItem
+          placeholder={t('TaskFooterTeamAssigneeMenu.SearchTeams')}
+          onChange={onQueryChange}
+          value={searchQuery}
+        />
       )}
       {query && matchedAssignableTeams.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
@@ -206,7 +209,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
           <TaskFooterTeamAssigneeAddIntegrationDialog
             onClose={handleClose}
             onConfirm={handleAddIntegrationConfirmed}
-            serviceName={isGitHubTask ? 'GitHub' : 'Jira'}
+            serviceName={isGitHubTask ? 'GitHub' : t('TaskFooterTeamAssigneeMenu.Jira')}
             teamName={newTeam.name}
           />
         )}

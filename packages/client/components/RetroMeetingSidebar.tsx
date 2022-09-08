@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import useRouter from '~/hooks/useRouter'
 import React, {Fragment} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
+import useRouter from '~/hooks/useRouter'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {
   NewMeetingPhaseTypeEnum,
@@ -27,6 +28,8 @@ interface Props {
 const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'discuss']
 
 const RetroMeetingSidebar = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {viewerId} = atmosphere
@@ -57,8 +60,11 @@ const RetroMeetingSidebar = (props: Props) => {
       <MeetingNavList>
         {phaseTypes.map((phaseType) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
-          const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
-            itemStage || {}
+          const {
+            id: itemStageId = '',
+            isNavigable = false,
+            isNavigableByFacilitator = false
+          } = itemStage || {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
             gotoStageId(itemStageId).catch()
@@ -104,7 +110,11 @@ const RetroMeetingSidebar = (props: Props) => {
               if (isDemoRoute()) {
                 history.push('/retrospective-demo-summary')
               } else {
-                history.push(`/new-summary/${meetingId}`)
+                history.push(
+                  t('RetroMeetingSidebar.NewSummaryMeetingId', {
+                    meetingId
+                  })
+                )
               }
             }}
             phaseType='SUMMARY'

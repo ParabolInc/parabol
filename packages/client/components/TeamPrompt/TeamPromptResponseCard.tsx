@@ -117,7 +117,6 @@ interface Props {
 const TeamPromptResponseCard = (props: Props) => {
   const {stageRef, status, onTransitionEnd, displayIdx} = props
 
-  //FIXME i18n: No response, yet...
   const {t} = useTranslation()
 
   const responseStage = useFragment(
@@ -254,7 +253,7 @@ const TeamPromptResponseCard = (props: Props) => {
         isHighlighted={meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id}
       >
         {isEmptyResponse ? (
-          'No response, yet...'
+          t('TeamPromptResponseCard.NoResponseYet')
         ) : (
           <>
             <PromptResponseEditor
@@ -272,10 +271,15 @@ const TeamPromptResponseCard = (props: Props) => {
                   {replyCount > 0 ? (
                     <>
                       <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
-                      {replyCount} {plural(replyCount, 'Reply', 'Replies')}
+                      {replyCount}{' '}
+                      {plural(
+                        replyCount,
+                        t('TeamPromptResponseCard.Reply'),
+                        t('TeamPromptResponseCard.Replies')
+                      )}
                     </>
                   ) : (
-                    'Reply'
+                    t('TeamPromptResponseCard.Reply')
                   )}
                 </ReplyButton>
               </ResponseCardFooter>

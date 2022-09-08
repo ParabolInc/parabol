@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {captureException} from '@sentry/minimal'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -38,6 +39,9 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
+
+  const {t} = useTranslation()
+
   const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
@@ -85,7 +89,9 @@ const GroupingKanban = (props: Props) => {
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
       if (!reflections) {
-        captureException(new Error('Invalid invariant: reflectionGroup.reflections is null'))
+        captureException(
+          new Error(t('GroupingKanban.InvalidInvariantReflectionGroupReflectionsIsNull'))
+        )
       } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }

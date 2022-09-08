@@ -71,11 +71,16 @@ const EditGitHubLabelTemplateModal = (props: Props) => {
     updateLabelTemplate(value)()
   }
   const addWildcard = () => {
-    setValue(INPUT_NAME, `${value} {{#}}`)
+    setValue(
+      INPUT_NAME,
+      t('EditGitHubLabelTemplateModal.Value', {
+        value
+      })
+    )
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{t('EditGitHubLabelTemplateModal.EditGithubLabel')}</DialogTitle>
+      <DialogTitle>{t('EditGitHubLabelTemplateModal.EditGitHubLabel')}</DialogTitle>
       <DialogContent>
         <div>
           <LabelTemplateInput

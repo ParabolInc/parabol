@@ -111,7 +111,6 @@ const validateIssue = (issue: string) => {
 const NewAzureIssueInput = (props: Props) => {
   const {isEditing, meetingId, setIsEditing, viewerRef} = props
 
-  //FIXME i18n: New issue title
   const {t} = useTranslation()
 
   const viewer = useFragment(
@@ -185,7 +184,11 @@ const NewAzureIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      content: convertToTaskContent(
+        t('NewAzureIssueInput.NewIssueTitleArchived', {
+          newIssueTitle
+        })
+      ),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
@@ -229,7 +232,7 @@ const NewAzureIssueInput = (props: Props) => {
               onChange={onChange}
               maxLength={255}
               name='newIssue'
-              placeholder='New issue title'
+              placeholder={t('NewAzureIssueInput.NewIssueTitle')}
               ref={ref}
               type='text'
             />

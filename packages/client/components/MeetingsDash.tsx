@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -38,6 +39,9 @@ const EmptyContainer = styled('div')({
 
 const MeetingsDash = (props: Props) => {
   const {meetingsDashRef, viewer} = props
+
+  const {t} = useTranslation()
+
   const {teams = [], preferredName = ''} = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const meetings = teams
@@ -54,7 +58,7 @@ const MeetingsDash = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
-  useDocumentTitle('Meetings | Parabol', 'Meetings')
+  useDocumentTitle(t('MeetingsDash.MeetingsParabol'), t('MeetingsDash.Meetings'))
   if (!viewer || !cardsPerRow) return null
   return (
     <>

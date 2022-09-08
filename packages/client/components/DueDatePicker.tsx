@@ -40,7 +40,6 @@ const Hint = styled('div')({
 const DueDatePicker = (props: Props) => {
   const {menuProps, task, useTaskChild} = props
 
-  //FIXME i18n: Pick a due date
   const {t} = useTranslation()
 
   const {id: taskId, dueDate} = task
@@ -61,7 +60,7 @@ const DueDatePicker = (props: Props) => {
   const now = new Date()
   const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1))
   return (
-    <TallMenu ariaLabel='Pick a due date' {...menuProps}>
+    <TallMenu ariaLabel={t('DueDatePicker.PickADueDate')} {...menuProps}>
       <PickerTitle>{t('DueDatePicker.ChangeDueDate')}</PickerTitle>
       {showHint && <Hint>{t('DueDatePicker.ToRemoveTapSelectedDate')}</Hint>}
       <DayPicker

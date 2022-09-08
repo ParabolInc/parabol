@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {ExternalLinks} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -29,9 +30,18 @@ const Img = styled('img')({
 
 const ExportToCSVButton = (props: Props) => {
   const {handleClick} = props
+
+  const {t} = useTranslation()
+
   return (
     <Button onClick={handleClick}>
-      <Img crossOrigin='' alt={label} src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`} />
+      <Img
+        crossOrigin=''
+        alt={label}
+        src={t('ExportToCSVButton.ExternalLinksEmailCdnCloudDownloadPng', {
+          externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+        })}
+      />
       <Label>{label}</Label>
     </Button>
   )

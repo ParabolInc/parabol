@@ -1,6 +1,7 @@
-import React from 'react'
-import styled from '@emotion/styled'
 import {keyframes} from '@emotion/core'
+import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 
 // NOTE: Let’s set this up!
 //    1. PATHS    for leaves of the logo
@@ -90,13 +91,16 @@ interface Props {
 
 const Spinner = (props: Props) => {
   const {fill, width, delay = 0} = props
+
+  const {t} = useTranslation()
+
   return (
     <Root width={width}>
       <Block width={width}>
         <SVG
           width={width}
           delay={delay}
-          viewBox='0 0 888 800'
+          viewBox={t('Spinner.00888800')}
           version='1.1'
           xmlns='http://www.w3.org/2000/svg'
         >
@@ -104,8 +108,14 @@ const Spinner = (props: Props) => {
             <Path
               delay={delay}
               fill={fill}
-              style={{animationDelay: `${DELAY * i + delay}ms`}}
-              key={`path${i}`}
+              style={{
+                animationDelay: t('Spinner.DelayIDelayMs', {
+                  delayIDelay: DELAY * i + delay
+                })
+              }}
+              key={t('Spinner.PathI', {
+                i
+              })}
               d={p}
             />
           ))}

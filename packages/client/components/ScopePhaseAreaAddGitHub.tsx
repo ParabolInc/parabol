@@ -61,7 +61,7 @@ const ScopePhaseAreaAddGitHub = (props: Props) => {
     <AddGitHubArea>
       <AddGitHubButton onClick={authGitHub} size={t('ScopePhaseAreaAddGitHub.Medium')}>
         <GitHubSVG />
-        {t('ScopePhaseAreaAddGitHub.ImportIssuesFromGithub')}
+        {t('ScopePhaseAreaAddGitHub.ImportIssuesFromGitHub')}
       </AddGitHubButton>
       <StyledLink onClick={gotoParabol}>
         {t('ScopePhaseAreaAddGitHub.OrAddNewTasksInParabol')}

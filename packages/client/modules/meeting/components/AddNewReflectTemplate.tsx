@@ -36,10 +36,6 @@ interface Props {
 const AddNewReflectTemplate = (props: Props) => {
   const {gotoTeamTemplates, teamId, reflectTemplates} = props
 
-  //FIXME i18n: You may only have 20 templates per team. Please remove one first.
-  //FIXME i18n: *New Template
-  //FIXME i18n: You already have a new template. Try renaming that one first.
-  //FIXME i18n: *New Template
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -53,14 +49,20 @@ const AddNewReflectTemplate = (props: Props) => {
   const addNewTemplate = () => {
     if (submitting) return
     if (reflectTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
+      onError(
+        new Error(t('AddNewReflectTemplate.YouMayOnlyHave20TemplatesPerTeamPleaseRemoveOneFirst'))
+      )
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
       }, 8000)
       return
     }
-    if (reflectTemplates.find((template) => template.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
+    if (
+      reflectTemplates.find((template) => template.name === t('AddNewReflectTemplate.NewTemplate'))
+    ) {
+      onError(
+        new Error(t('AddNewReflectTemplate.YouAlreadyHaveANewTemplateTryRenamingThatOneFirst'))
+      )
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
       }, 8000)
@@ -71,7 +73,9 @@ const AddNewReflectTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
 
-  const containsNewTemplate = reflectTemplates.find((template) => template.name === '*New Template')
+  const containsNewTemplate = reflectTemplates.find(
+    (template) => template.name === t('AddNewReflectTemplate.NewTemplate')
+  )
 
   if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate)
     return null

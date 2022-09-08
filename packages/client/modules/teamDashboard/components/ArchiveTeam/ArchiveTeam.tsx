@@ -22,8 +22,6 @@ const Hint = styled('div')({
 const ArchiveTeam = (props: Props) => {
   const {team} = props
 
-  //FIXME i18n: Click to permanently delete this team.
-  //FIXME i18n: Delete Team
   const {t} = useTranslation()
 
   const [showConfirmationField, setShowConfirmationField] = useState(false)
@@ -38,14 +36,14 @@ const ArchiveTeam = (props: Props) => {
       {!showConfirmationField ? (
         <div>
           <LinkButton
-            aria-label='Click to permanently delete this team.'
+            aria-label={t('ArchiveTeam.ClickToPermanentlyDeleteThisTeam')}
             palette='red'
             onClick={handleClick}
           >
-            <IconLabel icon='remove_circle' label='Delete Team' />
+            <IconLabel icon='remove_circle' label={t('ArchiveTeam.DeleteTeam')} />
           </LinkButton>
           <Hint>
-            <b>{t('ArchiveTeam.Note')}</b>: {t('ArchiveTeam.ThisCanTBeUndone')}
+            <b>{t('ArchiveTeam.Note')}</b>: {t('ArchiveTeam.ThisCantBeUndone')}
           </Hint>
         </div>
       ) : (

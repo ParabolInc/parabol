@@ -42,7 +42,7 @@ const ErrorComponent = (props: Props) => {
     const url = 'https://browser-update.org/update-browser.html'
     return (
       <ErrorBlock>
-        {t('ErrorComponent.OhNoYouVeFoundABugBecauseTheBrowserYouReUsingNeedsToBeUpdated')}
+        {t('ErrorComponent.OhNoYouveFoundABugBecauseTheBrowserYoureUsingNeedsToBeUpdated')}
         <Button>
           <Link href={url} target='_blank' rel='noreferrer'>
             {t('ErrorComponent.UpdateNow')}
@@ -53,7 +53,7 @@ const ErrorComponent = (props: Props) => {
   }
   return (
     <ErrorBlock>
-      {t('ErrorComponent.AnErrorHasOccurredWeVeAlertedTheDevelopersTryRefreshingThePage')}
+      {t('ErrorComponent.AnErrorHasOccurredWeveAlertedTheDevelopersTryRefreshingThePage')}
       {eventId && <Button onClick={openPortal}>{t('ErrorComponent.ReportFeedback')}</Button>}
       {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
     </ErrorBlock>

@@ -33,7 +33,9 @@ const ParabolScopingSearchBar = (props: Props) => {
 
   const {id: meetingId, parabolSearchQuery} = meeting
   const {queryString, statusFilters} = parabolSearchQuery
-  const currentFilters = statusFilters?.length ? statusFilters.join(', ') : 'None'
+  const currentFilters = statusFilters?.length
+    ? statusFilters.join(', ')
+    : t('ParabolScopingSearchBar.None')
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
@@ -42,7 +44,7 @@ const ParabolScopingSearchBar = (props: Props) => {
         placeholder={t('ParabolScopingSearchBar.SearchParabolTasks')}
         queryString={queryString ?? ''}
         meetingId={meetingId}
-        linkedRecordName={t('ParabolScopingSearchBar.Parabolsearchquery')}
+        linkedRecordName={t('ParabolScopingSearchBar.ParabolSearchQuery')}
         service={t('ParabolScopingSearchBar.Parabol')}
       />
       <ParabolScopingSearchFilterToggle meeting={meeting} />

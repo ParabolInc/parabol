@@ -69,7 +69,6 @@ interface Props {
 const OrgBillingCreditCardInfo = (props: Props) => {
   const {organization} = props
 
-  //FIXME i18n: Credit Card Information
   const {t} = useTranslation()
 
   const {creditCard, id: orgId, orgUserCount} = organization
@@ -78,7 +77,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   const {activeUserCount} = orgUserCount
   const {brand, last4, expiry} = creditCard
   return (
-    <Panel label='Credit Card Information'>
+    <Panel label={t('OrgBillingCreditCardInfo.CreditCardInformation')}>
       <InfoAndUpdate>
         <CreditCardInfo>
           <CreditCardIcon />

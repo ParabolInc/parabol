@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DeleteAccount from '../../../components/DeleteAccount'
 import Panel from '../../../components/Panel/Panel'
@@ -36,18 +37,20 @@ const query = graphql`
 `
 
 const UserProfile = ({queryRef}: Props) => {
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<UserProfileQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  useDocumentTitle('My Profile | Parabol', 'My Profile')
+  useDocumentTitle(t('UserProfile.MyProfileParabol'), t('UserProfile.MyProfile'))
   return (
     <UserSettingsWrapper>
       <SettingsBlock>
-        <Panel label='My Information'>
+        <Panel label={t('UserProfile.MyInformation')}>
           <UserSettingsForm viewer={viewer} />
         </Panel>
-        <Panel label='Danger Zone'>
+        <Panel label={t('UserProfile.DangerZone')}>
           <PanelRow>
             <DeleteAccount />
           </PanelRow>

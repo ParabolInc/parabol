@@ -97,7 +97,6 @@ const RemoveFromOrgModal = lazyPreload(
 )
 
 const OrgMemberRow = (props: Props) => {
-  //FIXME i18n: Send an email
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -137,7 +136,12 @@ const OrgMemberRow = (props: Props) => {
             <EmphasisTag>{t('OrgMemberRow.New')}</EmphasisTag>
           )}
         </RowInfoHeader>
-        <RowInfoLink href={`mailto:${email}`} title='Send an email'>
+        <RowInfoLink
+          href={t('OrgMemberRow.MailtoEmail', {
+            email
+          })}
+          title={t('OrgMemberRow.SendAnEmail')}
+        >
           {email}
         </RowInfoLink>
       </StyledRowInfo>

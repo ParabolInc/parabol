@@ -6,6 +6,7 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
@@ -161,6 +162,8 @@ const imageStyle = {
 }
 
 const ExportToCSV = (props: Props) => {
+  const {t} = useTranslation()
+
   useEffect(() => {
     if (props.urlAction === 'csv') {
       exportToCSV().catch()
@@ -181,9 +184,15 @@ const ExportToCSV = (props: Props) => {
       const {integration, title} = task
       let story = title
       if (integration?.__typename === 'JiraIssue') {
-        story = `${integration.issueKey}: ${integration.summary}`
+        story = t('ExportToCSV.IntegrationIssueKeyIntegrationSummary', {
+          integrationIssueKey: integration.issueKey,
+          integrationSummary: integration.summary
+        })
       } else if (integration?.__typename === '_xGitHubIssue') {
-        story = `${integration.number}: ${integration.title}`
+        story = t('ExportToCSV.IntegrationNumberIntegrationTitle', {
+          integrationNumber: integration.number,
+          integrationTitle: integration.title
+        })
       }
       const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
@@ -210,9 +219,9 @@ const ExportToCSV = (props: Props) => {
         const {question} = prompt
         rows.push({
           reflectionGroup: title!,
-          author: 'Anonymous',
+          author: t('ExportToCSV.Anonymous') ?? 'Anonymous',
           votes,
-          type: 'Reflection',
+          type: t('ExportToCSV.Reflection') ?? 'Reflection',
           createdAt,
           discussionThread: '',
           prompt: question,
@@ -230,7 +239,7 @@ const ExportToCSV = (props: Props) => {
       edges.forEach((edge) => {
         const {node} = edge
         const {createdAt, createdByUser, __typename: type, replies, content} = node
-        const author = createdByUser?.preferredName ?? 'Anonymous'
+        const author = createdByUser?.preferredName ?? t('ExportToCSV.Anonymous') ?? 'Anonymous'
         const discussionThread = extractTextFromDraftString(content)
         rows.push({
           reflectionGroup: title!,
@@ -244,12 +253,15 @@ const ExportToCSV = (props: Props) => {
         })
         replies.forEach((reply) => {
           const {createdAt, createdByUser} = reply
-          const author = createdByUser?.preferredName ?? 'Anonymous'
+          const author = createdByUser?.preferredName ?? t('ExportToCSV.Anonymous') ?? 'Anonymous'
           rows.push({
             reflectionGroup: title!,
             author,
             votes,
-            type: reply.__typename === 'Task' ? 'Task' : 'Reply',
+            type:
+              reply.__typename === t('ExportToCSV.Task')
+                ? t('ExportToCSV.Task')
+                : t('ExportToCSV.Reply'),
             createdAt,
             discussionThread,
             prompt: '',
@@ -275,7 +287,7 @@ const ExportToCSV = (props: Props) => {
       edges.forEach((edge) => {
         const {node} = edge
         const {createdAt, createdByUser, __typename: type, replies, content} = node
-        const author = createdByUser?.preferredName ?? 'Anonymous'
+        const author = createdByUser?.preferredName ?? t('ExportToCSV.Anonymous') ?? 'Anonymous'
         const discussionThread = extractTextFromDraftString(content)
         rows.push({
           author,
@@ -288,12 +300,15 @@ const ExportToCSV = (props: Props) => {
         })
         replies.forEach((reply) => {
           const {createdAt, createdByUser} = reply
-          const author = createdByUser?.preferredName ?? 'Anonymous'
+          const author = createdByUser?.preferredName ?? t('ExportToCSV.Anonymous') ?? 'Anonymous'
           rows.push({
             author,
             status: 'present',
             agendaItem: agendaItemContent,
-            type: reply.__typename === 'Task' ? 'Task' : 'Reply',
+            type:
+              reply.__typename === t('ExportToCSV.Task')
+                ? t('ExportToCSV.Task')
+                : t('ExportToCSV.Reply'),
             createdAt,
             discussionThread,
             content: extractTextFromDraftString(reply.content)
@@ -335,14 +350,25 @@ const ExportToCSV = (props: Props) => {
     const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
-    const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    const numDate = t('ExportToCSV.DateGetFullYearDateGetMonth1DateGetDate', {
+      dateGetFullYear: date.getFullYear(),
+      dateGetMonth1: date.getMonth() + 1,
+      dateGetDate: date.getDate()
+    })
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
     // note: using encodeUri does NOT work on the # symbol & breaks
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `Parabol${label}_${teamName}_${numDate}.csv`)
+    link.setAttribute(
+      'download',
+      t('ExportToCSV.ParabolLabelTeamNameNumDateCsv', {
+        label,
+        teamName,
+        numDate
+      })
+    )
     document.body.appendChild(link) // Required for FF
     link.click()
     document.body.removeChild(link)
@@ -357,7 +383,9 @@ const ExportToCSV = (props: Props) => {
             <img
               crossOrigin=''
               alt={label}
-              src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
+              src={t('ExportToCSV.ExternalLinksEmailCdnCloudDownloadPng', {
+                externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+              })}
               style={imageStyle}
             />
             <span style={labelStyle}>{label}</span>

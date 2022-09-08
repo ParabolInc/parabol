@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {InvoiceHeader_invoice} from '~/__generated__/InvoiceHeader_invoice.graphql'
 import TierTag from '../../../../components/Tag/TierTag'
@@ -65,17 +66,31 @@ interface Props {
 
 const InvoiceHeader = (props: Props) => {
   const {invoice} = props
+
+  const {t} = useTranslation()
+
   const {orgName, billingLeaderEmails, picture, tier} = invoice
   return (
     <Header>
       <LogoPanel>
-        <Picture alt={`Logo for ${orgName}`} src={picture || defaultOrgAvatar} />
+        <Picture
+          alt={t('InvoiceHeader.LogoForOrgName', {
+            orgName
+          })}
+          src={picture || defaultOrgAvatar}
+        />
       </LogoPanel>
       <Info>
         <OrgName>{orgName}</OrgName>
         {tier !== 'personal' && <StyledTierTag tier={tier} />}
         {billingLeaderEmails.map((email) => (
-          <Email key={`email${email}`}>{email}</Email>
+          <Email
+            key={t('InvoiceHeader.EmailEmail', {
+              email
+            })}
+          >
+            {email}
+          </Email>
         ))}
       </Info>
     </Header>

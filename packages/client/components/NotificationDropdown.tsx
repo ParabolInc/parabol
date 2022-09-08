@@ -40,7 +40,6 @@ const defaultViewer = {notifications: {edges: []}} as unknown as NotificationDro
 const NotificationDropdown = (props: Props) => {
   const {queryRef, menuProps, parentRef} = props
 
-  //FIXME i18n: Notification Menu Opened
   const {t} = useTranslation()
 
   const paginationRes = usePaginationFragment<
@@ -78,12 +77,12 @@ const NotificationDropdown = (props: Props) => {
     rootMargin: '8px'
   })
   const atmosphere = useAtmosphere()
-  useSegmentTrack('Notification Menu Opened', {})
+  useSegmentTrack(t('NotificationDropdown.NotificationMenuOpened'), {})
   return (
     <Menu ariaLabel={t('NotificationDropdown.SelectANotification')} {...menuProps}>
       {!hasNotifications && (
         <MenuItem
-          label={<NoNotifications>{t('NotificationDropdown.YouReAllCaughtUp')}</NoNotifications>}
+          label={<NoNotifications>{t('NotificationDropdown.YoureAllCaughtUp💯')}</NoNotifications>}
         />
       )}
       {edges.map(({node}) => {

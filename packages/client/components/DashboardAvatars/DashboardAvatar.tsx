@@ -1,17 +1,18 @@
-import {DashboardAvatar_teamMember} from '../../__generated__/DashboardAvatar_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Avatar from '../Avatar/Avatar'
-import {MenuPosition} from '../../hooks/useCoords'
-import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {PALETTE} from '../../styles/paletteV3'
-import {ElementWidth} from '../../types/constEnums'
-import useTooltip from '../../hooks/useTooltip'
-import useMutationProps from '../../hooks/useMutationProps'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {MenuPosition} from '../../hooks/useCoords'
+import useMutationProps from '../../hooks/useMutationProps'
+import useTooltip from '../../hooks/useTooltip'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
+import {PALETTE} from '../../styles/paletteV3'
+import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import {ElementWidth} from '../../types/constEnums'
+import {DashboardAvatar_teamMember} from '../../__generated__/DashboardAvatar_teamMember.graphql'
+import Avatar from '../Avatar/Avatar'
 
 interface Props {
   teamMember: DashboardAvatar_teamMember
@@ -37,10 +38,17 @@ const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
 
 const DashboardAvatar = (props: Props) => {
   const {teamMember} = props
+
+  const {t} = useTranslation()
+
   const {id: teamMemberId, picture, teamId, preferredName} = teamMember
   const {user} = teamMember
   if (!user) {
-    throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
+    throw new Error(
+      t('DashboardAvatar.UserAvatarUnavailableJsonStringifyTeamMember', {
+        jsonStringifyTeamMember: JSON.stringify(teamMember)
+      })
+    )
   }
   const {isConnected} = user
   const atmosphere = useAtmosphere()

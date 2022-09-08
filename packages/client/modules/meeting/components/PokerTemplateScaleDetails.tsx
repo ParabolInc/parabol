@@ -88,7 +88,6 @@ interface Props {
 const PokerTemplateScaleDetails = (props: Props) => {
   const {team} = props
 
-  //FIXME i18n: Back to Template
   const {t} = useTranslation()
 
   const {id: teamId, scales, editingScaleId} = team
@@ -106,7 +105,10 @@ const PokerTemplateScaleDetails = (props: Props) => {
   return (
     <ScaleValueEditor>
       <ScaleDetailHeader>
-        <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
+        <IconButton
+          aria-label={t('PokerTemplateScaleDetails.BackToTemplate')}
+          onClick={gotoTemplateDetail}
+        >
           <BackIcon />
         </IconButton>
         <ScaleDetailsTitle>{t('PokerTemplateScaleDetails.EditScale')}</ScaleDetailsTitle>

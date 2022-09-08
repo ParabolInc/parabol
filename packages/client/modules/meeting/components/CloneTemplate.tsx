@@ -10,11 +10,11 @@ interface Props {
 const CloneTemplate = (props: Props) => {
   const {canClone, onClick} = props
 
-  //FIXME i18n: Clone & Edit Template
-  //FIXME i18n: Too many team templates! Remove one first
   const {t} = useTranslation()
 
-  const tooltip = canClone ? 'Clone & Edit Template' : 'Too many team templates! Remove one first'
+  const tooltip = canClone
+    ? t('CloneTemplate.CloneEditTemplate')
+    : t('CloneTemplate.TooManyTeamTemplatesRemoveOneFirst')
   return (
     <DetailAction
       disabled={!canClone}

@@ -32,9 +32,6 @@ const StyledEditableText = styled(EditableText)({
 const EditableTemplateScaleName = (props: Props) => {
   const {name, scaleId, scales, isOwner} = props
 
-  //FIXME i18n: Please enter a scale name
-  //FIXME i18n: That scale name is probably long enough
-  //FIXME i18n: That scale name is already taken
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -51,15 +48,15 @@ const EditableTemplateScaleName = (props: Props) => {
   const legitify = (value) => {
     return new Legitity(value)
       .trim()
-      .required('Please enter a scale name')
-      .max(50, 'That scale name is probably long enough')
+      .required(t('EditableTemplateScaleName.PleaseEnterAScaleName'))
+      .max(50, t('EditableTemplateScaleName.ThatScaleNameIsProbablyLongEnough'))
       .test((mVal) => {
         const isDupe = !scales
           ? undefined
           : scales.find(
               (scale) => scale.id !== scaleId && scale.name.toLowerCase() === mVal.toLowerCase()
             )
-        return isDupe ? 'That scale name is already taken' : undefined
+        return isDupe ? t('EditableTemplateScaleName.ThatScaleNameIsAlreadyTaken') : undefined
       })
   }
 

@@ -17,8 +17,6 @@ interface Props {
 const SlackConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
 
-  //FIXME i18n: Refresh token
-  //FIXME i18n: Remove Slack
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -34,8 +32,8 @@ const SlackConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={t('SlackConfigMenu.ConfigureYourSlackIntegration')} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove Slack' onClick={removeSlack} />
+      <MenuItem label={t('SlackConfigMenu.RefreshToken')} onClick={openOAuth} />
+      <MenuItem label={t('SlackConfigMenu.RemoveSlack')} onClick={removeSlack} />
     </Menu>
   )
 }

@@ -19,8 +19,6 @@ interface Props {
 const AzureDevOpsConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId, provider} = props
 
-  //FIXME i18n: Refresh token
-  //FIXME i18n: Remove Azure DevOps
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -42,9 +40,9 @@ const AzureDevOpsConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={t('AzureDevOpsConfigMenu.ConfigureYourAzureDevopsIntegration')} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove Azure DevOps' onClick={removeAzureDevOps} />
+    <Menu ariaLabel={t('AzureDevOpsConfigMenu.ConfigureYourAzureDevOpsIntegration')} {...menuProps}>
+      <MenuItem label={t('AzureDevOpsConfigMenu.RefreshToken')} onClick={openOAuth} />
+      <MenuItem label={t('AzureDevOpsConfigMenu.RemoveAzureDevOps')} onClick={removeAzureDevOps} />
     </Menu>
   )
 }

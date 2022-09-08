@@ -4,6 +4,7 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from 'parabol-client/styles/typographyV2'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {RetroTopic_stage} from '../../../../../__generated__/RetroTopic_stage.graphql'
@@ -59,19 +60,28 @@ interface Props {
 
 const RetroTopic = (props: Props) => {
   const {isDemo, isEmail, to, stage} = props
+
+  const {t} = useTranslation()
+
   const {reflectionGroup, discussion} = stage
   const {commentCount} = discussion
   const {reflections, title, voteCount} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
-  const src = `${ExternalLinks.EMAIL_CDN}${icon}`
+  const src = t('RetroTopic.ExternalLinksEmailCdnIcon', {
+    externalLinksEmailCdn: ExternalLinks.EMAIL_CDN,
+    icon
+  })
   const grid = useEmailItemGrid(reflections, 3)
   const commentLinkLabel =
     commentCount === 0
-      ? 'No Comments'
+      ? t('RetroTopic.NoComments')
       : commentCount >= 101
-      ? 'See 100+ Comments'
-      : `See ${commentCount} ${plural(commentCount, 'Comment')}`
+      ? t('RetroTopic.See100Comments')
+      : t('RetroTopic.SeeCommentCountPluralCommentCountComment', {
+          commentCount,
+          pluralCommentCountComment: plural(commentCount, 'Comment')
+        })
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   return (
     <>

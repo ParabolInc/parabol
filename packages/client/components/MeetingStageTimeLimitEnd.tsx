@@ -21,12 +21,22 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
   const {id: meetingId, name: meetingName, team} = meeting
   const {name: teamName} = team
   const goThere = () => {
-    history.push(`/meet/${meetingId}`)
+    history.push(
+      t('MeetingStageTimeLimitEnd.MeetMeetingId', {
+        meetingId
+      })
+    )
   }
 
   return (
     <NotificationTemplate
-      message={`Your meeting ${meetingName} with ${teamName} is ready to move forward`}
+      message={t(
+        'MeetingStageTimeLimitEnd.YourMeetingMeetingNameWithTeamNameIsReadyToMoveForward',
+        {
+          meetingName,
+          teamName
+        }
+      )}
       notification={notification}
       action={
         <NotificationAction label={t('MeetingStageTimeLimitEnd.GoToMeeting')} onClick={goThere} />

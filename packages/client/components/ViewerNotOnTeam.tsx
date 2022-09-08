@@ -38,7 +38,6 @@ const query = graphql`
 const ViewerNotOnTeam = (props: Props) => {
   const {queryRef} = props
 
-  //FIXME i18n: Invitation Required
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef, {
@@ -50,7 +49,10 @@ const ViewerNotOnTeam = (props: Props) => {
   } = viewer
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  useDocumentTitle(`Invitation Required`, 'Invitation Required')
+  useDocumentTitle(
+    t('ViewerNotOnTeam.InvitationRequired', {}),
+    t('ViewerNotOnTeam.InvitationRequired')
+  )
   useEffect(
     () => {
       if (teamInvitation) {
@@ -75,7 +77,7 @@ const ViewerNotOnTeam = (props: Props) => {
       <InviteDialog>
         <DialogTitle>{t('ViewerNotOnTeam.InvitationRequired')}</DialogTitle>
         <DialogContent>
-          <InvitationDialogCopy>{t('ViewerNotOnTeam.YouReAlmostOnTheTeam')}</InvitationDialogCopy>
+          <InvitationDialogCopy>{t('ViewerNotOnTeam.YoureAlmostOnTheTeam')}</InvitationDialogCopy>
           <InvitationDialogCopy>
             {t('ViewerNotOnTeam.JustAskATeamMemberForAnInvitation')}
           </InvitationDialogCopy>

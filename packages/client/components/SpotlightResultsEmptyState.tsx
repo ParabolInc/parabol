@@ -56,7 +56,7 @@ const SpotlightResultsEmptyState = (props: Props) => {
 
   return (
     <EmptyState height={height}>
-      <Emoji>😔</Emoji>
+      <Emoji>{t('SpotlightResultsEmptyState.😔')}</Emoji>
       <Content>
         <Img src={purpleLines} />
         <MessageWrapper>

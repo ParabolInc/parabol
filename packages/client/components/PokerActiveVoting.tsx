@@ -99,8 +99,6 @@ interface Props {
 const PokerActiveVoting = (props: Props) => {
   const {isClosing, meeting, stage, isInitialStageRender} = props
 
-  //FIXME i18n: Votes are automatically revealed once everyone has voted.
-  //FIXME i18n: Tap a card to vote. Swipe to view each dimension.
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -123,8 +121,8 @@ const PokerActiveVoting = (props: Props) => {
   // - Show the participant a tooltip if they haven’t voted once
   const showTip = Boolean((isFacilitator && !hasVotes) || (!isFacilitator && !viewerHasVoted))
   const tipCopy = isFacilitator
-    ? 'Votes are automatically revealed once everyone has voted.'
-    : 'Tap a card to vote. Swipe to view each dimension.'
+    ? t('PokerActiveVoting.VotesAreAutomaticallyRevealedOnceEveryoneHasVoted')
+    : t('PokerActiveVoting.TapACardToVoteSwipeToViewEachDimension')
   const showRevealButton = isFacilitator && scores.length > 0
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const reveal = () => {

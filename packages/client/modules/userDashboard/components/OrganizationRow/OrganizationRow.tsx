@@ -104,7 +104,11 @@ const OrganizationRow = (props: Props) => {
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => {
     closeTooltip()
-    history.push(`/me/organizations/${orgId}`)
+    history.push(
+      t('OrganizationRow.MeOrganizationsOrgId', {
+        orgId
+      })
+    )
   }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = tier === 'personal'
@@ -133,7 +137,11 @@ const OrganizationRow = (props: Props) => {
             )}
           </RowInfoHeader>
           <StyledRowInfoCopy>
-            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
+            {t('OrganizationRow.TotalUsersPluralTotalUsersUserActiveUserCountActive', {
+              totalUsers,
+              pluralTotalUsersUser: plural(totalUsers, 'User'),
+              activeUserCount
+            })}
           </StyledRowInfoCopy>
         </StyledRowInfo>
         <RowActions>
@@ -152,7 +160,7 @@ const OrganizationRow = (props: Props) => {
               <SettingsIcon />
             </StyledIcon>
           </StyledButton>
-          {tooltipPortal('Settings')}
+          {tooltipPortal(t('OrganizationRow.Settings'))}
         </RowActions>
       </RowInner>
     </Row>

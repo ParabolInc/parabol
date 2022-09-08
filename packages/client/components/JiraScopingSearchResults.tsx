@@ -153,7 +153,9 @@ const JiraScopingSearchResults = (props: Props) => {
               summary={node.summary}
               url={url}
               linkText={issueKey}
-              linkTitle={`Jira Issue #${issueKey}`}
+              linkTitle={t('JiraScopingSearchResults.JiraIssueIssueKey', {
+                issueKey
+              })}
             />
           )
         })}

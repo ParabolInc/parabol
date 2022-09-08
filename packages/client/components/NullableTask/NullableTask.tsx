@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw} from 'draft-js'
 import React, {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -31,6 +32,9 @@ const NullableTask = (props: Props) => {
     isViewerMeetingSection,
     meetingId
   } = props
+
+  const {t} = useTranslation()
+
   const {content, createdBy, createdByUser, integration} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -46,7 +50,9 @@ const NullableTask = (props: Props) => {
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId || integration
   return showOutcome ? (
     <OutcomeCardContainer
-      dataCy={`${dataCy}`}
+      dataCy={t('NullableTask.DataCy', {
+        dataCy
+      })}
       area={area}
       className={className}
       contentState={contentState}

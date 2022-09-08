@@ -17,7 +17,6 @@ interface Props {
 const MSTeamsConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, providerId} = props
 
-  //FIXME i18n: Remove Microsoft Teams
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -33,7 +32,7 @@ const MSTeamsConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={t('MSTeamsConfigMenu.ConfigureYourMicrosoftTeamsIntegration')} {...menuProps}>
-      <MenuItem label='Remove Microsoft Teams' onClick={removeMSTeamsAuth} />
+      <MenuItem label={t('MSTeamsConfigMenu.RemoveMicrosoftTeams')} onClick={removeMSTeamsAuth} />
     </Menu>
   )
 }

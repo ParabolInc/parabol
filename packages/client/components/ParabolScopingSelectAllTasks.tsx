@@ -2,6 +2,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
@@ -29,6 +30,9 @@ interface Props {
 
 const ParabolScopingSelectAllTasks = (props: Props) => {
   const {meetingId, usedServiceTaskIds, tasks} = props
+
+  const {t} = useTranslation()
+
   const taskIds = tasks.map((taskEdge) => taskEdge.node.id)
   const atmosphere = useAtmosphere()
   const [unusedTasks, allSelected] = useUnusedRecords(taskIds, usedServiceTaskIds)
@@ -52,7 +56,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
     }
     const contents = updates.map((update) => {
       const task = tasks.find((taskEdge) => taskEdge.node.id === update.serviceTaskId)
-      return task?.node.plaintextContent ?? 'Unknown Story'
+      return task?.node.plaintextContent ?? t('ParabolScopingSelectAllTasks.UnknownStory')
     })
     UpdatePokerScopeMutation(atmosphere, variables, {
       onError,

@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {ExternalLinks} from '../../../../types/constEnums'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {emailTableBase} from '../../styles'
@@ -24,6 +25,9 @@ interface Props {
 
 const Header = (props: Props) => {
   const {appOrigin} = props
+
+  const {t} = useTranslation()
+
   const dashURL = makeAppURL(appOrigin, 'me')
   return (
     <table style={emailTableBase} width='100%'>
@@ -33,9 +37,11 @@ const Header = (props: Props) => {
             <a style={linkStyle} href={dashURL}>
               <img
                 crossOrigin=''
-                alt='Parabol, Inc. Logo'
+                alt={t('Header.ParabolIncLogo')}
                 height={42}
-                src={`${ExternalLinks.EMAIL_CDN}email-header-branding-color@3x.png`}
+                src={t('Header.ExternalLinksEmailCdnEmailHeaderBrandingColor3XPng', {
+                  externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+                })}
                 style={imageStyle}
                 width={204}
               />

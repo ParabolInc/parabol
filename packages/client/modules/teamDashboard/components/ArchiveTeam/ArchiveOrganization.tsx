@@ -22,8 +22,6 @@ const Hint = styled('div')({
 const ArchiveOrganization = (props: Props) => {
   const {organization} = props
 
-  //FIXME i18n: Click to permanently delete this organization.
-  //FIXME i18n: Delete organization
   const {t} = useTranslation()
 
   const [showConfirmationField, setShowConfirmationField] = useState(false)
@@ -38,14 +36,14 @@ const ArchiveOrganization = (props: Props) => {
       {!showConfirmationField ? (
         <div>
           <LinkButton
-            aria-label='Click to permanently delete this organization.'
+            aria-label={t('ArchiveOrganization.ClickToPermanentlyDeleteThisOrganization')}
             palette='red'
             onClick={handleClick}
           >
-            <IconLabel icon='remove_circle' label='Delete organization' />
+            <IconLabel icon='remove_circle' label={t('ArchiveOrganization.DeleteOrganization')} />
           </LinkButton>
           <Hint>
-            <b>{t('ArchiveOrganization.Note')}</b>: {t('ArchiveOrganization.ThisCanTBeUndone')}
+            <b>{t('ArchiveOrganization.Note')}</b>: {t('ArchiveOrganization.ThisCantBeUndone')}
           </Hint>
         </div>
       ) : (

@@ -68,8 +68,6 @@ interface Props {
 const InvoiceLineItemDetails = (props: Props) => {
   const {details, type} = props
 
-  //FIXME i18n: Hide Details
-  //FIXME i18n: View Details
   const {t} = useTranslation()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -80,7 +78,7 @@ const InvoiceLineItemDetails = (props: Props) => {
   return (
     <Details className={t('InvoiceLineItemDetails.HidePrint')}>
       <DetailsToggle onClick={toggleDetails}>
-        {isOpen ? 'Hide Details' : 'View Details'}
+        {isOpen ? t('InvoiceLineItemDetails.HideDetails') : t('InvoiceLineItemDetails.ViewDetails')}
       </DetailsToggle>
       <DetailsInner isOpen={isOpen}>
         {details.map((d) => {

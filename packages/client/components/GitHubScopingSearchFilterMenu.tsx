@@ -49,8 +49,6 @@ const getValue = (item: {nameWithOwner?: string}) => {
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, queryRef} = props
 
-  //FIXME i18n: Define the GitHub search query
-  //FIXME i18n: Search your GitHub repos
   const {t} = useTranslation()
 
   const query = usePreloadedQuery<GitHubScopingSearchFilterMenuQuery>(
@@ -102,12 +100,12 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   return (
     <StyledMenu
       keepParentFocus
-      ariaLabel='Define the GitHub search query'
+      ariaLabel={t('GitHubScopingSearchFilterMenu.DefineTheGitHubSearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
       <SearchMenuItem
-        placeholder='Search your GitHub repos'
+        placeholder={t('GitHubScopingSearchFilterMenu.SearchYourGitHubRepos')}
         onChange={onQueryChange}
         value={searchQuery}
       />
@@ -130,7 +128,11 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
               .trim()
               .split(' ')
               .filter((str) => !str.includes('repo:'))
-            const newRepos = newFilters.map((name) => `repo:${name}`)
+            const newRepos = newFilters.map((name) =>
+              t('GitHubScopingSearchFilterMenu.RepoName', {
+                name
+              })
+            )
             const newQueryStr = queryWithoutRepos.concat(newRepos).join(' ')
             githubSearchQuery.setValue(newQueryStr, 'queryString')
           })

@@ -41,7 +41,13 @@ const AddTaskButton = (props: Props) => {
   const {t} = useTranslation()
 
   return (
-    <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
+    <StyledPlainButton
+      data-cy={t('AddTaskButton.DataCyAdd', {
+        dataCy
+      })}
+      onClick={onClick}
+      disabled={disabled}
+    >
       <AddTaskIcon />
       <AddTaskLabel>{t('AddTaskButton.AddATask')}</AddTaskLabel>
     </StyledPlainButton>

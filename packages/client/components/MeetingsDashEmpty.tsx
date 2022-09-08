@@ -38,10 +38,14 @@ const MeetingsDashNewUser = (props: Props) => {
 
   return (
     <Section>
-      <Heading>{`Hi ${name},`}</Heading>
+      <Heading>
+        {t('MeetingsDashNewUser.HiName', {
+          name
+        })}
+      </Heading>
       <Copy>
         {t(
-          'MeetingsDashNewUser.LooksLikeYouHaveNoUpcomingMeetingsStartOneNowOrCheckOutTheseTipsAndTricks'
+          'MeetingsDashNewUser.LooksLikeYouHaveNoUpcomingMeetings😎StartOneNowOrCheckOutTheseTipsAndTricks'
         )}
       </Copy>
     </Section>

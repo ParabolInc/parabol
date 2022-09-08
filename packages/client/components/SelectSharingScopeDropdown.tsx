@@ -53,7 +53,9 @@ const SelectSharingScopeDropdown = (props: Props) => {
         <MenuItem
           label={
             <DropdownMenuIconItemLabel
-              label={`Share only with ${teamName}`}
+              label={t('SelectSharingScopeDropdown.ShareOnlyWithTeamName', {
+                teamName
+              })}
               icon={t('SelectSharingScopeDropdown.Group')}
             />
           }
@@ -64,7 +66,9 @@ const SelectSharingScopeDropdown = (props: Props) => {
         <MenuItem
           label={
             <DropdownMenuIconItemLabel
-              label={`Share with all of ${orgName}`}
+              label={t('SelectSharingScopeDropdown.ShareWithAllOfOrgName', {
+                orgName
+              })}
               icon={t('SelectSharingScopeDropdown.Business')}
             />
           }
@@ -75,7 +79,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
         <MenuItem
           label={
             <DropdownMenuIconItemLabel
-              label={`Share with the world`}
+              label={t('SelectSharingScopeDropdown.ShareWithTheWorld', {})}
               icon={t('SelectSharingScopeDropdown.Public')}
             />
           }

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'
@@ -52,6 +53,9 @@ interface Props {
 
 const ParabolScopingSearchResultItem = (props: Props) => {
   const {usedServiceTaskIds, task, meetingId, teamId, setIsEditing} = props
+
+  const {t} = useTranslation()
+
   const {id: serviceTaskId, content, plaintextContent} = task
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
@@ -59,9 +63,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(
-    serviceTaskId
-  )
+  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} =
+    useTaskChildFocus(serviceTaskId)
   const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
@@ -146,7 +149,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
         }}
       >
         <StyledTaskEditor
-          dataCy={`task`}
+          dataCy={t('ParabolScopingSearchResultItem.Task', {})}
           editorRef={editorRef}
           readOnly={!isEditingThisItem}
           editorState={editorState}

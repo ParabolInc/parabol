@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {matchPath} from 'react-router-dom'
 import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
 import useRouter from '../../../../hooks/useRouter'
@@ -8,26 +9,44 @@ interface Props {
   orgId: string
 }
 const BillingMembersToggle = (props: Props) => {
+  const {t} = useTranslation()
+
   const {
     history,
     location: {pathname},
     match
   } = useRouter()
   const {orgId} = props
-  const areaMatch = matchPath<{area: string}>(pathname, {path: `${match.url}/:area?`})
+  const areaMatch = matchPath<{area: string}>(pathname, {
+    path: t('BillingMembersToggle.MatchUrlArea', {
+      matchUrl: match.url
+    })
+  })
   const activeOrgDetail = areaMatch?.params.area ?? BILLING_PAGE
   const items = [
     {
-      label: 'Billing',
+      label: t('BillingMembersToggle.Billing'),
       icon: 'credit_card',
       isActive: activeOrgDetail === BILLING_PAGE,
-      onClick: () => history.push(`/me/organizations/${orgId}/${BILLING_PAGE}`)
+      onClick: () =>
+        history.push(
+          t('BillingMembersToggle.MeOrganizationsOrgIdBillingPage', {
+            orgId,
+            billingPage: BILLING_PAGE
+          })
+        )
     },
     {
-      label: 'Members',
+      label: t('BillingMembersToggle.Members'),
       icon: 'group',
       isActive: activeOrgDetail === MEMBERS_PAGE,
-      onClick: () => history.push(`/me/organizations/${orgId}/${MEMBERS_PAGE}`)
+      onClick: () =>
+        history.push(
+          t('BillingMembersToggle.MeOrganizationsOrgIdMembersPage', {
+            orgId,
+            membersPage: MEMBERS_PAGE
+          })
+        )
     }
   ]
 

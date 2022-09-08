@@ -107,15 +107,12 @@ interface Props {
 const TeamTasksHeader = (props: Props) => {
   const {team} = props
 
-  //FIXME i18n: All team members
-  //FIXME i18n: Team Member
-  //FIXME i18n: Archived Tasks
   const {t} = useTranslation()
 
   const {history} = useRouter()
   const {organization, id: teamId, name: teamName, teamMemberFilter, teamMembers} = team
   const teamMemberFilterName =
-    (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
+    (teamMemberFilter && teamMemberFilter.preferredName) || t('TeamTasksHeader.AllTeamMembers')!
   const {name: orgName, id: orgId} = organization
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
@@ -132,7 +129,9 @@ const TeamTasksHeader = (props: Props) => {
                   <NavLink
                     className={css(linkStyles)}
                     title={orgName}
-                    to={`/me/organizations/${orgId}`}
+                    to={t('TeamTasksHeader.MeOrganizationsOrgId', {
+                      orgId
+                    })}
                   >
                     {orgName}
                   </NavLink>
@@ -146,7 +145,9 @@ const TeamTasksHeader = (props: Props) => {
                   <NavLink
                     className={css(secondLink)}
                     title={t('TeamTasksHeader.SettingsIntegrations')}
-                    to={`/team/${teamId}/settings/`}
+                    to={t('TeamTasksHeader.TeamTeamIdSettings', {
+                      teamId
+                    })}
                   >
                     {t('TeamTasksHeader.SettingsIntegrations')}
                   </NavLink>
@@ -164,7 +165,7 @@ const TeamTasksHeader = (props: Props) => {
       <DashSectionControls>
         {/* Filter by Owner */}
         <DashFilterToggle
-          label='Team Member'
+          label={t('TeamTasksHeader.TeamMember')}
           onClick={togglePortal}
           onMouseEnter={TeamDashTeamMemberMenu.preload}
           ref={originRef}
@@ -174,8 +175,14 @@ const TeamTasksHeader = (props: Props) => {
         {/* Archive Link */}
         <DashNavControl
           icon='archive'
-          label='Archived Tasks'
-          onClick={() => history.push(`/team/${teamId}/archive`)}
+          label={t('TeamTasksHeader.ArchivedTasks')}
+          onClick={() =>
+            history.push(
+              t('TeamTasksHeader.TeamTeamIdArchive', {
+                teamId
+              })
+            )
+          }
         />
       </DashSectionControls>
     </DashSectionHeader>

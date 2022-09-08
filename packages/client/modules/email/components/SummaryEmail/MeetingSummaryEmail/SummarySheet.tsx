@@ -4,6 +4,7 @@ import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
 import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import lazyPreload from '~/utils/lazyPreload'
 import ExportToCSV from '../ExportToCSV'
@@ -36,6 +37,9 @@ const sheetStyle = {
 
 const SummarySheet = (props: Props) => {
   const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl, appOrigin} = props
+
+  const {t} = useTranslation()
+
   const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
 
@@ -83,8 +87,8 @@ const SummarySheet = (props: Props) => {
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
-          prompt={`How’d your meeting go?`}
-          tagline='We’re eager for your feedback!'
+          prompt={t('SummarySheet.HowdYourMeetingGo', {})}
+          tagline={t('SummarySheet.WereEagerForYourFeedback')}
         />
         <LogoFooter />
       </tbody>

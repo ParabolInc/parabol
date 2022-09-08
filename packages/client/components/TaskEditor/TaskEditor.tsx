@@ -8,6 +8,7 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import completeEntity from '~/utils/draftjs/completeEntity'
 import linkify from '~/utils/linkify'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
@@ -31,8 +32,8 @@ const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined
   })
 )
 
-const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -60,6 +61,9 @@ interface Props extends DraftProps {
 
 const TaskEditor = (props: Props) => {
   const {editorRef, editorState, readOnly, setEditorState, dataCy, className} = props
+
+  const {t} = useTranslation()
+
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -118,7 +122,7 @@ const TaskEditor = (props: Props) => {
   }
 
   const onKeyDownFallback = (e) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
+    if (e.key !== t('TaskEditor.Enter') || e.shiftKey) return
     e.preventDefault()
     editorRef.current && editorRef.current.blur()
   }
@@ -137,7 +141,7 @@ const TaskEditor = (props: Props) => {
         return result
       }
     }
-    if (e.key === 'Escape') {
+    if (e.key === t('TaskEditor.Escape')) {
       e.preventDefault()
       onRemoveModal()
       return 'not-handled'
@@ -178,12 +182,14 @@ const TaskEditor = (props: Props) => {
   }
 
   const noText = !editorState.getCurrentContent().hasText()
-  const placeholder = 'Describe what “Done” looks like'
+  const placeholder = t('TaskEditor.DescribeWhatDoneLooksLike')
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
     <RootEditor
-      data-cy={`${dataCy}-editor`}
+      data-cy={t('TaskEditor.DataCyEditor', {
+        dataCy
+      })}
       noText={noText}
       readOnly={readOnly}
       className={className}

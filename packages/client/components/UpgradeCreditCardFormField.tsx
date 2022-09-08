@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {CreditCard, DateRange, Lock} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../styles/paletteV3'
 
 const FieldBlock = styled('div')({
@@ -76,9 +77,11 @@ const UpgradeCreditCardFormField = (props: Props) => {
     value
   } = props
 
+  const {t} = useTranslation()
+
   const requireNumeric = (e) => {
     // keep Enter around to let them submit
-    if (e.key !== 'Enter' && isNaN(parseInt(e.key, 10))) {
+    if (e.key !== t('UpgradeCreditCardFormField.Enter') && isNaN(parseInt(e.key, 10))) {
       e.preventDefault()
     }
   }

@@ -1,15 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import Menu from '~/components/Menu'
 import PaletteColor from '~/components/PaletteColor/PaletteColor'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import palettePickerOptions from '~/styles/palettePickerOptions'
-import {ScaleValuePalettePicker_scale} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
+import {ScaleValuePalettePicker_scale} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
 
 interface Props {
   scale: ScaleValuePalettePicker_scale
@@ -36,6 +37,9 @@ const ScaleValuePaletteList = styled('ul')({
 
 const ScaleValuePalettePicker = (props: Props) => {
   const {scaleValueLabel, scaleValueColor, scale, menuProps, setScaleValueColor} = props
+
+  const {t} = useTranslation()
+
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {closePortal} = menuProps
   const atmosphere = useAtmosphere()
@@ -61,7 +65,10 @@ const ScaleValuePalettePicker = (props: Props) => {
   }
 
   return (
-    <ScaleValuePaletteDropDown ariaLabel='Pick a group color' {...menuProps}>
+    <ScaleValuePaletteDropDown
+      ariaLabel={t('ScaleValuePalettePicker.PickAGroupColor')}
+      {...menuProps}
+    >
       <ScaleValuePaletteList>
         {palettePickerOptions.map((color) => {
           return (

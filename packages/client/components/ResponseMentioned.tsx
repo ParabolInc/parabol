@@ -41,14 +41,21 @@ const ResponseMentioned = (props: Props) => {
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
     // :TODO: (jmtaber129): Link directly to card once we support that.
-    history.push(`/meet/${meetingId}`)
+    history.push(
+      t('ResponseMentioned.MeetMeetingId', {
+        meetingId
+      })
+    )
   }
 
   // :TODO: (jmtaber129): Show mention preview.
   return (
     <NotificationTemplate
       avatar={authorPicture}
-      message={`${authorName} mentioned you in their response in ${meetingName}.`}
+      message={t('ResponseMentioned.AuthorNameMentionedYouInTheirResponseInMeetingName', {
+        authorName,
+        meetingName
+      })}
       notification={notification}
       action={
         <NotificationAction label={t('ResponseMentioned.SeeTheirResponse')} onClick={goThere} />

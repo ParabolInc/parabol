@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import CardButton from '../../../../components/CardButton'
@@ -60,6 +61,9 @@ interface Props {
 
 const TaskFooter = (props: Props) => {
   const {area, cardIsActive, editorState, isAgenda, task, useTaskChild, dataCy} = props
+
+  const {t} = useTranslation()
+
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const handleError = (err: Error) => {
     onError(err)
@@ -111,7 +115,9 @@ const TaskFooter = (props: Props) => {
             <ButtonSpacer />
           ) : (
             <TaskFooterIntegrateToggle
-              dataCy={`${dataCy}-integration`}
+              dataCy={t('TaskFooter.DataCyIntegration', {
+                dataCy
+              })}
               mutationProps={mutationProps}
               task={task}
               useTaskChild={useTaskChild}
@@ -125,7 +131,9 @@ const TaskFooter = (props: Props) => {
             </CardButton>
           ) : (
             <TaskFooterTagMenuToggle
-              dataCy={`${dataCy}-tag`}
+              dataCy={t('TaskFooter.DataCyTag', {
+                dataCy
+              })}
               area={area}
               editorState={editorState}
               isAgenda={isAgenda}

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
@@ -83,6 +84,9 @@ const AddTeamMemberModalDemo = lazyPreload(
 
 const AddTeamMemberAvatarButton = (props: Props) => {
   const {meetingId, teamId, teamMembers} = props
+
+  const {t} = useTranslation()
+
   const isMeeting = !!meetingId
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
@@ -110,7 +114,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
       >
         <StyledIcon isMeeting={Boolean(isMeeting)} />
       </AddButton>
-      {tooltipPortal('Invite to Team')}
+      {tooltipPortal(t('AddTeamMemberAvatarButton.InviteToTeam'))}
       {modalPortal(modal)}
     </>
   )

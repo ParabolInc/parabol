@@ -1,6 +1,7 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
 import styled from '@emotion/styled'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {Link} from 'react-router-dom'
 import {PALETTE} from '../../styles/paletteV3'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 
@@ -29,10 +30,13 @@ interface Props {
 
 const LogoBlock = (props: Props) => {
   const {onClick} = props
+
+  const {t} = useTranslation()
+
   return (
     <RootBlock>
-      <Anchor title='My Dashboard' to='/meetings' onClick={onClick}>
-        <Image crossOrigin='' alt='Parabol' src={logoMarkPurple} />
+      <Anchor title={t('LogoBlock.MyDashboard')} to='/meetings' onClick={onClick}>
+        <Image crossOrigin='' alt={t('LogoBlock.Parabol')} src={logoMarkPurple} />
       </Anchor>
     </RootBlock>
   )

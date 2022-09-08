@@ -37,18 +37,26 @@ interface Props {
 const TeamArchiveHeader = (props: Props) => {
   const {teamId} = props
 
-  //FIXME i18n: Back to Team Tasks
   const {t} = useTranslation()
 
   const {history} = useRouter()
-  const goToTeamDash = () => history.push(`/team/${teamId}/`)
+  const goToTeamDash = () =>
+    history.push(
+      t('TeamArchiveHeader.TeamTeamId', {
+        teamId
+      })
+    )
   return (
     <RootBlock>
       <HeadingBlock>
         <StyledIcon />
         <Heading>{t('TeamArchiveHeader.ArchivedTasks')}</Heading>
       </HeadingBlock>
-      <DashNavControl icon='arrow_back' label='Back to Team Tasks' onClick={goToTeamDash} />
+      <DashNavControl
+        icon='arrow_back'
+        label={t('TeamArchiveHeader.BackToTeamTasks')}
+        onClick={goToTeamDash}
+      />
     </RootBlock>
   )
 }

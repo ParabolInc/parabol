@@ -144,14 +144,19 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         {edges.map(({node}) => (
           <ScopingSearchResultItem
             key={node.id}
-            service={t('AzureDevOpsScopingSearchResults.Azuredevops')}
+            service={t('AzureDevOpsScopingSearchResults.AzureDevOps')}
             usedServiceTaskIds={usedServiceTaskIds}
             serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
             meetingId={meetingId}
             summary={node.title}
             url={node.url}
-            linkText={`#${node.issueKey} ${node.project.name}`}
-            linkTitle={`Azure DevOps Work Item #${node.issueKey}`}
+            linkText={t('AzureDevOpsScopingSearchResults.NodeIssueKeyNodeProjectName', {
+              nodeIssueKey: node.issueKey,
+              nodeProjectName: node.project.name
+            })}
+            linkTitle={t('AzureDevOpsScopingSearchResults.AzureDevOpsWorkItemNodeIssueKey', {
+              nodeIssueKey: node.issueKey
+            })}
           />
         ))}
       </ResultScroller>

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ArrowForward, Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGotoNext from '~/hooks/useGotoNext'
@@ -62,6 +63,9 @@ const BottomControlBarReady = (props: Props) => {
     onTransitionEnd,
     status
   } = props
+
+  const {t} = useTranslation()
+
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarReady_meeting on NewMeeting {
@@ -132,7 +136,7 @@ const BottomControlBarReady = (props: Props) => {
       })
     : undefined
   const icon = isNext ? 'arrow_forward' : 'check'
-  const label = isNext ? 'Next' : 'Ready'
+  const label = isNext ? t('BottomControlBarReady.Next') : t('BottomControlBarReady.Ready')
   const getDisabled = () => {
     if (!isNext) return false
     if (phaseType === 'reflect') {
@@ -145,7 +149,7 @@ const BottomControlBarReady = (props: Props) => {
   return (
     <>
       <BottomNavControl
-        dataCy={`next-phase`}
+        dataCy={t('BottomControlBarReady.NextPhase', {})}
         disabled={disabled}
         confirming={!!cancelConfirm}
         onClick={cancelConfirm || onClick}
@@ -161,14 +165,14 @@ const BottomControlBarReady = (props: Props) => {
               {
                 {
                   arrow_forward: <ArrowForward />,
-                 check: <Check />
+                  check: <Check />
                 }[icon]
               }
-           </StyledIcon>
+            </StyledIcon>
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>
       </BottomNavControl>
-      {tooltipPortal(`Tap 'Next' again to Confirm`)}
+      {tooltipPortal(t('BottomControlBarReady.TapNextAgainToConfirm', {}))}
     </>
   )
 }

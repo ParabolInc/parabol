@@ -1,5 +1,6 @@
 import {Add as AddIcon} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'
@@ -12,12 +13,14 @@ interface Props {
 }
 
 const ConnectButton = (props: Props) => {
+  const {t} = useTranslation()
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const {
     submitting,
     onConnectClick,
-    connectButtonText = 'Connect',
+    connectButtonText = t('ConnectButton.Connect'),
     connectButtonIcon = <AddIcon />
   } = props
 

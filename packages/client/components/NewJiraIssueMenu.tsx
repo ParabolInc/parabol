@@ -24,8 +24,6 @@ const getValue = (project: NewJiraIssueMenu_JiraRemoteProjects[0]) => project.na
 const NewJiraIssueMenu = (props: Props) => {
   const {handleSelectProjectKey, menuProps, projectsRef} = props
 
-  //FIXME i18n: Select Jira project
-  //FIXME i18n: Search Jira
   const {t} = useTranslation()
 
   const projects = useFragment(
@@ -46,12 +44,16 @@ const NewJiraIssueMenu = (props: Props) => {
 
   return (
     <Menu
-      ariaLabel='Select Jira project'
+      ariaLabel={t('NewJiraIssueMenu.SelectJiraProject')}
       keepParentFocus
       {...menuProps}
       resetActiveOnChanges={[projects]}
     >
-      <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
+      <SearchMenuItem
+        placeholder={t('NewJiraIssueMenu.SearchJira')}
+        onChange={onQueryChange}
+        value={query}
+      />
       {query && projects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           {t('NewJiraIssueMenu.NoProjectsFound')}

@@ -104,7 +104,7 @@ const EstimateDimensionColumn = (props: Props) => {
             onClick={setSpectating(true)}
             palette={t('EstimateDimensionColumn.Blue')}
           >
-            {t('EstimateDimensionColumn.IDonTVote')}
+            {t('EstimateDimensionColumn.IDontVote')}
           </StyledLinkButton>
         )}
       </DimensionHeader>

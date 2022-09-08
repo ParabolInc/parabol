@@ -85,9 +85,6 @@ const validateEmail = (email) => {
 const ForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
 
-  //FIXME i18n: We couldn’t find that email. Please try again.
-  //FIXME i18n: Too many reset password attempts. Please try again later.
-  //FIXME i18n: noopener noreferrer
   const {t} = useTranslation()
 
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
@@ -139,9 +136,12 @@ const ForgotPasswordPage = (props: Props) => {
   }
 
   const errorMessage = {
-    [AuthenticationError.USER_NOT_FOUND]: 'We couldn’t find that email. Please try again.',
-    [AuthenticationError.EXCEEDED_RESET_THRESHOLD]:
-      'Too many reset password attempts. Please try again later.'
+    [AuthenticationError.USER_NOT_FOUND]: t(
+      'ForgotPasswordPage.WeCouldntFindThatEmailPleaseTryAgain'
+    ),
+    [AuthenticationError.EXCEEDED_RESET_THRESHOLD]: t(
+      'ForgotPasswordPage.TooManyResetPasswordAttemptsPleaseTryAgainLater'
+    )
   }
   const prettyError = error ? errorMessage[error.message] : undefined
   return (
@@ -154,7 +154,7 @@ const ForgotPasswordPage = (props: Props) => {
       <Container>
         <P>
           {t(
-            'ForgotPasswordPage.ConfirmYourEmailAddressAndWeLlSendYouAnEmailWithPasswordRecoveryInstructions'
+            'ForgotPasswordPage.ConfirmYourEmailAddressAndWellSendYouAnEmailWithPasswordRecoveryInstructions'
           )}
         </P>
         <Form onSubmit={onSubmit}>

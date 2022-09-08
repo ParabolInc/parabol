@@ -1,11 +1,12 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
+import {createFragmentContainer} from 'react-relay'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useTooltip from '../../../hooks/useTooltip'
 import {NewMeetingCheckInGreeting_checkInGreeting} from '../../../__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
 import {NewMeetingCheckInGreeting_teamMember} from '../../../__generated__/NewMeetingCheckInGreeting_teamMember.graphql'
-import React from 'react'
-import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import useTooltip from '../../../hooks/useTooltip'
-import {MenuPosition} from '../../../hooks/useCoords'
 
 const GreetingBlock = styled('div')({
   fontSize: '1.5rem',
@@ -25,21 +26,31 @@ interface Props {
 }
 const NewMeetingCheckInGreeting = (props: Props) => {
   const {teamMember, checkInGreeting} = props
+
+  const {t} = useTranslation()
+
   const {content, language} = checkInGreeting
   const {preferredName} = teamMember
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef
-  } = useTooltip(MenuPosition.UPPER_CENTER, {delay: 0})
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
+    MenuPosition.UPPER_CENTER,
+    {delay: 0}
+  )
   return (
     <GreetingBlock>
       <GreetingSpan ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
         {content}
       </GreetingSpan>
-      {`, ${preferredName || 'Unknown user'}:`}
-      {tooltipPortal(<div>{`${content} means “hello” in ${language}`}</div>)}
+      {t('NewMeetingCheckInGreeting.PreferredNameUnknownUser', {
+        preferredNameUnknownUser: preferredName || 'Unknown user'
+      })}
+      {tooltipPortal(
+        <div>
+          {t('NewMeetingCheckInGreeting.ContentMeansHelloInLanguage', {
+            content,
+            language
+          })}
+        </div>
+      )}
     </GreetingBlock>
   )
 }

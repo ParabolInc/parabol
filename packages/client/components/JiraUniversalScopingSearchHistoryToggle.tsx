@@ -1,4 +1,5 @@
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
@@ -22,6 +23,9 @@ interface Props {
 
 const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
   const {jiraSearchQueries, meetingId, teamId, service} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
 
   const searchQueries =
@@ -37,7 +41,11 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
           jiraSearchQuery.setValue(projectKeyFilters as string[], 'projectKeyFilters')
         })
       }
-      const queryStringLabel = isJQL ? queryString : `“${queryString}”`
+      const queryStringLabel = isJQL
+        ? queryString
+        : t('JiraUniversalScopingSearchHistoryToggle.QueryString', {
+            queryString
+          })
       const projectFilters = projectKeyFilters
         .map((filter) => {
           return service === 'jiraServer'
@@ -66,7 +74,11 @@ const JiraUniversalScopingSearchHistoryToggle = (props: Props) => {
       return {
         id,
         labelFirstLine: queryStringLabel,
-        labelSecondLine: projectFilters && `in ${projectFilters}`,
+        labelSecondLine:
+          projectFilters &&
+          t('JiraUniversalScopingSearchHistoryToggle.InProjectFilters', {
+            projectFilters
+          }),
         onClick: selectQuery,
         onDelete: service === 'jira' ? deleteJiraQuery : deleteJiraServerQuery
       }

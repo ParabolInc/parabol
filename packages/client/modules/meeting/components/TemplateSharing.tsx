@@ -76,7 +76,6 @@ interface Props {
 const TemplateSharing = (props: Props) => {
   const {template, teamId} = props
 
-  //FIXME i18n: Sharing publicly
   const {t} = useTranslation()
 
   const {scope, team} = template
@@ -105,10 +104,14 @@ const TemplateSharing = (props: Props) => {
   if (!isOwner) return null
   const label =
     scope === 'TEAM'
-      ? `Only visible to ${teamName}`
+      ? t('TemplateSharing.OnlyVisibleToTeamName', {
+          teamName
+        })
       : scope === 'ORGANIZATION'
-      ? `Sharing with ${orgName}`
-      : 'Sharing publicly'
+      ? t('TemplateSharing.SharingWithOrgName', {
+          orgName
+        })
+      : t('TemplateSharing.SharingPublicly')
   return (
     <>
       <HR />

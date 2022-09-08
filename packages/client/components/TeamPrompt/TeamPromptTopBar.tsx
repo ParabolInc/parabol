@@ -65,7 +65,6 @@ interface Props {
 const TeamPromptTopBar = (props: Props) => {
   const {meetingRef, isDesktop} = props
 
-  //FIXME i18n: Back to Meetings
   const {t} = useTranslation()
 
   const meeting = useFragment(
@@ -89,7 +88,7 @@ const TeamPromptTopBar = (props: Props) => {
   return (
     <MeetingTopBarStyles>
       <TeamPromptHeader>
-        <BackButton ariaLabel='Back to Meetings' to='/meetings' />
+        <BackButton ariaLabel={t('TeamPromptTopBar.BackToMeetings')} to='/meetings' />
         {isFacilitator ? (
           <EditableTeamPromptHeaderTitle
             error={error?.message}

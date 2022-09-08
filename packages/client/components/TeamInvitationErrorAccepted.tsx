@@ -22,12 +22,13 @@ const InlineCopy = styled(InvitationDialogCopy)({
 const TeamInvitationErrorAccepted = (props: Props) => {
   const {verifiedInvitation} = props
 
-  //FIXME i18n: Team Invitation
-  //FIXME i18n: Visit the Team Dashboard
   const {t} = useTranslation()
 
   const {meetingId, meetingName, teamInvitation, teamName} = verifiedInvitation
-  useDocumentTitle(`Token already accepted | Team Invitation`, 'Team Invitation')
+  useDocumentTitle(
+    t('TeamInvitationErrorAccepted.TokenAlreadyAcceptedTeamInvitation', {}),
+    t('TeamInvitationErrorAccepted.TeamInvitation')
+  )
   if (!teamInvitation || teamName === null) return null
   const {teamId} = teamInvitation
   return (
@@ -41,7 +42,14 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         </InvitationDialogCopy>
         {meetingName ? (
           <>
-            <StyledLink to={`/meet/${meetingId}`} title={`Join ${meetingName}`}>
+            <StyledLink
+              to={t('TeamInvitationErrorAccepted.MeetMeetingId', {
+                meetingId
+              })}
+              title={t('TeamInvitationErrorAccepted.JoinMeetingName', {
+                meetingName
+              })}
+            >
               {t('TeamInvitationErrorAccepted.Join')}
               {meetingName}
             </StyledLink>{' '}
@@ -50,7 +58,12 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         ) : (
           <>
             <InlineCopy>{t('TeamInvitationErrorAccepted.VisitThe')}</InlineCopy>{' '}
-            <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
+            <StyledLink
+              to={t('TeamInvitationErrorAccepted.TeamTeamId', {
+                teamId
+              })}
+              title={t('TeamInvitationErrorAccepted.VisitTheTeamDashboard')}
+            >
               {t('TeamInvitationErrorAccepted.TeamDashboard')}
             </StyledLink>
           </>

@@ -89,19 +89,17 @@ const makeFeatureRow = (featureIconFile: string, featureCopy: string, idx: numbe
 const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
   const {isDemo, dataCy} = props
 
-  //FIXME i18n: Go to My Dashboard
-  //FIXME i18n: Create a Free Account
-  //FIXME i18n: Head on over to your dashboard
-  //FIXME i18n: In just a few seconds you’ll have access
   const {t} = useTranslation()
 
   if (!isDemo) return null
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
-  const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
+  const primaryActionLabel = isLoggedIn
+    ? t('CreateAccountSection.GoToMyDashboard')
+    : t('CreateAccountSection.CreateAFreeAccount')
   const primaryActionLink = isLoggedIn ? '/meetings' : '/create-account?from=demo'
   const copyLineOne = isLoggedIn
-    ? 'Head on over to your dashboard'
-    : 'In just a few seconds you’ll have access'
+    ? t('CreateAccountSection.HeadOnOverToYourDashboard')
+    : t('CreateAccountSection.InJustAFewSecondsYoullHaveAccess')
   const copyLineTwo = isLoggedIn ? (
     <span>
       {t('CreateAccountSection.ToRun')}

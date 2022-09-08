@@ -113,9 +113,6 @@ const query = graphql`
 const ProviderList = (props: Props) => {
   const {queryRef, retry, teamId} = props
 
-  //FIXME i18n: Jira Server
-  //FIXME i18n: Azure DevOps
-  //FIXME i18n: MS Teams
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<ProviderListQuery>(query, queryRef, {
@@ -130,12 +127,12 @@ const ProviderList = (props: Props) => {
 
   const allIntegrations = [
     {
-      name: 'Atlassian',
+      name: t('ProviderList.Atlassian'),
       connected: !!integrations?.atlassian?.accessToken,
       component: <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
     },
     {
-      name: 'Jira Server',
+      name: t('ProviderList.JiraServer'),
       connected:
         !!integrations?.jiraServer?.auth?.isActive && integrations.jiraServer?.sharedProviders[0],
       component: <JiraServerProviderRow teamId={teamId} viewerRef={viewer} />
@@ -151,23 +148,23 @@ const ProviderList = (props: Props) => {
       component: <GitLabProviderRow teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'Mattermost',
+      name: t('ProviderList.Mattermost'),
       connected: !!integrations?.mattermost.auth,
       component: <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
     },
     {
-      name: 'Slack',
+      name: t('ProviderList.Slack'),
       connected: integrations?.slack?.isActive,
       component: <SlackProviderRow teamId={teamId} viewer={viewer} />
     },
     {
-      name: 'Azure DevOps',
+      name: t('ProviderList.AzureDevOps'),
       connected: !!integrations?.azureDevOps.auth?.accessToken,
       component: <AzureDevOpsProviderRow teamId={teamId} viewerRef={viewer} />,
       hidden: !allowAzureDevOps
     },
     {
-      name: 'MS Teams',
+      name: t('ProviderList.MsTeams'),
       connected: !!integrations?.msTeams.auth,
       component: <MSTeamsProviderRow teamId={teamId} viewerRef={viewer} />,
       hidden: !allowMSTeams

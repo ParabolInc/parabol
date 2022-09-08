@@ -9,9 +9,10 @@
     "modules/email/components",
     "hooks",
     "polyfills.ts",
-    "components/promptResponse/PromptResponseEditor.tsx",
-    "components/JiraScopingSearchCurrentFilters.tsx",
+    "components/AzureDevOpsScopingSelectAllIssues.tsx",
     "components/EstimatePhaseEmptyState.tsx",
+    "components/JiraScopingSearchCurrentFilters.tsx",
+    "components/promptResponse/PromptResponseEditor.tsx",
     "mutations/AddFeatureFlagMutation.ts"
   ]
 }

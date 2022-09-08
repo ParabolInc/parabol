@@ -72,15 +72,6 @@ interface Props {
 const NewTeamForm = (props: Props) => {
   const {isInitiallyNewOrg, organizations} = props
 
-  //FIXME i18n: Your new org needs a name!
-  //FIXME i18n: C’mon, you call that an organization?
-  //FIXME i18n: Maybe just the legal name?
-  //FIXME i18n: Try using a name, not a link!
-  //FIXME i18n: Add Team to…
-  //FIXME i18n: an existing organization:
-  //FIXME i18n: My new organization
-  //FIXME i18n: Create Team & Org
-  //FIXME i18n: Create Team
   const {t} = useTranslation()
 
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
@@ -89,10 +80,10 @@ const NewTeamForm = (props: Props) => {
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
       .trim()
-      .required('Your new org needs a name!')
-      .min(2, 'C’mon, you call that an organization?')
-      .max(100, 'Maybe just the legal name?')
-      .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
+      .required(t('NewTeamForm.YourNewOrgNeedsAName'))
+      .min(2, t('NewTeamForm.CmonYouCallThatAnOrganization'))
+      .max(100, t('NewTeamForm.MaybeJustTheLegalName'))
+      .test((val) => (linkify.match(val) ? t('NewTeamForm.TryUsingANameNotALink') : undefined))
   }
 
   const validateTeamName = (teamName: string) => {
@@ -162,14 +153,14 @@ const NewTeamForm = (props: Props) => {
       <StyledPanel>
         <FormInner>
           <NewTeamFormBlock>
-            <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
+            <FieldLabel fieldSize={controlSize} indent label={t('NewTeamForm.AddTeamTo')} />
           </NewTeamFormBlock>
           <NewTeamFormBlock>
             <Radio
               checked={!isNewOrg}
               name='isNewOrganization'
               value='false'
-              label='an existing organization:'
+              label={t('NewTeamForm.AnExistingOrganization')}
               onChange={handleIsNewOrgChange}
             />
             <NewTeamFieldBlock>
@@ -187,7 +178,7 @@ const NewTeamForm = (props: Props) => {
             onTypeChange={handleIsNewOrgChange}
             orgName={fields.orgName.value}
             error={fields.orgName.error}
-            placeholder='My new organization'
+            placeholder={t('NewTeamForm.MyNewOrganization')}
           />
           <NewTeamFormTeamName
             error={fields.teamName.error}
@@ -196,7 +187,7 @@ const NewTeamForm = (props: Props) => {
           />
 
           <StyledButton size='large' waiting={submitting}>
-            {isNewOrg ? 'Create Team & Org' : 'Create Team'}
+            {isNewOrg ? t('NewTeamForm.CreateTeamOrg') : t('NewTeamForm.CreateTeam')}
           </StyledButton>
           {error && <StyledError>{error.message}</StyledError>}
         </FormInner>

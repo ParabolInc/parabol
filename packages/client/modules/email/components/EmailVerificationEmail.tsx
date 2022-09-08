@@ -17,17 +17,20 @@ interface ResetPasswordEmailProps {
 const EmailVerificationEmail = (props: ResetPasswordEmailProps) => {
   const {appOrigin, verificationURL} = props
 
-  //FIXME i18n: Verify My Email
   const {t} = useTranslation()
 
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={emailCopyStyle}>{t('EmailVerificationEmail.Hello')}</p>
+        <p style={emailCopyStyle}>{t('EmailVerificationEmail.Hello👋')}</p>
         <p style={emailCopyStyle}>{t('EmailVerificationEmail.TapTheLinkBelowToVerifyYourEmail')}</p>
         <p style={emailCopyStyle}>
-          <a href={verificationURL} style={emailLinkStyle} title='Verify My Email'>
+          <a
+            href={verificationURL}
+            style={emailLinkStyle}
+            title={t('EmailVerificationEmail.VerifyMyEmail')}
+          >
             {t('EmailVerificationEmail.VerifyMyEmail')}
           </a>
         </p>

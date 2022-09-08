@@ -8,6 +8,7 @@ import {
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
@@ -65,6 +66,9 @@ interface Props {
 
 const SelectMeetingDropdownItem = (props: Props) => {
   const {meeting} = props
+
+  const {t} = useTranslation()
+
   const {history} = useRouter()
   const {name, team, id: meetingId, meetingType, phases} = meeting
   if (!team) {
@@ -73,16 +77,28 @@ const SelectMeetingDropdownItem = (props: Props) => {
     if (meeting.hasOwnProperty('team')) {
       errObj.team = team
     }
-    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    Sentry.captureException(
+      new Error(
+        t('SelectMeetingDropdownItem.MissingTeamOnMeetingJsonStringifyErrObj', {
+          jsonStringifyErrObj: JSON.stringify(errObj)
+        })
+      )
+    )
     return null
   }
   const {name: teamName} = team
   const gotoMeeting = () => {
-    history.push(`/meet/${meetingId}`)
+    history.push(
+      t('SelectMeetingDropdownItem.MeetMeetingId', {
+        meetingId
+      })
+    )
   }
   const IconOrSVG = meetingTypeToIcon[meetingType]
   const meetingPhase = getMeetingPhase(phases)
-  const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
+  const meetingPhaseLabel =
+    (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) ||
+    t('SelectMeetingDropdownItem.Complete')
 
   return (
     <Wrapper onClick={gotoMeeting}>

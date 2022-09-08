@@ -28,10 +28,6 @@ interface Props {
 const EditableTemplatePrompt = (props: Props) => {
   const {isOwner, promptId, isHover, question, isEditingDescription} = props
 
-  //FIXME i18n: Please enter a prompt question
-  //FIXME i18n: That question is probably long enough
-  //FIXME i18n: That question was already asked
-  //FIXME i18n: New prompt #
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -49,13 +45,13 @@ const EditableTemplatePrompt = (props: Props) => {
     const {promptId, prompts} = props
     return new Legitity(value)
       .trim()
-      .required('Please enter a prompt question')
-      .max(100, 'That question is probably long enough')
+      .required(t('EditableTemplatePrompt.PleaseEnterAPromptQuestion'))
+      .max(100, t('EditableTemplatePrompt.ThatQuestionIsProbablyLongEnough'))
       .test((mVal) => {
         const isDupe = prompts.find(
           (prompt) => prompt.id !== promptId && prompt.question.toLowerCase() === mVal.toLowerCase()
         )
-        return isDupe ? 'That question was already asked' : undefined
+        return isDupe ? t('EditableTemplatePrompt.ThatQuestionWasAlreadyAsked') : undefined
       })
   }
 
@@ -71,7 +67,7 @@ const EditableTemplatePrompt = (props: Props) => {
 
   return (
     <StyledEditableText
-      autoFocus={question.startsWith('New prompt #')}
+      autoFocus={question.startsWith(t('EditableTemplatePrompt.NewPrompt'))}
       disabled={!isOwner}
       error={error?.message}
       hideIcon={isEditingDescription ? true : !isHover}

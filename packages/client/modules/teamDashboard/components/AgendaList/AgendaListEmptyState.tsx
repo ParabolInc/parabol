@@ -26,16 +26,17 @@ const EmptyMessage = styled('div')({
 const AgendaListEmptyState = (props: Props) => {
   const {isComplete, isMeeting} = props
 
-  //FIXME i18n: next meeting
   const {t} = useTranslation()
 
-  const meetingContext = isMeeting ? 'meeting' : 'next meeting'
+  const meetingContext = isMeeting ? 'meeting' : t('AgendaListEmptyState.NextMeeting')
 
   if (isComplete) return null
   return (
     <EmptyBlock>
       <EmptyMessage>
-        {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
+        {t('AgendaListEmptyState.PssstAddTopicsForYourMeetingContextUseAPhraseLike', {
+          meetingContext
+        })}
         <b>
           <i>{t('AgendaListEmptyState.UpcomingVacation')}</i>
         </b>

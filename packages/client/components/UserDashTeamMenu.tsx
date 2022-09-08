@@ -22,7 +22,6 @@ interface Props {
 }
 
 const UserDashTeamMenu = (props: Props) => {
-  //FIXME i18n: Search teams
   const {t} = useTranslation()
 
   const {history} = useRouter()
@@ -62,7 +61,11 @@ const UserDashTeamMenu = (props: Props) => {
     >
       <DropdownMenuLabel>{t('UserDashTeamMenu.FilterByTeam')}</DropdownMenuLabel>
       {filteredTeams.length > 5 && (
-        <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={query} />
+        <SearchMenuItem
+          placeholder={t('UserDashTeamMenu.SearchTeams')}
+          onChange={onQueryChange}
+          value={query}
+        />
       )}
       {query && matchedFilteredTeams.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
@@ -71,7 +74,7 @@ const UserDashTeamMenu = (props: Props) => {
       )}
       {query === '' && showAllTeams && (
         <MenuItem
-          key={t('UserDashTeamMenu.Teamfilternull')}
+          key={t('UserDashTeamMenu.TeamFilterNull')}
           label={UserTaskViewFilterLabels.ALL_TEAMS}
           onClick={() =>
             history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))
@@ -80,8 +83,12 @@ const UserDashTeamMenu = (props: Props) => {
       )}
       {matchedFilteredTeams.map((team) => (
         <MenuItem
-          key={`teamFilter${team.id}`}
-          dataCy={`team-filter-${team.id}`}
+          key={t('UserDashTeamMenu.TeamFilterTeamId', {
+            teamId: team.id
+          })}
+          dataCy={t('UserDashTeamMenu.TeamFilterTeamId', {
+            teamId: team.id
+          })}
           label={team.name}
           onClick={() =>
             history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))

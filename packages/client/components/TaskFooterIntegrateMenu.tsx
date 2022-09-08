@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -75,6 +76,9 @@ const query = graphql`
 
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {menuProps, mutationProps, task: taskRef, queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -106,7 +110,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
-    const label = 'Push with your credentials'
+    const label = t('TaskFooterIntegrateMenu.PushWithYourCredentials')
     return (
       <TaskFooterIntegrateMenuList
         menuProps={menuProps}
@@ -121,7 +125,11 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   if (isAssigneeIntegrated) {
     const placeholder = makePlaceholder(isAssigneeIntegrated)
-    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
+    const label = isViewerAssignee
+      ? undefined
+      : t('TaskFooterIntegrateMenu.PushAsAssigneeName', {
+          assigneeName
+        })
     return (
       <TaskFooterIntegrateMenuList
         menuProps={menuProps}
@@ -134,8 +142,10 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
   }
   const label = isViewerAssignee
-    ? "You don't have any integrations for this team yet."
-    : `Neither you nor ${assigneeName} has any integrations for this team.`
+    ? t('TaskFooterIntegrateMenu.YouDontHaveAnyIntegrationsForThisTeamYet')
+    : t('TaskFooterIntegrateMenu.NeitherYouNorAssigneeNameHasAnyIntegrationsForThisTeam', {
+        assigneeName
+      })
 
   return (
     <TaskFooterIntegrateMenuSignup

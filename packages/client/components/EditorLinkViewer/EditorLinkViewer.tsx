@@ -46,7 +46,6 @@ interface Props {
 const EditorLinkViewer = (props: Props) => {
   const {href, addHyperlink, removeModal, onRemove, originCoords} = props
 
-  //FIXME i18n: noopener noreferrer
   const {t} = useTranslation()
 
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {

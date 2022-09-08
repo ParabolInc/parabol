@@ -12,15 +12,15 @@ interface Props {
 const TeamInvitationErrorNotFound = (props: Props) => {
   const {isMassInvite} = props
 
-  //FIXME i18n: Team Invitation
-  //FIXME i18n: Try requesting another link.
-  //FIXME i18n: Try copying the link from your email again.
   const {t} = useTranslation()
 
-  useDocumentTitle(`Token not found | Team Invitation`, 'Team Invitation')
+  useDocumentTitle(
+    t('TeamInvitationErrorNotFound.TokenNotFoundTeamInvitation', {}),
+    t('TeamInvitationErrorNotFound.TeamInvitation')
+  )
   const tip = isMassInvite
-    ? 'Try requesting another link.'
-    : 'Try copying the link from your email again.'
+    ? t('TeamInvitationErrorNotFound.TryRequestingAnotherLink')
+    : t('TeamInvitationErrorNotFound.TryCopyingTheLinkFromYourEmailAgain')
   return (
     <InviteDialog>
       <DialogTitle>{t('TeamInvitationErrorNotFound.InvalidInvitation')}</DialogTitle>

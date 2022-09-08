@@ -101,18 +101,16 @@ const TopLine = styled('div')({
 const THUMBNAIL = 'http://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
 
 const TutorialMeetingCard = () => {
-  //FIXME i18n: Tutorial Meeting Card Opened
-  //FIXME i18n: Tutorial Meeting Card Closed
   const {t} = useTranslation()
 
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
 
   const onOpen = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Opened')
+    SendClientSegmentEventMutation(atmospehere, t('TutorialMeetingCard.TutorialMeetingCardOpened'))
   }, [])
   const onClose = useCallback(() => {
-    SendClientSegmentEventMutation(atmospehere, 'Tutorial Meeting Card Closed')
+    SendClientSegmentEventMutation(atmospehere, t('TutorialMeetingCard.TutorialMeetingCardClosed'))
   }, [])
 
   const {togglePortal: toggleModal, modalPortal} = useModal({onOpen, onClose})

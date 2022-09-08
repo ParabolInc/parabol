@@ -60,7 +60,6 @@ const TaskFooterTeamAssigneeMenuRoot = lazyPreload(
 const TaskFooterTeamAssignee = (props: Props) => {
   const {canAssign, task: taskRef, useTaskChild} = props
 
-  //FIXME i18n: Assign this task to another team
   const {t} = useTranslation()
 
   const task = useFragment(
@@ -90,7 +89,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
     <>
       <TooltipToggle onClick={closeTooltip} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
         <TeamToggleButton
-          aria-label='Assign this task to another team'
+          aria-label={t('TaskFooterTeamAssignee.AssignThisTaskToAnotherTeam')}
           onClick={canAssign ? togglePortal : undefined}
           onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
           ref={originRef}

@@ -49,9 +49,6 @@ const getValue = (item: {fullPath?: string}) => {
 const GitLabScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, queryRef} = props
 
-  //FIXME i18n: Define the GitLab search query
-  //FIXME i18n: Search GitLab projects
-  //FIXME i18n: Selected Poker Scope Project Filter
   const {t} = useTranslation()
 
   const query = usePreloadedQuery<GitLabScopingSearchFilterMenuQuery>(
@@ -122,12 +119,12 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   return (
     <StyledMenu
       keepParentFocus
-      ariaLabel='Define the GitLab search query'
+      ariaLabel={t('GitLabScopingSearchFilterMenu.DefineTheGitLabSearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
       <SearchMenuItem
-        placeholder='Search GitLab projects'
+        placeholder={t('GitLabScopingSearchFilterMenu.SearchGitLabProjects')}
         onChange={onQueryChange}
         value={searchQuery}
       />
@@ -152,11 +149,15 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
               : [...selectedProjectsIds, projectId]
             gitlabSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
           })
-          SendClientSegmentEventMutation(atmosphere, 'Selected Poker Scope Project Filter', {
-            meetingId,
-            projectId,
-            service: 'gitlab'
-          })
+          SendClientSegmentEventMutation(
+            atmosphere,
+            t('GitLabScopingSearchFilterMenu.SelectedPokerScopeProjectFilter'),
+            {
+              meetingId,
+              projectId,
+              service: 'gitlab'
+            }
+          )
         }
         return (
           <MenuItem

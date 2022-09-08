@@ -206,7 +206,12 @@ const PhaseItemColumn = (props: Props) => {
   )
 
   return (
-    <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
+    <ColumnWrapper
+      data-cy={t('PhaseItemColumn.ReflectionColumnQuestion', {
+        question
+      })}
+      isDesktop={isDesktop}
+    >
       <ColumnHighlight isDesktop={isDesktop}>
         <ColumnColorDrop isFocused={isFocused} groupColor={groupColor} />
         <ColumnContent isDesktop={isDesktop}>
@@ -219,14 +224,22 @@ const PhaseItemColumn = (props: Props) => {
               {tooltipPortal(<div>{t('PhaseItemColumn.TapToHighlightPromptForEverybody')}</div>)}
               <Description>{description}</Description>
             </PromptHeader>
-            <EditorSection data-cy={`editor-section-${question}`}>
+            <EditorSection
+              data-cy={t('PhaseItemColumn.EditorSectionQuestion', {
+                question
+              })}
+            >
               <EditorAndStatus
-                data-cy={`editor-status-${question}`}
+                data-cy={t('PhaseItemColumn.EditorStatusQuestion', {
+                  question
+                })}
                 isGroupingComplete={!!isComplete}
               >
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}
-                  dataCy={`phase-item-editor-${question}`}
+                  dataCy={t('PhaseItemColumn.PhaseItemEditorQuestion', {
+                    question
+                  })}
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
@@ -241,7 +254,9 @@ const PhaseItemColumn = (props: Props) => {
           </HeaderAndEditor>
           <ReflectionStackSection isDesktop={isDesktop}>
             <ReflectionStack
-              dataCy={`reflection-stack-${question}`}
+              dataCy={t('PhaseItemColumn.ReflectionStackQuestion', {
+                question
+              })}
               reflectionStack={reflectionStack}
               idx={idx}
               phaseEditorRef={phaseEditorRef}

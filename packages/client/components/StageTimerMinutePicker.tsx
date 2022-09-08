@@ -28,7 +28,16 @@ const StageTimerMinutePicker = (props: Props) => {
         const onClick = () => {
           setMinuteTimeLimit(n)
         }
-        return <MenuItem key={n} label={`${n} ${plural(n, 'minute')}`} onClick={onClick} />
+        return (
+          <MenuItem
+            key={n}
+            label={t('StageTimerMinutePicker.NPluralNMinute', {
+              n,
+              pluralNMinute: plural(n, 'minute')
+            })}
+            onClick={onClick}
+          />
+        )
       })}
     </Menu>
   )

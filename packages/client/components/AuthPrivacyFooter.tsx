@@ -24,8 +24,6 @@ const FooterCopy = styled('div')({
 })
 
 const AuthPrivacyFooter = () => {
-  //FIXME i18n: noopener noreferrer
-  //FIXME i18n: Privacy Policy
   const {t} = useTranslation()
 
   return (
@@ -35,7 +33,7 @@ const AuthPrivacyFooter = () => {
         href='https://www.parabol.co/privacy'
         rel='noopener noreferrer'
         target='_blank'
-        title='Privacy Policy'
+        title={t('AuthPrivacyFooter.PrivacyPolicy')}
       >
         {t('AuthPrivacyFooter.PrivacyPolicy')}
       </Link>

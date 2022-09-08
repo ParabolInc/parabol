@@ -62,7 +62,11 @@ const NewMeetingTeamPicker = (props: Props) => {
 
   const {name} = selectedTeam
   const handleSelect = (teamId: string) => {
-    history.replace(`/new-meeting/${teamId}`)
+    history.replace(
+      t('NewMeetingTeamPicker.NewMeetingTeamId', {
+        teamId
+      })
+    )
   }
   return (
     <>

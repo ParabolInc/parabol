@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import useDeepEqual from '~/hooks/useDeepEqual'
@@ -103,6 +104,9 @@ const GroupingKanbanColumn = (props: Props) => {
     reflectPromptsCount,
     swipeColumn
   } = props
+
+  const {t} = useTranslation()
+
   const {question, id: promptId, groupColor} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
@@ -148,7 +152,9 @@ const GroupingKanbanColumn = (props: Props) => {
       isFirstColumn={isFirstColumn}
       isLastColumn={isLastColumn}
       ref={columnRef}
-      data-cy={`group-column-${question}`}
+      data-cy={t('GroupingKanbanColumn.GroupColumnQuestion', {
+        question
+      })}
     >
       <GroupingKanbanColumnHeader
         canAdd={canAdd}
@@ -164,19 +170,36 @@ const GroupingKanbanColumn = (props: Props) => {
         {subColumnIndexes.map((subColumnIdx) => {
           return (
             <ColumnBody
-              data-cy={subColumnIdx === 0 ? `group-column-${question}-body` : undefined}
+              data-cy={
+                subColumnIdx === 0
+                  ? t('GroupingKanbanColumn.GroupColumnQuestionBody', {
+                      question
+                    })
+                  : undefined
+              }
               isDesktop={isDesktop}
               isWidthExpanded={isWidthExpanded}
-              key={`${promptId}-${subColumnIdx}`}
+              key={t('GroupingKanbanColumn.PromptIdSubColumnIdx', {
+                promptId,
+                subColumnIdx
+              })}
               ref={subColumnIdx === 0 ? columnBodyRef : undefined}
-              {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
+              {...{
+                [DragAttribute.DROPZONE]: t('GroupingKanbanColumn.PromptIdSubColumnIdx', {
+                  promptId,
+                  subColumnIdx
+                })
+              }}
             >
               {filteredReflectionGroups
                 .filter((group) => (isWidthExpanded ? group.subColumnIdx === subColumnIdx : true))
                 .map((reflectionGroup, idx) => {
                   return (
                     <ReflectionGroup
-                      dataCy={`${question}-group-${idx}`}
+                      dataCy={t('GroupingKanbanColumn.QuestionGroupIdx', {
+                        question,
+                        idx
+                      })}
                       key={reflectionGroup.id}
                       meetingRef={meeting}
                       openSpotlight={openSpotlight}

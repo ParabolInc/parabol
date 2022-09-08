@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {ReflectionStack_meeting} from '~/__generated__/ReflectionStack_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -60,6 +61,9 @@ const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
 
 const ReflectionStack = (props: Props) => {
   const {phaseRef, idx, meeting, reflectionStack, stackTopRef, dataCy} = props
+
+  const {t} = useTranslation()
+
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
     stackRef,
@@ -92,10 +96,16 @@ const ReflectionStack = (props: Props) => {
                   key={reflection.id}
                   idx={idx}
                   ref={idx === 0 ? stackTopRef : undefined}
-                  data-cy={`${dataCy}-card-wrapper-${idx}`}
+                  data-cy={t('ReflectionStack.DataCyCardWrapperIdx', {
+                    dataCy,
+                    idx
+                  })}
                 >
                   <ReflectionCard
-                    dataCy={`${dataCy}-card-${idx}`}
+                    dataCy={t('ReflectionStack.DataCyCardIdx', {
+                      dataCy,
+                      idx
+                    })}
                     meeting={meeting}
                     reflection={reflection}
                     stackCount={reflectionStack.length}

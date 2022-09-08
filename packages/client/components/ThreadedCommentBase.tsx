@@ -161,7 +161,13 @@ const ThreadedCommentBase = (props: Props) => {
   }
 
   return (
-    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper
+      data-cy={t('ThreadedCommentBase.DataCyWrapper', {
+        dataCy
+      })}
+      isReply={isReply}
+      ref={ref}
+    >
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedCommentHeader
@@ -175,7 +181,9 @@ const ThreadedCommentBase = (props: Props) => {
         {isActive && (
           <EditorWrapper>
             <CommentEditor
-              dataCy={`${dataCy}`}
+              dataCy={t('ThreadedCommentBase.DataCy', {
+                dataCy
+              })}
               editorRef={editorRef}
               teamId={teamId}
               editorState={editorState}
@@ -197,7 +205,9 @@ const ThreadedCommentBase = (props: Props) => {
         {children}
         <ThreadedItemReply
           allowedThreadables={allowedThreadables}
-          dataCy={`${dataCy}-reply`}
+          dataCy={t('ThreadedCommentBase.DataCyReply', {
+            dataCy
+          })}
           discussion={discussion}
           editorRef={replyEditorRef}
           replyMention={replyMention}

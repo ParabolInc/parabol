@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Bookmark, Comment, Delete, Edit, Keyboard} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '~/styles/paletteV3'
 
 const Wrapper = styled('div')({
@@ -32,8 +33,15 @@ interface Props {
 
 const MenuItemWithIcon = (props: Props) => {
   const {icon, label, dataCy} = props
+
+  const {t} = useTranslation()
+
   return (
-    <Wrapper data-cy={`${dataCy}`}>
+    <Wrapper
+      data-cy={t('MenuItemWithIcon.DataCy', {
+        dataCy
+      })}
+    >
       <ItemIcon>
         {
           {

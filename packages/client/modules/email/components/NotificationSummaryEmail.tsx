@@ -37,19 +37,31 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header appOrigin={appOrigin} />
-        <p style={copyStyle}>{`Hi ${preferredName} -`}</p>
+        <p style={copyStyle}>
+          {t('NotificationSummaryEmail.HiPreferredName', {
+            preferredName
+          })}
+        </p>
         <p style={copyStyle}>
           {t('NotificationSummaryEmail.YouHave')}
           <span style={{fontWeight: 600}}>
-            {`${notificationCount} new ${plural(notificationCount, 'notification')}`}
+            {t('NotificationSummaryEmail.NotificationCountNewPluralNotificationCountNotification', {
+              notificationCount,
+              pluralNotificationCountNotification: plural(notificationCount, 'notification')
+            })}
           </span>
-          {t('NotificationSummaryEmail.SeeWhatSChangedWithYourTeams')}
+          {t('NotificationSummaryEmail.SeeWhatsChangedWithYourTeams')}
         </p>
         <Button url={tasksURL}>{t('NotificationSummaryEmail.SeeMyDashboard')}</Button>
         <EmptySpace height={24} />
         <p style={copyStyle}>
-          {t('NotificationSummaryEmail.IfYouNeedAnythingFromUsDonTHesitateToReachOutAt')}
-          <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
+          {t('NotificationSummaryEmail.IfYouNeedAnythingFromUsDontHesitateToReachOutAt')}
+          <a
+            style={linkStyle}
+            href={t('NotificationSummaryEmail.MailtoContactInfoEmailLove', {
+              contactInfoEmailLove: ContactInfo.EMAIL_LOVE
+            })}
+          >
             {ContactInfo.EMAIL_LOVE}
           </a>
           {'.'}

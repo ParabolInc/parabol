@@ -63,10 +63,15 @@ const OrgBillingInvoices = (props: Props) => {
   }
   if (!invoices || !invoices.edges.length) return null
   return (
-    <Panel label='Invoices'>
+    <Panel label={t('OrgBillingInvoices.Invoices')}>
       <div>
         {invoices.edges.map(({node: invoice}) => (
-          <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />
+          <InvoiceRow
+            key={t('OrgBillingInvoices.InvoiceRowInvoiceId', {
+              invoiceId: invoice.id
+            })}
+            invoice={invoice}
+          />
         ))}
         {hasNext && (
           <MoreGutter>

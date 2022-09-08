@@ -153,7 +153,9 @@ const GitHubFieldMenu = (props: Props) => {
     e.stopPropagation()
     openPortal()
   }
-  const defaultLabelTemplate = `${dimensionName}: {{#}}`
+  const defaultLabelTemplate = t('GitHubFieldMenu.DimensionName', {
+    dimensionName
+  })
   const serviceFieldTemplate = defaults.includes(serviceFieldName)
     ? defaultLabelTemplate
     : serviceFieldName

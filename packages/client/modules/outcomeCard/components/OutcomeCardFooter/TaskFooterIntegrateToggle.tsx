@@ -46,7 +46,9 @@ const TaskFooterIntegrateToggle = (props: Props) => {
         onClick={togglePortal}
         ref={originRef}
         onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
-        dataCy={`${dataCy}-button`}
+        dataCy={t('TaskFooterIntegrateToggle.DataCyButton', {
+          dataCy
+        })}
       >
         <IconLabel
           icon='publish'

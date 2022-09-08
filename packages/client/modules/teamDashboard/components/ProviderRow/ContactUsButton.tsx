@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {MailOutlined} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'
@@ -17,12 +18,15 @@ interface Props {
 
 const ContactUsButton = (props: Props) => {
   const {contactUsUrl, onContactUsSubmit} = props
+
+  const {t} = useTranslation()
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
     <Form method='get' target='_blank' action={contactUsUrl} onSubmit={onContactUsSubmit}>
       <ProviderRowActionButton key='request' palette='warm'>
-        {isDesktop ? 'Contact Us' : <MailOutlined />}
+        {isDesktop ? t('ContactUsButton.ContactUs') : <MailOutlined />}
       </ProviderRowActionButton>
     </Form>
   )

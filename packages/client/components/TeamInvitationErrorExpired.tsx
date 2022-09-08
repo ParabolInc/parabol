@@ -27,11 +27,13 @@ const TeamName = styled('span')({
 const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
 
-  //FIXME i18n: Team Invitation
   const {t} = useTranslation()
 
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
-  useDocumentTitle(`Token Expired | Team Invitation`, 'Team Invitation')
+  useDocumentTitle(
+    t('TeamInvitationErrorExpired.TokenExpiredTeamInvitation', {}),
+    t('TeamInvitationErrorExpired.TeamInvitation')
+  )
   return (
     <InviteDialog>
       <DialogTitle>{t('TeamInvitationErrorExpired.InvitationExpired')}</DialogTitle>
@@ -45,7 +47,14 @@ const TeamInvitationErrorExpired = (props: Props) => {
           {t('TeamInvitationErrorExpired.ReachOutTo')}
           {inviterName}
           {t('TeamInvitationErrorExpired.At')}{' '}
-          <StyledEmailLink href={`mailto:${inviterEmail}`} title={`Email ${inviterEmail}`}>
+          <StyledEmailLink
+            href={t('TeamInvitationErrorExpired.MailtoInviterEmail', {
+              inviterEmail
+            })}
+            title={t('TeamInvitationErrorExpired.EmailInviterEmail', {
+              inviterEmail
+            })}
+          >
             {inviterEmail}
           </StyledEmailLink>
         </InvitationDialogCopy>

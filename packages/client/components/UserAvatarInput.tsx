@@ -42,7 +42,6 @@ interface Props {
 const UserAvatarInput = (props: Props) => {
   const {picture} = props
 
-  //FIXME i18n: File is too large (1MB Max)
   const {t} = useTranslation()
 
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -54,7 +53,7 @@ const UserAvatarInput = (props: Props) => {
       file = (await jpgWithoutEXIF(file)) as File
     }
     if (file.size > 2 ** 20) {
-      onError(new Error('File is too large (1MB Max)'))
+      onError(new Error(t('UserAvatarInput.FileIsTooLarge1MbMax')))
       return
     }
     if (file.type === 'image/svg+xml') {

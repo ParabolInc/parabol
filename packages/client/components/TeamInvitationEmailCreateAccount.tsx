@@ -30,23 +30,30 @@ const TeamName = styled('span')({
 const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {invitationToken, verifiedInvitation} = props
 
-  //FIXME i18n: Sign Up
-  //FIXME i18n: Join Team
-  //FIXME i18n: to the team meeting for:
-  //FIXME i18n: to your team:
   const {t} = useTranslation()
 
   const {meetingName, teamName, teamInvitation} = verifiedInvitation
-  useDocumentTitle(`Sign up | Team Invitation`, 'Sign Up')
+  useDocumentTitle(
+    t('TeamInvitationEmailCreateAccount.SignUpTeamInvitation', {}),
+    t('TeamInvitationEmailCreateAccount.SignUp')
+  )
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (
     <StyledDialog>
-      <DialogTitle>{meetingName ? `Join ${meetingName}` : 'Join Team'}</DialogTitle>
+      <DialogTitle>
+        {meetingName
+          ? t('TeamInvitationEmailCreateAccount.JoinMeetingName', {
+              meetingName
+            })
+          : t('TeamInvitationEmailCreateAccount.JoinTeam')}
+      </DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
           {t('TeamInvitationEmailCreateAccount.ChooseAPasswordForImmediateAccess')}
-          {meetingName ? ' to the team meeting for: ' : ' to your team: '}
+          {meetingName
+            ? t('TeamInvitationEmailCreateAccount.ToTheTeamMeetingFor')
+            : t('TeamInvitationEmailCreateAccount.ToYourTeam')}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>

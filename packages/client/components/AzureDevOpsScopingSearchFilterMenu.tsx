@@ -62,12 +62,12 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   return (
     <Menu
       keepParentFocus
-      ariaLabel={t('AzureDevOpsScopingSearchFilterMenu.DefineTheAzureDevopsSearchQuery')}
+      ariaLabel={t('AzureDevOpsScopingSearchFilterMenu.DefineTheAzureDevOpsSearchQuery')}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
       <MenuItem
-        key={t('AzureDevOpsScopingSearchFilterMenu.Iswiql')}
+        key={t('AzureDevOpsScopingSearchFilterMenu.IsWiql')}
         label={
           <MenuItemLabel>
             <StyledCheckBox active={isWIQL} />

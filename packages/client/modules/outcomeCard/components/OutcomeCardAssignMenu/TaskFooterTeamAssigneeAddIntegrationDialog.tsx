@@ -50,7 +50,7 @@ const TaskFooterTeamAssigneeAddIntegrationDialog = (props: Props) => {
       <DialogContent>
         <div>
           <StyledTip>
-            {t('TaskFooterTeamAssigneeAddIntegrationDialog.YouDonTHave')}
+            {t('TaskFooterTeamAssigneeAddIntegrationDialog.YouDontHave')}
             {serviceName}
             {t('TaskFooterTeamAssigneeAddIntegrationDialog.ConfiguredFor')}
             {teamName}

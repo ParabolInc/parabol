@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'
@@ -19,6 +20,8 @@ interface Props {
 const normalize = (str) => str && str.toLowerCase().replace('’', "'")
 
 const ArchiveTeamForm = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const {history} = useRouter()
@@ -31,7 +34,9 @@ const ArchiveTeamForm = (props: Props) => {
         return new Legitity(rawInput)
           .normalize(normalize, 'err')
           .test((val) =>
-            val === normalize(teamName) ? undefined : 'The team name entered was incorrect.'
+            val === normalize(teamName)
+              ? undefined
+              : t('ArchiveTeamForm.TheTeamNameEnteredWasIncorrect')
           )
       }
     }
@@ -55,7 +60,7 @@ const ArchiveTeamForm = (props: Props) => {
         htmlFor='archivedTeamName'
         indent
         inline
-        label='Enter your team name and hit Enter to delete it.'
+        label={t('ArchiveTeamForm.EnterYourTeamNameAndHitEnterToDeleteIt')}
       />
       <BasicInput
         value={value}
@@ -64,7 +69,7 @@ const ArchiveTeamForm = (props: Props) => {
         autoFocus
         onBlur={handleFormBlur}
         name='archivedTeamName'
-        placeholder='E.g. "My Team"'
+        placeholder={t('ArchiveTeamForm.EGMyTeam')}
       />
     </form>
   )

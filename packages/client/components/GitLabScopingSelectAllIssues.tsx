@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -42,6 +43,9 @@ interface Props {
 
 const GitLabScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issuesRef, providerId} = props
+
+  const {t} = useTranslation()
+
   const issues = useFragment(
     graphql`
       fragment GitLabScopingSelectAllIssues_issues on _xGitLabIssue @relay(plural: true) {
@@ -81,7 +85,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
       const issue = issues.find(
         (issue) => GitLabIssueId.join(providerId, issue.id) === update.serviceTaskId
       )
-      return issue?.title ?? 'Unknown Story'
+      return issue?.title ?? t('GitLabScopingSelectAllIssues.UnknownStory')
     })
     UpdatePokerScopeMutation(atmosphere, variables, {
       onError,

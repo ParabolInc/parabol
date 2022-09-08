@@ -166,7 +166,13 @@ const RetroDiscussPhase = (props: Props) => {
     if (reflectionGroup.hasOwnProperty('reflections')) {
       errObj.reflections = reflections
     }
-    Sentry.captureException(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
+    Sentry.captureException(
+      new Error(
+        t('RetroDiscussPhase.NoReflectionsJsonStringifyErrObj', {
+          jsonStringifyErrObj: JSON.stringify(errObj)
+        })
+      )
+    )
   }
   return (
     <MeetingContent ref={callbackRef}>
@@ -187,7 +193,11 @@ const RetroDiscussPhase = (props: Props) => {
           <DiscussPhaseWrapper>
             <HeaderContainer>
               <DiscussHeader>
-                <TopicHeading>{`“${title}”`}</TopicHeading>
+                <TopicHeading>
+                  {t('RetroDiscussPhase.Title', {
+                    title
+                  })}
+                </TopicHeading>
                 <VoteMeta>
                   <VoteIcon />
                   {voteCount || 0}
@@ -197,7 +207,8 @@ const RetroDiscussPhase = (props: Props) => {
             <ColumnsContainer isDesktop={isDesktop}>
               <ReflectionColumn isDesktop={isDesktop}>
                 <LabelContainer isDesktop={isDesktop}>
-                  {reflections.length} {plural(reflections.length, 'Reflection')}
+                  {reflections.length}{' '}
+                  {plural(reflections.length, t('RetroDiscussPhase.Reflection'))}
                 </LabelContainer>
                 <ColumnInner isDesktop={isDesktop}>
                   {isDesktop ? (

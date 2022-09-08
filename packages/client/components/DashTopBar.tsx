@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
@@ -90,6 +91,9 @@ const TopBarMain = styled('div')({
 
 const DashTopBar = (props: Props) => {
   const {toggle, queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = useFragment(
     graphql`
       fragment DashTopBar_query on Query {
@@ -110,11 +114,11 @@ const DashTopBar = (props: Props) => {
   return (
     <Wrapper>
       <LeftNavHeader>
-        <LeftNavToggle onClick={toggle} aria-label='Toggle dashboard menu'>
+        <LeftNavToggle onClick={toggle} aria-label={t('DashTopBar.ToggleDashboardMenu')}>
           <Menu />
         </LeftNavToggle>
         <LogoWrapper onClick={gotoHome}>
-          <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
+          <img crossOrigin='' src={parabolLogo} alt={t('DashTopBar.ParabolLogo')} />
         </LogoWrapper>
       </LeftNavHeader>
       <TopBarMain>

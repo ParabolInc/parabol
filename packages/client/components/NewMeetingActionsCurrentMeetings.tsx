@@ -44,7 +44,10 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   const {activeMeetings} = team
   useSnacksForNewMeetings(activeMeetings)
   const meetingCount = activeMeetings.length
-  const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
+  const label = t('NewMeetingActionsCurrentMeetings.MeetingCountActivePluralMeetingCountMeeting', {
+    meetingCount,
+    pluralMeetingCountMeeting: plural(meetingCount, 'Meeting')
+  })
   return (
     <>
       <CurrentButton

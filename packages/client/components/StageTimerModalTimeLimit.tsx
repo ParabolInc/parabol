@@ -3,6 +3,7 @@ import {Timer} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
@@ -54,6 +55,9 @@ const StyledButton = styled(SecondaryButton)({
 
 const StageTimerModalTimeLimit = (props: Props) => {
   const {closePortal, defaultTimeLimit, meetingId, stage} = props
+
+  const {t} = useTranslation()
+
   const {suggestedTimeLimit, scheduledEndTime} = stage
   const initialTimeLimit =
     scheduledEndTime || !suggestedTimeLimit
@@ -93,7 +97,10 @@ const StageTimerModalTimeLimit = (props: Props) => {
       <Row>
         <StyledIcon />
         <Toggle
-          defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
+          defaultText={t('StageTimerModalTimeLimit.MinuteTimeLimitPluralMinuteTimeLimitMinute', {
+            minuteTimeLimit,
+            pluralMinuteTimeLimitMinute: plural(minuteTimeLimit, 'minute')
+          })}
           onClick={togglePortal}
           ref={originRef}
           size='small'
@@ -108,7 +115,11 @@ const StageTimerModalTimeLimit = (props: Props) => {
         />
       )}
       <StyledButton onClick={startTimer}>
-        {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
+        {scheduledEndTime
+          ? t('StageTimerModalTimeLimit.AddTime')
+          : t('StageTimerModalTimeLimit.StartMeetingLabelsTimer', {
+              meetingLabelsTimer: MeetingLabels.TIMER
+            })}
       </StyledButton>
       {error && <StyledError>{error.message}</StyledError>}
     </SetLimit>

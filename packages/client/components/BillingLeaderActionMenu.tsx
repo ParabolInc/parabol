@@ -34,11 +34,6 @@ const BillingLeaderActionMenu = (props: Props) => {
     toggleRemove
   } = props
 
-  //FIXME i18n: Remove Billing Leader role
-  //FIXME i18n: Promote to Billing Leader
-  //FIXME i18n: Leave Organization
-  //FIXME i18n: Refund and Remove
-  //FIXME i18n: Remove from Organization
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -61,20 +56,26 @@ const BillingLeaderActionMenu = (props: Props) => {
     <>
       <Menu ariaLabel={t('BillingLeaderActionMenu.SelectYourAction')} {...menuProps}>
         {isBillingLeader && !isViewerLastBillingLeader && (
-          <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
+          <MenuItem
+            label={t('BillingLeaderActionMenu.RemoveBillingLeaderRole')}
+            onClick={setRole(null)}
+          />
         )}
         {!isBillingLeader && (
-          <MenuItem label='Promote to Billing Leader' onClick={setRole('BILLING_LEADER')} />
+          <MenuItem
+            label={t('BillingLeaderActionMenu.PromoteToBillingLeader')}
+            onClick={setRole('BILLING_LEADER')}
+          />
         )}
         {viewerId === userId && !isViewerLastBillingLeader && (
-          <MenuItem label='Leave Organization' onClick={toggleLeave} />
+          <MenuItem label={t('BillingLeaderActionMenu.LeaveOrganization')} onClick={toggleLeave} />
         )}
         {viewerId !== userId && (
           <MenuItem
             label={
               tier === 'pro' && new Date(newUserUntil) > new Date()
-                ? 'Refund and Remove'
-                : 'Remove from Organization'
+                ? t('BillingLeaderActionMenu.RefundAndRemove')
+                : t('BillingLeaderActionMenu.RemoveFromOrganization')
             }
             onClick={toggleRemove}
           />

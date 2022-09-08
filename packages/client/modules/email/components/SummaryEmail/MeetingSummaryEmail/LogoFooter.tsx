@@ -25,7 +25,9 @@ const LogoFooter = () => {
         <td align='center' style={logoStyle}>
           <img
             crossOrigin=''
-            src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
+            src={t('LogoFooter.ExternalLinksEmailCdnMarkColor3XPng', {
+              externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+            })}
             height='32'
             width='34'
           />

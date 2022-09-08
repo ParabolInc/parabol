@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import {ElementHeight, ElementWidth} from '~/types/constEnums'
-import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
-import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
+import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import {SpotlightResultsQuery} from '~/__generated__/SpotlightResultsQuery.graphql'
+import useGroupMatrix from '../hooks/useGroupMatrix'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
+import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
 
 const ResultsWrapper = styled('div')({
   padding: '40px 0px 24px',
@@ -41,6 +42,8 @@ interface Props {
 
 const SpotlightResults = (props: Props) => {
   const {phaseRef, queryRef, isSpotlightEntering} = props
+
+  const {t} = useTranslation()
 
   const data = usePreloadedQuery<SpotlightResultsQuery>(
     graphql`
@@ -98,7 +101,11 @@ const SpotlightResults = (props: Props) => {
       ) : (
         <Scrollbar height={scrollHeight} ref={resultsRef}>
           {groupMatrix.map((row) => (
-            <Column key={`row-${row[0]?.id}`}>
+            <Column
+              key={t('SpotlightResults.RowRow0Id', {
+                row0Id: row[0]?.id
+              })}
+            >
               {row.map((group) => (
                 <ReflectionGroup
                   key={group.id}

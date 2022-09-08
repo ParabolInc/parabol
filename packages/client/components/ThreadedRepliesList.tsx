@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {ThreadedRepliesList_discussion} from '~/__generated__/ThreadedRepliesList_discussion.graphql'
 import {ThreadedRepliesList_replies} from '~/__generated__/ThreadedRepliesList_replies.graphql'
@@ -20,6 +21,9 @@ interface Props {
 
 const ThreadedRepliesList = (props: Props) => {
   const {allowedThreadables, replies, setReplyMention, discussion, dataCy, viewer} = props
+
+  const {t} = useTranslation()
+
   // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
   // not sure why this is required addComment and createTask but request replies
   if (!replies) return null
@@ -27,10 +31,12 @@ const ThreadedRepliesList = (props: Props) => {
     <>
       {replies.map((reply) => {
         const {__typename, id} = reply
-        return __typename === 'Task' ? (
+        return __typename === t('ThreadedRepliesList.Task') ? (
           <ThreadedTaskBase
             allowedThreadables={allowedThreadables}
-            dataCy={`${dataCy}-task`}
+            dataCy={t('ThreadedRepliesList.DataCyTask', {
+              dataCy
+            })}
             key={id}
             isReply
             task={reply}
@@ -41,7 +47,9 @@ const ThreadedRepliesList = (props: Props) => {
         ) : (
           <ThreadedCommentBase
             allowedThreadables={allowedThreadables}
-            dataCy={`${dataCy}-comment`}
+            dataCy={t('ThreadedRepliesList.DataCyComment', {
+              dataCy
+            })}
             key={id}
             isReply
             comment={reply}

@@ -1,9 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {Pricing} from '../../../../types/constEnums'
-import {CreditCardModalActionType} from './CreditCardModal'
+import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {Pricing} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
+import {CreditCardModalActionType} from './CreditCardModal'
 
 interface Props {
   activeUserCount?: number
@@ -48,6 +49,9 @@ const TotalBlock = styled('div')({
 
 const CreditCardPricingLine = (props: Props) => {
   const {actionType, activeUserCount} = props
+
+  const {t} = useTranslation()
+
   if (actionType === 'update' || !activeUserCount) return null
   const unitPriceString = (Pricing.PRO_SEAT_COST / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -64,9 +68,22 @@ const CreditCardPricingLine = (props: Props) => {
   )
   return (
     <Line>
-      <UserBlock>{`${activeUserCount} Active ${plural(activeUserCount, 'User')}`}</UserBlock>
-      <UnitPriceBlock>{`${unitPriceString}/ea`}</UnitPriceBlock>
-      <TotalBlock>{`${totalPriceString}/mo`}</TotalBlock>
+      <UserBlock>
+        {t('CreditCardPricingLine.ActiveUserCountActivePluralActiveUserCountUser', {
+          activeUserCount,
+          pluralActiveUserCountUser: plural(activeUserCount, 'User')
+        })}
+      </UserBlock>
+      <UnitPriceBlock>
+        {t('CreditCardPricingLine.UnitPriceStringEa', {
+          unitPriceString
+        })}
+      </UnitPriceBlock>
+      <TotalBlock>
+        {t('CreditCardPricingLine.TotalPriceStringMo', {
+          totalPriceString
+        })}
+      </TotalBlock>
     </Line>
   )
 }

@@ -45,7 +45,6 @@ const gqlQuery = graphql`
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, queryRef} = props
 
-  //FIXME i18n: Search team members
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef, {
@@ -86,7 +85,11 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     >
       <DropdownMenuLabel>{t('TaskFooterUserAssigneeMenu.AssignTo')}</DropdownMenuLabel>
       {assignees.length > 5 && (
-        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+        <SearchMenuItem
+          placeholder={t('TaskFooterUserAssigneeMenu.SearchTeamMembers')}
+          onChange={onQueryChange}
+          value={query}
+        />
       )}
       {query && matchedAssignees.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>

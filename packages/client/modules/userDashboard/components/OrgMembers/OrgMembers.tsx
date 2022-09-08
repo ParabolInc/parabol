@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
@@ -16,6 +17,9 @@ interface Props {
 
 const OrgMembers = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const query = usePreloadedQuery<OrgMembersQuery>(
     graphql`
       query OrgMembersQuery($orgId: ID!, $first: Int!, $after: String) {
@@ -85,14 +89,24 @@ const OrgMembers = (props: Props) => {
     const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date()
-    const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    const numDate = t('OrgMembers.DateGetFullYearDateGetMonth1DateGetDate', {
+      dateGetFullYear: date.getFullYear(),
+      dateGetMonth1: date.getMonth() + 1,
+      dateGetDate: date.getDate()
+    })
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
     // note: using encodeUri does NOT work on the # symbol & breaks
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `Parabol_${orgName}_${numDate}.csv`)
+    link.setAttribute(
+      'download',
+      t('OrgMembers.ParabolOrgNameNumDateCsv', {
+        orgName,
+        numDate
+      })
+    )
     document.body.appendChild(link) // Required for FF
     link.click()
     document.body.removeChild(link)
@@ -100,7 +114,7 @@ const OrgMembers = (props: Props) => {
 
   return (
     <Panel
-      label='Organization Members'
+      label={t('OrgMembers.OrganizationMembers')}
       controls={isBillingLeader && <ExportToCSVButton handleClick={exportToCSV} />}
     >
       {organizationUsers.edges.map(({node: organizationUser}) => {

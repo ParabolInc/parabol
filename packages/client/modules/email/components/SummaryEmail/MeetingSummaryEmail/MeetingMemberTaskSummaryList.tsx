@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import plural from 'parabol-client/utils/plural'
 import {MeetingMemberTaskSummaryList_meetingMember} from 'parabol-client/__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import SummaryAvatarHeader from './SummaryAvatarHeader'
 import TaskSummarySection from './TaskSummarySection'
@@ -12,10 +13,25 @@ interface Props {
 
 const MeetingMemberTaskSummaryList = (props: Props) => {
   const {meetingMember} = props
+
+  const {t} = useTranslation()
+
   const newTasks = meetingMember.tasks || []
   const doneTasks = meetingMember.doneTasks || []
-  const doneTasksLabel = `${doneTasks.length} ${plural(doneTasks.length, 'Task')} Done`
-  const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`
+  const doneTasksLabel = t(
+    'MeetingMemberTaskSummaryList.DoneTasksLengthPluralDoneTasksLengthTaskDone',
+    {
+      doneTasksLength: doneTasks.length,
+      pluralDoneTasksLengthTask: plural(doneTasks.length, 'Task')
+    }
+  )
+  const newTasksLabel = t(
+    'MeetingMemberTaskSummaryList.NewTasksLengthNewPluralNewTasksLengthTask',
+    {
+      newTasksLength: newTasks.length,
+      pluralNewTasksLengthTask: plural(newTasks.length, 'Task')
+    }
+  )
   return (
     <>
       <SummaryAvatarHeader meetingMember={meetingMember} />

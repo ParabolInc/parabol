@@ -6,7 +6,6 @@ import InviteDialog from './InviteDialog'
 import StyledError from './StyledError'
 
 const AuthProvider = () => {
-  //FIXME i18n: Error logging in
   const {t} = useTranslation()
 
   const [error, setError] = useState('')
@@ -27,7 +26,7 @@ const AuthProvider = () => {
           return window.opener.postMessage({oauthToken, oauthVerifier}, window.location.origin)
         }
       } else {
-        setError('Error logging in')
+        setError(t('AuthProvider.ErrorLoggingIn'))
       }
     }
     callOpener().catch()

@@ -96,9 +96,6 @@ const PokerDimensionValueControl = (props: Props) => {
     cardScore
   } = props
 
-  //FIXME i18n: The field selected only accepts numbers
-  //FIXME i18n: Final Score (set by facilitator)
-  //FIXME i18n: Final Score
   const {t} = useTranslation()
 
   const {dimensionRef, serviceField, task} = stage
@@ -117,7 +114,7 @@ const PokerDimensionValueControl = (props: Props) => {
       // isNaN says "3." is a number, so we stringify the parsed number & see if it matches
       if (String(parseFloat(value)) !== value) {
         // the service wants a number but we didn't get one
-        onError(new Error('The field selected only accepts numbers'))
+        onError(new Error(t('PokerDimensionValueControl.TheFieldSelectedOnlyAcceptsNumbers')))
         isLocallyValidatedRef.current = false
       } else {
         isLocallyValidatedRef.current = true
@@ -131,11 +128,14 @@ const PokerDimensionValueControl = (props: Props) => {
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     // keydown required because escape doesn't fire onKeyPress
-    if (e.key === 'Tab' || e.key === 'Enter') {
+    if (
+      e.key === t('PokerDimensionValueControl.Tab') ||
+      e.key === t('PokerDimensionValueControl.Enter')
+    ) {
       e.preventDefault()
       onSubmitScore()
       inputRef.current?.blur()
-    } else if (e.key === 'Escape') {
+    } else if (e.key === t('PokerDimensionValueControl.Escape')) {
       e.preventDefault()
       setCardScore(finalScore)
       inputRef.current?.blur()
@@ -150,7 +150,10 @@ const PokerDimensionValueControl = (props: Props) => {
   const isFinal = !!finalScore && cardScore === finalScore
   const hasIntegration = !!task?.integration?.__typename
   const handleLabelClick = () => inputRef.current!.focus()
-  const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
+  const label =
+    isDesktop && !finalScore
+      ? t('PokerDimensionValueControl.FinalScoreSetByFacilitator')
+      : t('PokerDimensionValueControl.FinalScore')
   return (
     <ControlWrap>
       <Control>

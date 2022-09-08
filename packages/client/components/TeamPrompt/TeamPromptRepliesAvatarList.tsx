@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useOverflowAvatars from '~/hooks/useOverflowAvatars'
 import {TransitionStatus} from '~/hooks/useTransition'
@@ -25,6 +26,9 @@ const MAX_AVATARS = 3
 
 const TeamPromptRepliesAvatarList = (props: Props) => {
   const {edgesRef} = props
+
+  const {t} = useTranslation()
+
   const edges = useFragment(
     graphql`
       fragment TeamPromptRepliesAvatarList_edges on ThreadableEdge @relay(plural: true) {
@@ -73,7 +77,9 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
                 width={AVATAR_SIZE}
               />
               <TeamPromptOverflowAvatar
-                key={`${userId}:overflowCount`}
+                key={t('TeamPromptRepliesAvatarList.UserIdOverflowCount', {
+                  userId
+                })}
                 isAnimated={true}
                 onTransitionEnd={onTransitionEnd}
                 status={status}

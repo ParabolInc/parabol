@@ -22,7 +22,6 @@ const EditableSubText = styled(EditableText)({
 const EditableTemplateDescription = (props: Props) => {
   const {isOwner, description, promptId, onEditingChange} = props
 
-  //FIXME i18n: That description is probably long enough
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -41,7 +40,9 @@ const EditableTemplateDescription = (props: Props) => {
   }
 
   const legitify = (value: string) => {
-    return new Legitity(value).trim().max(256, 'That description is probably long enough')
+    return new Legitity(value)
+      .trim()
+      .max(256, t('EditableTemplateDescription.ThatDescriptionIsProbablyLongEnough'))
   }
 
   const validate = (rawValue: string) => {

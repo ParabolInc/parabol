@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import ActionMeetingUpdatesPromptTeamHelpText from '../modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
@@ -39,6 +40,9 @@ const getQuestion = (isConnected, taskCount, preferredName) => {
 
 const ActionMeetingUpdatesPrompt = (props: Props) => {
   const {meeting} = props
+
+  const {t} = useTranslation()
+
   const {localStage, team, meetingMembers} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
@@ -48,7 +52,11 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const {teamMember, user} = currentMeetingMember
   const {isSelf: isViewerMeetingSection, picture, preferredName} = teamMember
   const {isConnected} = user
-  const prefix = isConnected ? `${preferredName}, ` : ''
+  const prefix = isConnected
+    ? t('ActionMeetingUpdatesPrompt.PreferredName', {
+        preferredName
+      })
+    : ''
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
@@ -59,10 +67,12 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
           <i>{getQuestion(isConnected, taskCount, preferredName)}</i>
         </StyledHeader>
         <PhaseHeaderDescription>
-          {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
+          {isViewerMeetingSection &&
+            taskCount === 0 &&
+            t('ActionMeetingUpdatesPrompt.AddCardsToTrackYourCurrentWork')}
           {isViewerMeetingSection &&
             taskCount > 0 &&
-            'Your turn to share! Quick updates only, please.'}
+            t('ActionMeetingUpdatesPrompt.YourTurnToShareQuickUpdatesOnlyPlease')}
           {!isViewerMeetingSection && (
             <ActionMeetingUpdatesPromptTeamHelpText currentMeetingMember={currentMeetingMember} />
           )}

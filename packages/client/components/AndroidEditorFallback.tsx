@@ -1,9 +1,10 @@
+import styled from '@emotion/styled'
 import {EditorState} from 'draft-js'
 import React, {ChangeEvent, ClipboardEvent, RefObject, useEffect, useState} from 'react'
-import styled from '@emotion/styled'
+import {useTranslation} from 'react-i18next'
 import TextArea from 'react-textarea-autosize'
-import {Card, Gutters} from '../types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
+import {Card, Gutters} from '../types/constEnums'
 
 interface Props {
   className?: string
@@ -44,6 +45,9 @@ const AndroidEditorFallback = (props: Props) => {
     placeholder,
     editorRef
   } = props
+
+  const {t} = useTranslation()
+
   const [value, setValue] = useState('')
   const [height, setHeight] = useState<number | undefined>(44)
 
@@ -60,7 +64,7 @@ const AndroidEditorFallback = (props: Props) => {
   const handlePaste = (e: ClipboardEvent) => {
     if (onPastedText) {
       const clipboardData = e.clipboardData
-      const pastedText = clipboardData.getData('Text')
+      const pastedText = clipboardData.getData(t('AndroidEditorFallback.Text'))
       onPastedText(pastedText)
     }
   }

@@ -21,9 +21,6 @@ interface Props {
 const TeamInvitationSSO = (props: Props) => {
   const {ssoURL} = props
 
-  //FIXME i18n: Error logging in
-  //FIXME i18n: SSO Login | Team Invitation
-  //FIXME i18n: Team Invitation
   const {t} = useTranslation()
 
   const {onCompleted, submitMutation, onError, error} = useMutationProps()
@@ -35,7 +32,7 @@ const TeamInvitationSSO = (props: Props) => {
       submitMutation()
       const {token, error} = await getTokenFromSSO(ssoURL)
       if (!token) {
-        onError(new Error(error || 'Error logging in'))
+        onError(new Error(error || t('TeamInvitationSSO.ErrorLoggingIn')))
         return
       }
       atmosphere.setAuthToken(token)
@@ -43,7 +40,10 @@ const TeamInvitationSSO = (props: Props) => {
     }
     loginWithSAML().catch()
   }, [])
-  useDocumentTitle('SSO Login | Team Invitation', 'Team Invitation')
+  useDocumentTitle(
+    t('TeamInvitationSSO.SsoLoginTeamInvitation'),
+    t('TeamInvitationSSO.TeamInvitation')
+  )
 
   return (
     <InviteDialog>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import DialogTitle from '~/components/DialogTitle'
 import DialogContainer from '../../../../components/DialogContainer'
 import UpgradeLater from '../../../../components/UpgradeLater'
@@ -41,6 +42,9 @@ type Status = 'success' | 'later' | 'init'
 
 const CreditCardModal = (props: Props) => {
   const {actionType, activeUserCount, closePortal, orgId, meetingId, onUpgrade} = props
+
+  const {t} = useTranslation()
+
   const [status, setStatus] = useState<Status>('init')
   const atmosphere = useAtmosphere()
   const onSuccess =
@@ -66,7 +70,9 @@ const CreditCardModal = (props: Props) => {
   return (
     <Container data-private>
       <DialogTitle>
-        {actionType === 'update' ? 'Update Credit Card' : 'Upgrade to Pro'}
+        {actionType === 'update'
+          ? t('CreditCardModal.UpdateCreditCard')
+          : t('CreditCardModal.UpgradeToPro')}
         {actionType !== 'update' && (
           <a href={ExternalLinks.PRICING_LINK} rel='noopener noreferrer' target='blank'>
             <Info>

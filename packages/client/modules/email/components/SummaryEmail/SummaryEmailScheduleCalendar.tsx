@@ -72,8 +72,6 @@ const sectionStart = {
 const SummaryEmailScheduleCalendar = (props: Props) => {
   const {createdAt, isDemo, meetingUrl, meetingNumber, teamName} = props
 
-  //FIXME i18n: noopener noreferrer
-  //FIXME i18n: noopener noreferrer
   const {t} = useTranslation()
 
   if (meetingNumber > 2 || isDemo) return null
@@ -95,7 +93,9 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   <img
                     crossOrigin=''
                     style={iconLinkIcon}
-                    src={`${ExternalLinks.EMAIL_CDN}google@3x.png`}
+                    src={t('SummaryEmailScheduleCalendar.ExternalLinksEmailCdnGoogle3XPng', {
+                      externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+                    })}
                     height={iconSize}
                     width={iconSize}
                   />
@@ -114,7 +114,12 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   <img
                     crossOrigin=''
                     style={iconLinkIcon}
-                    src={`${ExternalLinks.EMAIL_CDN}event_available@3x.png`}
+                    src={t(
+                      'SummaryEmailScheduleCalendar.ExternalLinksEmailCdnEventAvailable3XPng',
+                      {
+                        externalLinksEmailCdn: ExternalLinks.EMAIL_CDN
+                      }
+                    )}
                     height={iconSize}
                     width={iconSize}
                   />

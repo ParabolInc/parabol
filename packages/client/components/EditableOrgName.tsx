@@ -20,9 +20,6 @@ const EditableOrgText = styled(EditableText)({
 })
 
 const EditableOrgName = (props: Props) => {
-  //FIXME i18n: “The nameless wonder” is better than nothing
-  //FIXME i18n: The “A Team” had a longer name than that
-  //FIXME i18n: That isn’t very memorable. Maybe shorten it up?
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -45,9 +42,9 @@ const EditableOrgName = (props: Props) => {
 
     const res = new Legitity(rawOrgName)
       .trim()
-      .required('“The nameless wonder” is better than nothing')
-      .min(2, 'The “A Team” had a longer name than that')
-      .max(50, 'That isn’t very memorable. Maybe shorten it up?')
+      .required(t('EditableOrgName.TheNamelessWonderIsBetterThanNothing'))
+      .min(2, t('EditableOrgName.TheATeamHadALongerNameThanThat'))
+      .max(50, t('EditableOrgName.ThatIsntVeryMemorableMaybeShortenItUp'))
 
     if (res.error) {
       onError(res.error)

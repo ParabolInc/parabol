@@ -129,14 +129,22 @@ const DashboardAvatars = (props: Props) => {
       <AvatarsWrapper>
         {sortedAvatars.map((teamMember) => {
           return (
-            <ErrorBoundary key={`dbAvatar${teamMember.id}`}>
+            <ErrorBoundary
+              key={t('DashboardAvatars.DbAvatarTeamMemberId', {
+                teamMemberId: teamMember.id
+              })}
+            >
               <DashboardAvatar teamMember={teamMember} />
             </ErrorBoundary>
           )
         })}
         {overflowCount > 0 && (
           <OverflowWrapper onClick={() => handleClick(true)}>
-            <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+            <OverflowCount>
+              {t('DashboardAvatars.OverflowCount', {
+                overflowCount
+              })}
+            </OverflowCount>
           </OverflowWrapper>
         )}
       </AvatarsWrapper>

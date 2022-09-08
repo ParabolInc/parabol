@@ -95,7 +95,11 @@ const NewMeetingAvatarGroup = (props: Props) => {
       .filter((meetingMember) => {
         return (
           meetingMember.userId === viewerId ||
-          (meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
+          (meetingMember.user.lastSeenAtURLs?.includes(
+            t('NewMeetingAvatarGroup.MeetMeetingId', {
+              meetingId
+            })
+          ) &&
             meetingMember.user.isConnected)
         )
       })
@@ -124,7 +128,11 @@ const NewMeetingAvatarGroup = (props: Props) => {
               <OverflowCount
                 status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
                 onTransitionEnd={meetingMember.onTransitionEnd}
-              >{`+${hiddenMeetingMemberCount}`}</OverflowCount>
+              >
+                {t('NewMeetingAvatarGroup.HiddenMeetingMemberCount', {
+                  hiddenMeetingMemberCount
+                })}
+              </OverflowCount>
             </OverlappingBlock>
           )
         }

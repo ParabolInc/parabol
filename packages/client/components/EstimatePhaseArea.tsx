@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -73,6 +74,9 @@ interface Props {
 
 const EstimatePhaseArea = (props: Props) => {
   const {gotoStageId, meeting} = props
+
+  const {t} = useTranslation()
+
   const {localStage, phases} = meeting
   const {id: localStageId, taskId} = localStage
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
@@ -88,7 +92,7 @@ const EstimatePhaseArea = (props: Props) => {
 
   const slideContainer = {
     display: 'flex',
-    padding: isDesktop ? '0 8px' : '0 4px'
+    padding: isDesktop ? t('EstimatePhaseArea.08Px') : t('EstimatePhaseArea.04Px')
   }
 
   const hasSingleDimension = dimensionStages.length === 1

@@ -1,20 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import {TeamDrawer_viewer$key} from '~/__generated__/TeamDrawer_viewer.graphql'
+import {TeamDrawer as TeamDrawerType} from '~/__generated__/ToggleTeamDrawerMutation.graphql'
+import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint, RightSidebar} from '../../../../types/constEnums'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
-import ManageTeamList from '../ManageTeam/ManageTeamList'
 import CloseDrawer from '../CloseDrawer/CloseDrawer'
-import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
-import {PALETTE} from '../../../../styles/paletteV3'
-import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {TeamDrawer as TeamDrawerType} from '~/__generated__/ToggleTeamDrawerMutation.graphql'
+import ManageTeamList from '../ManageTeam/ManageTeamList'
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -44,6 +45,8 @@ interface Props {
 }
 
 const TeamDrawer = (props: Props) => {
+  const {t} = useTranslation()
+
   const data = useFragment(
     graphql`
       fragment TeamDrawer_viewer on User {
@@ -91,7 +94,9 @@ const TeamDrawer = (props: Props) => {
       <DrawerContent isDesktop={isDesktop}>
         <DrawerHeader>
           <StyledLabelHeading>
-            {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
+            {drawerTypeRef.current === 'manageTeam'
+              ? t('TeamDrawer.ManageTeam')
+              : t('TeamDrawer.TeamAgenda')}
           </StyledLabelHeading>
           <CloseDrawer teamId={teamId} />
         </DrawerHeader>

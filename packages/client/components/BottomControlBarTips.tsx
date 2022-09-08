@@ -112,7 +112,6 @@ interface Props {
 const BottomControlBarTips = (props: Props) => {
   const {cancelConfirm, meeting: meetingRef, status, onTransitionEnd} = props
 
-  //FIXME i18n: Meeting tips
   const {t} = useTranslation()
 
   const meeting = useFragment(
@@ -157,7 +156,7 @@ const BottomControlBarTips = (props: Props) => {
   }, [demoPauseOpen, openPortal])
   return (
     <BottomNavControl
-      dataCy={`tip-menu-toggle`}
+      dataCy={t('BottomControlBarTips.TipMenuToggle', {})}
       confirming={!!cancelConfirm}
       onClick={cancelConfirm || togglePortal}
       ref={originRef}
@@ -170,7 +169,7 @@ const BottomControlBarTips = (props: Props) => {
         label={t('BottomControlBarTips.Tips')}
       />
       {menuPortal(
-        <TallMenu ariaLabel='Meeting tips' {...menuProps}>
+        <TallMenu ariaLabel={t('BottomControlBarTips.MeetingTips')} {...menuProps}>
           <MenuContent meetingType={meetingType} />
         </TallMenu>
       )}

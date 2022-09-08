@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import React, {useEffect, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
@@ -44,6 +45,9 @@ interface Props {
 
 const ScopingSearchInput = (props: Props) => {
   const {placeholder, queryString, meetingId, linkedRecordName, defaultInput, service} = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const inputRef = useRef<HTMLInputElement>(null)
   const isEmpty = !queryString
@@ -74,13 +78,13 @@ const ScopingSearchInput = (props: Props) => {
     const {value} = e.target
     setSearch(meetingId, value)
     if (isEmpty) {
-      trackEvent('Started Poker Scope Search')
+      trackEvent(t('ScopingSearchInput.StartedPokerScopeSearch'))
     }
   }
   const clearSearch = () => {
     setSearch(meetingId, '')
     inputRef.current?.focus()
-    trackEvent('Cleared Poker Scope Search')
+    trackEvent(t('ScopingSearchInput.ClearedPokerScopeSearch'))
   }
 
   return (

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import relativeDate from '~/utils/date/relativeDate'
@@ -40,6 +41,9 @@ const getName = (comment: ThreadedCommentHeader_comment) => {
 
 const ThreadedCommentHeader = (props: Props) => {
   const {comment, onReply, editComment, onToggleReactji, dataCy, meetingId} = props
+
+  const {t} = useTranslation()
+
   const {id: commentId, isActive, isViewerComment, reactjis, updatedAt} = comment
   const name = getName(comment)
   const hasReactjis = reactjis.length > 0
@@ -50,12 +54,19 @@ const ThreadedCommentHeader = (props: Props) => {
           {!hasReactjis && (
             <>
               <AddReactji onToggle={onToggleReactji} />
-              <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
+              <ThreadedReplyButton
+                dataCy={t('ThreadedCommentHeader.DataCy', {
+                  dataCy
+                })}
+                onReply={onReply}
+              />
             </>
           )}
           {isViewerComment && (
             <CommentAuthorOptionsButton
-              dataCy={`${dataCy}`}
+              dataCy={t('ThreadedCommentHeader.DataCy', {
+                dataCy
+              })}
               editComment={editComment}
               commentId={commentId}
               meetingId={meetingId}

@@ -119,8 +119,6 @@ interface Props {
 const TeamPromptEditablePromptModal = (props: Props) => {
   const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error} = props
 
-  //FIXME i18n: A prompt is required to start the activity
-  //FIXME i18n: Prompts should be at least two characters long
   const {t} = useTranslation()
 
   const {
@@ -135,8 +133,8 @@ const TeamPromptEditablePromptModal = (props: Props) => {
       validate: (rawMeetingPrompt) => {
         return new Legitity(rawMeetingPrompt)
           .trim()
-          .required('A prompt is required to start the activity')
-          .min(2, 'Prompts should be at least two characters long')
+          .required(t('TeamPromptEditablePromptModal.APromptIsRequiredToStartTheActivity'))
+          .min(2, t('TeamPromptEditablePromptModal.PromptsShouldBeAtLeastTwoCharactersLong'))
       }
     }
   })
@@ -166,7 +164,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
         <TextArea
           {...fields.meetingPrompt}
           onFocus={(e) => e.target.select()}
-          name={t('TeamPromptEditablePromptModal.Meetingprompt')}
+          name={t('TeamPromptEditablePromptModal.MeetingPrompt')}
           isDesktop={isDesktop}
           autoFocus={true}
           maxLength={500}
@@ -189,7 +187,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
             key={i}
             onClick={() => setValue('meetingPrompt', prompt)}
           >
-            <LightbulbWrapper>💡</LightbulbWrapper>
+            <LightbulbWrapper>{t('TeamPromptEditablePromptModal.💡')}</LightbulbWrapper>
             {prompt}
           </SuggestedPromptWrapper>
         ))}

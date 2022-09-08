@@ -115,12 +115,11 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
 
-  //FIXME i18n: Assign this task to a teammate
   const {t} = useTranslation()
 
   const {user} = task
   const userImage = user?.picture || avatarUser
-  const preferredName = user?.preferredName || 'Unassigned'
+  const preferredName = user?.preferredName || t('TaskFooterUserAssignee.Unassigned')
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   const {
     tooltipPortal,
@@ -137,7 +136,7 @@ const TaskFooterUserAssignee = (props: Props) => {
         ref={tipRef}
       >
         <AvatarButton
-          aria-label='Assign this task to a teammate'
+          aria-label={t('TaskFooterUserAssignee.AssignThisTaskToATeammate')}
           onClick={canAssign ? togglePortal : undefined}
           onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
           ref={originRef}

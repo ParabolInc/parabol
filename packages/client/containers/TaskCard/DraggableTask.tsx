@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {Draggable, DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import NullableTask from '../../components/NullableTask/NullableTask'
@@ -23,6 +24,9 @@ interface Props {
 
 const DraggableTask = (props: Props) => {
   const {area, idx, task, isViewerMeetingSection, meetingId} = props
+
+  const {t} = useTranslation()
+
   return (
     <Draggable draggableId={task.id} index={idx} disableInteractiveElementBlocking={false}>
       {(dragProvided: DraggableProvided, dragSnapshot: DraggableStateSnapshot) => (
@@ -32,7 +36,7 @@ const DraggableTask = (props: Props) => {
           {...dragProvided.dragHandleProps}
         >
           <NullableTask
-            dataCy={`draggable-task`}
+            dataCy={t('DraggableTask.DraggableTask', {})}
             area={area}
             task={task}
             isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum}

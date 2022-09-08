@@ -30,7 +30,7 @@ const TimelineNoTasks = () => {
   return (
     <Wrapper>
       <ThumbsUp />
-      {t('TimelineNoTasks.YouReAllCaughtUp')}
+      {t('TimelineNoTasks.YoureAllCaughtUp')}
       <RallyLink>{getRallyLink()}</RallyLink>
     </Wrapper>
   )

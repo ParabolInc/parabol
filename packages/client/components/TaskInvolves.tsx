@@ -93,13 +93,23 @@ const TaskInvolves = (props: Props) => {
       {onError, onCompleted}
     )
     const archiveSuffix = tags.includes('archived') ? '/archive' : ''
-    history.push(`/team/${teamId}${archiveSuffix}`)
+    history.push(
+      t('TaskInvolves.TeamTeamIdArchiveSuffix', {
+        teamId,
+        archiveSuffix
+      })
+    )
   }
   const preposition = involvement === MENTIONEE ? ' in' : ''
   return (
     <NotificationTemplate
       avatar={changeAuthorPicture}
-      message={`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
+      message={t('TaskInvolves.ChangeAuthorNameActionYouPrepositionATaskOnTheTeamNameTeam', {
+        changeAuthorName,
+        action,
+        preposition,
+        teamName
+      })}
       notification={notification}
       action={
         task ? (
@@ -121,7 +131,7 @@ const TaskInvolves = (props: Props) => {
           }}
         />
         <Owner>
-          <OwnerAvatar alt='Avatar' src={user?.picture || changeAuthorPicture} />
+          <OwnerAvatar alt={t('TaskInvolves.Avatar')} src={user?.picture || changeAuthorPicture} />
           <OwnerName>{user?.preferredName || changeAuthorName}</OwnerName>
         </Owner>
       </TaskListView>

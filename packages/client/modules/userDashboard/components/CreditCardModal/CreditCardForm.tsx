@@ -81,9 +81,6 @@ interface Props {
 const CreditCardForm = (props: Props) => {
   const {activeUserCount, actionType, onSuccess, onLater, orgId} = props
 
-  //FIXME i18n: Credit Card Modal Opened
-  //FIXME i18n: Invalid details
-  //FIXME i18n: Card number
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -107,7 +104,7 @@ const CreditCardForm = (props: Props) => {
       validate: stripeClientManager.validateExpiry
     }
   })
-  useSegmentTrack('Credit Card Modal Opened', {actionType})
+  useSegmentTrack(t('CreditCardForm.CreditCardModalOpened'), {actionType})
 
   useEffect(() => {
     if (isStripeLoaded) {
@@ -115,7 +112,7 @@ const CreditCardForm = (props: Props) => {
     }
   }, [isStripeLoaded])
 
-  const handleError = (param: string, fallback = 'Invalid details') => {
+  const handleError = (param: string, fallback = t('CreditCardForm.InvalidDetails')) => {
     const inputField = paramToInputLookup[param]
     if (inputField) {
       // set submitting to false and clear general error
@@ -197,10 +194,10 @@ const CreditCardForm = (props: Props) => {
           autoFocus
           iconName='credit_card'
           maxLength={20}
-          name={t('CreditCardForm.Creditcardnumber')}
+          name={t('CreditCardForm.CreditCardNumber')}
           onBlur={() => setDirtyField('creditCardNumber')}
           onChange={onChange}
-          placeholder='Card number'
+          placeholder={t('CreditCardForm.CardNumber')}
         />
         <CardDetails>
           <CardExpiry

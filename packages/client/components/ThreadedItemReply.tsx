@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
 import React, {RefObject, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useClickAway from '~/hooks/useClickAway'
@@ -34,6 +35,9 @@ const ThreadedItemReply = (props: Props) => {
     dataCy,
     viewer
   } = props
+
+  const {t} = useTranslation()
+
   const {id: threadableId, replies} = threadable
   const {id: discussionId, replyingToCommentId} = discussion
   const isReplying = replyingToCommentId === threadableId
@@ -55,7 +59,7 @@ const ThreadedItemReply = (props: Props) => {
     if (!editorEl) return
     const hasText = isAndroid
       ? editorEl.value
-      : ((editorEl as any) as Editor).props.editorState.getCurrentContent().hasText()
+      : (editorEl as any as Editor).props.editorState.getCurrentContent().hasText()
     if (!hasText) {
       clearReplyingToCommentId()
     }
@@ -68,7 +72,9 @@ const ThreadedItemReply = (props: Props) => {
   return (
     <DiscussionThreadInput
       allowedThreadables={allowedThreadables}
-      dataCy={`${dataCy}-input`}
+      dataCy={t('ThreadedItemReply.DataCyInput', {
+        dataCy
+      })}
       ref={replyRef}
       editorRef={editorRef}
       isReply

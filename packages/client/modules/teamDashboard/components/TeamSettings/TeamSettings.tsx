@@ -64,8 +64,6 @@ const query = graphql`
 const TeamSettings = (props: Props) => {
   const {queryRef} = props
 
-  //FIXME i18n: Team Settings
-  //FIXME i18n: Danger Zone
   const {t} = useTranslation()
 
   const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef, {
@@ -75,7 +73,12 @@ const TeamSettings = (props: Props) => {
   const {history} = useRouter()
   const {team} = viewer
   const {name: teamName, orgId, teamMembers, tier} = team!
-  useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
+  useDocumentTitle(
+    t('TeamSettings.TeamSettingsTeamName', {
+      teamName
+    }),
+    t('TeamSettings.TeamSettings')
+  )
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
   if (!viewerTeamMember) return null
@@ -87,14 +90,24 @@ const TeamSettings = (props: Props) => {
           <Panel>
             <StyledRow>
               <div>{t('TeamSettings.ThisTeamIsCurrentlyOnAPersonalPlan')}</div>
-              <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                {`Upgrade Team to ${TierLabel.PRO}`}
+              <PrimaryButton
+                onClick={() =>
+                  history.push(
+                    t('TeamSettings.MeOrganizationsOrgId', {
+                      orgId
+                    })
+                  )
+                }
+              >
+                {t('TeamSettings.UpgradeTeamToTierLabelPro', {
+                  tierLabelPro: TierLabel.PRO
+                })}
               </PrimaryButton>
             </StyledRow>
           </Panel>
         )}
         {viewerIsLead && (
-          <Panel label='Danger Zone'>
+          <Panel label={t('TeamSettings.DangerZone')}>
             <PanelRow>
               <ArchiveTeam team={team!} />
             </PanelRow>

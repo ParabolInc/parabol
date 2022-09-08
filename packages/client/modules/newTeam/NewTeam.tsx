@@ -69,13 +69,10 @@ interface Props {
 const NewTeam = (props: Props) => {
   const {defaultOrgId, queryRef} = props
 
-  //FIXME i18n: New Team | Parabol
-  //FIXME i18n: New Team
-  //FIXME i18n: Learn More
   const {t} = useTranslation()
 
   const isDesktop = useBreakpoint(1280)
-  useDocumentTitle('New Team | Parabol', 'New Team')
+  useDocumentTitle(t('NewTeam.NewTeamParabol'), t('NewTeam.NewTeam'))
   const data = usePreloadedQuery<NewTeamQuery>(
     graphql`
       query NewTeamQuery {
@@ -100,20 +97,18 @@ const NewTeam = (props: Props) => {
         {isDesktop && (
           <HelpLayout>
             <HelpBlock>
-              <HelpHeading>{t('NewTeam.WhatSAnOrganization')}</HelpHeading>
+              <HelpHeading>{t('NewTeam.WhatsAnOrganization')}</HelpHeading>
               <HelpCopy>
-                {`It’s the billing entity for a group of teams
-                such as a company, non-profit, or
-                for your personal use. Once created, you can
-                create teams and invite others, even if they
-                don't share your email domain. New Organizations
-                start out on the Free Personal Plan.`}
+                {t(
+                  'NewTeam.ItsTheBillingEntityForAGroupOfTeamsSuchAsACompanyNonProfitOrForYourPersonalUseOnceCreatedYouCanCreateTeamsAndInviteOthersEvenIfTheyDontShareYourEmailDomainNewOrganizationsStartOutOnTheFreePersonalPlan',
+                  {}
+                )}
               </HelpCopy>
               <LearnMoreLink
                 palette='blue'
                 onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}
               >
-                <IconLabel icon='open_in_new' iconAfter label='Learn More' />
+                <IconLabel icon='open_in_new' iconAfter label={t('NewTeam.LearnMore')} />
               </LearnMoreLink>
             </HelpBlock>
           </HelpLayout>

@@ -169,7 +169,10 @@ const ThreadedPollBase = (props: Props) => {
                 <EditablePollOption
                   key={option.id}
                   shouldAutoFocus={isOptional && isLastOption}
-                  placeholder={`Add a choice ${index + 1} ${isOptional ? '(optional)' : ''}...`}
+                  placeholder={t('ThreadedPollBase.AddAChoiceIndex1IsOptionalOptional', {
+                    index1: index + 1,
+                    isOptionalOptional: isOptional ? '(optional)' : ''
+                  })}
                   optionRef={option}
                 />
               )

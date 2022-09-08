@@ -1,4 +1,5 @@
 import React, {ChangeEvent} from 'react'
+import {useTranslation} from 'react-i18next'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import Radio from '../../../../components/Radio/Radio'
 import {NewTeamFieldBlock} from './NewTeamForm'
@@ -15,13 +16,16 @@ interface Props {
 
 const NewTeamFormOrgName = (props: Props) => {
   const {error, isNewOrg, onChange, onTypeChange, orgName, placeholder} = props
+
+  const {t} = useTranslation()
+
   return (
     <NewTeamFormBlock>
       <Radio
         checked={isNewOrg}
         name='isNewOrganization'
         value='true'
-        label='a new organization:'
+        label={t('NewTeamFormOrgName.ANewOrganization')}
         onChange={onTypeChange}
       />
       <NewTeamFieldBlock>

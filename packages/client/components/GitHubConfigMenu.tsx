@@ -18,8 +18,6 @@ interface Props {
 const GitHubConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
 
-  //FIXME i18n: Refresh token
-  //FIXME i18n: Remove GitHub
   const {t} = useTranslation()
 
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
@@ -37,9 +35,9 @@ const GitHubConfigMenu = (props: Props) => {
     }, Duration.PORTAL_CLOSE)
   }
   return (
-    <Menu ariaLabel={t('GitHubConfigMenu.ConfigureYourGithubIntegration')} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      <MenuItem label='Remove GitHub' onClick={removeGitHub} />
+    <Menu ariaLabel={t('GitHubConfigMenu.ConfigureYourGitHubIntegration')} {...menuProps}>
+      <MenuItem label={t('GitHubConfigMenu.RefreshToken')} onClick={openOAuth} />
+      <MenuItem label={t('GitHubConfigMenu.RemoveGitHub')} onClick={removeGitHub} />
     </Menu>
   )
 }

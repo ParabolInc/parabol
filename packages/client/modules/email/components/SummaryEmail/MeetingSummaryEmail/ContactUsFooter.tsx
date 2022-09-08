@@ -34,9 +34,6 @@ interface Props {
 const ContactUsFooter = (props: Props) => {
   const {hasLearningLink, isDemo, prompt, tagline} = props
 
-  //FIXME i18n: Email us: love@parabol.co
-  //FIXME i18n: noopener noreferrer
-  //FIXME i18n: Navigate uncertainty with the Parabol Rhythm
   const {t} = useTranslation()
 
   if (isDemo) return null
@@ -55,7 +52,11 @@ const ContactUsFooter = (props: Props) => {
       <tr>
         <td align='center' style={textStyle}>
           {t('ContactUsFooter.EmailUs')}&nbsp;
-          <a href='mailto:love@parabol.co' style={linkStyle} title='Email us: love@parabol.co'>
+          <a
+            href='mailto:love@parabol.co'
+            style={linkStyle}
+            title={t('ContactUsFooter.EmailUsLoveParabolCo')}
+          >
             {t('ContactUsFooter.LoveParabolCo')}
           </a>
         </td>
@@ -68,11 +69,13 @@ const ContactUsFooter = (props: Props) => {
               rel='noopener noreferrer'
               style={linkStyle}
               target='_blank'
-              title='Navigate uncertainty with the Parabol Rhythm'
+              title={t('ContactUsFooter.NavigateUncertaintyWithTheParabolRhythm')}
             >
               {t('ContactUsFooter.LearnMore')}
             </a>
-            {` about the ${MEETING_NAME} Process.`}
+            {t('ContactUsFooter.AboutTheMeetingNameProcess', {
+              meetingName: MEETING_NAME
+            })}
           </td>
         </tr>
       )}

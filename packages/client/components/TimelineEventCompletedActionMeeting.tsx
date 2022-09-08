@@ -27,8 +27,6 @@ const CountItem = styled('span')({
 const TimelineEventCompletedActionMeeting = (props: Props) => {
   const {timelineEvent} = props
 
-  //FIXME i18n: less than a minute
-  //FIXME i18n: agenda item
   const {t} = useTranslation()
 
   const {meeting, team} = timelineEvent
@@ -46,27 +44,59 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
     now: endedAt,
     max: 2,
     suffix: false,
-    smallDiff: 'less than a minute'
+    smallDiff: t('TimelineEventCompletedActionMeeting.LessThanAMinute')
   })
   return (
     <TimelineEventCard
       iconName='change_history'
       timelineEvent={timelineEvent}
-      title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
+      title={
+        <TimelineEventTitle>
+          {t('TimelineEventCompletedActionMeeting.MeetingNameWithTeamNameComplete', {
+            meetingName,
+            teamName
+          })}
+        </TimelineEventTitle>
+      }
     >
       <TimelineEventBody>
-        {`It lasted ${meetingDuration} and generated `}
-        <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
+        {t('TimelineEventCompletedActionMeeting.ItLastedMeetingDurationAndGenerated', {
+          meetingDuration
+        })}
+        <CountItem>
+          {t('TimelineEventCompletedActionMeeting.TaskCountPluralTaskCountTask', {
+            taskCount,
+            pluralTaskCountTask: plural(taskCount, 'task')
+          })}
+        </CountItem>
         {', '}
-        <CountItem>{`${agendaItemCount} ${plural(agendaItemCount, 'agenda item')}`}</CountItem>
+        <CountItem>
+          {t('TimelineEventCompletedActionMeeting.AgendaItemCountPluralAgendaItemCountAgendaItem', {
+            agendaItemCount,
+            pluralAgendaItemCountAgendaItem: plural(agendaItemCount, 'agenda item')
+          })}
+        </CountItem>
         {t('TimelineEventCompletedActionMeeting.And')}
-        <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
+        <CountItem>
+          {t('TimelineEventCompletedActionMeeting.CommentCountPluralCommentCountComment', {
+            commentCount,
+            pluralCommentCountComment: plural(commentCount, 'comment')
+          })}
+        </CountItem>
         <br />
-        <Link to={`/meet/${meetingId}/agendaitems/1`}>
+        <Link
+          to={t('TimelineEventCompletedActionMeeting.MeetMeetingIdAgendaitems1', {
+            meetingId
+          })}
+        >
           {t('TimelineEventCompletedActionMeeting.SeeTheDiscussion')}
         </Link>
         {t('TimelineEventCompletedActionMeeting.InYourMeetingOr')}
-        <Link to={`/new-summary/${meetingId}`}>
+        <Link
+          to={t('TimelineEventCompletedActionMeeting.NewSummaryMeetingId', {
+            meetingId
+          })}
+        >
           {t('TimelineEventCompletedActionMeeting.ReviewASummary')}
         </Link>
       </TimelineEventBody>

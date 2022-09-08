@@ -83,7 +83,11 @@ const NewMeetingSidebar = (props: Props) => {
 
   const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
   const {id: teamId, name: teamName} = team
-  const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
+  const teamLink = isDemoRoute()
+    ? '/create-account'
+    : t('NewMeetingSidebar.TeamTeamId', {
+        teamId
+      })
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -92,7 +96,7 @@ const NewMeetingSidebar = (props: Props) => {
   return (
     <SidebarParent data-cy='sidebar'>
       <SidebarHeader>
-        <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
+        <StyledToggle dataCy={t('NewMeetingSidebar.Sidebar', {})} onClick={toggleSidebar} />
         <div>
           {isFacilitator ? (
             <EditableMeetingName

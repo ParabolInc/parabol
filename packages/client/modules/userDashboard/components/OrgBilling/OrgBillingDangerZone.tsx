@@ -50,25 +50,22 @@ interface Props {
 const OrgBillingDangerZone = (props: Props) => {
   const {organization} = props
 
-  //FIXME i18n: Danger Zone
-  //FIXME i18n: mailto:love@parabol.co?subject=Instant Unsubscribe from Pro
-  //FIXME i18n: Instant Unsubscribe from Pro
   const {t} = useTranslation()
 
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
   const isPersonal = tier === 'personal'
   return (
-    <Panel label='Danger Zone'>
+    <Panel label={t('OrgBillingDangerZone.DangerZone')}>
       <PanelRow>
         {isPersonal ? (
           <ArchiveOrganization organization={organization} />
         ) : (
           <Unsubscribe>
-            <span>{t('OrgBillingDangerZone.NeedToCancelItSPainless')}</span>
+            <span>{t('OrgBillingDangerZone.NeedToCancelItsPainless')}</span>
             <a
-              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
-              title='Instant Unsubscribe from Pro'
+              href={t('OrgBillingDangerZone.MailtoLoveParabolCoSubjectInstantUnsubscribeFromPro')}
+              title={t('OrgBillingDangerZone.InstantUnsubscribeFromPro')}
             >
               <u>{t('OrgBillingDangerZone.ContactUs')}</u>
               <EnvelopeIcon>

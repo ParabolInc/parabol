@@ -1,14 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {createFragmentContainer} from 'react-relay'
 import {ThreadedItem_discussion} from '~/__generated__/ThreadedItem_discussion.graphql'
 import {ThreadedItem_threadable} from '~/__generated__/ThreadedItem_threadable.graphql'
 import {ThreadedItem_viewer} from '~/__generated__/ThreadedItem_viewer.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
+import ThreadedPollBase from './ThreadedPollBase'
 import ThreadedRepliesList from './ThreadedRepliesList'
 import ThreadedTaskBase from './ThreadedTaskBase'
-import ThreadedPollBase from './ThreadedPollBase'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
@@ -26,23 +27,26 @@ export type SetReplyMention = (replyMention: ReplyMention) => void
 
 export const ThreadedItem = (props: Props) => {
   const {allowedThreadables, threadable, discussion, viewer} = props
+
+  const {t} = useTranslation()
+
   const {__typename, replies} = threadable
   const [replyMention, setReplyMention] = useState<ReplyMention>(null)
   const child = (
     <ThreadedRepliesList
       allowedThreadables={allowedThreadables}
-      dataCy={`child`}
+      dataCy={t('ThreadedItem.Child', {})}
       discussion={discussion}
       replies={replies}
       setReplyMention={setReplyMention}
       viewer={viewer}
     />
   )
-  if (__typename === 'Task') {
+  if (__typename === t('ThreadedItem.Task')) {
     return (
       <ThreadedTaskBase
         allowedThreadables={allowedThreadables}
-        dataCy={`task`}
+        dataCy={t('ThreadedItem.Task', {})}
         task={threadable}
         discussion={discussion}
         replyMention={replyMention}
@@ -53,7 +57,7 @@ export const ThreadedItem = (props: Props) => {
       </ThreadedTaskBase>
     )
   }
-  if (__typename === 'Poll') {
+  if (__typename === t('ThreadedItem.Poll')) {
     return (
       <ThreadedPollBase
         allowedThreadables={allowedThreadables}
@@ -65,7 +69,7 @@ export const ThreadedItem = (props: Props) => {
   return (
     <ThreadedCommentBase
       allowedThreadables={allowedThreadables}
-      dataCy={`comment`}
+      dataCy={t('ThreadedItem.Comment', {})}
       comment={threadable}
       discussion={discussion}
       replyMention={replyMention}

@@ -69,7 +69,6 @@ interface UserSettingsProps extends WithFormProps<'preferredName'> {
 function UserSettings(props: UserSettingsProps) {
   const {fields, onChange, validateField, viewer} = props
 
-  //FIXME i18n: My name
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -95,7 +94,7 @@ function UserSettings(props: UserSettingsProps) {
       <InfoBlock>
         <FieldLabel
           customStyles={{paddingBottom: 8}}
-          label='Name'
+          label={t('UserSettings.Name')}
           fieldSize='medium'
           indent
           htmlFor='preferredName'
@@ -108,7 +107,7 @@ function UserSettings(props: UserSettingsProps) {
               autoFocus
               onChange={onChange}
               name='preferredName'
-              placeholder='My name'
+              placeholder={t('UserSettings.MyName')}
             />
           </FieldBlock>
           <StyledButton size='medium'>{t('UserSettings.Update')}</StyledButton>

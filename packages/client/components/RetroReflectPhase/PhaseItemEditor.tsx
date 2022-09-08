@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -72,6 +73,9 @@ const PhaseItemEditor = (props: Props) => {
     readOnly,
     meetingRef
   } = props
+
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const [editorState, setEditorState] = useState(EditorState.createEmpty)
@@ -93,8 +97,8 @@ const PhaseItemEditor = (props: Props) => {
     const visible = !isEditing && editorState.getCurrentContent().hasText()
     if (visible) {
       const newEnterHint = isFocused
-        ? 'Press enter to add'
-        : 'Forgot to press enter? Click here to add 👆'
+        ? t('PhaseItemEditor.PressEnterToAdd')
+        : t('PhaseItemEditor.ForgotToPressEnterClickHereToAdd👆')
       hindTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 500)
       return () => {
         window.clearTimeout(hindTimerRef.current)
@@ -132,7 +136,10 @@ const PhaseItemEditor = (props: Props) => {
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
-      transform: `translate(${left}px,${top}px)`,
+      transform: t('PhaseItemEditor.TranslateLeftPxTopPx', {
+        left,
+        top
+      }),
       editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(content))),
       key: content,
       isStart: true
@@ -150,7 +157,10 @@ const PhaseItemEditor = (props: Props) => {
         {
           ...cardInFlight,
           isStart: false,
-          transform: `translate(${left}px,${top}px)`
+          transform: t('PhaseItemEditor.TranslateLeftPxTopPx', {
+            left,
+            top
+          })
         },
         ...cardsInFlightRef.current.slice(idx + 1)
       ]
@@ -162,7 +172,7 @@ const PhaseItemEditor = (props: Props) => {
   }
 
   const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
+    if (e.key !== t('PhaseItemEditor.Enter') || e.shiftKey) return
     e.preventDefault()
     const {value} = e.currentTarget
     if (!value) return
@@ -236,9 +246,11 @@ const PhaseItemEditor = (props: Props) => {
     <>
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
         <ReflectionEditorWrapper
-          dataCy={`${dataCy}-wrapper`}
+          dataCy={t('PhaseItemEditor.DataCyWrapper', {
+            dataCy
+          })}
           isPhaseItemEditor
-          ariaLabel='Edit this reflection'
+          ariaLabel={t('PhaseItemEditor.EditThisReflection')}
           editorState={editorState}
           editorRef={editorRef}
           onBlur={onBlur}
@@ -246,7 +258,7 @@ const PhaseItemEditor = (props: Props) => {
           handleReturn={handleReturn}
           handleKeyDownFallback={handleKeyDownFallback}
           keyBindingFn={onFocus}
-          placeholder='My reflection… (press enter to add)'
+          placeholder={t('PhaseItemEditor.MyReflectionPressEnterToAdd')}
           setEditorState={setEditorState}
           readOnly={readOnly}
           disableAnonymity={disableAnonymity}

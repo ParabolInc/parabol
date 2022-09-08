@@ -26,7 +26,6 @@ const StyledDialogContainer = styled(DialogContainer)({
 const LeaveOrgModal = (props: Props) => {
   const {orgId} = props
 
-  //FIXME i18n: Leave the organization
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -49,9 +48,13 @@ const LeaveOrgModal = (props: Props) => {
       <DialogContent>
         {t('LeaveOrgModal.ThisWillRemoveYouFromTheOrganizationAndAllTeamsUnderIt')}
         <br />
-        {t('LeaveOrgModal.ToUndoItYouLlHaveToAskAnotherBillingLeaderToReAddYou')}
+        {t('LeaveOrgModal.ToUndoItYoullHaveToAskAnotherBillingLeaderToReAddYou')}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
-          <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
+          <IconLabel
+            icon='arrow_forward'
+            iconAfter
+            label={t('LeaveOrgModal.LeaveTheOrganization')}
+          />
         </StyledButton>
       </DialogContent>
     </StyledDialogContainer>

@@ -38,7 +38,6 @@ const LastCallWrapper = styled('div')({
 const ActionMeetingLastCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
 
-  //FIXME i18n: End Meeting
   const {t} = useTranslation()
 
   const atmosphere = useAtmosphere()
@@ -61,19 +60,39 @@ const ActionMeetingLastCall = (props: Props) => {
   const getHeadingText = () => {
     if (endedAt && agendaItemsCompleted === 0)
       return <span>{t('ActionMeetingLastCall.NothingToSeeHere')}</span>
-    else if (agendaItemsCompleted === 0) return <span>{`No ${labelAgendaItems}?`}</span>
+    else if (agendaItemsCompleted === 0)
+      return (
+        <span>
+          {t('ActionMeetingLastCall.NoLabelAgendaItems', {
+            labelAgendaItems
+          })}
+        </span>
+      )
     else return <span>{t('ActionMeetingLastCall.LastCall')}</span>
   }
 
   const getMeetingCopy = () => {
     if (endedAt && agendaItemsCompleted === 0) {
-      return <span>{`There were no ${labelAgendaItems} added to this meeting.`}</span>
+      return (
+        <span>
+          {t('ActionMeetingLastCall.ThereWereNoLabelAgendaItemsAddedToThisMeeting', {
+            labelAgendaItems
+          })}
+        </span>
+      )
     } else if (agendaItemsCompleted === 0) {
       return (
         <span>
-          {`Looks like you didn’t process any ${labelAgendaItems}.`}
+          {t('ActionMeetingLastCall.LooksLikeYouDidntProcessAnyLabelAgendaItems', {
+            labelAgendaItems
+          })}
           <br />
-          {`You can add ${labelAgendaItems} in the left sidebar before ending the meeting.`}
+          {t(
+            'ActionMeetingLastCall.YouCanAddLabelAgendaItemsInTheLeftSidebarBeforeEndingTheMeeting',
+            {
+              labelAgendaItems
+            }
+          )}
           <br />
           {t('ActionMeetingLastCall.SimplyTapOnAnyItemsYouCreateToProcessThem')}
         </span>
@@ -81,8 +100,19 @@ const ActionMeetingLastCall = (props: Props) => {
     } else {
       return (
         <span>
-          {t('ActionMeetingLastCall.WeVeWorkedOn')}
-          <b>{`${agendaItemsCompleted} ${plural(agendaItemsCompleted, AGENDA_ITEM_LABEL)}`}</b>
+          {t('ActionMeetingLastCall.WeveWorkedOn')}
+          <b>
+            {t(
+              'ActionMeetingLastCall.AgendaItemsCompletedPluralAgendaItemsCompletedAgendaItemLabel',
+              {
+                agendaItemsCompleted,
+                pluralAgendaItemsCompletedAgendaItemLabel: plural(
+                  agendaItemsCompleted,
+                  AGENDA_ITEM_LABEL
+                )
+              }
+            )}
+          </b>
           {t('ActionMeetingLastCall.SoFarNeedAnythingElse')}
         </span>
       )
@@ -105,7 +135,7 @@ const ActionMeetingLastCall = (props: Props) => {
           {!endedAt && <AgendaShortcutHint />}
           {isFacilitating ? (
             <PrimaryButton
-              aria-label='End Meeting'
+              aria-label={t('ActionMeetingLastCall.EndMeeting')}
               size='large'
               onClick={endMeeting}
               disabled={!!endedAt}
@@ -114,7 +144,8 @@ const ActionMeetingLastCall = (props: Props) => {
             </PrimaryButton>
           ) : !endedAt ? (
             <MeetingFacilitationHint>
-              {t('ActionMeetingLastCall.WaitingFor')} <b>{preferredName}</b> {`to end the meeting`}
+              {t('ActionMeetingLastCall.WaitingFor')} <b>{preferredName}</b>{' '}
+              {t('ActionMeetingLastCall.ToEndTheMeeting', {})}
             </MeetingFacilitationHint>
           ) : null}
         </LastCallWrapper>

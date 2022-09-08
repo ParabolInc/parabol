@@ -5,6 +5,7 @@
 import styled from '@emotion/styled'
 import {Cancel} from '@mui/icons-material'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import {PALETTE} from '../../styles/paletteV3'
@@ -52,6 +53,8 @@ const StyledIcon = styled(Cancel)({
 })
 
 const ReflectionCardDeleteButton = (props: Props) => {
+  const {t} = useTranslation()
+
   const atmosphere = useAtmosphere()
   const handleDelete = () => {
     const {onCompleted, onError, meetingId, reflectionId, submitMutation, submitting} = props
@@ -61,7 +64,7 @@ const ReflectionCardDeleteButton = (props: Props) => {
   }
 
   const {submitting, dataCy} = props
-  const userLabel = 'Delete this reflection card'
+  const userLabel = t('ReflectionCardDeleteButton.DeleteThisReflectionCard')
   if (submitting) return null
   return (
     <DeleteButton data-cy={dataCy} aria-label={userLabel} onClick={handleDelete} title={userLabel}>

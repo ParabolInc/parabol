@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -109,6 +110,9 @@ const validateIssue = (issue: string) => {
 
 const NewGitLabIssueInput = (props: Props) => {
   const {isEditing, meetingId, setIsEditing, viewerRef} = props
+
+  const {t} = useTranslation()
+
   const viewer = useFragment(
     graphql`
       fragment NewGitLabIssueInput_viewer on User {
@@ -194,7 +198,11 @@ const NewGitLabIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      content: convertToTaskContent(
+        t('NewGitLabIssueInput.NewIssueTitleArchived', {
+          newIssueTitle
+        })
+      ),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
@@ -237,7 +245,7 @@ const NewGitLabIssueInput = (props: Props) => {
               onChange={onChange}
               maxLength={255}
               name='newIssue'
-              placeholder='New issue title'
+              placeholder={t('NewGitLabIssueInput.NewIssueTitle')}
               ref={ref}
               type='text'
             />

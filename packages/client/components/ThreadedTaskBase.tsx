@@ -74,7 +74,13 @@ const ThreadedTaskBase = (props: Props) => {
   }
   useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
   return (
-    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper
+      data-cy={t('ThreadedTaskBase.DataCyWrapper', {
+        dataCy
+      })}
+      isReply={isReply}
+      ref={ref}
+    >
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedItemHeaderDescription
@@ -82,14 +88,27 @@ const ThreadedTaskBase = (props: Props) => {
           subTitle={t('ThreadedTaskBase.AddedATask')}
         >
           <HeaderActions>
-            <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
+            <ThreadedReplyButton
+              dataCy={t('ThreadedTaskBase.DataCy', {
+                dataCy
+              })}
+              onReply={onReply}
+            />
           </HeaderActions>
         </ThreadedItemHeaderDescription>
-        <StyledNullableTask dataCy={`${dataCy}`} area='meeting' task={task} />
+        <StyledNullableTask
+          dataCy={t('ThreadedTaskBase.DataCy', {
+            dataCy
+          })}
+          area='meeting'
+          task={task}
+        />
         {children}
         <ThreadedItemReply
           allowedThreadables={allowedThreadables}
-          dataCy={`${dataCy}-reply`}
+          dataCy={t('ThreadedTaskBase.DataCyReply', {
+            dataCy
+          })}
           discussion={discussion}
           threadable={task}
           editorRef={replyEditorRef}

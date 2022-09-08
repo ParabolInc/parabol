@@ -46,12 +46,13 @@ const persistSchemaForTab = (currentSchema: SchemaType) => {
 }
 
 const GraphqlContainer = () => {
-  //FIXME i18n: Prettify Query (Shift-Ctrl-P)
-  //FIXME i18n: Show History
   const {t} = useTranslation()
 
   const [currentSchema, setCurrentSchema] = useState<SchemaType>(() => {
-    return (window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) as SchemaType) || 'Public'
+    return (
+      (window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) as SchemaType) ||
+      t('GraphqlContainer.Public')
+    )
   })
   const introspectionResultRef = useRef({Public: '', Private: ''})
   const graphiql = useRef<GraphiQL>(null)
@@ -72,9 +73,15 @@ const GraphqlContainer = () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-application-authorization': `Bearer ${atmosphere.authToken}`
+        'x-application-authorization': t('GraphqlContainer.BearerAtmosphereAuthToken', {
+          atmosphereAuthToken: atmosphere.authToken
+        })
       },
-      body: JSON.stringify({query, variables, isPrivate: currentSchema === 'Private'})
+      body: JSON.stringify({
+        query,
+        variables,
+        isPrivate: currentSchema === t('GraphqlContainer.Private')
+      })
     })
     const resJSON = await res.json()
     if (isIntrospectionQuery) {
@@ -87,7 +94,7 @@ const GraphqlContainer = () => {
     const tabSchemaLookupStr = window.localStorage.getItem('graphiql:tabSchemaLookup')
     const parsedTabSchemaLookup = safeParseJSON(tabSchemaLookupStr)
     const tabSchemaLookup = Array.isArray(parsedTabSchemaLookup) ? parsedTabSchemaLookup : []
-    const schemaToUse = tabSchemaLookup[tab.activeTabIndex] || 'Public'
+    const schemaToUse = tabSchemaLookup[tab.activeTabIndex] || t('GraphqlContainer.Public')
     setCurrentSchema(schemaToUse)
   }
 
@@ -95,33 +102,36 @@ const GraphqlContainer = () => {
     <GQL>
       <GraphiQL fetcher={fetcher} ref={graphiql} tabs={{onTabChange}}>
         <GraphiQL.Logo>
-          <img crossOrigin='' alt='Parabol' src={logoMarkPrimary} />
+          <img crossOrigin='' alt={t('GraphqlContainer.Parabol')} src={logoMarkPrimary} />
         </GraphiQL.Logo>
         <GraphiQL.Toolbar>
           <GraphiQL.ToolbarButton
             onClick={() => graphiql.current!.ref?.props.prettify()}
-            title='Prettify Query (Shift-Ctrl-P)'
-            label='Prettify'
+            title={t('GraphqlContainer.PrettifyQueryShiftCtrlP')}
+            label={t('GraphqlContainer.Prettify')}
           />
           <GraphiQL.ToolbarButton
             onClick={() => graphiql.current!.ref?.props.historyContext?.toggle()}
-            title='Show History'
-            label='History'
+            title={t('GraphqlContainer.ShowHistory')}
+            label={t('GraphqlContainer.History')}
           />
           <GraphiQL.Group>
             <span>{t('GraphqlContainer.Schema')}</span>
-            <ToolbarSelect title='Schema' label='Schema'>
+            <ToolbarSelect
+              title={t('GraphqlContainer.Schema')}
+              label={t('GraphqlContainer.Schema')}
+            >
               <ToolbarSelectOption
-                label='Public'
-                value='Public'
-                selected={currentSchema === 'Public'}
-                onSelect={changeSchema('Public')}
+                label={t('GraphqlContainer.Public')}
+                value={t('GraphqlContainer.Public')}
+                selected={currentSchema === t('GraphqlContainer.Public')}
+                onSelect={changeSchema(t('GraphqlContainer.Public'))}
               />
               <ToolbarSelectOption
-                label='Private'
-                value='Private'
-                selected={currentSchema === 'Private'}
-                onSelect={changeSchema('Private')}
+                label={t('GraphqlContainer.Private')}
+                value={t('GraphqlContainer.Private')}
+                selected={currentSchema === t('GraphqlContainer.Private')}
+                onSelect={changeSchema(t('GraphqlContainer.Private'))}
               />
             </ToolbarSelect>
           </GraphiQL.Group>

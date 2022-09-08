@@ -39,7 +39,12 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   const {history} = useRouter()
 
   const onClick = () => {
-    history.replace(`/new-meeting/${teamId}`, {backgroundLocation: location})
+    history.replace(
+      t('SideBarStartMeetingButton.NewMeetingTeamId', {
+        teamId
+      }),
+      {backgroundLocation: location}
+    )
   }
   return (
     <Button isOpen={isOpen} onClick={onClick}>

@@ -73,7 +73,7 @@ const MobileDashTopBar = (props: Props) => {
     queryRef
   )
   const {viewer} = data
-  const pageName = viewer?.pageName ?? 'Parabol'
+  const pageName = viewer?.pageName ?? t('MobileDashTopBar.Parabol')
   return (
     <Wrapper>
       <LeftNavHeader>

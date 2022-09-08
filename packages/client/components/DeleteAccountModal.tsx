@@ -79,7 +79,7 @@ const DeleteAccountModal = () => {
       <StyledDialogContent>
         <Fields>
           <StyledCopy>
-            {t('DeleteAccountModal.WeReOnAMissionToMakeEveryMeetingWorthTheTimeInvested')}
+            {t('DeleteAccountModal.WereOnAMissionToMakeEveryMeetingWorthTheTimeInvested')}
           </StyledCopy>
           <StyledCopy>
             {t('DeleteAccountModal.IfThereIsAnythingWeCanDoToImproveLetUsKnowBelow')}

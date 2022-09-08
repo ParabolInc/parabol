@@ -49,7 +49,7 @@ const JiraFieldMenu = (props: Props) => {
         isDropdown={isDropdown}
       >
         <MenuItem
-          key={t('JiraFieldMenu.Noresults')}
+          key={t('JiraFieldMenu.NoResults')}
           label={t('JiraFieldMenu.CannotConnectToJira')}
         />
       </Menu>

@@ -1,12 +1,13 @@
-import React, {ReactNode, Ref, RefObject, useMemo, useEffect} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode, Ref, RefObject, useEffect, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PALETTE} from '../../styles/paletteV3'
 import {BBox} from '../../types/animations'
-import {RefCallbackInstance} from '../../types/generics'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
+import {RefCallbackInstance} from '../../types/generics'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ExpandedReflection from './ExpandedReflection'
 import getBBox from './getBBox'
-import {OpenSpotlight} from '../GroupingKanbanColumn'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -92,13 +93,16 @@ const ExpandedReflectionStack = (props: Props) => {
     openSpotlight,
     isBehindSpotlight
   } = props
+
+  const {t} = useTranslation()
+
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       const {activeElement, body} = document
-      if (e.key === 'Escape' && activeElement === body) {
+      if (e.key === t('ExpandedReflectionStack.Escape') && activeElement === body) {
         closePortal()
       }
     }

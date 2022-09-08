@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, useEffect} from 'react'
+import {useTranslation} from 'react-i18next'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import Avatar from '../../../../components/Avatar/Avatar'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
@@ -92,6 +93,9 @@ const query = graphql`
 
 const Organization = (props: Props) => {
   const {queryRef} = props
+
+  const {t} = useTranslation()
+
   const data = usePreloadedQuery<OrganizationQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -105,8 +109,13 @@ const Organization = (props: Props) => {
     }
   }, [history, organization])
   const {togglePortal, modalPortal} = useModal()
-  const orgName = (organization && organization.name) || 'Unknown'
-  useDocumentTitle(`Organization Settings | ${orgName}`, orgName)
+  const orgName = (organization && organization.name) || t('Organization.Unknown') || 'Unknown'
+  useDocumentTitle(
+    t('Organization.OrganizationSettingsOrgName', {
+      orgName
+    }),
+    orgName
+  )
   if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
@@ -117,7 +126,7 @@ const Organization = (props: Props) => {
         <BackControlBlock>
           <DashNavControl
             icon='arrow_back'
-            label='Back to Organizations'
+            label={t('Organization.BackToOrganizations')}
             onClick={() => history.push('/me/organizations')}
           />
         </BackControlBlock>
