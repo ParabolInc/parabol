@@ -325,14 +325,8 @@
     "TeamTeamId": "/team/{{teamId}}"
   },
   "DashSidebar": {
-    "Add": "add",
     "AddATeam": "Add a Team",
-    "Forum": "forum",
-    "Me": "/me",
-    "MeTasks": "/me/tasks",
     "Meetings": "Meetings",
-    "Newteam1": "/newteam/1",
-    "PlaylistAddCheck": "playlist_add_check",
     "Tasks": "Tasks",
     "Timeline": "Timeline"
   },

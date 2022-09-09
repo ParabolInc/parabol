@@ -1,5 +1,11 @@
 {
   "SideBarStartMeetingButton": {
     "AddMeeting": "Neues Meeting"
+  },
+  "DashSidebar": {
+    "AddATeam": "Neues Team",
+    "Meetings": "Meetings",
+    "Tasks": "Aufgaben",
+    "Timeline": "Verlauf"
   }
 }

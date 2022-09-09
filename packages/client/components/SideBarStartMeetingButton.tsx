@@ -12,7 +12,8 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   height: 48,
   overflow: 'hidden',
   padding: 0,
-  width: isOpen ? 160 : 48,
+  maxWidth: isOpen ? '100%' : 48,
+  width: 'fit-content',
   marginLeft: 7,
   marginTop: 15,
   marginBottom: 15,
@@ -28,7 +29,8 @@ const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   fontSize: 16,
   fontWeight: 600,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  opacity: isOpen ? 1 : 0
+  opacity: isOpen ? 1 : 0,
+  paddingRight: 32
 }))
 
 const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {

@@ -68,21 +68,9 @@ const DashSidebar = (props: Props) => {
       <Nav isOpen={isOpen}>
         <Contents>
           <NavItemsWrap>
-            <NavItem
-              icon={t('DashSidebar.Forum')}
-              href={t('DashSidebar.Meetings')}
-              label={t('DashSidebar.Meetings')}
-            />
-            <NavItem
-              icon={t('DashSidebar.Timeline')}
-              href={t('DashSidebar.Me')}
-              label={t('DashSidebar.Timeline')}
-            />
-            <NavItem
-              icon={t('DashSidebar.PlaylistAddCheck')}
-              href={t('DashSidebar.MeTasks')}
-              label={t('DashSidebar.Tasks')}
-            />
+            <NavItem icon='forum' href='/meetings' label={t('DashSidebar.Meetings')} />
+            <NavItem icon='timeline' href='/me' label={t('DashSidebar.Timeline')} />
+            <NavItem icon='playlist_add_check' href='/me/tasks' label={t('DashSidebar.Tasks')} />
           </NavItemsWrap>
           <DashHR />
           <NavMain>
@@ -90,11 +78,7 @@ const DashSidebar = (props: Props) => {
           </NavMain>
           <DashHR />
           <NavItemsWrap>
-            <NavItem
-              icon={t('DashSidebar.Add')}
-              href={t('DashSidebar.Newteam1')}
-              label={t('DashSidebar.AddATeam')}
-            />
+            <NavItem icon='add' href='/newteam/1' label={t('DashSidebar.AddATeam')} />
           </NavItemsWrap>
         </Contents>
       </Nav>

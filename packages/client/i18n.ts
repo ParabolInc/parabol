@@ -8,9 +8,14 @@ i18next
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    lng: 'en', // if you're using a language detector, do not define the lng option
     fallbackLng: 'en',
+    supportedLngs: ['en', 'es', 'de'],
+    load: 'languageOnly',
+    partialBundledLanguages: true,
     debug: true,
+    detection: {
+      order: ['navigator']
+    },
     backend: {
       loadPath: '/static/translations/{{lng}}.json'
     }
