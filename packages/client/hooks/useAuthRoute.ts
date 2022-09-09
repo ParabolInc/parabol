@@ -1,8 +1,9 @@
-import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
 import {useEffect} from 'react'
-import useDeepEqual from './useDeepEqual'
+import SignUpWithPasswordMutation from '~/mutations/SignUpWithPasswordMutation'
 import {AuthTokenRole} from '../types/constEnums'
+import useAtmosphere from './useAtmosphere'
+import useDeepEqual from './useDeepEqual'
+import useRouter from './useRouter'
 
 interface Options {
   role?: AuthTokenRole
@@ -19,6 +20,16 @@ const unauthenticatedDefault = {
   autoDismiss: 5,
   message: 'Hey! You haven’t signed in yet. Taking you to the sign in page.',
   key: 'unauthenticated'
+}
+
+function makeid(length: number) {
+  let result = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
 }
 
 const useAuthRoute = (inOptions: Options = {}) => {
@@ -39,6 +50,28 @@ const useAuthRoute = (inOptions: Options = {}) => {
           atmosphere.eventEmitter.emit('addSnackbar', unauthenticatedDefault)
         })
       }
+
+      // FIXME we should only create a temporary account and login user if meeting is public
+      SignUpWithPasswordMutation(
+        atmosphere,
+        {
+          email: `anonymous.${makeid(10)}@gmail.com`,
+          password: makeid(20),
+          invitationToken: '',
+          isInvitation: false
+          //isAnonymous: true
+        },
+        {
+          onError: () => {
+            return null
+          },
+          onCompleted: () => {
+            return null
+          },
+          history
+        }
+      )
+
       history.replace({
         pathname: '/',
         search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
