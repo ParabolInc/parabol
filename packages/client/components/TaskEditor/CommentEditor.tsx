@@ -7,7 +7,7 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useRef, useEffect} from 'react'
+import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import completeEntity from '../../utils/draftjs/completeEntity'
 import linkify from '../../utils/linkify'
 import {AriaLabels, Card} from '../../types/constEnums'
@@ -53,6 +53,7 @@ interface Props extends DraftProps {
   onSubmit: () => void
   teamId: string
   dataCy: string
+  discussionId?: string
 }
 
 const CommentEditor = (props: Props) => {
@@ -66,6 +67,7 @@ const CommentEditor = (props: Props) => {
     onSubmit,
     onBlur,
     onFocus,
+    discussionId,
     dataCy
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
@@ -192,9 +194,9 @@ const CommentEditor = (props: Props) => {
 
   useEffect(() => {
     if (editorRef.current) {
-      editorRef.current.focus();
+      editorRef.current.focus()
     }
-  }, [editorRef, editorState]);
+  }, [editorRef, discussionId])
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
