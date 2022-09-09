@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
+import getRethink from '../../database/rethinkDriver'
+import {canJoinMeeting, getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RemoveReflectionPayload from '../types/RemoveReflectionPayload'
 import removeEmptyReflectionGroup from './helpers/removeEmptyReflectionGroup'
-import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
-import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
 
 export default {
   type: RemoveReflectionPayload,
@@ -30,10 +30,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .run()
+    const reflection = await r.table('RetroReflection').get(reflectionId).run()
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -42,8 +39,8 @@ export default {
       return standardError(new Error('Reflection'), {userId: viewerId})
     }
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    const {endedAt, phases, teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
+    const {endedAt, phases} = meeting
+    if (!(await canJoinMeeting(authToken, meetingId))) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})

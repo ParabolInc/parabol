@@ -1,8 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId} from '../../utils/authorization'
+import {canJoinMeeting} from '../../utils/authorization'
 import getPubSub from '../../utils/getPubSub'
 import {GQLContext} from '../graphql'
 import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
@@ -19,14 +17,7 @@ export default {
     {authToken}: GQLContext
   ) => {
     // AUTH
-    const r = await getRethink()
-    const viewerId = getUserId(authToken)
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await r
-      .table('MeetingMember')
-      .get(meetingMemberId)
-      .run()
-    if (!meetingMember) {
+    if (!(await canJoinMeeting(authToken, meetingId))) {
       throw new Error('Not invited to the meeting. Cannot subscribe')
     }
 

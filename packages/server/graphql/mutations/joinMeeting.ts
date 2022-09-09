@@ -16,7 +16,7 @@ import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStag
 import UpdatesStage from '../../database/types/UpdatesStage'
 import insertDiscussions from '../../postgres/queries/insertDiscussions'
 import {analytics} from '../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {canJoinMeeting, getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -71,16 +71,32 @@ const joinMeeting = {
     if (!meeting) {
       return {error: {message: 'Invalid meeting ID'}}
     }
-    const {endedAt, teamId, phases} = meeting
+    const {endedAt, teamId: meetingTeamId, phases} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting has already ended'}}
     }
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: 'Not on the team'}}
+    if (!(await canJoinMeeting(authToken, meetingId))) {
+      return {error: {message: 'Can not access meeting'}}
     }
-    const teamMemberId = toTeamMemberId(teamId, viewerId)
+
+    const getUserDefaultTeam = async (viewerId: string) => {
+      const teamMember = await r
+        .table('TeamMember')
+        .filter({userId: viewerId, isLead: true})
+        .nth(0)
+        .run()
+
+      return teamMember.teamId
+    }
+
+    // FIXME: as a quick solution we pick some default team for 3rd party users
+    const viewerTeamId = isTeamMember(authToken, meetingTeamId)
+      ? meetingTeamId
+      : await getUserDefaultTeam(viewerId)
+    const teamMemberId = toTeamMemberId(viewerTeamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
+
     const {errors} = await r.table('MeetingMember').insert(meetingMember).run()
     // if this is called concurrently, only 1 will be error free
     if (errors > 0) {
@@ -145,7 +161,7 @@ const joinMeeting = {
       await insertDiscussions([
         {
           id: responsesStage.discussionId,
-          teamId,
+          teamId: meetingTeamId,
           meetingId,
           discussionTopicId: teamMemberId,
           discussionTopicType: 'teamPromptResponse' as const

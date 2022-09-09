@@ -22,6 +22,41 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   return Array.isArray(tms) && tms.includes(teamId)
 }
 
+export const canJoinMeeting = async (authToken: AuthToken, meetingId: string) => {
+  const r = await getRethink()
+  const viewerId = getUserId(authToken)
+  const meeting = await r.table('NewMeeting').get(meetingId).run()
+  const {allowedOrganizationIds, allowedUserIds, allowedTeamIds, allowedEveryone, createdBy} =
+    meeting
+
+  if (createdBy === viewerId || allowedEveryone) {
+    return true
+  }
+
+  if (allowedOrganizationIds) {
+    const viewerOrgIds = await r
+      .table('OrganizationUser')
+      .filter({
+        userId: viewerId
+      })
+      .getField('orgId')
+      .run()
+
+    // TODO: could be done as a single rethinkdb query
+    return allowedOrganizationIds.some((orgId) => viewerOrgIds.includes(orgId))
+  }
+
+  if (allowedUserIds) {
+    return allowedUserIds.includes(viewerId)
+  }
+
+  if (allowedTeamIds) {
+    return allowedTeamIds.some((teamId) => isTeamMember(authToken, teamId))
+  }
+
+  return false
+}
+
 // export const isPastOrPresentTeamMember = async (viewerId: string, teamId: string) => {
 //   const r = await getRethink()
 //   return r

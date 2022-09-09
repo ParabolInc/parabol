@@ -39,6 +39,10 @@ export default abstract class Meeting {
   showConversionModal?: boolean
   meetingSeriesId?: number
   scheduledEndTime?: Date | null
+  allowedOrganizationIds?: string[] | null
+  allowedUserIds?: string[] | null
+  allowedTeamIds?: string[] | null
+  allowedEveryone?: boolean | null
 
   constructor(input: Input) {
     const {

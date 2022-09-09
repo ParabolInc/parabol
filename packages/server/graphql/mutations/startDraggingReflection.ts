@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import {canJoinMeeting, getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',
@@ -43,7 +43,7 @@ export default {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
+    if (!(await canJoinMeeting(authToken, meetingId))) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})

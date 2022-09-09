@@ -4,7 +4,7 @@ import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {canJoinMeeting, getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -44,8 +44,8 @@ export default {
     }
     const {meetingId} = reflectionGroup
     const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
-    const {endedAt, phases, maxVotesPerGroup, teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
+    const {endedAt, phases, maxVotesPerGroup} = meeting
+    if (!(await canJoinMeeting(authToken, meetingId))) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
