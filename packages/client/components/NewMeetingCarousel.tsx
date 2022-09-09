@@ -84,14 +84,14 @@ const ILLUSTRATIONS = {
 
 const TITLES = {
   retrospective: 'Retrospective',
-  action: 'Team Check-in',
+  action: '1-on-1',
   poker: 'Sprint Poker',
   teamPrompt: 'Standup'
 } as Record<MeetingTypeEnum, string>
 
 const DESCRIPTIONS = {
   retrospective: 'Improve how you work',
-  action: 'Sync up, unblock each other',
+  action: 'Check in with your reports',
   poker: 'Estimate effort, de-risk execution',
   teamPrompt: 'Share updates, on your time'
 } as Record<MeetingTypeEnum, string>

@@ -104,7 +104,7 @@ const ActionMeetingLastCall = (props: Props) => {
               onClick={endMeeting}
               disabled={!!endedAt}
             >
-              End Check-in Meeting
+              End 1:1 Meeting
             </PrimaryButton>
           ) : !endedAt ? (
             <MeetingFacilitationHint>

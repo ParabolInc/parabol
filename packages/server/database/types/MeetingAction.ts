@@ -32,7 +32,7 @@ export default class MeetingAction extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'action',
-      name: name ?? `Check-in #${meetingCount + 1}`
+      name: name ?? `1-on-1 #${meetingCount + 1}`
     })
   }
 }

@@ -30,6 +30,7 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PlainButton from './PlainButton/PlainButton'
 import PromptResponseEditor from './promptResponse/PromptResponseEditor'
+import StageTimerDisplay from './StageTimerDisplay'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -191,9 +192,10 @@ const AddAgendaItems = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.additems}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
+          <StageTimerDisplay meeting={meeting} />
           <AgendaWrapper>
             <AgendaList>
               <h2>This meeting's agenda</h2>
@@ -287,6 +289,8 @@ export default createFragmentContainer(AddAgendaItems, {
       id
       endedAt
       showSidebar
+      ...StageTimerControl_meeting
+      ...StageTimerDisplay_meeting
       agendaItems {
         id
         isActive

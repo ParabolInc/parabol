@@ -13,7 +13,7 @@ import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 export const APP_CDN_USER_ASSET_SUBDIR = '/store'
 
 /* Meeting Misc. */
-export const MEETING_NAME = 'Check-in Meeting'
+export const MEETING_NAME = '1-on-1'
 export const MEETING_SUMMARY_LABEL = 'Summary'
 export const AGENDA_ITEM_LABEL = 'Agenda Topic'
 export const RETRO_TOPIC_LABEL = 'Topic'
