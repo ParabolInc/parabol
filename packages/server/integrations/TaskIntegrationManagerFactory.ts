@@ -2,7 +2,11 @@ import {GraphQLResolveInfo} from 'graphql'
 import {TaskIntegration} from '../database/types/Task'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
-import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
+import {
+  IntegrationProviderAzureDevOps,
+  IntegrationProviderJiraServer
+} from '../postgres/queries/getIntegrationProvidersByIds'
+import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import GitHubServerManager from './github/GitHubServerManager'
 import GitLabServerManager from './gitlab/GitLabServerManager'
 import JiraIntegrationManager from './jira/JiraIntegrationManager'
@@ -33,7 +37,8 @@ export interface TaskIntegrationManager {
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    issueId: string
+    issueId: string,
+    integrationHash?: string
   ): Promise<string | Error>
 }
 
@@ -49,6 +54,7 @@ export default class TaskIntegrationManagerFactory {
     | GitHubServerManager
     | JiraServerRestManager
     | GitLabServerManager
+    | AzureDevOpsServerManager
     | null
   > {
     if (service === 'jira') {
@@ -81,6 +87,19 @@ export default class TaskIntegrationManagerFactory {
       const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
       return new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
+    }
+
+    if (service === 'azureDevOps') {
+      const auth = await dataLoader
+        .get('teamMemberIntegrationAuths')
+        .load({service: 'azureDevOps', teamId, userId})
+
+      if (!auth) {
+        return null
+      }
+      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+      return new AzureDevOpsServerManager(auth, provider as IntegrationProviderAzureDevOps)
     }
 
     return null

@@ -57,13 +57,14 @@ interface Props {
 
 const EditorLinkChangerModal = (props: Props) => {
   const {originCoords, removeModal, link, text, handleSubmit, handleEscape} = props
+  const trimmedText = text ? text.trim() : ''
   const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
     isDropdown: true,
     originCoords
   })
   const {setDirtyField, onChange, validateField, fields} = useForm({
     text: {
-      getDefault: () => text,
+      getDefault: () => trimmedText,
       validate: (value) =>
         new Legitity(value)
           .trim()
@@ -100,7 +101,7 @@ const EditorLinkChangerModal = (props: Props) => {
     }
   }
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       removeModal(true)
       handleEscape && handleEscape()
@@ -108,11 +109,11 @@ const EditorLinkChangerModal = (props: Props) => {
   }
 
   const hasError = !!(fields.text.error || fields.link.error)
-  const label = text ? 'Update' : 'Add'
+  const label = !!trimmedText ? 'Update' : 'Add'
   return menuPortal(
     <ModalBoundary onBlur={handleBlur} onKeyDown={handleKeyDown} tabIndex={-1}>
       <form onSubmit={onSubmit}>
-        {text !== null && (
+        {trimmedText !== null && (
           <TextBlock>
             <InputLabel>{'Text'}</InputLabel>
             <InputBlock>
@@ -126,7 +127,7 @@ const EditorLinkChangerModal = (props: Props) => {
             <BasicInput
               {...fields.link}
               value={fields.link.value === null ? '' : fields.link.value}
-              autoFocus={link === null && text !== ''}
+              autoFocus={!link && !!trimmedText}
               onChange={onChange}
               name='link'
               spellCheck={false}

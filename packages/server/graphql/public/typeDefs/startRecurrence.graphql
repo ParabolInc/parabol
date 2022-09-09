@@ -4,7 +4,7 @@ extend type Mutation {
   """
   startRecurrence(
     """
-    Describe the first arg here
+    ID of the meeting to start recurrence for
     """
     meetingId: ID!
   ): StartRecurrencePayload!
@@ -18,7 +18,7 @@ union StartRecurrencePayload = StartRecurrenceSuccess | ErrorPayload
 type StartRecurrenceSuccess {
   """
   The updated meeting
-  :TODO: (jmtaber129): Change this to be any NewMeeting.
+  :TODO: Change this to be any NewMeeting.
   """
   meeting: TeamPromptMeeting!
 }

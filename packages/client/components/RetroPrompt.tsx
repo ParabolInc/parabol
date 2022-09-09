@@ -4,7 +4,6 @@ const RetroPrompt = styled('div')({
   alignItems: 'center',
   display: 'flex',
   fontSize: 18,
-  fontStyle: 'italic',
   fontWeight: 600,
   lineHeight: '24px'
 })

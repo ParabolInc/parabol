@@ -2,8 +2,6 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
-import ReflectionGroup from '../../database/types/ReflectionGroup'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -13,7 +11,6 @@ import {GQLContext} from '../graphql'
 import VoteForReflectionGroupPayload from '../types/VoteForReflectionGroupPayload'
 import safelyCastVote from './helpers/safelyCastVote'
 import safelyWithdrawVote from './helpers/safelyWithdrawVote'
-import getPhase from '../../utils/getPhase'
 
 export default {
   type: VoteForReflectionGroupPayload,
@@ -87,46 +84,11 @@ export default {
       )
       if (votingError) return votingError
     }
-    const reflectionGroups = await dataLoader
-      .get('retroReflectionGroupsByMeetingId')
-      .load(meetingId)
-    const voteCount = reflectionGroups.reduce(
-      (sum: number, group: ReflectionGroup) => sum + group.voterIds.length,
-      0
-    )
-
-    let isUnlock
-    let unlockedStageIds
-
-    if (!isUnvote) {
-      const discussPhase = getPhase(phases, 'discuss')
-      const {stages} = discussPhase
-      const [firstStage] = stages
-      const {isNavigableByFacilitator} = firstStage
-      if (!isNavigableByFacilitator) {
-        isUnlock = true
-      }
-    } else if (voteCount === 0) {
-      // technically, this is still a possible race condition if someone removes & adds 1 very quickly
-      // but then can fix that by casting another vote, so it's not terrible
-      isUnlock = false
-    }
-    if (isUnlock !== undefined) {
-      unlockedStageIds = unlockAllStagesForPhase(phases, 'discuss', true, isUnlock)
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          phases
-        })
-        .run()
-    }
 
     const data = {
       meetingId,
       userId: viewerId,
-      reflectionGroupId,
-      unlockedStageIds
+      reflectionGroupId
     }
     publish(
       SubscriptionChannel.MEETING,

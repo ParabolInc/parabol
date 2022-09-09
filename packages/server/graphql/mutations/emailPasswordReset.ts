@@ -4,6 +4,7 @@ import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {GQLContext} from '../graphql'
@@ -36,13 +37,13 @@ const emailPasswordReset = {
           .table('PasswordResetRequest')
           .getAll(ip, {index: 'ip'})
           .filter({email})
-          .filter((row) => row('time').ge(yesterday))
+          .filter((row: RDatum) => row('time').ge(yesterday))
           .count()
           .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown as boolean,
         failOnTime: r
           .table('PasswordResetRequest')
           .getAll(ip, {index: 'ip'})
-          .filter((row) => row('time').ge(yesterday))
+          .filter((row: RDatum) => row('time').ge(yesterday))
           .count()
           .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown as boolean
       }).run()
@@ -52,7 +53,7 @@ const emailPasswordReset = {
       const domain = getSSODomainFromEmail(email)
       const samlDomainExists = await r
         .table('SAML')
-        .filter((row) => row('domains').contains(domain))
+        .filter((row: RDatum) => row('domains').contains(domain))
         .run()
       if (samlDomainExists.length) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}

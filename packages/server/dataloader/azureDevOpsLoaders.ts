@@ -4,9 +4,11 @@ import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/gene
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
+import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager, {
+  ProjectRes,
   Resource,
   TeamProjectReference,
   WorkItem
@@ -43,7 +45,7 @@ export interface AzureDevOpsRemoteProjectKey {
   userId: string
   teamId: string
   instanceId: string
-  projectKey: string
+  projectId: string
 }
 
 export interface AzureDevOpsIssueKey {
@@ -112,6 +114,18 @@ export interface AzureUserInfo {
   timeStamp: string
 }
 
+export interface AzureAccountProject extends TeamProjectReference {
+  userId: string
+  teamId: string
+  service: 'azureDevOps'
+}
+
+interface AzureProject extends ProjectRes {
+  userId: string
+  teamId: string
+  service: 'azureDevOps'
+}
+
 export const freshAzureDevOpsAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, IGetTeamMemberIntegrationAuthQueryResult | null, string> => {
@@ -146,6 +160,10 @@ export const freshAzureDevOpsAuth = (
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
+              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
+              if (oauthRes.message === 'invalid_grant') {
+                await removeTeamMemberIntegrationAuthQuery('azureDevOps', teamId, userId)
+              }
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
@@ -300,8 +318,8 @@ export const allAzureDevOpsAccessibleOrgs = (
 
 export const allAzureDevOpsProjects = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, TeamProjectReference[], string> => {
-  return new DataLoader<TeamUserKey, TeamProjectReference[], string>(
+): DataLoader<TeamUserKey, AzureAccountProject[], string> => {
+  return new DataLoader<TeamUserKey, AzureAccountProject[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
@@ -337,6 +355,45 @@ export const allAzureDevOpsProjects = (
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const azureDevOpsProject = (
+  parent: RootDataLoader
+): DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string> => {
+  return new DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({instanceId, userId, teamId, projectId}) => {
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return null
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          if (!provider) return null
+          const manager = new AzureDevOpsServerManager(
+            auth,
+            provider as IntegrationProviderAzureDevOps
+          )
+          const projectRes = await manager.getProject(instanceId, projectId)
+          if (projectRes instanceof Error) {
+            console.log(projectRes)
+            return null
+          }
+          return {
+            ...projectRes,
+            teamId,
+            userId,
+            self: projectRes._links.self.href,
+            instanceId,
+            service: 'azureDevOps' as const
+          }
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}:${key.instanceId}:${key.projectId}`
     }
   )
 }
@@ -531,7 +588,9 @@ export const getMappedAzureDevOpsWorkItem = async (
     descriptionHTML: returnedWorkItem.fields['System.Description']
       ? returnedWorkItem.fields['System.Description']
       : '',
-    service: 'azureDevOps'
+    service: 'azureDevOps',
+    teamId,
+    userId
   } as AzureDevOpsWorkItem
 
   const projectResult = await manager.getProjectProcessTemplate(

@@ -148,8 +148,7 @@ export default {
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     const {isSpectatingPoker} = teamMember
     const updates = {
-      lastMeetingType: meetingType,
-      updatedAt: new Date()
+      lastMeetingType: meetingType
     }
     await Promise.all([
       r

@@ -1,56 +1,64 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NewMeetingSettingsToggleCheckIn_settings} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import {useFragment} from 'react-relay'
+import {NewMeetingSettingsToggleCheckIn_settings$key} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import SetCheckInEnabledMutation from '../mutations/SetCheckInEnabledMutation'
+import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {NewMeeting} from '../types/constEnums'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
 
 const ButtonRow = styled(PlainButton)({
-  alignItems: 'center',
+  background: PALETTE.SLATE_200,
+  borderRadius: '8px',
   display: 'flex',
-  padding: '12px 12px 12px 16px',
-  width: NewMeeting.CONTROLS_WIDTH,
-  background: '#fff',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderTop: 0,
-  borderRadius: '0 0 4px 4px',
+  fontSize: 14,
+  lineHeight: '24px',
+  fontWeight: 600,
+  userSelect: 'none',
+  width: '100%',
   ':hover': {
-    backgroundColor: PALETTE.SLATE_100
-  }
+    backgroundColor: PALETTE.SLATE_300
+  },
+  padding: '22px 16px',
+  alignItems: 'center'
 })
 
 const Label = styled('div')({
-  color: PALETTE.SLATE_700,
-  cursor: 'pointer',
-  fontSize: 14,
+  flex: 1,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  fontSize: 20,
   fontWeight: 600,
-  minWidth: 160,
-  lineHeight: '24px',
-  userSelect: 'none'
+  color: PALETTE.SLATE_900
 })
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
-  fontSize: ICON_SIZE.MD24,
-  marginRight: 16,
+  fontSize: 28,
   textAlign: 'center',
-  userSelect: 'none',
-  width: ICON_SIZE.MD24
+  userSelect: 'none'
 }))
 
 interface Props {
-  settings: NewMeetingSettingsToggleCheckIn_settings
+  settingsRef: NewMeetingSettingsToggleCheckIn_settings$key
+  className?: string
 }
 
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {
-  const {settings} = props
+  const {settingsRef, className} = props
+  const settings = useFragment(
+    graphql`
+      fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
+        id
+        phaseTypes
+      }
+    `,
+    settingsRef
+  )
   const {id: settingsId, phaseTypes} = settings
   const hasCheckIn = phaseTypes.includes('checkin')
   const atmosphere = useAtmosphere()
@@ -58,25 +66,18 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
   const toggleCheckIn = () => {
     if (submitting) return
     submitMutation()
-    SetCheckInEnabledMutation(
+    SetMeetingSettingsMutation(
       atmosphere,
-      {isEnabled: !hasCheckIn, settingsId},
+      {checkinEnabled: !hasCheckIn, settingsId},
       {onError, onCompleted}
     )
   }
   return (
-    <ButtonRow onClick={toggleCheckIn}>
-      <StyledCheckbox active={hasCheckIn} />
+    <ButtonRow onClick={toggleCheckIn} className={className}>
       <Label>{'Include Icebreaker'}</Label>
+      <StyledCheckbox active={hasCheckIn} />
     </ButtonRow>
   )
 }
 
-export default createFragmentContainer(NewMeetingSettingsToggleCheckIn, {
-  settings: graphql`
-    fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
-      id
-      phaseTypes
-    }
-  `
-})
+export default NewMeetingSettingsToggleCheckIn

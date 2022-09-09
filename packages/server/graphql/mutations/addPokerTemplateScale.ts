@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import TemplateScale from '../../database/types/TemplateScale'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -40,11 +41,7 @@ const addPokerTemplateScale = {
     const activeScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-      )
+      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
       .run()
     if (activeScales.length >= Threshold.MAX_POKER_TEMPLATE_SCALES) {
       return standardError(new Error('Too many scales'), {userId: viewerId})
@@ -70,12 +67,8 @@ const addPokerTemplateScale = {
       const existingCopyCount = await r
         .table('TemplateScale')
         .getAll(teamId, {index: 'teamId'})
-        .filter((row) =>
-          row('removedAt')
-            .default(null)
-            .eq(null)
-        )
-        .filter((row) => row('name').match(`^${copyName}`) as any)
+        .filter((row: RDatum) => row('removedAt').default(null).eq(null))
+        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
         .count()
         .run()
       const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
@@ -94,10 +87,7 @@ const addPokerTemplateScale = {
       })
     }
 
-    await r
-      .table('TemplateScale')
-      .insert(newScale)
-      .run()
+    await r.table('TemplateScale').insert(newScale).run()
 
     const scaleId = newScale.id
     const data = {scaleId}
