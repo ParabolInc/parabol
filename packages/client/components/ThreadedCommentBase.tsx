@@ -25,7 +25,6 @@ import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 import useFocusedReply from './useFocusedReply'
-import ensureHasText from '../modules/meeting/helpers/ensureHasText'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -124,6 +123,8 @@ const ThreadedCommentBase = (props: Props) => {
         ?.setValue(ownerId, 'replyingToCommentId')
     })
   }
+
+  const ensureHasText = (value: string) => value.trim().length
 
   const onSubmit = () => {
     if (submitting || isTempId(commentId)) return

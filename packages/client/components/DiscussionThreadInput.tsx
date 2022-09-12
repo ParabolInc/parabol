@@ -29,7 +29,6 @@ import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import {createLocalPoll} from './Poll/local/newPoll'
-import ensureHasText from '../modules/meeting/helpers/ensureHasText'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -155,6 +154,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     })
     editorRef.current?.focus()
   }
+
+  const ensureHasText = (value: string) => value.trim().length
 
   const hasText = ensureHasText(editorState.getCurrentContent().getPlainText())
   const commentSubmitState = hasText ? 'typing' : 'idle'
