@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -44,7 +45,7 @@ const setMeetingSettings = {
     if (!settings) {
       return standardError(new Error('Settings not found'), {userId: viewerId})
     }
-    const {teamId} = settings
+    const {teamId, meetingType} = settings
 
     // RESOLUTION
     await r
@@ -69,6 +70,10 @@ const setMeetingSettings = {
       .run()
 
     const data = {settingsId}
+    analytics.meetingSettingsChanged(viewerId, teamId, meetingType, {
+      hasIcebreaker: !!checkinEnabled,
+      disableAnonymity: !!disableAnonymity
+    })
     publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
     return data
   }

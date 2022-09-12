@@ -42,6 +42,11 @@ export type TaskEstimateProperties = {
   errorMessage?: string
 }
 
+export type MeetingSettings = {
+  hasIcebreaker?: boolean
+  disableAnonymity?: boolean
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -52,6 +57,7 @@ export type AnalyticsEvent =
   | 'Reactji Interacted'
   | 'Meeting Recurrence Started'
   | 'Meeting Recurrence Stopped'
+  | 'Meeting Settings Changed'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -147,6 +153,19 @@ class Analytics {
 
   meetingJoined = (userId: string, meeting: Meeting) => {
     this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
+  }
+
+  meetingSettingsChanged = (
+    userId: string,
+    teamId: string,
+    meetingType: MeetingTypeEnum,
+    meetingSettings: MeetingSettings
+  ) => {
+    this.track(userId, 'Meeting Settings Changed', {
+      teamId,
+      meetingType,
+      ...meetingSettings
+    })
   }
 
   commentAdded = (
