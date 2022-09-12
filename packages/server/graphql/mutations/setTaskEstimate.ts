@@ -307,6 +307,7 @@ const setTaskEstimate = {
         break
       }
       default:
+        success = true
         break
     }
 
