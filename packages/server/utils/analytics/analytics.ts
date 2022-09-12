@@ -1,5 +1,6 @@
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
@@ -106,12 +107,15 @@ class Analytics {
   }
 
   retrospectiveEnd = (
-    completedMeeting: Meeting,
+    completedMeeting: MeetingRetrospective,
     meetingMembers: MeetingMember[],
     template: MeetingTemplate
   ) => {
+    const {disableAnonymity} = completedMeeting
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, template)
+      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, template, {
+        disableAnonymity
+      })
     )
   }
 
