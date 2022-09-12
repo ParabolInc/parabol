@@ -5,7 +5,7 @@ import StripeManager from './StripeManager'
 // using proxy to start gradual coverage of StripeManager
 export default function StubStripeManager() {
   return new Proxy<StripeManager>(new StripeManager(), {
-    get: (target, propKey) => {
+    get: (target, propKey: keyof typeof target) => {
       if (propKey === 'createEnterpriseSubscription') {
         return async (customerId: string, orgId: string, quantity: number, plan?: string) => {
           return {

@@ -6,9 +6,15 @@ import {TaskServiceEnum} from '../../database/types/Task'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
+
+export type MeetingSeriesAnalyticsProperties = Pick<
+  MeetingSeries,
+  'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'title'
+> & {teamId: string; facilitatorId: string}
 
 export type OrgTierChangeEventProperties = {
   orgId: string
@@ -45,6 +51,7 @@ export type AnalyticsEvent =
   | 'Response Added'
   | 'Reactji Interacted'
   | 'Meeting Recurrence Started'
+  | 'Meeting Recurrence Stopped'
   // team
   | 'Integration Added'
   | 'Integration Removed'
@@ -130,17 +137,25 @@ class Analytics {
     this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
   }
 
-  recurrenceStarted = (userId: string, meeting: Meeting) => {
-    // :TODO: (jmtaber129): Add properties related to recurrence settings (duration, frequency,
-    // etc.) after we support configuring those.
-    this.track(userId, 'Meeting Recurrence Started', createMeetingProperties(meeting))
+  recurrenceStarted = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
+    this.track(userId, 'Meeting Recurrence Started', meetingSeries)
+  }
+
+  recurrenceStopped = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
+    this.track(userId, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
   meetingJoined = (userId: string, meeting: Meeting) => {
     this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
   }
 
-  commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {
+  commentAdded = (
+    userId: string,
+    meeting: Meeting,
+    isAnonymous: boolean,
+    isAsync: boolean,
+    isReply: boolean
+  ) => {
     this.track(userId, 'Comment Added', {
       meetingId: meeting.id,
       meetingType: meeting.meetingType,

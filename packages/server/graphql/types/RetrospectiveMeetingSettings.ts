@@ -1,7 +1,14 @@
-import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import db from '../../db'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
 import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
@@ -27,6 +34,11 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
       type: new GraphQLNonNull(GraphQLInt),
       description:
         'The maximum number of votes a team member can vote for a single reflection group'
+    },
+    disableAnonymity: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'Disables anonymity of reflections',
+      resolve: ({disableAnonymity}) => disableAnonymity ?? false
     },
     selectedTemplateId: {
       type: new GraphQLNonNull(GraphQLID),

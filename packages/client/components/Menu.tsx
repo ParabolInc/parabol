@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import React, {
   Children,
   cloneElement,
@@ -10,9 +11,8 @@ import React, {
   useRef,
   useState
 } from 'react'
-import styled from '@emotion/styled'
-import MenuItemAnimation from './MenuItemAnimation'
 import {PortalStatus} from '../hooks/usePortal'
+import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick
 const REACT_ELEMENT = Symbol.for('react.element')
@@ -132,7 +132,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
         if (!child) return null
         if (!isReactElement(child)) return child
         // overloading a ref callback with useful props means intermediary components only need to forward the ref
-        const ref = (c) => {
+        const ref = (c: {onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}) => {
           itemHandles.current[idx] = c
         }
         ref.closePortal = closePortal

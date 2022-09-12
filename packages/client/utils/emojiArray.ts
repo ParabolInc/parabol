@@ -5,6 +5,6 @@ import emojis from './emojis'
 export default Object.keys(emojis).map((name) => {
   return {
     value: `:${name}:`,
-    emoji: emojis[name]
+    emoji: emojis[name as keyof typeof emojis]
   }
 })

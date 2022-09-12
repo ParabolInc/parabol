@@ -122,9 +122,9 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
   function _validateField(name?: FieldStateKey<T>) {
     if (!name) {
       return Object.keys(state).reduce((obj, name) => {
-        obj[name] = _validateField(name)
+        obj[name as any] = _validateField(name)
         return obj
-      }, {})
+      }, {} as any)
     }
     return validate(name, state[name].value)
   }

@@ -2,8 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import clientTempId from '~/utils/relay/clientTempId'
 import {UpsertTeamPromptResponseMutation_meeting} from '~/__generated__/UpsertTeamPromptResponseMutation_meeting.graphql'
+import {UpsertTeamPromptResponseMutation_notification} from '~/__generated__/UpsertTeamPromptResponseMutation_notification.graphql'
 import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {UpsertTeamPromptResponseMutation as TUpsertTeamPromptResponseMutation} from '../__generated__/UpsertTeamPromptResponseMutation.graphql'
+import handleAddNotifications from './handlers/handleAddNotifications'
 
 graphql`
   fragment UpsertTeamPromptResponseMutation_meeting on UpsertTeamPromptResponseSuccess {
@@ -15,6 +17,16 @@ graphql`
       plaintextContent
       updatedAt
       createdAt
+    }
+  }
+`
+
+graphql`
+  fragment UpsertTeamPromptResponseMutation_notification on UpsertTeamPromptResponseSuccess {
+    addedNotification {
+      id
+      type
+      ...ResponseMentioned_notification @relay(mask: false)
     }
   }
 `
@@ -39,6 +51,14 @@ const mutation = graphql`
     }
   }
 `
+
+export const upsertTeamPromptResponseNotificationUpdater: SharedUpdater<
+  UpsertTeamPromptResponseMutation_notification
+> = (payload, {store}) => {
+  const notification = payload.getLinkedRecord('addedNotification' as any)
+  if (!notification) return
+  handleAddNotifications(notification, store)
+}
 
 export const upsertTeamPromptResponseUpdater: SharedUpdater<
   UpsertTeamPromptResponseMutation_meeting

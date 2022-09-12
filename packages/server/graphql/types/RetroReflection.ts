@@ -8,7 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import Reflection from '../../database/types/Reflection'
-import {getUserId} from '../../utils/authorization'
+import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
 import resolveReactjis from '../resolvers/resolveReactjis'
@@ -19,6 +19,7 @@ import ReflectPrompt from './ReflectPrompt'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
+import User from './User'
 
 const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
   name: 'RetroReflection',
@@ -43,7 +44,37 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     creatorId: {
       description: 'The userId that created the reflection (or unique Id if not a team member)',
       type: GraphQLID,
-      resolve: resolveForSU('creatorId')
+      resolve: async ({creatorId, meetingId}, _args: unknown, {authToken, dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+
+        const {meetingType} = meeting
+
+        if (
+          !isSuperUser(authToken) &&
+          (meetingType !== 'retrospective' || !meeting.disableAnonymity)
+        ) {
+          return null
+        }
+
+        return creatorId
+      }
+    },
+    creator: {
+      description: 'The user that created the reflection, only visible if anonymity is disabled',
+      type: User,
+      resolve: async ({creatorId, meetingId}, _args: unknown, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+
+        const {meetingType} = meeting
+
+        // let's not allow super users to grap this in case the UI does not check `disableAnonymity` in which case
+        // reflection authors would be always visible for them
+        if (meetingType !== 'retrospective' || !meeting.disableAnonymity) {
+          return null
+        }
+
+        return dataLoader.get('users').load(creatorId)
+      }
     },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',

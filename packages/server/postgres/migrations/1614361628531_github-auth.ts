@@ -1,24 +1,24 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r} from 'rethinkdb-ts'
+import {r, RValue} from 'rethinkdb-ts'
 import {parse} from 'url'
 import {insertGitHubAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL!)
   await r.connectPool({
-    host,
-    port: parseInt(port, 10),
-    db: path.split('/')[1]
+    host: host!,
+    port: parseInt(port!, 10),
+    db: path!.split('/')[1]
   })
   const client = new Client(getPgConfig())
   await client.connect()
   const ghIntegrations = await r
     .table('Provider')
     .filter({service: 'GitHubIntegration', isActive: true})
-    .filter((row) => row('accessToken').default(null).ne(null))
+    .filter((row: RValue) => row('accessToken').default(null).ne(null))
     .run()
   const auths = ghIntegrations.map(
     ({accessToken, createdAt, isActive, providerUserName, teamId, updatedAt, userId}) => ({
@@ -47,7 +47,7 @@ export async function up(): Promise<void> {
     await insertGitHubAuthsQuery.run({auths}, client)
   }
   await client.end()
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {

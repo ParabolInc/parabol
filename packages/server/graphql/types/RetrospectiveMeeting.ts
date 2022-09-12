@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLID,
@@ -54,6 +55,11 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of votes allowed for each participant to cast on a single group'
+    },
+    disableAnonymity: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'Disables anonymity of reflections',
+      resolve: ({disableAnonymity}) => disableAnonymity ?? false
     },
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetrospectiveMeetingMember))),
