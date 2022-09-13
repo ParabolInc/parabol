@@ -306,9 +306,10 @@ const setTaskEstimate = {
         success = true
         break
       }
-      default:
+      case undefined: {
         success = true
         break
+      }
     }
 
     analytics.taskEstimateSet(viewerId, {
