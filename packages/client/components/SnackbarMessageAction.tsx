@@ -17,6 +17,7 @@ const Action = styled(PlainButton)({
   fontWeight: 600,
   marginLeft: 8,
   padding: 8,
+  whiteSpace: 'nowrap',
   backgroundColor: '#ffffff17',
   transition: `background 100ms ${DECELERATE}`,
   ':hover,:focus,:active': {
