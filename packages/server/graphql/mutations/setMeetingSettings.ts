@@ -47,6 +47,7 @@ const setMeetingSettings = {
     }
     const {teamId, meetingType} = settings
 
+    const meetingSettings = {}
     // RESOLUTION
     await r
       .table('MeetingSettings')
@@ -59,10 +60,12 @@ const setMeetingSettings = {
             checkinEnabled ? row('phaseTypes') : row('phaseTypes').difference(['checkin']),
             checkinEnabled ? row('phaseTypes').prepend('checkin') : row('phaseTypes')
           )
+          Object.assign(meetingSettings, {hasIcebreaker: checkinEnabled})
         }
 
         if (isNotNull(disableAnonymity)) {
           updatedSettings.disableAnonymity = disableAnonymity
+          Object.assign(meetingSettings, {disableAnonymity})
         }
 
         return updatedSettings
@@ -70,10 +73,7 @@ const setMeetingSettings = {
       .run()
 
     const data = {settingsId}
-    analytics.meetingSettingsChanged(viewerId, teamId, meetingType, {
-      hasIcebreaker: !!checkinEnabled,
-      disableAnonymity: !!disableAnonymity
-    })
+    analytics.meetingSettingsChanged(viewerId, teamId, meetingType, meetingSettings)
     publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
     return data
   }
