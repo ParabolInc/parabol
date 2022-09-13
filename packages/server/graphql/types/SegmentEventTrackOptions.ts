@@ -6,6 +6,7 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql'
+import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import TaskServiceEnum from './TaskServiceEnum'
 import TierEnum from './TierEnum'
@@ -21,7 +22,6 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     spotlightSearchQuery: {type: GraphQLString},
     meetingId: {type: GraphQLID},
     reflectionId: {type: GraphQLID},
-    viewerId: {type: GraphQLID},
     reflectionsCount: {type: GraphQLInt},
     action: {type: GraphQLString},
     searchQueryString: {type: GraphQLString},
@@ -30,7 +30,10 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     projectId: {type: GraphQLID},
     selectedAll: {type: GraphQLBoolean},
     domainId: {type: GraphQLID},
-    CTAType: {type: TierEnum}
+    CTAType: {type: TierEnum},
+    taskId: {type: GraphQLID},
+    meetingType: {type: MeetingTypeEnum},
+    inMeeting: {type: GraphQLBoolean}
   })
 })
 

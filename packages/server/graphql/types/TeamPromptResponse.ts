@@ -21,7 +21,7 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
       description: 'Id of the user who created the team prompt response'
     },
     user: {
-      type: require('./User').default,
+      type: new GraphQLNonNull(require('./User').default),
       description: 'The user who created the response',
       resolve: ({userId}: {userId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)

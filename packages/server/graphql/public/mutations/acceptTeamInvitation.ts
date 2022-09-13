@@ -1,5 +1,9 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {InvitationTokenError, SubscriptionChannel} from '../../../../client/types/constEnums'
+import {
+  InvitationTokenError,
+  LOCKED_MESSAGE,
+  SubscriptionChannel
+} from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -7,9 +11,11 @@ import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
+import segmentIo from '../../../utils/segmentIo'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
+import getIsAnyViewerTeamLocked from './helpers/getIsAnyViewerTeamLocked'
 import getIsUserIdApprovedByOrg from './helpers/getIsUserIdApprovedByOrg'
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
@@ -43,7 +49,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   }
 
   const {invitation} = invitationRes
-  const {meetingId, teamId} = invitation
+  const {meetingId, teamId, invitedBy: inviterId} = invitation
   const acceptAt = invitation.meetingId ? 'meeting' : 'team'
   const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
   const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
@@ -59,10 +65,26 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
     }
   }
-  const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken)
+
+  const [approvalError, isAnyViewerTeamLocked] = await Promise.all([
+    getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken),
+    getIsAnyViewerTeamLocked(viewer.tms, dataLoader)
+  ])
   if (approvalError instanceof Error) {
     await redisLock.unlock()
     return {error: {message: approvalError.message}}
+  }
+  if (isAnyViewerTeamLocked) {
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Locked user attempted to join a team',
+      properties: {invitingOrgId: orgId}
+    })
+    return {
+      error: {
+        message: LOCKED_MESSAGE.TEAM_INVITE
+      }
+    }
   }
 
   // RESOLUTION
@@ -116,7 +138,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     )
   }
   const isNewUser = viewer.createdAt.getDate() === viewer.lastSeenAt.getDate()
-  analytics.inviteAccepted(viewerId, teamId, isNewUser, acceptAt)
+  analytics.inviteAccepted(viewerId, teamId, inviterId, isNewUser, acceptAt)
   return {
     ...data,
     authToken: encodedAuthToken

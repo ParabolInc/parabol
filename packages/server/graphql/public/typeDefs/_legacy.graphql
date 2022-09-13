@@ -3715,6 +3715,7 @@ enum NotificationEnum {
   TEAM_ARCHIVED
   TASK_INVOLVES
   MEETING_STAGE_TIME_LIMIT_END
+  RESPONSE_MENTIONED
 }
 
 """
@@ -6522,6 +6523,21 @@ type TeamPromptMeeting implements NewMeeting {
   id: ID!
 
   """
+  The meeting series id this meeting is associated with if the meeting is recurring
+  """
+  meetingSeriesId: ID
+
+  """
+  The meeting series this meeting is associated with if the meeting is recurring
+  """
+  meetingSeries: MeetingSeries
+
+  """
+  The timestamp the meeting is scheduled to end
+  """
+  scheduledEndTime: DateTime
+
+  """
   The timestamp the meeting was created
   """
   createdAt: DateTime!
@@ -7671,14 +7687,20 @@ type Mutation {
   """
   Enabled or disable the icebreaker round
   """
-  setCheckInEnabled(
+  setMeetingSettings(
     settingsId: ID!
 
     """
     true to turn icebreaker phase on, false to turn it off
     """
-    isEnabled: Boolean!
-  ): SetCheckInEnabledPayload!
+    checkinEnabled: Boolean
+
+    """
+    disables anonymity of reflections
+    """
+    disableAnonymity: Boolean
+
+  ): SetMeetingSettingsPayload!
 
   """
   Update the default Slack channel where notifications are sent
@@ -9730,7 +9752,7 @@ type SetAppLocationSuccess {
   user: User!
 }
 
-type SetCheckInEnabledPayload {
+type SetMeetingSettingsPayload {
   error: StandardMutationError
   settings: TeamMeetingSettings
 }
@@ -11150,7 +11172,7 @@ union TeamSubscriptionPayload =
   | RenamePokerTemplateDimensionPayload
   | RenamePokerTemplateScalePayload
   | RemovePokerTemplateScaleValuePayload
-  | SetCheckInEnabledPayload
+  | SetMeetingSettingsPayload
   | SetSlackNotificationPayload
   | UpdatePokerTemplateDimensionScalePayload
   | UpdatePokerTemplateScaleValuePayload

@@ -5,13 +5,13 @@ import suggestMentionableUsersQuery, {
   SuggestMentionableUsersQuery
 } from '../__generated__/SuggestMentionableUsersQuery.graphql'
 import SuggestMentionableUsers from './SuggestMentionableUsers'
-import {DraftSuggestion} from './TaskEditor/useSuggestions'
+import {MentionSuggestion} from './TaskEditor/useSuggestions'
 
 interface Props {
   active: number
-  handleSelect: (idx: number) => (e: React.MouseEvent) => void
-  suggestions: DraftSuggestion[]
-  setSuggestions: (suggestions: DraftSuggestion[]) => void
+  handleSelect: (item: MentionSuggestion) => void
+  suggestions: MentionSuggestion[]
+  setSuggestions: (suggestions: MentionSuggestion[]) => void
   originCoords: BBox
   triggerWord: string
   teamId: string

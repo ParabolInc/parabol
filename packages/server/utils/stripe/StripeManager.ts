@@ -40,14 +40,14 @@ export default class StripeManager {
       metadata: {
         orgId
       },
-      prorate: false,
+      proration_behavior: 'none',
       items: [
         {
           plan: plan || StripeManager.PARABOL_ENTERPRISE_2019Q3,
           quantity
         }
       ]
-    } as any)
+    })
   }
 
   async createProSubscription(customerId: string, orgId: string, quantity: number) {
@@ -86,6 +86,10 @@ export default class StripeManager {
 
   async listLineItems(invoiceId: string, options: Stripe.InvoiceLineItemListParams) {
     return this.stripe.invoices.listLineItems(invoiceId, options)
+  }
+
+  async listSources(customerId: string) {
+    return this.stripe.customers.listSources(customerId, {object: 'card', limit: 3})
   }
 
   async retrieveCharge(chargeId: string) {

@@ -1,0 +1,44 @@
+"""
+A meeting series representing a set of recurring meetings
+"""
+type MeetingSeries {
+  """
+  The unique meeting series ID
+  """
+  id: ID!
+
+  """
+  The type of the recurring meeting
+  """
+  meetingType: MeetingTypeEnum!
+
+  """
+  The name of the meeting series used to generate the names of the recurring meetings
+  """
+  title: String!
+
+  """
+  The RFC-2445 recurrence rule that determines when meetings should start
+  """
+  recurrenceRule: String!
+
+  """
+  The duration, in minutes, of meetings that recur
+  """
+  duration: Int!
+
+  """
+  When the meeting series was created
+  """
+  createdAt: DateTime!
+
+  """
+  When the meeting series was last updated
+  """
+  updatedAt: DateTime!
+
+  """
+  When the meeting series was cancelled
+  """
+  cancelledAt: DateTime
+}

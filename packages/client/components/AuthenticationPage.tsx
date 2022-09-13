@@ -43,7 +43,7 @@ const AuthenticationPage = (props: Props) => {
           Better Meetings, <br />
           Less Effort
         </h1>
-        <p>Help your team connect &amp; improve with an agile meeting co-pilot</p>
+        <p>92&#37; of users agreed that Parabol improves the efficiency of their meetings.</p>
       </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>

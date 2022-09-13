@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import Invoice from '../../database/types/Invoice'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
@@ -47,7 +48,7 @@ export default {
           leftBound: 'open',
           rightBound: 'closed'
         })
-        .filter((invoice) => invoice('status').ne('UPCOMING').and(invoice('total').ne(0)))
+        .filter((invoice: RDatum) => invoice('status').ne('UPCOMING').and(invoice('total').ne(0)))
         // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)
         // break ties based on when created. In the future, we might want to consider using the created_at provided by stripe instead of our own
         .orderBy(r.desc('startAt'), r.desc('createdAt'))
@@ -58,7 +59,7 @@ export default {
     const extraInvoices: Invoice[] = tooManyInvoices || []
     const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice
-      ? [upcomingInvoice].concat(paginatedInvoices)
+      ? [upcomingInvoice, ...paginatedInvoices]
       : paginatedInvoices
     const nodes = allInvoices.slice(0, first)
     const edges = nodes.map((node) => ({

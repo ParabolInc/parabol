@@ -31,7 +31,7 @@ export default {
       .limit(first + 1)
       .run()
 
-    const nodes = nodesPlus1.slice(0, -1)
+    const nodes = nodesPlus1.slice(0, first)
     const edges = nodes.map((node) => ({
       cursor: node.createdAt,
       node

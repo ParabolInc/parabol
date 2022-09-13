@@ -70,7 +70,7 @@ export default {
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType})) as MeetingSettingsRetrospective
-    const {totalVotes, maxVotesPerGroup, selectedTemplateId} = meetingSettings
+    const {totalVotes, maxVotesPerGroup, selectedTemplateId, disableAnonymity} = meetingSettings
     const meeting = new MeetingRetrospective({
       id: meetingId,
       teamId,
@@ -80,6 +80,7 @@ export default {
       facilitatorUserId: viewerId,
       totalVotes,
       maxVotesPerGroup,
+      disableAnonymity,
       templateId: selectedTemplateId
     })
 
@@ -103,8 +104,7 @@ export default {
     }
 
     const updates = {
-      lastMeetingType: meetingType,
-      updatedAt: new Date()
+      lastMeetingType: meetingType
     }
     await Promise.all([
       r

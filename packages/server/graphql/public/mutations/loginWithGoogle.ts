@@ -7,6 +7,7 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import GoogleServerManager from '../../../utils/GoogleServerManager'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
@@ -28,8 +29,19 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     return {error: {message: 'Email is too long'}}
   }
 
-  const existingUser = await getUserByEmail(email)
+  const [existingUser, samlURL] = await Promise.all([
+    getUserByEmail(email),
+    getSAMLURLFromEmail(email, false)
+  ])
 
+  if (samlURL) {
+    return {
+      error: {
+        message:
+          'our organization requires you to login with SSO. Reach out to support@parabol.co for more help!'
+      }
+    }
+  }
   if (existingUser) {
     const {id: viewerId, identities, rol} = existingUser
     let googleIdentity = identities.find(

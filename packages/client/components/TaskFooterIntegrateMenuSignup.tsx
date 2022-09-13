@@ -6,6 +6,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
+import AddToAzureMenuItem from './AddToAzureMenuItem'
 import AddToGitHubMenuItem from './AddToGitHubMenuItem'
 import AddToGitLabMenuItem from './AddToGitLabMenuItem'
 import AddToJiraMenuItem from './AddToJiraMenuItem'
@@ -40,6 +41,9 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
         gitlab {
           ...AddToGitLabMenuItem_GitLabIntegration
         }
+        azureDevOps {
+          ...AddToAzureMenuItem_AzureIntegration
+        }
       }
     `,
     integrationsRef
@@ -56,6 +60,11 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
       )}
       <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
       <AddToJiraMenuItem mutationProps={mutationProps} teamId={teamId} />
+      <AddToAzureMenuItem
+        mutationProps={mutationProps}
+        teamId={teamId}
+        azureRef={integrations.azureDevOps}
+      />
       <AddToGitLabMenuItem
         mutationProps={mutationProps}
         teamId={teamId}

@@ -1,11 +1,11 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
-import React, {forwardRef, ReactElement, Ref} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React, {forwardRef, ReactElement, Ref} from 'react'
 import useMenu from '../hooks/useMenu'
 import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
-import ui from '../styles/ui'
 import {PALETTE} from '../styles/paletteV3'
+import ui from '../styles/ui'
+import Icon from './Icon'
 
 const DropdownIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
@@ -28,7 +28,7 @@ interface InputStyleProps {
 const InputBlock = styled('div')<InputStyleProps>(
   ({disabled, size}) => ({
     ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles[size],
+    ...ui.fieldSizeStyles[size!],
     ...makeFieldColorPalette('white', !disabled),
     cursor: 'pointer',
     position: 'relative',

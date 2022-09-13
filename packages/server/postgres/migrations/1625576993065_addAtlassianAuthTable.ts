@@ -2,17 +2,17 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
-import {parse} from 'url'
+import {RDatum} from '../../database/stricterR'
 import {insertAtlassianAuthsQuery} from '../generatedMigrationHelpers'
 import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 const connectRethinkDB = async () => {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
     port: parseInt(port, 10),
-    db: path.split('/')[1]
+    db: pathname.split('/')[1]
   })
 }
 
@@ -40,7 +40,7 @@ export async function up(): Promise<void> {
 
   const atlassianIntegrations = await r
     .table('AtlassianAuth')
-    .filter((row) => row('accessToken').default(null).ne(null))
+    .filter((row: RDatum) => row('accessToken').default(null).ne(null))
     .run()
   const auths = atlassianIntegrations.map(
     ({
@@ -72,7 +72,7 @@ export async function up(): Promise<void> {
     await insertAtlassianAuthsQuery.run({auths}, client)
   }
   await client.end()
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {

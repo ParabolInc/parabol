@@ -30,15 +30,14 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const {error, isOldBrowserErr} = this.state
     if (!error || isOldBrowserErr) return
     const {atmosphere} = this.props
-    const {viewerId} = atmosphere
-    SendClientSegmentEventMutation(atmosphere, 'Fatal Error', {viewerId})
+    SendClientSegmentEventMutation(atmosphere, 'Fatal Error')
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const {atmosphere} = this.props
     const {viewerId} = atmosphere
     const store = atmosphere.getStore()
-    const email = (store as any)?._recordSource?._records?.[viewerId]?.email ?? ''
+    const email = (store.getSource().get(viewerId) as any).email ?? ''
     const isOldBrowserErr = isOldBrowserError(error.message)
     if (viewerId) {
       Sentry.configureScope((scope) => {

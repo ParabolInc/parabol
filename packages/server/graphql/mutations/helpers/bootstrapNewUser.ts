@@ -12,17 +12,22 @@ import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
+import isPatientZero from './isPatientZero'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
-  const {id: userId, createdAt, email, segmentId, picture, preferredName} = user
+  const {id: userId, createdAt, email, featureFlags, tier, segmentId, preferredName} = user
+  const domain = email.split('@')[1]
   segmentIo.identify({
     userId,
     traits: {
-      avatar: picture,
       createdAt,
       email,
-      name: preferredName
+      name: preferredName,
+      isActive: true,
+      featureFlags,
+      highestTier: tier,
+      isPatient0: await isPatientZero(userId, domain)
     },
     anonymousId: segmentId
   })

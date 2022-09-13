@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import RemovePokerTemplateScalePayload from '../types/RemovePokerTemplateScalePayload'
-import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import RemovePokerTemplateScalePayload from '../types/RemovePokerTemplateScalePayload'
 
 const removePokerTemplateScale = {
   description: 'Remove a scale from a template',
@@ -37,21 +38,14 @@ const removePokerTemplateScale = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update({removedAt: now, updatedAt: now})
-      .run()
+    await r.table('TemplateScale').get(scaleId).update({removedAt: now, updatedAt: now}).run()
 
     const nextDefaultScaleId = SprintPokerDefaults.DEFAULT_SCALE_ID
     const dimensions = await r
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-          .and(row('scaleId').eq(scaleId))
+      .filter((row: RDatum) =>
+        row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId))
       )
       .update(
         {

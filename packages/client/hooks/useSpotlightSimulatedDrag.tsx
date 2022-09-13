@@ -1,10 +1,10 @@
 import {MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
+import {commitLocalUpdate} from 'react-relay'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import {Times} from '~/types/constEnums'
+import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import useAtmosphere from './useAtmosphere'
-import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import {commitLocalUpdate} from 'react-relay'
-import {Times} from '~/types/constEnums'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting,
@@ -18,7 +18,6 @@ const useSpotlightSimulatedDrag = (
     () => reflectionGroups.map(({reflections}) => reflections).length,
     [reflectionGroups]
   )
-  const {viewerId} = atmosphere
 
   // handle the case when someone steals the reflection
   useEffect(() => {
@@ -55,7 +54,6 @@ const useSpotlightSimulatedDrag = (
       dragId: dragIdRef.current
     })
     SendClientSegmentEventMutation(atmosphere, 'Closed Spotlight', {
-      viewerId,
       reflectionsCount,
       meetingId,
       reflectionId,
