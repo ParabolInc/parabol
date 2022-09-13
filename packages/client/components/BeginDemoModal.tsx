@@ -1,12 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import DialogContainer from './DialogContainer'
+import Icon from './Icon'
 import PrimaryButton from './PrimaryButton'
-import useAtmosphere from '../hooks/useAtmosphere'
-import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 
 const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',
@@ -30,21 +28,12 @@ const StyledIcon = styled(Icon)({
 })
 
 interface Props {
-  closePortal: () => void
+  startDemo: () => void
 }
 
 const BeginDemoModal = (props: Props) => {
-  const {closePortal} = props
-  const atmosphere = (useAtmosphere() as unknown) as LocalAtmosphere
-  const {clientGraphQLServer} = atmosphere
-  const {startBot} = clientGraphQLServer
-  const onClick = () => {
-    startBot()
-    closePortal()
-    setTimeout(() => {
-      clientGraphQLServer.emit('startDemo')
-    }, 1000)
-  }
+  const {startDemo} = props
+
   return (
     <StyledDialogContainer>
       <StyledIcon>chat</StyledIcon>
@@ -52,7 +41,7 @@ const BeginDemoModal = (props: Props) => {
         Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
         colleagues
       </StyledCopy>
-      <PrimaryButton dataCy='start-demo-button' onClick={onClick} size='medium'>
+      <PrimaryButton dataCy='start-demo-button' onClick={startDemo} size='medium'>
         Start Demo
       </PrimaryButton>
     </StyledDialogContainer>

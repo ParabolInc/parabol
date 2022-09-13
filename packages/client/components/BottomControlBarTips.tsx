@@ -134,22 +134,20 @@ const BottomControlBarTips = (props: Props) => {
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   const menus = isDemoRoute() ? demoHelps : helps
+  const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
   const MenuContent = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
-      const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
-      const {isNew} = clientGraphQLServer
-      if (!isNew) {
+      if (clientGraphQLServer.db._started) {
         openPortal()
       } else {
         // wait for the startBot event to occur
         clientGraphQLServer.once('startDemo', () => {
-          clientGraphQLServer.isNew = false
           openPortal()
         })
       }
     }
-  }, [demoPauseOpen, openPortal])
+  }, [demoPauseOpen, openPortal, clientGraphQLServer.db._started])
   return (
     <BottomNavControl
       dataCy={`tip-menu-toggle`}
