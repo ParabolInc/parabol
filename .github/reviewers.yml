@@ -1,0 +1,36 @@
+reviewers:
+  groups:
+    developers:
+      - JimmyLv
+      - jmtaber129
+      - igorlesnenko
+      - nickoferral
+      - BartoszJarocki
+    maintainers:
+      - mattkrick
+      - Dschoordsch
+    data:
+      - tianrunhe
+      - tghanken
+    designers:
+      - ackernaut
+      - enriquesanchez
+
+  per_author:
+    developers:
+    maintainers:
+    data:
+    designers:
+
+  defaults:
+    - developers
+
+files:
+  '**/migrations/**':
+    - data
+options:
+  ignore_draft: true
+  ignored_keywords:
+    - WIP
+  number_of_reviewers: 1
+
