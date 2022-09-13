@@ -15,12 +15,17 @@ reviewers:
     designers:
       - ackernaut
       - enriquesanchez
+    none:
 
   per_author:
     developers:
+      - none
     maintainers:
+      - none
     data:
+      - none
     designers:
+      - none
 
   defaults:
     - developers
