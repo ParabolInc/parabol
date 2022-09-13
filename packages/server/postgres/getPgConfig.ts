@@ -3,12 +3,15 @@ import path from 'path'
 import PROD from '../PROD'
 
 const getSSL = () => {
-  if (process.env.PGSSLMODE !== 'require') return undefined
-  const PG_ROOT = path.join(__PROJECT_ROOT__, 'packages/server/postgres')
-  const ca = readFileSync(path.join(PG_ROOT, 'root.crt'))
-  const key = readFileSync(path.join(PG_ROOT, 'postgresql.key'))
-  const cert = readFileSync(path.join(PG_ROOT, 'postgresql.crt'))
-  return {ca, key, cert, rejectUnauthorized: true}
+  try {
+    const PG_ROOT = path.join(__PROJECT_ROOT__, 'packages/server/postgres')
+    const ca = readFileSync(path.join(PG_ROOT, 'root.crt'))
+    const key = readFileSync(path.join(PG_ROOT, 'postgresql.key'))
+    const cert = readFileSync(path.join(PG_ROOT, 'postgresql.crt'))
+    return {ca, key, cert, rejectUnauthorized: true}
+  } catch (e) {
+    return undefined
+  }
 }
 
 const getPgConfig = () => ({
