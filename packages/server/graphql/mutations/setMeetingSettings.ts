@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
-import {analytics} from '../../utils/analytics/analytics'
+import {analytics, MeetingSettings} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -47,7 +47,7 @@ const setMeetingSettings = {
     }
     const {teamId, meetingType} = settings
 
-    const meetingSettings = {}
+    const meetingSettings = {} as MeetingSettings
     // RESOLUTION
     await r
       .table('MeetingSettings')
@@ -60,12 +60,12 @@ const setMeetingSettings = {
             checkinEnabled ? row('phaseTypes') : row('phaseTypes').difference(['checkin']),
             checkinEnabled ? row('phaseTypes').prepend('checkin') : row('phaseTypes')
           )
-          Object.assign(meetingSettings, {hasIcebreaker: checkinEnabled})
+          meetingSettings.hasIcebreaker = checkinEnabled
         }
 
         if (isNotNull(disableAnonymity)) {
           updatedSettings.disableAnonymity = disableAnonymity
-          Object.assign(meetingSettings, {disableAnonymity})
+          meetingSettings.disableAnonymity = disableAnonymity
         }
 
         return updatedSettings
