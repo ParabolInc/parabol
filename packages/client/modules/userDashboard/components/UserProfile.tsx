@@ -4,6 +4,7 @@ import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DeleteAccount from '../../../components/DeleteAccount'
 import Panel from '../../../components/Panel/Panel'
+import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Layout} from '../../../types/constEnums'
@@ -46,6 +47,11 @@ const UserProfile = ({queryRef}: Props) => {
       <SettingsBlock>
         <Panel label='My Information'>
           <UserSettingsForm viewer={viewer} />
+        </Panel>
+        <Panel label='Authentication'>
+          <PanelRow>
+            <PasswordResetLink />
+          </PanelRow>
         </Panel>
         <Panel label='Danger Zone'>
           <PanelRow>
