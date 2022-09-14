@@ -91,6 +91,7 @@ import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
+import resetRetroMeetingToReflectStage from './mutations/resetRetroMeetingToReflectStage'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
@@ -222,6 +223,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeTeamMember,
       resetPassword,
       resetRetroMeetingToGroupStage,
+      resetRetroMeetingToReflectStage,
       segmentEventTrack,
       selectTemplate,
       setAppLocation,

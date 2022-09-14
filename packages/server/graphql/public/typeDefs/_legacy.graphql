@@ -7665,6 +7665,11 @@ type Mutation {
   resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
 
   """
+  Reset a retro meeting to group stage
+  """
+  resetRetroMeetingToReflectStage(meetingId: ID!): ResetRetroMeetingToReflectStagePayload!
+
+  """
   track an event in segment, like when errors are hit
   """
   segmentEventTrack(event: String!, options: SegmentEventTrackOptions): Boolean
@@ -9722,6 +9727,11 @@ type ResetRetroMeetingToGroupStagePayload {
   meeting: NewMeeting
 }
 
+type ResetRetroMeetingToReflectStagePayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+}
+
 input SegmentEventTrackOptions {
   teamId: ID
   orgId: ID
@@ -10885,6 +10895,7 @@ union MeetingSubscriptionPayload =
   | PromoteNewMeetingFacilitatorPayload
   | RemoveReflectionPayload
   | ResetRetroMeetingToGroupStagePayload
+  | ResetRetroMeetingToReflectStagePayload
   | SetPhaseFocusPayload
   | SetStageTimerPayload
   | StartDraggingReflectionPayload

@@ -21,6 +21,7 @@ import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDe
 import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
+import {resetRetroMeetingToReflectStageUpdater} from '../mutations/ResetRetroMeetingToReflectStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 
@@ -49,6 +50,7 @@ const subscription = graphql`
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)
       ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
+      ...ResetRetroMeetingToReflectStageMutation_meeting @relay(mask: false)
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
@@ -81,7 +83,8 @@ const updateHandlers = {
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
-  ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
+  ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToReflectStageUpdater,
+  ResetRetroMeetingToReflectStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
   UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater

@@ -46,7 +46,7 @@ const RetroReflectPhase = (props: Props) => {
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
-          <StageTimerDisplay meeting={meeting} />
+          <StageTimerDisplay meeting={meeting} canUndo={true} />
           <ColumnWrapper
             setActiveIdx={setActiveIdx}
             activeIdx={activeIdx}
