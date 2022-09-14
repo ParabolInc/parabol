@@ -7,7 +7,7 @@ openssl rand -base64 32 >consumerKey
 
 echo
 echo -----------------------------------
-echo SEND TO CLIENT
+echo BEGIN SEND TO CLIENT
 echo Consumer Key:
 cat consumerKey
 echo Consumer Name:
@@ -16,6 +16,7 @@ echo Public Key:
 cat jira_publickey.pem
 echo
 echo "Ask for their Jira Server URL, (ours is 'jira.parabol.co' for example)"
+echo END SEND TO CLIENT
 echo -----------------------------------
 echo 
 echo to run the mutation you need
