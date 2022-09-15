@@ -7,7 +7,7 @@ import Panel from '../../../components/Panel/Panel'
 import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import {PALETTE} from '../../../styles/paletteV3'
-import {Layout} from '../../../types/constEnums'
+import {AuthIdentityTypeEnum, Layout} from '../../../types/constEnums'
 import {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
@@ -33,6 +33,9 @@ const query = graphql`
       ...PasswordResetLink_viewer
       preferredName
       picture
+      identities {
+        type
+      }
     }
   }
 `
@@ -42,6 +45,8 @@ const UserProfile = ({queryRef}: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
+  const {identities} = viewer
+  const isLocal = identities?.find((identity) => identity?.type === AuthIdentityTypeEnum.LOCAL)
   useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
     <UserSettingsWrapper>
@@ -49,11 +54,13 @@ const UserProfile = ({queryRef}: Props) => {
         <Panel label='My Information'>
           <UserSettingsForm viewer={viewer} />
         </Panel>
-        <Panel label='Authentication'>
-          <PanelRow>
-            <PasswordResetLink viewerRef={viewer} />
-          </PanelRow>
-        </Panel>
+        {isLocal && (
+          <Panel label='Authentication'>
+            <PanelRow>
+              <PasswordResetLink viewerRef={viewer} />
+            </PanelRow>
+          </Panel>
+        )}
         <Panel label='Danger Zone'>
           <PanelRow>
             <DeleteAccount />
