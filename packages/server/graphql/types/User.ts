@@ -412,6 +412,14 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         return overLimitCopy
       }
     },
+    sendSummaryEmail: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'Whether the user should receive a meeting summary email',
+      resolve: async (src) => {
+        console.log('🚀 ~ src', src)
+        return true
+      }
+    },
     similarReflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
       description:

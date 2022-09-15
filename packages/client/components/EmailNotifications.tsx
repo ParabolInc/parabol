@@ -1,11 +1,9 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import ToggleSummaryEmailMutation from '../mutations/ToggleSummaryEmailMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {PasswordResetLink_viewer$key} from '../__generated__/PasswordResetLink_viewer.graphql'
 import Checkbox from './Checkbox'
 import StyledError from './StyledError'
 
@@ -50,7 +48,7 @@ const StyledCheckbox = styled(Checkbox)({
 })
 
 type Props = {
-  viewerRef: PasswordResetLink_viewer$key
+  viewerRef: any // PasswordResetLink_viewer$key
 }
 
 const EmailNotifications = (props: Props) => {
@@ -58,17 +56,18 @@ const EmailNotifications = (props: Props) => {
   const [isClicked, setIsClicked] = useState(true)
   const atmosphere = useAtmosphere()
   const {error, onError, onCompleted, submitMutation} = useMutationProps()
-  const viewer = useFragment(
-    graphql`
-      fragment PasswordResetLink_viewer on User {
-        email
-      }
-    `,
-    viewerRef
-  )
+  // const viewer = useFragment(
+  //   graphql`
+  //     fragment PasswordResetLink_viewer on User {
+  //       email
+  //     }
+  //   `,
+  //   viewerRef
+  // )
 
   const handleClick = () => {
     setIsClicked((isClicked) => !isClicked)
+    ToggleSummaryEmailMutation(atmosphere, {}, {onError, onCompleted})
   }
 
   return (

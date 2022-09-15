@@ -1,0 +1,18 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  toggleSummaryEmail: ToggleSummaryEmailPayload!
+}
+
+"""
+Return value for toggleSummaryEmail, which could be an error
+"""
+union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess
+
+type ToggleSummaryEmailSuccess {
+  """
+  Describe the first return field here
+  """
+  successField: Boolean
+}
