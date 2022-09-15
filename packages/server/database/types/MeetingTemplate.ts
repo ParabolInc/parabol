@@ -1,5 +1,5 @@
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 
 export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM'
 

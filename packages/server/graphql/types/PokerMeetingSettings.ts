@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 import db from '../../db'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
 import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
-import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
+import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',

@@ -19,6 +19,7 @@
     "precommit": "lint-staged",
     "lint": "eslint --fix . --ext .ts,.tsx",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose --runInBand",
     "postversion": "git push --follow-tags",
     "typecheck": "tsc --noEmit -p tsconfig.json"

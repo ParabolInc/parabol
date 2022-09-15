@@ -1,6 +1,6 @@
-import mime from 'mime-types'
-import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
+import {JSDOM} from 'jsdom'
+import mime from 'mime-types'
 
 const validateAvatarUpload = async (
   contentType: string,

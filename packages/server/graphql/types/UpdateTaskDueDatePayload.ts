@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveTask} from '../resolvers'
-import Task from './Task'
-import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
+import {resolveTask} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import Task from './Task'
 
 const UpdateTaskDueDatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateTaskDueDatePayload',

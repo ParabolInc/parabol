@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     const tierToOrgIds = (await r
       .table('Organization')
@@ -26,7 +26,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r) {
+export const down = async function (r) {
   try {
     await r
       .table('OrganizationUser')

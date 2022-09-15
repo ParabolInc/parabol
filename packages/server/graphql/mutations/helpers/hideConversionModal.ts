@@ -1,6 +1,6 @@
-import {DataLoaderWorker} from '../../graphql'
 import getRethink from '../../../database/rethinkDriver'
 import errorFilter from '../../errorFilter'
+import {DataLoaderWorker} from '../../graphql'
 
 const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)

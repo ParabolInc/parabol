@@ -1,32 +1,17 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await Promise.all([
       r.tableCreate('FailedAuthRequest').run(),
       r.tableCreate('PasswordResetRequest').run()
     ])
     await Promise.all([
-      r
-        .table('FailedAuthRequest')
-        .indexCreate('ip')
-        .run(),
-      r
-        .table('FailedAuthRequest')
-        .indexCreate('email')
-        .run(),
-      r
-        .table('PasswordResetRequest')
-        .indexCreate('ip')
-        .run(),
-      r
-        .table('PasswordResetRequest')
-        .indexCreate('email')
-        .run(),
-      r
-        .table('PasswordResetRequest')
-        .indexCreate('token')
-        .run()
+      r.table('FailedAuthRequest').indexCreate('ip').run(),
+      r.table('FailedAuthRequest').indexCreate('email').run(),
+      r.table('PasswordResetRequest').indexCreate('ip').run(),
+      r.table('PasswordResetRequest').indexCreate('email').run(),
+      r.table('PasswordResetRequest').indexCreate('token').run()
     ])
   } catch (e) {
     console.log(e)
@@ -54,7 +39,7 @@ export const up = async function(r: R) {
     .run()
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await Promise.all([
       r.tableDrop('FailedAuthRequest').run(),

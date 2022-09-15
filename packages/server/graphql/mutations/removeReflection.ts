@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RemoveReflectionPayload from '../types/RemoveReflectionPayload'
 import removeEmptyReflectionGroup from './helpers/removeEmptyReflectionGroup'
-import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
-import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
 
 export default {
   type: RemoveReflectionPayload,
@@ -30,10 +30,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .run()
+    const reflection = await r.table('RetroReflection').get(reflectionId).run()
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }

@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from '../resolvers'
-import Team from './Team'
 import {GQLContext} from '../graphql'
-import TimelineEvent from './TimelineEvent'
+import {resolveNewMeeting} from '../resolvers'
 import makeMutationPayload from './makeMutationPayload'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
+import Team from './Team'
+import TimelineEvent from './TimelineEvent'
 
 export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndRetrospectiveSuccess',

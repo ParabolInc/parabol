@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import StandardMutationError from './StandardMutationError'
 import User from './User'
-import {GQLContext} from '../graphql'
 
 const RemoveSlackAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveSlackAuthPayload',

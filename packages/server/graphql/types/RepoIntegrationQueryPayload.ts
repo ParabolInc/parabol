@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 import RepoIntegration from './RepoIntegration'
+import StandardMutationError from './StandardMutationError'
 
 const RepoIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RepoIntegrationQueryPayload',

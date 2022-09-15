@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import PokerTemplate from './PokerTemplate'
-import TemplateDimension from './TemplateDimension'
 import StandardMutationError from './StandardMutationError'
+import TemplateDimension from './TemplateDimension'
 
 const RemovePokerTemplateDimensionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemovePokerTemplateDimensionPayload',

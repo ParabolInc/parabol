@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import JiraDimensionField from './JiraDimensionField'
+import makeMutationPayload from './makeMutationPayload'
 
 export const AddMissingJiraFieldSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'AddMissingJiraFieldSuccess',
