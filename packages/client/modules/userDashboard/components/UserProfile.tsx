@@ -51,17 +51,17 @@ const UserProfile = ({queryRef}: Props) => {
   return (
     <UserSettingsWrapper>
       <SettingsBlock>
-        <Panel label='My Information'>
+        <Panel label='Profile' casing={'capitalize'}>
           <UserSettingsForm viewer={viewer} />
         </Panel>
         {isLocal && (
-          <Panel label='Authentication'>
+          <Panel label='Authentication' casing={'capitalize'}>
             <PanelRow>
               <PasswordResetLink viewerRef={viewer} />
             </PanelRow>
           </Panel>
         )}
-        <Panel label='Danger Zone'>
+        <Panel label='Danger Zone' casing={'capitalize'}>
           <PanelRow>
             <DeleteAccount />
           </PanelRow>
