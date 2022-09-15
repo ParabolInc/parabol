@@ -70,7 +70,7 @@ const PasswordResetLink = (props: Props) => {
       {isClicked ? (
         <>
           {error ? (
-            <ErrorMessage>{error?.message}</ErrorMessage>
+            <ErrorMessage>{error.message}</ErrorMessage>
           ) : (
             <Text>Sent! Check your email...</Text>
           )}
