@@ -30,6 +30,7 @@ interface Props {
 const query = graphql`
   query UserProfileQuery {
     viewer {
+      ...PasswordResetLink_viewer
       preferredName
       picture
     }
@@ -50,7 +51,7 @@ const UserProfile = ({queryRef}: Props) => {
         </Panel>
         <Panel label='Authentication'>
           <PanelRow>
-            <PasswordResetLink />
+            <PasswordResetLink viewerRef={viewer} />
           </PanelRow>
         </Panel>
         <Panel label='Danger Zone'>
