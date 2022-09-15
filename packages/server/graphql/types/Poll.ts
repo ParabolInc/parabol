@@ -1,10 +1,10 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import PollId from '../../../client/shared/gqlIds/PollId'
+import {GQLContext} from './../graphql'
+import PollOption from './PollOption'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import PollOption from './PollOption'
 import User from './User'
-import PollId from '../../../client/shared/gqlIds/PollId'
 
 const Poll: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Poll',

@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
-import RetroDiscussStage from './RetroDiscussStage'
 import {GQLContext} from '../graphql'
 import {resolveGQLStagesFromPhase} from '../resolvers'
+import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
+import RetroDiscussStage from './RetroDiscussStage'
 
 const DiscussPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'DiscussPhase',

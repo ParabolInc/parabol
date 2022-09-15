@@ -1,16 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getPhase from '../../utils/getPhase'
+import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import updateStage from '../../database/updateStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerRevealVotesPayload from '../types/PokerRevealVotesPayload'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
-import {RValue} from '../../database/stricterR'
 
 const pokerRevealVotes = {
   type: new GraphQLNonNull(PokerRevealVotesPayload),

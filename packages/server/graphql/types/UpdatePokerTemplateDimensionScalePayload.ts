@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import TemplateDimension from './TemplateDimension'
 import StandardMutationError from './StandardMutationError'
+import TemplateDimension from './TemplateDimension'
 
 const UpdatePokerTemplateDimensionScalePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatePokerTemplateDimensionScalePayload',

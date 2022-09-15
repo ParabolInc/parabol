@@ -39,12 +39,9 @@ const getActiveDomainFromEmails = (emails) => {
   return getGroupMajority(companyDomains)
 }
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
-    await r
-      .table('Organization')
-      .indexCreate('activeDomain')
-      .run()
+    await r.table('Organization').indexCreate('activeDomain').run()
   } catch (e) {
     console.log(e)
   }
@@ -54,10 +51,7 @@ export const up = async function(r: R) {
       .table('OrganizationUser')
       .filter({removedAt: null})
       .merge((row) => ({
-        email: r
-          .table('User')
-          .get(row('userId'))('email')
-          .default('')
+        email: r.table('User').get(row('userId'))('email').default('')
       }))
       .group('orgId')('email')
       .ungroup()
@@ -87,12 +81,9 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
-    await r
-      .table('Organization')
-      .indexDrop('activeDomain')
-      .run()
+    await r.table('Organization').indexDrop('activeDomain').run()
   } catch (e) {
     console.log(e)
   }

@@ -1,5 +1,5 @@
-import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
+import OAuth from 'oauth-1.0a'
 import appOrigin from '../../appOrigin'
 
 export interface OAuth1Auth {

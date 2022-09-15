@@ -39,10 +39,7 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
     segmentId,
     invitationToken
   })
-  await r
-    .table('EmailVerification')
-    .insert(emailVerification)
-    .run()
+  await r.table('EmailVerification').insert(emailVerification).run()
   return {error: {message: 'Verification required. Check your inbox.'}}
 }
 

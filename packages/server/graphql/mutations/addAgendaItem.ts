@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
@@ -11,6 +10,7 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput, {CreateAgendaItemInputType} from '../types/CreateAgendaItemInput'
+import {GQLContext} from './../graphql'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 
 export default {

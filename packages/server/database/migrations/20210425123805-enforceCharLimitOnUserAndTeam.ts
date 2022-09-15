@@ -43,7 +43,7 @@ const userIdsWithTooLongEmails = ['local|nm0nwe77AA', 'local|1BIzNRvD', 'local|1
     .run({arrayLimit: 300000})
 */
 
-export const up = async function(r) {
+export const up = async function (r) {
   await Promise.all([
     r
       .table('Team')
@@ -69,6 +69,6 @@ export const up = async function(r) {
   ])
 }
 
-export const down = function(r) {
+export const down = function (r) {
   // noop
 }

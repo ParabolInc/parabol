@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import ToggleTeamDrawerPayload from '../types/ToggleTeamDrawerPayload'
-import {GQLContext} from '../graphql'
-import standardError from '../../utils/standardError'
-import TeamDrawerEnum, {TeamDrawer} from '../types/TeamDrawerEnum'
 import {RValue} from '../../database/stricterR'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import TeamDrawerEnum, {TeamDrawer} from '../types/TeamDrawerEnum'
+import ToggleTeamDrawerPayload from '../types/ToggleTeamDrawerPayload'
 
 const toggleTeamDrawer = {
   type: new GraphQLNonNull(ToggleTeamDrawerPayload),

@@ -1,9 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {makeResolve, resolveNewMeeting} from '../resolvers'
-import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import RetroReflectionGroup from './RetroReflectionGroup'
-import {GQLContext} from '../graphql'
+import StandardMutationError from './StandardMutationError'
 
 const UpdateReflectionGroupTitlePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateReflectionGroupTitlePayload',

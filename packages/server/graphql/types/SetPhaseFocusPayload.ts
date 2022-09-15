@@ -1,11 +1,11 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from '../resolvers'
-import StandardMutationError from './StandardMutationError'
-import RetrospectiveMeeting from './RetrospectiveMeeting'
-import ReflectPhase from './ReflectPhase'
 import {REFLECT} from 'parabol-client/utils/constants'
-import {GQLContext} from '../graphql'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import {GQLContext} from '../graphql'
+import {resolveNewMeeting} from '../resolvers'
+import ReflectPhase from './ReflectPhase'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import StandardMutationError from './StandardMutationError'
 
 const SetPhaseFocusPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetPhaseFocusPayload',

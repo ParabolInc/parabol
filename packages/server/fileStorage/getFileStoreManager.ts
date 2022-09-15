@@ -1,6 +1,6 @@
 import FileStoreManager from './FileStoreManager'
-import S3Manager from './S3Manager'
 import LocalFileSystemManager from './LocalFileSystemManager'
+import S3Manager from './S3Manager'
 
 let fileStoreManager: FileStoreManager
 const managers = {
