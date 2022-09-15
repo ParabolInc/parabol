@@ -6,7 +6,6 @@ import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 import {
   DragAttribute,
   ElementWidth,
@@ -21,6 +20,7 @@ import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
+import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 
 const CardStack = styled('div')({
   position: 'relative'

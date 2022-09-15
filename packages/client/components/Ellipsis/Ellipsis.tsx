@@ -1,6 +1,6 @@
-import React from 'react'
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import React from 'react'
 
 const keyframesOpacity = keyframes`
   0% {

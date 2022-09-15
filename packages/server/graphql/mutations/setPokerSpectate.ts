@@ -1,15 +1,15 @@
-import {removeVoteForUserId} from './voteForPokerStory'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
+import EstimateStage from '../../database/types/EstimateStage'
+import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import {getUserId} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SetPokerSpectatePayload from '../types/SetPokerSpectatePayload'
-import getPhase from '../../utils/getPhase'
-import EstimateStage from '../../database/types/EstimateStage'
+import {removeVoteForUserId} from './voteForPokerStory'
 
 const setPokerSpectate = {
   type: new GraphQLNonNull(SetPokerSpectatePayload),

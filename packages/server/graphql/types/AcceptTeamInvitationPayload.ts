@@ -1,6 +1,6 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLObjectType} from 'graphql'
 import {resolveTeam, resolveTeamMember} from '../resolvers'
+import {GQLContext} from './../graphql'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'

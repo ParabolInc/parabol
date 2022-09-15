@@ -4,12 +4,12 @@
  *   [ (!) Your Message Here ]
  *
  */
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import {Radius} from '../../types/constEnums'
 import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props {
   message: string

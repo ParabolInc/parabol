@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AddPokerTemplateScaleMutation_scale} from '../__generated__/AddPokerTemplateScaleMutation_scale.graphql'
+import {PALETTE} from '../styles/paletteV3'
+import {PokerCards} from '../types/constEnums'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddPokerTemplateScaleMutation as TAddPokerTemplateScaleMutation} from '../__generated__/AddPokerTemplateScaleMutation.graphql'
+import {AddPokerTemplateScaleMutation_scale} from '../__generated__/AddPokerTemplateScaleMutation_scale.graphql'
 import handleAddPokerTemplateScale from './handlers/handleAddPokerTemplateScale'
-import {PokerCards} from '../types/constEnums'
-import {PALETTE} from '../styles/paletteV3'
 
 graphql`
   fragment AddPokerTemplateScaleMutation_scale on AddPokerTemplateScalePayload {
@@ -30,10 +30,9 @@ const mutation = graphql`
   }
 `
 
-export const addPokerTemplateScaleTeamUpdater: SharedUpdater<AddPokerTemplateScaleMutation_scale> = (
-  payload,
-  {store}
-) => {
+export const addPokerTemplateScaleTeamUpdater: SharedUpdater<
+  AddPokerTemplateScaleMutation_scale
+> = (payload, {store}) => {
   const scale = payload.getLinkedRecord('scale')
   if (!scale) return
   const scaleId = scale.getValue('id')
@@ -43,9 +42,11 @@ export const addPokerTemplateScaleTeamUpdater: SharedUpdater<AddPokerTemplateSca
   team.setValue(scaleId, 'editingScaleId')
 }
 
-const AddPokerTemplateScaleMutation: StandardMutation<
-  TAddPokerTemplateScaleMutation
-> = (atmosphere, variables, {onError, onCompleted}) => {
+const AddPokerTemplateScaleMutation: StandardMutation<TAddPokerTemplateScaleMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TAddPokerTemplateScaleMutation>(atmosphere, {
     mutation,
     variables,
@@ -72,11 +73,11 @@ const AddPokerTemplateScaleMutation: StandardMutation<
       } else {
         const questionMarkCard = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.FUSCIA_400,
-          label: PokerCards.QUESTION_CARD,
+          label: PokerCards.QUESTION_CARD
         })
         const passCard = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.GRAPE_500,
-          label: PokerCards.PASS_CARD,
+          label: PokerCards.PASS_CARD
         })
         proxyScale.setLinkedRecords([questionMarkCard, passCard], 'values')
       }

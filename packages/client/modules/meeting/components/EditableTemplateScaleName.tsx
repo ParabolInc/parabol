@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 import EditableText from '../../../components/EditableText'
-import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
-import Legitity from '../../../validation/Legitity'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
+import Legitity from '../../../validation/Legitity'
+import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 
 interface Props {
   name: string

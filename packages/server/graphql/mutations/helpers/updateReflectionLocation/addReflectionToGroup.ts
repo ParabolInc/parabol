@@ -1,8 +1,8 @@
-import {GQLContext} from './../../../graphql'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
 import Reflection from '../../../../database/types/Reflection'
+import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const addReflectionToGroup = async (

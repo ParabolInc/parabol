@@ -4,8 +4,8 @@
  *
  */
 
-import React, {Fragment} from 'react'
 import styled from '@emotion/styled'
+import React, {Fragment} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import LabelHeading from '../LabelHeading/LabelHeading'
 

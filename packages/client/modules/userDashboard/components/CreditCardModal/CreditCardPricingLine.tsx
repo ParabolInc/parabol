@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {Pricing} from '../../../../types/constEnums'
-import {CreditCardModalActionType} from './CreditCardModal'
+import React from 'react'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {Pricing} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
+import {CreditCardModalActionType} from './CreditCardModal'
 
 interface Props {
   activeUserCount?: number

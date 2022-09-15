@@ -21,16 +21,17 @@ interface Props {
 }
 
 const phaseLookup = {
-  checkin: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  checkin: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  reflect: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
+  reflect: lazyPreload(
+    () =>
+      import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
   ),
   group: lazyPreload(() => import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')),
   vote: lazyPreload(() => import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')),
-  discuss: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
+  discuss: lazyPreload(
+    () => import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
@@ -69,14 +70,8 @@ const RetroMeeting = (props: Props) => {
     `,
     meetingRef
   )
-  const {
-    toggleSidebar,
-    handleGotoNext,
-    gotoStageId,
-    safeRoute,
-    handleMenuClick,
-    demoPortal
-  } = useMeeting(meeting)
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick, demoPortal} =
+    useMeeting(meeting)
   const atmosphere = useAtmosphere()
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, localPhase} = meeting
@@ -85,7 +80,7 @@ const RetroMeeting = (props: Props) => {
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
-      ? ((atmosphere as unknown) as LocalAtmosphere).clientGraphQLServer.isBotFinished()
+      ? (atmosphere as unknown as LocalAtmosphere).clientGraphQLServer.isBotFinished()
       : false
   return (
     <MeetingStyles>

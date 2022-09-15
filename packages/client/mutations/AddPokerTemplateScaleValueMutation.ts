@@ -22,9 +22,11 @@ const mutation = graphql`
   }
 `
 
-const AddPokerTemplateScaleValueMutation: StandardMutation<
-  TAddPokerTemplateScaleValueMutation
-> = (atmosphere, variables, {onError, onCompleted}) => {
+const AddPokerTemplateScaleValueMutation: StandardMutation<TAddPokerTemplateScaleValueMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TAddPokerTemplateScaleValueMutation>(atmosphere, {
     mutation,
     variables,

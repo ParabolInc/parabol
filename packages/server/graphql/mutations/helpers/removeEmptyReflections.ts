@@ -1,5 +1,5 @@
-import getRethink from '../../../database/rethinkDriver'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import getRethink from '../../../database/rethinkDriver'
 import Meeting from '../../../database/types/Meeting'
 
 const removeEmptyReflections = async (meeting: Meeting) => {

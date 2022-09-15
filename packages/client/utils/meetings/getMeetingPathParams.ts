@@ -4,9 +4,9 @@
  */
 import {matchPath} from 'react-router-dom'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {RetroDemo} from '../../types/constEnums'
 import findKeyByValue from '../findKeyByValue'
 import {phaseTypeToSlug} from './lookups'
-import {RetroDemo} from '../../types/constEnums'
 
 interface MeetingPathResults {
   meetingId?: string

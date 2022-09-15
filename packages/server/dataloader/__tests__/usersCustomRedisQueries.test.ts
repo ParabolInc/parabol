@@ -1,7 +1,7 @@
+import faker from 'faker'
 import '../../../../scripts/webpack/utils/dotenv'
 import getDataLoader from '../../graphql/getDataLoader'
 import getPg from '../../postgres/getPg'
-import faker from 'faker'
 
 afterAll(async () => {
   const pg = getPg()

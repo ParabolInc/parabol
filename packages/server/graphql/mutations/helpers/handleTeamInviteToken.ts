@@ -1,6 +1,6 @@
-import TeamInvitation from '../../../database/types/TeamInvitation'
-import getRethink from '../../../database/rethinkDriver'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import getRethink from '../../../database/rethinkDriver'
+import TeamInvitation from '../../../database/types/TeamInvitation'
 
 const handleTeamInviteToken = async (
   invitationToken: string,
@@ -20,10 +20,7 @@ const handleTeamInviteToken = async (
   if (expiresAt.getTime() < Date.now()) {
     // using the notification has no expiry
     const notification = notificationId
-      ? await r
-        .table('Notification')
-        .get(notificationId)
-        .run()
+      ? await r.table('Notification').get(notificationId).run()
       : undefined
     if (!notification || notification.userId !== viewerId) {
       return {error: InvitationTokenError.EXPIRED}

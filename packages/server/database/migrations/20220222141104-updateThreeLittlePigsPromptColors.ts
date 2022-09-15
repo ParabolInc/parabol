@@ -18,9 +18,9 @@ export const up = async function (r: R) {
         .update({groupColor: PALETTE.GOLD_300})
     }).run()
   } catch (e) {
-    console.error("error when migration up groupColors for the threeLittlePigsTemplate", e)
+    console.error('error when migration up groupColors for the threeLittlePigsTemplate', e)
   }
-};
+}
 
 export const down = async function (r: R) {
   try {
@@ -28,17 +28,17 @@ export const down = async function (r: R) {
       houseOfBricks: r
         .table('ReflectPrompt')
         .get('promptHouseOfBricks')
-        .update({groupColor: "#D9D916"}),
+        .update({groupColor: '#D9D916'}),
       houseOfSticks: r
         .table('ReflectPrompt')
         .get('promptHouseOfSticks')
-        .update({groupColor: "#E55C5C"}),
+        .update({groupColor: '#E55C5C'}),
       houseOfStraw: r
         .table('ReflectPrompt')
         .get('promptHouseOfStraw')
-        .update({groupColor: "#52CC52"})
+        .update({groupColor: '#52CC52'})
     }).run()
   } catch (e) {
-    console.error("error when migrating down groupColors for the threeLittlePigsTemplate", e)
+    console.error('error when migrating down groupColors for the threeLittlePigsTemplate', e)
   }
-};
+}

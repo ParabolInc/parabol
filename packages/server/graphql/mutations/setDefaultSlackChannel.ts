@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import SetDefaultSlackChannelPayload from '../types/SetDefaultSlackChannelPayload'
-import {GQLContext} from '../graphql'
-import standardError from '../../utils/standardError'
 import SlackServerManager from '../../utils/SlackServerManager'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import SetDefaultSlackChannelPayload from '../types/SetDefaultSlackChannelPayload'
 
 const setDefaultSlackChannel = {
   type: new GraphQLNonNull(SetDefaultSlackChannelPayload),

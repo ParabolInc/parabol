@@ -1,11 +1,11 @@
 import React from 'react'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
 import {MenuMutationProps} from '../hooks/useMutationProps'
+import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   menuProps: MenuProps

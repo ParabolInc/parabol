@@ -1,10 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {meetingAvatarMediaQueries} from '../styles/meeting'
-import LinkButton from './LinkButton'
-import GiftSVG from './GiftSVG'
 import useBreakpoint from '../hooks/useBreakpoint'
+import {meetingAvatarMediaQueries} from '../styles/meeting'
+import GiftSVG from './GiftSVG'
+import LinkButton from './LinkButton'
 
 const StyledButton = styled(LinkButton)({
   fontSize: 13,

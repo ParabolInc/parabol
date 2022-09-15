@@ -6,8 +6,8 @@ import lazyPreload from '../utils/lazyPreload'
 import IconLabel from './IconLabel'
 import LinkButton from './LinkButton'
 
-const DeleteAccountModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
+const DeleteAccountModal = lazyPreload(
+  () => import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
 )
 
 const Hint = styled('div')({

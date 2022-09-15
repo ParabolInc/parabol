@@ -2,21 +2,23 @@ import React, {lazy} from 'react'
 import {Route} from 'react-router'
 import {Switch} from 'react-router-dom'
 
-const Organizations = lazy(() =>
-  import(
-    /* webpackChunkName: 'OrganizationsRoot' */ '../../containers/Organizations/OrganizationsRoot'
-  )
+const Organizations = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'OrganizationsRoot' */ '../../containers/Organizations/OrganizationsRoot'
+    )
 )
-const Organization = lazy(() =>
-  import(
-    /* webpackChunkName: 'OrganizationRoot' */ '../../containers/Organization/OrganizationRoot'
-  )
+const Organization = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'OrganizationRoot' */ '../../containers/Organization/OrganizationRoot'
+    )
 )
-const UserDashMain = lazy(() =>
-  import(/* webpackChunkName: 'UserDashMain' */ '../UserDashMain/UserDashMain')
+const UserDashMain = lazy(
+  () => import(/* webpackChunkName: 'UserDashMain' */ '../UserDashMain/UserDashMain')
 )
-const UserProfile = lazy(() =>
-  import(/* webpackChunkName: 'UserProfileRoot' */ '../UserProfileRoot')
+const UserProfile = lazy(
+  () => import(/* webpackChunkName: 'UserProfileRoot' */ '../UserProfileRoot')
 )
 
 interface Props {

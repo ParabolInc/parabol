@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import mode from 'parabol-client/utils/mode'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import mode from 'parabol-client/utils/mode'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateRetroMaxVotesPayload from '../types/UpdateRetroMaxVotesPayload'
-import {RValue} from '../../database/stricterR'
 
 const updateRetroMaxVotes = {
   type: new GraphQLNonNull(UpdateRetroMaxVotesPayload),

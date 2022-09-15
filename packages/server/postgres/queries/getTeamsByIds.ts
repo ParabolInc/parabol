@@ -1,6 +1,6 @@
-import {getTeamsByIdsQuery, IGetTeamsByIdsQueryResult} from './generated/getTeamsByIdsQuery'
-import getPg from '../getPg'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import getPg from '../getPg'
+import {getTeamsByIdsQuery, IGetTeamsByIdsQueryResult} from './generated/getTeamsByIdsQuery'
 import {IGetTeamsByOrgIdsQueryResult} from './generated/getTeamsByOrgIdsQuery'
 
 export interface JiraDimensionField {

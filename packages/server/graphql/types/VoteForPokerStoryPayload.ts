@@ -1,8 +1,8 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
 import makeMutationPayload from './makeMutationPayload'
-import resolveStage from '../resolvers/resolveStage'
 export const VoteForPokerStorySuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'VoteForPokerStorySuccess',
   fields: () => ({

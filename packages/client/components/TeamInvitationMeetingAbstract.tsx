@@ -1,5 +1,5 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 

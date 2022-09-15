@@ -1,7 +1,7 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import pluralizeHandler from './pluralizeHandler'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import {SprintPokerDefaults} from '../../types/constEnums'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleRemovePokerTemplateScale = (
   scaleId: string,
@@ -14,7 +14,7 @@ const handleRemovePokerTemplateScale = (
   const dimensionsUsingScale = scale.getLinkedRecords('dimensions')
   const defaultScale = store.get(SprintPokerDefaults.DEFAULT_SCALE_ID)!
   dimensionsUsingScale?.forEach((dimension) => {
-    dimension.setLinkedRecord(defaultScale, "selectedScale")
+    dimension.setLinkedRecord(defaultScale, 'selectedScale')
   })
 }
 

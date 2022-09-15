@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await r
       .table('User')
@@ -13,11 +13,7 @@ export const up = async function(r: R) {
             .coerceTo('array')
             .distinct()
             .do((orgIds) =>
-              r
-                .table('Organization')
-                .getAll(r.args(orgIds))('tier')
-                .distinct()
-                .coerceTo('array')
+              r.table('Organization').getAll(r.args(orgIds))('tier').distinct().coerceTo('array')
             )
             .do((tiers) => {
               return r.branch(
@@ -37,7 +33,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r
       .table('User')

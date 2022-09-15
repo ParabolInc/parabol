@@ -1,5 +1,5 @@
-import pluralizeHandler from './pluralizeHandler'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleAddTeam = (newNode, store) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')

@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import {PortalStatus} from './usePortal'
+import TooltipStyled from '../components/TooltipStyled'
 import {DECELERATE} from '../styles/animation'
 import {Duration} from '../types/constEnums'
-import TooltipStyled from '../components/TooltipStyled'
+import {PortalStatus} from './usePortal'
 
 const backgroundStyles = (portalStatus: PortalStatus) => {
   switch (portalStatus) {

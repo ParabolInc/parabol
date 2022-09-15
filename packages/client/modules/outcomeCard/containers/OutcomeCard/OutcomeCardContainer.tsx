@@ -4,17 +4,17 @@ import {ContentState, convertToRaw} from 'draft-js'
 import React, {memo, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
+import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
-import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 
 const Wrapper = styled('div')({
   outline: 'none'
@@ -34,7 +34,17 @@ interface Props {
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy, isViewerMeetingSection, meetingId} = props
+  const {
+    contentState,
+    className,
+    isDraggingOver,
+    task,
+    area,
+    isAgenda,
+    dataCy,
+    isViewerMeetingSection,
+    meetingId
+  } = props
   const {id: taskId, team, content} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()

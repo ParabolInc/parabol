@@ -18,11 +18,7 @@ export default class DocumentCache {
     let document = this.store[docId]
     if (!document) {
       const r = await getRethink()
-      let queryString = await r
-        .table('QueryMap')
-        .get(docId)('query')
-        .default(null)
-        .run()
+      let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
       if (!queryString && !PROD) {
         // In development, use the frequently changing queryMap to look up persisted queries by hash
         const queryMap = require('../../../queryMap.json')

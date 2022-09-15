@@ -1,5 +1,5 @@
-import {requiredId, optionalUrl} from 'parabol-client/validation/templates'
 import legitify from 'parabol-client/validation/legitify'
+import {optionalUrl, requiredId} from 'parabol-client/validation/templates'
 
 export default function updateOrgValidation() {
   return legitify({
