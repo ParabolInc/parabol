@@ -1,11 +1,11 @@
-import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
-import React, {useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
-import useAtmosphere from '../../hooks/useAtmosphere'
+import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import {RefCallbackInstance} from '../../types/generics'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {ElementWidth} from '../../types/constEnums'
+import {RefCallbackInstance} from '../../types/generics'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
+import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
 
 const ModalReflectionWrapper = styled('div')({
   padding: ElementWidth.REFLECTION_CARD_PADDING

@@ -1,8 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
 
 const FieldBlock = styled('div')({
   alignItems: 'center',

@@ -1,7 +1,7 @@
 import {MutableRefObject, useRef} from 'react'
+import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {Dims, Point} from '../types/animations'
 import {BezierCurve, ElementWidth, Times} from '../types/constEnums'
-import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 
 interface Options<T> {
   isBackground?: boolean

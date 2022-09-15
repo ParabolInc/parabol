@@ -1,7 +1,7 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import purpleLines from '../styles/theme/images/purpleLines.svg'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
+import purpleLines from '../styles/theme/images/purpleLines.svg'
 
 const EmptyState = styled('div')<{height: number | string}>(({height}) => ({
   display: 'flex',

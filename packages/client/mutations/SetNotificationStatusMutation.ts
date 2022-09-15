@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation, OptionalHandlers} from '~/types/relayMutations'
+import {OptionalHandlers, StandardMutation} from '~/types/relayMutations'
 import {SetNotificationStatusMutation as TSetNotificationStatusMutation} from '../__generated__/SetNotificationStatusMutation.graphql'
 
 graphql`

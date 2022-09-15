@@ -3,11 +3,11 @@ import {
   convertFromRaw,
   convertToRaw,
   EditorState,
-  Modifier,
-  SelectionState,
-  RawDraftContentState,
   Entity,
-  RawDraftEntityRange
+  Modifier,
+  RawDraftContentState,
+  RawDraftEntityRange,
+  SelectionState
 } from 'draft-js'
 import unicodeSubstring from 'unicode-substring'
 

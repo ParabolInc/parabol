@@ -1,5 +1,5 @@
-import {getRequest} from 'relay-runtime'
 import graphql from 'babel-plugin-relay/macro'
+import {getRequest} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {UpdateDragLocationMutationVariables} from '../__generated__/UpdateDragLocationMutation.graphql'
 

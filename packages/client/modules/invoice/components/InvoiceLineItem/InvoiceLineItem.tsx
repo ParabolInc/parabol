@@ -1,14 +1,14 @@
-import React from 'react'
-import invoiceLineFormat from '../../helpers/invoiceLineFormat'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {
-  InvoiceLineItem_item,
-  InvoiceLineItemEnum
+  InvoiceLineItemEnum,
+  InvoiceLineItem_item
 } from '~/__generated__/InvoiceLineItem_item.graphql'
 import plural from '../../../../utils/plural'
-import InvoiceLineItemDetails from './InvoiceLineItemDetails'
+import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 import InvoiceLineItemContent from './InvoiceLineItemContent'
+import InvoiceLineItemDetails from './InvoiceLineItemDetails'
 
 const descriptionMaker = {
   ADDED_USERS: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,

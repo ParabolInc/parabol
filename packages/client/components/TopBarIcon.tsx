@@ -1,8 +1,8 @@
-import React, {forwardRef} from 'react'
 import styled from '@emotion/styled'
+import React, {forwardRef} from 'react'
+import {PALETTE} from '../styles/paletteV3'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
-import {PALETTE} from '../styles/paletteV3'
 
 const ButtonIcon = styled(Icon)({})
 

@@ -7,8 +7,9 @@ import lazyPreload from '~/utils/lazyPreload'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
-const CommentAuthorOptionsDropdown = lazyPreload(() =>
-  import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
+const CommentAuthorOptionsDropdown = lazyPreload(
+  () =>
+    import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
 )
 
 const StyledButton = styled(PlainButton)({

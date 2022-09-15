@@ -1,15 +1,15 @@
-import SecondaryButton from '../../../../components/SecondaryButton'
-import Panel from '../../../../components/Panel/Panel'
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {OrgBillingCreditCardInfo_organization} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
 import Icon from '../../../../components/Icon'
+import Panel from '../../../../components/Panel/Panel'
+import SecondaryButton from '../../../../components/SecondaryButton'
+import useModal from '../../../../hooks/useModal'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout} from '../../../../types/constEnums'
-import graphql from 'babel-plugin-relay/macro'
-import {OrgBillingCreditCardInfo_organization} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
-import {createFragmentContainer} from 'react-relay'
-import useModal from '../../../../hooks/useModal'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 const CreditCardInfo = styled('div')({
@@ -55,11 +55,12 @@ const InfoBlocks = styled('div')({
   }
 })
 
-const CreditCardModal = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'CreditCardModal' */
-    '../CreditCardModal/CreditCardModal'
-  )
+const CreditCardModal = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'CreditCardModal' */
+      '../CreditCardModal/CreditCardModal'
+    )
 )
 
 interface Props {

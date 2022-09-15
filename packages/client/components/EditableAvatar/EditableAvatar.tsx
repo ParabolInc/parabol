@@ -1,8 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Avatar from '../Avatar/Avatar'
+import React from 'react'
 import {panelShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
+import Avatar from '../Avatar/Avatar'
 import Icon from '../Icon'
 
 const borderRadius = '50%'

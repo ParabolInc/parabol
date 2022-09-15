@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
+import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
-import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import TeamDrawer from './TeamDrawer'
 
 const AbsoluteFab = styled(StartMeetingFAB)({

@@ -1,16 +1,17 @@
-import React, {lazy} from 'react'
 import styled from '@emotion/styled'
+import React, {lazy} from 'react'
 import {Route} from 'react-router'
 import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
 import TeamSettingsToggleNav from '../TeamSettingsToggleNav/TeamSettingsToggleNav'
 
-const TeamSettings = lazy(() =>
-  import(/* webpackChunkName: 'TeamSettingsRoot' */ '../TeamSettingsRoot')
+const TeamSettings = lazy(
+  () => import(/* webpackChunkName: 'TeamSettingsRoot' */ '../TeamSettingsRoot')
 )
-const TeamIntegrationsRoot = lazy(() =>
-  import(
-    /* webpackChunkName: 'TeamIntegrationsRoot' */ '../../containers/TeamIntegrationsRoot/TeamIntegrationsRoot'
-  )
+const TeamIntegrationsRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'TeamIntegrationsRoot' */ '../../containers/TeamIntegrationsRoot/TeamIntegrationsRoot'
+    )
 )
 
 interface Props extends RouteComponentProps<{teamId: string}> {}

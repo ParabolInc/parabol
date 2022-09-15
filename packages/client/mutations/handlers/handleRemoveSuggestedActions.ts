@@ -1,5 +1,5 @@
-import pluralizeHandler from './pluralizeHandler'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveSuggestedAction = (suggestedActionId, store) => {
   const suggestedAction = store.get(suggestedActionId)

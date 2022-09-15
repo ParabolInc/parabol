@@ -1,9 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
-import getInProxy from '../utils/relay/getInProxy'
+import {commitMutation} from 'react-relay'
 import {MovePokerTemplateDimensionMutation as TMovePokerTemplateDimensionMutation} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
+import getInProxy from '../utils/relay/getInProxy'
+import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
 
 graphql`
   fragment MovePokerTemplateDimensionMutation_team on MovePokerTemplateDimensionPayload {

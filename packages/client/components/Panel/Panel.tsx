@@ -1,8 +1,8 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import LabelHeading from '../LabelHeading/LabelHeading'
+import React, {ReactNode} from 'react'
 import {panelShadow} from '../../styles/elevation'
 import {Layout} from '../../types/constEnums'
+import LabelHeading from '../LabelHeading/LabelHeading'
 
 const PanelRoot = styled('div')({
   backgroundColor: 'white',

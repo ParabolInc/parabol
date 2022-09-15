@@ -1,5 +1,5 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
 import {DashTimeline} from '../types/constEnums'
 import getRotatedBBox from '../utils/getRotatedBBox'

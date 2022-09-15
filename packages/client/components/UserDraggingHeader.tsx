@@ -1,9 +1,9 @@
-import React from 'react'
+import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import Icon from './Icon'
-import {keyframes} from '@emotion/core'
 import BaseTag from './Tag/BaseTag'
 
 const keyframesOpacity = keyframes`

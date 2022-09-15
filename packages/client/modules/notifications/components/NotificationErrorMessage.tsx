@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../styles/paletteV3'
 import React from 'react'
+import {PALETTE} from '../../../styles/paletteV3'
 
 const StyledError = styled('div')({
   color: PALETTE.TOMATO_500,

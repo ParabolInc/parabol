@@ -28,10 +28,9 @@ const mutation = graphql`
   }
 `
 
-export const archiveTimelineEventNotificationUpdater: SharedUpdater<ArchiveTimelineEventMutation_notification> = (
-  payload,
-  {store}
-) => {
+export const archiveTimelineEventNotificationUpdater: SharedUpdater<
+  ArchiveTimelineEventMutation_notification
+> = (payload, {store}) => {
   const timelineEvent = payload.getLinkedRecord('timelineEvent')
   if (!timelineEvent) return
   const timelineEventId = timelineEvent.getValue('id')

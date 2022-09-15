@@ -1,6 +1,6 @@
 import React, {forwardRef, Ref} from 'react'
-import RaisedButton, {RaisedButtonProps} from './RaisedButton'
 import {Elevation} from '../styles/elevation'
+import RaisedButton, {RaisedButtonProps} from './RaisedButton'
 
 interface Props extends RaisedButtonProps {}
 

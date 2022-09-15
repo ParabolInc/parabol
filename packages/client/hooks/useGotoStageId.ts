@@ -54,7 +54,7 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
       const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
       if (!canNavigate) return
       if (teamId === demoTeamId) {
-        await ((atmosphere as any) as LocalAtmosphere).clientGraphQLServer.finishBotActions()
+        await (atmosphere as any as LocalAtmosphere).clientGraphQLServer.finishBotActions()
       }
       updateLocalStage(atmosphere, meetingId, stageId)
       if (isViewerFacilitator && isNavigableByFacilitator && !endedAt) {

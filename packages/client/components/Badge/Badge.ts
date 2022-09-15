@@ -1,5 +1,5 @@
-import {PALETTE} from '../../styles/paletteV3'
 import styled from '@emotion/styled'
+import {PALETTE} from '../../styles/paletteV3'
 
 const Badge = styled('div')({
   backgroundColor: PALETTE.TOMATO_500,
