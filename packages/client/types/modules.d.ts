@@ -9,6 +9,9 @@ declare module '*.svg'
 declare module '*.woff2'
 declare module 'json2csv/lib/JSON2CSVParser'
 declare module 'string-score'
+declare module 'babel-plugin-relay/macro' {
+  export {graphql as default} from 'react-relay'
+}
 
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
