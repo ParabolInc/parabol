@@ -35,20 +35,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: "16.14.0"
-      - name: Cache node modules
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
+          cache: 'yarn'
       - name: yarn install
         if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --pure-lockfile
       - name: Build
         run: |
           cp .env.example .env
