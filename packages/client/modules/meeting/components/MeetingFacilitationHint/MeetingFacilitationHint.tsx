@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import {PALETTE} from '../../../../styles/paletteV3'
 
@@ -10,7 +10,12 @@ const Hint = styled('div')({
   lineHeight: '20px',
   textAlign: 'center'
 })
-const MeetingFacilitationHint = (props) => {
+
+interface Props {
+  children: ReactNode
+}
+
+const MeetingFacilitationHint = (props: Props) => {
   const {children} = props
   return (
     <Hint>

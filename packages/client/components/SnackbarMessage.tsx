@@ -1,12 +1,11 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import React, {useEffect} from 'react'
 import {TransitionStatus} from '../hooks/useTransition'
 import {DECELERATE} from '../styles/animation'
 import {snackbarShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {Radius, ZIndex} from '../types/constEnums'
-import Icon from './Icon'
 import {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
 
@@ -60,9 +59,10 @@ const DismissButton = styled('button')({
   justifyContent: 'center'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Close)({
   color: PALETTE.SLATE_500,
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   '&:hover': {
     opacity: 0.5
   }
@@ -103,7 +103,7 @@ const SnackbarMessage = (props: Props) => {
         <SnackbarMessageAction action={secondaryAction} />
         {showDismissButton && (
           <DismissButton onClick={dismissSnack}>
-            <StyledIcon>close</StyledIcon>
+            <StyledIcon />
           </DismissButton>
         )}
       </MessageStyles>

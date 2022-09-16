@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
@@ -46,11 +46,14 @@ export const handleRemoveReply = (
   const isParentActive = threadParent.getValue('isActive')
   const isParentComment = threadParent.getValue('__typename') === 'Comment'
   if (isParentComment && !isParentActive) {
-    handleDeleteComment(threadParent, store)
+    handleDeleteComment(threadParent as any, store)
   }
 }
 
-const handleDeleteComment = (comment, store) => {
+const handleDeleteComment = (
+  comment: RecordProxy<DeleteCommentMutation_meeting['comment']>,
+  store: RecordSourceSelectorProxy
+) => {
   const commentId = comment.getValue('id')
   const replies = comment.getLinkedRecords('replies')
   const threadParentId = comment.getValue('threadParentId')
@@ -96,7 +99,7 @@ const DeleteCommentMutation: SimpleMutation<TDeleteCommentMutation> = (atmospher
       const {commentId} = variables
       const comment = store.get(commentId)
       if (!comment) return
-      handleDeleteComment(comment, store)
+      handleDeleteComment(comment as any, store)
     }
   })
 }

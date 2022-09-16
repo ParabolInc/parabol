@@ -1,13 +1,13 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
 import styled from '@emotion/styled'
+import {ExpandMore} from '@mui/icons-material'
 import React, {forwardRef, ReactElement, Ref} from 'react'
 import useMenu from '../hooks/useMenu'
 import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
 import {PALETTE} from '../styles/paletteV3'
 import ui from '../styles/ui'
-import Icon from './Icon'
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled(ExpandMore)({
   color: PALETTE.SLATE_600,
   marginLeft: 8
 })
@@ -22,7 +22,7 @@ const DropdownBlock = styled('div')({
 interface InputStyleProps {
   disabled: boolean
   flat: boolean | undefined
-  size?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
 const InputBlock = styled('div')<InputStyleProps>(
@@ -56,7 +56,7 @@ interface Props {
   onMouseEnter?: () => void
   // style hacks until a better pattern
   flat?: boolean
-  size?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
@@ -70,7 +70,7 @@ const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) =
     >
       <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={0}>
         <Value>{defaultText}</Value>
-        {!disabled && <DropdownIcon>expand_more</DropdownIcon>}
+        {!disabled && <DropdownIcon />}
       </InputBlock>
     </DropdownBlock>
   )

@@ -34,7 +34,7 @@ const ReactjiSection = (props: Props) => {
         return (
           <ReactjiCount
             key={transReactji.child.key}
-            reactji={transReactji.child}
+            reactjiRef={transReactji.child}
             onTransitionEnd={transReactji.onTransitionEnd}
             status={isInit ? TransitionStatus.ENTERED : transReactji.status}
             onToggle={onToggle}

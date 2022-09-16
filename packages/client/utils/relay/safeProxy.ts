@@ -31,7 +31,7 @@ class SafeProxy<
     args?: Variables
   ): SafeProxy<RecordProxy<V[K]>>[] | SafeProxy<RecordProxy<V[K]>> {
     const records = this.proxy ? this.proxy.getLinkedRecords(name as any, args) : null
-    return records ? (records as any).map((record) => new SafeProxy(record)) : new SafeProxy(null)
+    return records ? records.map((record) => new SafeProxy(record)) : new SafeProxy(null)
   }
 }
 

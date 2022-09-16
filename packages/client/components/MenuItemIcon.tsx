@@ -1,11 +1,13 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 
-const MenuItemIcon = styled(Icon)({
+const MenuItemIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
+  svg: {
+    fontSize: 18
+  },
   marginRight: 8
 })
 

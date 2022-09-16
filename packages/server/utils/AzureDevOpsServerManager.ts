@@ -1,4 +1,3 @@
-import AbortController from 'abort-controller'
 import fetch, {RequestInit} from 'node-fetch'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
@@ -140,7 +139,6 @@ export interface WorkItem {
 export interface CreateTaskIssueRes {
   id: number
   rev: number
-  fields: object
   _links: ReferenceLinks
   url: string
 }

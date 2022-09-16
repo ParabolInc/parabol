@@ -23,6 +23,10 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The project under the atlassian cloud the field lives in'
     },
+    issueType: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'Type id of the issue'
+    },
     fieldId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The ID referring to the field name'

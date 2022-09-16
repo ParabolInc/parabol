@@ -5,11 +5,11 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
+import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
-import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -156,14 +156,18 @@ const TeamTasksHeader = (props: Props) => {
       </TeamHeaderAndAvatars>
       <DashSectionControls>
         {/* Filter by Owner */}
-        <DashFilterToggle
-          label='Team Member'
-          onClick={togglePortal}
-          onMouseEnter={TeamDashTeamMemberMenu.preload}
-          ref={originRef}
-          value={teamMemberFilterName}
-        />
-        {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
+        <TeamMeta>
+          {teamMembers.length > 1 && (
+            <DashFilterToggle
+              label='Team Member'
+              onClick={togglePortal}
+              onMouseEnter={TeamDashTeamMemberMenu.preload}
+              ref={originRef}
+              value={teamMemberFilterName}
+            />
+          )}
+          {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
+        </TeamMeta>
         {/* Archive Link */}
         <DashNavControl
           icon='archive'

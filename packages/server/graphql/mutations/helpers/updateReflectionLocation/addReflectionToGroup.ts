@@ -2,6 +2,7 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
 import Reflection from '../../../../database/types/Reflection'
+import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
@@ -15,7 +16,14 @@ const addReflectionToGroup = async (
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
-  const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
+  const {reflectionGroup, oldReflectionGroup} = await r({
+    reflectionGroup: r
+      .table('RetroReflectionGroup')
+      .get(reflectionGroupId) as unknown as ReflectionGroup,
+    oldReflectionGroup: r
+      .table('RetroReflectionGroup')
+      .get(oldReflectionGroupId) as unknown as ReflectionGroup
+  }).run()
   if (!reflectionGroup || !reflectionGroup.isActive) {
     throw new Error('Reflection group not found')
   }
@@ -63,7 +71,23 @@ const addReflectionToGroup = async (
     }).run()
 
     const nextTitle = getGroupSmartTitle(nextReflections)
-    await updateSmartGroupTitle(reflectionGroupId, nextTitle)
+    const oldGroupHasSingleReflectionCustomTitle =
+      oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
+    const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
+    if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
+      // Edge case of dragging a single card with a custom group name on a group with smart name
+      await r
+        .table('RetroReflectionGroup')
+        .get(reflectionGroupId)
+        .update({
+          title: oldReflectionGroup.title,
+          smartTitle: nextTitle,
+          updatedAt: now
+        })
+        .run()
+    } else {
+      await updateSmartGroupTitle(reflectionGroupId, nextTitle)
+    }
 
     if (oldReflections.length > 0) {
       const oldTitle = getGroupSmartTitle(oldReflections)

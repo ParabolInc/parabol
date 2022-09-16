@@ -4,6 +4,7 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV3'
+import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import isDemoRoute from '../../../utils/isDemoRoute'
 import makeHref from '../../../utils/makeHref'
@@ -69,6 +70,7 @@ const NewMeetingSummary = (props: Props) => {
         meetingUrl={meetingUrl}
         teamDashUrl={teamDashUrl}
         emailCSVUrl={emailCSVUrl}
+        corsOptions={APP_CORS_OPTIONS}
       />
     </div>
   )

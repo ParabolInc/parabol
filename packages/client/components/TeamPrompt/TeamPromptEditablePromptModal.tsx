@@ -1,16 +1,15 @@
 import styled from '@emotion/styled'
+import {Close, Info} from '@mui/icons-material'
 import React from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useForm from '~/hooks/useForm'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint} from '~/types/constEnums'
 import Legitity from '~/validation/Legitity'
 import DialogContainer from '../DialogContainer'
 import DialogContent from '../DialogContent'
 import DialogTitle from '../DialogTitle'
-import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 import RaisedButton from '../RaisedButton'
 
@@ -64,10 +63,9 @@ const UpdatePromptFooter = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const CloseIcon = styled(Icon)({
+const CloseIcon = styled(Close)({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  fontSize: ICON_SIZE.MD24,
   '&:hover': {
     opacity: 0.5
   }
@@ -93,9 +91,10 @@ const ErrorWrapper = styled('div')({
   marginTop: 16
 })
 
-const ErrorIcon = styled(Icon)({
+const InfoIcon = styled(Info)({
   color: PALETTE.SLATE_500,
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   marginRight: 8
 })
 
@@ -154,13 +153,13 @@ const TeamPromptEditablePromptModal = (props: Props) => {
       <StyledDialogTitle>
         {'Prompt'}
         <StyledCloseButton onClick={onCloseModal}>
-          <CloseIcon>close</CloseIcon>
+          <CloseIcon />
         </StyledCloseButton>
       </StyledDialogTitle>
       <DialogContent>
         <TextArea
           {...fields.meetingPrompt}
-          onFocus={(e) => e.target.select()}
+          onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) => e.target.select()}
           name={'meetingPrompt'}
           isDesktop={isDesktop}
           autoFocus={true}
@@ -171,7 +170,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
         />
         {displayError && (
           <ErrorWrapper>
-            <ErrorIcon>info</ErrorIcon>
+            <InfoIcon />
             {displayError}
           </ErrorWrapper>
         )}

@@ -11,6 +11,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import AddTeamMemberIntegrationAuthPayload from '../types/AddTeamMemberIntegrationAuthPayload'
 import GraphQLURLType from '../types/GraphQLURLType'
 
@@ -155,6 +156,7 @@ const addTeamMemberIntegrationAuth = {
       teamId,
       userId: viewerId
     })
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
     analytics.integrationAdded(viewerId, teamId, service)
 

@@ -106,7 +106,7 @@ const TaskEditor = (props: Props) => {
     setEditorState(editorState)
   }
 
-  const onReturn = (e) => {
+  const onReturn: EditorProps['handleReturn'] = (e) => {
     if (handleReturn) {
       return handleReturn(e, editorState)
     }
@@ -117,7 +117,7 @@ const TaskEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyDownFallback = (e) => {
+  const onKeyDownFallback: React.KeyboardEventHandler = (e) => {
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
     editorRef.current && editorRef.current.blur()
@@ -130,7 +130,7 @@ const TaskEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyBindingFn = (e) => {
+  const onKeyBindingFn: EditorProps['keyBindingFn'] = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {

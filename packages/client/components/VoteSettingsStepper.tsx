@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
+import {Add, Remove} from '@mui/icons-material'
 import React from 'react'
 import {MeetingSettingsThreshold} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
@@ -28,8 +27,14 @@ const Stepper = styled(PlainButton)<{isDisabled: boolean}>(({isDisabled}) => ({
   width: 24
 }))
 
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const RemoveIcon = styled(Remove)({
+  width: 18,
+  height: 18
+})
+
+const AddIcon = styled(Add)({
+  width: 18,
+  height: 18
 })
 
 const Value = styled('span')({
@@ -47,11 +52,11 @@ const VoteStepper = (props: Props) => {
   return (
     <Wrapper>
       <Stepper isDisabled={!canDecrease} aria-label={'Decrease'} onClick={decrease}>
-        <StyledIcon>remove</StyledIcon>
+        <RemoveIcon />
       </Stepper>
       <Value aria-label={props['aria-label']}>{value}</Value>
       <Stepper isDisabled={!canIncrease} aria-label={'Increase'} onClick={increase}>
-        <StyledIcon>add</StyledIcon>
+        <AddIcon />
       </Stepper>
     </Wrapper>
   )

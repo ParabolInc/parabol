@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import React from 'react'
 import {useLocation} from 'react-router'
 import useRouter from '~/hooks/useRouter'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
 import {BezierCurve} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
-import Icon from './Icon'
 
 const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   height: 48,
@@ -19,7 +19,7 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   justifyContent: 'flex-start'
 }))
 
-const MeetingIcon = styled(Icon)({
+const MeetingIcon = styled(Add)({
   margin: '0px 11px'
 })
 
@@ -40,7 +40,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   }
   return (
     <Button isOpen={isOpen} onClick={onClick}>
-      <MeetingIcon>{'add'}</MeetingIcon>
+      <MeetingIcon />
       <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>
     </Button>
   )

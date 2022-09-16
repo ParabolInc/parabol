@@ -5,6 +5,231 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.83.1 2022-November-23
+
+### Fixed
+
+- XSS vulnerability in meeting templates (#7491)
+
+## 6.83.0 2022-November-17
+
+### Fixed
+
+- Update tier when leaving org (#7377) 
+- Added CorsOptions to email images (#7393)
+- Typo in Earth 2.0 check-in question 
+- Send button is disabled in retro discussion on mobile (#7361) 
+- Snackbar messages are not centered during standups #7203
+- Add delete confirmation button and waiting effect (#7403) 
+- Snack on jira auth error (#7432) 
+
+### Changed
+
+- Cleanup packages to support future bundled server build (#7400) 
+ 
+## 6.82.0 2022-November-09
+
+### Added
+
+- **metrics**: disable Company properties update to HubSpot (#7366)
+- Implement setIsFreeMeetingTemplate mutation (#7346)
+- Add invoice explanation to comment (#7399)
+- Add template limit feature flag (#7391)
+
+### Fixed
+
+- Use MaterialUI SvgIcons instead of Font (#7154)
+- Header name should be more general (#7394)
+
+### Changed
+
+- CircleCI: split backup from deployment (#7389)
+
+## 6.81.0 2022-November-02
+
+### Added
+
+- **standups**: Added ended meeting view (#7327)
+- **timer picker**: add 10 minutes option (#7357)
+
+### Fixed
+
+- **Azure DevOps**: fix adding issues to Sprint Poker (#7365)
+- **Team**: leave team does not work until refresh (#7368)
+- use fallback values for PokerCardDeck (#7315)
+
+### Changed
+
+- add isFree to meeting template (#7345)
+- put isPatient0 on User row (#7325)
+- Remove @types/ioredis package (#7367)
+
+## 6.80.2 2022-November-01
+
+### Fixed
+
+- Release version mismatch
+
+## 6.80.1 2022-November-01
+
+### Fixed
+
+- **Jira**: issues sometimes are not loading in poker meeting
+
+## 6.80.0 2022-October-26
+
+### Added
+
+- End meeting from meetings view (#7313)
+
+### Fixed
+
+- **Metrics:** set disableAnonymity default to false in Meeting related events (#7320)
+- Removed the last-release-sha & unused yaml file (#7294)
+- Revert the release-please-config
+- Add noindex for ppmis (#7324)
+- Fix whitespace in links (#7326)
+- Add credit card formatting (#7303)
+- Filtering is still able to be done when only one state is available (#7295)
+- Avoid overriding custom group name with a single card (#7312)
+
+### Changed
+
+- Rename christmas template (#7323)
+- Speed up repo integrations query (#7234)
+
+## 6.79.1 2022-October-25
+
+### Fixed
+
+- EstimateStage was broken for Jira if the issue could not be fetched (#7337)
+
+## 6.79.0 2022-October-21
+
+### Added
+
+- Add confirmation tooltip on the retro meeting sidebar (#7248)
+- show you in emoji list instead of viewer name (#7285)
+- **notifications**: Update which users receive notification batch emails (#7286)
+
+### Fixed
+
+- assign new billing leader after deleting billing leader (#7267)
+- AdjustMeetingMemberCountPosition (#7202)
+- missing daki prompt (#7279)
+- Hyperlink removes whitespace (#7089)
+- **Jira**: show only available fields in Sprint Poker (#7257)
+- **Jira**: Link to documentation if we cannot find a story point field (#7264)
+- **Retro**: a card dragged from an expanded group disappeared (#7317)
+
+### Changed
+
+- use SDL for JiraIssue (#7258)
+- Fix missing types (#7300)
+- Run auto assign reviewer workflow on pull request target (#7296)
+- Change auto assign reviewer PAT (#7318)
+
+## [6.78.1](https://github.com/ParabolInc/parabol/compare/v6.78.0...v6.78.1) (2022-10-12)
+
+### Bug Fixes
+
+- add release PR for staging branch (if bugfix) ([47a7794](https://github.com/ParabolInc/parabol/commit/47a7794c014a5c0eff5d13fd96d290e6870e82fa))
+- update the release please name & trigger branch ([2c1587b](https://github.com/ParabolInc/parabol/commit/2c1587bf809f3c0e8be9c7c594a3b77e9d2e92a1))
+
+## [6.78.0](https://github.com/ParabolInc/parabol/compare/v6.77.0...v6.78.0) (2022-10-12)
+
+### Features
+
+- **metrics:** Send isPatient0 property to Google Analytics ([#7261](https://github.com/ParabolInc/parabol/issues/7261)) ([a046fe7](https://github.com/ParabolInc/parabol/commit/a046fe7d03581e3400f0f12790ceea848a2f0e73))
+
+### Bug Fixes
+
+- **noImplicitAny:** Fixup 200 ts rules (Part 2 of 2) ([#7193](https://github.com/ParabolInc/parabol/issues/7193)) ([c5b7306](https://github.com/ParabolInc/parabol/commit/c5b73062d4935b14af6b0d332e4e74e864a83620))
+- other tabs break when accepting a team invitation via a link ([#7200](https://github.com/ParabolInc/parabol/issues/7200)) ([d51ca5a](https://github.com/ParabolInc/parabol/commit/d51ca5a1836756c284530e79f3ba17615e8cbf68))
+- participants follow facilitator ([#7269](https://github.com/ParabolInc/parabol/issues/7269)) ([1800d0f](https://github.com/ParabolInc/parabol/commit/1800d0f062d21cdc1d98dc59cda4ea190c2b4667))
+- unsubscribe analytics bug ([#7255](https://github.com/ParabolInc/parabol/issues/7255)) ([39e9d38](https://github.com/ParabolInc/parabol/commit/39e9d3805fdde52e608c8c82bead2016b07872ac))
+
+## 6.77.0 2022-October-5
+
+### Added
+
+- **Standups**: Replace back arrow with logo (#7141)
+- **Standups**: Starting and stopping recurrence from meeting menu (#7105)
+- **Notifications**: Open notification menu when opening app from notification email (#7225)
+- **Retro**: Prompt user to drag cards in group phase (#6910)
+- **Reactions**: Show users who added a reactji (#7147)
+
+### Fixed
+
+- **Sprint Poker**: Scope phase styling issue in header (#7043)
+- **Discussion Threads**: Text without spaces breaks the UI in discussion (#7140)
+- **Discussion Threads**: Autofocus the input in the discussion drawer when opened (#7238)
+- **Accessibility**: Aria-label “edit this reflection” should not exist when the reflection is no longer editable (#7218)
+- Hover over avatar to see names not working for some users (#7239)
+
+### Changed
+
+- **Review Stats**: Correct node version (#7242)
+- **Review Stats**: Count IssueComment events towards comment count (#7230)
+- Boot message changed to include Server ID and task. (#7237)
+- Update code review policy (#7228)
+- Upgrade node to 16.16.0 (#6998)
+
+## 6.76.0 2022-September-28
+
+### Added
+
+- Add password reset to user profile (#7183)
+- Option to unsubscribe from summary emails (#7190)
+- **Analytics**: 'Copied Invite Link' event (#7232)
+- **Analytics**: 'Sent invite accepted' event (#7231)
+
+### Fixed
+
+- **Notifications**: UTM params on notification email link (#7224)
+
+### Changed
+
+- Tweak review stats schedule to match other reminders (#7227)
+- Add jira server key generation script (#7180)
+- Let super users invite to team (#7226)
+
+## 6.75.0 2022-September-21
+
+### Added
+
+- feat(metrics): Add metrics about disableAnonymity in retro meetings (#7171)
+
+### Fixed
+
+- fix: Fix cannot read email of undefined in ErrorBoundary (#7198)
+- fix: 'Estimate phase is already complete' error message (#7194)
+
+### Changed
+
+- style(lint): run yarn format on server side (#7186)
+- ci: update to Lerna V5 and integrate with Nx (#7184)
+- ci: setting write permissions to the PR for external contributor (#7195)
+- chore: add Standup smoke test into the testing basics (#7189)
+- chore: Weekly review stats in Slack (#7205)
+
+## 6.74.0 2022-September-15
+
+### Fixed
+
+- fix: Disallow comments only consisting of whitespace (#7137)
+- fix: New Add Meeting button is pushing the Add Team button out of reach (#7157)
+- fix(demo): prevent demo meeting auto-start after page refresh (#7131)
+- fix: card quick return to original position without hangs (#7138)
+- fix: Misleading error message when inviting existing team mate (#7159)
+- fix: Long title create UI issue on mobile (#7168)
+- fix: only check clientGraphQLServer for isDemoRoute (#7176)
+- fix(poker): fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
+
+### Changed
+
+- chore: Automatically add reviewers (#7172)
+
 ## 6.73.0 2022-September-08
 
 ### Added

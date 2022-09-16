@@ -45,7 +45,7 @@ const BillingLeaderActionMenu = (props: Props) => {
       if (submitting) return
       submitMutation()
       const variables = {orgId, userId, role}
-      SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
+      SetOrgUserRoleMutation(atmosphere, variables, {onError, onCompleted})
     }
 
   return (

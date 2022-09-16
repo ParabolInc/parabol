@@ -1491,29 +1491,6 @@ type AtlassianIntegration {
   userId: ID!
 
   """
-  A list of issues coming straight from the jira integration for a specific team member
-  """
-  issues(
-    first: Int = 100
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    A string of text to search for, or JQL if isJQL is true
-    """
-    queryString: String
-
-    """
-    true if the queryString is JQL, else false
-    """
-    isJQL: Boolean!
-    projectKeyFilters: [ID!]
-  ): JiraIssueConnection!
-
-  """
   A list of projects accessible by this team member. empty if viewer is not the user
   """
   projects: [JiraRemoteProject!]!
@@ -1532,107 +1509,6 @@ type AtlassianIntegration {
   the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
   """
   jiraSearchQueries: [JiraSearchQuery!]!
-}
-
-"""
-A connection to a list of items.
-"""
-type JiraIssueConnection {
-  """
-  Page info with cursors coerced to ISO8601 dates
-  """
-  pageInfo: PageInfoDateCursor
-
-  """
-  A list of edges.
-  """
-  edges: [JiraIssueEdge!]!
-
-  """
-  An error with the connection, if any
-  """
-  error: StandardMutationError
-}
-
-"""
-An edge in a connection.
-"""
-type JiraIssueEdge {
-  """
-  The item at the end of the edge
-  """
-  node: JiraIssue!
-  cursor: DateTime
-}
-
-"""
-The Jira Issue that comes direct from Jira
-"""
-type JiraIssue implements TaskIntegration {
-  """
-  GUID cloudId:issueKey
-  """
-  id: ID!
-
-  """
-  The parabol teamId this issue was fetched for
-  """
-  teamId: ID!
-
-  """
-  The parabol userId this issue was fetched for
-  """
-  userId: ID!
-
-  """
-  The ID of the jira cloud where the issue lives
-  """
-  cloudId: ID!
-
-  """
-  The name of the jira cloud where the issue lives
-  """
-  cloudName: ID!
-
-  """
-  The url to access the issue
-  """
-  url: URL!
-
-  """
-  The key of the issue as found in Jira
-  """
-  issueKey: ID!
-
-  """
-  The key of the project, which is the prefix to the issueKey
-  """
-  projectKey: ID!
-
-  """
-  The project fetched from jira
-  """
-  project: JiraRemoteProject
-
-  """
-  The plaintext summary of the jira issue
-  """
-  summary: String!
-
-  """
-  Field names that exists on the issue and can be used as estimation fields
-  """
-  possibleEstimationFieldNames: [String!]!
-
-  """
-  The stringified ADF of the jira issue description
-  """
-  description: String!
-
-  """
-  The description converted into raw HTML
-  """
-  descriptionHTML: String!
 }
 
 interface TaskIntegration {
@@ -2291,11 +2167,6 @@ type Team {
   ): MassInvitation!
 
   """
-  Integration details that are shared by all team members. Nothing user specific
-  """
-  integrations: TeamIntegrations!
-
-  """
   true if the underlying org has a validUntil date greater than now. if false, subs do not work
   """
   isPaid: Boolean
@@ -2424,36 +2295,6 @@ type MassInvitation {
   """
   expiration: DateTime!
   meetingId: ID
-}
-
-"""
-All the available integrations available for this team member
-"""
-type TeamIntegrations {
-  """
-  composite
-  """
-  id: ID!
-
-  """
-  All things associated with an atlassian integration for a team member
-  """
-  atlassian: AtlassianTeamIntegration!
-}
-
-"""
-The atlassian integration details shared across an entire team
-"""
-type AtlassianTeamIntegration {
-  """
-  shortid
-  """
-  id: ID!
-
-  """
-  The dimensions and their corresponding Jira fields
-  """
-  jiraDimensionFields: [JiraDimensionField!]!
 }
 
 """
@@ -2598,7 +2439,7 @@ type ReflectTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -4299,7 +4140,7 @@ type PokerTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -4366,7 +4207,7 @@ interface MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 }
 
@@ -7699,7 +7540,6 @@ type Mutation {
     disables anonymity of reflections
     """
     disableAnonymity: Boolean
-
   ): SetMeetingSettingsPayload!
 
   """
@@ -8146,41 +7986,9 @@ type Mutation {
   ): MovePokerTemplateScaleValuePayload!
 
   """
-  Set the jira field that the poker dimension should map to
-  """
-  updateJiraDimensionField(
-    dimensionName: String!
-
-    """
-    The jira field name that we should push estimates to
-    """
-    fieldName: String!
-
-    """
-    The cloudId the field lives on
-    """
-    cloudId: ID!
-
-    """
-    The project the field lives on
-    """
-    projectKey: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-  ): UpdateJiraDimensionFieldPayload!
-
-  """
   Create a meeting member for a user
   """
   joinMeeting(meetingId: ID!): JoinMeetingPayload!
-
-  """
-  Adds a missing Jira field to a screen currently assigned to a Jira project
-  """
-  addMissingJiraField(meetingId: ID!, stageId: ID!): AddMissingJiraFieldPayload!
 
   """
   Set whether the user is spectating poker meeting
@@ -10328,22 +10136,6 @@ type MovePokerTemplateScaleValueSuccess {
 }
 
 """
-Return object for UpdateJiraDimensionFieldPayload
-"""
-union UpdateJiraDimensionFieldPayload = ErrorPayload | UpdateJiraDimensionFieldSuccess
-
-type UpdateJiraDimensionFieldSuccess {
-  teamId: ID!
-  meetingId: ID
-  team: Team!
-
-  """
-  The poker meeting the field was updated from
-  """
-  meeting: PokerMeeting
-}
-
-"""
 Return object for JoinMeetingPayload
 """
 union JoinMeetingPayload = ErrorPayload | JoinMeetingSuccess
@@ -10355,18 +10147,6 @@ type JoinMeetingSuccess {
   The meeting with the updated stages, if any
   """
   meeting: NewMeeting!
-}
-
-"""
-Return object for AddMissingJiraFieldPayload
-"""
-union AddMissingJiraFieldPayload = ErrorPayload | AddMissingJiraFieldSuccess
-
-type AddMissingJiraFieldSuccess {
-  """
-  Jira field which was just added to an issue screen
-  """
-  dimensionField: JiraDimensionField
 }
 
 """
@@ -10941,7 +10721,6 @@ union NotificationSubscriptionPayload =
   | User
   | AuthTokenPayload
   | PersistGitHubSearchQuerySuccess
-  | JiraIssue
 
 type AddNewFeaturePayload {
   """
@@ -11179,7 +10958,6 @@ union TeamSubscriptionPayload =
   | UpdateUserProfilePayload
   | PersistJiraSearchQuerySuccess
   | MovePokerTemplateScaleValueSuccess
-  | UpdateJiraDimensionFieldSuccess
   | SetDefaultSlackChannelSuccess
   | SetAppLocationSuccess
   | UpdateGitHubDimensionFieldSuccess

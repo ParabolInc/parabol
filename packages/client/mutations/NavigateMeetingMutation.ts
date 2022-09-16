@@ -1,21 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {NavigateMeetingMutation_meeting} from '~/__generated__/NavigateMeetingMutation_meeting.graphql'
+import {
+  NavigateMeetingMutation_meeting,
+  NewMeetingPhaseTypeEnum
+} from '~/__generated__/NavigateMeetingMutation_meeting.graphql'
 import {NavigateMeetingMutation_team} from '~/__generated__/NavigateMeetingMutation_team.graphql'
 import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
-import Atmosphere from '../Atmosphere'
-import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import getBaseRecord from '../utils/relay/getBaseRecord'
-import getInProxy from '../utils/relay/getInProxy'
 import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import {isViewerTypingInComment, isViewerTypingInTask} from '../utils/viewerTypingUtils'
-import {
-  NavigateMeetingMutation as TNavigateMeetingMutation,
-  NavigateMeetingMutationVariables
-} from '../__generated__/NavigateMeetingMutation.graphql'
+import {NavigateMeetingMutation as TNavigateMeetingMutation} from '../__generated__/NavigateMeetingMutation.graphql'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 
 graphql`
@@ -129,7 +127,9 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     return
   }
   if (viewerStageId === oldMeeting.facilitatorStageId) {
-    const viewerPhaseType = getInProxy(meeting, 'localPhase', 'phaseType')
+    const viewerPhaseType = meeting
+      .getLinkedRecord('localPhase')!
+      .getValue('phaseType') as NewMeetingPhaseTypeEnum
     const isViewerTyping = isViewerTypingInTask() || isViewerTypingInComment()
     if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping) {
       setLocalStageAndPhase(store, meetingId, facilitatorStageId)
@@ -139,13 +139,13 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   const emptyReflectionGroupIds = safeProxy(payload)
     .getLinkedRecord('phaseComplete')
     .getLinkedRecord('reflect')
-    .getValue('emptyReflectionGroupIds')
+    .getValue('emptyReflectionGroupIds')!
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store)
 
   const emptyGroupReflectionGroupIds = safeProxy(payload)
     .getLinkedRecord('phaseComplete')
     .getLinkedRecord('group')
-    .getValue('emptyReflectionGroupIds')
+    .getValue('emptyReflectionGroupIds')!
   handleRemoveReflectionGroups(emptyGroupReflectionGroupIds, meetingId, store)
 
   if (emptyReflectionGroupIds) {
@@ -171,11 +171,9 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   meeting.setLinkedRecords(sortedReflectionGroups, 'reflectionGroups')
 }
 
-const NavigateMeetingMutation = (
-  atmosphere: Atmosphere,
-  variables: NavigateMeetingMutationVariables,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
+const NavigateMeetingMutation: SimpleMutation<TNavigateMeetingMutation> = (
+  atmosphere,
+  variables
 ) => {
   return commitMutation<TNavigateMeetingMutation>(atmosphere, {
     mutation,
@@ -213,9 +211,7 @@ const NavigateMeetingMutation = (
           }
         }
       }
-    },
-    onCompleted,
-    onError
+    }
   })
 }
 

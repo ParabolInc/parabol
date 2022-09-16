@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Forum} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -9,7 +10,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import plural from '~/utils/plural'
 import {NewMeetingActionsCurrentMeetings_team} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
 import FlatButton from './FlatButton'
-import Icon from './Icon'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
 
 const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
@@ -20,8 +20,8 @@ const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings})
   visibility: hasMeetings ? undefined : 'hidden'
 }))
 
-const ForumIcon = styled(Icon)({
-  paddingRight: 12
+const ForumIcon = styled(Forum)({
+  marginRight: 12
 })
 
 interface Props {
@@ -38,7 +38,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
     }
   )
   const {activeMeetings} = team
-  useSnacksForNewMeetings(activeMeetings)
+  useSnacksForNewMeetings(activeMeetings as any)
   const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   return (
@@ -49,7 +49,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
         hasMeetings={meetingCount > 0}
         size={'large'}
       >
-        <ForumIcon>forum</ForumIcon>
+        <ForumIcon />
         {label}
       </CurrentButton>
       {menuPortal(<SelectMeetingDropdown menuProps={menuProps} meetings={activeMeetings!} />)}

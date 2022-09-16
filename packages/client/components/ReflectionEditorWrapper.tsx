@@ -1,5 +1,12 @@
 import styled from '@emotion/styled'
-import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
+import {
+  ContentBlock,
+  DraftHandleValue,
+  Editor,
+  EditorProps,
+  EditorState,
+  getDefaultKeyBinding
+} from 'draft-js'
 import React, {PureComponent, RefObject, Suspense} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
@@ -22,7 +29,7 @@ interface Props {
   handleBeforeInput: (char: string) => DraftHandleValue
   handleChange: (editorState: EditorState) => void
   handleKeyCommand: (command: string) => DraftHandleValue
-  handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
+  handleReturn: (e: any) => any
   isBlurred: boolean
   isClipped?: boolean
   isPhaseItemEditor?: boolean
@@ -106,7 +113,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  blockStyleFn = (contentBlock) => {
+  blockStyleFn = (contentBlock: ContentBlock) => {
     // TODO complete emtotion migration to provider a string className
     const type = contentBlock.getType()
     if (type === 'blockquote') {
@@ -117,7 +124,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     return ''
   }
 
-  handleChange = (editorState) => {
+  handleChange = (editorState: EditorState) => {
     const {handleChange, setEditorState} = this.props
     if (this.entityPasteStart) {
       const {anchorOffset, anchorKey} = this.entityPasteStart
@@ -140,7 +147,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     setEditorState(editorState)
   }
 
-  handleReturn = (e) => {
+  handleReturn: EditorProps['handleReturn'] = (e) => {
     const {handleReturn, renderModal} = this.props
     if (handleReturn && !renderModal) {
       return handleReturn(e)
@@ -148,7 +155,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     return 'not-handled'
   }
 
-  handleKeyCommand = (command) => {
+  handleKeyCommand = (command: string) => {
     const {handleKeyCommand} = this.props
     if (handleKeyCommand) {
       return handleKeyCommand(command)
@@ -156,10 +163,10 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     return 'not-handled'
   }
 
-  keyBindingFn = (e) => {
+  keyBindingFn: EditorProps['keyBindingFn'] = (e) => {
     const {keyBindingFn, renderModal} = this.props
     if (keyBindingFn) {
-      const result = keyBindingFn(e)
+      const result = keyBindingFn(e as any)
       if (result) {
         return result
       }
@@ -181,7 +188,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     return getDefaultKeyBinding(e)
   }
 
-  handleBeforeInput = (char) => {
+  handleBeforeInput = (char: string) => {
     const {handleBeforeInput} = this.props
     if (handleBeforeInput) {
       return handleBeforeInput(char)
@@ -189,10 +196,10 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     return 'not-handled'
   }
 
-  handlePastedText = (text) => {
+  handlePastedText = (text: string) => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i]
+        const tag = textTags[i]!
         if (text.indexOf(tag) !== -1) {
           const selection = this.props.editorState.getSelection()
           this.entityPasteStart = {

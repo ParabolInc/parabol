@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Flag} from '@mui/icons-material'
 import React, {forwardRef, Ref} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
@@ -14,11 +15,9 @@ import {ElementWidth, Times} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import Icon from './Icon'
 
-const FlagIcon = styled(Icon)({
-  color: PALETTE.SKY_500,
-  height: 24
+const FlagIcon = styled(Flag)({
+  color: PALETTE.SKY_500
 })
 
 interface Props {
@@ -89,7 +88,7 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         onTransitionEnd={onTransitionEnd}
       >
         <BottomNavIconLabel label={label} ref={originRef}>
-          <FlagIcon>{'flag'}</FlagIcon>
+          <FlagIcon />
         </BottomNavIconLabel>
       </EndMeetingButtonStyles>
       {tooltipPortal(`Tap '${label}' again to Confirm`)}

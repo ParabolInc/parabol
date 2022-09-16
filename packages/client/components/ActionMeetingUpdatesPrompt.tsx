@@ -28,7 +28,7 @@ const StyledHeader = styled(PhaseHeaderTitle)({
   fontSize: 18
 })
 
-const getQuestion = (isConnected, taskCount, preferredName) => {
+const getQuestion = (isConnected: boolean | null, taskCount: number, preferredName: string) => {
   if (isConnected) {
     return taskCount > 0 ? 'what’s changed with your tasks?' : 'what are you working on?'
   }

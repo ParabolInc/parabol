@@ -57,7 +57,7 @@ const PokerMeeting = (props: Props) => {
           gotoStageId={gotoStageId}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
-          avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
+          avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
         />
       </Suspense>
       <MeetingControlBar

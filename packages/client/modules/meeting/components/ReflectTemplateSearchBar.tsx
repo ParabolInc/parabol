@@ -1,16 +1,15 @@
 import styled from '@emotion/styled'
+import {Close, Search as SearchIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
 import {ReflectTemplateSearchBar_settings$key} from '~/__generated__/ReflectTemplateSearchBar_settings.graphql'
 import Atmosphere from '../../../Atmosphere'
-import Icon from '../../../components/Icon'
 import MenuItemComponentAvatar from '../../../components/MenuItemComponentAvatar'
 import MenuItemLabel from '../../../components/MenuItemLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 
 const SearchBarWrapper = styled('div')({
   padding: '16px 16px 0 16px'
@@ -34,15 +33,14 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 8
 })
 
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
+const StyledSearchIcon = styled(SearchIcon)({
+  color: PALETTE.SLATE_600
 })
 
-const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
+const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
   color: PALETTE.SLATE_500,
   cursor: 'pointer',
-  padding: 8,
+  margin: 8,
   display: isEmpty ? 'none' : 'flex'
 }))
 
@@ -118,7 +116,7 @@ const ReflectTemplateSearchBar = (props: Props) => {
     <SearchBarWrapper>
       <Search>
         <StyledMenuItemIcon>
-          <SearchIcon>search</SearchIcon>
+          <StyledSearchIcon />
         </StyledMenuItemIcon>
         <InputWrapper>
           <SearchInput
@@ -132,9 +130,7 @@ const ReflectTemplateSearchBar = (props: Props) => {
             value={templateSearchQuery ?? ''}
           />
         </InputWrapper>
-        <ClearSearchIcon isEmpty={!templateSearchQuery} onClick={handleClear}>
-          close
-        </ClearSearchIcon>
+        <ClearSearchIcon isEmpty={!templateSearchQuery} onClick={handleClear} />
       </Search>
     </SearchBarWrapper>
   )

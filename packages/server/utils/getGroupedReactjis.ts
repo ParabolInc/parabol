@@ -10,10 +10,11 @@ const getGroupedReactjis = (reactjis: Reactji[], viewerId: string, idPrefix: str
     const isViewerReactji = viewerId === userId
     const record = agg[guid]
     if (!record) {
-      agg[guid] = {id: guid, count: 1, isViewerReactji}
+      agg[guid] = {id: guid, count: 1, isViewerReactji, userIds: [userId]}
     } else {
       record.count++
       record.isViewerReactji = record.isViewerReactji || isViewerReactji
+      record.userIds = [userId, ...record.userIds]
     }
   })
 

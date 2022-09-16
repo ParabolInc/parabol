@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
 import Menu from '../../../components/Menu'
 import MenuItem from '../../../components/MenuItem'
@@ -32,7 +32,7 @@ const AddScaleLink = styled(LinkButton)({
   width: '100%'
 })
 
-const AddScaleLinkPlus = styled(Icon)({
+const AddScaleLinkPlus = styled(Add)({
   display: 'block',
   margin: '0 8px 0 0'
 })
@@ -90,7 +90,7 @@ const SelectScaleDropdown = (props: Props) => {
           key='create'
           label={
             <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
-              <AddScaleLinkPlus>add</AddScaleLinkPlus>
+              <AddScaleLinkPlus />
               Create a Scale
             </AddScaleLink>
           }

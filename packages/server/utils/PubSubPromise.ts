@@ -21,8 +21,8 @@ interface BaseRequest {
 
 export default class PubSubPromise<Request extends BaseRequest, Response> {
   jobs = {} as {[jobId: string]: Job}
-  publisher = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_pub'})
-  subscriber = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_sub'})
+  publisher = new Redis(REDIS_URL!, {connectionName: 'pubsubPromise_pub'})
+  subscriber = new Redis(REDIS_URL!, {connectionName: 'pubsubPromise_sub'})
   subChannel: string
   stream: string
   jobCounter = 0

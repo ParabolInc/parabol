@@ -3,6 +3,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import util from 'util'
+import {EMAIL_CORS_OPTIONS} from '../../../client/types/cors'
 import {isNotNull} from '../../../client/utils/predicates'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
@@ -13,7 +14,7 @@ import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -57,7 +58,7 @@ export default {
 
       // AUTH
       const viewerId = getUserId(authToken)
-      if (!isTeamMember(authToken, teamId)) {
+      if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
         return standardError(new Error('Team not found'), {userId: viewerId})
       }
 
@@ -155,7 +156,8 @@ export default {
             inviterName: inviter.preferredName,
             inviterEmail: inviter.email,
             teamName,
-            meeting: bestMeeting
+            meeting: bestMeeting,
+            corsOptions: EMAIL_CORS_OPTIONS
           })
           return getMailManager().sendEmail({
             to: invitation.email,

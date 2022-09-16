@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Public} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV3'
 import {FONT_FAMILY} from '~/styles/typographyV2'
-import Icon from '../../../components/Icon'
 import MenuItem from '../../../components/MenuItem'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -45,7 +45,8 @@ const ScaleName = styled('div')({
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
   fontWeight: 600,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  alignItems: 'center'
 })
 
 const ScaleValues = styled('div')({
@@ -63,10 +64,10 @@ const ScaleActionButtonGroup = styled('div')({
   marginBottom: 'auto'
 })
 
-const StarterIcon = styled(Icon)({
-  fontSize: 18,
-  lineHeight: '24px',
-  paddingLeft: 4
+const StarterIcon = styled(Public)({
+  height: 18,
+  width: 18,
+  marginLeft: 4
 })
 
 const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
@@ -97,7 +98,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
           <ScaleNameAndValues>
             <ScaleName>
               {scaleName}
-              {isStarter && <StarterIcon>public</StarterIcon>}
+              {isStarter && <StarterIcon />}
             </ScaleName>
             <ScaleValues>{scaleValueString(values)}</ScaleValues>
           </ScaleNameAndValues>

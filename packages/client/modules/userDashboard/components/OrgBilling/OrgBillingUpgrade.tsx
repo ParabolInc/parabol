@@ -38,7 +38,7 @@ const StyledPrimaryButton = styled(PrimaryButton)({
 
 interface Props {
   organization: OrgBillingUpgrade_organization
-  invoiceListRefetch?: ({orgId: string, first: number}) => void
+  invoiceListRefetch?: ({orgId, first}: {orgId: string; first: number}) => void
 }
 
 const OrgBillingUpgrade = (props: Props) => {
