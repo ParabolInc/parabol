@@ -9,6 +9,7 @@ import {
 } from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
+import {AddTeamMutation_notification} from '../__generated__/AddTeamMutation_notification.graphql'
 import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -62,7 +63,10 @@ export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_team> = (payload,
   handleAddTeams(team, store)
 }
 
-export const addTeamMutationNotificationUpdater = (payload, {store}) => {
+export const addTeamMutationNotificationUpdater: SharedUpdater<AddTeamMutation_notification> = (
+  payload,
+  {store}
+) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }

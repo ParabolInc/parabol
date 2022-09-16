@@ -54,7 +54,7 @@ const TaskSubscription = (
     updater: (store) => {
       const payload = store.getRootField('taskSubscription') as any
       if (!payload) return
-      const type = payload.getValue('__typename')
+      const type = payload.getValue('__typename') as keyof typeof updateHandlers
       const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
       const updater = updateHandlers[type]
       updater?.(payload, context)

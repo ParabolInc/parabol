@@ -279,7 +279,7 @@ const NotificationSubscription = (
           meetingStageTimeLimitUpdater(payload, context)
           break
         case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, store)
+          removeOrgUserNotificationUpdater(payload, context)
           break
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, context)

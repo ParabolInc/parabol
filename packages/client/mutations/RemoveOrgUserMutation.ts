@@ -117,7 +117,10 @@ export const removeOrgUserOrganizationUpdater: SharedUpdater<RemoveOrgUserMutati
   }
 }
 
-export const removeOrgUserNotificationUpdater = (payload, store) => {
+export const removeOrgUserNotificationUpdater: SharedUpdater<RemoveOrgUserMutation_notification> = (
+  payload,
+  {store}
+) => {
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
   handleAddNotifications(kickOutNotifications, store)
 }

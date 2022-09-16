@@ -9,6 +9,7 @@ import {
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import {RemoveTeamMemberMutation as TRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
+import {RemoveTeamMemberMutation_task} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
 import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
@@ -127,9 +128,13 @@ export const removeTeamMemberTeamOnNext: OnNextHandler<
   }
 }
 
-export const removeTeamMemberTasksUpdater = (payload, store) => {
+export const removeTeamMemberTasksUpdater: SharedUpdater<RemoveTeamMemberMutation_task> = (
+  payload,
+  {store}
+) => {
   const tasks = payload.getLinkedRecords('updatedTasks')
-  handleUpsertTasks(tasks, store)
+  // FIXME: noImplcitAny found this as a bug, it probably is! The fix will be a little too involved to include in this linting PR
+  handleUpsertTasks(tasks as any, store)
 }
 
 export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation_team> = (
@@ -155,7 +160,7 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
 }
 
 export const removeTeamMemberUpdater: SharedUpdater<any> = (payload, context) => {
-  removeTeamMemberTasksUpdater(payload, context.store)
+  removeTeamMemberTasksUpdater(payload, context)
   removeTeamMemberTeamUpdater(payload, context)
 }
 
