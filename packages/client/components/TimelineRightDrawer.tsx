@@ -1,13 +1,13 @@
-import {TimelineRightDrawer_viewer} from '../__generated__/TimelineRightDrawer_viewer.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import ErrorBoundary from './ErrorBoundary'
-import TimelinePriorityTasks from './TimelinePriorityTasks'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {PALETTE} from '../styles/paletteV3'
 import {DashTimeline, NavSidebar} from '../types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {TimelineRightDrawer_viewer} from '../__generated__/TimelineRightDrawer_viewer.graphql'
+import ErrorBoundary from './ErrorBoundary'
+import TimelinePriorityTasks from './TimelinePriorityTasks'
 
 interface Props {
   viewer: TimelineRightDrawer_viewer

@@ -1,11 +1,11 @@
+import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {Disposable} from 'relay-runtime'
+import {LocalHandlers} from '../types/relayMutations'
 import {
   DismissNewFeatureMutation as TDismissNewFeatureMutation,
   DismissNewFeatureMutationVariables
 } from '../__generated__/DismissNewFeatureMutation.graphql'
-import {commitMutation} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import {LocalHandlers} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation DismissNewFeatureMutation {

@@ -5,7 +5,7 @@
  */
 
 const computeDistanceMatrix = (
-  reflectionEntities: {lemma?: string, name: string, salience: number}[][],
+  reflectionEntities: {lemma?: string; name: string; salience: number}[][],
   uniqueLemmaArr: string[]
 ) => {
   return reflectionEntities.map((entities) => {

@@ -1,12 +1,12 @@
-import {NewMeetingAvatar_teamMember} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
-import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
+import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
+import {NewMeetingAvatar_teamMember} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
 
 const Item = styled('div')({
   position: 'relative'

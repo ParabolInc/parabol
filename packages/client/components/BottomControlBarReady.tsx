@@ -161,10 +161,10 @@ const BottomControlBarReady = (props: Props) => {
               {
                 {
                   arrow_forward: <ArrowForward />,
-                 check: <Check />
+                  check: <Check />
                 }[icon]
               }
-           </StyledIcon>
+            </StyledIcon>
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>
       </BottomNavControl>

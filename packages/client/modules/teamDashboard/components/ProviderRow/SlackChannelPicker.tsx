@@ -1,15 +1,15 @@
 import React from 'react'
 import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
-import useMenu from '../../../../hooks/useMenu'
-import {MenuPosition} from '../../../../hooks/useCoords'
 import {
   SlackChannelDropdownChannels,
   SlackChannelDropdownOnClick
 } from '../../../../components/SlackChannelDropdown'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useMenu from '../../../../hooks/useMenu'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import lazyPreload from '../../../../utils/lazyPreload'
 import SlackClientManager from '../../../../utils/SlackClientManager'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
 
 interface Props {
   isTokenValid: boolean
@@ -19,11 +19,12 @@ interface Props {
   teamId: string
 }
 
-const SlackChannelDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'SlackChannelDropdown' */
-    '../../../../components/SlackChannelDropdown'
-  )
+const SlackChannelDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'SlackChannelDropdown' */
+      '../../../../components/SlackChannelDropdown'
+    )
 )
 
 enum ChannelState {

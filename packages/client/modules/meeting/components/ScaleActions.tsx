@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
 import RemovePokerTemplateScaleMutation from '../../../mutations/RemovePokerTemplateScaleMutation'
-import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {Threshold} from '../../../types/constEnums'
 import {ScaleActions_scale} from '../../../__generated__/ScaleActions_scale.graphql'
 
 const CloneAndDelete = styled('div')({

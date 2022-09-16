@@ -1,8 +1,8 @@
-import useFlip from './useFlip'
+import {MutableRefObject, RefObject, useEffect} from 'react'
 import {ElementWidth, Times} from '../types/constEnums'
+import useFlip from './useFlip'
 import useFlipDeal from './useFlipDeal'
 import usePortal, {PortalId, PortalStatus} from './usePortal'
-import {MutableRefObject, RefObject, useEffect} from 'react'
 
 const shrinkGroupOnExpand = (groupEl: HTMLDivElement) => {
   const {style, scrollHeight} = groupEl

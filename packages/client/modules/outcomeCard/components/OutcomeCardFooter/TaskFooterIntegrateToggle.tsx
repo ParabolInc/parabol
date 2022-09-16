@@ -8,10 +8,11 @@ import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import lazyPreload from '../../../../utils/lazyPreload'
 
-const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot'
-  )
+const TaskFooterIntegrateMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot'
+    )
 )
 
 interface Props {
@@ -29,9 +30,12 @@ const TaskFooterIntegrateToggle = (props: Props) => {
       loadingWidth: 200
     }
   )
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <CardButton

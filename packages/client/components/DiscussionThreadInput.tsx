@@ -25,10 +25,10 @@ import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
 import {DiscussionThreadables} from './DiscussionThreadList'
+import {createLocalPoll} from './Poll/local/newPoll'
 import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import {createLocalPoll} from './Poll/local/newPoll'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',

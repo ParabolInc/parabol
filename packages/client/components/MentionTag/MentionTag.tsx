@@ -1,7 +1,7 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import DraftMentionRow from './DraftMentionRow'
+import React from 'react'
 import DraftionMentionDescription from './DraftMentionDescription'
+import DraftMentionRow from './DraftMentionRow'
 
 export interface TagProps {
   active: boolean

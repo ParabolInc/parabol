@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-
 import {PALETTE} from '~/styles/paletteV3'
-
 import MenuItemLabel from './MenuItemLabel'
 
 export const EmptyDropdownMenuItemLabel = styled(MenuItemLabel)({

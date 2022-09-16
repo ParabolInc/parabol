@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import InviteDialog from './InviteDialog'
-import DialogTitle from './DialogTitle'
 import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InviteDialog from './InviteDialog'
 import StyledError from './StyledError'
 
 const AuthProvider = () => {

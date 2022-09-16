@@ -1,7 +1,7 @@
-import {RemoveSlackAuthMutation as TRemoveSlackAuthMutation} from '../__generated__/RemoveSlackAuthMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
+import {RemoveSlackAuthMutation as TRemoveSlackAuthMutation} from '../__generated__/RemoveSlackAuthMutation.graphql'
 
 graphql`
   fragment RemoveSlackAuthMutation_team on RemoveSlackAuthPayload {
