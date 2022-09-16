@@ -139,13 +139,13 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   const emptyReflectionGroupIds = safeProxy(payload)
     .getLinkedRecord('phaseComplete')
     .getLinkedRecord('reflect')
-    .getValue('emptyReflectionGroupIds')
+    .getValue('emptyReflectionGroupIds')!
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store)
 
   const emptyGroupReflectionGroupIds = safeProxy(payload)
     .getLinkedRecord('phaseComplete')
     .getLinkedRecord('group')
-    .getValue('emptyReflectionGroupIds')
+    .getValue('emptyReflectionGroupIds')!
   handleRemoveReflectionGroups(emptyGroupReflectionGroupIds, meetingId, store)
 
   if (emptyReflectionGroupIds) {

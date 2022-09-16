@@ -122,8 +122,8 @@ const CreditCardForm = (props: Props) => {
     const [expMonth, expYear] = fields.expiry.value.split('/')
     const {error, id: stripeToken} = await stripeClientManager.createToken({
       number: fields.creditCardNumber.value,
-      exp_month: expMonth,
-      exp_year: expYear,
+      exp_month: Number(expMonth),
+      exp_year: Number(expYear),
       cvc: fields.cvc.value
     })
     if (error) {

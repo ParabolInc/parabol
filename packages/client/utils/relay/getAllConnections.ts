@@ -1,4 +1,4 @@
-import {getRelayHandleKey, RecordSourceSelectorProxy} from 'relay-runtime'
+import {getRelayHandleKey, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 /*
  * Sometimes you want all the connections that currently exist.
@@ -12,11 +12,11 @@ const getAllConnections = (
   const connectionRecordPrefix = getRelayHandleKey('connection', connection, null)
   const mutator = (store as any).__recordSource.__mutator
   const parentRecord = mutator._base.get(parentId)
-  if (!parentRecord) return []
+  if (!parentRecord) return [] as RecordProxy[]
   const childIds = Object.keys(parentRecord)
   return childIds
     .filter((id) => id.startsWith(connectionRecordPrefix))
-    .map((childId) => store.get(mutator.getLinkedRecordID(parentId, childId)))
+    .map((childId) => store.get(mutator.getLinkedRecordID(parentId, childId))!)
 }
 
 export default getAllConnections

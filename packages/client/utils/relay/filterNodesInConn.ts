@@ -1,5 +1,7 @@
-const filterNodesInConn = (connection, findFn) => {
-  const filteredNodes = []
+import {RecordProxy} from 'relay-runtime'
+
+const filterNodesInConn = (connection: RecordProxy, findFn: (node: RecordProxy) => boolean) => {
+  const filteredNodes = [] as RecordProxy[]
   const edges = connection.getLinkedRecords('edges')
   if (!edges) return filteredNodes
   for (let ii = 0; ii < edges.length; ii++) {

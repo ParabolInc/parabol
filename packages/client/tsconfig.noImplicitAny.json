@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noImplicitAny": false,
+    "noImplicitAny": true,
   },
   "includes": [
     "mutations"

@@ -43,7 +43,7 @@ const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
   SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
-}
+} as const
 
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
@@ -51,7 +51,7 @@ const updateHandlers = {
   SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
-}
+} as const
 
 const OrganizationSubscription = (
   atmosphere: Atmosphere,

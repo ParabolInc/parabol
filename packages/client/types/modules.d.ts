@@ -12,7 +12,7 @@ declare module 'string-score'
 declare module 'babel-plugin-relay/macro' {
   export {graphql as default} from 'react-relay'
 }
-
+declare module 'unicode-substring'
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
 declare const __SOCKET_PORT__: string

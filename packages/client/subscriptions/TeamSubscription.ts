@@ -100,7 +100,7 @@ const onNextHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
-}
+} as const
 
 const updateHandlers = {
   AddAgendaItemPayload: addAgendaItemUpdater,
@@ -120,7 +120,7 @@ const updateHandlers = {
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
-}
+} as const
 
 const TeamSubscription = (
   atmosphere: Atmosphere,

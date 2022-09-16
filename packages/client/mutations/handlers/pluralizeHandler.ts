@@ -2,7 +2,10 @@ import {FirstParam, SecondPlusParams} from '../../types/generics'
 
 const pluralizeHandler =
   <T extends (...args: any[]) => any>(handler: T) =>
-  (newNodeOrNodes: FirstParam<T> | FirstParam<T>[], ...args: SecondPlusParams<T>) => {
+  (
+    newNodeOrNodes: FirstParam<T> | FirstParam<T>[] | readonly FirstParam<T>[],
+    ...args: SecondPlusParams<T>
+  ) => {
     if (!newNodeOrNodes) return
     if (Array.isArray(newNodeOrNodes)) {
       for (let ii = 0; ii < newNodeOrNodes.length; ii++) {

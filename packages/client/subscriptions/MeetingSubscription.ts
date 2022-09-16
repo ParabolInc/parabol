@@ -69,7 +69,7 @@ const subscription = graphql`
 const onNextHandlers = {
   EndDraggingReflectionPayload: endDraggingReflectionMeetingOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorMeetingOnNext
-}
+} as const
 
 const updateHandlers = {
   CreatePollSuccess: createPollMeetingUpdater,
@@ -85,7 +85,7 @@ const updateHandlers = {
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
   UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater
-}
+} as const
 
 const MeetingSubscription = (
   atmosphere: Atmosphere,

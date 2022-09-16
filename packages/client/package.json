@@ -20,7 +20,7 @@
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
-    "typecheck": "yarn tsc --noEmit -p tsconfig.noImplicitAny.json"
+    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",

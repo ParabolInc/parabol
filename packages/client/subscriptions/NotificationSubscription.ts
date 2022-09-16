@@ -193,10 +193,10 @@ const stripeFailPaymentNotificationUpdater: UpdaterHandler = (payload, {store}) 
   handleAddNotifications(notification, store)
 }
 
-const addNewFeatureNotificationUpdater = (payload, {store}) => {
+const addNewFeatureNotificationUpdater: UpdaterHandler = (payload, {store}) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const newFeature = payload.getLinkedRecord('newFeature')
-  viewer.setLinkedRecord(newFeature, 'newFeature')
+  viewer?.setLinkedRecord(newFeature, 'newFeature')
 }
 
 const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
@@ -229,7 +229,7 @@ const onNextHandlers = {
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
   InvalidateSessionsPayload: invalidateSessionsNotificationOnNext
-}
+} as const
 
 const NotificationSubscription = (
   atmosphere: Atmosphere,

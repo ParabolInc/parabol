@@ -32,7 +32,7 @@ const subscription = graphql`
 
 const onNextHandlers = {
   UpdateTaskPayload: updateTaskTaskOnNext
-}
+} as const
 
 const TaskSubscription = (
   atmosphere: Atmosphere,
