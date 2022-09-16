@@ -1,7 +1,7 @@
 import AuthToken from './AuthToken'
 
 export default class ServerAuthToken extends AuthToken {
-  constructor () {
+  constructor() {
     super({sub: 'parabol-server', tms: [], rol: 'su'})
   }
 }

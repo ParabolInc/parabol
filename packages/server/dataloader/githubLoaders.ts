@@ -1,11 +1,11 @@
 import DataLoader from 'dataloader'
-import RootDataLoader from './RootDataLoader'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
+import RootDataLoader from './RootDataLoader'
 
 export const githubAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(

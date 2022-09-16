@@ -1,6 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
-import getNextFacilitatorStageAfterStageRemoved from './getNextFacilitatorStageAfterStageRemoved'
 import {DataLoaderWorker} from '../../graphql'
+import getNextFacilitatorStageAfterStageRemoved from './getNextFacilitatorStageAfterStageRemoved'
 
 /*
  * NewMeetings have a predefined set of stages, we need to remove it manually

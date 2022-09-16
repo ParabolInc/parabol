@@ -22,18 +22,20 @@ import lazyPreload from '../../../../utils/lazyPreload'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const UserDashTeamMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'UserDashTeamMenu' */
-    '../../../../components/UserDashTeamMenu'
-  )
+const UserDashTeamMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMenu' */
+      '../../../../components/UserDashTeamMenu'
+    )
 )
 
-const UserDashTeamMemberMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'UserDashTeamMemberMenu' */
-    '../../../../components/UserDashTeamMemberMenu'
-  )
+const UserDashTeamMemberMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMemberMenu' */
+      '../../../../components/UserDashTeamMemberMenu'
+    )
 )
 
 const StyledDashFilterToggle = styled(DashFilterToggle)({

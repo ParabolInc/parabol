@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Team from './Team'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
+import Team from './Team'
 
 export const StartRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'StartRetrospectiveSuccess',

@@ -1,5 +1,5 @@
-import {TeamDrawer} from './../../../client/__generated__/ToggleTeamDrawerMutation.graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {TeamDrawer} from './../../../client/__generated__/ToggleTeamDrawerMutation.graphql'
 
 interface Input {
   isNotRemoved?: boolean

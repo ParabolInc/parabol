@@ -1,10 +1,10 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import ReflectPrompt from './ReflectPrompt'
 import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
-import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import ReflectPrompt from './ReflectPrompt'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',

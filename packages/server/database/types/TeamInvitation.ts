@@ -25,17 +25,8 @@ export default class TeamInvitation {
   teamId: string
   token: string
   constructor(input: Input) {
-    const {
-      teamId,
-      acceptedAt,
-      acceptedBy,
-      email,
-      expiresAt,
-      id,
-      invitedBy,
-      meetingId,
-      token
-    } = input
+    const {teamId, acceptedAt, acceptedBy, email, expiresAt, id, invitedBy, meetingId, token} =
+      input
     this.id = id || generateUID()
     this.acceptedAt = acceptedAt || null
     this.acceptedBy = acceptedBy

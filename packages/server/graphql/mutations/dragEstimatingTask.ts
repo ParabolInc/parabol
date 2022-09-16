@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPhase from '../../utils/getPhase'
+import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import DragEstimatingTaskPayload from '../types/DragEstimatingTaskPayload'
 import {GQLContext} from '../graphql'
-import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
+import DragEstimatingTaskPayload from '../types/DragEstimatingTaskPayload'
 
 export default {
   description: 'Changes the ordering of the estimating tasks',

@@ -1,12 +1,12 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
+import {LocalHandlers} from '../types/relayMutations'
 import {
   UpdateOrgMutation as TUpdateOrgMutation,
   UpdateOrgMutationVariables
 } from '../__generated__/UpdateOrgMutation.graphql'
-import {LocalHandlers} from '../types/relayMutations'
 graphql`
   fragment UpdateOrgMutation_organization on UpdateOrgPayload {
     organization {

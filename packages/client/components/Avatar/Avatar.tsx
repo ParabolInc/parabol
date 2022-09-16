@@ -1,7 +1,7 @@
-import React, {forwardRef} from 'react'
-import AvatarBadge from '../AvatarBadge/AvatarBadge'
 import styled from '@emotion/styled'
+import React, {forwardRef} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import AvatarBadge from '../AvatarBadge/AvatarBadge'
 
 type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
 

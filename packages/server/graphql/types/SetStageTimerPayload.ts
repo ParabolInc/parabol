@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {GQLContext} from '../graphql'
 import NewMeetingStage from './NewMeetingStage'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
+import StandardMutationError from './StandardMutationError'
 
 const SetStageTimerPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetStageTimerPayload',

@@ -1,5 +1,5 @@
-import numToBase64 from '../utils/numToBase64'
 import RootDataLoader from '../dataloader/RootDataLoader'
+import numToBase64 from '../utils/numToBase64'
 import DataLoaderCache from './DataLoaderCache'
 import getNodeId from './getNodeId'
 

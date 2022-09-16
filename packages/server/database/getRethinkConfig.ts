@@ -1,8 +1,8 @@
+import dotenv from 'dotenv'
 import flag from 'node-env-flag'
+import path from 'path'
 import {parse} from 'url'
 import readCert from './readCert'
-import dotenv from 'dotenv'
-import path from 'path'
 
 export default function getRethinkConfig() {
   const envFile = path.join(__dirname, '../../../', '.env')

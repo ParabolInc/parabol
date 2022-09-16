@@ -1,8 +1,8 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import StyledError from '../StyledError'
+import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {FONT_FAMILY} from '../../styles/typographyV2'
+import StyledError from '../StyledError'
 
 const Input = styled('input')({
   appearance: 'none',

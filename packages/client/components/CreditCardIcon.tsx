@@ -1,15 +1,15 @@
+import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import React from 'react'
-import useSVG from '../hooks/useSVG'
-import {BezierCurve} from '../types/constEnums'
-import {keyframes} from '@emotion/core'
-import {CardTypeIcon} from '../utils/StripeClientManager'
-import ccJCB from '../../../static/images/creditCards/cc-jcb-brands.svg'
 import ccAmex from '../../../static/images/creditCards/cc-amex-brands.svg'
 import ccDiners from '../../../static/images/creditCards/cc-diners-club-brands.svg'
 import ccDiscover from '../../../static/images/creditCards/cc-discover-brands.svg'
+import ccJCB from '../../../static/images/creditCards/cc-jcb-brands.svg'
 import ccMastercard from '../../../static/images/creditCards/cc-mastercard-brands.svg'
 import ccVisa from '../../../static/images/creditCards/cc-visa-brands.svg'
+import useSVG from '../hooks/useSVG'
+import {BezierCurve} from '../types/constEnums'
+import {CardTypeIcon} from '../utils/StripeClientManager'
 
 const cardTypeIconToFilename = {
   'cc-amex-brands': ccAmex,

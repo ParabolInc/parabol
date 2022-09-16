@@ -1,8 +1,8 @@
 import aws from 'aws-sdk'
 import mime from 'mime-types'
 import {APP_CDN_USER_ASSET_SUBDIR} from 'parabol-client/utils/constants'
-import path from 'path'
 import protocolRelativeUrl from 'parabol-server/utils/protocolRelativeUrl'
+import path from 'path'
 import FileStoreManager from './FileStoreManager'
 
 export default class S3Manager extends FileStoreManager {

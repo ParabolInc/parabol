@@ -1,5 +1,5 @@
-import {avatar} from './templates'
 import legitify from './legitify'
+import {avatar} from './templates'
 
 export default function makeAvatarSchema() {
   return legitify({

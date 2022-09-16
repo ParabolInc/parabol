@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
-import makeMutationPayload from './makeMutationPayload'
 import {GQLContext} from '../graphql'
+import makeMutationPayload from './makeMutationPayload'
 
 const EmailPasswordResetSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EmailPasswordResetSuccess',

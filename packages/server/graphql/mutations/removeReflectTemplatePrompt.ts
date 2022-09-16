@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import RemoveReflectTemplatePromptPayload from '../types/RemoveReflectTemplatePromptPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import RemoveReflectTemplatePromptPayload from '../types/RemoveReflectTemplatePromptPayload'
 
 const removeReflectTemplatePrompt = {
   description: 'Remove a prompt from a template',
@@ -24,10 +24,7 @@ const removeReflectTemplatePrompt = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r
-      .table('ReflectPrompt')
-      .get(promptId)
-      .run()
+    const prompt = await r.table('ReflectPrompt').get(promptId).run()
     const viewerId = getUserId(authToken)
 
     // AUTH

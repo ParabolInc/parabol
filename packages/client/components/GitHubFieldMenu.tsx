@@ -109,7 +109,11 @@ const GitHubFieldMenu = (props: Props) => {
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ] as string[]
   const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
-  const {modalPortal, openPortal, closePortal: closeModal} = useModal({
+  const {
+    modalPortal,
+    openPortal,
+    closePortal: closeModal
+  } = useModal({
     id: 'editGitHubLabel',
     parentId: 'githubFieldMenu'
   })

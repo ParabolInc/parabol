@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     // delete notifications without owners
     await r
@@ -10,10 +10,7 @@ export const up = async function(r: R) {
       .run()
 
     // set all to unread
-    await r
-      .table('Notification')
-      .update({status: 'UNREAD'})
-      .run()
+    await r.table('Notification').update({status: 'UNREAD'}).run()
 
     //turn archived into CLICKED
     await r
@@ -29,9 +26,7 @@ export const up = async function(r: R) {
         row
           .merge({
             createdAt: row('startAt'),
-            userId: row('userIds')
-              .nth(0)
-              .default(null)
+            userId: row('userIds').nth(0).default(null)
           })
           .without('startAt', 'userIds')
       )
@@ -72,25 +67,16 @@ export const up = async function(r: R) {
       .run()
 
     await Promise.all([
-      r
-        .table('Notification')
-        .indexCreate('userId')
-        .run(),
-      r
-        .table('Notification')
-        .indexDrop('userIds')
-        .run(),
-      r
-        .table('Notification')
-        .indexDrop('orgId')
-        .run()
+      r.table('Notification').indexCreate('userId').run(),
+      r.table('Notification').indexDrop('userIds').run(),
+      r.table('Notification').indexDrop('orgId').run()
     ])
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     //turn CLICKED into archived
     await r
@@ -112,18 +98,9 @@ export const down = async function(r: R) {
       )
       .run()
     await Promise.all([
-      r
-        .table('Notification')
-        .indexCreate('userIds', {multi: true})
-        .run(),
-      r
-        .table('Notification')
-        .indexDrop('userId')
-        .run(),
-      r
-        .table('Notification')
-        .indexCreate('orgId')
-        .run()
+      r.table('Notification').indexCreate('userIds', {multi: true}).run(),
+      r.table('Notification').indexDrop('userId').run(),
+      r.table('Notification').indexCreate('orgId').run()
     ])
   } catch (e) {
     console.log(e)

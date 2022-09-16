@@ -1,5 +1,5 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode} from 'react'
 import CopyLink from '../../../../components/CopyLink'
 import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV3'

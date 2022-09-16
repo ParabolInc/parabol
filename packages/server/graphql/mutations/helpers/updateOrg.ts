@@ -1,11 +1,11 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import updateOrgValidation from '../helpers/updateOrgValidation'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {UpdateOrgInputType} from '../../types/UpdateOrgInput'
 import {GQLContext} from '../../graphql'
+import {UpdateOrgInputType} from '../../types/UpdateOrgInput'
+import updateOrgValidation from '../helpers/updateOrgValidation'
 
 const updateOrg = async (
   _source: unknown,
@@ -38,11 +38,7 @@ const updateOrg = async (
     ...org,
     updatedAt: now
   }
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update(dbUpdate)
-    .run()
+  await r.table('Organization').get(orgId).update(dbUpdate).run()
 
   const data = {orgId}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateOrgPayload', data, subOptions)

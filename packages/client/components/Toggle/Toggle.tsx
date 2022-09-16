@@ -1,8 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
+import React from 'react'
 import {DECELERATE} from '../../styles/animation'
 import {switchShadow} from '../../styles/elevation'
+import {PALETTE} from '../../styles/paletteV3'
 import {Duration} from '../../types/constEnums'
 
 interface Props {

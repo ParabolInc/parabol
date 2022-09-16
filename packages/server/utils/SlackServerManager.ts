@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import SlackManager from 'parabol-client/utils/SlackManager'
 import {stringify} from 'querystring'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 
 interface IncomingWebhook {

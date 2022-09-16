@@ -1,7 +1,7 @@
 import Oy from 'oy-vey'
-import React from 'react'
 import TeamInvite, {TeamInviteProps} from 'parabol-client/modules/email/components/TeamInvite'
 import {headCSS} from 'parabol-client/modules/email/styles'
+import React from 'react'
 
 const subject = 'You’ve been invited to Parabol'
 

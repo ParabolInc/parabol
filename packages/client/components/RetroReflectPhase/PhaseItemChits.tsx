@@ -1,12 +1,12 @@
-import React, {Component} from 'react'
-import styled from '@emotion/styled'
 import {keyframes} from '@emotion/core'
+import styled from '@emotion/styled'
+import React, {Component} from 'react'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import {PALETTE} from '../../styles/paletteV3'
 import {Elevation} from '../../styles/elevation'
+import {PALETTE} from '../../styles/paletteV3'
+import {ElementWidth} from '../../types/constEnums'
 import plural from '../../utils/plural'
 import TinyLabel from '../TinyLabel'
-import {ElementWidth} from '../../types/constEnums'
 
 interface Props {
   count: number

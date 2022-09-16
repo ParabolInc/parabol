@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
-import {PALETTE} from '~/styles/paletteV3'
-import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {PALETTE} from '~/styles/paletteV3'
+import {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
 
 const PollOptionTitle = styled('div')({
   width: '100%',

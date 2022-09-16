@@ -6,9 +6,9 @@ import {ThreadedItem_threadable} from '~/__generated__/ThreadedItem_threadable.g
 import {ThreadedItem_viewer} from '~/__generated__/ThreadedItem_viewer.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
+import ThreadedPollBase from './ThreadedPollBase'
 import ThreadedRepliesList from './ThreadedRepliesList'
 import ThreadedTaskBase from './ThreadedTaskBase'
-import ThreadedPollBase from './ThreadedPollBase'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]

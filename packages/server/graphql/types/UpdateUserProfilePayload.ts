@@ -1,10 +1,10 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import User from './User'
-import {resolveUser} from '../resolvers'
-import TeamMember from './TeamMember'
-import StandardMutationError from './StandardMutationError'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
+import {resolveUser} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import TeamMember from './TeamMember'
+import User from './User'
 
 const UpdateUserProfilePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateUserProfilePayload',

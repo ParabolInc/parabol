@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
+import StandardMutationError from './StandardMutationError'
 
 const DismissNewFeaturePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DismissNewFeaturePayload',

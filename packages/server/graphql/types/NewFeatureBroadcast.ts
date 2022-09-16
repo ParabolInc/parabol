@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const NewFeatureBroadcast = new GraphQLObjectType<any, GQLContext>({

@@ -1,10 +1,10 @@
-import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
+import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../../graphql/mutations/helpers/createJiraTask'
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import {TaskIntegrationManager, CreateTaskResponse} from '../TaskIntegrationManagerFactory'
+import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
+import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export default class JiraIntegrationManager
   extends AtlassianServerManager

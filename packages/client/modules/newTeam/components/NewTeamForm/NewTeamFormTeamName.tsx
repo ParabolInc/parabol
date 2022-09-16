@@ -1,10 +1,10 @@
-import React, {ChangeEvent} from 'react'
 import styled from '@emotion/styled'
+import React, {ChangeEvent} from 'react'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
+import {Breakpoint} from '../../../../types/constEnums'
 import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
-import {Breakpoint} from '../../../../types/constEnums'
 
 const FormBlockInline = styled(NewTeamFormBlock)({
   marginTop: 16,

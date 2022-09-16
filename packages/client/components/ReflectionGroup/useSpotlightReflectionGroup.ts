@@ -1,7 +1,7 @@
-import useSpotlightResults from '~/hooks/useSpotlightResults'
 import {useMemo} from 'react'
-import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import useSpotlightResults from '~/hooks/useSpotlightResults'
 import {ReflectionGroup_meeting} from '~/__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 
 const useSpotlightReflectionGroup = (

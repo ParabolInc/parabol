@@ -19,6 +19,7 @@
     "lint": "eslint --fix . --ext .ts,.tsx",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {

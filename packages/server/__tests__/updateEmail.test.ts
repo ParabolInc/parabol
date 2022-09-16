@@ -1,5 +1,5 @@
-import {sendIntranet, signUp} from './common'
 import faker from 'faker'
+import {sendIntranet, signUp} from './common'
 
 test('Update user email with unknown email fails', async () => {
   const email = faker.internet.email().toLowerCase()

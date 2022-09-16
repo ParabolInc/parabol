@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import TeamMeetingSettings from './TeamMeetingSettings'
-import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
+import StandardMutationError from './StandardMutationError'
+import TeamMeetingSettings from './TeamMeetingSettings'
 
 const SelectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SelectTemplatePayload',

@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import Team from '../types/Team'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import Team from '../types/Team'
 
 // HANDLED_OPS is a list of operations that we gracefully handle on the client, so we don't want to report them to sentry
 const HANDLED_OPS = ['TeamRootQuery']

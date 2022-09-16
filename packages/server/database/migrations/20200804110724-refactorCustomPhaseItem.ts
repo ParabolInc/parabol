@@ -2,11 +2,7 @@ import {R} from 'rethinkdb-ts'
 exports.up = async (r: R) => {
   // this is going to be a BIG db hit, so delete the unnedded records first
   try {
-    await r
-      .table('RetroReflectionGroup')
-      .filter({isActive: false})
-      .delete()
-      .run()
+    await r.table('RetroReflectionGroup').filter({isActive: false}).delete().run()
   } catch (e) {
     console.log(e)
   }
@@ -20,19 +16,12 @@ exports.up = async (r: R) => {
   }
 
   try {
-    await r
-      .table('CustomPhaseItem')
-      .config()
-      .update({name: 'ReflectPrompt'})
-      .run()
+    await r.table('CustomPhaseItem').config().update({name: 'ReflectPrompt'}).run()
   } catch (e) {
     console.log(e)
   }
   try {
-    await r
-      .table('ReflectPrompt')
-      .indexCreate('templateId')
-      .run()
+    await r.table('ReflectPrompt').indexCreate('templateId').run()
   } catch (e) {
     console.log(e)
   }
@@ -48,19 +37,12 @@ exports.down = async (r: R) => {
     console.log(e)
   }
   try {
-    await r
-      .table('ReflectPrompt')
-      .config()
-      .update({name: 'CustomPhaseItem'})
-      .run()
+    await r.table('ReflectPrompt').config().update({name: 'CustomPhaseItem'}).run()
   } catch (e) {
     console.log(e)
   }
   try {
-    await r
-      .table('CustomPhaseItem')
-      .indexDrop('templateId')
-      .run()
+    await r.table('CustomPhaseItem').indexDrop('templateId').run()
   } catch (e) {
     console.log(e)
   }

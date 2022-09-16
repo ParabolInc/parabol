@@ -1,9 +1,9 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import NewMeeting from '../types/NewMeeting'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import NewMeeting from '../types/NewMeeting'
+import {GQLContext} from './../graphql'
 
 export default {
   type: NewMeeting,

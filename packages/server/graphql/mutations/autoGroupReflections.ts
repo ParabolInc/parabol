@@ -35,11 +35,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -95,13 +91,10 @@ export default {
             updatedAt: now
           } as any)
       }),
-      meeting: r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          autoGroupThreshold,
-          nextAutoGroupThreshold: nextThresh
-        })
+      meeting: r.table('NewMeeting').get(meetingId).update({
+        autoGroupThreshold,
+        nextAutoGroupThreshold: nextThresh
+      })
     }).run()
 
     const reflectionGroupIds = groups.map(({id}) => id)

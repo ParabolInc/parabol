@@ -1,5 +1,5 @@
-import {sendIntranet} from './common'
 import faker from 'faker'
+import {sendIntranet} from './common'
 
 test('SAML', async () => {
   const companyName = faker.company.companyName()
