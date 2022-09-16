@@ -38,10 +38,7 @@ const flagReadyToAdvance = {
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const [meeting, viewerMeetingMember] = await Promise.all([
-      r
-        .table('NewMeeting')
-        .get(meetingId)
-        .run(),
+      r.table('NewMeeting').get(meetingId).run(),
       dataLoader.get('meetingMembers').load(meetingMemberId)
     ])
     if (!meeting) {
@@ -83,11 +80,7 @@ const flagReadyToAdvance = {
 
     // RESOLUTION
     // TODO there's enough evidence showing that we should probably worry about atomicity
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({phases, updatedAt: now})
-      .run()
+    await r.table('NewMeeting').get(meetingId).update({phases, updatedAt: now}).run()
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'FlagReadyToAdvanceSuccess', data, subOptions)
     return data

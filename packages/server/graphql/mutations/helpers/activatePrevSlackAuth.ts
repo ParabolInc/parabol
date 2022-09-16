@@ -34,10 +34,7 @@ const activatePrevSlackAuth = async (userId: string, teamId: string) => {
     }
 
     await r({
-      auth: r
-        .table('SlackAuth')
-        .get(authId)
-        .update({isActive: true, updatedAt: now}),
+      auth: r.table('SlackAuth').get(authId).update({isActive: true, updatedAt: now}),
       notifications: upsertNotifications(userId, teamId, defaultTeamChannelId, slackUserId)
     }).run()
   }

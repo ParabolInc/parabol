@@ -1,4 +1,6 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {getUserId} from '../../utils/authorization'
+import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
 import {
   resolveFilterByTeam,
@@ -16,8 +18,6 @@ import Task from './Task'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import User from './User'
-import {getUserId} from '../../utils/authorization'
-import errorFilter from '../errorFilter'
 
 const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveOrgUserPayload',

@@ -1,4 +1,4 @@
-export const up = async function(r) {
+export const up = async function (r) {
   try {
     await r({
       teamMembers: r.table('TeamMember').update({isSpectatingPoker: false}),
@@ -12,7 +12,7 @@ export const up = async function(r) {
   }
 }
 
-export const down = async function(r) {
+export const down = async function (r) {
   try {
     await r({
       teamMembers: r.table('TeamMember').replace((row) => row.without('isSpectatingPoker')),

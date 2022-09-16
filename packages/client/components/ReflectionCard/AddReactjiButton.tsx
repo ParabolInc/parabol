@@ -23,11 +23,12 @@ const AddIcon = styled('img')({
   width: 18
 })
 
-const ReactjiPicker = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'ReactjiPicker' */
-    '../ReactjiPicker'
-  )
+const ReactjiPicker = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'ReactjiPicker' */
+      '../ReactjiPicker'
+    )
 )
 
 interface Props {

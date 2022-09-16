@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
+import {analytics, MeetingSettings} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -44,8 +45,9 @@ const setMeetingSettings = {
     if (!settings) {
       return standardError(new Error('Settings not found'), {userId: viewerId})
     }
-    const {teamId} = settings
+    const {teamId, meetingType} = settings
 
+    const meetingSettings = {} as MeetingSettings
     // RESOLUTION
     await r
       .table('MeetingSettings')
@@ -58,10 +60,12 @@ const setMeetingSettings = {
             checkinEnabled ? row('phaseTypes') : row('phaseTypes').difference(['checkin']),
             checkinEnabled ? row('phaseTypes').prepend('checkin') : row('phaseTypes')
           )
+          meetingSettings.hasIcebreaker = checkinEnabled
         }
 
         if (isNotNull(disableAnonymity)) {
           updatedSettings.disableAnonymity = disableAnonymity
+          meetingSettings.disableAnonymity = disableAnonymity
         }
 
         return updatedSettings
@@ -69,6 +73,7 @@ const setMeetingSettings = {
       .run()
 
     const data = {settingsId}
+    analytics.meetingSettingsChanged(viewerId, teamId, meetingType, meetingSettings)
     publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
     return data
   }

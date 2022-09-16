@@ -1,9 +1,9 @@
+import styled from '@emotion/styled'
 import React from 'react'
 import {InvoiceStatusEnum} from '~/__generated__/InvoiceRow_invoice.graphql'
-import styled from '@emotion/styled'
-import {Breakpoint} from '../../../../types/constEnums'
-import {PALETTE} from '../../../../styles/paletteV3'
 import BaseTag from '../../../../components/Tag/BaseTag'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Breakpoint} from '../../../../types/constEnums'
 
 const TagBlock = styled('div')({
   position: 'absolute',

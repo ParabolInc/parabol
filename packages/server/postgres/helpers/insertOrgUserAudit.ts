@@ -1,8 +1,8 @@
+import getPg from '../getPg'
 import {
   insertOrgUserAuditQuery,
   OrganizationUserAuditEventTypeEnum
 } from '../queries/generated/insertOrgUserAuditQuery'
-import getPg from '../getPg'
 
 const insertOrgUserAudit = async (
   orgIds: string[],

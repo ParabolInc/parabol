@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Team from './Team'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
+import Team from './Team'
 
 export const UpdateAzureDevOpsDimensionFieldSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateAzureDevOpsDimensionFieldSuccess',

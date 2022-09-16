@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveUser} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import User from './User'
-import {GQLContext} from '../graphql'
 
 const DismissSuggestedActionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DismissSuggestedActionPayload',

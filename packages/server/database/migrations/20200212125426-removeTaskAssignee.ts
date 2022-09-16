@@ -1,16 +1,10 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await Promise.all([
-      r
-        .table('Task')
-        .indexDrop('assigneeId')
-        .run(),
-      r
-        .table('TeamMember')
-        .indexDrop('assigneeId')
-        .run()
+      r.table('Task').indexDrop('assigneeId').run(),
+      r.table('TeamMember').indexDrop('assigneeId').run()
     ])
     await r
       .table('Task')
@@ -21,7 +15,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r
       .table('Task')
@@ -30,14 +24,8 @@ export const down = async function(r: R) {
       }))
       .run()
     await Promise.all([
-      r
-        .table('Task')
-        .indexCreate('assigneeId')
-        .run(),
-      r
-        .table('TeamMember')
-        .indexCreate('assigneeId')
-        .run()
+      r.table('Task').indexCreate('assigneeId').run(),
+      r.table('TeamMember').indexCreate('assigneeId').run()
     ])
   } catch (e) {
     console.log(e)

@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   await r
     .table('User')
     .filter({isRemoved: true})
@@ -10,7 +10,7 @@ export const up = async function(r: R) {
     .run()
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   await r
     .table('User')
     .filter({isRemoved: true})

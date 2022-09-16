@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import TagBlock from '../../../../components/Tag/TagBlock'
-import makeDateString from '../../../../utils/makeDateString'
+import React from 'react'
 import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
+import makeDateString from '../../../../utils/makeDateString'
 
 const StyledTagBlock = styled(TagBlock)({
   display: 'block'

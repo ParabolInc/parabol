@@ -1,7 +1,7 @@
 const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker',
+  poker = 'poker'
 }
 const enum NewMeetingPhaseTypeEnum {
   lobby = 'lobby',
@@ -16,10 +16,10 @@ const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE',
+  ESTIMATE = 'ESTIMATE'
 }
 
-export const up = async function(r) {
+export const up = async function (r) {
   try {
     const actionMeetings = await r
       .table('NewMeeting')
@@ -56,7 +56,7 @@ export const up = async function(r) {
   }
 }
 
-export const down = async function(r) {
+export const down = async function (r) {
   try {
     await r
       .table('AgendaItem')

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import useRouter from '~/hooks/useRouter'
 import React, {Fragment} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useRouter from '~/hooks/useRouter'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {
   NewMeetingPhaseTypeEnum,
@@ -57,8 +57,11 @@ const RetroMeetingSidebar = (props: Props) => {
       <MeetingNavList>
         {phaseTypes.map((phaseType) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
-          const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
-            itemStage || {}
+          const {
+            id: itemStageId = '',
+            isNavigable = false,
+            isNavigableByFacilitator = false
+          } = itemStage || {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
             gotoStageId(itemStageId).catch()

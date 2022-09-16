@@ -1,10 +1,10 @@
-import React, {forwardRef, useEffect} from 'react'
 import styled from '@emotion/styled'
+import React, {forwardRef, useEffect} from 'react'
 import {LoadingDelayRef} from '../../hooks/useLoadingDelay'
+import useTimeout from '../../hooks/useTimeout'
 import Spinner from '../../modules/spinner/components/Spinner/Spinner'
 import {PALETTE} from '../../styles/paletteV3'
 import {LoaderSize, Times} from '../../types/constEnums'
-import useTimeout from '../../hooks/useTimeout'
 
 interface WrapperProps {
   height?: string | number

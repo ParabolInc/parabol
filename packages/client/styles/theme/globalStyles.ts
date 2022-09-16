@@ -1,7 +1,7 @@
 import {makePlaceholderStylesString} from '../helpers/makePlaceholderStyles'
-import fontLoader from './fontLoader'
-import {FONT_FAMILY} from '../typographyV2'
 import {PALETTE} from '../paletteV3'
+import {FONT_FAMILY} from '../typographyV2'
+import fontLoader from './fontLoader'
 
 const placeholderStyles = makePlaceholderStylesString(PALETTE.SLATE_600)
 

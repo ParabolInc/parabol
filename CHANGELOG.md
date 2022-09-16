@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.74.0 2022-September-15
+
+### Fixed
+- fix: Disallow comments only consisting of whitespace (#7137)
+- fix: New Add Meeting button is pushing the Add Team button out of reach (#7157)
+- fix(demo): prevent demo meeting auto-start after page refresh (#7131)
+- fix: card quick return to original position without hangs (#7138)
+- fix: Misleading error message when inviting existing team mate (#7159)
+- fix: Long title create UI issue on mobile (#7168)
+- fix: only check clientGraphQLServer for isDemoRoute (#7176)
+- fix(poker): fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
+
+### Changed
+- chore: Automatically add reviewers (#7172)
+
 ## 6.73.0 2022-September-08
 
 ### Added

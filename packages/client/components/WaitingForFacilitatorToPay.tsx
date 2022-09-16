@@ -1,10 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogContainer from './DialogContainer'
-import Icon from './Icon'
+import React from 'react'
 import {ICON_SIZE} from '../styles/typographyV2'
+import DialogContainer from './DialogContainer'
 import Ellipsis from './Ellipsis/Ellipsis'
+import Icon from './Icon'
+import InvitationDialogCopy from './InvitationDialogCopy'
 
 const HelpIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD48,

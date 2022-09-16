@@ -1,20 +1,20 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Menu from '../../../components/Menu'
-import {MenuProps} from '../../../hooks/useMenu'
-import {SelectScaleDropdown_dimension} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
-import ScaleDropdownMenuItem from './ScaleDropdownMenuItem'
-import MenuItemHR from '../../../components/MenuItemHR'
-import MenuItem from '../../../components/MenuItem'
-import styled from '@emotion/styled'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import {FONT_FAMILY} from '../../../styles/typographyV2'
+import Menu from '../../../components/Menu'
+import MenuItem from '../../../components/MenuItem'
+import MenuItemHR from '../../../components/MenuItemHR'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
+import {FONT_FAMILY} from '../../../styles/typographyV2'
 import {Threshold} from '../../../types/constEnums'
+import {SelectScaleDropdown_dimension} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
+import ScaleDropdownMenuItem from './ScaleDropdownMenuItem'
 
 interface Props {
   menuProps: MenuProps
@@ -47,7 +47,10 @@ const SelectScaleDropdown = (props: Props) => {
   const {selectedScale, team} = dimension
   const {id: seletedScaleId} = selectedScale
   const {id: teamId, scales} = team
-  const defaultActiveIdx = useMemo(() => scales.findIndex(({id}) => id === seletedScaleId), [dimension])
+  const defaultActiveIdx = useMemo(
+    () => scales.findIndex(({id}) => id === seletedScaleId),
+    [dimension]
+  )
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -67,24 +70,32 @@ const SelectScaleDropdown = (props: Props) => {
   }
 
   return (
-    <StyledMenu ariaLabel={'Select the scale for this dimension'} {...menuProps} defaultActiveIdx={defaultActiveIdx}>
-      {scales
-        .map((scale) => (
-          <ScaleDropdownMenuItem key={scale.id} scale={scale} dimension={dimension} scaleCount={scales.length} closePortal={closePortal} />
-        ))
-      }
+    <StyledMenu
+      ariaLabel={'Select the scale for this dimension'}
+      {...menuProps}
+      defaultActiveIdx={defaultActiveIdx}
+    >
+      {scales.map((scale) => (
+        <ScaleDropdownMenuItem
+          key={scale.id}
+          scale={scale}
+          dimension={dimension}
+          scaleCount={scales.length}
+          closePortal={closePortal}
+        />
+      ))}
       <MenuItemHR key='HR1' />
-      {scales.length < Threshold.MAX_POKER_TEMPLATE_SCALES &&
+      {scales.length < Threshold.MAX_POKER_TEMPLATE_SCALES && (
         <MenuItem
           key='create'
           label={
             <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
               <AddScaleLinkPlus>add</AddScaleLinkPlus>
-            Create a Scale
-          </AddScaleLink>
+              Create a Scale
+            </AddScaleLink>
           }
         />
-      }
+      )}
     </StyledMenu>
   )
 }

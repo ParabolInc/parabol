@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
 import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
-import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 
 const JiraServerRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraServerRemoteProject',

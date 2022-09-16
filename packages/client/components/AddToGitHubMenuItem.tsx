@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
 import React, {forwardRef} from 'react'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import {ICON_SIZE} from '../styles/typographyV2'
+import GitHubClientManager from '../utils/GitHubClientManager'
 import GitHubSVG from './GitHubSVG'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuMutationProps} from '../hooks/useMutationProps'
-import styled from '@emotion/styled'
-import {ICON_SIZE} from '../styles/typographyV2'
-import GitHubClientManager from '../utils/GitHubClientManager'
 
 interface Props {
   teamId: string

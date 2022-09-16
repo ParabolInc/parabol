@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import NotificationMeetingStageTimeLimitEnd from './NotificationMeetingStageTimeLimitEnd'
 import {GQLContext} from '../graphql'
+import NotificationMeetingStageTimeLimitEnd from './NotificationMeetingStageTimeLimitEnd'
 
 const MeetingStageTimeLimitPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'MeetingStageTimeLimitPayload',

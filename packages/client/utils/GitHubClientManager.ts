@@ -10,9 +10,7 @@ class GitHubClientManager {
   fetch = window.fetch.bind(window)
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
     const uri = `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GitHubClientManager.SCOPE}&state=${providerState}`
 
     const popup = window.open(

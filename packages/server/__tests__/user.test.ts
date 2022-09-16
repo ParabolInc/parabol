@@ -1,5 +1,5 @@
-import {sendIntranet, signUp, signUpWithEmail} from './common'
 import faker from 'faker'
+import {sendIntranet, signUp, signUpWithEmail} from './common'
 
 test('Get user by id', async () => {
   const {email, userId} = await signUp()

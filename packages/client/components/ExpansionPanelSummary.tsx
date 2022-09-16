@@ -1,8 +1,8 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
 
 const DropdownIcon = styled(Icon)({
   padding: '8px 0 8px 4px',

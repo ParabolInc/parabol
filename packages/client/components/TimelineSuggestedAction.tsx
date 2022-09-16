@@ -1,8 +1,8 @@
-import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
-import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {lazy} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import DelayUnmount from './DelayUnmount'
 
 interface Props {
@@ -10,26 +10,32 @@ interface Props {
 }
 
 const lookup = {
-  SuggestedActionInviteYourTeam: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionInviteYourTeam' */ './SuggestedActionInviteYourTeam'
-    )
+  SuggestedActionInviteYourTeam: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionInviteYourTeam' */ './SuggestedActionInviteYourTeam'
+      )
   ),
-  SuggestedActionTryTheDemo: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ './SuggestedActionTryTheDemo')
+  SuggestedActionTryTheDemo: lazy(
+    () => import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ './SuggestedActionTryTheDemo')
   ),
-  SuggestedActionTryRetroMeeting: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ './SuggestedActionTryRetroMeeting'
-    )
+  SuggestedActionTryRetroMeeting: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ './SuggestedActionTryRetroMeeting'
+      )
   ),
-  SuggestedActionTryActionMeeting: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionTryActionMeeting' */ './SuggestedActionTryActionMeeting'
-    )
+  SuggestedActionTryActionMeeting: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionTryActionMeeting' */ './SuggestedActionTryActionMeeting'
+      )
   ),
-  SuggestedActionCreateNewTeam: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam')
+  SuggestedActionCreateNewTeam: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam'
+      )
   )
 }
 

@@ -1,13 +1,10 @@
-import {
-  createGoogleCalendarInviteURL,
-  makeIcsUrl
-} from 'parabol-client/utils/makeCalendarInvites'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {createGoogleCalendarInviteURL, makeIcsUrl} from 'parabol-client/utils/makeCalendarInvites'
 import React from 'react'
 import {ExternalLinks} from '../../../../types/constEnums'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import {emailFontFamily} from '../../styles'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
 
 const message = {
   color: PALETTE.SLATE_700,
