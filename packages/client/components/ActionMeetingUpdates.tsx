@@ -13,8 +13,8 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
-import TaskColumns from './TaskColumns/TaskColumns'
 import PhaseCompleteTag from './Tag/PhaseCompleteTag'
+import TaskColumns from './TaskColumns/TaskColumns'
 
 const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
   position: 'relative'

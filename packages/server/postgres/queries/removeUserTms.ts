@@ -1,6 +1,6 @@
-import {removeUserTmsQuery} from './generated/removeUserTmsQuery'
 import getPg from '../getPg'
 import catchAndLog from '../utils/catchAndLog'
+import {removeUserTmsQuery} from './generated/removeUserTmsQuery'
 
 const removeUserTms = async (teamIdsToRemove: string | string[], userIds: string | string[]) => {
   userIds = typeof userIds === 'string' ? [userIds] : userIds

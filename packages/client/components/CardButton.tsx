@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV3'
-import BaseButton from './BaseButton'
 import {Card} from '../types/constEnums'
+import BaseButton from './BaseButton'
 
 const buttonSize = Card.BUTTON_HEIGHT
 

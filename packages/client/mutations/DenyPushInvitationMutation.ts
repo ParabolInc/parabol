@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
 import {

@@ -1,9 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isSpecialPokerLabel from 'parabol-client/utils/isSpecialPokerLabel'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import TemplateScaleInput, {TemplateScaleInputType} from '../types/TemplateScaleInput'
 import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateScaleValuePayload'
 import {
@@ -11,9 +14,6 @@ import {
   validateScaleLabel,
   validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
-import isSpecialPokerLabel from 'parabol-client/utils/isSpecialPokerLabel'
-import {GQLContext} from '../graphql'
-import {RValue} from '../../database/stricterR'
 
 const updatePokerTemplateScaleValue = {
   description: 'Update the label, numerical value or color of a scale value in a scale',

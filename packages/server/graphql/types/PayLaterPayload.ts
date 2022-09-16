@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
-import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
+import NewMeeting from './NewMeeting'
+import StandardMutationError from './StandardMutationError'
 
 const PayLaterPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'PayLaterPayload',

@@ -1,11 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
 import TypeAheadFilter from '../utils/TypeAheadFilter'
 
-const useFilteredItems = <T>(
-  query: string,
-  items: readonly T[],
-  getValue: (item: T) => string
-) => {
+const useFilteredItems = <T>(query: string, items: readonly T[], getValue: (item: T) => string) => {
   const typeAheadFilterRef = useRef(new TypeAheadFilter())
   const [filteredItems, setFilteredItems] = useState(items)
   useEffect(() => {

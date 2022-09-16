@@ -1,7 +1,7 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import Icon from './Icon'
 
 const Banner = styled('div')({
   border: `1px dashed ${PALETTE.SLATE_400}`,

@@ -1,4 +1,4 @@
-export const up = async function(r) {
+export const up = async function (r) {
   try {
     await Promise.all([
       r
@@ -11,14 +11,9 @@ export const up = async function(r) {
   }
 }
 
-export const down = async function(r) {
+export const down = async function (r) {
   try {
-    await Promise.all([
-      r
-        .table('OrganizationUser')
-        .indexDrop('tierInactive')
-        .run()
-    ])
+    await Promise.all([r.table('OrganizationUser').indexDrop('tierInactive').run()])
   } catch (e) {
     console.log(e)
   }

@@ -1,5 +1,5 @@
 import {R} from 'rethinkdb-ts'
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await r
       .table('NewMeeting')
@@ -7,9 +7,7 @@ export const up = async function(r: R) {
       .update({
         phases: r.row('phases').map((phase) => {
           return r.branch(
-            phase('focusedPhaseItemId')
-              .default(null)
-              .ne(null),
+            phase('focusedPhaseItemId').default(null).ne(null),
             phase
               .without('focusedPhaseItemId')
               .merge({focusedPromptId: phase('focusedPhaseItemId')}),
@@ -23,7 +21,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r
       .table('NewMeeting')
@@ -31,9 +29,7 @@ export const down = async function(r: R) {
       .update({
         phases: r.row('phases').map((phase) => {
           return r.branch(
-            phase('focusedPromptId')
-              .default(null)
-              .ne(null),
+            phase('focusedPromptId').default(null).ne(null),
             phase.without('focusedPromptId').merge({focusedPhaseItemId: phase('focusedPromptId')}),
             phase
           )

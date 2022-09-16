@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
-import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 import {GQLContext} from '../graphql'
+import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 
 const removeReflectTemplate = {
   description: 'Remove a template full of prompts',
@@ -40,17 +40,17 @@ const removeReflectTemplate = {
     // VALIDATION
     const {teamId} = template
     const {templates, settings} = await r({
-      templates: (r
+      templates: r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true, type: 'retrospective'})
         .orderBy('name')
-        .coerceTo('array') as unknown) as ReflectTemplate[],
-      settings: (r
+        .coerceTo('array') as unknown as ReflectTemplate[],
+      settings: r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
         .filter({meetingType: 'retrospective'})
-        .nth(0) as unknown) as MeetingSettingsRetrospective
+        .nth(0) as unknown as MeetingSettingsRetrospective
     }).run()
 
     // RESOLUTION

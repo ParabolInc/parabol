@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
 import getRethink from '../../database/rethinkDriver'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import RenameMeetingTemplatePayload from '../types/RenameMeetingTemplatePayload'
 import {GQLContext} from '../graphql'
+import RenameMeetingTemplatePayload from '../types/RenameMeetingTemplatePayload'
 
 const renameMeetingTemplate = {
   description: 'Rename a meeting template',

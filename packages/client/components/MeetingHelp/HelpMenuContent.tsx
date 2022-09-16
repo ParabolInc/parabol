@@ -1,8 +1,8 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
-import Icon from '../Icon'
 import {ICON_SIZE} from '../../styles/typographyV2'
+import Icon from '../Icon'
 
 const Content = styled('div')({
   fontSize: 13,

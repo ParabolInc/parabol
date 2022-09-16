@@ -1,19 +1,19 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
+import TemplateScale from '../../database/types/TemplateScale'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import AddTemplateScaleInput, {AddTemplateScaleInputType} from '../types/AddTemplateScaleInput'
+import {GQLContext} from '../graphql'
 import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
+import AddTemplateScaleInput, {AddTemplateScaleInputType} from '../types/AddTemplateScaleInput'
 import {
   validateColorValue,
   validateScaleLabel,
   validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
-import {GQLContext} from '../graphql'
-import {RDatum} from '../../database/stricterR'
-import TemplateScale from '../../database/types/TemplateScale'
 
 const addPokerTemplateScaleValue = {
   description: 'Add a new scale value for a scale in a poker template',
@@ -38,10 +38,7 @@ const addPokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const existingScale = await r.table('TemplateScale').get(scaleId).run()
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -64,12 +61,7 @@ const addPokerTemplateScaleValue = {
       .update(
         (row: RDatum<TemplateScale>) => ({
           // Append at the end of the sub-array (minus ? and Pass)
-          values: row('values').insertAt(
-            row('values')
-              .count()
-              .sub(2),
-            scaleValue
-          ),
+          values: row('values').insertAt(row('values').count().sub(2), scaleValue),
           updatedAt: now
         }),
         {returnChanges: true}

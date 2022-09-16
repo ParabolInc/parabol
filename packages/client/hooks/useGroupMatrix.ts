@@ -1,9 +1,9 @@
-import {SpotlightResultsQueryResponse} from './../__generated__/SpotlightResultsQuery.graphql'
 import {RefObject, useEffect, useState} from 'react'
-import {ElementWidth} from '../types/constEnums'
-import useResizeObserver from './useResizeObserver'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
+import {ElementWidth} from '../types/constEnums'
+import {SpotlightResultsQueryResponse} from './../__generated__/SpotlightResultsQuery.graphql'
 import useInitialRender from './useInitialRender'
+import useResizeObserver from './useResizeObserver'
 
 type Group = SpotlightResultsQueryResponse['viewer']['similarReflectionGroups'][0]
 

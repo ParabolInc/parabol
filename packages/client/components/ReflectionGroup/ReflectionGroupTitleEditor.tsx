@@ -106,11 +106,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
     })
     if (!dirtyRef.current) return
     const normalizedTitle = title.trim()
-    const validationError = getValidationError(
-      normalizedTitle,
-      reflectionGroups,
-      reflectionGroupId
-    )
+    const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId)
     if (!validationError) {
       if (error) {
         onCompleted()
@@ -171,22 +167,19 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ReflectionGroupTitleEditor,
-  {
-    reflectionGroup: graphql`
-      fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+export default createFragmentContainer(ReflectionGroupTitleEditor, {
+  reflectionGroup: graphql`
+    fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+      id
+      title
+    }
+  `,
+  meeting: graphql`
+    fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
+      reflectionGroups {
         id
         title
       }
-    `,
-    meeting: graphql`
-      fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
-        reflectionGroups {
-          id
-          title
-        }
-      }
-    `
-  }
-)
+    }
+  `
+})

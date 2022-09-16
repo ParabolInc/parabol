@@ -1,5 +1,5 @@
-import {Doc} from './convertContentStateToADF'
 import {ExternalLinks} from '../../client/types/constEnums'
+import {Doc} from './convertContentStateToADF'
 
 const makeCreateJiraTaskComment = (
   creator: string,

@@ -69,10 +69,7 @@ const addReflectTemplatePrompt = {
       removedAt: null
     })
 
-    await r
-      .table('ReflectPrompt')
-      .insert(reflectPrompt)
-      .run()
+    await r.table('ReflectPrompt').insert(reflectPrompt).run()
 
     const promptId = reflectPrompt.id
     const data = {promptId}

@@ -1,10 +1,10 @@
+import styled from '@emotion/styled'
 import UserAgent from 'fbjs/lib/UserAgent'
 import React from 'react'
-import styled from '@emotion/styled'
-import IconButton from '../IconButton'
-import IconLabel from '../IconLabel'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius} from '../../types/constEnums'
+import IconButton from '../IconButton'
+import IconLabel from '../IconLabel'
 
 const isOSX = UserAgent.isPlatform('Mac OS X')
 const modKey = isOSX ? '⌘' : 'ctrl'

@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import NewFeatureBroadcast from './NewFeatureBroadcast'
 import {GQLContext} from '../graphql'
+import NewFeatureBroadcast from './NewFeatureBroadcast'
 
 const AddNewFeaturePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddNewFeaturePayload',

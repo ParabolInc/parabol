@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {makeResolve, resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
-import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
+import NewMeetingStage from './NewMeetingStage'
 import RetroReflection from './RetroReflection'
 import RetroReflectionGroup from './RetroReflectionGroup'
-import NewMeetingStage from './NewMeetingStage'
-import {GQLContext} from '../graphql'
+import StandardMutationError from './StandardMutationError'
 
 const CreateReflectionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateReflectionPayload',

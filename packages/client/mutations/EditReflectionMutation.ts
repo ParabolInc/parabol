@@ -1,9 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleEditReflection from './handlers/handleEditReflection'
+import {commitMutation} from 'react-relay'
+import {EditReflectionMutation_meeting} from '~/__generated__/EditReflectionMutation_meeting.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {EditReflectionMutation as TEditReflectionMutation} from '../__generated__/EditReflectionMutation.graphql'
-import {EditReflectionMutation_meeting} from '~/__generated__/EditReflectionMutation_meeting.graphql'
+import handleEditReflection from './handlers/handleEditReflection'
 
 graphql`
   fragment EditReflectionMutation_meeting on EditReflectionPayload {

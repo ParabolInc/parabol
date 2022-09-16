@@ -1,8 +1,8 @@
+import getPg from '../getPg'
 import {
   getPollOptionsByPollIdsQuery,
   IGetPollOptionsByPollIdsQueryResult
 } from './generated/getPollOptionsByPollIdsQuery'
-import getPg from '../getPg'
 
 export interface PollOption extends IGetPollOptionsByPollIdsQueryResult {}
 

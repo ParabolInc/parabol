@@ -1,6 +1,6 @@
 interface Input {
-  id: string,
-  amountOff?: number,
+  id: string
+  amountOff?: number
   name: string
   percentOff?: number
 }
@@ -11,7 +11,7 @@ export default class Coupon {
   name: string
   percentOff?: number
 
-  constructor (input: Input) {
+  constructor(input: Input) {
     const {id, amountOff, name, percentOff} = input
     this.id = id
     this.amountOff = amountOff

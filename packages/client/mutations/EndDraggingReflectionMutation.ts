@@ -105,10 +105,9 @@ export const moveReflectionLocation = (
   handleAddReflectionGroupToGroups(store, reflectionGroup)
 }
 
-export const endDraggingReflectionMeetingUpdater: SharedUpdater<EndDraggingReflectionMutation_meeting> = (
-  payload,
-  {store}
-) => {
+export const endDraggingReflectionMeetingUpdater: SharedUpdater<
+  EndDraggingReflectionMutation_meeting
+> = (payload, {store}) => {
   const reflection = payload.getLinkedRecord('reflection')
   if (!reflection) return
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')

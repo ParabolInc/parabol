@@ -63,10 +63,9 @@ const popOrgArchivedToast: OnNextHandler<
   })
 }
 
-export const archiveOrganizationOrganizationUpdater: SharedUpdater<ArchiveOrganizationMutation_organization> = (
-  payload,
-  {store}
-) => {
+export const archiveOrganizationOrganizationUpdater: SharedUpdater<
+  ArchiveOrganizationMutation_organization
+> = (payload, {store}) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
   const teams = payload.getLinkedRecords('teams')
   if (!teams) return

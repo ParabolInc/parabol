@@ -2,9 +2,9 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import ResetPasswordEmail from '../../client/modules/email/components/ResetPasswordEmail'
-import emailTemplate from './emailTemplate'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
+import emailTemplate from './emailTemplate'
 interface Props {
   resetPasswordToken: string
 }

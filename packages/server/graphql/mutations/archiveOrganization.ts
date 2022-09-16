@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import Team from '../../database/types/Team'
+import User from '../../database/types/User'
+import IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
-import IUser from '../../postgres/types/IUser'
 import isValid from '../isValid'
-import Team from '../../database/types/Team'
-import User from '../../database/types/User'
+import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
 
 export default {
   type: new GraphQLNonNull(ArchiveOrganizationPayload),

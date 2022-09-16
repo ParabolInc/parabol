@@ -1,6 +1,6 @@
+import styled from '@emotion/styled'
 import React from 'react'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
-import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const Hint = styled('div')({

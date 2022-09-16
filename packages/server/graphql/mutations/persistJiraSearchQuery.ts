@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraSearchQuery from '../../database/types/JiraSearchQuery'
+import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JiraSearchQueryInput, {JiraSearchQueryType} from '../types/JiraSearchQueryInput'
 import PersistJiraSearchQueryPayload from '../types/PersistJiraSearchQueryPayload'
-import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
 const persistJiraSearchQuery = {
   type: new GraphQLNonNull(PersistJiraSearchQueryPayload),

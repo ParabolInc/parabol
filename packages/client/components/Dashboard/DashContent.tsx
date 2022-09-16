@@ -1,6 +1,6 @@
+import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
 import {Filter} from '../../types/constEnums'
-import styled from '@emotion/styled'
 
 const DashContent = styled('div')<{hasOverlay?: boolean}>(({hasOverlay}) => ({
   backgroundColor: PALETTE.SLATE_200,

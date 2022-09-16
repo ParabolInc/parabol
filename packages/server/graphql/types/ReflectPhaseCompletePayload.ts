@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import RetroReflectionGroup from './RetroReflectionGroup'
 

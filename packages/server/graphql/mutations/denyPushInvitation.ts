@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import PushInvitation from '../../database/types/PushInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import DenyPushInvitationPayload from '../types/DenyPushInvitationPayload'
-import PushInvitation from '../../database/types/PushInvitation'
-import publish from '../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: DenyPushInvitationPayload,

@@ -23,12 +23,16 @@ const JiraServerConfigMenu = (props: Props) => {
     JiraServerClientManager.openOAuth(atmosphere, providerId, teamId, mutationProps)
   }
 
-  const removeJiraServer= () => {
+  const removeJiraServer = () => {
     if (submitting) return
     submitMutation()
     // wait for the portal to animate closed before removing, otherwise it'll stick around forever
     setTimeout(() => {
-      RemoveTeamMemberIntegrationAuthMutation(atmosphere, {teamId, service: 'jiraServer'}, {onCompleted, onError})
+      RemoveTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {teamId, service: 'jiraServer'},
+        {onCompleted, onError}
+      )
     }, Duration.PORTAL_CLOSE)
   }
   return (

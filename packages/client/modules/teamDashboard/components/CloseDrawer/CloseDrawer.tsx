@@ -1,8 +1,8 @@
 import React from 'react'
-import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
 import IconButton from '../../../../components/IconButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
 
 interface Props {
   teamId: string

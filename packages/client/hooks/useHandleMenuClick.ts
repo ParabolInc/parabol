@@ -1,6 +1,6 @@
-import useAtmosphere from './useAtmosphere'
 import {useCallback} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import useAtmosphere from './useAtmosphere'
 
 const useHandleMenuClick = (meetingId: string, isDesktop: boolean) => {
   const atmosphere = useAtmosphere()

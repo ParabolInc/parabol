@@ -1,5 +1,4 @@
-import {getRelayHandleKey} from 'relay-runtime'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {getRelayHandleKey, RecordSourceSelectorProxy} from 'relay-runtime'
 
 /*
  * Sometimes you want all the connections that currently exist.

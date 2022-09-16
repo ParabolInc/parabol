@@ -1,11 +1,11 @@
+import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {matchPath} from 'react-router'
+import {LocalHandlers, OnNextHistoryContext, StandardMutation} from '../types/relayMutations'
 import {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
 import {InviteToTeamMutation_notification} from '../__generated__/InviteToTeamMutation_notification.graphql'
-import {commitMutation} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {matchPath} from 'react-router'
-import handleAddNotifications from './handlers/handleAddNotifications'
-import {LocalHandlers, OnNextHistoryContext, StandardMutation} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
+import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`

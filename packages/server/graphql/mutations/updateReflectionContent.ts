@@ -39,10 +39,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .run()
+    const reflection = await r.table('RetroReflection').get(reflectionId).run()
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }

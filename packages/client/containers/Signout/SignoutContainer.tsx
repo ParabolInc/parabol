@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
-import signout from './signout'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useRouter from '../../hooks/useRouter'
+import signout from './signout'
 
 const SignoutContainer = () => {
   const atmosphere = useAtmosphere()

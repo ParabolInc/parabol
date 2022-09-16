@@ -1,5 +1,5 @@
 query getIssueId($name: String!, $owner: String!, $number: Int!) {
-  repository(name: $name, owner: $owner){
+  repository(name: $name, owner: $owner) {
     issue(number: $number) {
       id
     }

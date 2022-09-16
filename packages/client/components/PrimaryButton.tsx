@@ -9,7 +9,9 @@ const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
   const {disabled, waiting} = props
   const visuallyDisabled = disabled || waiting
   return {
-    backgroundImage: visuallyDisabled ? PALETTE.GRADIENT_TOMATO_400_ROSE_300 : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
+    backgroundImage: visuallyDisabled
+      ? PALETTE.GRADIENT_TOMATO_400_ROSE_300
+      : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
     borderRadius: Radius.BUTTON_PILL,
     color: '#FFFFFF',
     fontWeight: 600,
@@ -24,7 +26,7 @@ const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
   }
 })
 
-interface Props extends BaseButtonProps { }
+interface Props extends BaseButtonProps {}
 
 const PrimaryButton = forwardRef((props: Props, ref: any) => {
   const {children, className, elevationHovered, elevationResting} = props

@@ -4,6 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import BaseButton from '../../../../components/BaseButton'
+import Icon from '../../../../components/Icon'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
@@ -12,7 +13,6 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TaskFooterUserAssignee_task} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
-import Icon from '../../../../components/Icon'
 
 const label = {
   ...textOverflow,
@@ -100,10 +100,11 @@ interface Props {
   useTaskChild: UseTaskChild
 }
 
-const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot'
-  )
+const TaskFooterUserAssigneeMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot'
+    )
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
@@ -112,9 +113,12 @@ const TaskFooterUserAssignee = (props: Props) => {
   const userImage = user?.picture || avatarUser
   const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <TooltipToggle

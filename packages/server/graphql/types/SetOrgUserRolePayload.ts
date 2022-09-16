@@ -1,11 +1,11 @@
-import {GQLContext} from './../graphql'
 import {GraphQLInterfaceType} from 'graphql'
 import {resolveOrganization} from '../resolvers'
+import {GQLContext} from './../graphql'
 import Organization from './Organization'
+import OrganizationUser from './OrganizationUser'
 import SetOrgUserRoleAddedPayload from './SetOrgUserRoleAddedPayload'
 import SetOrgUserRoleRemovedPayload from './SetOrgUserRoleRemovedPayload'
 import StandardMutationError from './StandardMutationError'
-import OrganizationUser from './OrganizationUser'
 
 export const setOrgUserRoleFields = {
   error: {

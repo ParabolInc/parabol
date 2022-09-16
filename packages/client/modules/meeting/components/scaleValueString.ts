@@ -1,5 +1,5 @@
-import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import {PokerCards} from '../../../types/constEnums'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 
 const scaleValueString = (values: readonly {label: string}[]) => {
   return values

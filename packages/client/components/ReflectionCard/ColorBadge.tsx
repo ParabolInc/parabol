@@ -4,8 +4,8 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
-import {ColorBadge_reflection} from '~/__generated__/ColorBadge_reflection.graphql'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {ColorBadge_reflection} from '~/__generated__/ColorBadge_reflection.graphql'
 
 const DROP_SIZE = 32
 const DROP_SIZE_HALF = DROP_SIZE / 2

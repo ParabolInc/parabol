@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import useModal from '../hooks/useModal'
-import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import {PALETTE} from '~/styles/paletteV3'
+import useModal from '../hooks/useModal'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import AddTeamMemberModal from './AddTeamMemberModal'
 import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
 
 const Label = styled('div')({
   fontSize: 12,

@@ -1,8 +1,8 @@
-import {ResetPasswordMutation as TResetPasswordMutation} from '../__generated__/ResetPasswordMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import {commitMutation} from 'react-relay'
 import getValidRedirectParam from '~/utils/getValidRedirectParam'
+import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import {ResetPasswordMutation as TResetPasswordMutation} from '../__generated__/ResetPasswordMutation.graphql'
 
 const mutation = graphql`
   mutation ResetPasswordMutation($newPassword: String!, $token: ID!) {
