@@ -38,26 +38,23 @@ jobs:
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.14.0"
-          cache: 'yarn'
+          cache: "yarn"
       - name: yarn install
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --pure-lockfile
-      - name: Build
+      - name: Build Databases
         run: |
           cp .env.example .env
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
-          yarn build
-        env:
-          CI: true
+      - name: Build Assets
+        run: yarn build
       - name: Check
         run: |
           npx nx affected --target=typecheck
           npx nx affected --target=lint:check
           npx nx affected --target=prettier:check
-        env:
-          CI: true
