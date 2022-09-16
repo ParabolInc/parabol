@@ -9,6 +9,10 @@ const BeginDemoModal = lazyPreload(
   () => import(/* webpackChunkName: 'BeginDemoModal' */ '../components/BeginDemoModal')
 )
 
+const a = '1'
+const bo = a == '1'
+console.log('========bo========', bo)
+
 const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
   const forceUpdate = useForceUpdate()
