@@ -2,34 +2,8 @@ name: Typecheck
 
 on: [push]
 
-env:
-  DEPENDENCIES_CACHE: cache-node-modules
-
 jobs:
-  build:
-    services:
-      rethinkdb:
-        image: rethinkdb:2.4.0
-        ports:
-          - "8080:8080"
-          - "29015:29015"
-          - "28015:28015"
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_PASSWORD: "parabol"
-          POSTGRES_USER: "pgparaboladmin"
-          POSTGRES_DB: "parabol-saas"
-          POSTGRES_HOST: "localhost"
-          POSTGRES_PORT: "5432"
-        ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+  install-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -55,6 +29,33 @@ jobs:
       - name: yarn install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --pure-lockfile
+  build:
+    services:
+      rethinkdb:
+        image: rethinkdb:2.4.0
+        ports:
+          - "8080:8080"
+          - "29015:29015"
+          - "28015:28015"
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: "parabol"
+          POSTGRES_USER: "pgparaboladmin"
+          POSTGRES_DB: "parabol-saas"
+          POSTGRES_HOST: "localhost"
+          POSTGRES_PORT: "5432"
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    runs-on: ubuntu-latest
+    needs: install-deps
+    steps:
       - name: Build Databases
         run: |
           cp .env.example .env
