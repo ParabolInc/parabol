@@ -142,7 +142,11 @@ const CreditCardForm = (props: Props) => {
     }
 
     if (actionType === 'update') {
-      UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, handleCompleted)
+      UpdateCreditCardMutation(
+        atmosphere,
+        {orgId, stripeToken},
+        {onError, onCompleted: handleCompleted}
+      )
     } else {
       UpgradeToProMutation(
         atmosphere,

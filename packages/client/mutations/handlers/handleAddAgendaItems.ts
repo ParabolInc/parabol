@@ -1,5 +1,5 @@
-import pluralizeHandler from './pluralizeHandler'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleAddAgendaItem = (newNode, store) => {
   const teamId = newNode.getValue('teamId')

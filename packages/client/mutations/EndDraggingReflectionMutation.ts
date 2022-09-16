@@ -8,7 +8,6 @@ import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import getInProxy from '../utils/relay/getInProxy'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
@@ -111,7 +110,7 @@ export const endDraggingReflectionMeetingUpdater: SharedUpdater<
   const reflection = payload.getLinkedRecord('reflection')
   if (!reflection) return
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
-  const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+  const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
   const existingDrag = reflection.getLinkedRecord('remoteDrag')
   if (!existingDrag) {
     const remoteDrag = payload.getLinkedRecord('remoteDrag')
@@ -150,7 +149,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
-      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+      const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {

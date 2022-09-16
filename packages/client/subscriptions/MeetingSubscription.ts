@@ -98,7 +98,7 @@ const MeetingSubscription = (
     updater: (store) => {
       const payload = store.getRootField('meetingSubscription') as any
       if (!payload) return
-      const type = payload.getValue('__typename') as string
+      const type = payload.getValue('__typename') as keyof typeof updateHandlers
       const handler = updateHandlers[type]
       if (handler) {
         handler(payload, {atmosphere, store})
@@ -108,9 +108,9 @@ const MeetingSubscription = (
       if (!result) return
       const {meetingSubscription} = result
       const {__typename: type} = meetingSubscription
-      const handler = onNextHandlers[type]
+      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
       if (handler) {
-        handler(meetingSubscription, {...router, atmosphere})
+        handler(meetingSubscription as any, {...router, atmosphere})
       }
     },
     onCompleted: () => {

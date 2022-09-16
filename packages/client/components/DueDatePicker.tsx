@@ -46,7 +46,7 @@ const DueDatePicker = (props: Props) => {
     if (disabled || submitting) return
     submitMutation()
     const dueDate = selected ? null : day
-    UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, onCompleted, onError)
+    UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, {onCompleted, onError})
     menuProps.closePortal()
     ;(document as any).activeElement?.blur()
   }

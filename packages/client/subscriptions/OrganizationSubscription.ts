@@ -64,7 +64,7 @@ const OrganizationSubscription = (
     updater: (store) => {
       const payload = store.getRootField('organizationSubscription') as any
       if (!payload) return
-      const type = payload.getValue('__typename') as string
+      const type = payload.getValue('__typename') as keyof typeof updateHandlers
       const handler = updateHandlers[type]
       if (handler) {
         handler(payload, {atmosphere, store})
@@ -74,9 +74,9 @@ const OrganizationSubscription = (
       if (!result) return
       const {organizationSubscription} = result
       const {__typename: type} = organizationSubscription
-      const handler = onNextHandlers[type]
+      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
       if (handler) {
-        handler(organizationSubscription, {...router, atmosphere})
+        handler(organizationSubscription as any, {...router, atmosphere})
       }
     },
     onCompleted: () => {

@@ -72,7 +72,7 @@ const withForm =
       validate = (name?: K) => {
         if (!name) {
           return Object.keys(this.state.fields).reduce((obj, name) => {
-            obj[name] = this.validate(name as K)
+            obj[name as K] = this.validate(name as K) as any
             return obj
           }, {} as FieldState<K>)
         }

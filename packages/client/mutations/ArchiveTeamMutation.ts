@@ -9,7 +9,6 @@ import {
 } from '../types/relayMutations'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
-import getInProxy from '../utils/relay/getInProxy'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
@@ -93,7 +92,7 @@ export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team> = (
   {store}
 ) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
-  const teamId = getInProxy(payload, 'team', 'id')
+  const teamId = payload.getLinkedRecord('team').getValue('id')
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
   const notification = payload.getLinkedRecord('notification')

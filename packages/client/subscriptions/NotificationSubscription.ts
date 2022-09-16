@@ -27,7 +27,7 @@ import {
 } from '../mutations/RemoveOrgUserMutation'
 import {upsertTeamPromptResponseNotificationUpdater} from '../mutations/UpsertTeamPromptResponseMutation'
 import {LocalStorageKey} from '../types/constEnums'
-import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
   NotificationSubscription as TNotificationSubscription,
   NotificationSubscriptionResponse,
@@ -183,17 +183,17 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
   })
 }
 
-const meetingStageTimeLimitUpdater: UpdaterHandler = (payload, {store}) => {
+const meetingStageTimeLimitUpdater: SharedUpdater<any> = (payload, {store}) => {
   const notification = payload.getLinkedRecord('notification')
   handleAddNotifications(notification, store)
 }
 
-const stripeFailPaymentNotificationUpdater: UpdaterHandler = (payload, {store}) => {
+const stripeFailPaymentNotificationUpdater: SharedUpdater<any> = (payload, {store}) => {
   const notification = payload.getLinkedRecord('notification')
   handleAddNotifications(notification, store)
 }
 
-const addNewFeatureNotificationUpdater: UpdaterHandler = (payload, {store}) => {
+const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const newFeature = payload.getLinkedRecord('newFeature')
   viewer?.setLinkedRecord(newFeature, 'newFeature')
@@ -298,9 +298,9 @@ const NotificationSubscription = (
       if (!result) return
       const {notificationSubscription} = result
       const {__typename: type} = notificationSubscription
-      const handler = onNextHandlers[type]
+      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
       if (handler) {
-        handler(notificationSubscription, {...router, atmosphere})
+        handler(notificationSubscription as any, {...router, atmosphere})
       }
     },
     onCompleted: () => {

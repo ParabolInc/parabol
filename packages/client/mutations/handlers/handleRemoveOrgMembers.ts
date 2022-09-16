@@ -1,6 +1,6 @@
+import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getOrgMembersConn from '../connections/getOrgMembersConn'
 import pluralizeHandler from './pluralizeHandler'
-import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 
 const handleRemoveOrgMember = (orgId, orgUserId, store) => {
   const orgUser = store.get(orgUserId)
