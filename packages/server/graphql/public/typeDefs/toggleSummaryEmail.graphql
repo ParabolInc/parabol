@@ -12,7 +12,7 @@ union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess
 
 type ToggleSummaryEmailSuccess {
   """
-  Describe the first return field here
+  The user whose summary email settings have changed
   """
-  successField: Boolean
+  user: User
 }

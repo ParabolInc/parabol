@@ -32,6 +32,7 @@ const query = graphql`
   query UserProfileQuery {
     viewer {
       ...PasswordResetLink_viewer
+      ...EmailNotifications_viewer
       preferredName
       picture
       identities {

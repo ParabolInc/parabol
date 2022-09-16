@@ -414,11 +414,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     },
     sendSummaryEmail: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'Whether the user should receive a meeting summary email',
-      resolve: async (src) => {
-        console.log('🚀 ~ src', src)
-        return true
-      }
+      description: 'Whether the user should receive a meeting summary email'
     },
     similarReflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),

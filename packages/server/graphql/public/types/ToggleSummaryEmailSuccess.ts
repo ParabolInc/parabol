@@ -1,12 +1,16 @@
 import {ToggleSummaryEmailSuccessResolvers} from '../resolverTypes'
 
 export type ToggleSummaryEmailSuccessSource = {
-  id: string
+  viewerId: string
 }
 
 const ToggleSummaryEmailSuccess: ToggleSummaryEmailSuccessResolvers = {
-  successField: async ({id}, _args, {dataLoader}) => {
-    return true
+  user: async (src, _args, {dataLoader}) => {
+    const {viewerId} = src
+    console.log('🚀 ~ viewerId', {viewerId, src})
+    const user = await dataLoader.get('users').load(viewerId)
+    console.log('🚀 ~ user', user)
+    return user
   }
 }
 

@@ -1,6 +1,7 @@
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import updateUser from '../../../postgres/queries/updateUser'
 import {getUserId} from '../../../utils/authorization'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
@@ -12,13 +13,13 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   const now = new Date()
   const viewer = await getUserById(viewerId)
   console.log('🚀 ~ viewer', viewer)
-
-  // VALIDATION
+  if (!viewer) return standardError(new Error('User not found'), {userId: viewerId})
 
   // RESOLUTION
-  await updateUser({sendSummaryEmail: false}, viewerId)
+  const {sendSummaryEmail} = viewer
+  await updateUser({sendSummaryEmail: !sendSummaryEmail}, viewerId)
 
-  const data = {}
+  const data = {viewerId}
   return data
 }
 

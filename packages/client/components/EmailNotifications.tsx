@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import ToggleSummaryEmailMutation from '../mutations/ToggleSummaryEmailMutation'
@@ -56,14 +58,15 @@ const EmailNotifications = (props: Props) => {
   const [isClicked, setIsClicked] = useState(true)
   const atmosphere = useAtmosphere()
   const {error, onError, onCompleted, submitMutation} = useMutationProps()
-  // const viewer = useFragment(
-  //   graphql`
-  //     fragment PasswordResetLink_viewer on User {
-  //       email
-  //     }
-  //   `,
-  //   viewerRef
-  // )
+  const viewer = useFragment(
+    graphql`
+      fragment EmailNotifications_viewer on User {
+        sendSummaryEmail
+      }
+    `,
+    viewerRef
+  )
+  const {sendSummaryEmail} = viewer
 
   const handleClick = () => {
     setIsClicked((isClicked) => !isClicked)
@@ -72,7 +75,7 @@ const EmailNotifications = (props: Props) => {
 
   return (
     <Wrapper>
-      <StyledCheckbox active={isClicked} onClick={handleClick} />
+      <StyledCheckbox active={sendSummaryEmail} onClick={handleClick} />
       <Text>{'Send meeting summary emails'}</Text>
     </Wrapper>
   )
