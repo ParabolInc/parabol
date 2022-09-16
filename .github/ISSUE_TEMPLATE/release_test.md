@@ -24,7 +24,8 @@ Run through this list at least once at [staging](https://action-staging.parabol.
 - [ ] Added JiraServer, verified issue created
 - [ ] Smoke tested the Retro meeting with 2 players
 - [ ] Smoke tested the Sprint Poker meeting with 2 players
-- [ ] Smoke tested the Action meeting with 2 players
+- [ ] Smoke tested the Team Check-in meeting with 2 players
+- [ ] Smoke tested the Standup meeting with 2 players
 - [ ] Smoke tested cards on the dashboard
 - [ ] Created a 2nd team
 - [ ] Created a 2nd organization
