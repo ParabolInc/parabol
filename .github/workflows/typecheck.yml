@@ -2,6 +2,9 @@ name: Typecheck
 
 on: [push]
 
+env:
+  DEPENDENCIES_CACHE: cache-node-modules
+
 jobs:
   build:
     services:
@@ -29,19 +32,33 @@ jobs:
           --health-retries 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: "16.14.0"
-      - name: Typecheck
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Build
         run: |
           cp .env.example .env
-          yarn
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
           yarn build
+        env:
+          CI: true
+      - name: Check
+        run: |
           yarn typecheck
           yarn lintcheck
           yarn stylecheck
