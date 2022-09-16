@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
   """
   toggleSummaryEmail: ToggleSummaryEmailPayload!
 }
@@ -14,5 +14,5 @@ type ToggleSummaryEmailSuccess {
   """
   The user whose summary email settings have changed
   """
-  user: User
+  user: User!
 }
