@@ -21,6 +21,7 @@ const StyledIcon = styled('div')({
 })
 
 interface Props {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   label: string
 }

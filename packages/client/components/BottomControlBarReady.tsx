@@ -131,7 +131,6 @@ const BottomControlBarReady = (props: Props) => {
         gotoNext()
       })
     : undefined
-  const icon = isNext ? 'arrow_forward' : 'check'
   const label = isNext ? 'Next' : 'Ready'
   const getDisabled = () => {
     if (!isNext) return false
@@ -158,12 +157,7 @@ const BottomControlBarReady = (props: Props) => {
           <BottomControlBarProgress isNext={isNext} progress={progress} />
           <BottomNavIconLabel label={label} ref={originRef}>
             <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-              {
-                {
-                  arrow_forward: <ArrowForward />,
-                  check: <Check />
-                }[icon]
-              }
+              {isNext ?  <ArrowForward /> : <Check />}
             </StyledIcon>
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>

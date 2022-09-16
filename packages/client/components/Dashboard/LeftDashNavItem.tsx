@@ -57,6 +57,7 @@ interface Props {
   onClick?: () => void
   label: string
   href: string
+  //FIXME 6062: change to React.ComponentType
   icon: string
 }
 

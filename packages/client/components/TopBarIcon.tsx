@@ -38,6 +38,7 @@ const Badge = styled('div')({
 })
 
 interface Props {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   onClick?: () => void
   onMouseEnter?: () => void

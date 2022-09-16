@@ -80,6 +80,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const gotoMeeting = () => {
     history.push(`/meet/${meetingId}`)
   }
+  //FIXME 6062: change to React.ComponentType
   const IconOrSVG = meetingTypeToIcon[meetingType]
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'

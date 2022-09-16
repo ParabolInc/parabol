@@ -13,6 +13,7 @@ import SuggestedActionBackground from './SuggestedActionBackground'
 interface Props extends WithMutationProps {
   backgroundColor: string
   children: ReactNode
+  //FIXME 6062: change to React.ComponentType
   iconName: string
   suggestedActionId: string
 }

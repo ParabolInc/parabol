@@ -35,6 +35,7 @@ const CopyBlock = styled('div')({
 
 interface Props {
   className?: string
+  //FIXME 6062: change to React.ComponentType
   icon?: string
   label?: ReactNode
   title?: string | undefined

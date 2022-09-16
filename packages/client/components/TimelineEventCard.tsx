@@ -11,6 +11,7 @@ import TimelineEventHeaderMenuToggle from './TimelineEventHeaderMenuToggle'
 
 interface Props {
   children: ReactNode
+  //FIXME 6062: change to React.ComponentType
   iconName?: string
   IconSVG?: ReactNode
   title: ReactNode

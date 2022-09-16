@@ -27,6 +27,7 @@ interface Props {
   disabled?: boolean
   onClick: React.MouseEventHandler
   tooltip: string
+  //FIXME 6062: change to React.ComponentType
   icon: string
 }
 

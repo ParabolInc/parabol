@@ -8,6 +8,7 @@ interface Props {
   className?: string
   label: string
   value: string
+  //FIXME 6062: change to React.ComponentType
   iconText?: string
   dataCy?: string
   onClick: () => void

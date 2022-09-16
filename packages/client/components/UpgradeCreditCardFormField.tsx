@@ -34,6 +34,7 @@ interface Props {
   className?: string
   error: string | undefined
   dirty: boolean
+  //FIXME 6062: change to React.ComponentType
   iconName: string
   maxLength: number
   onBlur?: (e: React.FocusEvent) => void

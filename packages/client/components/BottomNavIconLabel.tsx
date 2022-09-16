@@ -14,6 +14,7 @@ const paletteColors = {
 interface Props {
   className?: string
   fontSize?: number
+  //FIXME 6062: change to React.ComponentType
   icon?: string | undefined
   iconColor?: keyof typeof paletteColors
   label: any | undefined

@@ -55,6 +55,7 @@ const StyledIcon = styled('div')<{iconAfter: boolean | undefined; iconLarge: boo
 )
 
 interface Props {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   iconAfter?: boolean
   iconLarge?: boolean

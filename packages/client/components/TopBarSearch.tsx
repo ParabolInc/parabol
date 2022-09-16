@@ -81,7 +81,7 @@ const TopBarSearch = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, e.target.value)
   }
-  const icon = dashSearch ? 'close' : 'search'
+  const Icon = dashSearch ? Close : Search
   const onClick = () => {
     setSearch(atmosphere, '')
     inputRef.current?.focus()
@@ -90,12 +90,7 @@ const TopBarSearch = (props: Props) => {
     <Wrapper location={location}>
       <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
       <SearchIcon onClick={onClick}>
-        {
-          {
-            close: <Close />,
-            search: <Search />
-          }[icon]
-        }
+        <Icon />
       </SearchIcon>
     </Wrapper>
   )

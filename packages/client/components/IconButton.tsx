@@ -6,6 +6,7 @@ import LinkButton, {LinkButtonProps} from './LinkButton'
 const StyledButton = styled(LinkButton)({outline: 0})
 
 interface Props extends LinkButtonProps {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   iconLarge?: boolean
 }

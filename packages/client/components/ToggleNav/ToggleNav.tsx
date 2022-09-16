@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {CreditCard, Extension, Group} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
-import {ICON_SIZE} from '../../styles/typographyV2'
 
 //    TODO:
 //  • Add themes, not just mid/purple (TA)
@@ -53,6 +52,7 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
 )
 
 interface Props {
+  //FIXME 6062: change item.icon to React.ComponentType
   items: any[]
 }
 

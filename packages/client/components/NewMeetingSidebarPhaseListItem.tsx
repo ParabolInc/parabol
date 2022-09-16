@@ -150,6 +150,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     phaseType
   } = props
   const label = phaseLabelLookup[phaseType]
+  //FIXME 6062: change to React.ComponentType
   const icon = phaseIconLookup[phaseType]
   const Image = phaseImageLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)

@@ -8,7 +8,6 @@ import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
@@ -77,10 +76,10 @@ const StatBlockLabel = styled('div')({
   alignItems: 'center'
 })
 
-//TODO check styling
 const StyledIcon = styled(Info)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
+  width: 18,
+  height: 18,
   paddingLeft: '4px',
   ':hover': {
     cursor: 'pointer'

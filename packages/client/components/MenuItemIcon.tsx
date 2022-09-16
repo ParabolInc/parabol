@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 
 const MenuItemIcon = styled('div')({
   color: PALETTE.SLATE_600,
