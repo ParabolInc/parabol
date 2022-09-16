@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import ToggleSummaryEmailMutation from '../mutations/ToggleSummaryEmailMutation'
 import {PALETTE} from '../styles/paletteV3'
+import {EmailNotifications_viewer$key} from '../__generated__/EmailNotifications_viewer.graphql'
 import Checkbox from './Checkbox'
 import StyledError from './StyledError'
 
@@ -15,32 +16,12 @@ const Wrapper = styled('div')({
   alignItems: 'center'
 })
 
-const Link = styled('div')({
-  fontWeight: 600,
-  color: PALETTE.SKY_500,
-  '&:hover': {
-    cursor: 'pointer'
-  }
-})
-
-const Title = styled('div')({
-  paddingLeft: 16,
-  paddingBottom: 16,
-  fontWeight: 600
-})
-
-const StyledIcon = styled('img')({
-  paddingRight: 8,
-  filter: `invert(56%) sepia(10%) saturate(643%) hue-rotate(205deg) brightness(89%) contrast(92%)` // make svg slate_600
-})
-
 const Text = styled('div')({
   fontWeight: 600,
   paddingRight: 8
 })
 
 const ErrorMessage = styled(StyledError)({
-  fontSize: 12,
   paddingRight: 8
 })
 
@@ -50,15 +31,14 @@ const StyledCheckbox = styled(Checkbox)({
 })
 
 type Props = {
-  viewerRef: any // PasswordResetLink_viewer$key
+  viewerRef: EmailNotifications_viewer$key
 }
 
 const EmailNotifications = (props: Props) => {
   const {viewerRef} = props
-  const [isClicked, setIsClicked] = useState(true)
   const atmosphere = useAtmosphere()
-  const {error, onError, onCompleted, submitMutation} = useMutationProps()
-  const viewer = useFragment(
+  const {error, onError, onCompleted} = useMutationProps()
+  const {sendSummaryEmail} = useFragment(
     graphql`
       fragment EmailNotifications_viewer on User {
         sendSummaryEmail
@@ -66,10 +46,8 @@ const EmailNotifications = (props: Props) => {
     `,
     viewerRef
   )
-  const {sendSummaryEmail} = viewer
 
   const handleClick = () => {
-    setIsClicked((isClicked) => !isClicked)
     ToggleSummaryEmailMutation(atmosphere, {}, {onError, onCompleted})
   }
 
@@ -77,6 +55,7 @@ const EmailNotifications = (props: Props) => {
     <Wrapper>
       <StyledCheckbox active={sendSummaryEmail} onClick={handleClick} />
       <Text>{'Send meeting summary emails'}</Text>
+      <ErrorMessage>{error?.message}</ErrorMessage>
     </Wrapper>
   )
 }

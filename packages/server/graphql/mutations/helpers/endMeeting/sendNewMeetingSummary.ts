@@ -19,6 +19,7 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
     dataLoader.get('users').load(viewerId),
     r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run()
   ])
+  if (!user) return
   const {sendSummaryEmail} = user
   if (sendSummaryEmail === false) return
   const {name: teamName, orgId} = team
