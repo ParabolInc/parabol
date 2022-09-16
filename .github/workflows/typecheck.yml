@@ -43,5 +43,7 @@ jobs:
           yarn pg:build
           yarn build
           yarn typecheck
+          yarn lintcheck
+          yarn stylecheck
         env:
           CI: true
