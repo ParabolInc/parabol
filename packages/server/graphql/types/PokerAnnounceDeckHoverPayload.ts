@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import EstimateStage from './EstimateStage'
-import resolveStage from '../resolvers/resolveStage'
 import {GQLContext} from '../graphql'
+import resolveStage from '../resolvers/resolveStage'
+import EstimateStage from './EstimateStage'
 import makeMutationPayload from './makeMutationPayload'
 import User from './User'
 

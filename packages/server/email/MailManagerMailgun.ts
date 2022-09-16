@@ -1,5 +1,5 @@
-import Mailgun from 'mailgun.js'
 import FormData from 'form-data'
+import Mailgun from 'mailgun.js'
 import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 

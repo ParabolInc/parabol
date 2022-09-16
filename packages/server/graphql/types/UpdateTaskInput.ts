@@ -2,8 +2,8 @@ import {
   GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLString
 } from 'graphql'
 import TaskStatusEnum from './TaskStatusEnum'
 

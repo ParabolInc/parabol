@@ -18,10 +18,7 @@ const setTierForOrgUsers = async (orgId: string) => {
     .filter({removedAt: null})
     .update(
       {
-        tier: (r
-          .table('Organization')
-          .get(orgId)
-          .getField('tier') as unknown) as TierEnum
+        tier: r.table('Organization').get(orgId).getField('tier') as unknown as TierEnum
       },
       {nonAtomic: true}
     )

@@ -1,6 +1,6 @@
-import {R} from 'rethinkdb-ts'
-import {PokerCards} from 'parabol-client/types/constEnums'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {PokerCards} from 'parabol-client/types/constEnums'
+import {R} from 'rethinkdb-ts'
 
 const priorityScaleId = 'priorityScale'
 const priorityScale = [
@@ -25,24 +25,17 @@ const priorityScale = [
   }
 ]
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
-    await r
-      .table('TemplateScale')
-      .insert(priorityScale)
-      .run()
+    await r.table('TemplateScale').insert(priorityScale).run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
-    await r
-      .table('TemplateScale')
-      .get(priorityScaleId)
-      .delete()
-      .run()
+    await r.table('TemplateScale').get(priorityScaleId).delete().run()
   } catch (e) {
     console.log(e)
   }

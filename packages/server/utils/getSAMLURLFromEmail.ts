@@ -1,7 +1,7 @@
 import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
-import getRethink from '../database/rethinkDriver'
 import {URL} from 'url'
+import getRethink from '../database/rethinkDriver'
 
 const urlWithRelayState = (url: string, isInvited?: boolean | null) => {
   if (!isInvited) return url

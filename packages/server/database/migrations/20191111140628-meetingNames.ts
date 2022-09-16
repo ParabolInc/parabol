@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   await r
     .table('NewMeeting')
     .update((row) => ({
@@ -13,7 +13,7 @@ export const up = async function(r: R) {
     .run()
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   await r
     .table('NewMeeting')
     .replace((row) => row.without('name'))

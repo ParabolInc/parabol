@@ -1,10 +1,10 @@
-import {GQLContext} from './../graphql'
-import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPubSub from '../../utils/getPubSub'
+import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
+import getPubSub from '../../utils/getPubSub'
 import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'
+import {GQLContext} from './../graphql'
 
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),

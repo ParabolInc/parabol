@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
 import SetTaskHighlightPayload from '../types/SetTaskHighlightPayload'
-import getRedis from '../../utils/getRedis'
 
 const HIGHLIGHT_TIMEOUT_SECONDS = 300
 

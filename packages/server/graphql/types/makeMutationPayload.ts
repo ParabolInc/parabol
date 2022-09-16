@@ -1,5 +1,5 @@
+import {GraphQLObjectType, GraphQLUnionType} from 'graphql'
 import ErrorPayload from './ErrorPayload'
-import {GraphQLUnionType, GraphQLObjectType} from 'graphql'
 
 const makeMutationPayload = (name: string, successType: GraphQLObjectType) => {
   return new GraphQLUnionType({

@@ -1,8 +1,8 @@
-import {verifyMassInviteToken} from '../../../utils/massInviteToken'
-import TeamInvitation from '../../../database/types/TeamInvitation'
-import getRethink from '../../../database/rethinkDriver'
-import {DataLoaderWorker} from '../../graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import getRethink from '../../../database/rethinkDriver'
+import TeamInvitation from '../../../database/types/TeamInvitation'
+import {verifyMassInviteToken} from '../../../utils/massInviteToken'
+import {DataLoaderWorker} from '../../graphql'
 
 const handleMassInviteToken = async (
   invitationToken: string,
@@ -25,10 +25,7 @@ const handleMassInviteToken = async (
     expiresAt,
     email
   })
-  await r
-    .table('TeamInvitation')
-    .insert(invitation)
-    .run()
+  await r.table('TeamInvitation').insert(invitation).run()
   return {invitation}
 }
 

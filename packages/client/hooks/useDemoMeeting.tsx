@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import lazyPreload from '../utils/lazyPreload'
 import useAtmosphere from './useAtmosphere'
@@ -12,20 +12,32 @@ const BeginDemoModal = lazyPreload(
 const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
   const forceUpdate = useForceUpdate()
-  const {modalPortal, closePortal, togglePortal} = useModal({noClose: true})
+  const {modalPortal, openPortal, closePortal} = useModal({noClose: true})
+  const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
+
   useEffect(() => {
-    const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
     if (clientGraphQLServer) {
       clientGraphQLServer.on('botsFinished', () => {
         // for the demo, we're essentially using the isBotFinished() prop as state
         forceUpdate()
       })
-      if (clientGraphQLServer.isNew) {
-        togglePortal()
+      if (!clientGraphQLServer.db._started) {
+        openPortal()
       }
     }
   }, [atmosphere, forceUpdate])
-  return () => modalPortal(<BeginDemoModal closePortal={closePortal} />)
+
+  const startDemo = useCallback(() => {
+    clientGraphQLServer.startDemo()
+
+    closePortal()
+
+    setTimeout(() => {
+      clientGraphQLServer.emit('startDemo')
+    }, 1000)
+  }, [])
+
+  return () => modalPortal(<BeginDemoModal startDemo={startDemo} />)
 }
 
 export default useDemoMeeting

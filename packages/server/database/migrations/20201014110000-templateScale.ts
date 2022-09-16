@@ -182,43 +182,25 @@ const newPokerTemplates = [
   }
 ]
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     // create index 'teamId' for table TemplateScale
-    await r
-      .table('TemplateScale')
-      .indexCreate('teamId')
-      .run()
+    await r.table('TemplateScale').indexCreate('teamId').run()
 
     // clear TemplateScale table
-    await r
-      .table('TemplateScale')
-      .delete()
-      .run()
+    await r.table('TemplateScale').delete().run()
 
     // insert new data to TemplateScale table
-    await r
-      .table('TemplateScale')
-      .insert(newScales)
-      .run()
+    await r.table('TemplateScale').insert(newScales).run()
 
     // create index 'teamId' for TemplateDimension table
-    await r
-      .table('TemplateDimension')
-      .indexCreate('teamId')
-      .run()
+    await r.table('TemplateDimension').indexCreate('teamId').run()
 
     // clear TemplateDimension table
-    await r
-      .table('TemplateDimension')
-      .delete()
-      .run()
+    await r.table('TemplateDimension').delete().run()
 
     // insert new data to TemplateDimension table
-    await r
-      .table('TemplateDimension')
-      .insert(newDimensions)
-      .run()
+    await r.table('TemplateDimension').insert(newDimensions).run()
 
     // clear poker template data in MeetingTemplate table
     await r
@@ -230,52 +212,31 @@ export const up = async function(r: R) {
       .run()
 
     // insert new poker template data to MeetingTemplate table
-    await r
-      .table('MeetingTemplate')
-      .insert(newPokerTemplates)
-      .run()
+    await r.table('MeetingTemplate').insert(newPokerTemplates).run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     // drop index 'teamId' for table TemplateScale
-    await r
-      .table('TemplateScale')
-      .indexDrop('teamId')
-      .run()
+    await r.table('TemplateScale').indexDrop('teamId').run()
 
     // clear TemplateScale table
-    await r
-      .table('TemplateScale')
-      .delete()
-      .run()
+    await r.table('TemplateScale').delete().run()
 
     // insert old data to TemplateScale table
-    await r
-      .table('TemplateScale')
-      .insert(oldScales)
-      .run()
+    await r.table('TemplateScale').insert(oldScales).run()
 
     // drop index 'teamId' for TemplateDimension table
-    await r
-      .table('TemplateDimension')
-      .indexDrop('teamId')
-      .run()
+    await r.table('TemplateDimension').indexDrop('teamId').run()
 
     // clear TemplateDimension table
-    await r
-      .table('TemplateDimension')
-      .delete()
-      .run()
+    await r.table('TemplateDimension').delete().run()
 
     // insert old data to TemplateDimension table
-    await r
-      .table('TemplateDimension')
-      .insert(oldDimensions)
-      .run()
+    await r.table('TemplateDimension').insert(oldDimensions).run()
 
     // clear poker template data in MeetingTemplate table
     await r
@@ -287,10 +248,7 @@ export const down = async function(r: R) {
       .run()
 
     // insert old poker template data to MeetingTemplate table
-    await r
-      .table('MeetingTemplate')
-      .insert(oldPokerTemplates)
-      .run()
+    await r.table('MeetingTemplate').insert(oldPokerTemplates).run()
   } catch (e) {
     console.log(e)
   }

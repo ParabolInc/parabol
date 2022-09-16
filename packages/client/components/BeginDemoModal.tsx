@@ -1,8 +1,6 @@
 import styled from '@emotion/styled'
 import {Chat} from '@mui/icons-material'
 import React from 'react'
-import useAtmosphere from '../hooks/useAtmosphere'
-import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import DialogContainer from './DialogContainer'
 import PrimaryButton from './PrimaryButton'
@@ -30,21 +28,12 @@ const StyledIcon = styled(Chat)({
 })
 
 interface Props {
-  closePortal: () => void
+  startDemo: () => void
 }
 
 const BeginDemoModal = (props: Props) => {
-  const {closePortal} = props
-  const atmosphere = useAtmosphere() as unknown as LocalAtmosphere
-  const {clientGraphQLServer} = atmosphere
-  const {startBot} = clientGraphQLServer
-  const onClick = () => {
-    startBot()
-    closePortal()
-    setTimeout(() => {
-      clientGraphQLServer.emit('startDemo')
-    }, 1000)
-  }
+  const {startDemo} = props
+
   return (
     <StyledDialogContainer>
       <StyledIcon />
@@ -52,7 +41,7 @@ const BeginDemoModal = (props: Props) => {
         Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
         colleagues
       </StyledCopy>
-      <PrimaryButton dataCy='start-demo-button' onClick={onClick} size='medium'>
+      <PrimaryButton dataCy='start-demo-button' onClick={startDemo} size='medium'>
         Start Demo
       </PrimaryButton>
     </StyledDialogContainer>

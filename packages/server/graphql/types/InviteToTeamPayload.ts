@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
+import NotificationTeamInvitation from './NotificationTeamInvitation'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
-import NotificationTeamInvitation from './NotificationTeamInvitation'
-import {GQLContext} from '../graphql'
 
 const InviteToTeamPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'InviteToTeamPayload',

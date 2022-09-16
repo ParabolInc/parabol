@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveTeam, resolveTeamMember} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 import TeamMember from './TeamMember'
-import StandardMutationError from './StandardMutationError'
-import {GQLContext} from '../graphql'
 
 export const addTeamFields = {
   error: {

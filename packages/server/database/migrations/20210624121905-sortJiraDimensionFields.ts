@@ -1,15 +1,9 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   await r
     .table('Team')
-    .filter(
-      r
-        .row('jiraDimensionFields')
-        .default([])
-        .count()
-        .gt(0)
-    )
+    .filter(r.row('jiraDimensionFields').default([]).count().gt(0))
     .update((team) => ({
       jiraDimensionFields: team('jiraDimensionFields')
         .default([])
@@ -17,6 +11,6 @@ export const up = async function(r: R) {
     }))
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   //noop
 }

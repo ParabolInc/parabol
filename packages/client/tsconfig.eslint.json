@@ -1,19 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "include": [
-    "validation/*",
-    "utils",
-    "shared",
-    "mutations/fragments",
-    "mutations/InvalidateSessionsMutation.ts",
-    "modules/email/components",
-    "hooks",
-    "polyfills.ts",
-    "components/promptResponse/PromptResponseEditor.tsx",
-    "components/AnimatedFade.tsx",
-    "components/AzureDevOpsScopingSelectAllIssues.tsx",
-    "components/HowToStepItem.tsx",
-    "components/EstimatePhaseEmptyState.tsx",
-    "mutations/AddFeatureFlagMutation.ts"
-  ]
+  "include": ["./**/*.ts", "./**/*.tsx"],
+  "exclude": ["node_modules"]
 }

@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveTask} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import Task from './Task'
-import {GQLContext} from '../graphql'
 
 const ChangeTaskTeamPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'ChangeTaskTeamPayload',

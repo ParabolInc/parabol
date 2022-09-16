@@ -37,10 +37,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r
-      .table('RetroReflectionGroup')
-      .get(reflectionGroupId)
-      .run()
+    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
     if (!reflectionGroup) {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }

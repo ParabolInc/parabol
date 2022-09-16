@@ -7,9 +7,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import InvoiceLineItemEnum from './InvoiceLineItemEnum'
-import InvoiceLineItemDetails from './InvoiceLineItemDetails'
 import {GQLContext} from '../graphql'
+import InvoiceLineItemDetails from './InvoiceLineItemDetails'
+import InvoiceLineItemEnum from './InvoiceLineItemEnum'
 
 const InvoiceLineItem = new GraphQLObjectType<any, GQLContext>({
   name: 'InvoiceLineItem',

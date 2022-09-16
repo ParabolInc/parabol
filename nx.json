@@ -1,0 +1,22 @@
+{
+  "extends": "nx/presets/npm.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "format",
+          "lint",
+          "precommit",
+          "prettier",
+          "typecheck",
+          "test"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {},
+  "affected": {
+    "defaultBase": "master"
+  }
+}

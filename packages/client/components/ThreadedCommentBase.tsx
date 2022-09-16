@@ -124,13 +124,15 @@ const ThreadedCommentBase = (props: Props) => {
     })
   }
 
+  const ensureHasText = (value: string) => value.trim().length
+
   const onSubmit = () => {
     if (submitting || isTempId(commentId)) return
     const editorEl = editorRef.current
     if (isAndroid) {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
-      if (!value) return
+      if (!ensureHasText(value)) return
       const initialContentState = editorState.getCurrentContent()
       const initialText = initialContentState.getPlainText()
       setIsEditing(false)
@@ -144,7 +146,7 @@ const ThreadedCommentBase = (props: Props) => {
       return
     }
     const contentState = editorState.getCurrentContent()
-    if (!contentState.hasText()) return
+    if (!ensureHasText(contentState.getPlainText())) return
     const nextContent = JSON.stringify(convertToRaw(contentState))
     setIsEditing(false)
     if (content === nextContent) return

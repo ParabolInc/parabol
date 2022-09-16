@@ -6,9 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 import SlackNotification from './SlackNotification'
 
 const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
