@@ -7,7 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   _source,
   {},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken}
 ) => {
   const viewerId = getUserId(authToken)
   const now = new Date()
@@ -19,8 +19,7 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   const {sendSummaryEmail} = viewer
   await updateUser({sendSummaryEmail: !sendSummaryEmail}, viewerId)
 
-  const data = {viewerId}
-  return data
+  return true
 }
 
 export default toggleSummaryEmail

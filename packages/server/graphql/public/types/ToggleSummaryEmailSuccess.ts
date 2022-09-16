@@ -1,16 +1,12 @@
+import {getUserId} from '../../../utils/authorization'
 import {ToggleSummaryEmailSuccessResolvers} from '../resolverTypes'
 
-export type ToggleSummaryEmailSuccessSource = {
-  viewerId: string
-}
+export type ToggleSummaryEmailSuccessSource = {}
 
 const ToggleSummaryEmailSuccess: ToggleSummaryEmailSuccessResolvers = {
-  user: async (src, _args, {dataLoader}) => {
-    const {viewerId} = src
-    console.log('🚀 ~ viewerId', {viewerId, src})
-    const user = await dataLoader.get('users').load(viewerId)
-    console.log('🚀 ~ user', user)
-    return user
+  user: async (_src, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return dataLoader.get('users').loadNonNull(viewerId)
   }
 }
 
