@@ -45,7 +45,7 @@ class DelayUnmount extends Component<Props, State> {
     return null
   }
 
-  componentDidUpdate(_prevProps, prevState) {
+  componentDidUpdate(_prevProps: Props, prevState: State) {
     if (
       prevState.transitionState !== TransitionState.Exiting &&
       this.state.transitionState === TransitionState.Exiting

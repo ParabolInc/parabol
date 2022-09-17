@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw} from 'draft-js'
+import {convertToRaw, EditorProps} from 'draft-js'
 import React, {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
@@ -195,7 +195,7 @@ const ReflectionCard = (props: Props) => {
     EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
   }
 
-  const handleReturn = (e) => {
+  const handleReturn: EditorProps['handleReturn'] = (e) => {
     if (e.shiftKey) return 'not-handled'
     editorRef.current && editorRef.current.blur()
     return 'handled'

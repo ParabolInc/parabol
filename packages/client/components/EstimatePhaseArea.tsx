@@ -59,7 +59,7 @@ const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
       : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
-  }
+  } as React.CSSProperties
 }
 
 const containerStyle = {

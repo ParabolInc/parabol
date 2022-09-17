@@ -11,7 +11,7 @@ const handleRemoveOrgMember = (
   if (!orgUserId) return
   const orgUser = store.get(orgUserId)
   if (!orgUser) return
-  const organization = store.get(orgId)
+  const organization = store.get(orgId)!
   const conn = getOrgMembersConn(organization)
   safeRemoveNodeFromConn(orgUserId, conn)
 }

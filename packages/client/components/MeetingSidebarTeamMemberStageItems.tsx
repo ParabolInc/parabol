@@ -38,7 +38,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {facilitatorStageId, facilitatorUserId, localPhase, localStage, phases} = meeting
   const sidebarPhase = phases.find((phase) => phase.phaseType === phaseType)
   const localStageId = (localStage && localStage.id) || ''
-  const gotoStage = (teamMemberId) => () => {
+  const gotoStage = (teamMemberId: string) => () => {
     const teamMemberStage =
       sidebarPhase && sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
@@ -79,7 +79,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
                 </AvatarBlock>
               }
               isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
-              onClick={gotoStage(teamMemberId)}
+              onClick={gotoStage(teamMemberId!)}
               isActive={localStageId === stageId}
               isComplete={isComplete}
               isDragging={false}

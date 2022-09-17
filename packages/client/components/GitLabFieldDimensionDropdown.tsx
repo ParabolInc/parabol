@@ -71,7 +71,7 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const label = labelLookup[serviceFieldName]
+  const label = labelLookup[serviceFieldName as keyof typeof labelLookup]
 
   return (
     <>

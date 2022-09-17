@@ -1,6 +1,6 @@
-import {ConnectionHandler} from 'relay-runtime'
+import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
 
-const getOrgMembersConn = (organization) =>
+const getOrgMembersConn = (organization: ReadOnlyRecordProxy) =>
   ConnectionHandler.getConnection(organization, 'OrgMembers_organizationUsers')
 
 export default getOrgMembersConn

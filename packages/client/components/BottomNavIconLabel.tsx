@@ -28,7 +28,7 @@ const Inner = styled('div')({
 })
 
 const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({
-  color: iconColor ? paletteColors[iconColor] : 'inherit',
+  color: iconColor ? paletteColors[iconColor as keyof typeof paletteColors] : 'inherit',
   height: 24
 }))
 

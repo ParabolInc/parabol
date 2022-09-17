@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import {convertFromRaw, EditorState} from 'draft-js'
-import {useEffect, useRef, useState} from 'react'
+import {MutableRefObject, useEffect, useRef, useState} from 'react'
 import makeEditorState from '../utils/draftjs/makeEditorState'
 import mergeServerContent from '../utils/mergeServerContent'
 
@@ -8,7 +8,7 @@ const useEditorState = (content?: string | null | undefined) => {
   const [editorState, setEditorState] = useState<EditorState>(() =>
     makeEditorState(content, () => editorStateRef.current!)
   )
-  const editorStateRef = useRef<EditorState>(editorState)
+  const editorStateRef = useRef<EditorState>(editorState) as MutableRefObject<EditorState>
   const isErrorSentToSentryRef = useRef<boolean>(false)
   const lastFiredRef = useRef<Date | null>(null)
   const initialRender = useRef(true)

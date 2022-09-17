@@ -160,7 +160,7 @@ const TeamPromptEditablePromptModal = (props: Props) => {
       <DialogContent>
         <TextArea
           {...fields.meetingPrompt}
-          onFocus={(e) => e.target.select()}
+          onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) => e.target.select()}
           name={'meetingPrompt'}
           isDesktop={isDesktop}
           autoFocus={true}
