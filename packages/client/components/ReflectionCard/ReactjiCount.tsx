@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import data from 'emoji-mart/data/apple.json'
 import {uncompress} from 'emoji-mart/dist-modern/utils/data.js'
 import {unifiedToNative} from 'emoji-mart/dist-modern/utils/index.js'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {TransitionStatus} from '~/hooks/useTransition'
@@ -53,6 +53,8 @@ const Count = styled('div')({
   paddingLeft: 4
 })
 
+export const SHOW_REACTJI_USERS_DELAY = 100 // ms
+
 interface Props {
   reactji: ReactjiCount_reactji
   onToggle: (emojiId: string) => void
@@ -63,8 +65,15 @@ interface Props {
 const ReactjiCount = (props: Props) => {
   const {onToggle, reactji, status, onTransitionEnd} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
+    MenuPosition.UPPER_CENTER,
+    {delay: SHOW_REACTJI_USERS_DELAY}
   )
+
+  const userReactjiList = useMemo(
+    () => reactji && reactji.users.map(({preferredName}) => preferredName).join(', '),
+    [reactji.users]
+  )
+
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
   const {name} = ReactjiId.split(id)
@@ -80,7 +89,7 @@ const ReactjiCount = (props: Props) => {
         <Emoji onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
           {unicode}
         </Emoji>
-        {tooltipPortal(reactji.users.map(({preferredName}) => preferredName).join(', '))}
+        {userReactjiList && tooltipPortal(userReactjiList)}
         <Count>{count}</Count>
       </Inner>
     </Parent>
