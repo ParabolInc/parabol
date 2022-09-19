@@ -40,7 +40,8 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   marginTop: isReply ? 8 : undefined,
   pointerEvents: isDisabled ? 'none' : undefined,
   // required for the shadow to overlay draft-js in the task cards
-  zIndex: 0
+  zIndex: 0,
+  overflowX: 'hidden',
 }))
 
 const CommentContainer = styled('div')({
@@ -56,7 +57,27 @@ const CommentAvatar = styled(Avatar)({
 
 const EditorWrap = styled('div')({
   flex: 1,
-  margin: '14px 0'
+  margin: '14px 0',
+  maxWidth: '100%',
+  maxHeight: '40px',
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  '&::-webkit-scrollbar': {
+    width: '0.4em'
+  },
+  '&::-webkit-scrollbar-track': {
+    boxShadow: 'inset 0 0 6px rgba(0,0,0,0)',
+    webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0)',
+    backgroundColor: 'rgba(0,0,0,.1)',
+    borderRadius: '10px'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: 'rgba(0,0,0,.1)',
+    borderRadius: '10px'
+  },
+  '&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner': {
+    backgroundColor: '#2b2b2b'
+  }
 })
 
 const ActionsContainer = styled('div')({
