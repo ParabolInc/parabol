@@ -62,6 +62,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
     mutation,
     variables,
     optimisticUpdater: (store) => {
+      const viewer = store.get(atmosphere.viewerId)!
       const {reactableId, reactji, isRemove} = variables
       const id = `${reactableId}:${reactji}`
       const reactable = store.get<Reactable>(reactableId)
@@ -93,7 +94,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
               id,
               count: 1,
               isViewerReactji: true
-            }).setLinkedRecords([store.get(atmosphere.viewerId)!], 'users')
+            }).setLinkedRecords([viewer], 'users')
           const nextReactjis = [...reactjis, optimisticReactji]
           reactable.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
@@ -103,8 +104,8 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           reactji.setValue(true, 'isViewerReactji')
 
           const existingReactjiUsers = reactji.getLinkedRecords('users')
-          const updatedReactjiUsers = [...existingReactjiUsers, store.get(atmosphere.viewerId)!]
-          reactji.setLinkedRecords(updatedReactjiUsers, 'users') // add new user to existing reactji
+          const updatedReactjiUsers = [...existingReactjiUsers, viewer]
+          reactji.setLinkedRecords(updatedReactjiUsers, 'users')
         }
       }
     },
