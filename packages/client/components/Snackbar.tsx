@@ -13,8 +13,8 @@ import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
 
-const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean}>(
-  ({isMeetingRoute, isDesktop}) => ({
+const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean; isStandupRoute: boolean}>(
+  ({isMeetingRoute, isDesktop, isStandupRoute}) => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -25,7 +25,10 @@ const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean}>(
     paddingBottom: isMeetingRoute ? 64 : 8,
     position: 'fixed',
     top: 0,
-    width: isMeetingRoute && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
+    width:
+      isMeetingRoute && !isStandupRoute && isDesktop
+        ? `calc(100% + ${NavSidebar.WIDTH}px)`
+        : '100%',
     pointerEvents: 'none',
     zIndex: ZIndex.SNACKBAR
   })
@@ -57,6 +60,7 @@ const Snackbar = React.memo(() => {
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
   const {location} = useRouter()
   const isMeetingRoute = location.pathname.startsWith('/meet/')
+  const isStandupRoute = isMeetingRoute && !location.pathname.includes('/checkin')
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const transitionChildren = useTransition(activeSnacksRef.current)
   // used to ensure the snack isn't dismissed when the cursor is on it
@@ -153,7 +157,7 @@ const Snackbar = React.memo(() => {
   }, [showSnack, transitionChildren])
 
   return portal(
-    <Modal isMeetingRoute={isMeetingRoute} isDesktop={isDesktop}>
+    <Modal isMeetingRoute={isMeetingRoute} isDesktop={isDesktop} isStandupRoute={isStandupRoute}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
         const dismiss = () => {
           if (child.noDismissOnClick) return
