@@ -1,6 +1,7 @@
 import closeTransport from '../socketHelpers/closeTransport'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sseClients from '../sseClients'
+import {getUserId} from '../utils/authorization'
 import publishInternalGQL from '../utils/publishInternalGQL'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 
@@ -8,9 +9,9 @@ interface Options {
   exitCode?: number
   reason?: string
 }
-const query = `
-mutation DisconnectSocket {
-  disconnectSocket {
+export const disconnectQuery = `
+mutation DisconnectSocket($userId: ID!) {
+  disconnectSocket(userId: $userId) {
     user {
       id
     }
@@ -26,7 +27,8 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
   clearInterval(cancelKeepAlive!)
   relayUnsubscribeAll(connectionContext)
   if (authToken.rol !== 'impersonate') {
-    publishInternalGQL({authToken, ip, query, socketId})
+    const userId = getUserId(authToken)
+    publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
   }
   if (connectionContext.id.startsWith('sse')) {
     sseClients.delete(connectionContext.id)

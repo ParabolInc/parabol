@@ -240,7 +240,12 @@ type Mutation {
   """
   a server-side mutation called when a client connects
   """
-  connectSocket: User!
+  connectSocket(
+    """
+    The ID of the server this socket is connected to
+    """
+    socketServerId: ID!
+  ): User!
 
   """
   profile the CPU
@@ -250,7 +255,12 @@ type Mutation {
   """
   a server-side mutation called when a client disconnects
   """
-  disconnectSocket: DisconnectSocketPayload
+  disconnectSocket(
+    """
+    the userId to disconnect
+    """
+    userId: ID
+  ): DisconnectSocketPayload
 
   """
   Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license

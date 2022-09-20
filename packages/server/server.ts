@@ -22,6 +22,7 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
+import ServerHealthChecker from './utils/ServerHealthChecker'
 
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
@@ -33,6 +34,8 @@ const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
 if (!PROD) {
   process.on('SIGINT', async () => {
     await r.getPoolMaster()?.drain()
+    const healthChecker = new ServerHealthChecker()
+    await healthChecker.reportDeadServers([process.env.SERVER_ID!])
     process.exit()
   })
 }
