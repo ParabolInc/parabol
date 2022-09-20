@@ -67,7 +67,7 @@ const fetchData = async (mergedAfter: Date) => {
     })
   })
 
-  console.log(GITHUB_TOKEN, response)
+  console.log(`Pulling stats for ${REPO}: ${response.status}`)
 
   //TODO we're not checking pagination yet
    
@@ -81,7 +81,7 @@ const pushToSlack = async (body: any) => {
     body: JSON.stringify(body)
   })
 
-  console.log(response)
+  console.log(`Pushing stats: ${response.status}`)
 }
 
 const median = (values: number[]) => {
@@ -183,17 +183,18 @@ const formatRow = (values: (string|number)[], format: number[]) => {
   return rows.join('\n')
 }
 
+const safeMs = (val: number | '-' | undefined | null) => typeof val === 'number' && isFinite(val) ? ms(val) : '-'
+
 const formatReviewers = (reviewerStats) => {
   const format = [15, 8]
   const rows = [] as string[]
   rows.push(formatRow(['login', 'median time to review', 'reviewed PRs', 'comments', 'approvals', 'changes requested'], format))
   Object.values(reviewerStats).forEach((reviewer: any) => {
     const {login, timesToReview, reviewedPRs, reviewStates, comments} = reviewer
-    const medianTimeToReview = median(timesToReview)
-    const formattedMedianTimeToReview = medianTimeToReview !== undefined ? ms(medianTimeToReview) : '-'
+    const medianTimeToReview = safeMs(median(timesToReview))
     const approvals = reviewStates.filter(state => state === 'APPROVED').length
     const changesRequested = reviewStates.filter(state => state === 'CHANGES_REQUESTED').length
-    rows.push(formatRow([login, formattedMedianTimeToReview, reviewedPRs, comments, approvals, changesRequested], format))
+    rows.push(formatRow([login, medianTimeToReview, reviewedPRs, comments, approvals, changesRequested], format))
   })
   return rows.join('\n')
 }
@@ -204,7 +205,7 @@ const formatPrs = (prs) => {
   rows.push(formatRow(['', 'min', 'max', 'median'], format))
 
   const timesToMerge = prs.map(({timeToMerge}: {timeToMerge: number}) => timeToMerge)
-  rows.push(formatRow(['time to merge', ms(Math.min(...timesToMerge)), ms(Math.max(...timesToMerge)), ms(median(timesToMerge))], format))
+  rows.push(formatRow(['time to merge', safeMs(Math.min(...timesToMerge)), safeMs(Math.max(...timesToMerge)), safeMs(median(timesToMerge))], format))
 
   const comments = prs.map(({comments}) => comments)
   rows.push(formatRow(['comments per PR', Math.min(...comments), Math.max(...comments), median(comments)], format))
