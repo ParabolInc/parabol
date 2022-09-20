@@ -1,4 +1,7 @@
 const ms = require('ms')
+const dayjs = require('dayjs')
+const isoWeek = require('dayjs/plugin/isoWeek')
+dayjs.extend(isoWeek)
 
 const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
@@ -14,27 +17,31 @@ query($searchQuery: String!) {
       endCursor
     }
     nodes {
-        ... on PullRequest {
-          number
-          url
-          publishedAt
-          mergedAt
-          author { ...UserFragment }
-          timelineItems(first: 100) {
-              nodes {
-                __typename
-                ... on ReviewRequestedEvent {
-                  createdAt
-                  requestedReviewer { ...UserFragment }
-                }
-                ... on PullRequestReview {
-                id
-                author { ...UserFragment }
-                comments(first: 1) {
-                  totalCount
-                }
-                submittedAt
-                state
+      ... on PullRequest {
+        number
+        url
+        publishedAt
+        mergedAt
+        author { ...UserFragment }
+        timelineItems(first: 100) {
+          nodes {
+            __typename
+            ... on ReviewRequestedEvent {
+              createdAt
+              requestedReviewer { ...UserFragment }
+            }
+            ... on PullRequestReview {
+              id
+              author { ...UserFragment }
+              comments(first: 1) {
+                totalCount
+              }
+              submittedAt
+              state
+            }
+            ... on MergedEvent {
+              actor { ...UserFragment }
+              createdAt
             }
           }
         }
@@ -84,13 +91,13 @@ const pushToSlack = async (body: any) => {
   console.log(`Pushing stats: ${response.status}`)
 }
 
-const median = (values: number[]) => {
-  if(values.length === 0) return '-'
+const calculateTimeToReview = (request: Date, review: Date) => {
+  const timeToReview = review.valueOf() - request.valueOf()
+  const requestWeek = dayjs(request).isoWeek()
+  const reviewWeek = dayjs(review).isoWeek()
+  const weekends = reviewWeek - requestWeek
 
-  values.sort()
-  var middle = Math.floor(values.length / 2)
-  if (values.length % 2) return values[middle]
-  return (values[middle- 1] + values[middle]) / 2.0;
+  return timeToReview - weekends * ms('2d')
 }
 
 const parseStats = (rawData: any) => {
@@ -126,7 +133,7 @@ const parseStats = (rawData: any) => {
 
         const request = requestedReviewers[login]
         if (request) {
-          const timeToReview = (new Date(item.submittedAt)).valueOf() - request.valueOf()
+          const timeToReview = calculateTimeToReview(request, new Date(item.submittedAt))
           reviewerStats[login].timesToReview.push(timeToReview)
           requestedReviewers[login] = undefined
         }
@@ -134,6 +141,30 @@ const parseStats = (rawData: any) => {
         reviewers.add(login)
         comments += item.comments.totalCount
         reviews++
+      }
+      if (item.__typename === 'MergedEvent') {
+        const login = item.actor.login
+        if (login !== pr.author.login) {
+          if (!reviewerStats[login]) {
+            reviewerStats[login] = {
+              ...item.actor,
+              timesToReview: [],
+              reviewStates: [],
+              comments: 0,
+              reviewedPRs: 0,
+            }
+          }
+
+          const request = requestedReviewers[login]
+          if (request) {
+            const timeToReview = calculateTimeToReview(request, new Date(item.createdAt))
+            reviewerStats[login].timesToReview.push(timeToReview)
+            requestedReviewers[login] = undefined
+          }
+
+          reviewers.add(login)
+          reviews++
+        }
       }
     })
     reviewers.forEach(reviewer => {
@@ -168,11 +199,11 @@ const formatRow = (values: (string|number)[], format: number[]) => {
 
     const overflow = Array(values.length).fill('')
     values.forEach((value, index) => {
-      const valueStr = value.toString()
+      const valueStr = value === undefined ? '-' : value.toString()
       const fieldLength = format[Math.min(index, format.length - 1)]
       row.push(padRight(valueStr, fieldLength))
       if (valueStr.length > fieldLength) {
-        overflow[index] = valueStr.slice(fieldLength)
+        overflow[index] = valueStr.slice(fieldLength).trim()
       }
     })
     values = overflow
@@ -183,13 +214,27 @@ const formatRow = (values: (string|number)[], format: number[]) => {
   return rows.join('\n')
 }
 
-const safeMs = (val: number | '-' | undefined | null) => typeof val === 'number' && isFinite(val) ? ms(val) : '-'
+const median = (values: number[]) => {
+  if(values.length === 0) return undefined
+
+  values.sort()
+  var middle = Math.floor(values.length / 2)
+  if (values.length % 2) return values[middle]
+  return (values[middle- 1] + values[middle]) / 2.0;
+}
+
+const safeMs = (val: number | undefined | null) => typeof val === 'number' && isFinite(val) ? ms(val) : undefined
 
 const formatReviewers = (reviewerStats) => {
-  const format = [15, 8]
+  const format = [15, 9]
   const rows = [] as string[]
   rows.push(formatRow(['login', 'median time to review', 'reviewed PRs', 'comments', 'approvals', 'changes requested'], format))
-  Object.values(reviewerStats).forEach((reviewer: any) => {
+
+  const reviewers = Object.values(reviewerStats)
+  reviewers.sort((a: any, b: any) => {
+    return median(a.timesToReview) < median(b.timesToReview) ? -1 : 1 
+  })
+  reviewers.forEach((reviewer: any) => {
     const {login, timesToReview, reviewedPRs, reviewStates, comments} = reviewer
     const medianTimeToReview = safeMs(median(timesToReview))
     const approvals = reviewStates.filter(state => state === 'APPROVED').length
