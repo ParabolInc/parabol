@@ -9,6 +9,7 @@ import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
 import {DeepNonNullable} from '../../types/generics'
+import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import {RemoteReflection_meeting} from '../../__generated__/RemoteReflection_meeting.graphql'
 import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
@@ -158,7 +159,7 @@ interface Props {
 const RemoteReflection = (props: Props) => {
   const {meeting, reflection, style, animation} = props
   const {id: reflectionId, content, isDropping, reflectionGroupId, creator} = reflection
-  const {meetingMembers, disableAnonymity} = meeting
+  const {meetingMembers, localPhase, disableAnonymity} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection['remoteDrag']
   >
@@ -182,12 +183,14 @@ const RemoteReflection = (props: Props) => {
       },
       remoteDrag?.isSpotlight
         ? Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT
+        : localPhase.phaseType === VOTE
+        ? 0
         : Times.REFLECTION_DRAG_STALE_TIMEOUT
     )
     return () => {
       window.clearTimeout(timeoutRef.current)
     }
-  }, [remoteDrag])
+  }, [remoteDrag, localPhase.phaseType])
 
   useEffect(() => {
     if (!remoteDrag || !meeting) return
@@ -271,6 +274,9 @@ export default createFragmentContainer(RemoteReflection, {
       ...useSpotlightResults_meeting
       id
       disableAnonymity
+      localPhase {
+        phaseType
+      }
       meetingMembers {
         userId
         user {

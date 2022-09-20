@@ -39,6 +39,7 @@ const getFormattedStr = (
 const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailExists: boolean} => {
   // this breaks RFC5322 standards, but people are not standard :-(
   const commaDelimStr = rawStr
+    .toLowerCase()
     // replace line breaks, semi colons, greater than and less than signs with commas
     .replace(/(?:\r\n|\r|\n|;|<|>)/g, ',')
     // if the above created 2 commas (like a , + linebreak), remove dupes

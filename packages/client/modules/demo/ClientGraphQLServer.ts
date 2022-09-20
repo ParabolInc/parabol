@@ -1,6 +1,6 @@
 import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
-import {parse} from 'flatted'
+import {parse, stringify} from 'flatted'
 import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
@@ -158,24 +158,36 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getTempId = (prefix: string) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
-  isNew = true
   constructor(atmosphere: LocalAtmosphere) {
     super()
     this.atmosphere = atmosphere
-    const demoDB = window.localStorage.getItem('retroDemo') || ''
+    const validDB = this.getValidDB()
+    if (validDB) {
+      this.db = validDB
+      this.db._started && this.startBot()
+    } else {
+      this.db = initDB(initBotScript())
+    }
+  }
+
+  private getValidDB(): RetroDemoDB | undefined {
     let validDB
     try {
+      const demoDB = window.localStorage.getItem('retroDemo') || ''
       validDB = parse(demoDB)
     } catch (e) {
       // noop
     }
-    // const isStale = false
-    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
-    this.db = isStale ? initDB(initBotScript()) : validDB
-    if (!isStale) {
-      this.isNew = false
-      this.startBot()
-    }
+    const isFresh = validDB && new Date(validDB._updatedAt).getTime() >= Date.now() - ms('5m')
+    if (!isFresh) return
+
+    return validDB
+  }
+
+  startDemo() {
+    this.startBot()
+    this.db._started = true
+    window.localStorage.setItem('retroDemo', stringify(this.db))
   }
 
   getUnlockedStages(stageIds: string[]) {

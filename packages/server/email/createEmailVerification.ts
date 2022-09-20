@@ -1,5 +1,5 @@
 import base64url from 'base64url'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import {Security} from 'parabol-client/types/constEnums'
 import getRethink from '../database/rethinkDriver'
@@ -39,7 +39,10 @@ const createEmailVerification = async (props: SignUpWithPasswordMutationVariable
     segmentId,
     invitationToken
   })
-  await r.table('EmailVerification').insert(emailVerification).run()
+  await r
+    .table('EmailVerification')
+    .insert(emailVerification)
+    .run()
   return {error: {message: 'Verification required. Check your inbox.'}}
 }
 
