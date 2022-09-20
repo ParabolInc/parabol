@@ -26,13 +26,13 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   bottom: 0,
   top: 0,
   right: isDesktop ? 0 : undefined,
+  paddingBottom: isDesktop ? 0 : 56,
   transition: `all 200ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
   width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
   zIndex: ZIndex.SIDEBAR,
   [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
     width: '100vw',
-    height: '100dvh',
     position: 'fixed',
     right: isOpen ? `-${DiscussionThreadEnum.WIDTH}px` : '-100vw'
   }
