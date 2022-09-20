@@ -1,6 +1,8 @@
 name: Pull Request Stats
 
-on: [pull_request]
+on:
+  schedule:
+    - cron: '0 9 * * 5'
 
 jobs:
   stats:
