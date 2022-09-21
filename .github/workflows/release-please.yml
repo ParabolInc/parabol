@@ -11,10 +11,12 @@ jobs:
         id: release
         with:
           release-type: node
-          command: manifest
-          token: ${{secrets.GITHUB_TOKEN}}
-      - name: Build Packages
-        if: ${{ steps.release.outputs.releases_created }}
-        run: |
-          npm install
-          npx lerna bootstrap
+          bootstrap-sha: 9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f
+
+      # true for single package
+      - name: Echo release_created
+        run: echo "${{ steps.release.outputs.release_created }}"
+
+      # true for multiple packages
+      - name: Echo releases_created
+        run: echo "${{ steps.release.outputs.releases_created }}"
