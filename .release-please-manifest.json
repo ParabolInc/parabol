@@ -1,3 +1,7 @@
 {
-  ".": "0.0.0"
+  ".": "6.74.0",
+  "packages/client": "6.74.0",
+  "packages/server": "6.74.0",
+  "packages/gql-executor": "6.74.0",
+  "packages/integration-tests": "6.74.0"
 }
