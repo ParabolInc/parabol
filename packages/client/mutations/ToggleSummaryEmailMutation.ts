@@ -4,7 +4,7 @@ import {StandardMutation} from '../types/relayMutations'
 import {ToggleSummaryEmailMutation as TToggleSummaryEmailMutation} from '../__generated__/ToggleSummaryEmailMutation.graphql'
 
 graphql`
-  fragment ToggleSummaryEmailMutation_viewer on ToggleSummaryEmailSuccess {
+  fragment ToggleSummaryEmailMutation_team on ToggleSummaryEmailSuccess {
     user {
       sendSummaryEmail
     }
@@ -19,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ToggleSummaryEmailMutation_viewer @relay(mask: false)
+      ...ToggleSummaryEmailMutation_team @relay(mask: false)
     }
   }
 `

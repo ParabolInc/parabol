@@ -50,7 +50,7 @@
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
           "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
-          "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess",
+          "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess#ToggleSummaryEmailSuccessSource",
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
