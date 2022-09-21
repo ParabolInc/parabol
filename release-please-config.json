@@ -8,22 +8,6 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease": false
-    },
-    "packages/client": {
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "6.74.0"
-    },
-    "packages/server": {
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "6.74.0"
-    },
-    "packages/gql-executor": {
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "6.74.0"
-    },
-    "packages/integration-tests": {
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "6.74.0"
     }
   }
 }
