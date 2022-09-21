@@ -1,7 +1,8 @@
 on:
   push:
     branches:
-      - master
+      # update the current branch to have a tryπ
+      - release-please/bootstrap/default
 name: release-please
 jobs:
   release-please:
@@ -12,6 +13,7 @@ jobs:
         with:
           release-type: node
           bootstrap-sha: 9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f
+          default-branch: release-please/bootstrap/default
 
       # true for single package
       - name: Echo release_created
