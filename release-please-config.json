@@ -1,6 +1,8 @@
 {
   "bootstrap-sha": "9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f",
   "plugins": ["node-workspace"],
+  "draft": true,
+  "group-pull-request-title-pattern": "chore: release v${version}",
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",

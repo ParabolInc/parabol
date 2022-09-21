@@ -1,6 +1,7 @@
 on:
   push:
     branches:
+      # update the current branch to have a try
       - master
 name: release-please
 jobs:
@@ -10,3 +11,4 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         with:
           command: manifest
+          default-branch: release-please/bootstrap/default
