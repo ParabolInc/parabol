@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [6.74.1](https://github.com/ParabolInc/parabol/compare/parabol-action-v6.74.0...parabol-action-v6.74.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* 'Estimate phase is already complete' error message ([#7194](https://github.com/ParabolInc/parabol/issues/7194)) ([00c4d2e](https://github.com/ParabolInc/parabol/commit/00c4d2ef9b429992cad6c4f96d69b7f4fb9741ca))
+* add node-workspace plugin ([1e51fab](https://github.com/ParabolInc/parabol/commit/1e51fabd64ed8b87e757b5ba9eef5d0fe913ba75))
+* Fix cannot read email of undefined in ErrorBoundary ([#7198](https://github.com/ParabolInc/parabol/issues/7198)) ([4dca4d5](https://github.com/ParabolInc/parabol/commit/4dca4d57992693ea4d0e05a78c1040a0cb7c4308))
+* not update the changelog-path ([dd147e1](https://github.com/ParabolInc/parabol/commit/dd147e14c9fea17f351128205d57b643a7ab8dad))
+* try to make a small polish ([e5a821b](https://github.com/ParabolInc/parabol/commit/e5a821b8d227d2ae32122686055a62f1532cefb5))
+* try to not publish server ([65e6472](https://github.com/ParabolInc/parabol/commit/65e6472f8b71e8f681bbd06430306a7e62f44b7a))
+* try to release ([32a5656](https://github.com/ParabolInc/parabol/commit/32a5656993080f43f8044dcb3b55ca82e474409a))
+* update extra files? ([91f83c0](https://github.com/ParabolInc/parabol/commit/91f83c0974adcdaad84452a4e8f0d972df483bf1))
+* update root version ([f9234ac](https://github.com/ParabolInc/parabol/commit/f9234ac740b37acb6e6b0a3fd31a775047b4d6f8))
+* update the current manifest version ([7f82d77](https://github.com/ParabolInc/parabol/commit/7f82d7703244f857804000458ee2313ad27c3a5d))
+
 ## 6.74.0 2022-September-15
 
 ### Fixed

@@ -1,0 +1,9 @@
+# Changelog
+
+## [6.74.1](https://github.com/ParabolInc/parabol/compare/parabol-client-v6.74.0...parabol-client-v6.74.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* Fix cannot read email of undefined in ErrorBoundary ([#7198](https://github.com/ParabolInc/parabol/issues/7198)) ([4dca4d5](https://github.com/ParabolInc/parabol/commit/4dca4d57992693ea4d0e05a78c1040a0cb7c4308))
+* try to make a small polish ([e5a821b](https://github.com/ParabolInc/parabol/commit/e5a821b8d227d2ae32122686055a62f1532cefb5))
