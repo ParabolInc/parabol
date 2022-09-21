@@ -12,6 +12,7 @@ jobs:
         id: release
         with:
           release-type: node
+          command: manifest
           bootstrap-sha: 9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f
           default-branch: release-please/bootstrap/default
 
