@@ -50,8 +50,8 @@ import RenamePokerTemplateScalePayload from './RenamePokerTemplateScalePayload'
 import RenameReflectTemplatePromptPayload from './RenameReflectTemplatePromptPayload'
 import SelectTemplatePayload from './SelectTemplatePayload'
 import {SetAppLocationSuccess} from './SetAppLocationPayload'
-import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import {SetDefaultSlackChannelSuccess} from './SetDefaultSlackChannelPayload'
+import SetMeetingSettingsPayload from './SetMeetingSettingsPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
@@ -59,11 +59,11 @@ import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import {StartTeamPromptSuccess} from './StartTeamPromptPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
+import {UpdateAzureDevOpsDimensionFieldSuccess} from './UpdateAzureDevOpsDimensionFieldPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
 import {UpdateIntegrationProviderSuccess} from './UpdateIntegrationProviderPayload'
 import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
-import {UpdateAzureDevOpsDimensionFieldSuccess} from './UpdateAzureDevOpsDimensionFieldPayload'
 import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimensionScalePayload'
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
@@ -128,7 +128,7 @@ const types = [
   RenamePokerTemplateDimensionPayload,
   RenamePokerTemplateScalePayload,
   RemovePokerTemplateScaleValuePayload,
-  SetCheckInEnabledPayload,
+  SetMeetingSettingsPayload,
   SetSlackNotificationPayload,
   UpdatePokerTemplateDimensionScalePayload,
   UpdatePokerTemplateScaleValuePayload,
@@ -140,7 +140,7 @@ const types = [
   SetDefaultSlackChannelSuccess,
   SetAppLocationSuccess,
   UpdateGitHubDimensionFieldSuccess,
-  UpdateIntegrationProviderSuccess,
+  UpdateIntegrationProviderSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

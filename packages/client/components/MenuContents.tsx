@@ -3,7 +3,7 @@ import {PortalStatus} from '../hooks/usePortal'
 import {DECELERATE} from '../styles/animation'
 import {Duration, Radius} from '../types/constEnums'
 
-const animations = (portalStatus) => {
+const animations = (portalStatus: PortalStatus) => {
   switch (portalStatus) {
     case PortalStatus.Mounted:
       return {

@@ -31,7 +31,8 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs'
+    libraryTarget: 'commonjs',
+    publicPath: `http://localhost:${process.env.PORT}/static/`
   },
   resolve: {
     alias: {
@@ -39,8 +40,7 @@ module.exports = {
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT
     },
-    // .mjs required for a single instance of graphql
-    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
+    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
     unsafeCache: true,
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]
@@ -58,7 +58,6 @@ module.exports = {
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
     }),
-
   ],
   module: {
     rules: [
@@ -79,10 +78,7 @@ module.exports = {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader',
-            options: {
-              publicPath: `http://localhost:${process.env.PORT}/static/`
-            }
+            loader: 'file-loader'
           }
         ]
       }

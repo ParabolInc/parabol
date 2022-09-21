@@ -127,6 +127,6 @@ const ui = {
       padding: `${CONTROL_LARGE_PADDING_VERTICAL} ${CONTROL_LARGE_PADDING_HORIZONTAL}`
     }
   }
-}
+} as const
 
 export default ui

@@ -13,8 +13,8 @@ import {SegmentAnalytics} from './segment/SegmentAnalytics'
 
 export type MeetingSeriesAnalyticsProperties = Pick<
   MeetingSeries,
-  'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'teamId' | 'title' | 'facilitatorId'
->
+  'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'title'
+> & {teamId: string; facilitatorId: string}
 
 export type OrgTierChangeEventProperties = {
   orgId: string
@@ -149,7 +149,13 @@ class Analytics {
     this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
   }
 
-  commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {
+  commentAdded = (
+    userId: string,
+    meeting: Meeting,
+    isAnonymous: boolean,
+    isAsync: boolean,
+    isReply: boolean
+  ) => {
     this.track(userId, 'Comment Added', {
       meetingId: meeting.id,
       meetingType: meeting.meetingType,

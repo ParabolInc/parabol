@@ -24,9 +24,7 @@ const TopBarHelpMenu = (props: Props) => {
   return (
     <Menu ariaLabel={'How may we help?'} {...menuProps}>
       <MenuItem
-        label={
-          <MenuItemWithIcon dataCy={`${dataCy}`} label={'Documentation'} icon={'bookmark'} />
-        }
+        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Documentation'} icon={'bookmark'} />}
         onClick={gotoSupport}
       />
       {isDesktop && (

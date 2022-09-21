@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -27,10 +28,7 @@ const renamePokerTemplateDimension = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .run()
+    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -50,11 +48,7 @@ const renamePokerTemplateDimension = {
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
       .filter({templateId})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-      )
+      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
       .run()
     if (allDimensions.find((dimension) => dimension.name === normalizedName)) {
       return standardError(new Error('Duplicate name dimension'), {userId: viewerId})

@@ -90,7 +90,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent) => {
     if (isDisabled) return
     if (noCloseOnClick) {
       activate()

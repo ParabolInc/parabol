@@ -1,13 +1,15 @@
-import {AgendaInput_team} from '../../../../__generated__/AgendaInput_team.graphql'
-import React, {useRef} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import Icon from '../../../../components/Icon'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useForm from '../../../../hooks/useForm'
 import useHotkey from '../../../../hooks/useHotkey'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useTooltip from '../../../../hooks/useTooltip'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
@@ -15,9 +17,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import ui from '../../../../styles/ui'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import useForm from '../../../../hooks/useForm'
-import useTooltip from '../../../../hooks/useTooltip'
-import {MenuPosition} from '../../../../hooks/useCoords'
+import {AgendaInput_team} from '../../../../__generated__/AgendaInput_team.graphql'
 
 const AgendaInputBlock = styled('div')({
   padding: `8px 0`,
@@ -41,9 +41,7 @@ const InputField = styled('input')<{disabled: boolean}>(
   {
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
-    borderRadius: 4,
     boxShadow: 'none',
-    color: PALETTE.SKY_500,
     cursor: 'not-allowed',
     display: 'block',
     fontSize: 14,

@@ -4,7 +4,7 @@ import * as crypto from 'crypto'
 import * as _stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r} from 'rethinkdb-ts'
+import {r, RValue} from 'rethinkdb-ts'
 import {parse} from 'url'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TemplateDimension from '../../database/types/TemplateDimension'
@@ -15,11 +15,11 @@ import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(): Promise<void> {
-  const u = parse(process.env.RETHINKDB_URL)
+  const u = parse(process.env.RETHINKDB_URL!)
   const config = {
     host: u.hostname || '',
-    port: parseInt(u.port, 10),
-    db: u.path.split('/')[1]
+    port: parseInt(u.port!, 10),
+    db: u.path!.split('/')[1]
   }
   await r.connectPool(config)
 
@@ -44,13 +44,13 @@ export async function up(): Promise<void> {
   const dimensionsByTemplateId = (await r
     .table('TemplateDimension')
     .getAll(r.args(uniqueTemplateIds), {index: 'templateId'})
-    .merge((d) => ({
+    .merge((d: RValue) => ({
       scale: r.table('TemplateScale').get(d('scaleId'))
     }))
     .orderBy('sortOrder')
     .group('templateId')
     .ungroup()
-    .merge((row) => ({
+    .merge((row: RValue) => ({
       name: r.table('MeetingTemplate').get(row('group'))('name'),
       id: row('group'),
       dimensions: row('reduction')
@@ -97,7 +97,7 @@ export async function up(): Promise<void> {
           dimensionIdToDimensionRefIdx[dimensionId] = idx
 
           const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
-          const templateScale = templateScales[scaleIdx]
+          const templateScale = templateScales[scaleIdx]!
           const {id: scaleRefId} = templateScale
           return {
             name,
@@ -118,37 +118,37 @@ export async function up(): Promise<void> {
   if (await r.tableList().contains('Team').run()) {
     await r
       .table('Team')
-      .filter((row) => row('jiraDimensionFields').default(null).ne(null))
+      .filter((row: RValue) => row('jiraDimensionFields').default(null).ne(null))
       .update({jiraDimensionFields: []})
       .run()
   }
 
   // add a templateRefId to each meeting
   await r(templateIdToTemplateRefId)
-    .do((lookup) => {
+    .do((lookup: RValue) => {
       return r
         .table('NewMeeting')
         .filter({meetingType: 'poker'})
-        .update((meeting) => ({
+        .update((meeting: RValue) => ({
           templateRefId: lookup(meeting('templateId'))
         }))
     })
     .run()
-  const mapIf = (rArr, test, f) => {
-    return rArr.map((x) => r.branch(test(x), f(x), x))
+  const mapIf = (rArr: any, test: any, f: any) => {
+    return rArr.map((x: any) => r.branch(test(x), f(x), x))
   }
   await r(dimensionIdToDimensionRefIdx)
-    .do((lookup) => {
+    .do((lookup: any) => {
       return r
         .table('NewMeeting')
         .filter({meetingType: 'poker'})
-        .update((meeting) => ({
+        .update((meeting: RValue) => ({
           phases: mapIf(
             meeting('phases'),
-            (phase) => phase('phaseType').eq('ESTIMATE'),
-            (estimatePhase) =>
+            (phase: RValue) => phase('phaseType').eq('ESTIMATE'),
+            (estimatePhase: RValue) =>
               estimatePhase.merge({
-                stages: estimatePhase('stages').map((stage) =>
+                stages: estimatePhase('stages').map((stage: any) =>
                   stage.merge({
                     dimensionRefIdx: lookup(stage('dimensionId'))
                   })
@@ -160,7 +160,7 @@ export async function up(): Promise<void> {
     .run()
 
   await client.end()
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
