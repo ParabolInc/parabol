@@ -11,7 +11,12 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import {
+  getPermsByTaskService,
+  getPrevRepoIntegrations
+} from '../queries/helpers/repoIntegrationHelpers'
 import {resolveTeam} from '../resolvers'
+import PrevRepoIntegration from '../types/PrevRepoIntegration'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -92,6 +97,14 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
+    },
+    prevRepoIntegrations: {
+      type: PrevRepoIntegration,
+      resolve: async ({userId, teamId}, {meetingId}, {dataLoader}) => {
+        const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+        const testa = await getPrevRepoIntegrations(userId, teamId, permLookup)
+        return testa[0]
+      }
     },
     repoIntegrations: require('../queries/repoIntegrations').default,
     tasks: {

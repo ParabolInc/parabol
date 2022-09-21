@@ -91,6 +91,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   )
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
+  console.log('🚀 ~ viewer', viewer)
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {integrations: viewerIntegrations, repoIntegrations: viewerRepoIntegrations} =
     viewerTeamMember
@@ -179,13 +180,18 @@ graphql`
     }
   }
 `
+
 graphql`
   fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
-    repoIntegrations(first: 50) {
-      ...TaskFooterIntegrateMenuList_repoIntegrations
+    prevRepoIntegrations {
+      userId
     }
   }
 `
+// repoIntegrations(first: 50) {
+//   ...TaskFooterIntegrateMenuListQuery
+// }
+// ...TaskFooterIntegrateMenuList_repoIntegrations
 
 graphql`
   fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {

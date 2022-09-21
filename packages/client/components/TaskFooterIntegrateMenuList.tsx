@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import useAllIntegrations from '../hooks/useAllIntegrations'
@@ -11,7 +11,7 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
-import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
@@ -24,7 +24,7 @@ interface Props {
   mutationProps: MenuMutationProps
   placeholder: string
   repoIntegrations: TaskFooterIntegrateMenuList_repoIntegrations
-  task: TaskFooterIntegrateMenuList_task
+  task: TaskFooterIntegrateMenuList_task$key
   label?: string
 }
 
@@ -41,10 +41,110 @@ const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {mutationProps, menuProps, placeholder, repoIntegrations, task, label} = props
-  const {hasMore} = repoIntegrations
-  const items = repoIntegrations.items || []
+  // const {mutationProps, menuProps, placeholder, repoIntegrations, task: taskRef, label} = props
+  const {mutationProps, menuProps, placeholder, task: taskRef, label} = props
+  // const {hasMore} = repoIntegrations
+  // const hasMore = repoIntegrations?.hasMore
+  // const items = repoIntegrations?.items || []
+  // const {id: taskId, teamId, userId} = task
+
+  const hasPrevRepoIntegration = true
+
+  // fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
+  //   hasMore
+  //   items {
+  //     ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+  //   }
+  // }
+
+  // const repotesta = useFragment(
+  //   graphql`
+  //     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
+  //       __typename
+  //       id
+  //       service
+  //       ... on JiraRemoteProject {
+  //         cloudId
+  //         key
+  //         name
+  //       }
+  //       ... on _xGitHubRepository {
+  //         nameWithOwner
+  //       }
+  //       ... on _xGitLabProject {
+  //         fullPath
+  //       }
+  //       ... on AzureDevOpsRemoteProject {
+  //         id
+  //         name
+  //         instanceId
+  //       }
+  //       ... on JiraServerRemoteProject {
+  //         name
+  //       }
+  //     }
+  //   `,
+  //   repoIntegrationRef
+  // )
+
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterIntegrateMenuList_task on Task {
+        id
+        teamId
+        userId
+      }
+    `,
+    taskRef
+  )
+
+  console.log('🚀 ~ task___', task)
   const {id: taskId, teamId, userId} = task
+
+  // ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+  const {viewer} = useLazyLoadQuery<any>(
+    graphql`
+      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $hasPrevRepoIntegration: Boolean!) {
+        viewer @include(if: $hasPrevRepoIntegration) {
+          teamMember(teamId: $teamId) {
+            repoIntegrations(first: 10) {
+              hasMore
+              items {
+                __typename
+                id
+                service
+                ... on JiraRemoteProject {
+                  cloudId
+                  key
+                  name
+                }
+                ... on _xGitHubRepository {
+                  nameWithOwner
+                }
+                ... on _xGitLabProject {
+                  fullPath
+                }
+                ... on AzureDevOpsRemoteProject {
+                  id
+                  name
+                  instanceId
+                }
+                ... on JiraServerRemoteProject {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {hasPrevRepoIntegration, teamId}
+  )
+  console.log('🚀 ~ viewer..', viewer)
+
+  const repoIntegrations = viewer.teamMember.repoIntegrations
+  const hasMore = repoIntegrations?.hasMore
+  const items = repoIntegrations?.items
 
   const {
     query,
@@ -201,47 +301,22 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   )
 }
 
-graphql`
-  fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
-    __typename
-    id
-    service
-    ... on JiraRemoteProject {
-      cloudId
-      key
-      name
-    }
-    ... on _xGitHubRepository {
-      nameWithOwner
-    }
-    ... on _xGitLabProject {
-      fullPath
-    }
-    ... on AzureDevOpsRemoteProject {
-      id
-      name
-      instanceId
-    }
-    ... on JiraServerRemoteProject {
-      name
-    }
-  }
-`
+export default TaskFooterIntegrateMenuList
 
-export default createFragmentContainer(TaskFooterIntegrateMenuList, {
-  repoIntegrations: graphql`
-    fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
-      hasMore
-      items {
-        ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-      }
-    }
-  `,
-  task: graphql`
-    fragment TaskFooterIntegrateMenuList_task on Task {
-      id
-      teamId
-      userId
-    }
-  `
-})
+// export default createFragmentContainer(TaskFooterIntegrateMenuList, {
+//   repoIntegrations: graphql`
+//     fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
+//       hasMore
+//       items {
+//         ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+//       }
+//     }
+//   `,
+//   task: graphql`
+//     fragment TaskFooterIntegrateMenuList_task on Task {
+//       id
+//       teamId
+//       userId
+//     }
+//   `
+// })

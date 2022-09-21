@@ -32,12 +32,12 @@ const gqlQuery = graphql`
           ... on _xGitLabProject {
             fullPath
           }
-          ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }
     }
   }
 `
+// ...TaskFooterIntegrateMenuListItem @relay(mask: false)
 
 const getValue = (item: FetchedItems[0]) => {
   if (item.__typename === 'JiraServerRemoteProject') {
