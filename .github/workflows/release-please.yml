@@ -2,7 +2,7 @@ on:
   push:
     branches:
       # update the current branch to have a try
-      - master
+      - release-please/bootstrap/default
 name: release-please
 jobs:
   release-please:
