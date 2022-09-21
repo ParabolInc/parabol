@@ -10,7 +10,11 @@ import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
+import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import {
+  TaskFooterIntegrateMenuList_repoIntegrations,
+  TaskFooterIntegrateMenuList_repoIntegrations$key
+} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
@@ -23,7 +27,7 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   placeholder: string
-  repoIntegrations: TaskFooterIntegrateMenuList_repoIntegrations
+  repoIntegrationsRef: TaskFooterIntegrateMenuList_repoIntegrations$key
   task: TaskFooterIntegrateMenuList_task$key
   label?: string
 }
@@ -41,51 +45,39 @@ const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  // const {mutationProps, menuProps, placeholder, repoIntegrations, task: taskRef, label} = props
-  const {mutationProps, menuProps, placeholder, task: taskRef, label} = props
-  // const {hasMore} = repoIntegrations
-  // const hasMore = repoIntegrations?.hasMore
-  // const items = repoIntegrations?.items || []
-  // const {id: taskId, teamId, userId} = task
+  const {mutationProps, menuProps, placeholder, repoIntegrationsRef, task: taskRef, label} = props
 
   const hasPrevRepoIntegration = true
 
-  // fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
-  //   hasMore
-  //   items {
-  //     ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-  //   }
-  // }
-
-  // const repotesta = useFragment(
-  //   graphql`
-  //     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
-  //       __typename
-  //       id
-  //       service
-  //       ... on JiraRemoteProject {
-  //         cloudId
-  //         key
-  //         name
-  //       }
-  //       ... on _xGitHubRepository {
-  //         nameWithOwner
-  //       }
-  //       ... on _xGitLabProject {
-  //         fullPath
-  //       }
-  //       ... on AzureDevOpsRemoteProject {
-  //         id
-  //         name
-  //         instanceId
-  //       }
-  //       ... on JiraServerRemoteProject {
-  //         name
-  //       }
-  //     }
-  //   `,
-  //   repoIntegrationRef
-  // )
+  useFragment(
+    graphql`
+      fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
+        __typename
+        id
+        service
+        ... on JiraRemoteProject {
+          cloudId
+          key
+          name
+        }
+        ... on _xGitHubRepository {
+          nameWithOwner
+        }
+        ... on _xGitLabProject {
+          fullPath
+        }
+        ... on AzureDevOpsRemoteProject {
+          id
+          name
+          instanceId
+        }
+        ... on JiraServerRemoteProject {
+          name
+        }
+      }
+    `,
+    repoIntegrationsRef
+  )
 
   const task = useFragment(
     graphql`
@@ -97,12 +89,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     `,
     taskRef
   )
-
-  console.log('🚀 ~ task___', task)
   const {id: taskId, teamId, userId} = task
-
-  // ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-  const {viewer} = useLazyLoadQuery<any>(
+  const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
     graphql`
       query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $hasPrevRepoIntegration: Boolean!) {
         viewer @include(if: $hasPrevRepoIntegration) {
@@ -110,28 +98,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             repoIntegrations(first: 10) {
               hasMore
               items {
-                __typename
-                id
-                service
-                ... on JiraRemoteProject {
-                  cloudId
-                  key
-                  name
-                }
-                ... on _xGitHubRepository {
-                  nameWithOwner
-                }
-                ... on _xGitLabProject {
-                  fullPath
-                }
-                ... on AzureDevOpsRemoteProject {
-                  id
-                  name
-                  instanceId
-                }
-                ... on JiraServerRemoteProject {
-                  name
-                }
+                ...TaskFooterIntegrateMenuListItem @relay(mask: false)
               }
             }
           }
@@ -140,12 +107,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     `,
     {hasPrevRepoIntegration, teamId}
   )
-  console.log('🚀 ~ viewer..', viewer)
-
-  const repoIntegrations = viewer.teamMember.repoIntegrations
+  const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
-  const items = repoIntegrations?.items
-
+  const items = repoIntegrations?.items ?? []
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -302,21 +266,3 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 }
 
 export default TaskFooterIntegrateMenuList
-
-// export default createFragmentContainer(TaskFooterIntegrateMenuList, {
-//   repoIntegrations: graphql`
-//     fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
-//       hasMore
-//       items {
-//         ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-//       }
-//     }
-//   `,
-//   task: graphql`
-//     fragment TaskFooterIntegrateMenuList_task on Task {
-//       id
-//       teamId
-//       userId
-//     }
-//   `
-// })
