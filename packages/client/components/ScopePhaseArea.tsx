@@ -53,12 +53,6 @@ const StyledTabsBar = styled(Tabs)({
   '&::-webkit-scrollbar-thumb': {
     borderRadius: '3px',
     backgroundColor: 'rgba(0, 0, 0, 0.3)'
-  },
-  '&::-webkit-scrollbar-thumb:hover': {
-    background: 'rgba(0, 0, 0, 0.5)'
-  },
-  '&::-webkit-scrollbar-thumb:window-inactive': {
-    background: 'rgba(0, 0, 0, 0.2)'
   }
 })
 
