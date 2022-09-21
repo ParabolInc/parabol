@@ -1,0 +1,18 @@
+{
+  "packages": {
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": [
+        "packages/client",
+        "packages/server",
+        "packages/gql-executor",
+        "packages/integration-tests"
+      ]
+    }
+  }
+}
