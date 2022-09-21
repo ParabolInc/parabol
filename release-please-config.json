@@ -1,5 +1,6 @@
 {
   "bootstrap-sha": "9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f",
+  "plugins": ["node-workspace"],
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
@@ -8,6 +9,12 @@
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
       "prerelease": false
-    }
+    },
+    "packages/client": {
+      "changelog-path": "../../CHANGELOG.md"
+    },
+    "packages/server": {},
+    "packages/gql-executor": {},
+    "packages/integration-tests": {}
   }
 }
