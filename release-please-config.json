@@ -10,9 +10,7 @@
       "draft": false,
       "prerelease": false
     },
-    "packages/client": {
-      "changelog-path": "../../CHANGELOG.md"
-    },
+    "packages/client": {},
     "packages/server": {},
     "packages/gql-executor": {},
     "packages/integration-tests": {}
