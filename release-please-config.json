@@ -1,6 +1,14 @@
 {
   "bootstrap-sha": "9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f",
   "packages": {
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
+    },
     "packages/client": {
       "release-as": "6.74.0"
     },
