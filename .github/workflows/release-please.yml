@@ -11,29 +11,5 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
-          release-type: node
           command: manifest
-          bootstrap-sha: 9177909d9b3bc9cf2ba5d88a32c0ce53b1da177f
           default-branch: release-please/bootstrap/default
-
-      # true for single package
-      - name: Echo release_created
-        run: | 
-          echo "${{ steps.release.outputs.release_created }}"
-          echo "${{ steps.release.outputs.major }}"
-          echo "${{ steps.release.outputs.minor }}"
-          echo "${{ steps.release.outputs.patch }}"
-
-      # true for multiple packages
-      - name: Echo releases_created
-        run: |
-          echo "${{ steps.release.outputs.releases_created }}"
-          echo "${{ steps.release.outputs.major }}"
-          echo "${{ steps.release.outputs.minor }}"
-          echo "${{ steps.release.outputs.patch }}"
-
-      - name: Build Packages
-        if: ${{ steps.release.outputs.releases_created }}
-        run: |
-          yarn install
-          yarn lerna version ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }} --amend --yes --no-push
