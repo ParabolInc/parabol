@@ -90,8 +90,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     teamMemberRef
   )
   console.log('🚀 ~ prevRepoIntegrations', prevRepoIntegrations)
-  // const hasPrevRepoIntegration = !!prevRepoIntegrations
-  const hasPrevRepoIntegration = false
+  const hasPrevRepoIntegration = !!prevRepoIntegrations
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuList_task on Task {
@@ -123,9 +122,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
   // const items = prevRepoIntegrations?.concat(repoIntegrations?.items ?? []) ?? []
-  // const items = prevRepoIntegrations ? prevRepoIntegrations : repoIntegrations?.items ?? []
-  const items = repoIntegrations?.items ?? []
-  console.log('🚀 ~ items', items)
+  const items = prevRepoIntegrations ? prevRepoIntegrations : repoIntegrations?.items ?? []
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -162,9 +159,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       )) ||
         null}
       {allItems.slice(0, 10).map((repoIntegration) => {
-        const {id, __typename} = repoIntegration
+        const {id, service} = repoIntegration
         const {submitMutation, onError, onCompleted} = mutationProps
-        if (__typename === 'JiraRemoteProject') {
+        if (service === 'jira') {
           const onClick = () => {
             const variables = {
               integrationRepoId: repoIntegration.id,
@@ -184,7 +181,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === 'JiraServerRemoteProject') {
+        if (service === 'jiraServer') {
           const onClick = () => {
             const variables = {
               integrationRepoId: repoIntegration.id,
@@ -204,7 +201,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === '_xGitHubRepository') {
+        if (service === 'github') {
           const onClick = () => {
             const {nameWithOwner} = repoIntegration
             const variables = {
@@ -225,7 +222,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === '_xGitLabProject') {
+        if (service === 'gitlab') {
           const {fullPath} = repoIntegration
           const onClick = () => {
             const variables = {
@@ -246,7 +243,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === 'AzureDevOpsRemoteProject') {
+        if (service === 'azureDevOps') {
           const {name, id: projectId, instanceId} = repoIntegration
           const onClick = () => {
             const integrationRepoId = IntegrationRepoId.join({
