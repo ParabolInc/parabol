@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -90,7 +90,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     teamMemberRef
   )
   console.log('🚀 ~ prevRepoIntegrations', prevRepoIntegrations)
-  const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
+  const [showRepoIntegrations, setShowRepoIntegrations] = useState(false)
 
   const task = useFragment(
     graphql`
@@ -122,11 +122,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   )
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
-  // TODO: show prevRepo integrations at the top of the menu
-  const items =
-    prevRepoIntegrations && !showRepoIntegrations
+  const items = useMemo(() => {
+    return prevRepoIntegrations && !showRepoIntegrations
       ? prevRepoIntegrations
       : repoIntegrations?.items ?? []
+    // TODO: show prevRepo integrations at the top of the menu
+  }, [prevRepoIntegrations.length, showRepoIntegrations])
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -138,7 +139,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     if (!showRepoIntegrations && filteredIntegrations.length === 0) {
       setShowRepoIntegrations(true)
     }
-  }, [filteredIntegrations])
+  }, [filteredIntegrations.length])
 
   const atmosphere = useAtmosphere()
   const {allItems, status} = useAllIntegrations(
@@ -150,12 +151,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     userId
   )
   return (
-    <Menu
-      keepParentFocus
-      ariaLabel={'Export the task'}
-      {...menuProps}
-      resetActiveOnChanges={[allItems]}
-    >
+    <Menu ariaLabel={'Export the task'} {...menuProps} resetActiveOnChanges={[allItems]}>
       {label && (
         <>
           <Label>{label}</Label>
