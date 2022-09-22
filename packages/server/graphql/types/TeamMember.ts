@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
@@ -16,10 +17,10 @@ import {
   getPrevRepoIntegrations
 } from '../queries/helpers/repoIntegrationHelpers'
 import {resolveTeam} from '../resolvers'
-import PrevRepoIntegration from '../types/PrevRepoIntegration'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
+import PrevRepoIntegration from './PrevRepoIntegration'
 import {TaskConnection} from './Task'
 import Team from './Team'
 import TeamDrawerEnum from './TeamDrawerEnum'
@@ -99,11 +100,17 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the assignee'
     },
     prevRepoIntegrations: {
-      type: PrevRepoIntegration,
+      type: GraphQLList(GraphQLNonNull(PrevRepoIntegration)),
+      // type: GraphQLList(GraphQLNonNull(RepoIntegration)),
+      // type: GraphQLList(GraphQLNonNull(RepoIntegrationQueryPayload)),
       resolve: async ({userId, teamId}, {meetingId}, {dataLoader}) => {
         const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
         const testa = await getPrevRepoIntegrations(userId, teamId, permLookup)
-        return testa[0]
+        // return {
+        //   hasMore: false,
+        //   items: [testa[0]]
+        // }
+        return [testa[0]]
       }
     },
     repoIntegrations: require('../queries/repoIntegrations').default,
