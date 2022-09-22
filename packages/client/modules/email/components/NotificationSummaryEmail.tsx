@@ -21,6 +21,12 @@ const linkStyle = {
   ...emailLinkStyle
 }
 
+export const notificationSummaryUrlParams = {
+  utm_source: 'notification email',
+  utm_medium: 'email',
+  utm_campaign: 'notifications'
+}
+
 export interface NotificationSummaryProps {
   appOrigin: string
   preferredName: string
@@ -28,7 +34,7 @@ export interface NotificationSummaryProps {
 }
 export default function NotificationSummaryEmail(props: NotificationSummaryProps) {
   const {appOrigin, notificationCount, preferredName} = props
-  const tasksURL = makeAppURL(appOrigin, 'me/tasks')
+  const tasksURL = makeAppURL(appOrigin, 'me/tasks', {searchParams: notificationSummaryUrlParams})
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
