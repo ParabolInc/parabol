@@ -19,7 +19,7 @@ echo "Ask for their Jira Server URL, (ours is 'jira.parabol.co' for example)"
 echo END SEND TO CLIENT
 echo -----------------------------------
 echo 
-echo to run the mutation you need
+echo to run the addIntegrationProvider mutation later you need
 echo "serverBaseUrl: <ASK CLIENT>"
 echo "consumerKey: <see file consumerKey>"
 echo "consumerSecret: <see file jira_privatekey.pem>"
