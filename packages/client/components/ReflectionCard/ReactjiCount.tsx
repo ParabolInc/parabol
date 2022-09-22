@@ -3,16 +3,17 @@ import graphql from 'babel-plugin-relay/macro'
 import data from 'emoji-mart/data/apple.json'
 import {uncompress} from 'emoji-mart/dist-modern/utils/data.js'
 import {unifiedToNative} from 'emoji-mart/dist-modern/utils/index.js'
-import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React from 'react'
+import {useFragment} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
-import {ReactjiCount_reactji} from '~/__generated__/ReactjiCount_reactji.graphql'
+import {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
+import EmojiUsersReaction from './EmojiUsersReaction'
 
 uncompress(data)
 
@@ -56,22 +57,33 @@ const Count = styled('div')({
 export const SHOW_REACTJI_USERS_DELAY = 100 // ms
 
 interface Props {
-  reactji: ReactjiCount_reactji
+  reactjiRef: ReactjiCount_reactji$key
   onToggle: (emojiId: string) => void
   onTransitionEnd: any
   status: TransitionStatus
 }
 
 const ReactjiCount = (props: Props) => {
-  const {onToggle, reactji, status, onTransitionEnd} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+  const {onToggle, reactjiRef, status, onTransitionEnd} = props
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,
     {delay: SHOW_REACTJI_USERS_DELAY}
   )
-
-  const userReactjiList = useMemo(
-    () => reactji && reactji.users.map(({preferredName}) => preferredName).join(', '),
-    [reactji.users]
+  const reactji = useFragment(
+    graphql`
+      fragment ReactjiCount_reactji on Reactji {
+        id
+        count
+        isViewerReactji
+        users {
+          id
+          preferredName
+          picture
+        }
+        ...EmojiUsersReaction_reactji
+      }
+    `,
+    reactjiRef
   )
 
   if (!reactji) return null
@@ -85,28 +97,19 @@ const ReactjiCount = (props: Props) => {
 
   return (
     <Parent onTransitionEnd={onTransitionEnd} status={status}>
-      <Inner isViewerReactji={isViewerReactji} onClick={onClick}>
-        <Emoji onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-          {unicode}
-        </Emoji>
-        {userReactjiList && tooltipPortal(userReactjiList)}
+      <Inner
+        isViewerReactji={isViewerReactji}
+        onClick={onClick}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        ref={originRef}
+      >
+        <Emoji>{unicode}</Emoji>
         <Count>{count}</Count>
+        {tooltipPortal(<EmojiUsersReaction unicode={unicode} reactjiRef={reactji} />)}
       </Inner>
     </Parent>
   )
 }
 
-export default createFragmentContainer(ReactjiCount, {
-  reactji: graphql`
-    fragment ReactjiCount_reactji on Reactji {
-      id
-      count
-      isViewerReactji
-      users {
-        id
-        preferredName
-        picture
-      }
-    }
-  `
-})
+export default ReactjiCount
