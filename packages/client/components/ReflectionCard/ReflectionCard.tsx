@@ -272,7 +272,7 @@ const ReflectionCard = (props: Props) => {
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
         isClipped={isClipped}
-        ariaLabel='Edit this reflection'
+        ariaLabel={readOnly ? '' : 'Edit this reflection'}
         editorRef={editorRef}
         editorState={editorState}
         onBlur={handleEditorBlur}
