@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -90,7 +90,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     teamMemberRef
   )
   console.log('🚀 ~ prevRepoIntegrations', prevRepoIntegrations)
-  const hasPrevRepoIntegration = !!prevRepoIntegrations
+  const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
+
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuList_task on Task {
@@ -104,8 +105,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const {id: taskId, teamId, userId} = task
   const {viewer} = useLazyLoadQuery<any>(
     graphql`
-      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $hasPrevRepoIntegration: Boolean!) {
-        viewer @skip(if: $hasPrevRepoIntegration) {
+      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $showRepoIntegrations: Boolean!) {
+        viewer @include(if: $showRepoIntegrations) {
           teamMember(teamId: $teamId) {
             repoIntegrations(first: 50) {
               hasMore
@@ -117,17 +118,27 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
       }
     `,
-    {hasPrevRepoIntegration, teamId}
+    {showRepoIntegrations, teamId}
   )
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
-  // const items = prevRepoIntegrations?.concat(repoIntegrations?.items ?? []) ?? []
-  const items = prevRepoIntegrations ? prevRepoIntegrations : repoIntegrations?.items ?? []
+  // TODO: show prevRepo integrations at the top of the menu
+  const items =
+    prevRepoIntegrations && !showRepoIntegrations
+      ? prevRepoIntegrations
+      : repoIntegrations?.items ?? []
   const {
     query,
     filteredItems: filteredIntegrations,
     onQueryChange
   } = useSearchFilter(items, getValue)
+
+  useEffect(() => {
+    // when typing into the search input, show all repoIntegrations if there are no matching prevRepoIntegrations
+    if (!showRepoIntegrations && filteredIntegrations.length === 0) {
+      setShowRepoIntegrations(true)
+    }
+  }, [filteredIntegrations])
 
   const atmosphere = useAtmosphere()
   const {allItems, status} = useAllIntegrations(
