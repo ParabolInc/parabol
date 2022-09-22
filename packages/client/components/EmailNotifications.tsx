@@ -13,7 +13,8 @@ import StyledError from './StyledError'
 const Wrapper = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
-  alignItems: 'center'
+  alignItems: 'center',
+  cursor: 'pointer'
 })
 
 const Text = styled('div')({
@@ -52,8 +53,8 @@ const EmailNotifications = (props: Props) => {
   }
 
   return (
-    <Wrapper>
-      <StyledCheckbox active={sendSummaryEmail} onClick={handleClick} />
+    <Wrapper onClick={handleClick}>
+      <StyledCheckbox active={sendSummaryEmail} />
       <Text>{'Send meeting summary emails'}</Text>
       <ErrorMessage>{error?.message}</ErrorMessage>
     </Wrapper>
