@@ -90,8 +90,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     teamMemberRef
   )
   console.log('🚀 ~ prevRepoIntegrations', prevRepoIntegrations)
-  const [showRepoIntegrations, setShowRepoIntegrations] = useState(false)
-
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuList_task on Task {
@@ -103,6 +101,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     taskRef
   )
   const {id: taskId, teamId, userId} = task
+  const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
   const {viewer} = useLazyLoadQuery<any>(
     graphql`
       query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $showRepoIntegrations: Boolean!) {
@@ -118,16 +117,24 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
       }
     `,
-    {showRepoIntegrations, teamId}
+    {showRepoIntegrations, teamId},
+    {UNSTABLE_renderPolicy: 'full', fetchPolicy: 'store-or-network'}
   )
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
   const items = useMemo(() => {
-    return prevRepoIntegrations && !showRepoIntegrations
-      ? prevRepoIntegrations
-      : repoIntegrations?.items ?? []
+    // return prevRepoIntegrations && !showRepoIntegrations
+    //   ? prevRepoIntegrations
+    //   : repoIntegrations?.items ?? []
+    console.log('MEMO')
+    return repoIntegrations?.items.length ? repoIntegrations?.items : prevRepoIntegrations ?? []
     // TODO: show prevRepo integrations at the top of the menu
-  }, [prevRepoIntegrations.length, showRepoIntegrations])
+  }, [prevRepoIntegrations.length, showRepoIntegrations, repoIntegrations?.items.length])
+  // console.log('🚀 ~ repoIntegrations__', {
+  //   repoIntegrations,
+  //   prevRepoIntegrations,
+  //   showRepoIntegrations
+  // })
   const {
     query,
     filteredItems: filteredIntegrations,
