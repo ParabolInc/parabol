@@ -2,16 +2,23 @@ name: Pull Request Stats
 
 on:
   schedule:
-    - cron: '0 * * * 5'
+    - cron: '0 9 * * 5'
 
 jobs:
   stats:
     runs-on: ubuntu-latest
     steps:
-      - name: Run pull request stats
-        uses: flowwer-dev/pull-request-stats@master
+      - uses: actions/checkout@v1
+      - name: Use Node.js
+        uses: actions/setup-node@v1
         with:
-          slack-channel: '#t_product_github_notifications'
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-          charts: true
-          sort-by: 'TIME'
+          node-version: "16.14.0"
+      - name: Run pull request stats
+        run: |
+          yarn
+          yarn ts-node scripts/reviewStats.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          REPO: ${{ github.repository }}
+          TIME_DIFF: 7d

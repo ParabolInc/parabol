@@ -5,9 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.75.0 2022-September-21
+
+### Added
+
+- feat(metrics): Add metrics about disableAnonymity in retro meetings (#7171)
+
+### Fixed
+
+- fix: Fix cannot read email of undefined in ErrorBoundary (#7198)
+- fix: 'Estimate phase is already complete' error message (#7194)
+
+### Changed
+
+- style(lint): run yarn format on server side (#7186)
+- ci: update to Lerna V5 and integrate with Nx (#7184)
+- ci: setting write permissions to the PR for external contributor (#7195)
+- chore: add Standup smoke test into the testing basics (#7189)
+- chore: Weekly review stats in Slack (#7205)
+
 ## 6.74.0 2022-September-15
 
 ### Fixed
+
 - fix: Disallow comments only consisting of whitespace (#7137)
 - fix: New Add Meeting button is pushing the Add Team button out of reach (#7157)
 - fix(demo): prevent demo meeting auto-start after page refresh (#7131)
@@ -18,6 +38,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - fix(poker): fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
 
 ### Changed
+
 - chore: Automatically add reviewers (#7172)
 
 ## 6.73.0 2022-September-08
