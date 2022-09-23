@@ -10,8 +10,10 @@ import {
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import fetchAllRepoIntegrations from '../queries/helpers/fetchAllRepoIntegrations'
 import {
   getPermsByTaskService,
   getPrevRepoIntegrations
@@ -20,7 +22,8 @@ import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import PrevRepoIntegration from './PrevRepoIntegration'
+import RepoIntegration from './RepoIntegration'
+import RepoIntegrationQueryPayload from './RepoIntegrationQueryPayload'
 import {TaskConnection} from './Task'
 import Team from './Team'
 import TeamDrawerEnum from './TeamDrawerEnum'
@@ -100,20 +103,49 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the assignee'
     },
     prevRepoIntegrations: {
-      type: GraphQLList(GraphQLNonNull(PrevRepoIntegration)),
-      // type: GraphQLList(GraphQLNonNull(RepoIntegration)),
-      // type: GraphQLList(GraphQLNonNull(RepoIntegrationQueryPayload)),
-      resolve: async ({userId, teamId}, {meetingId}, {dataLoader}) => {
+      description: 'The integrations that the user has previously used',
+      type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
+      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
         const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-        const testa = await getPrevRepoIntegrations(userId, teamId, permLookup)
-        // return {
-        //   hasMore: false,
-        //   items: [testa[0]]
-        // }
-        return [testa[0]]
+        return await getPrevRepoIntegrations(userId, teamId, permLookup)
       }
     },
-    repoIntegrations: require('../queries/repoIntegrations').default,
+    repoIntegrations: {
+      description: 'The integrations that the user would probably like to use',
+      type: new GraphQLNonNull(RepoIntegrationQueryPayload),
+      args: {
+        first: {
+          type: new GraphQLNonNull(GraphQLInt),
+          description: 'the number of repo integrations to return'
+        },
+        after: {
+          type: GraphQLISO8601Type
+        }
+      },
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        {first},
+        context,
+        info
+      ) => {
+        const {authToken, dataLoader} = context
+        const viewerId = getUserId(authToken)
+        if (userId !== viewerId) {
+          const user = await dataLoader.get('users').loadNonNull(userId)
+          const {tms} = user
+          const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
+          if (!onTeam) {
+            return standardError(new Error('Not on same team as user'), {userId: viewerId})
+          }
+        }
+        const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
+        if (allRepoIntegrations.length > first) {
+          return {hasMore: true, items: allRepoIntegrations.slice(0, first)}
+        } else {
+          return {hasMore: false, items: allRepoIntegrations}
+        }
+      }
+    },
     tasks: {
       type: TaskConnection,
       description: 'Tasks owned by the team member',

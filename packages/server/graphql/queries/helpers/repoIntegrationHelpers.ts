@@ -3,39 +3,50 @@ import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {Unpromise} from 'parabol-client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
+import {TaskServiceEnum} from '../../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql'
 
-export interface IntegrationByTeamId {
-  id: string
+// export interface IntegrationByTeamId {
+//   id: string
+//   userId: string
+//   service: 'github' | 'jira'
+//   nameWithOwner: string | null
+//   projectKey: string | null
+//   projectName: string | null
+//   avatar: string | null
+//   cloudId: string | null
+//   lastUsedAt: Date
+// }
+
+// type PrevJiraRepoIntegration = {
+//   service: 'jira'
+//   userId: string
+//   issueKey: string
+//   cloudId: string
+//   nameWithOwner: null
+//   lastUsedAt: Date
+// }
+
+// type PrevGitHubRepoIntegration = {
+//   service: 'github'
+//   userId: string
+//   projectKey: null
+//   cloudId: null
+//   nameWithOwner: string
+//   lastUsedAt: Date
+// }
+
+type PrevRepoIntegration = {
+  service: TaskServiceEnum
   userId: string
-  service: 'github' | 'jira'
-  nameWithOwner: string | null
   projectKey: string | null
-  projectName: string | null
-  avatar: string | null
   cloudId: string | null
+  key: string | null
+  nameWithOwner: string | null
   lastUsedAt: Date
 }
 
-type PrevJiraRepoIntegration = {
-  service: 'jira'
-  userId: string
-  issueKey: string
-  cloudId: string
-  nameWithOwner: null
-  lastUsedAt: Date
-}
-
-type PrevGitHubRepoIntegration = {
-  service: 'github'
-  userId: string
-  projectKey: null
-  cloudId: null
-  nameWithOwner: string
-  lastUsedAt: Date
-}
-
-type PrevRepoIntegrationRes = PrevGitHubRepoIntegration | PrevJiraRepoIntegration
+// type PrevRepoIntegrationRes = PrevGitHubRepoIntegration | PrevJiraRepoIntegration
 
 export const getPrevRepoIntegrations = async (
   userId: string,
@@ -62,19 +73,22 @@ export const getPrevRepoIntegrations = async (
     .map((row: RValue) => ({
       userId: row('group')(0),
       service: row('group')(1),
-      issueKey: row('group')(2),
+      key: row('group')(2),
       cloudId: row('group')(3),
       nameWithOwner: row('group')(4),
-      lastUsedAt: row('reduction')
+      lastUsedAt: row('reduction'),
+      teamId
     }))
-    .run()) as PrevRepoIntegrationRes[]
+    .run()) as PrevRepoIntegration[]
 
   const threeMonthsAgo = new Date(Date.now() - ms('90d'))
   return res
     .filter((res) => permLookup[res.service] && res.lastUsedAt > threeMonthsAgo)
-    .map((res) =>
-      res.service === 'jira' ? {...res, projectKey: JiraProjectKeyId.join(res.issueKey)} : res
-    )
+    .map((res) => {
+      return res.service === 'jira' && res.key
+        ? {...res, projectKey: JiraProjectKeyId.join(res.key)}
+        : res
+    })
 }
 
 export const getPermsByTaskService = async (
@@ -83,13 +97,20 @@ export const getPermsByTaskService = async (
   userId: string
 ) => {
   // we need to see which team integrations the user has access to
-  const [atlassianAuth, githubAuth] = await Promise.all([
+  const [atlassianAuth, githubAuth, gitlabAuth, azureAuth, jiraServerAuth] = await Promise.all([
     dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
-    dataLoader.get('githubAuth').load({teamId, userId})
+    dataLoader.get('githubAuth').load({teamId, userId}),
+    dataLoader.get('freshGitlabAuth').load({teamId, userId}),
+    dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId}),
+    dataLoader.get('teamMemberIntegrationAuths').load({service: 'jiraServer', teamId, userId})
   ])
 
   return {
     jira: !!atlassianAuth,
-    github: !!githubAuth
+    github: !!githubAuth,
+    gitlab: !!gitlabAuth,
+    azureDevOps: !!azureAuth,
+    jiraServer: !!jiraServerAuth,
+    PARABOL: true
   }
 }

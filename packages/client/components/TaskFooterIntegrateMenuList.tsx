@@ -25,7 +25,6 @@ interface Props {
   mutationProps: MenuMutationProps
   placeholder: string
   teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
-  // teamMemberRef: any // TaskFooterIntegrateMenuList_teamMember$key
   task: TaskFooterIntegrateMenuList_task$key
   label?: string
 }
@@ -76,13 +75,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenuList_teamMember on TeamMember {
         prevRepoIntegrations {
-          __typename
-          cloudId
-          issueKey
-          lastUsedAt
-          nameWithOwner
-          service
-          userId
+          ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }
     `,
@@ -125,25 +118,17 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
   const items = useMemo(() => {
-    if (!repoIntegrations?.items?.length) {
-      console.log('FIRST')
-      return prevRepoIntegrations ?? []
-    }
-    // const filteredItems = repoIntegrations.items.filter((item) => item)
-    // console.log('🚀 ~ filteredItems', filteredItems)
+    if (!repoIntegrations?.items?.length) prevRepoIntegrations ?? []
+    if (!prevRepoIntegrations) return repoIntegrations?.items ?? []
 
-    if (!prevRepoIntegrations) return repoIntegrations.items
-
-    const filteredItems = repoIntegrations.items.filter((item) => {
-      const itemName = getValue(item)
-      return !prevRepoIntegrations.some(
-        (prevRepoIntegration) => itemName === getValue(prevRepoIntegration as any)
-      )
-    })
+    const filteredItems =
+      repoIntegrations?.items?.filter((item) => {
+        return !prevRepoIntegrations.some(
+          (prevRepoIntegration) => getValue(item) === getValue(prevRepoIntegration as any)
+        )
+      }) ?? []
     return [...prevRepoIntegrations, ...filteredItems]
-    // return repoIntegrations?.items
-    // TODO: show prevRepo integrations at the top of the menu
-  }, [prevRepoIntegrations, showRepoIntegrations, repoIntegrations?.items])
+  }, [prevRepoIntegrations?.length, showRepoIntegrations, repoIntegrations?.items?.length])
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -167,7 +152,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   //   userId
   // )
   // console.log('🚀 ~ items', {items, allItems})
-  console.log('🚀 ~ allItems', {filteredIntegrations, items})
   return (
     <Menu
       ariaLabel={'Export the task'}
@@ -190,15 +174,17 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         null}
       {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
         const {id, service, __typename} = repoIntegration
-        console.log('🚀 ~ __typename', __typename)
+        // console.log('🚀 ~ __typename', __typename)
         const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira') {
+          console.log('🚀 ~ jira repo int ----______-----', repoIntegration)
           const onClick = () => {
             const variables = {
               integrationRepoId: repoIntegration.id,
               taskId,
               integrationProviderService: 'jira' as const
             }
+            console.log('🚀 ~ variables', variables)
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
@@ -212,7 +198,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'jiraServer') {
+        if (service === 'jiraServer' && repoIntegration.name) {
           const onClick = () => {
             const variables = {
               integrationRepoId: repoIntegration.id,
@@ -232,9 +218,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'github') {
+        if (service === 'github' && repoIntegration.nameWithOwner) {
+          const {nameWithOwner} = repoIntegration
           const onClick = () => {
-            const {nameWithOwner} = repoIntegration
             const variables = {
               integrationRepoId: nameWithOwner,
               taskId,
@@ -253,7 +239,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'gitlab') {
+        if (service === 'gitlab' && repoIntegration.fullPath) {
           const {fullPath} = repoIntegration
           const onClick = () => {
             const variables = {
@@ -274,11 +260,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'azureDevOps') {
+        if (service === 'azureDevOps' && repoIntegration.name) {
           const {name, id: projectId, instanceId} = repoIntegration
+          console.log('🚀 ~ instanceId', instanceId)
           const onClick = () => {
             const integrationRepoId = IntegrationRepoId.join({
-              instanceId,
+              instanceId: instanceId!,
               projectId,
               service: 'azureDevOps'
             })
