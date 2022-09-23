@@ -58,7 +58,7 @@ export default {
       // AUTH
       const viewerId = getUserId(authToken)
       if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-        return standardError(new Error('Viewer does not belong to that team'), {userId: viewerId})
+        return standardError(new Error(`Viewer does not belong to that team`), {userId: viewerId})
       }
 
       // RESOLUTION
