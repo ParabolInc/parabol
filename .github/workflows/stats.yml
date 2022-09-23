@@ -2,7 +2,7 @@ name: Pull Request Stats
 
 on:
   schedule:
-    - cron: '0 9 * * 5'
+    - cron: '54 14 * * 5'
 
 jobs:
   stats:
