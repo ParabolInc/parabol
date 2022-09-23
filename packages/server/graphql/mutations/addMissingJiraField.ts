@@ -28,6 +28,7 @@ const addMissingJiraField = {
     {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    /*
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -177,11 +178,13 @@ const addMissingJiraField = {
 
       try {
         // if we can update the field that was previously missing it means we've added it to the right screen
-        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId)
+        const testFfieldId = fieldId === 'timeestimate' ? 'originalEstimate' : fieldId
+        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, testFfieldId)
         updatedScreen = screen
         console.log(`Tested story points update for the issue: ${issueKey}, fieldId: ${fieldId}`)
         break
       } catch (e) {
+        console.log('GEORG tested', e)
         // save a screen for a later cleanup, continue looking for a proper screen
         screensToCleanup.push({screenId, tabId})
       }
@@ -206,6 +209,7 @@ const addMissingJiraField = {
     const data = {dimensionField}
     publish(SubscriptionChannel.MEETING, meetingId, 'AddMissingJiraFieldSuccess', data, subOptions)
     return data
+  */
   }
 }
 

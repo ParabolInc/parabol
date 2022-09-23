@@ -2111,6 +2111,11 @@ type JiraIssue implements TaskIntegration {
   issueKey: ID!
 
   """
+  Type id of the issue
+  """
+  issueType: ID!
+
+  """
   The key of the project, which is the prefix to the issueKey
   """
   projectKey: ID!
@@ -3151,6 +3156,11 @@ type JiraDimensionField {
   The project under the atlassian cloud the field lives in
   """
   projectKey: ID!
+
+  """
+  Type id of the issue
+  """
+  issueType: ID!
 
   """
   The ID referring to the field name

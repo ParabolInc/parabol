@@ -14,6 +14,10 @@ import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
+import getJiraDimensionFieldMap, {
+  GetJiraDimensionFieldMapParams,
+  JiraDimensionFieldMap
+} from '../postgres/queries/getJiraDimensionFieldMap'
 import {isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
@@ -167,10 +171,18 @@ export const jiraRemoteProject = (
   )
 }
 
+export type JiraIssue = JiraGetIssueRes['fields'] & {
+    issueType: string,
+    possibleEstimationFieldNames: string[],
+    descriptionHTML: string,
+    teamId: string,
+    userId: string
+}
+
 export const jiraIssue = (
   parent: RootDataLoader
-): DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string> => {
-  return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
+): DataLoader<JiraIssueKey, JiraIssue | null, string> => {
+  return new DataLoader<JiraIssueKey, JiraIssue | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, cloudId, issueKey, taskId, viewerId}) => {
@@ -217,26 +229,23 @@ export const jiraIssue = (
 
             const simplified = !!issueRes.fields.project?.simplified
 
-            const possibleEstimationFieldNames = Array.from(
-              new Set(
-                Object.entries<{type: string}>(issueRes.schema)
-                  .filter(([fieldId, fieldSchema]) =>
-                    isValidEstimationField(
-                      fieldSchema.type,
-                      issueRes.names[fieldId],
-                      fieldId,
-                      simplified
-                    )
-                  )
-                  .map(([fieldId]) => {
-                    return issueRes.names[fieldId]
-                  })
-                  .sort()
-              )
-            )
+            const possibleEstimationFieldNames = [] as string[]
+            Object.entries<any>(issueRes.editmeta?.fields)?.forEach(([fieldId, {schema}]) => {
+              if (
+                isValidEstimationField(schema.type, issueRes.names[fieldId], fieldId, simplified)
+              ) {
+                possibleEstimationFieldNames.push(issueRes.names[fieldId])
+              }
+              if (schema.type === 'timetracking') {
+                possibleEstimationFieldNames.push(issueRes.names['timeestimate'])
+                possibleEstimationFieldNames.push(issueRes.names['timeoriginalestimate'])
+              }
+            })
+            possibleEstimationFieldNames.sort()
 
             return {
               ...fields,
+              issueType: fields.issuetype.id,
               possibleEstimationFieldNames,
               descriptionHTML: updatedDescription,
               teamId,
@@ -327,3 +336,19 @@ export const atlassianCloudName = (
     }
   )
 }
+
+export const jiraDimensionFieldMap = (parent: RootDataLoader) =>
+  new DataLoader<GetJiraDimensionFieldMapParams, JiraDimensionFieldMap | null, string>(
+    async (keys) => {
+      return Promise.all(
+        keys.map(async (params) => {
+          return getJiraDimensionFieldMap(params)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, cloudId, projectKey, issueType, dimensionName}) =>
+        `${teamId}:${cloudId}:${projectKey}:${issueType}:${dimensionName}`
+    }
+  )

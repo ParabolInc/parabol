@@ -8,7 +8,7 @@ import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphq
 import {UpdateJiraDimensionFieldMutation as TUpdateJiraDimensionFieldMutation} from '../__generated__/UpdateJiraDimensionFieldMutation.graphql'
 
 graphql`
-  fragment UpdateJiraDimensionFieldMutation_team on UpdateJiraDimensionFieldSuccess {
+  fragment UpdateJiraDimensionFieldMutation_team on UpdateDimensionFieldSuccess {
     meeting {
       phases {
         ... on EstimatePhase {
@@ -29,6 +29,7 @@ graphql`
             projectKey
             dimensionName
             fieldName
+            issueType
           }
         }
       }
@@ -43,6 +44,7 @@ const mutation = graphql`
     $meetingId: ID!
     $cloudId: ID!
     $projectKey: ID!
+    $issueType: ID!
   ) {
     updateJiraDimensionField(
       dimensionName: $dimensionName
@@ -50,6 +52,7 @@ const mutation = graphql`
       meetingId: $meetingId
       cloudId: $cloudId
       projectKey: $projectKey
+      issueType: $issueType
     ) {
       ... on ErrorPayload {
         error {

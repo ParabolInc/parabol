@@ -1,5 +1,5 @@
 const VALID_TYPES = ['string', 'number']
-const INVALID_WORDS = ['color', 'name', 'description', 'environment']
+const INVALID_WORDS = ['summary', 'color', 'name', 'description', 'environment']
 const INVALID_ID_PREFIXES = ['aggregate']
 import {SprintPokerDefaults} from '~/types/constEnums'
 

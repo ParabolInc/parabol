@@ -1,27 +1,30 @@
 type FieldType = 'string' | 'number'
 interface Input {
   cloudId: string
-  fieldId: string
+  projectKey: string
+  issueType: string
   dimensionName: string
+  fieldId: string
   fieldName: string
   fieldType: FieldType
-  projectKey: string
 }
 
 export default class JiraDimensionField {
   cloudId: string
+  projectKey: string
+  issueType: string
   dimensionName: string
   fieldId: string
   fieldName: string
   fieldType: FieldType
-  projectKey: string
   constructor(input: Input) {
-    const {cloudId, fieldId, dimensionName, fieldName, fieldType, projectKey} = input
+    const {cloudId, projectKey, issueType, dimensionName, fieldId, fieldName, fieldType } = input
     this.cloudId = cloudId
-    this.fieldId = fieldId
+    this.projectKey = projectKey
+    this.issueType = issueType
     this.dimensionName = dimensionName
+    this.fieldId = fieldId
     this.fieldName = fieldName
     this.fieldType = fieldType
-    this.projectKey = projectKey
   }
 }

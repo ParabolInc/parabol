@@ -8,6 +8,7 @@ import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraS
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
 import {analytics} from '../../utils/analytics/analytics'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -102,9 +103,11 @@ const setTaskEstimate = {
       case 'jira': {
         const {accessUserId, cloudId, issueKey} = integration!
         const projectKey = JiraProjectKeyId.join(issueKey)
-        const [auth, team] = await Promise.all([
+        const [auth, jiraIssue] = await Promise.all([
           dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
-          dataLoader.get('teams').load(teamId)
+          dataLoader
+            .get('jiraIssue')
+            .load({teamId, cloudId, viewerId, userId: accessUserId, issueKey})
         ])
         if (!auth) {
           errorMessage = 'User no longer has access to Atlassian'
@@ -112,13 +115,43 @@ const setTaskEstimate = {
         }
         const {accessToken} = auth
         const manager = new AtlassianServerManager(accessToken)
-        const jiraDimensionFields = team?.jiraDimensionFields || []
-        const dimensionField = jiraDimensionFields.find(
-          (dimensionField) =>
-            dimensionField.dimensionName === dimensionName &&
-            dimensionField.cloudId === cloudId &&
-            dimensionField.projectKey === projectKey
-        )
+
+        if (!jiraIssue) {
+          errorMessage = 'Issue not found'
+          break
+        }
+        const {issueType} = jiraIssue
+ 
+        let dimensionField = await dataLoader
+          .get('jiraDimensionFieldMap')
+          .load({teamId, cloudId, projectKey, issueType, dimensionName})
+
+        // Check if there are legacy dimension fields stored without issue type
+        if (!dimensionField) {
+          const legacyField = await dataLoader
+            .get('jiraDimensionFieldMap')
+            .load({teamId, cloudId, projectKey, issueType: '', dimensionName})
+          const {possibleEstimationFieldNames} = jiraIssue
+          if (legacyField && possibleEstimationFieldNames.includes(legacyField.fieldName)) {
+            dimensionField = legacyField
+
+            // store the new match so we can at some point remove the fallback
+            // don't remove the fallback just yet, because people might have more issue types they vote on
+            const {fieldId, fieldName, fieldType} = legacyField
+            const newField = {
+              teamId,
+              cloudId,
+              projectKey,
+              issueType,
+              dimensionName,
+              fieldId,
+              fieldName,
+              fieldType
+            }
+            await upsertJiraDimensionFieldMap(newField)
+          }
+        }
+ 
         const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
         if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
           const res = await manager.addComment(

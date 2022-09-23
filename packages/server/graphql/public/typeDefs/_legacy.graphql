@@ -8146,33 +8146,6 @@ type Mutation {
   ): MovePokerTemplateScaleValuePayload!
 
   """
-  Set the jira field that the poker dimension should map to
-  """
-  updateJiraDimensionField(
-    dimensionName: String!
-
-    """
-    The jira field name that we should push estimates to
-    """
-    fieldName: String!
-
-    """
-    The cloudId the field lives on
-    """
-    cloudId: ID!
-
-    """
-    The project the field lives on
-    """
-    projectKey: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-  ): UpdateJiraDimensionFieldPayload!
-
-  """
   Create a meeting member for a user
   """
   joinMeeting(meetingId: ID!): JoinMeetingPayload!
@@ -10328,22 +10301,6 @@ type MovePokerTemplateScaleValueSuccess {
 }
 
 """
-Return object for UpdateJiraDimensionFieldPayload
-"""
-union UpdateJiraDimensionFieldPayload = ErrorPayload | UpdateJiraDimensionFieldSuccess
-
-type UpdateJiraDimensionFieldSuccess {
-  teamId: ID!
-  meetingId: ID
-  team: Team!
-
-  """
-  The poker meeting the field was updated from
-  """
-  meeting: PokerMeeting
-}
-
-"""
 Return object for JoinMeetingPayload
 """
 union JoinMeetingPayload = ErrorPayload | JoinMeetingSuccess
@@ -11179,7 +11136,6 @@ union TeamSubscriptionPayload =
   | UpdateUserProfilePayload
   | PersistJiraSearchQuerySuccess
   | MovePokerTemplateScaleValueSuccess
-  | UpdateJiraDimensionFieldSuccess
   | SetDefaultSlackChannelSuccess
   | SetAppLocationSuccess
   | UpdateGitHubDimensionFieldSuccess

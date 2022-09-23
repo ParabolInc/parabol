@@ -60,6 +60,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         info
       ) => {
         const {dataLoader, authToken} = context
+        const viewerId = getUserId(authToken)
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -77,25 +78,39 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         }
 
         if (service === 'jira') {
-          const {cloudId, issueKey} = integration
+          const {cloudId, issueKey, accessUserId} = integration
           const projectKey = JiraProjectKeyId.join(issueKey)
-          const [dimensionName, team] = await Promise.all([
+          const [dimensionName, jiraIssue] = await Promise.all([
             getDimensionName(meetingId),
-            dataLoader.get('teams').load(teamId)
+            dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
           ])
-          const jiraDimensionFields = team?.jiraDimensionFields || []
-          const existingDimensionField = jiraDimensionFields.find(
-            (field) =>
-              field.dimensionName === dimensionName &&
-              field.cloudId === cloudId &&
-              field.projectKey === projectKey
-          )
+          if (!jiraIssue) return null
+          const {issueType} = jiraIssue
 
-          if (existingDimensionField)
+          const dimensionField = await dataLoader
+            .get('jiraDimensionFieldMap')
+            .load({teamId, cloudId, projectKey, issueType, dimensionName})
+          if (dimensionField) {
             return {
-              name: existingDimensionField.fieldName,
-              type: existingDimensionField.fieldType
+              name: dimensionField.fieldName,
+              type: dimensionField.fieldType
             }
+          }
+
+          // Fallback field for transitioning
+          // We used to not distinguish types for estimating, so check if there is a stored field with no type associated
+          const legacyDimensionField = await dataLoader
+            .get('jiraDimensionFieldMap')
+            .load({teamId, cloudId, projectKey, issueType, dimensionName})
+          if (legacyDimensionField) {
+            const {possibleEstimationFieldNames} = jiraIssue
+            if (possibleEstimationFieldNames.includes(legacyDimensionField.fieldName)) {
+              return {
+                name: legacyDimensionField.fieldName,
+                type: legacyDimensionField.fieldType
+              }
+            }
+          }
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
@@ -135,7 +150,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             taskId,
             instanceId,
             projectId: projectKey,
-            viewerId: accessUserId,
+            viewerId,
             workItemId: issueKey
           })
 

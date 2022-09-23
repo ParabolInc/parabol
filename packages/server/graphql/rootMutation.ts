@@ -118,7 +118,6 @@ import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateIntegrationProvider from './mutations/updateIntegrationProvider'
-import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
 import updatePokerScope from './mutations/updatePokerScope'
@@ -265,7 +264,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       pokerResetDimension,
       pokerAnnounceDeckHover,
       movePokerTemplateScaleValue,
-      updateJiraDimensionField,
       joinMeeting,
       addMissingJiraField,
       setPokerSpectate,

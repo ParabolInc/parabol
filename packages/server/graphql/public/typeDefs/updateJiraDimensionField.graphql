@@ -1,0 +1,34 @@
+extend type Mutation {
+  """
+  Set the jira field that the poker dimension should map to
+  """
+  updateJiraDimensionField(
+    """
+    The cloudId the field lives on
+    """
+    cloudId: ID!
+
+    """
+    The project the field lives on
+    """
+    projectKey: ID!
+
+    """
+    The Jira issue type for which to update the field
+    """
+    issueType: ID!
+
+    dimensionName: String!
+
+    """
+    The jira field name that we should push estimates to
+    """
+    fieldName: String!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField
+    """
+    meetingId: ID!
+  ): UpdateDimensionFieldPayload!
+}
+
