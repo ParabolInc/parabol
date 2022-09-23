@@ -4,16 +4,15 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
-import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-// import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
-// import {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
+import {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
@@ -25,8 +24,8 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   placeholder: string
-  // teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
-  teamMemberRef: any // TaskFooterIntegrateMenuList_teamMember$key
+  teamMemberRef: TaskFooterIntegrateMenuList_teamMember$key
+  // teamMemberRef: any // TaskFooterIntegrateMenuList_teamMember$key
   task: TaskFooterIntegrateMenuList_task$key
   label?: string
 }
@@ -101,12 +100,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   )
   const {id: taskId, teamId, userId} = task
   const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
-  const {viewer} = useLazyLoadQuery<any>(
+  const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
     graphql`
       query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!) {
         viewer {
           teamMember(teamId: $teamId) {
             repoIntegrations(first: 50) {
+              __typename
               hasMore
               items {
                 ...TaskFooterIntegrateMenuListItem @relay(mask: false)
@@ -125,9 +125,25 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
   const items = useMemo(() => {
-    return repoIntegrations?.items.length ? repoIntegrations?.items : prevRepoIntegrations ?? []
+    if (!repoIntegrations?.items?.length) {
+      console.log('FIRST')
+      return prevRepoIntegrations ?? []
+    }
+    // const filteredItems = repoIntegrations.items.filter((item) => item)
+    // console.log('🚀 ~ filteredItems', filteredItems)
+
+    if (!prevRepoIntegrations) return repoIntegrations.items
+
+    const filteredItems = repoIntegrations.items.filter((item) => {
+      const itemName = getValue(item)
+      return !prevRepoIntegrations.some(
+        (prevRepoIntegration) => itemName === getValue(prevRepoIntegration as any)
+      )
+    })
+    return [...prevRepoIntegrations, ...filteredItems]
+    // return repoIntegrations?.items
     // TODO: show prevRepo integrations at the top of the menu
-  }, [prevRepoIntegrations.length, showRepoIntegrations, repoIntegrations?.items.length])
+  }, [prevRepoIntegrations, showRepoIntegrations, repoIntegrations?.items])
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -142,16 +158,22 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   }, [filteredIntegrations.length])
 
   const atmosphere = useAtmosphere()
-  const {allItems, status} = useAllIntegrations(
-    atmosphere,
-    query,
-    filteredIntegrations,
-    !!hasMore,
-    teamId,
-    userId
-  )
+  // const {allItems, status} = useAllIntegrations(
+  //   atmosphere,
+  //   query,
+  //   filteredIntegrations,
+  //   !!hasMore,
+  //   teamId,
+  //   userId
+  // )
+  // console.log('🚀 ~ items', {items, allItems})
+  console.log('🚀 ~ allItems', {filteredIntegrations, items})
   return (
-    <Menu ariaLabel={'Export the task'} {...menuProps} resetActiveOnChanges={[allItems]}>
+    <Menu
+      ariaLabel={'Export the task'}
+      {...menuProps}
+      resetActiveOnChanges={[filteredIntegrations]}
+    >
       {label && (
         <>
           <Label>{label}</Label>
@@ -159,14 +181,16 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         </>
       )}
       <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
-      {(query && allItems.length === 0 && status !== 'loading' && (
+      {/* {(query && filteredIntegrations.length === 0 && status !== 'loading' && ( */}
+      {(query && filteredIntegrations.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No integrations found!
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}
-      {allItems.slice(0, 10).map((repoIntegration) => {
-        const {id, service} = repoIntegration
+      {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
+        const {id, service, __typename} = repoIntegration
+        console.log('🚀 ~ __typename', __typename)
         const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira') {
           const onClick = () => {
