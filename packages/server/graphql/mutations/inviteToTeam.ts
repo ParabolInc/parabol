@@ -13,7 +13,7 @@ import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -57,8 +57,8 @@ export default {
 
       // AUTH
       const viewerId = getUserId(authToken)
-      if (!isTeamMember(authToken, teamId)) {
-        return standardError(new Error('Team not found'), {userId: viewerId})
+      if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
+        return standardError(new Error('Viewer does not belong to that team'), {userId: viewerId})
       }
 
       // RESOLUTION
