@@ -38,12 +38,13 @@ interface Props {
   title?: string | undefined
   tooltip?: string | undefined
   url: string
+  onCopy?: () => void
 }
 const CopyShortLink = (props: Props) => {
-  const {className, icon, label, url, title, tooltip} = props
+  const {className, icon, label, url, title, tooltip, onCopy} = props
   const theLabel = label || url
   return (
-    <CopyLink url={url} title={title} tooltip={tooltip}>
+    <CopyLink url={url} title={title} tooltip={tooltip} onCopy={onCopy}>
       <CopyBlock className={className}>
         {icon && <CopyIcon>{icon}</CopyIcon>}
         <CopyLabel>{theLabel}</CopyLabel>

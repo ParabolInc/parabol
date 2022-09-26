@@ -8,25 +8,28 @@ interface Props {
   title: string | undefined
   tooltip: string | undefined
   url: string
+  onCopy?: () => void
 }
 
 const CopyLink = (props: Props) => {
-  const {title, children, tooltip, url} = props
+  const {title, children, tooltip, url, onCopy} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
     MenuPosition.LOWER_CENTER
   )
 
-  const onCopy = () => {
+  const handleCopy = () => {
     if (tooltip) {
       openTooltip()
       setTimeout(() => {
         closeTooltip()
       }, 2000)
     }
+
+    onCopy && onCopy()
   }
   return (
     <>
-      <CopyToClipboard text={url} onCopy={onCopy} title={title}>
+      <CopyToClipboard text={url} onCopy={handleCopy} title={title}>
         <span ref={originRef}>{children}</span>
       </CopyToClipboard>
       {tooltipPortal(tooltip)}
