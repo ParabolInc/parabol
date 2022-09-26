@@ -1,52 +1,26 @@
 import ms from 'ms'
-import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {Unpromise} from 'parabol-client/types/generics'
+import IntegrationRepoId, {
+  JiraRepoIntegration,
+  RepoIntegration
+} from '../../../../client/shared/gqlIds/IntegrationRepoId'
+import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
-import {TaskServiceEnum} from '../../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql'
 
-// export interface IntegrationByTeamId {
-//   id: string
-//   userId: string
-//   service: 'github' | 'jira'
-//   nameWithOwner: string | null
-//   projectKey: string | null
-//   projectName: string | null
-//   avatar: string | null
-//   cloudId: string | null
-//   lastUsedAt: Date
-// }
-
-// type PrevJiraRepoIntegration = {
-//   service: 'jira'
-//   userId: string
-//   issueKey: string
-//   cloudId: string
-//   nameWithOwner: null
-//   lastUsedAt: Date
-// }
-
-// type PrevGitHubRepoIntegration = {
-//   service: 'github'
-//   userId: string
-//   projectKey: null
-//   cloudId: null
-//   nameWithOwner: string
-//   lastUsedAt: Date
-// }
-
-type PrevRepoIntegration = {
-  service: TaskServiceEnum
-  userId: string
-  projectKey: string | null
-  cloudId: string | null
-  key: string | null
-  nameWithOwner: string | null
-  lastUsedAt: Date
+type JiraPrevRepoIntegrationRes = Omit<JiraRepoIntegration, 'projectKey'> & {
+  issueKey: string
 }
 
-// type PrevRepoIntegrationRes = PrevGitHubRepoIntegration | PrevJiraRepoIntegration
+type PrevRepoIntegrationRes = (
+  | Exclude<RepoIntegration, JiraRepoIntegration>
+  | JiraPrevRepoIntegrationRes
+) & {
+  teamId: string
+  userId: string
+  lastUsedAt: Date
+}
 
 export const getPrevRepoIntegrations = async (
   userId: string,
@@ -54,7 +28,7 @@ export const getPrevRepoIntegrations = async (
   permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>
 ) => {
   const r = await getRethink()
-  const res = (await (
+  const prevIntegrationsRes = (await (
     r
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
@@ -73,22 +47,36 @@ export const getPrevRepoIntegrations = async (
     .map((row: RValue) => ({
       userId: row('group')(0),
       service: row('group')(1),
-      key: row('group')(2),
+      issueKey: row('group')(2),
       cloudId: row('group')(3),
       nameWithOwner: row('group')(4),
       lastUsedAt: row('reduction'),
       teamId
     }))
-    .run()) as PrevRepoIntegration[]
+    .run()) as PrevRepoIntegrationRes[]
 
   const threeMonthsAgo = new Date(Date.now() - ms('90d'))
-  return res
-    .filter((res) => permLookup[res.service] && res.lastUsedAt > threeMonthsAgo)
-    .map((res) => {
-      return res.service === 'jira' && res.key
-        ? {...res, projectKey: JiraProjectKeyId.join(res.key)}
-        : res
-    })
+  const usedIntegrationIds = new Set<string>()
+  return (
+    prevIntegrationsRes
+      // we don't store the projectKey needed by IntegrationRepoId or key needed by JiraRemoteProject
+      .map((res) =>
+        res.service === 'jira'
+          ? {
+              ...res,
+              projectKey: JiraProjectKeyId.join(res.issueKey),
+              key: JiraProjectKeyId.join(res.issueKey)
+            }
+          : res
+      )
+      // remove dups and integrations that haven't been used for three months
+      .filter((res) => {
+        const integrationId = IntegrationRepoId.join(res)
+        if (usedIntegrationIds.has(integrationId)) return false
+        usedIntegrationIds.add(integrationId)
+        return permLookup[res.service] && res.lastUsedAt > threeMonthsAgo
+      })
+  )
 }
 
 export const getPermsByTaskService = async (

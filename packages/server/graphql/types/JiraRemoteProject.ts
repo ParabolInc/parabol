@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import {RateLimitError} from '../../../client/utils/AtlassianManager'
 import {
   createImageUrlHash,
   createParabolImageUrl,
@@ -52,10 +53,10 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
         {
           name,
           cloudId,
-          projectKey,
+          key,
           teamId,
           userId
-        }: {name?: string; cloudId: string; projectKey: string; teamId: string; userId: string},
+        }: {name?: string; cloudId: string; key: string; teamId: string; userId: string},
         _args,
         {dataLoader}
       ) => {
@@ -64,9 +65,9 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
         if (!auth) return null
         const {accessToken} = auth
         const manager = new AtlassianServerManager(accessToken)
-        const projectRes = await manager.getProject(cloudId, projectKey)
-        if (projectRes instanceof Error) {
-          sendToSentry(projectRes, {userId, tags: {teamId, projectKey}})
+        const projectRes = await manager.getProject(cloudId, key)
+        if (projectRes instanceof Error || projectRes instanceof RateLimitError) {
+          sendToSentry(projectRes, {userId, tags: {teamId, key}})
           return null
         }
         return projectRes.name

@@ -1,16 +1,21 @@
 import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import {IntegrationProviderServiceEnum} from 'parabol-client/__generated__/CreateTaskIntegrationMutation.graphql'
 
 type GitHubRepoIntegration = {
   nameWithOwner: string
   service: 'github'
 }
 
-type JiraRepoIntegration = {
+export type JiraRepoIntegration = {
   cloudId: string
   projectKey: string
   service: 'jira'
+}
+
+type GitLabRepoIntegration = {
+  providerId: string
+  gid: string
+  service: 'gitlab'
 }
 
 type AzureDevOpsRepoIntegration = {
@@ -26,21 +31,15 @@ type JiraServerRepoIntegration = {
   service: 'jiraServer'
 }
 
-export type RepoIntegration = {
-  id: string
-  providerId: string
-  service: Exclude<IntegrationProviderServiceEnum, 'jira' | 'jiraServer' | 'github' | 'azureDevOps'>
-}
+export type RepoIntegration =
+  | GitHubRepoIntegration
+  | JiraRepoIntegration
+  | JiraServerRepoIntegration
+  | AzureDevOpsRepoIntegration
+  | GitLabRepoIntegration
 
 const IntegrationRepoId = {
-  join: (
-    integration:
-      | GitHubRepoIntegration
-      | JiraRepoIntegration
-      | RepoIntegration
-      | JiraServerRepoIntegration
-      | AzureDevOpsRepoIntegration
-  ) => {
+  join: (integration: RepoIntegration) => {
     const {service} = integration
     switch (service) {
       case 'github':
@@ -51,8 +50,10 @@ const IntegrationRepoId = {
         return `${integration.service}:${integration.providerId}:${integration.id}:${integration.key}`
       case 'azureDevOps':
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
-      default:
-        return `${integration.service}:${integration.providerId}:${integration.id}`
+      case 'gitlab':
+        return integration.gid
+      // default: TODO: test jira server and see why this was added
+      // return `${integration.service}:${integration.providerId}:${integration.id}`
     }
   },
   split: (id: string) => {
