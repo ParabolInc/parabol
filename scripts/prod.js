@@ -25,11 +25,8 @@ const prod = async (isDeploy) => {
   await generateGraphQLArtifacts()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
-  if (isDeploy) {
-    await compile(serversConfig)
-    await compile(clientConfig)
-  } else {
-    await Promise.all([compile(serversConfig), compile(clientConfig)])
+  await Promise.all([compile(serversConfig), compile(clientConfig)])
+  if (!isDeploy) {
     require('./toolbox/postDeploy.js')
   }
 }

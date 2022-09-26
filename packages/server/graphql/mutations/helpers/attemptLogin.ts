@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'

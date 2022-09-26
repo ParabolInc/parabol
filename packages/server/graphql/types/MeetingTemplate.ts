@@ -1,11 +1,11 @@
-import {GQLContext} from './../graphql'
 import {
+  GraphQLBoolean,
   GraphQLID,
-  GraphQLNonNull,
-  GraphQLString,
   GraphQLInterfaceType,
-  GraphQLBoolean
+  GraphQLNonNull,
+  GraphQLString
 } from 'graphql'
+import {GQLContext} from './../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import SharingScopeEnum from './SharingScopeEnum'
 import Team from './Team'

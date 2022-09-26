@@ -11,10 +11,7 @@ const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
   const teamCountRemainingOnOldOrg = orgTeams.length
 
   if (teamCountRemainingOnOldOrg > 0) return
-  const org = await r
-    .table('Organization')
-    .get(orgId)
-    .run()
+  const org = await r.table('Organization').get(orgId).run()
   if (org.tier !== 'personal') return
 
   await r

@@ -1,7 +1,7 @@
-import React from 'react'
-import {PALETTE} from '../../styles/paletteV3'
-import srOnly from '../../styles/helpers/srOnly'
 import styled from '@emotion/styled'
+import React from 'react'
+import srOnly from '../../styles/helpers/srOnly'
+import {PALETTE} from '../../styles/paletteV3'
 
 const size = 10 // 8 + border
 

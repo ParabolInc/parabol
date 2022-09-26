@@ -44,5 +44,4 @@ jobs:
           yarn build
           yarn typecheck
         env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
           CI: true

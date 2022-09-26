@@ -6,16 +6,16 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {getUserId} from '../../utils/authorization'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import resolveReactjis from '../resolvers/resolveReactjis'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import Reactable, {reactableFields} from './Reactable'
 import Reactji from './Reactji'
 import Threadable, {threadableFields} from './Threadable'
-import resolveReactjis from '../resolvers/resolveReactjis'
-import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 
 const TOMBSTONE = convertToTaskContent('[deleted]')
 

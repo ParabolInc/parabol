@@ -1,12 +1,12 @@
+import styled from '@emotion/styled'
 import React from 'react'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import DialogContainer from '~/components/DialogContainer'
 import DialogContent from '~/components/DialogContent'
 import DialogTitle from '~/components/DialogTitle'
-import PrimaryButton from '~/components/PrimaryButton'
 import FlatButton from '~/components/FlatButton'
-import styled from '@emotion/styled'
+import PrimaryButton from '~/components/PrimaryButton'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import {PALETTE} from '~/styles/paletteV3'
 
 interface Props {
@@ -37,7 +37,9 @@ const UndoableGroupPhaseDialog = (props: Props) => {
     <DialogContainer>
       <DialogTitle>Reset meeting and edit groups?</DialogTitle>
       <DialogContent>
-        <p><b>Danger zone</b>: to edit groups you must reset the meeting to this point.</p>
+        <p>
+          <b>Danger zone</b>: to edit groups you must reset the meeting to this point.
+        </p>
         <p>All votes and discussion will be lost.</p>
         <ButtonGroup>
           <StyledButton onClick={closePortal}>Cancel</StyledButton>

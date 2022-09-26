@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
@@ -9,6 +8,7 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
+import {GQLContext} from './../graphql'
 
 export default {
   type: UpdateTaskDueDatePayload,

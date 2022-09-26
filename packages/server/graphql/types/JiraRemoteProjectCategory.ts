@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLString, GraphQLObjectType} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const JiraRemoteProjectCategory = new GraphQLObjectType<any, GQLContext>({

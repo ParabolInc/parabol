@@ -1,5 +1,5 @@
-import useEventCallback from './useEventCallback'
 import {RefObject, useEffect} from 'react'
+import useEventCallback from './useEventCallback'
 
 const useClickAway = (
   ref: RefObject<HTMLElement> | null,

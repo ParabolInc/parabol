@@ -1,5 +1,5 @@
-import {cardShadow} from '../elevation'
 import {Card} from '../../types/constEnums'
+import {cardShadow} from '../elevation'
 
 const cardRootStyles = {
   backgroundColor: '#FFFFFF',

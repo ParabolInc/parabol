@@ -1,13 +1,13 @@
-import React from 'react'
-import FloatingActionButton from './FloatingActionButton'
 import styled from '@emotion/styled'
-import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {PALETTE} from '../styles/paletteV3'
-import {Breakpoint, ZIndex} from '../types/constEnums'
+import React from 'react'
 import useBreakpoint from '../hooks/useBreakpoint'
-import PlainButton from './PlainButton/PlainButton'
 import useRouter from '../hooks/useRouter'
+import {PALETTE} from '../styles/paletteV3'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {Breakpoint, ZIndex} from '../types/constEnums'
+import FloatingActionButton from './FloatingActionButton'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
 
 const BackButtonMobile = styled(PlainButton)({
   background: '#fff',

@@ -1,5 +1,4 @@
-import InvoiceLineItem from './InvoiceLineItem'
-import {InvoiceLineItemEnum} from './InvoiceLineItem'
+import InvoiceLineItem, {InvoiceLineItemEnum} from './InvoiceLineItem'
 
 interface Input {
   amount: number

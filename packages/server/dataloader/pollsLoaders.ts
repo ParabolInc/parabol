@@ -1,11 +1,11 @@
 import DataLoader from 'dataloader'
-import RootDataLoader from './RootDataLoader'
+import {IGetPollOptionsByPollIdsQueryResult} from '../postgres/queries/generated/getPollOptionsByPollIdsQuery'
+import {IGetPollsByDiscussionIdsQueryResult} from '../postgres/queries/generated/getPollsByDiscussionIdsQuery'
+import {IGetPollsByIdsQueryResult} from '../postgres/queries/generated/getPollsByIdsQuery'
 import getPollOptionsByPollIds from '../postgres/queries/getPollOptionsByPollIds'
 import getPollsByDiscussionIds from '../postgres/queries/getPollsByDiscussionIds'
 import getPollsByIds from '../postgres/queries/getPollsByIds'
-import {IGetPollOptionsByPollIdsQueryResult} from '../postgres/queries/generated/getPollOptionsByPollIdsQuery'
-import {IGetPollsByIdsQueryResult} from '../postgres/queries/generated/getPollsByIdsQuery'
-import {IGetPollsByDiscussionIdsQueryResult} from '../postgres/queries/generated/getPollsByDiscussionIdsQuery'
+import RootDataLoader from './RootDataLoader'
 
 export const pollOptions = (parent: RootDataLoader) => {
   return new DataLoader<number, IGetPollOptionsByPollIdsQueryResult[], string>(

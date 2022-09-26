@@ -6,11 +6,11 @@ import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {BezierCurve} from '~/types/constEnums'
 import {EditableTemplateScaleValueColor_scale} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
-import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
+import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 
 interface Props {
   scale: EditableTemplateScaleValueColor_scale
@@ -66,12 +66,15 @@ const EditableTemplateScaleValueColor = (props: Props) => {
     <ScaleValueColor ref={originRef} onClick={togglePortal}>
       <ColorBadge color={scaleValueColor} />
       <DropdownIcon>arrow_drop_down</DropdownIcon>
-      {menuPortal(<ScaleValuePalettePicker menuProps={menuProps}
-        scaleValueLabel={scaleValueLabel}
-        scaleValueColor={scaleValueColor}
-        scale={scale}
-        setScaleValueColor={setScaleValueColor}
-      />)}
+      {menuPortal(
+        <ScaleValuePalettePicker
+          menuProps={menuProps}
+          scaleValueLabel={scaleValueLabel}
+          scaleValueColor={scaleValueColor}
+          scale={scale}
+          setScaleValueColor={setScaleValueColor}
+        />
+      )}
     </ScaleValueColor>
   )
 }

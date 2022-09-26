@@ -9,7 +9,10 @@ export const up = async function (r: R) {
         return task('integration')('service').eq('jira').default(false)
       })
       .update((task) => ({
-        integrationHash: r('jira:').add(task('integration')('cloudId')).add(':').add(task('integration')('issueKey'))
+        integrationHash: r('jira:')
+          .add(task('integration')('cloudId'))
+          .add(':')
+          .add(task('integration')('issueKey'))
           .default('BAD_HASH'),
         integration: task('integration').merge({
           accessUserId: task('createdBy')
@@ -21,7 +24,10 @@ export const up = async function (r: R) {
         return task('integration')('service').eq('github').default(false)
       })
       .update((task) => ({
-        integrationHash: r('gh:').add(task('integration')('nameWithOwner')).add(':').add(task('integration')('issueNumber'))
+        integrationHash: r('gh:')
+          .add(task('integration')('nameWithOwner'))
+          .add(':')
+          .add(task('integration')('issueNumber'))
           .default('BAD_HASH'),
         integration: task('integration').merge({
           accessUserId: task('createdBy')
@@ -35,7 +41,8 @@ export const up = async function (r: R) {
 
 export const down = async function (r: R) {
   await r.table('Task').indexDrop('integrationHash').run()
-  await r.table('Task')
+  await r
+    .table('Task')
     .filter((task) => task('integrationHash').default(null).ne(null))
     .replace((row) => row.without('integrationHash'))
     .run()

@@ -1,10 +1,10 @@
-import EditorLink from './EditorLink'
 import {CompositeDecorator, ContentBlock, ContentState, EditorState} from 'draft-js'
+import {SetEditorState} from '../../types/draft'
+import EditorLink from './EditorLink'
 import Hashtag from './Hashtag'
 import Mention from './Mention'
 import SearchHighlight from './SearchHighlight'
 import TruncatedEllipsis from './TruncatedEllipsis'
-import {SetEditorState} from '../../types/draft'
 
 const findEntity =
   (entityType: string) =>

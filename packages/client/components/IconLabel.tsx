@@ -1,7 +1,7 @@
-import React, {ReactNode, forwardRef} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React, {forwardRef, ReactNode} from 'react'
 import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
 
 const LabelBlock = styled('div')({
   alignItems: 'center',

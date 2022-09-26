@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import Icon from './Icon'
-import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
 
 const Wrapper = styled('div')({
   display: 'flex',

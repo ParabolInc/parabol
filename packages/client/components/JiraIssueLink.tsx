@@ -26,7 +26,15 @@ interface Props {
 }
 
 const JiraIssueLink = (props: Props) => {
-  const {dataCy, className, cloudName, issueKey, projectKey, children, showLabelPrefix = true} = props
+  const {
+    dataCy,
+    className,
+    cloudName,
+    issueKey,
+    projectKey,
+    children,
+    showLabelPrefix = true
+  } = props
   const href =
     cloudName === 'jira-demo'
       ? 'https://www.parabol.co/features/integrations'

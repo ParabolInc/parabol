@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLObjectType, GraphQLNonNull} from 'graphql'
+import {GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const OrgUserCount = new GraphQLObjectType<any, GQLContext>({

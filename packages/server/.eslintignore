@@ -5,6 +5,8 @@ gitlabTypes.ts
 resolverTypes.ts
 githubSchema.graphql
 gitlabSchema.graphql
+graphql/private/schema.graphql
+graphql/public/schema.graphql
 _legacy.graphql
 migrationTemplate.ts
 billing/debug.ts

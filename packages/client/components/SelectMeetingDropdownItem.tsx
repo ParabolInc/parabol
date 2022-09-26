@@ -77,7 +77,13 @@ const SelectMeetingDropdownItem = (props: Props) => {
 
   return (
     <Wrapper onClick={gotoMeeting}>
-      {typeof IconOrSVG === 'string' ? <MeetingIcon>{IconOrSVG}</MeetingIcon> : <MeetingSVG><IconOrSVG /></MeetingSVG>}
+      {typeof IconOrSVG === 'string' ? (
+        <MeetingIcon>{IconOrSVG}</MeetingIcon>
+      ) : (
+        <MeetingSVG>
+          <IconOrSVG />
+        </MeetingSVG>
+      )}
       <MeetingInfo>
         <Title>{name}</Title>
         <Subtitle>

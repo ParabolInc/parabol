@@ -284,7 +284,7 @@ class BugDispatch {
   }
 }
 
-export default class BugController extends BugDispatch { }
+export default class BugController extends BugDispatch {}
 
 export class SpiderController extends BugDispatch {
   constructor(options: Partial<BugControllerOptions>) {

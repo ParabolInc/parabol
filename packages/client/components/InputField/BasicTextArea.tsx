@@ -1,8 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import StyledError from '../StyledError'
+import React from 'react'
 import makeFieldColorPalette from '../../styles/helpers/makeFieldColorPalette'
 import ui from '../../styles/ui'
+import StyledError from '../StyledError'
 
 const TextArea = styled('textarea')({
   ...ui.fieldBaseStyles,

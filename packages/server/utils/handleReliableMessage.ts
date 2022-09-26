@@ -1,6 +1,6 @@
-import {sendAndPushToReliableQueue} from '../socketHelpers/sendEncodedMessage'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import {sendAndPushToReliableQueue} from '../socketHelpers/sendEncodedMessage'
 
 const ACK = 0
 const REQ = 1

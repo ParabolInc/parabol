@@ -2,12 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {TaskColumnAddTaskSelectTeam_teams} from '~/__generated__/TaskColumnAddTaskSelectTeam_teams.graphql'
+import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
-import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 
@@ -18,11 +18,12 @@ interface Props {
   userId: string
 }
 
-const SelectTeamDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'SelectTeamDropdown' */
-    '../../../../components/SelectTeamDropdown'
-  )
+const SelectTeamDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'SelectTeamDropdown' */
+      '../../../../components/SelectTeamDropdown'
+    )
 )
 
 const TaskColumnAddTaskSelectTeam = (props: Props) => {

@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'

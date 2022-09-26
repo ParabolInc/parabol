@@ -49,10 +49,11 @@ interface Props {
   useTaskChild: UseTaskChild
 }
 
-const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TaskFooterTeamAssigneeMenuRoot' */ '../TaskFooterTeamAssigneeMenuRoot'
-  )
+const TaskFooterTeamAssigneeMenuRoot = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TaskFooterTeamAssigneeMenuRoot' */ '../TaskFooterTeamAssigneeMenuRoot'
+    )
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
@@ -75,9 +76,12 @@ const TaskFooterTeamAssignee = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     id: 'taskFooterTeamAssigneeMenu'
   })
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <TooltipToggle onClick={closeTooltip} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>

@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
 import {SimpleMutation} from '../types/relayMutations'
 import {

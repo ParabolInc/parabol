@@ -1,7 +1,12 @@
-
 import {RefObject, useEffect} from 'react'
 
-const usePokerZIndexOverride = (isTop: boolean, cardRef: RefObject<HTMLDivElement>, isExpanding: boolean, collapseDuration: number, expandDuration: number) => {
+const usePokerZIndexOverride = (
+  isTop: boolean,
+  cardRef: RefObject<HTMLDivElement>,
+  isExpanding: boolean,
+  collapseDuration: number,
+  expandDuration: number
+) => {
   useEffect(() => {
     if (!isTop) return
     const el = cardRef.current

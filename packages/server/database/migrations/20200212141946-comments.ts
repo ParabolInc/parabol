@@ -1,25 +1,15 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await r.tableCreate('Comment').run()
     await Promise.all([
-      r
-        .table('Comment')
-        .indexCreate('threadId')
-        .run(),
-      r
-        .table('Task')
-        .indexDrop('agendaId')
-        .run()
+      r.table('Comment').indexCreate('threadId').run(),
+      r.table('Task').indexDrop('agendaId').run()
     ])
     await r
       .table('Task')
-      .filter((row) =>
-        row('agendaId')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('agendaId').default(null).ne(null))
       .replace((row) =>
         row
           .merge({
@@ -31,11 +21,7 @@ export const up = async function(r: R) {
       .run()
     await r
       .table('Task')
-      .filter((row) =>
-        row('reflectionGroupId')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('reflectionGroupId').default(null).ne(null))
       .replace((row) =>
         row
           .merge({
@@ -46,29 +32,19 @@ export const up = async function(r: R) {
       )
       .run()
 
-    await r
-      .table('Task')
-      .indexCreate('threadId')
-      .run()
+    await r.table('Task').indexCreate('threadId').run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r.tableDrop('Comment').run()
+    await r.table('Task').indexDrop('threadId').run()
     await r
       .table('Task')
-      .indexDrop('threadId')
-      .run()
-    await r
-      .table('Task')
-      .filter((row) =>
-        row('threadId')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('threadId').default(null).ne(null))
       .replace((row) =>
         row
           .merge({
@@ -82,10 +58,7 @@ export const down = async function(r: R) {
           .without('threadId', 'threadSource')
       )
       .run()
-    await r
-      .table('Task')
-      .indexCreate('agendaId')
-      .run()
+    await r.table('Task').indexCreate('agendaId').run()
   } catch (e) {
     console.log(e)
   }

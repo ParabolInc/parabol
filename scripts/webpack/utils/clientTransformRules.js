@@ -7,6 +7,8 @@ const clientTransformRules = (projectRoot, USE_REFRESH) => {
       test: /\.tsx?$/,
       // things that need the relay plugin
       include: [path.join(CLIENT_ROOT)],
+      // but don't need the inline-import plugin
+      exclude: [path.join(CLIENT_ROOT, 'utils/GitHubManager.ts')],
       use: [
         {
           loader: 'babel-loader',
@@ -23,6 +25,34 @@ const clientTransformRules = (projectRoot, USE_REFRESH) => {
                 }
               ],
               'react-refresh/babel',
+            ]
+          }
+        },
+        {
+          loader: '@sucrase/webpack-loader',
+          options: {
+            transforms: ['jsx', 'typescript']
+          }
+        }
+      ]
+    },
+    {
+      test: /GitHubManager\.ts/,
+      // things that need inline-import
+      include: path.join(CLIENT_ROOT, 'utils'),
+      use: [
+        {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            babelrc: false,
+            plugins: [
+              [
+                'inline-import',
+                {
+                  extensions: ['.graphql']
+                }
+              ]
             ]
           }
         },

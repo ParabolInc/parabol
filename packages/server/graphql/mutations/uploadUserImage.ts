@@ -1,15 +1,14 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
-import {getUserId} from '../../utils/authorization'
-import {isAuthenticated} from '../../utils/authorization'
+import FileStoreManager from '../../fileStorage/FileStoreManager'
+import getFileStoreManager from '../../fileStorage/getFileStoreManager'
+import normalizeAvatarUpload from '../../fileStorage/normalizeAvatarUpload'
+import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
+import {getUserId, isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLFileType from '../types/GraphQLFileType'
-import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
-import normalizeAvatarUpload from '../../fileStorage/normalizeAvatarUpload'
-import getFileStoreManager from '../../fileStorage/getFileStoreManager'
-import FileStoreManager from '../../fileStorage/FileStoreManager'
-import updateUserProfile from './helpers/updateUserProfile'
 import UpdateUserProfilePayload from '../types/UpdateUserProfilePayload'
+import {GQLContext} from './../graphql'
+import updateUserProfile from './helpers/updateUserProfile'
 
 export default {
   type: UpdateUserProfilePayload,

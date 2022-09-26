@@ -4,8 +4,8 @@ import DiscussPhase from '../database/types/DiscussPhase'
 import EstimatePhase from '../database/types/EstimatePhase'
 import GenericMeetingPhase from '../database/types/GenericMeetingPhase'
 import ReflectPhase from '../database/types/ReflectPhase'
-import UpdatesPhase from '../database/types/UpdatesPhase'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
+import UpdatesPhase from '../database/types/UpdatesPhase'
 
 interface PhaseTypeLookup {
   agendaitems: AgendaItemsPhase

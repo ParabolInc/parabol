@@ -1,9 +1,9 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import getPubSub from '../../utils/getPubSub'
 import TaskSubscriptionPayload from '../types/TaskSubscriptionPayload'
+import {GQLContext} from './../graphql'
 
 const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),
