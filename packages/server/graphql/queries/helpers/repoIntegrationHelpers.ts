@@ -7,9 +7,15 @@ import IntegrationRepoId, {
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
+import TaskIntegrationAzureDevOps from '../../../database/types/TaskIntegrationAzureDevOps'
+import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
+import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
+import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
+import TaskIntegrationJiraServer from '../../../database/types/TaskIntegrationJiraServer'
 import {DataLoaderWorker} from '../../graphql'
 
-type JiraPrevRepoIntegrationRes = Omit<JiraRepoIntegration, 'projectKey'> & {
+// type JiraPrevRepoIntegrationRes = Omit<JiraRepoIntegration, 'projectKey'> & {
+type JiraPrevRepoIntegrationRes = Omit<JiraRepoIntegration, ''> & {
   issueKey: string
 }
 
@@ -21,6 +27,13 @@ type PrevRepoIntegrationRes = (
   userId: string
   lastUsedAt: Date
 }
+
+type TaskIntegration =
+  | TaskIntegrationGitLab
+  | TaskIntegrationJira
+  | TaskIntegrationAzureDevOps
+  | TaskIntegrationGitHub
+  | TaskIntegrationJiraServer
 
 export const getPrevRepoIntegrations = async (
   userId: string,
@@ -38,7 +51,12 @@ export const getPrevRepoIntegrations = async (
         row('integration')('service'),
         row('integration')('issueKey').default(null),
         row('integration')('cloudId').default(null),
-        row('integration')('nameWithOwner').default(null)
+        row('integration')('nameWithOwner').default(null),
+        row('integration')('instanceId').default(null),
+        row('integration')('projectId').default(null),
+        row('integration')('providerId').default(null),
+        row('integration')('gid').default(null),
+        row('integration')('fullPath').default(null)
       ]) as any
   )
     .max('createdAt')('createdAt')
@@ -50,6 +68,11 @@ export const getPrevRepoIntegrations = async (
       issueKey: row('group')(2),
       cloudId: row('group')(3),
       nameWithOwner: row('group')(4),
+      instanceId: row('group')(5),
+      projectId: row('group')(6),
+      providerId: row('group')(7),
+      gid: row('group')(8),
+      fullPath: row('group')(9),
       lastUsedAt: row('reduction'),
       teamId
     }))
@@ -59,15 +82,14 @@ export const getPrevRepoIntegrations = async (
   const usedIntegrationIds = new Set<string>()
   return (
     prevIntegrationsRes
-      // we don't store the projectKey needed by IntegrationRepoId or key needed by JiraRemoteProject
       .map((res) =>
         res.service === 'jira'
           ? {
               ...res,
-              projectKey: JiraProjectKeyId.join(res.issueKey),
-              key: JiraProjectKeyId.join(res.issueKey)
+              id: IntegrationRepoId.join({...res, projectKey: JiraProjectKeyId.join(res.issueKey)}),
+              key: JiraProjectKeyId.join(res.issueKey) // needed by JiraRemoteProject
             }
-          : res
+          : {...res, id: IntegrationRepoId.join(res)}
       )
       // remove dups and integrations that haven't been used for three months
       .filter((res) => {

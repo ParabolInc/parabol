@@ -51,7 +51,8 @@ const IntegrationRepoId = {
       case 'azureDevOps':
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
       case 'gitlab':
-        return integration.gid
+        return integration.gid // TODO: change to full path as its the case in MenuList
+
       // default: TODO: test jira server and see why this was added
       // return `${integration.service}:${integration.providerId}:${integration.id}`
     }

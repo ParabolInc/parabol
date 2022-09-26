@@ -92,13 +92,14 @@ const createTaskInService = async (
     if (gitlabTaskRes.error) {
       return {error: gitlabTaskRes.error}
     }
-    const {gid, providerId} = gitlabTaskRes
+    const {gid, providerId, fullPath} = gitlabTaskRes
     const integrationProviderId = IntegrationProviderId.join(providerId)
     return {
       integration: new TaskIntegrationGitLab({
         accessUserId,
         providerId: integrationProviderId,
-        gid
+        gid,
+        fullPath
       }),
       integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }

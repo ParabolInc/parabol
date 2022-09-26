@@ -108,7 +108,8 @@ class GitLabServerManager implements TaskIntegrationManager {
         accessUserId: this.auth.userId,
         service: 'gitlab',
         gid,
-        providerId: `${this.auth.providerId}`
+        providerId: `${this.auth.providerId}`,
+        fullPath: integrationRepoId
       }
     }
   }
