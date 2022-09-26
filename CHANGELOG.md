@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [6.75.1](https://github.com/ParabolInc/parabol/compare/parabol-action-v6.75.0...parabol-action-v6.75.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* **DraftJS:** try to make a small polish ([775484f](https://github.com/ParabolInc/parabol/commit/775484ffce4bae85ce9e536157056d254f5d6505))
+* update the bootstrap-sha ([6597ba4](https://github.com/ParabolInc/parabol/commit/6597ba475c122b9dcdf8cb8097f03067b8672865))
+* update the last-release-sha ([dcae0d4](https://github.com/ParabolInc/parabol/commit/dcae0d4fce66cdf53cc1a78a762a6986c97b5771))
+
 ## 6.75.0 2022-September-21
 
 ### Added
