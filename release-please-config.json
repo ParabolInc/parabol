@@ -1,0 +1,17 @@
+{
+  "bootstrap-sha": "d29aa0314c82bac17a6e55fc18ac7322c31b40c6",
+  "last-release-sha": "d29aa0314c82bac17a6e55fc18ac7322c31b40c6",
+  "plugins": ["node-workspace"],
+  "draft-pull-request": true,
+  "group-pull-request-title-pattern": "chore: release v${version}",
+  "packages": {
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node"
+    },
+    "packages/client": {},
+    "packages/server": {},
+    "packages/gql-executor": {},
+    "packages/integration-tests": {}
+  }
+}
