@@ -43,6 +43,10 @@ query($searchQuery: String!) {
               actor { ...UserFragment }
               createdAt
             }
+            ... on IssueComment {
+              author { ...UserFragment }
+              createdAt
+            }
           }
         }
       }
@@ -164,6 +168,25 @@ const parseStats = (rawData: any) => {
 
           reviewers.add(login)
           reviews++
+        }
+      }
+      if (item.__typename === 'IssueComment') {
+        const login = item.author.login
+        // no bots
+        if (login !== undefined) {
+          if (login !== pr.author.login) {
+            if (!reviewerStats[login]) {
+              reviewerStats[login] = {
+                ...item.author,
+                timesToReview: [],
+                reviewStates: [],
+                comments: 0,
+                reviewedPRs: 0,
+              }
+            }
+            reviewerStats[login].comments++
+          }
+          comments++
         }
       }
     })
