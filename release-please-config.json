@@ -1,6 +1,6 @@
 {
-  "bootstrap-sha": "50ffb166facaebb49a7a5e6c449f66dfd2dff92c",
-  "last-release-sha": "50ffb166facaebb49a7a5e6c449f66dfd2dff92c",
+  "bootstrap-sha": "d29aa0314c82bac17a6e55fc18ac7322c31b40c6",
+  "last-release-sha": "d29aa0314c82bac17a6e55fc18ac7322c31b40c6",
   "plugins": ["node-workspace"],
   "draft-pull-request": true,
   "group-pull-request-title-pattern": "chore: release v${version}",
