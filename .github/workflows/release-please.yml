@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - staging
 name: release-please
 jobs:
   release-please:
