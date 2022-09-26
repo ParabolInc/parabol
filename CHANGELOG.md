@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [6.74.1](https://github.com/ParabolInc/parabol/compare/parabol-action-v6.74.0...parabol-action-v6.74.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* 'Estimate phase is already complete' error message ([#7194](https://github.com/ParabolInc/parabol/issues/7194)) ([00c4d2e](https://github.com/ParabolInc/parabol/commit/00c4d2ef9b429992cad6c4f96d69b7f4fb9741ca))
+* **DraftJS:** try to make a small polish ([9c7c20e](https://github.com/ParabolInc/parabol/commit/9c7c20e5c573db8f418355e28aba70ee20710376))
+* Fix cannot read email of undefined in ErrorBoundary ([#7198](https://github.com/ParabolInc/parabol/issues/7198)) ([4dca4d5](https://github.com/ParabolInc/parabol/commit/4dca4d57992693ea4d0e05a78c1040a0cb7c4308))
+* update the current branch to have a try ([37b16a1](https://github.com/ParabolInc/parabol/commit/37b16a1dafe58a04a8733921a2a65e38fbd7924e))
+* update the default-branch to staging ([1c0c291](https://github.com/ParabolInc/parabol/commit/1c0c29188fe1a6f24763b115c012f66e4a075a15))
+
 ## 6.74.0 2022-September-15
 
 ### Fixed
