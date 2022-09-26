@@ -64,6 +64,7 @@ export type AnalyticsEvent =
   | 'Integration Removed'
   | 'Invite Email Sent'
   | 'Invite Accepted'
+  | 'Sent Invite Accepted'
   // org
   | 'Organization Upgraded'
   | 'Organization Downgraded'
@@ -269,6 +270,13 @@ class Analytics {
     this.track(userId, 'Invite Accepted', {
       teamId,
       inviterId,
+      isNewUser,
+      acceptAt
+    })
+
+    this.track(inviterId, 'Sent Invite Accepted', {
+      teamId,
+      userId,
       isNewUser,
       acceptAt
     })
