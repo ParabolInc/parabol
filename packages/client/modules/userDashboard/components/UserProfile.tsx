@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DeleteAccount from '../../../components/DeleteAccount'
+import EmailNotifications from '../../../components/EmailNotifications'
 import Panel from '../../../components/Panel/Panel'
 import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
@@ -31,6 +32,7 @@ const query = graphql`
   query UserProfileQuery {
     viewer {
       ...PasswordResetLink_viewer
+      ...EmailNotifications_viewer
       preferredName
       picture
       identities {
@@ -61,6 +63,11 @@ const UserProfile = ({queryRef}: Props) => {
             </PanelRow>
           </Panel>
         )}
+        <Panel label='Email Notifications' casing={'capitalize'}>
+          <PanelRow>
+            <EmailNotifications viewerRef={viewer} />
+          </PanelRow>
+        </Panel>
         <Panel label='Danger Zone' casing={'capitalize'}>
           <PanelRow>
             <DeleteAccount />
