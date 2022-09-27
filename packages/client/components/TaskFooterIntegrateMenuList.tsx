@@ -9,8 +9,10 @@ import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
+import {
+  TaskFooterIntegrateMenuListLocalQuery,
+  TaskFooterIntegrateMenuListLocalQueryResponse
+} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskFooterIntegrateMenuList_teamMember.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -35,10 +37,20 @@ const Label = styled('div')({
   padding: '8px 8px 0'
 })
 
-const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations['items']>[0]) => {
-  const jiraItemName = item?.name ?? ''
-  const githubName = item?.nameWithOwner ?? ''
-  return jiraItemName || githubName
+type Item = NonNullable<
+  NonNullable<
+    TaskFooterIntegrateMenuListLocalQueryResponse['viewer']['teamMember']
+  >['repoIntegrations']['items']
+>[0]
+
+const getValue = (item: Item) => {
+  const {service} = item
+  if (service === 'jira') return item.name ?? ''
+  if (service === 'github') return item.nameWithOwner ?? ''
+  if (service === 'gitlab') return item.fullPath ?? ''
+  if (service === 'azureDevOps') return item.name ?? ''
+  if (service === 'jiraServer') return item.name ?? ''
+  return ''
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
@@ -176,7 +188,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         const {id, service, __typename} = repoIntegration
         // console.log('🚀 ~ __typename', __typename)
         const {submitMutation, onError, onCompleted} = mutationProps
-        if (service === 'jira') {
+        if (service === 'jira' && repoIntegration.name) {
           console.log('🚀 ~ jira repo int ----______-----', repoIntegration)
           const onClick = () => {
             const variables = {
@@ -262,7 +274,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         if (service === 'azureDevOps' && repoIntegration.name) {
           const {name, id: projectId, instanceId} = repoIntegration
-          console.log('🚀 ~ instanceId', instanceId)
           const onClick = () => {
             const integrationRepoId = IntegrationRepoId.join({
               instanceId: instanceId!,

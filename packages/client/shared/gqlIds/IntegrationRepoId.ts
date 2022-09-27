@@ -13,9 +13,8 @@ export type JiraRepoIntegration = {
 }
 
 type GitLabRepoIntegration = {
-  providerId: string
-  gid: string
   service: 'gitlab'
+  fullPath: string
 }
 
 type AzureDevOpsRepoIntegration = {
@@ -51,7 +50,7 @@ const IntegrationRepoId = {
       case 'azureDevOps':
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
       case 'gitlab':
-        return integration.gid // TODO: change to full path as its the case in MenuList
+        return integration.fullPath
 
       // default: TODO: test jira server and see why this was added
       // return `${integration.service}:${integration.providerId}:${integration.id}`
