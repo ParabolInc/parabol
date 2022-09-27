@@ -88,17 +88,20 @@ export const getPrevRepoIntegrations = async (
             }),
             key: JiraProjectKeyId.join(res.issueKey) // needed by JiraRemoteProject
           }
-        }
-        if (res.service === 'jiraServer') {
+        } else if (res.service === 'jiraServer') {
           return {
             id: res.repositoryId,
             ...res
           }
-        }
-        if (res.service === 'azureDevOps') {
+        } else if (res.service === 'azureDevOps') {
           return {
             ...res,
             id: res.projectKey // TODO: fix projectId / key inconsistencies: https://github.com/ParabolInc/parabol/issues/7073
+          }
+        } else if (res.service === 'github') {
+          return {
+            ...res,
+            id: res.nameWithOwner
           }
         }
         return res
