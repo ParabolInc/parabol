@@ -13,11 +13,6 @@ const MassInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       description:
         'The name of the person that sent the invitation, present if errorType is expired'
     },
-    inviterEmail: {
-      type: GraphQLString,
-      description:
-        'The email of the person that sent the invitation, present if errorType is expired'
-    },
     teamId: {
       type: GraphQLID,
       description: 'The teamId from the token'

@@ -6825,11 +6825,6 @@ type MassInvitationPayload {
   name of the inviting team, present if invitation exists
   """
   teamName: String
-
-  """
-    The email of the person that send the invitation, present if errorType is expired
-  """
-  inviterEmail: String
 }
 
 type VerifiedInvitationPayload {

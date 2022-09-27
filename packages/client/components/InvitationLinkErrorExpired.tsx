@@ -2,9 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
-import {PALETTE} from '../styles/paletteV3'
+import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import hasToken from '../utils/hasToken'
 import {InvitationLinkErrorExpired_massInvitation} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
 import DialogContent from './DialogContent'
@@ -12,6 +13,7 @@ import DialogTitle from './DialogTitle'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
+import LinkButton from './LinkButton'
 
 interface Props {
   massInvitation: InvitationLinkErrorExpired_massInvitation
@@ -23,23 +25,34 @@ const TeamName = styled('span')({
 })
 
 const DialogActions = styled('div')({
-  marginTop: 16
+  marginTop: 16,
+  display: 'flex'
 })
 
-const StyledEmailLink = styled('a')({
-  color: PALETTE.SKY_500
+const DashboardButton = styled(LinkButton)({
+  fontWeight: 600,
+  width: '50%'
 })
 
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation} = props
-  const {teamName, inviterName, inviterEmail} = massInvitation
+  const {teamName, inviterName, teamId} = massInvitation
   useDocumentTitle(`Token Expired | Invitation Link`, 'Invitation Link')
 
-  const path = hasToken() ? '/meetings' : '/'
-  const label = hasToken() ? 'My Dashboard' : 'Sign In'
-  const handleClick = () => history.push(path)
-
   const {history} = useRouter()
+  const atmosphere = useAtmosphere()
+
+  const requestInvite = () => {
+    if (teamId) {
+      PushInvitationMutation(atmosphere, {teamId})
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'inviteRequested',
+        message: 'Invite requested',
+        autoDismiss: 5,
+        showDismissButton: true
+      })
+    }
+  }
 
   return (
     <InviteDialog>
@@ -49,16 +62,29 @@ const InvitationLinkErrorExpired = (props: Props) => {
           The invitation to <TeamName>{teamName}</TeamName> has expired.
         </InvitationDialogCopy>
         <InvitationDialogCopy>
-          Reach out to {inviterName} at{' '}
-          <StyledEmailLink href={`mailto:${inviterEmail}`} title={`Email ${inviterEmail}`}>
-            {inviterEmail}
-          </StyledEmailLink>{' '}
-          to request a new one
+          {hasToken()
+            ? `Reach out to ${inviterName} to request a new one`
+            : `Login or sign up to request invite or reach out to ${inviterName}`}
         </InvitationDialogCopy>
         <DialogActions>
-          <FlatPrimaryButton onClick={handleClick} size='medium'>
-            {label}
-          </FlatPrimaryButton>
+          {hasToken() ? (
+            <>
+              <FlatPrimaryButton onClick={requestInvite} size='medium'>
+                Request Invite
+              </FlatPrimaryButton>
+              <DashboardButton
+                onClick={() => history.push('/meetings')}
+                size='medium'
+                palette='blue'
+              >
+                My Dashboard
+              </DashboardButton>
+            </>
+          ) : (
+            <FlatPrimaryButton onClick={() => history.push('/')} size='medium'>
+              Sign In
+            </FlatPrimaryButton>
+          )}
         </DialogActions>
       </DialogContent>
     </InviteDialog>
@@ -70,7 +96,7 @@ export default createFragmentContainer(InvitationLinkErrorExpired, {
     fragment InvitationLinkErrorExpired_massInvitation on MassInvitationPayload {
       teamName
       inviterName
-      inviterEmail
+      teamId
     }
   `
 })

@@ -35,7 +35,6 @@ export default {
       return {
         errorType: error,
         inviterName: teamMember.preferredName,
-        inviterEmail: teamMember.email,
         teamId,
         teamName: team.name
       }
