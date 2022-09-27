@@ -166,6 +166,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   // console.log('🚀 ~ items', {items, allItems})
   return (
     <Menu
+      keepParentFocus
       ariaLabel={'Export the task'}
       {...menuProps}
       resetActiveOnChanges={[filteredIntegrations]}

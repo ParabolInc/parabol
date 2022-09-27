@@ -51,9 +51,6 @@ const IntegrationRepoId = {
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
       case 'gitlab':
         return integration.fullPath
-
-      // default: TODO: test jira server and see why this was added
-      // return `${integration.service}:${integration.providerId}:${integration.id}`
     }
   },
   split: (id: string) => {

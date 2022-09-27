@@ -103,6 +103,11 @@ export const getPrevRepoIntegrations = async (
             ...res,
             id: res.nameWithOwner
           }
+        } else if (res.service === 'gitlab') {
+          return {
+            ...res,
+            id: res.fullPath
+          }
         }
         return res
       })
