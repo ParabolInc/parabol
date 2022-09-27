@@ -71,6 +71,8 @@ export type AnalyticsEvent =
   | 'Task Created'
   | 'Task Published'
   | 'Task Estimate Set'
+  // user
+  | 'Summary Email Setting Changed'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -304,6 +306,10 @@ class Analytics {
 
   taskEstimateSet = (userId: string, taskEstimateProperties: TaskEstimateProperties) => {
     this.track(userId, 'Task Estimate Set', taskEstimateProperties)
+  }
+
+  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
+    this.track(userId, 'Summary Email Setting Changed', subscribeToSummaryEmail)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>

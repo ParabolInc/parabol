@@ -28,6 +28,7 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
     .filter(isValid)
     .filter(({sendSummaryEmail}) => sendSummaryEmail)
     .map(({email}) => email)
+  if (!emailAddresses.length) return
   const {subject, body, html} = content
   await getMailManager().sendEmail({
     to: emailAddresses,

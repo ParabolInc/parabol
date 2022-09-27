@@ -1,7 +1,7 @@
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import updateUser from '../../../postgres/queries/updateUser'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import segmentIo from '../../../utils/segmentIo'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -17,11 +17,7 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   // RESOLUTION
   const {sendSummaryEmail} = viewer
   await updateUser({sendSummaryEmail: !sendSummaryEmail}, viewerId)
-  segmentIo.track({
-    userId: viewerId,
-    event: 'Toggle subscribe to summary email',
-    properties: {subscribeToSummaryEmail: !sendSummaryEmail}
-  })
+  analytics.toggleSubToSummaryEmail(viewerId, !sendSummaryEmail)
 
   return true
 }
