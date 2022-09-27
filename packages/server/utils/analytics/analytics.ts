@@ -276,7 +276,7 @@ class Analytics {
 
     this.track(inviterId, 'Sent Invite Accepted', {
       teamId,
-      userId,
+      inviteeId: userId,
       isNewUser,
       acceptAt
     })
