@@ -18,7 +18,9 @@ import {TaskFooterIntegrateMenuList_teamMember$key} from '../__generated__/TaskF
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
+import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
+import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
@@ -37,6 +39,11 @@ const Label = styled('div')({
   padding: '8px 8px 0'
 })
 
+const StyledMenuItemLabel = styled(MenuItemLabel)({
+  display: 'flex',
+  justifyContent: 'center'
+})
+
 type Item = NonNullable<
   NonNullable<
     TaskFooterIntegrateMenuListLocalQueryResponse['viewer']['teamMember']
@@ -45,11 +52,10 @@ type Item = NonNullable<
 
 const getValue = (item: Item) => {
   const {service} = item
-  if (service === 'jira') return item.name ?? ''
-  if (service === 'github') return item.nameWithOwner ?? ''
-  if (service === 'gitlab') return item.fullPath ?? ''
-  if (service === 'azureDevOps') return item.name ?? ''
-  if (service === 'jiraServer') return item.name ?? ''
+  if (service === 'jira' || service === 'azureDevOps' || service === 'jiraServer')
+    return item.name ?? ''
+  else if (service === 'github') return item.nameWithOwner ?? ''
+  else if (service === 'gitlab') return item.fullPath ?? ''
   return ''
 }
 
@@ -129,8 +135,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   )
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
+  const hasRepoIntegrations = !!repoIntegrations?.items?.length
   const items = useMemo(() => {
-    if (!repoIntegrations?.items?.length) prevRepoIntegrations ?? []
+    if (!hasRepoIntegrations) prevRepoIntegrations ?? []
     if (!prevRepoIntegrations) return repoIntegrations?.items ?? []
 
     const filteredItems =
@@ -140,7 +147,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         )
       }) ?? []
     return [...prevRepoIntegrations, ...filteredItems]
-  }, [prevRepoIntegrations?.length, showRepoIntegrations, repoIntegrations?.items?.length])
+  }, [prevRepoIntegrations?.length, showRepoIntegrations, hasRepoIntegrations])
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -155,6 +162,11 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   }, [filteredIntegrations.length])
 
   const atmosphere = useAtmosphere()
+  const handleShowMore = () => {
+    if (!showRepoIntegrations) {
+      setShowRepoIntegrations(true)
+    }
+  }
   // const {allItems, status} = useAllIntegrations(
   //   atmosphere,
   //   query,
@@ -190,7 +202,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         // console.log('🚀 ~ __typename', __typename)
         const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira' && repoIntegration.name) {
-          console.log('🚀 ~ jira repo int ----______-----', repoIntegration)
           const onClick = () => {
             const variables = {
               integrationRepoId: repoIntegration.id,
@@ -301,6 +312,14 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         return null
       })}
+      <MenuItemHR />
+      {!hasRepoIntegrations && (
+        <MenuItem
+          onClick={handleShowMore}
+          label={<StyledMenuItemLabel>{'Show more'}</StyledMenuItemLabel>}
+          noCloseOnClick
+        />
+      )}
       {status === 'loading' && (
         <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
       )}
