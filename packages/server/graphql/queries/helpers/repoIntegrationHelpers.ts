@@ -1,9 +1,6 @@
 import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
-import IntegrationRepoId, {
-  JiraRepoIntegration,
-  RepoIntegration
-} from '../../../../client/shared/gqlIds/IntegrationRepoId'
+import IntegrationRepoId from '../../../../client/shared/gqlIds/IntegrationRepoId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
@@ -14,26 +11,15 @@ import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
 import TaskIntegrationJiraServer from '../../../database/types/TaskIntegrationJiraServer'
 import {DataLoaderWorker} from '../../graphql'
 
-// type JiraPrevRepoIntegrationRes = Omit<JiraRepoIntegration, 'projectKey'> & {
-type JiraPrevRepoIntegrationRes = Omit<JiraRepoIntegration, ''> & {
-  issueKey: string
-}
-
-type PrevRepoIntegrationRes = (
-  | Exclude<RepoIntegration, JiraRepoIntegration>
-  | JiraPrevRepoIntegrationRes
-) & {
-  teamId: string
-  userId: string
-  lastUsedAt: Date
-}
-
-type TaskIntegration =
+type TaskIntegration = (
   | TaskIntegrationGitLab
   | TaskIntegrationJira
   | TaskIntegrationAzureDevOps
   | TaskIntegrationGitHub
   | TaskIntegrationJiraServer
+) & {
+  lastUsedAt: Date
+}
 
 export const getPrevRepoIntegrations = async (
   userId: string,
@@ -59,7 +45,9 @@ export const getPrevRepoIntegrations = async (
         row('integration')('fullPath').default(null),
         row('integration')('name').default(null),
         row('integration')('url').default(null),
-        row('integration')('projectKey').default(null)
+        row('integration')('projectKey').default(null),
+        row('integration')('repositoryId').default(null),
+        row('integration')('key').default(null)
       ]) as any
   )
     .max('createdAt')('createdAt')
@@ -79,6 +67,8 @@ export const getPrevRepoIntegrations = async (
       name: row('group')(10),
       url: row('group')(11),
       projectKey: row('group')(12),
+      repositoryId: row('group')(13),
+      key: row('group')(14),
       lastUsedAt: row('reduction'),
       teamId
     }))
@@ -97,6 +87,12 @@ export const getPrevRepoIntegrations = async (
               projectKey: JiraProjectKeyId.join(res.issueKey)
             }),
             key: JiraProjectKeyId.join(res.issueKey) // needed by JiraRemoteProject
+          }
+        }
+        if (res.service === 'jiraServer') {
+          return {
+            id: res.repositoryId,
+            ...res
           }
         }
         if (res.service === 'azureDevOps') {
