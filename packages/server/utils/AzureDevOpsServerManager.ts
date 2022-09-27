@@ -140,7 +140,9 @@ export interface WorkItem {
 export interface CreateTaskIssueRes {
   id: number
   rev: number
-  fields: object
+  fields: {
+    'System.TeamProject': string
+  }
   _links: ReferenceLinks
   url: string
 }
@@ -378,7 +380,9 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         instanceId,
         service: 'azureDevOps',
         projectKey: projectId,
-        issueKey: String(issueRes.id)
+        issueKey: String(issueRes.id),
+        url: issueRes.url,
+        name: issueRes.fields['System.TeamProject']
       }
     }
   }

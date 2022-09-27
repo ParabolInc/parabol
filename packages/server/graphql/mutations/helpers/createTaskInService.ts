@@ -118,13 +118,17 @@ const createTaskInService = async (
     )
     if (azureTaskRes instanceof Error) return {error: azureTaskRes}
     const {integrationHash} = azureTaskRes
+    const integration = azureTaskRes.integration as TaskIntegrationAzureDevOps
+    const {name, url} = integration
     const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(integrationHash)
     return {
       integration: new TaskIntegrationAzureDevOps({
         instanceId,
         accessUserId,
         projectKey,
-        issueKey
+        issueKey,
+        name,
+        url
       }),
       integrationHash
     }

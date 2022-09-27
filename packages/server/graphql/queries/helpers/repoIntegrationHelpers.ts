@@ -56,7 +56,10 @@ export const getPrevRepoIntegrations = async (
         row('integration')('projectId').default(null),
         row('integration')('providerId').default(null),
         row('integration')('gid').default(null),
-        row('integration')('fullPath').default(null)
+        row('integration')('fullPath').default(null),
+        row('integration')('name').default(null),
+        row('integration')('url').default(null),
+        row('integration')('projectKey').default(null)
       ]) as any
   )
     .max('createdAt')('createdAt')
@@ -73,24 +76,37 @@ export const getPrevRepoIntegrations = async (
       providerId: row('group')(7),
       gid: row('group')(8),
       fullPath: row('group')(9),
+      name: row('group')(10),
+      url: row('group')(11),
+      projectKey: row('group')(12),
       lastUsedAt: row('reduction'),
       teamId
     }))
-    .run()) as PrevRepoIntegrationRes[]
+    .run()) as TaskIntegration[]
 
   const threeMonthsAgo = new Date(Date.now() - ms('90d'))
   const usedIntegrationIds = new Set<string>()
   return (
     prevIntegrationsRes
-      .map((res) =>
-        res.service === 'jira'
-          ? {
+      .map((res) => {
+        if (res.service === 'jira') {
+          return {
+            ...res,
+            id: IntegrationRepoId.join({
               ...res,
-              id: IntegrationRepoId.join({...res, projectKey: JiraProjectKeyId.join(res.issueKey)}),
-              key: JiraProjectKeyId.join(res.issueKey) // needed by JiraRemoteProject
-            }
-          : {...res, id: IntegrationRepoId.join(res)}
-      )
+              projectKey: JiraProjectKeyId.join(res.issueKey)
+            }),
+            key: JiraProjectKeyId.join(res.issueKey) // needed by JiraRemoteProject
+          }
+        }
+        if (res.service === 'azureDevOps') {
+          return {
+            ...res,
+            id: res.projectKey // TODO: fix projectId / key inconsistencies: https://github.com/ParabolInc/parabol/issues/7073
+          }
+        }
+        return res
+      })
       // remove dups and integrations that haven't been used for three months
       .filter((res) => {
         const integrationId = IntegrationRepoId.join(res)
