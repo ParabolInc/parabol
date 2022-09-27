@@ -24,7 +24,7 @@ const mutation = graphql`
   }
 `
 
-const ToggleSummaryEmailMutation: StandardMutation<any> = (
+const ToggleSummaryEmailMutation: StandardMutation<TToggleSummaryEmailMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}

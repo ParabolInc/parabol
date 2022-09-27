@@ -2,7 +2,6 @@ import getRethink from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
 import getMailManager from '../../../../email/getMailManager'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
-import {getUserId} from '../../../../utils/authorization'
 import {GQLContext} from '../../../graphql'
 import isValid from '../../../isValid'
 
@@ -11,17 +10,12 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
   if (summarySentAt) return
   const now = new Date()
   const r = await getRethink()
-  const {dataLoader, authToken} = context
-  const viewerId = getUserId(authToken)
-  const [teamMembers, team, user] = await Promise.all([
+  const {dataLoader} = context
+  const [teamMembers, team] = await Promise.all([
     dataLoader.get('teamMembersByTeamId').load(teamId),
     dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').load(viewerId),
     r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run()
   ])
-  if (!user) return
-  const {sendSummaryEmail} = user
-  if (sendSummaryEmail === false) return
   const {name: teamName, orgId} = team
   const userIds = teamMembers.map(({userId}) => userId)
   const [content, users, organization] = await Promise.all([
@@ -30,7 +24,10 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
     dataLoader.get('organizations').load(orgId)
   ])
   const {tier, name: orgName} = organization
-  const emailAddresses = users.filter(isValid).map(({email}) => email)
+  const emailAddresses = users
+    .filter(isValid)
+    .filter(({sendSummaryEmail}) => sendSummaryEmail)
+    .map(({email}) => email)
   const {subject, body, html} = content
   await getMailManager().sendEmail({
     to: emailAddresses,
