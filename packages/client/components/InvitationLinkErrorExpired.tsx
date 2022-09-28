@@ -36,7 +36,7 @@ const DashboardButton = styled(LinkButton)({
 
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation} = props
-  const {teamName, inviterName, teamId} = massInvitation
+  const {teamName, teamId} = massInvitation
   useDocumentTitle(`Token Expired | Invitation Link`, 'Invitation Link')
 
   const {history} = useRouter()
@@ -63,8 +63,8 @@ const InvitationLinkErrorExpired = (props: Props) => {
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           {hasToken()
-            ? `Reach out to ${inviterName} to request a new one`
-            : `Login or sign up to request invite or reach out to ${inviterName}`}
+            ? `Request a new invitation or reach out to the team administrator.`
+            : `Sign in to request a new invitation or reach out to the team administrator.`}
         </InvitationDialogCopy>
         <DialogActions>
           {hasToken() ? (
@@ -77,7 +77,7 @@ const InvitationLinkErrorExpired = (props: Props) => {
                 size='medium'
                 palette='blue'
               >
-                My Dashboard
+                Go to Dashboard
               </DashboardButton>
             </>
           ) : (
@@ -95,7 +95,6 @@ export default createFragmentContainer(InvitationLinkErrorExpired, {
   massInvitation: graphql`
     fragment InvitationLinkErrorExpired_massInvitation on MassInvitationPayload {
       teamName
-      inviterName
       teamId
     }
   `
