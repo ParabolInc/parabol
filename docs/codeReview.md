@@ -17,7 +17,7 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 - Consider requesting review from a group of reviewers at once
 - Post a link in a slack channel: [**#t_product_review_requests**](https://app.slack.com/client/T08FL6336/C043A70QXTL) to allow anyone interested to review this PR earlier than assigned Code Reviewer (unless you don't need one particular person)
 - If the PR has not been reviewed within 24 hours, send a reminder to Slack or request a review from another reviewer or group of reviewers, or consider adding an agenda item to the [Parabol – Product](https://www.notion.so/Parabol-Product-1065acffc95d4f64a71b7808bad98ff5) check-in meeting
-- If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. Use the label for PRs of any size and complexity If you are confident enough and it feels safe.
+- If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. Use the label for PRs of any size and complexity If you are confident enough, and it feels safe. One exception: we should be extremely careful with DB migrations as they might break the application in the way that is hard to restore.
 
 ## Doing Code Reviews
 
