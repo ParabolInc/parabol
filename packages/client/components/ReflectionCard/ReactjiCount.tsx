@@ -106,7 +106,7 @@ const ReactjiCount = (props: Props) => {
       >
         <Emoji>{unicode}</Emoji>
         <Count>{count}</Count>
-        {tooltipPortal(<EmojiUsersReaction unicode={unicode} reactjiRef={reactji} />)}
+        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} />)}
       </Inner>
     </Parent>
   )
