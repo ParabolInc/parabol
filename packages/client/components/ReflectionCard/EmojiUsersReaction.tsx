@@ -17,7 +17,10 @@ const EmojiUsersReactionParent = styled('div')({
   whiteSpace: 'normal'
 })
 
-const LIST_FORMATTER = new Intl.ListFormat('en', {style: 'long', type: 'conjunction'})
+const LIST_FORMATTER =
+  Intl.ListFormat !== undefined
+    ? new Intl.ListFormat('en', {style: 'long', type: 'conjunction'})
+    : {format: (arr: string[]) => arr.join(', ')} // fallback for safari pre Big Sur
 
 interface Props {
   reactjiRef: EmojiUsersReaction_reactji$key
