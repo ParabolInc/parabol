@@ -86,7 +86,7 @@ export const getPrevRepoIntegrations = async (
               ...res,
               projectKey: JiraProjectKeyId.join(res.issueKey)
             }),
-            key: JiraProjectKeyId.join(res.issueKey) // needed by JiraRemoteProject
+            key: JiraProjectKeyId.join(res.issueKey)
           }
         } else if (res.service === 'jiraServer') {
           return {

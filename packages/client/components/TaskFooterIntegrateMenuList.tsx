@@ -175,7 +175,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   //   teamId,
   //   userId
   // )
-  // console.log('🚀 ~ items', {items, allItems})
   return (
     <Menu
       keepParentFocus
@@ -199,7 +198,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         null}
       {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
         const {id, service, __typename} = repoIntegration
-        // console.log('🚀 ~ __typename', __typename)
         const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira' && repoIntegration.name) {
           const onClick = () => {
@@ -208,7 +206,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               taskId,
               integrationProviderService: 'jira' as const
             }
-            console.log('🚀 ~ variables', variables)
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
