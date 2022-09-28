@@ -25,8 +25,9 @@ const TeamName = styled('span')({
 })
 
 const DialogActions = styled('div')({
-  marginTop: 16,
-  display: 'flex'
+  marginTop: 20,
+  display: 'flex',
+  justifyContent: 'center'
 })
 
 const DashboardButton = styled(LinkButton)({
