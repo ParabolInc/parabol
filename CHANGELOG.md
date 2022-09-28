@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.75.0 2022-September-28
+
+### Added
+- Add password reset to user profile (#7183)
+- Option to unsubscribe from summary emails (#7190)
+- **Analytics**: 'Copied Invite Link' event (#7232)
+- **Analytics**: 'Sent invite accepted' event (#7231)
+
+### Fixed
+**Notifications**: UTM params on notification email link (#7224)
+
+### Changed
+Tweak review stats schedule to match other reminders (#7227)
+Add jira server key generation script (#7180)
+Let super users invite to team (#7226)
+
 ## 6.75.0 2022-September-21
 
 ### Added
