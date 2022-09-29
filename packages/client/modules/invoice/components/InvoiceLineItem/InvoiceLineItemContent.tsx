@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
 import React, {ReactNode} from 'react'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 
 const Item = styled('div')({

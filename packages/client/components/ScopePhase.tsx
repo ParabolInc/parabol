@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useGotoStageId from '~/hooks/useGotoStageId'
 import {ScopePhase_meeting} from '~/__generated__/ScopePhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
@@ -12,7 +13,6 @@ import PhaseWrapper from './PhaseWrapper'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
 import ScopePhaseArea from './ScopePhaseArea'
 import StageTimerDisplay from './StageTimerDisplay'
-import useGotoStageId from '~/hooks/useGotoStageId'
 interface Props extends PokerMeetingPhaseProps {
   meeting: ScopePhase_meeting
   gotoStageId?: ReturnType<typeof useGotoStageId>
@@ -30,9 +30,7 @@ const ScopePhase = (props: Props) => {
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.SCOPE}</PhaseHeaderTitle>
-          <PhaseHeaderDescription>
-            {'Add tasks to be estimated'}
-          </PhaseHeaderDescription>
+          <PhaseHeaderDescription>{'Add tasks to be estimated'}</PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} />

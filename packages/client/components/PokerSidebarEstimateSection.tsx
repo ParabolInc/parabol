@@ -68,7 +68,8 @@ const PokerSidebarEstimateSection = (props: Props) => {
       destination.droppableId !== ESTIMATING_TASK ||
       source.droppableId !== ESTIMATING_TASK ||
       destination.index === source.index ||
-      !sourceTopic ||!destinationTopic
+      !sourceTopic ||
+      !destinationTopic
     ) {
       return
     }

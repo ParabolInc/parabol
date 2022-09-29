@@ -43,18 +43,11 @@ const createMassInvitation = {
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     if (voidOld) {
-      await r
-        .table('MassInvitation')
-        .getAll(teamMemberId, {index: 'teamMemberId'})
-        .delete()
-        .run()
+      await r.table('MassInvitation').getAll(teamMemberId, {index: 'teamMemberId'}).delete().run()
     }
     const massInvitation = new MassInvitation({meetingId: meetingId ?? undefined, teamMemberId})
 
-    await r
-      .table('MassInvitation')
-      .insert(massInvitation, {conflict: 'replace'})
-      .run()
+    await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
     return {teamId}
   }
 }

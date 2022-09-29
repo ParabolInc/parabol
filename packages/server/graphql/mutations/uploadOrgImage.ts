@@ -1,14 +1,14 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import GraphQLFileType from '../types/GraphQLFileType'
-import {getUserId, isUserBillingLeader} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
-import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
-import normalizeAvatarUpload from '../../fileStorage/normalizeAvatarUpload'
 import FileStoreManager from '../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
-import {default as updateOrgResolver} from './helpers/updateOrg'
+import normalizeAvatarUpload from '../../fileStorage/normalizeAvatarUpload'
+import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import GraphQLFileType from '../types/GraphQLFileType'
 import UpdateOrgPayload from '../types/UpdateOrgPayload'
+import {GQLContext} from './../graphql'
+import {default as updateOrgResolver} from './helpers/updateOrg'
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),

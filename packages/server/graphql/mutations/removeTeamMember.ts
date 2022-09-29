@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import removeTeamMember from './helpers/removeTeamMember'
-import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
+import removeTeamMember from './helpers/removeTeamMember'
 
 export default {
   type: RemoveTeamMemberPayload,

@@ -2,10 +2,11 @@ import React, {lazy, Suspense} from 'react'
 import useHotkey from '../../hooks/useHotkey'
 import useModal from '../../hooks/useModal'
 
-const EditorHelpModal = lazy(() =>
-  import(
-    /* webpackChunkName: 'EditorHelpModal' */ '../../components/EditorHelpModal/EditorHelpModal'
-  )
+const EditorHelpModal = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'EditorHelpModal' */ '../../components/EditorHelpModal/EditorHelpModal'
+    )
 )
 
 const EditorHelpModalContainer = () => {

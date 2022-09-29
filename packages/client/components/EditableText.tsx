@@ -88,7 +88,20 @@ interface Props {
 }
 
 const EditableText = forwardRef((props: Props, ref: any) => {
-  const {initialValue, error, handleSubmit, maxLength, placeholder, validate, autoFocus: autoFocusProp, className, disabled, hideIcon, isWrap, onEditingChange} = props
+  const {
+    initialValue,
+    error,
+    handleSubmit,
+    maxLength,
+    placeholder,
+    validate,
+    autoFocus: autoFocusProp,
+    className,
+    disabled,
+    hideIcon,
+    isWrap,
+    onEditingChange
+  } = props
   const [isEditing, setIsEditing] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)

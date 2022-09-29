@@ -35,10 +35,11 @@ const BackIcon = styled(Icon)({
   color: 'inherit'
 })
 
-const UnpaidTeamModalRoot = lazy(() =>
-  import(
-    /* webpackChunkName: 'UnpaidTeamModalRoot' */ '../../containers/UnpaidTeamModal/UnpaidTeamModalRoot'
-  )
+const UnpaidTeamModalRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'UnpaidTeamModalRoot' */ '../../containers/UnpaidTeamModal/UnpaidTeamModalRoot'
+    )
 )
 
 interface Props {

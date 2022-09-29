@@ -14,7 +14,7 @@ const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]
       ? -1
       : 1
   )
-  return (teamsSlice as unknown) as T
+  return teamsSlice as unknown as T
 }
 
 export default sortByTier

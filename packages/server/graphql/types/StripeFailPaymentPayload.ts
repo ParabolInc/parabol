@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveNotification, resolveOrganization} from '../resolvers'
 import NotifyPaymentRejected from './NotifyPaymentRejected'
 import Organization from './Organization'
 import StandardMutationError from './StandardMutationError'
-import {GQLContext} from '../graphql'
 
 const StripeFailPaymentPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'StripeFailPaymentPayload',

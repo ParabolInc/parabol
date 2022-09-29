@@ -1,12 +1,12 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import DragDiscussionTopicPayload from '../types/DragDiscussionTopicPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPhase from '../../utils/getPhase'
 import {GQLContext} from '../graphql'
+import DragDiscussionTopicPayload from '../types/DragDiscussionTopicPayload'
 
 export default {
   description: 'Changes the priority of the discussion topics',
@@ -33,10 +33,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {

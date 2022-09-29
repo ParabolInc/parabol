@@ -1,12 +1,12 @@
-import React, {RefObject, Suspense, useRef} from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, Suspense, useRef} from 'react'
+import {useFragment} from 'react-relay'
+import useQueryLoaderNow from '~/hooks/useQueryLoaderNow'
 import spotlightResultsQuery, {
   SpotlightResultsQuery
 } from '../__generated__/SpotlightResultsQuery.graphql'
-import SpotlightResults from './SpotlightResults'
-import useQueryLoaderNow from '~/hooks/useQueryLoaderNow'
 import {SpotlightResultsRoot_meeting$key} from '../__generated__/SpotlightResultsRoot_meeting.graphql'
-import {useFragment} from 'react-relay'
+import SpotlightResults from './SpotlightResults'
 
 interface Props {
   meetingRef: SpotlightResultsRoot_meeting$key

@@ -1,5 +1,5 @@
-import {months} from './makeDateString'
 import ensureDate from './ensureDate'
+import {months} from './makeDateString'
 
 export default function makeMonthString(datetime: Date | string | null) {
   const timestamp = ensureDate(datetime)

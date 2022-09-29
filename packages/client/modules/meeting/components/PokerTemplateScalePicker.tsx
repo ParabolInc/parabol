@@ -12,11 +12,12 @@ import {FONT_FAMILY, ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {PokerTemplateScalePicker_dimension} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
 
-const SelectScaleDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'SelectScaleDropdown' */
-    './SelectScaleDropdown'
-  )
+const SelectScaleDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'SelectScaleDropdown' */
+      './SelectScaleDropdown'
+    )
 )
 
 const DropdownIcon = styled(Icon)({
@@ -74,9 +75,12 @@ const PokerTemplateScalePicker = (props: Props) => {
       loadingWidth: 300
     }
   )
-  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.LOWER_CENTER, {
+  const {
+    openTooltip,
+    tooltipPortal,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER, {
     disabled: isOwner
   })
   return (

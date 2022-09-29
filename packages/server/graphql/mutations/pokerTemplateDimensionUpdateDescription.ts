@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import PokerTemplateDimensionUpdateDescriptionPayload from '../types/PokerTemplateDimensionUpdateDescriptionPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import PokerTemplateDimensionUpdateDescriptionPayload from '../types/PokerTemplateDimensionUpdateDescriptionPayload'
 
 const pokerTemplateDimensionUpdateDescription = {
   description: 'Update the description of a poker template dimension',
@@ -27,10 +27,7 @@ const pokerTemplateDimensionUpdateDescription = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .run()
+    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
     const viewerId = getUserId(authToken)
 
     // AUTH

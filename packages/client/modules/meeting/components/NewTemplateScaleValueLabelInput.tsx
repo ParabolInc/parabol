@@ -70,8 +70,8 @@ const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values'
   const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
   const isNextLabelValid = !isNaN(potentialNextLabel)
     ? potentialNextLabel >= 0 &&
-    potentialNextLabel < 100 &&
-    !existingLabels.includes(String(potentialNextLabel))
+      potentialNextLabel < 100 &&
+      !existingLabels.includes(String(potentialNextLabel))
     : false
   return isNextLabelValid ? potentialNextLabel.toString() : 'Enter a new scale value'
 }

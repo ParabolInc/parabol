@@ -1,11 +1,11 @@
-import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientManager'
+import styled from '@emotion/styled'
 import React, {useEffect, useState} from 'react'
 import CreditCardIcon from '../../../../components/CreditCardIcon'
-import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
 import Icon from '../../../../components/Icon'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {UseFormField} from '../../../../hooks/useForm'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
+import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientManager'
 
 const LineIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,

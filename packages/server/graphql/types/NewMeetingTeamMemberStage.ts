@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import {CHECKIN, UPDATES} from 'parabol-client/utils/constants'
-import CheckInStage from './CheckInStage'
-import {resolveTeamMember} from '../resolvers'
-import TeamMember from './TeamMember'
-import UpdatesStage from './UpdatesStage'
-import MeetingMember from './MeetingMember'
-import {GQLContext} from '../graphql'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {GQLContext} from '../graphql'
+import {resolveTeamMember} from '../resolvers'
+import CheckInStage from './CheckInStage'
+import MeetingMember from './MeetingMember'
+import TeamMember from './TeamMember'
+import UpdatesStage from './UpdatesStage'
 
 export const newMeetingTeamMemberStageFields = () => ({
   meetingMember: {

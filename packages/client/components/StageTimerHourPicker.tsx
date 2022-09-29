@@ -1,9 +1,9 @@
-import React from 'react'
-import Menu from './Menu'
-import {MenuProps} from '../hooks/useMenu'
-import MenuItem from './MenuItem'
 import ms from 'ms'
+import React from 'react'
+import {MenuProps} from '../hooks/useMenu'
 import formatTime from '../utils/date/formatTime'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   endTime: Date

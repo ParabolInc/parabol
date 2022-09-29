@@ -1,0 +1,18 @@
+extend type Mutation {
+  """
+  Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
+  """
+  toggleSummaryEmail: ToggleSummaryEmailPayload!
+}
+
+"""
+Return value for toggleSummaryEmail, which could be an error
+"""
+union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess
+
+type ToggleSummaryEmailSuccess {
+  """
+  The user whose summary email settings have changed
+  """
+  user: User!
+}

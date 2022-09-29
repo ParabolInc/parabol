@@ -1,8 +1,8 @@
 /* Deprecated. See internals of useMenuPortal */
 
+import {ClassNames} from '@emotion/core'
 import React, {Component, ReactNode} from 'react'
 import {CSSTransition} from 'react-transition-group'
-import {ClassNames} from '@emotion/core'
 
 interface Props extends CSSTransition {
   appear?: boolean

@@ -8,16 +8,17 @@ import useRouter from '../../../../hooks/useRouter'
 import {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import Team from '../../components/Team/Team'
 
-const TeamDashMain = lazy(() =>
-  import(/* webpackChunkName: 'TeamDashMainRoot' */ '../../components/TeamDashMainRoot')
+const TeamDashMain = lazy(
+  () => import(/* webpackChunkName: 'TeamDashMainRoot' */ '../../components/TeamDashMainRoot')
 )
-const TeamSettings = lazy(() =>
-  import(
-    /* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper'
-  )
+const TeamSettings = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper'
+    )
 )
-const ArchivedTasks = lazy(() =>
-  import(/* webpackChunkName: 'ArchiveTaskRoot' */ '../../../../components/ArchiveTaskRoot')
+const ArchivedTasks = lazy(
+  () => import(/* webpackChunkName: 'ArchiveTaskRoot' */ '../../../../components/ArchiveTaskRoot')
 )
 
 interface Props {

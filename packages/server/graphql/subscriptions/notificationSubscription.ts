@@ -1,9 +1,9 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import getPubSub from '../../utils/getPubSub'
 import NotificationSubscriptionPayload from '../types/NotificationSubscriptionPayload'
+import {GQLContext} from './../graphql'
 
 export default {
   type: new GraphQLNonNull(NotificationSubscriptionPayload),

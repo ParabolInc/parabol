@@ -1,5 +1,5 @@
-import {getTeamsByOrgIdsQuery} from './generated/getTeamsByOrgIdsQuery'
 import getPg from '../getPg'
+import {getTeamsByOrgIdsQuery} from './generated/getTeamsByOrgIdsQuery'
 import {mapToTeam} from './getTeamsByIds'
 
 const getTeamsByOrgIds = async (

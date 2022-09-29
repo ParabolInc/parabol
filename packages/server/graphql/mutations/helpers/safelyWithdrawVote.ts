@@ -1,9 +1,9 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
-import standardError from '../../../utils/standardError'
-import {getUserId} from '../../../utils/authorization'
-import AuthToken from '../../../database/types/AuthToken'
 import {RValue} from '../../../database/stricterR'
+import AuthToken from '../../../database/types/AuthToken'
+import {getUserId} from '../../../utils/authorization'
+import standardError from '../../../utils/standardError'
 
 const safelyWithdrawVote = async (
   authToken: AuthToken,

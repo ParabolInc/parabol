@@ -1,6 +1,6 @@
+import styled from '@emotion/styled'
 import React from 'react'
 import ui from '../../styles/ui'
-import styled from '@emotion/styled'
 import LabelHeading from '../LabelHeading/LabelHeading'
 
 const FieldLabelStyles = styled(LabelHeading)<

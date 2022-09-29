@@ -80,7 +80,11 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
   const setScale = (scaleId: any) => () => {
     if (submitting || scaleId === selectedScaleId) return
     submitMutation()
-    UpdatePokerTemplateDimensionScaleMutation(atmosphere, {dimensionId, scaleId}, {onError, onCompleted})
+    UpdatePokerTemplateDimensionScaleMutation(
+      atmosphere,
+      {dimensionId, scaleId},
+      {onError, onCompleted}
+    )
     closePortal()
   }
 
@@ -90,21 +94,15 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
       onClick={setScale(scaleId)}
       label={
         <ScaleDetails>
-          <ScaleNameAndValues >
+          <ScaleNameAndValues>
             <ScaleName>
               {scaleName}
               {isStarter && <StarterIcon>public</StarterIcon>}
             </ScaleName>
-            <ScaleValues>
-              {scaleValueString(values)}
-            </ScaleValues>
+            <ScaleValues>{scaleValueString(values)}</ScaleValues>
           </ScaleNameAndValues>
           <ScaleActionButtonGroup>
-            <ScaleActions
-              scale={scale}
-              scaleCount={scaleCount}
-              teamId={dimension.team.id}
-            />
+            <ScaleActions scale={scale} scaleCount={scaleCount} teamId={dimension.team.id} />
           </ScaleActionButtonGroup>
         </ScaleDetails>
       }
