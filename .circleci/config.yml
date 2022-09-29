@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: cimg/node:16.14.0
+      - image: cimg/node:16.16.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:
