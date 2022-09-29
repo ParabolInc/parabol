@@ -8,10 +8,15 @@ import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGro
 import {PALETTE} from '~/styles/paletteV3'
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import {meetingAvatarMediaQueries} from '../../styles/meeting'
-import BackButton from '../BackButton'
 import EditableText from '../EditableText'
+import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import TeamPromptOptions from './TeamPromptOptions'
+
+const TeamPromptLogoBlock = styled(LogoBlock)({
+  marginRight: '8px',
+  paddingLeft: '0'
+})
 
 const TeamPromptHeaderTitle = styled('h1')({
   fontSize: 18,
@@ -85,7 +90,7 @@ const TeamPromptTopBar = (props: Props) => {
   return (
     <MeetingTopBarStyles>
       <TeamPromptHeader>
-        <BackButton ariaLabel='Back to Meetings' to='/meetings' />
+        <TeamPromptLogoBlock />
         {isFacilitator ? (
           <EditableTeamPromptHeaderTitle
             error={error?.message}
