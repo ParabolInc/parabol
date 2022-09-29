@@ -36,6 +36,7 @@ query($searchQuery: String!) {
               comments(first: 1) {
                 totalCount
               }
+              bodyText
               submittedAt
               state
             }
@@ -144,6 +145,9 @@ const parseStats = (rawData: any) => {
 
         reviewers.add(login)
         comments += item.comments.totalCount
+        if (item.bodyText) {
+          comments++
+        }
         reviews++
       }
       if (item.__typename === 'MergedEvent') {
@@ -185,8 +189,8 @@ const parseStats = (rawData: any) => {
               }
             }
             reviewerStats[login].comments++
+            comments++
           }
-          comments++
         }
       }
     })
@@ -196,6 +200,7 @@ const parseStats = (rawData: any) => {
 
     return {
       number: pr.number,
+      url: pr.url,
       author: pr.author,
       timeToMerge: timeToMerge,
       comments,
@@ -298,6 +303,19 @@ const main = async () => {
   console.log(`Total ${prs.length} PRs merged`)
   console.log(formatPrs(prs))
 
+  if (process.argv.includes('--debug')) {
+    console.log('\nDEBUG')
+    console.log('Read following PRs')
+    prs.forEach((pr) => {
+      console.log(`#${pr.number} ${pr.url}`)
+      console.log(`- author: ${pr.author.login}`)
+      console.log(`- comments: ${pr.comments}`)
+      console.log(`- reviews: ${pr.reviews}`)
+      console.log(`- time to merge: ${ms(pr.timeToMerge)}`)
+    })
+    console.log('DEBUG - Not sending to Slack')
+    return
+  }
 
   const slackMessage = {
     blocks: [{
