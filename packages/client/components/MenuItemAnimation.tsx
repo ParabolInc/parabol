@@ -1,9 +1,9 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {Omit} from '../types/generics'
+import React, {ReactNode} from 'react'
 import {PortalStatus} from '../hooks/usePortal'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Duration} from '../types/constEnums'
+import {Omit} from '../types/generics'
 
 declare global {
   interface Element {

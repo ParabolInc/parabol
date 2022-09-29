@@ -48,7 +48,7 @@ export const authorizeOAuth2 = async <
   const headers = {
     Accept: 'application/json',
     ...additonalHeaders
-  }
+  } as Record<string, string>
   if (typeof contentType !== 'undefined') {
     headers['Content-Type'] = contentType
   } else {

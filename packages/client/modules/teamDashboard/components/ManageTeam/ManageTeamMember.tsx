@@ -4,20 +4,20 @@ import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import Row from '../../../../components/Row/Row'
-import Icon from '../../../../components/Icon'
-import {PALETTE} from '../../../../styles/paletteV3'
 import FlatButton from '../../../../components/FlatButton'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberModal'
-import RemoveTeamMemberModal from '../RemoveTeamMemberModal/RemoveTeamMemberModal'
-import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
-import useModal from '../../../../hooks/useModal'
+import Icon from '../../../../components/Icon'
+import Row from '../../../../components/Row/Row'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import lazyPreload from '../../../../utils/lazyPreload'
+import useModal from '../../../../hooks/useModal'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
+import lazyPreload from '../../../../utils/lazyPreload'
+import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
+import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberModal'
+import RemoveTeamMemberModal from '../RemoveTeamMemberModal/RemoveTeamMemberModal'
 
 const StyledRow = styled(Row)({
   borderTop: 0,
@@ -59,10 +59,11 @@ const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
   lineHeight: '12px'
 }))
 
-const TeamMemberAvatarMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TeamMemberAvatarMenu' */ '../../../../components/DashboardAvatars/TeamMemberAvatarMenu'
-  )
+const TeamMemberAvatarMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TeamMemberAvatarMenu' */ '../../../../components/DashboardAvatars/TeamMemberAvatarMenu'
+    )
 )
 
 interface Props {

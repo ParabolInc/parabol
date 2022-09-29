@@ -4,8 +4,10 @@ import {commitMutation} from 'react-relay'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
+import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {
@@ -60,6 +62,8 @@ graphql`
       updatedAt
       teamId
       userId
+      id
+      taskService
     }
   }
 `
@@ -219,7 +223,26 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         azureTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
-    onCompleted,
+    onCompleted: (data, errors) => {
+      if (onCompleted) {
+        onCompleted(data, errors)
+      }
+      const {meetingId} = getMeetingPathParams()
+      const store = atmosphere.getStore()
+      const meetingType = meetingId
+        ? (store.getSource().get(meetingId) as any)?.meetingType
+        : undefined
+      if (data.createTaskIntegration && !data?.createTaskIntegration?.error) {
+        SendClientSegmentEventMutation(atmosphere, 'Task Published', {
+          taskId: data.createTaskIntegration.task?.id,
+          teamId: data.createTaskIntegration.task?.teamId,
+          inMeeting: !!meetingId,
+          meetingId,
+          meetingType,
+          service: data.createTaskIntegration.task?.taskService
+        })
+      }
+    },
     onError
   })
 }

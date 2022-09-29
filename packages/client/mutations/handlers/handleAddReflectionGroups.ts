@@ -1,5 +1,5 @@
-import pluralizeHandler from './pluralizeHandler'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleAddReflectionGroup = (reflectionGroup, store) => {
   const meetingId = reflectionGroup.getValue('meetingId')

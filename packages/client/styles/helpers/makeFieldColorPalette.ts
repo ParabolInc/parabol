@@ -1,5 +1,5 @@
-import {PALETTE} from '../paletteV3'
 import {Radius} from '../../types/constEnums'
+import {PALETTE} from '../paletteV3'
 import makePlaceholderStyles from './makePlaceholderStyles'
 
 const fieldPalettes = {
@@ -26,7 +26,7 @@ const fieldPalettes = {
 }
 
 export default function makeFieldColorPalette(
-  colorPalette,
+  colorPalette: keyof typeof fieldPalettes,
   hasPseudoClassStyles = true,
   customStyles = {}
 ) {

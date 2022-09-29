@@ -1,6 +1,6 @@
-import {HttpResponse, getParts, MultipartField} from 'uWebSockets.js'
-import isObject from 'parabol-client/utils/isObject'
 import {FetchHTTPData} from 'parabol-client/Atmosphere'
+import isObject from 'parabol-client/utils/isObject'
+import {getParts, HttpResponse, MultipartField} from 'uWebSockets.js'
 import {Threshold} from '../client/types/constEnums'
 
 interface UploadableBuffer {

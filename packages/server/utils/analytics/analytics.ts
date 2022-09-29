@@ -1,14 +1,21 @@
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
+import {TaskServiceEnum} from '../../database/types/Task'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
-import {AnyMeeting, MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import segment from '../segmentIo'
 import {createMeetingProperties} from './helpers'
 import {SegmentAnalytics} from './segment/SegmentAnalytics'
+
+export type MeetingSeriesAnalyticsProperties = Pick<
+  MeetingSeries,
+  'id' | 'duration' | 'recurrenceRule' | 'meetingType' | 'title'
+> & {teamId: string; facilitatorId: string}
 
 export type OrgTierChangeEventProperties = {
   orgId: string
@@ -17,6 +24,28 @@ export type OrgTierChangeEventProperties = {
   oldTier: string
   newTier: string
   billingLeaderEmail: string
+}
+
+export type TaskProperties = {
+  taskId: string
+  teamId: string
+  meetingId?: string
+  meetingType?: MeetingTypeEnum
+  inMeeting: boolean
+}
+
+export type TaskEstimateProperties = {
+  taskId: string
+  meetingId: string
+  dimensionName: string
+  service?: TaskServiceEnum
+  success: boolean
+  errorMessage?: string
+}
+
+export type MeetingSettings = {
+  hasIcebreaker?: boolean
+  disableAnonymity?: boolean
 }
 
 export type AnalyticsEvent =
@@ -28,17 +57,23 @@ export type AnalyticsEvent =
   | 'Response Added'
   | 'Reactji Interacted'
   | 'Meeting Recurrence Started'
+  | 'Meeting Recurrence Stopped'
+  | 'Meeting Settings Changed'
   // team
   | 'Integration Added'
   | 'Integration Removed'
   | 'Invite Email Sent'
   | 'Invite Accepted'
+  | 'Sent Invite Accepted'
   // org
   | 'Organization Upgraded'
   | 'Organization Downgraded'
   // task
   | 'Task Created'
   | 'Task Published'
+  | 'Task Estimate Set'
+  // user
+  | 'Summary Email Setting Changed'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -75,12 +110,15 @@ class Analytics {
   }
 
   retrospectiveEnd = (
-    completedMeeting: Meeting,
+    completedMeeting: MeetingRetrospective,
     meetingMembers: MeetingMember[],
     template: MeetingTemplate
   ) => {
+    const {disableAnonymity} = completedMeeting
     meetingMembers.forEach((meetingMember) =>
-      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, template)
+      this.meetingEnd(meetingMember.userId, completedMeeting, meetingMembers, template, {
+        disableAnonymity
+      })
     )
   }
 
@@ -112,17 +150,38 @@ class Analytics {
     this.track(userId, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
   }
 
-  recurrenceStarted = (userId: string, meeting: Meeting) => {
-    // :TODO: (jmtaber129): Add properties related to recurrence settings (duration, frequency,
-    // etc.) after we support configuring those.
-    this.track(userId, 'Meeting Recurrence Started', createMeetingProperties(meeting))
+  recurrenceStarted = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
+    this.track(userId, 'Meeting Recurrence Started', meetingSeries)
+  }
+
+  recurrenceStopped = (userId: string, meetingSeries: MeetingSeriesAnalyticsProperties) => {
+    this.track(userId, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
   meetingJoined = (userId: string, meeting: Meeting) => {
     this.track(userId, 'Meeting Joined', createMeetingProperties(meeting))
   }
 
-  commentAdded = (userId: string, meeting: Meeting, isAnonymous, isAsync, isReply) => {
+  meetingSettingsChanged = (
+    userId: string,
+    teamId: string,
+    meetingType: MeetingTypeEnum,
+    meetingSettings: MeetingSettings
+  ) => {
+    this.track(userId, 'Meeting Settings Changed', {
+      teamId,
+      meetingType,
+      ...meetingSettings
+    })
+  }
+
+  commentAdded = (
+    userId: string,
+    meeting: Meeting,
+    isAnonymous: boolean,
+    isAsync: boolean,
+    isReply: boolean
+  ) => {
     this.track(userId, 'Comment Added', {
       meetingId: meeting.id,
       meetingType: meeting.meetingType,
@@ -216,6 +275,13 @@ class Analytics {
       isNewUser,
       acceptAt
     })
+
+    this.track(inviterId, 'Sent Invite Accepted', {
+      teamId,
+      inviteeId: userId,
+      isNewUser,
+      acceptAt
+    })
   }
 
   //org
@@ -233,46 +299,25 @@ class Analytics {
   // task
   taskPublished = (
     userId: string,
-    teamId: string,
-    service: IntegrationProviderServiceEnumType,
-    meetingId?: string
+    taskProperties: TaskProperties,
+    service: IntegrationProviderServiceEnumType
   ) => {
     this.track(userId, 'Task Published', {
-      teamId,
-      meetingId,
+      ...taskProperties,
       service
     })
   }
 
-  taskCreated = (
-    userId: string,
-    teamId: string,
-    isReply: boolean,
-    meeting?: AnyMeeting,
-    service?: IntegrationProviderServiceEnumType
-  ) => {
-    let isAsync
-    let meetingId
-    if (meeting) {
-      const {phases, id} = meeting
-      meetingId = id
-      const discussPhase = phases.find(
-        ({phaseType}: {phaseType: NewMeetingPhaseTypeEnum}) =>
-          phaseType === 'discuss' || phaseType === 'agendaitems'
-      )
-      if (discussPhase) {
-        const {stages} = discussPhase
-        isAsync = stages.some((stage) => stage.isAsync)
-      }
-    }
+  taskCreated = (userId: string, taskProperties: TaskProperties) => {
+    this.track(userId, 'Task Created', taskProperties)
+  }
 
-    this.track(userId, 'Task Created', {
-      meetingId,
-      teamId,
-      isAsync,
-      isReply,
-      service
-    })
+  taskEstimateSet = (userId: string, taskEstimateProperties: TaskEstimateProperties) => {
+    this.track(userId, 'Task Estimate Set', taskEstimateProperties)
+  }
+
+  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
+    this.track(userId, 'Summary Email Setting Changed', subscribeToSummaryEmail)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>

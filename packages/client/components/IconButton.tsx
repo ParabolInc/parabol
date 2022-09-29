@@ -1,8 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import LinkButton, {LinkButtonProps} from './LinkButton'
-import Icon from './Icon'
+import React from 'react'
 import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
+import LinkButton, {LinkButtonProps} from './LinkButton'
 
 const StyledButton = styled(LinkButton)({outline: 0})
 

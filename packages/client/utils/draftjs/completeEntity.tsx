@@ -1,8 +1,13 @@
-import {ContentState, EditorState, Modifier, SelectionState} from 'draft-js'
+import {ContentState, DraftEntityMutability, EditorState, Modifier, SelectionState} from 'draft-js'
 import getAnchorLocation from '../../components/TaskEditor/getAnchorLocation'
 import getWordAt from '../../components/TaskEditor/getWordAt'
 
-const operationTypes = {
+type ENTITY_NAME = 'EMOJI' | 'TAG' | 'LINK' | 'MENTION'
+
+const OPERATION_TYPES: Record<
+  ENTITY_NAME,
+  {editorChangeType: 'apply-entity'; entityType: DraftEntityMutability}
+> = {
   EMOJI: {
     editorChangeType: 'apply-entity',
     entityType: 'IMMUTABLE'
@@ -72,13 +77,13 @@ interface Options {
 }
 const completeEntity = (
   editorState: EditorState,
-  entityName: string,
+  entityName: ENTITY_NAME,
   entityData: any,
   mention: string,
   options: Options = {}
 ) => {
   const {keepSelection} = options
-  const {editorChangeType, entityType} = operationTypes[entityName]
+  const {editorChangeType, entityType} = OPERATION_TYPES[entityName]
   const contentState = editorState.getCurrentContent()
   const contentStateWithEntity = contentState.createEntity(entityName, entityType, entityData)
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey()

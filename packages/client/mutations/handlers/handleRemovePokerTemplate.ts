@@ -1,10 +1,10 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {PokerTemplateList_settings} from '~/__generated__/PokerTemplateList_settings.graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getPokerTemplateOrgConn from '../connections/getPokerTemplateOrgConn'
 import getPokerTemplatePublicConn from '../connections/getPokerTemplatePublicConn'
 import pluralizeHandler from './pluralizeHandler'
-import {PokerTemplateList_settings} from '~/__generated__/PokerTemplateList_settings.graphql'
 
 const handleRemovePokerTemplate = (
   templateId: string,

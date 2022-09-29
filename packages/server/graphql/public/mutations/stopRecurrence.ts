@@ -1,5 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import updateMeetingSeries from '../../../postgres/queries/updateMeetingSeries'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -36,6 +37,9 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
 
   await updateMeetingSeries({cancelledAt: now}, meetingSeriesId)
   dataLoader.get('meetingSeries').clear(meetingSeriesId)
+
+  const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
+  analytics.recurrenceStopped(viewerId, meetingSeries)
 
   await r
     .table('NewMeeting')

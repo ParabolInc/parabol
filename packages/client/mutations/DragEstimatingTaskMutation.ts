@@ -17,7 +17,11 @@ graphql`
 
 const mutation = graphql`
   mutation DragEstimatingTaskMutation($meetingId: ID!, $taskId: ID!, $newPositionIndex: Int!) {
-    dragEstimatingTask(meetingId: $meetingId, taskId: $taskId, newPositionIndex: $newPositionIndex) {
+    dragEstimatingTask(
+      meetingId: $meetingId
+      taskId: $taskId
+      newPositionIndex: $newPositionIndex
+    ) {
       ...DragEstimatingTaskMutation_meeting @relay(mask: false)
     }
   }

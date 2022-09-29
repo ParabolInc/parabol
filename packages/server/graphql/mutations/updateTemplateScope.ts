@@ -1,18 +1,19 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import PokerTemplate from '../../database/types/PokerTemplate'
-import TemplateDimension from '../../database/types/TemplateDimension'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
+import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
+import PokerTemplate from '../../database/types/PokerTemplate'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import TemplateDimension from '../../database/types/TemplateDimension'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SharingScopeEnum, {SharingScopeEnumType} from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
-import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
 
 const updateTemplateScope = {
   type: new GraphQLNonNull(UpdateTemplateScopePayload),
@@ -65,7 +66,7 @@ const updateTemplateScope = {
       ? await r
           .table('NewMeeting')
           .getAll(templateId, {index: 'templateId'})
-          .filter((meeting) => meeting('teamId').ne(teamId))
+          .filter((meeting: RDatum) => meeting('teamId').ne(teamId))
           .nth(0)
           .default(null)
           .ne(null)
@@ -97,10 +98,7 @@ const updateTemplateScope = {
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
-        inactivatedTemplate: r
-          .table('MeetingTemplate')
-          .get(templateId)
-          .update({isActive: false}),
+        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
@@ -130,10 +128,7 @@ const updateTemplateScope = {
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedDimensions: r.table('TemplateDimension').insert(clonedDimensions),
-        inactivatedTemplate: r
-          .table('MeetingTemplate')
-          .get(templateId)
-          .update({isActive: false}),
+        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
         inactivatedDimensions: r
           .table('TemplateDimension')
           .getAll(r.args(dimensionIds))

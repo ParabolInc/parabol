@@ -1,6 +1,6 @@
-import {compositeId, id} from './templates'
 import legitify from './legitify'
 import Legitity from './Legitity'
+import {compositeId, id} from './templates'
 
 export default function makeAgendaItemSchema() {
   return legitify({

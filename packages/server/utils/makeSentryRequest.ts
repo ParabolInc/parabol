@@ -1,7 +1,7 @@
-import uwsGetHeaders from './uwsGetHeaders'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import getReqAuth from './getReqAuth'
+import uwsGetHeaders from './uwsGetHeaders'
 import uwsGetIP from './uwsGetIP'
-import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 
 const makeSentryRequest = (res: HttpResponse, req: HttpRequest) => {
   return {

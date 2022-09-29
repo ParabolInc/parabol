@@ -52,10 +52,12 @@ const EditingStatus = (props: Props) => {
     closeTooltip()
     setTimestampType(timestampType === 'createdAt' ? 'updatedAt' : 'createdAt')
   }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {disabled: isEditing}
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {disabled: isEditing})
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>

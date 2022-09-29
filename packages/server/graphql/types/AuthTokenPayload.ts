@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
+import encodeAuthToken from '../../utils/encodeAuthToken'
 import {GQLContext} from '../graphql'
 
 // const AuthTokenRole = new GraphQLEnumType({

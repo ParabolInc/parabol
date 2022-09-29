@@ -3,9 +3,9 @@
  * Assumes a fixed value for LATENCY
  */
 
+import {RecordProxy} from 'relay-runtime'
 import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
 import initHandler from './initHandler'
-import {RecordProxy} from 'relay-runtime'
 
 const LATENCY = 200 // ms to travel from server to client
 

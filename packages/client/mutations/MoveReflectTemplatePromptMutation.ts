@@ -1,9 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
+import {commitMutation} from 'react-relay'
 import {MoveReflectTemplatePromptMutation as TMoveReflectTemplatePromptMutation} from '~/__generated__/MoveReflectTemplatePromptMutation.graphql'
-import getInProxy from '../utils/relay/getInProxy'
 import {StandardMutation} from '../types/relayMutations'
+import getInProxy from '../utils/relay/getInProxy'
+import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
 
 interface Context {
   templateId: string

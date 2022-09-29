@@ -1,14 +1,14 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from '../resolvers'
-import Team from './Team'
-import Task from './Task'
-import StandardMutationError from './StandardMutationError'
-import NewMeeting from './NewMeeting'
-import {GQLContext} from '../graphql'
-import {getUserId} from '../../utils/authorization'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import TimelineEvent from './TimelineEvent'
+import {getUserId} from '../../utils/authorization'
 import errorFilter from '../errorFilter'
+import {GQLContext} from '../graphql'
+import {resolveNewMeeting} from '../resolvers'
+import NewMeeting from './NewMeeting'
+import StandardMutationError from './StandardMutationError'
+import Task from './Task'
+import Team from './Team'
+import TimelineEvent from './TimelineEvent'
 
 const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EndNewMeetingPayload',

@@ -4,6 +4,7 @@ import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
@@ -29,7 +30,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
     r
       .table('Task')
       .getAll(r.args(userIds), {index: 'userId'})
-      .filter((task) => task('tags').contains('archived').not()) as any
+      .filter((task: RDatum) => task('tags').contains('archived').not()) as any
   )
     .max('sortOrder')('sortOrder')
     .default(0)
@@ -112,7 +113,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
       .filter({status: DONE})
-      .filter((task) => task('tags').contains('archived').not())
+      .filter((task: RDatum) => task('tags').contains('archived').not())
       .run(),
     r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
   ])

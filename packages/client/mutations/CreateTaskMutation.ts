@@ -69,6 +69,9 @@ graphql`
           id
           title
           url
+          project {
+            name
+          }
         }
       }
     }
@@ -216,12 +219,16 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'azureDevOps') {
           const {instanceId} = AzureDevOpsProjectId.split(serviceProjectHash)
+          const project = createProxyRecord(store, 'AzureDevOpsRemoteProject', {
+            name: '?'
+          })
           const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
             title: plaintextContent,
             url: `https://${instanceId}`,
             type: 'Basic:Issue',
             id: '?'
           })
+          optimisticTaskIntegration.setLinkedRecord(project, 'project')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')

@@ -1,9 +1,10 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import {RDatum} from '../../../database/stricterR'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
@@ -33,7 +34,7 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
     failOnTime: r
       .table('FailedAuthRequest')
       .getAll(ip, {index: 'ip'})
-      .filter((row) => row('time').ge(yesterday))
+      .filter((row: RDatum) => row('time').ge(yesterday))
       .count()
       .ge(Threshold.MAX_DAILY_PASSWORD_ATTEMPTS) as unknown as boolean
   }).run()

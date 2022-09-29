@@ -11,7 +11,6 @@ export const skeletonShine = keyframes`
   }
 `
 
-
 const MockTemplateItemBody = styled('div')({
   padding: '12px 16px'
 })

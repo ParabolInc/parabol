@@ -1,5 +1,5 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const color = PALETTE.SKY_500

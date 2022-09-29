@@ -1,8 +1,8 @@
 import {useCallback} from 'react'
+import {Breakpoint} from '../types/constEnums'
+import useBreakpoint from './useBreakpoint'
 import useHotkey from './useHotkey'
 import useRefState from './useRefState'
-import useBreakpoint from './useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
 
 const useSidebar = (initialOpenState?: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)

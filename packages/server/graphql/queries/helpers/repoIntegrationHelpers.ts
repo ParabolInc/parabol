@@ -1,9 +1,9 @@
 import ms from 'ms'
+import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {Unpromise} from 'parabol-client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
-import {DataLoaderWorker} from '../../graphql'
-import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {RValue} from '../../../database/stricterR'
+import {DataLoaderWorker} from '../../graphql'
 
 export interface IntegrationByTeamId {
   id: string

@@ -1,4 +1,4 @@
-import {useEffect, RefObject} from 'react'
+import {RefObject, useEffect} from 'react'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
 import useEventCallback from './useEventCallback'
 

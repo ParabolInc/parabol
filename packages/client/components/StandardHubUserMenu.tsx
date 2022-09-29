@@ -67,7 +67,7 @@ const StandardHubUserMenu = (props: Props) => {
         label={
           <MenuItemLink to={'/me/profile'}>
             <MenuItemIcon>account_box</MenuItemIcon>
-            {'Profile'}
+            {'My Settings'}
           </MenuItemLink>
         }
       />

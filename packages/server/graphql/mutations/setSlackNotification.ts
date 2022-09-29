@@ -1,14 +1,15 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
-import SetSlackNotificationPayload from '../types/SetSlackNotificationPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import standardError from '../../utils/standardError'
-import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import {RDatum} from '../../database/stricterR'
 import SlackNotification, {
   SlackNotificationEventEnum as TSlackNotificationEventEnum
 } from '../../database/types/SlackNotification'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import SetSlackNotificationPayload from '../types/SetSlackNotificationPayload'
 import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
 
 type SetSlackNotificationMutationVariables = {
@@ -58,7 +59,7 @@ export default {
       .table('SlackNotification')
       .getAll(viewerId, {index: 'userId'})
       .filter({teamId})
-      .filter((row) => r(slackNotificationEvents).contains(row('event')))
+      .filter((row: RDatum) => r(slackNotificationEvents).contains(row('event')))
       .run()
 
     const notifications = slackNotificationEvents.map((event) => {
@@ -73,10 +74,7 @@ export default {
         id: (existingNotification && existingNotification.id) || undefined
       })
     })
-    await r
-      .table('SlackNotification')
-      .insert(notifications, {conflict: 'replace'})
-      .run()
+    await r.table('SlackNotification').insert(notifications, {conflict: 'replace'}).run()
     const slackNotificationIds = notifications.map(({id}) => id)
     const data = {userId: viewerId, slackNotificationIds}
     publish(SubscriptionChannel.TEAM, teamId, 'SetSlackNotificationPayload', data, subOptions)

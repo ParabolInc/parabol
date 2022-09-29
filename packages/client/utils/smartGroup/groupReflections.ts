@@ -39,10 +39,11 @@ const groupReflections = <T extends Reflection>(
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities)
   // create a distance vector for each reflection
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, uniqueLemmaArr)
-  const {groups: groupedArrays, thresh, nextThresh} = getGroupMatrix(
-    distanceMatrix,
-    groupingOptions
-  )
+  const {
+    groups: groupedArrays,
+    thresh,
+    nextThresh
+  } = getGroupMatrix(distanceMatrix, groupingOptions)
   // replace the arrays with reflections
   const updatedReflections = [] as GroupedReflectionRes[]
   const reflectionGroupMapping = {} as Record<string, string>

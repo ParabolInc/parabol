@@ -1,5 +1,5 @@
 import base64url from 'base64url'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import {Security} from 'parabol-client/types/constEnums'
 import getRethink from '../database/rethinkDriver'

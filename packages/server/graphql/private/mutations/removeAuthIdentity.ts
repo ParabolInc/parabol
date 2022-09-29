@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import {AuthIdentityTypeEnum, Security} from 'parabol-client/types/constEnums'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import generateRandomString from '../../../generateRandomString'

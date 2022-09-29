@@ -1,7 +1,7 @@
 import React from 'react'
-import PrimaryButton from './PrimaryButton'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import hasToken from '../utils/hasToken'
+import PrimaryButton from './PrimaryButton'
 
 const DemoCreateAccountPrimaryButton = (props: RouteComponentProps) => {
   const {history} = props

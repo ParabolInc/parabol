@@ -1,5 +1,5 @@
-import {R} from 'rethinkdb-ts'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import {R} from 'rethinkdb-ts'
 
 export const up = async function (r: R) {
   // We have about 2500 such tasks

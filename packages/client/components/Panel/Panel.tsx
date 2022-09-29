@@ -1,8 +1,8 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import LabelHeading from '../LabelHeading/LabelHeading'
+import React, {CSSProperties, ReactNode} from 'react'
 import {panelShadow} from '../../styles/elevation'
 import {Layout} from '../../types/constEnums'
+import LabelHeading from '../LabelHeading/LabelHeading'
 
 const PanelRoot = styled('div')({
   backgroundColor: 'white',
@@ -21,10 +21,10 @@ const PanelHeader = styled('div')({
   width: '100%'
 })
 
-const PanelLabel = styled(LabelHeading)({
+const PanelLabel = styled(LabelHeading)<{casing: CSSProperties['textTransform']}>(({casing}) => ({
   padding: `8px ${Layout.ROW_GUTTER}px`,
-  textTransform: 'uppercase'
-})
+  textTransform: casing ? casing : 'uppercase'
+}))
 
 const PanelControls = styled('div')({
   display: 'flex',
@@ -44,17 +44,18 @@ interface Props {
   children: ReactNode
   className?: string
   controls?: any
-  label?: any
+  label?: string
+  casing?: CSSProperties['textTransform']
 }
 
 const Panel = (props: Props) => {
-  const {children, className, controls, label} = props
+  const {children, className, controls, label, casing} = props
 
   return (
     <PanelRoot className={className}>
       {label && (
         <PanelHeader>
-          <PanelLabel>{label}</PanelLabel>
+          <PanelLabel casing={casing}>{label}</PanelLabel>
           <PanelControls>{controls}</PanelControls>
         </PanelHeader>
       )}

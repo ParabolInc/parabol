@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'

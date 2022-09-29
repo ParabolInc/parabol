@@ -38,11 +38,7 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('Notification')
-      .get(notificationId)
-      .update({status})
-      .run()
+    await r.table('Notification').get(notificationId).update({status}).run()
     // mutate dataloader cache
     notification.status = status
 

@@ -55,16 +55,8 @@ interface Props {
 }
 
 const OverflowAvatar = (props: Props) => {
-  const {
-    overflowCount,
-    offset,
-    status,
-    onTransitionEnd,
-    isAnimated,
-    onClick,
-    width,
-    borderColor
-  } = props
+  const {overflowCount, offset, status, onTransitionEnd, isAnimated, onClick, width, borderColor} =
+    props
   const ref = useRef<HTMLDivElement>(null)
   const label = overflowCount >= 99 ? 99 : overflowCount
   useResizeFontForElement<HTMLDivElement>(ref, label, 11, 18, 4)

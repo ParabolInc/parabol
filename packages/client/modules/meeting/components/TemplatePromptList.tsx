@@ -22,7 +22,6 @@ const PromptList = styled('div')({
   width: '100%'
 })
 
-
 const TemplatePromptList = (props: Props) => {
   const {isOwner, prompts, templateId} = props
   const atmosphere = useAtmosphere()
@@ -36,7 +35,8 @@ const TemplatePromptList = (props: Props) => {
       destination.droppableId !== TEMPLATE_PROMPT ||
       source.droppableId !== TEMPLATE_PROMPT ||
       destination.index === source.index ||
-      !sourcePrompt || !destinationPrompt
+      !sourcePrompt ||
+      !destinationPrompt
     ) {
       return
     }

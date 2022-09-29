@@ -1,10 +1,10 @@
 import {GraphQLObjectType} from 'graphql'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import {GQLContext} from '../graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import NewMeetingTeamMemberStage, {
   newMeetingTeamMemberStageFields
 } from './NewMeetingTeamMemberStage'
-import {GQLContext} from '../graphql'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 
 const UpdatesStage: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatesStage',

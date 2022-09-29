@@ -84,7 +84,9 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
         <CurrentValue>{label}</CurrentValue>
         <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
       </Wrapper>
-      {menuPortal(<GitHubFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore}/>)}
+      {menuPortal(
+        <GitHubFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore} />
+      )}
     </>
   )
 }

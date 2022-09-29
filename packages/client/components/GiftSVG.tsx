@@ -1,5 +1,5 @@
-import React from 'react'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import React from 'react'
 
 const GiftSVG = React.memo(() => {
   return (

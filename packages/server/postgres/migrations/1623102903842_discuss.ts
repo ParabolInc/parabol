@@ -1,7 +1,6 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {Client} from 'pg'
-import {r} from 'rethinkdb-ts'
-import {parse} from 'url'
+import {r, RValue} from 'rethinkdb-ts'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import EstimatePhase from '../../database/types/EstimatePhase'
@@ -12,11 +11,11 @@ import getPgConfig from '../getPgConfig'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
     port: parseInt(port, 10),
-    db: path.split('/')[1]
+    db: pathname.split('/')[1]
   })
   const client = new Client(getPgConfig())
   await client.connect()
@@ -32,8 +31,8 @@ export async function up(): Promise<void> {
     return r
       .table('NewMeeting')
       .get(meetingId)
-      .update((meeting) => ({
-        phases: meeting('phases').map((phase) =>
+      .update((meeting: RValue) => ({
+        phases: meeting('phases').map((phase: RValue) =>
           r.branch(
             phase('phaseType').eq(phaseType),
             phase.merge({
@@ -72,12 +71,14 @@ export async function up(): Promise<void> {
       .limit(BATCH_SIZE)
       .run()
     if (curMeetings.length < 1) break
-    const discussions = []
+    const discussions = [] as any[]
     const threadIdToDiscussionId = [] as [string, string][]
-    const stageUpdates = curMeetings.map((meeting) => {
+    const stageUpdates = curMeetings.map((meeting: any) => {
       const {id: meetingId, teamId, meetingType, phases} = meeting
       if (meetingType === 'retrospective') {
-        const discussPhase = phases.find((phase) => phase.phaseType === 'discuss') as DiscussPhase
+        const discussPhase = phases.find(
+          (phase: any) => phase.phaseType === 'discuss'
+        ) as DiscussPhase
         if (!discussPhase) return
         const {stages} = discussPhase
         const discussionIds = stages.map(() => generateUID())
@@ -85,7 +86,7 @@ export async function up(): Promise<void> {
         stages.forEach((stage, idx) => {
           const {reflectionGroupId} = stage
           if (reflectionGroupId) {
-            const discussionId = discussionIds[idx]
+            const discussionId = discussionIds[idx]!
             threadIdToDiscussionId.push([reflectionGroupId, discussionId])
             discussions.push({
               id: discussionId,
@@ -98,13 +99,15 @@ export async function up(): Promise<void> {
         })
         return updateStagesWithDiscussionIds(meetingId, 'discuss', discussionIds)
       } else if (meetingType === 'action') {
-        const phase = phases.find((phase) => phase.phaseType === 'agendaitems') as AgendaItemsPhase
+        const phase = phases.find(
+          (phase: any) => phase.phaseType === 'agendaitems'
+        ) as AgendaItemsPhase
         if (!phase) return
         const {stages} = phase
         const discussionIds = stages.map(() => generateUID())
         stages.forEach((stage, idx) => {
           const {agendaItemId} = stage
-          const discussionId = discussionIds[idx]
+          const discussionId = discussionIds[idx]!
           threadIdToDiscussionId.push([agendaItemId, discussionId])
           discussions.push({
             id: discussionId,
@@ -116,20 +119,23 @@ export async function up(): Promise<void> {
         })
         return updateStagesWithDiscussionIds(meetingId, 'agendaitems', discussionIds)
       } else if (meetingType === 'poker') {
-        const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
+        const phase = phases.find((phase: any) => phase.phaseType === 'ESTIMATE') as EstimatePhase
         if (!phase) return
         const {stages} = phase
         const discussionIds = stages.map(() => generateUID())
         stages.forEach((stage, idx) => {
           const {service, serviceTaskId} = stage as any
-          const discussionId = discussionIds[idx]
+          const discussionId = discussionIds[idx]!
           threadIdToDiscussionId.push([serviceTaskId, discussionId])
           discussions.push({
             id: discussionId,
             meetingId,
             teamId,
             discussionTopicId: serviceTaskId,
-            discussionTopicType: taskServiceToDiscussionTopicType[service] || 'task'
+            discussionTopicType:
+              taskServiceToDiscussionTopicType[
+                service as keyof typeof taskServiceToDiscussionTopicType
+              ] || 'task'
           })
         })
         return updateStagesWithDiscussionIds(meetingId, 'ESTIMATE', discussionIds)
@@ -188,15 +194,15 @@ export async function up(): Promise<void> {
   }
 
   await client.end()
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
-  const {hostname: host, port, path} = parse(process.env.RETHINKDB_URL)
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
     port: parseInt(port, 10),
-    db: path.split('/')[1]
+    db: pathname.split('/')[1]
   })
   try {
     await Promise.all([
@@ -206,7 +212,7 @@ export async function down(pgm: MigrationBuilder): Promise<void> {
   } catch (e) {
     // nope
   }
-  await r.getPoolMaster().drain()
+  await r.getPoolMaster()?.drain()
   await pgm.db.query(`
     DELETE FROM "Discussion";
   `)

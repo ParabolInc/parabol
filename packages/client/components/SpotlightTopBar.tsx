@@ -1,10 +1,9 @@
-
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
-import PlainButton from './PlainButton/PlainButton'
-import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
 import React from 'react'
+import {PALETTE} from '../styles/paletteV3'
+import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
 
 const StyledCloseButton = styled(PlainButton)({
   height: 24,

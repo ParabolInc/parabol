@@ -129,10 +129,9 @@ const handleUpdateTemplateScope = (
   })
 }
 
-export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdateReflectTemplateScopeMutation_organization> = (
-  payload: any,
-  {store}
-) => {
+export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
+  UpdateReflectTemplateScopeMutation_organization
+> = (payload: any, {store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
   const clonedTemplate = payload.getLinkedRecord('clonedTemplate')

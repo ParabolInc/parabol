@@ -54,7 +54,7 @@ const run = async () => {
     ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
     executorChannel
   )
-  console.log(`\n💧💧💧 Ready for GraphQL Execution: ${SERVER_ID} 💧💧💧`)
+  console.log(`\n💧💧💧 Server ID: ${SERVER_ID}. Ready for GraphQL Execution 💧💧💧`)
 
   for await (const message of incomingStream) {
     // don't await the call below so this instance can immediately call incomingStream.next()

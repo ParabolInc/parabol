@@ -16,9 +16,7 @@ class GitLabClientManager {
     mutationProps: MenuMutationProps
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
 
     const redirectUri = makeHref('/auth/gitlab')
     const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${GitLabClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code`

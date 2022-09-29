@@ -1,6 +1,6 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import pluralizeHandler from './pluralizeHandler'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveReflectTemplatePrompt = (
   promptId: string,

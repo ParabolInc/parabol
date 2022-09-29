@@ -5,15 +5,16 @@ import useModal from '~/hooks/useModal'
 import lazyPreload from '~/utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
 
-const TopBarHelpMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TopBarHelpMenu' */
-    './TopBarHelpMenu'
-  )
+const TopBarHelpMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TopBarHelpMenu' */
+      './TopBarHelpMenu'
+    )
 )
 
-const EditorHelpModal = lazy(() =>
-  import(/* webpackChunkName: 'EditorHelpModal' */ './EditorHelpModal/EditorHelpModal')
+const EditorHelpModal = lazy(
+  () => import(/* webpackChunkName: 'EditorHelpModal' */ './EditorHelpModal/EditorHelpModal')
 )
 
 const TopBarHelp = () => {

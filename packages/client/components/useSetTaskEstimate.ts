@@ -1,11 +1,11 @@
+import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
+import {SprintPokerDefaults} from '../types/constEnums'
 import {
   SetTaskEstimateMutationResponse,
   TaskEstimateInput
 } from '../__generated__/SetTaskEstimateMutation.graphql'
-import {SprintPokerDefaults} from '../types/constEnums'
-import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
-import useAtmosphere from '../hooks/useAtmosphere'
 
 const useSetTaskEstimate = () => {
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()

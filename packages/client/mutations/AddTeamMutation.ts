@@ -1,8 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleAddTeams from './handlers/handleAddTeams'
-import getGraphQLError from '../utils/relay/getGraphQLError'
-import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import {commitMutation} from 'react-relay'
 import {
   HistoryLocalHandler,
   OnNextHandler,
@@ -10,8 +7,11 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
+import getGraphQLError from '../utils/relay/getGraphQLError'
 import {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
+import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
+import handleAddTeams from './handlers/handleAddTeams'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {

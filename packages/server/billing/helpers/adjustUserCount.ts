@@ -1,5 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
@@ -113,7 +114,7 @@ const deleteUser = async (orgIds: string[], userId: string) => {
   return r
     .table('OrganizationUser')
     .getAll(userId, {index: 'userId'})
-    .filter((row) => r.expr(orgIds).contains(row('orgId')))
+    .filter((row: RDatum) => r.expr(orgIds).contains(row('orgId')))
     .update({
       removedAt: new Date()
     })
@@ -158,7 +159,7 @@ export default async function adjustUserCount(
   const paidOrgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
-    .filter((org) => org('stripeSubscriptionId').default(null).ne(null))
+    .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
   const proOrgs = paidOrgs.filter((org) => org.tier === 'pro')
