@@ -14,16 +14,15 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
 ## Requesting Code Reviews
 
 - Self-assess which domains are involved in the changes made by your PR, find a reviewer from among the folks who fill the [Code Reviewer (L2–3)](https://www.notion.so/Code-Reviewer-L2-3-a47bb0759a0b41b5b0469ff14a8cdaae) role, paying specific attention to who GitHub suggests, who has indicated expertise within a domain (e.g. backend, front-end, etc.), and who has capacity to review within 24 hours.
-- If the PR has not been reviewed within 24 hours, send a reminder to Slack or request a review from another reviewer or group of reviewers, or consider adding an agenda item to the [Parabol – Product](https://www.notion.so/Parabol-Product-1065acffc95d4f64a71b7808bad98ff5) check-in meeting
-- If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. Use the label for PRs of any size and complexity If you are confident enough, and it feels safe. One exception: we should be extremely careful with DB migrations as they might break the application in the way that is hard to restore.
+- If the PR has not been reviewed within 24 hours, ping the reviewer on Slack and ask when they'll be able to review. If they don't have capacity for review, reassign to a different reviewer. If you're still blocked at the next check-in meeting, add an agenda item.
+- If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. Use the label for PRs of any size and complexity if you are confident enough, and it feels safe. One exception: we should be extremely careful with DB migrations as they might break the application in the way that is hard to restore.
 
-## Doing Code Reviews
+## Performing Code Reviews
 
-- Doing code reviews and unblocking others is also important part of your job. It is totally fine that sometimes you may do more PR reviews than coding.
-- Prioritize unblocking others by doing [code reviews](https://github.com/pulls/review-requested) on daily basis
+- Performing code reviews and unblocking others is also important part of your job. It is totally fine that sometimes you may do more PR reviews than coding.
+- Prioritize unblocking others by performing [code reviews](https://github.com/pulls/review-requested) on daily basis
 - Try to complete PR reviews within 1 working day
 - If not possible to complete PR review within 1 working day, follow the above “Requesting Code Reviews” guide to reassign the PR
-- If the review requested from a group of people, indicate that you are doing review by assigning a PR to yourself or in a comment.
 - When reviewing a PR and requesting changes, be mindful that the PR author won't always have the right background to understand what are you requesting. Make your comments meaningful, and record a Loom if needed.
 - [The right balance](https://docs.gitlab.com/ee/development/code_review.html#the-right-balance)
 
@@ -69,4 +68,4 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
     - resolve if you followed the suggestion
     - reply if you didn't
 - If you need to clarify parts of the code, check if it can be done by adding comments or improve naming of variables/functions/classes
-- When you replied or resolved all comments, move the PR back to reviewer- or maintainer-review
+- When you replied or resolved all comments, move the PR back to review
