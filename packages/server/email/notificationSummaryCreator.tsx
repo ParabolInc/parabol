@@ -1,9 +1,11 @@
 import Oy from 'oy-vey'
+import NotificationSummaryEmail, {
+  NotificationSummaryProps
+} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
-import NotificationSummaryEmail, {NotificationSummaryProps} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 
 const textOnlySummary = (props: NotificationSummaryProps) => {
   const {preferredName, notificationCount, appOrigin} = props

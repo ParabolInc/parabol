@@ -1,10 +1,10 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
+import {GQLContext} from './../graphql'
 
 export default {
   type: TaskConnection,

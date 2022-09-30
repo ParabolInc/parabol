@@ -1,7 +1,7 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import styled from '@emotion/styled'
 import {ManageTeamList_team$key} from '../../../../__generated__/ManageTeamList_team.graphql'
 import ManageTeamMember from './ManageTeamMember'
 

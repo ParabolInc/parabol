@@ -1,15 +1,14 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
-
+import React from 'react'
+import {useFragment} from 'react-relay'
 import {cardShadow, Elevation} from '~/styles/elevation'
-import ThreadedItemWrapper from '../ThreadedItemWrapper'
-import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
-import ThreadedItemHeaderDescription from '../ThreadedItemHeaderDescription'
 import cardRootStyles from '~/styles/helpers/cardRootStyles'
 import {PALETTE} from '~/styles/paletteV3'
+import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
+import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
+import ThreadedItemHeaderDescription from '../ThreadedItemHeaderDescription'
+import ThreadedItemWrapper from '../ThreadedItemWrapper'
 import {getPollState} from './PollState'
 
 const BodyCol = styled('div')({

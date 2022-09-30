@@ -1,9 +1,9 @@
 import React from 'react'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InviteDialog from './InviteDialog'
 
 interface Props {
   isMassInvite?: boolean

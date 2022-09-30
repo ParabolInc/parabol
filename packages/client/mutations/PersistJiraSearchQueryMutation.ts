@@ -32,11 +32,11 @@ const mutation = graphql`
 
 const PersistJiraSearchQueryMutation: SimpleMutation<TPersistJiraSearchQueryMutation> = (
   atmosphere,
-  variables,
+  variables
 ) => {
   return commitMutation<TPersistJiraSearchQueryMutation>(atmosphere, {
     mutation,
-    variables,
+    variables
     // TODO: Add optimistic updater
     // optimisticUpdater: (store) => {
     // },

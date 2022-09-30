@@ -1,8 +1,8 @@
-import {R} from 'rethinkdb-ts'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import {R} from 'rethinkdb-ts'
 import Task from '../types/Task'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   const updateBatch = async (tasks: Task[]) => {
     const updates = [] as {
       taskId: string
@@ -56,7 +56,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r
       .table('Task')

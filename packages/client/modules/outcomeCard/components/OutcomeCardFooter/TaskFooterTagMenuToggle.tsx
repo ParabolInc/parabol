@@ -1,13 +1,13 @@
 import {EditorState} from 'draft-js'
 import React from 'react'
 import useTooltip from '~/hooks/useTooltip'
+import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {
@@ -20,16 +20,20 @@ interface Props {
   dataCy: string
 }
 
-const TaskFooterTagMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterTagMenu' */ '../OutcomeCardStatusMenu/TaskFooterTagMenu')
+const TaskFooterTagMenu = lazyPreload(
+  () =>
+    import(/* webpackChunkName: 'TaskFooterTagMenu' */ '../OutcomeCardStatusMenu/TaskFooterTagMenu')
 )
 
 const TaskFooterTagMenuToggle = (props: Props) => {
   const {area, editorState, isAgenda, mutationProps, task, useTaskChild, dataCy} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   return (
     <>
       <CardButton

@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await r
       .table('User')
@@ -27,6 +27,6 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function() {
+export const down = async function () {
   // noop
 }

@@ -2,13 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GROUP} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
 import {GQLContext} from '../graphql'
+import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
 
 const setPhaseFocus = {
   type: SetPhaseFocusPayload,
@@ -33,11 +33,7 @@ const setPhaseFocus = {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, facilitatorUserId, phases} = meeting
     if (endedAt) return standardError(new Error('Meeting already completed'), {userId: viewerId})
@@ -55,11 +51,7 @@ const setPhaseFocus = {
     // RESOLUTION
     // mutative
     reflectPhase.focusedPromptId = focusedPromptId ?? undefined
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(meeting)
-      .run()
+    await r.table('NewMeeting').get(meetingId).update(meeting).run()
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPhaseFocusPayload', data, subOptions)
     return data

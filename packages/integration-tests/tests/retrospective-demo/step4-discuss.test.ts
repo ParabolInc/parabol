@@ -1,10 +1,10 @@
-import {test, expect} from '@playwright/test'
+import {expect, test} from '@playwright/test'
 import config from '../config'
 import {
-  startDemo,
-  goToNextPhase,
   dragReflectionCard,
-  skipToDiscussPhase
+  goToNextPhase,
+  skipToDiscussPhase,
+  startDemo
 } from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / discuss page', () => {
@@ -82,9 +82,7 @@ test.describe('retrospective-demo / discuss page', () => {
         'Try no-meeting Thursdays',
         'Use our planning meetings to discover which meetings and attendees to schedule'
       ],
-      comments: [
-        'While our meetings could be more efficient, we agree that some of them are necessary'
-      ]
+      comments: ['We could make our standups async?']
     }
     // To optimize for speed, we don't check every discuss group.
     // {

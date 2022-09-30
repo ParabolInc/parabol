@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
-import useTooltip from '../hooks/useTooltip'
-import {MenuPosition} from '../hooks/useCoords'
 
 export type CommentSubmitState = 'idle' | 'typing'
 
@@ -45,9 +45,12 @@ interface Props {
 
 const SendCommentButton = (props: Props) => {
   const {commentSubmitState, onSubmit, dataCy} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<
-    HTMLButtonElement
-  >(MenuPosition.LOWER_CENTER)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
   const isDisabled = commentSubmitState === 'idle'
   return (
     <>

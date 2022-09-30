@@ -401,7 +401,7 @@ export class DemoComment {
   createdAt: string
   updatedAt: string
   createdBy: string | null
-  createdByUser: DemoUser | null
+  createdByUserNullable: DemoUser | null
   id: string
   isActive = true
   isViewerComment: boolean
@@ -435,7 +435,7 @@ export class DemoComment {
     this.createdAt = new Date().toJSON()
     this.updatedAt = new Date().toJSON()
     this.createdBy = isAnonymous ? null : userId
-    this.createdByUser = isAnonymous ? null : db.users.find(({id}) => id === userId)!
+    this.createdByUserNullable = isAnonymous ? null : db.users.find(({id}) => id === userId)!
     this.id = id
     this.discussionId = discussionId
     this.isViewerComment = userId === demoViewerId
@@ -573,6 +573,7 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
     team,
     teamMembers,
     users,
+    _started: false,
     _updatedAt: new Date(),
     _tempID: 1,
     _botScript: botScript

@@ -1,5 +1,4 @@
-
-type IntervalUnit = "day" | "week" | "month" | "year";
+type IntervalUnit = 'day' | 'week' | 'month' | 'year'
 interface Input {
   amount: number
   quantity: number

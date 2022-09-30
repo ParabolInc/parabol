@@ -1,6 +1,6 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {R} from 'rethinkdb-ts'
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   const questions = [
     'Glad',
     'Sad',
@@ -69,11 +69,7 @@ export const up = async function(r: R) {
   try {
     const colorlessItemGroups = (await r
       .table('CustomPhaseItem')
-      .filter((row) =>
-        row('groupColor')
-          .default(null)
-          .eq(null)
-      )
+      .filter((row) => row('groupColor').default(null).eq(null))
       .group('templateId')('id')
       .ungroup()('reduction')
       .run()) as string[][]
@@ -99,7 +95,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r
       .table('CustomPhaseItem')

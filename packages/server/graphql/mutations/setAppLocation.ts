@@ -1,5 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import {getUserId} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
@@ -8,7 +9,6 @@ import {GQLContext} from '../graphql'
 import {UserPresence} from '../private/mutations/connectSocket'
 import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
-import {isNotNull} from 'parabol-client/utils/predicates'
 
 export default {
   type: new GraphQLNonNull(SetAppLocationPayload),

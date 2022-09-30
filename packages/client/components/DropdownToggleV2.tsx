@@ -1,27 +1,32 @@
-import React, {forwardRef, ReactNode, Ref} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React, {forwardRef, ReactNode, Ref} from 'react'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import Icon from './Icon'
 
-const DropdownIcon = styled(Icon)<{hasCustomIcon: boolean}>(({hasCustomIcon}) => ({
-  color: PALETTE.SLATE_700,
-  padding: hasCustomIcon ? 15 : 12,
-  fontSize: hasCustomIcon ? ICON_SIZE.MD18 : ICON_SIZE.MD24
+const DropdownIcon = styled(Icon)<{opened: boolean | undefined}>(({opened}) => ({
+  color: PALETTE.SLATE_600,
+  fontSize: ICON_SIZE.MD36,
+  alignSelf: 'center',
+  transform: opened ? 'rotateX(180deg)' : 'none',
+  transition: 'transform 0.2s'
 }))
 
 const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
-  background: '#fff',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: '4px',
+  background: PALETTE.SLATE_200,
+  borderRadius: '8px',
   cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'flex',
   fontSize: 14,
   lineHeight: '24px',
   fontWeight: 600,
   userSelect: 'none',
-  width: '100%'
+  width: '100%',
+  ':hover': {
+    backgroundColor: PALETTE.SLATE_300
+  },
+  padding: 16
 }))
 
 interface Props {
@@ -31,10 +36,11 @@ interface Props {
   onClick: ReturnType<typeof useMenu>['togglePortal']
   onMouseEnter?: () => void
   children: ReactNode
+  opened?: boolean
 }
 
 const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, children, icon, onClick, onMouseEnter, disabled} = props
+  const {className, children, icon, onClick, onMouseEnter, disabled, opened} = props
   return (
     <DropdownBlock
       className={className}
@@ -44,7 +50,7 @@ const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
       onClick={disabled ? undefined : onClick}
     >
       {children}
-      {!disabled && <DropdownIcon hasCustomIcon={Boolean(icon)}>{icon || 'expand_more'}</DropdownIcon>}
+      {!disabled && <DropdownIcon opened={opened}>{icon || 'expand_more'}</DropdownIcon>}
     </DropdownBlock>
   )
 })

@@ -1,8 +1,8 @@
-import {PromoteNewMeetingFacilitatorMutation_meeting} from '../__generated__/PromoteNewMeetingFacilitatorMutation_meeting.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
+import {PromoteNewMeetingFacilitatorMutation_meeting} from '../__generated__/PromoteNewMeetingFacilitatorMutation_meeting.graphql'
 
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_meeting on PromoteNewMeetingFacilitatorPayload {
@@ -37,10 +37,9 @@ const mutation = graphql`
   }
 `
 
-export const promoteNewMeetingFacilitatorMeetingOnNext: OnNextHandler<PromoteNewMeetingFacilitatorMutation_meeting> = (
-  payload,
-  {atmosphere}
-) => {
+export const promoteNewMeetingFacilitatorMeetingOnNext: OnNextHandler<
+  PromoteNewMeetingFacilitatorMutation_meeting
+> = (payload, {atmosphere}) => {
   const {viewerId} = atmosphere
   const {oldFacilitator, meeting} = payload
   if (!oldFacilitator || !meeting) return
@@ -59,10 +58,9 @@ export const promoteNewMeetingFacilitatorMeetingOnNext: OnNextHandler<PromoteNew
   })
 }
 
-const PromoteNewMeetingFacilitatorMutation: SimpleMutation<TPromoteNewMeetingFacilitatorMutation> = (
-  atmosphere,
-  variables
-) => {
+const PromoteNewMeetingFacilitatorMutation: SimpleMutation<
+  TPromoteNewMeetingFacilitatorMutation
+> = (atmosphere, variables) => {
   return commitMutation<TPromoteNewMeetingFacilitatorMutation>(atmosphere, {
     mutation,
     variables,

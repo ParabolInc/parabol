@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import RetrospectiveMeeting from './RetrospectiveMeeting'
-import {resolveNewMeeting} from '../resolvers'
 import {GQLContext} from '../graphql'
+import {resolveNewMeeting} from '../resolvers'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 
 const VotePhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'VotePhaseCompletePayload',

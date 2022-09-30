@@ -11,9 +11,7 @@ import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {MeetingTypeEnum, NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
-import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
-import {Elevation} from '../styles/elevation'
 import {Breakpoint, Radius} from '../types/constEnums'
 import sortByTier from '../utils/sortByTier'
 import DialogContainer from './DialogContainer'
@@ -33,27 +31,42 @@ interface Props {
 
 const MEDIA_QUERY_FUZZY_TABLET = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
 
-const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  gridArea: 'settings',
-  marginTop: isDesktop ? 32 : 16,
-  minHeight: 166
-}))
-
-const TeamAndSettingsInner = styled('div')({
-  borderRadius: '4px',
-  boxShadow: Elevation.Z1
+const TeamAndSettings = styled('div')({
+  marginTop: 16,
+  minHeight: 166,
+  padding: '0px 24px'
 })
 
-const NewMeetingDialog = styled(DialogContainer)<{isDesktop}>(({isDesktop}) =>({
-  width: '800px',
-  borderRadius: isDesktop ? Radius.FIELD : 0,
-  minWidth: isDesktop ? 'unset' : '100vw',
-  maxHeight: isDesktop ? 'unset' : '100vh',
-  minHeight: isDesktop ? 'unset' : '100vh',
-}))
+const SettingsFirstRow = styled('div')({
+  paddingBottom: 16
+})
+
+const SettingsRow = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  gap: 16,
+  '> div, button': {
+    width: '50%'
+  },
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    flexDirection: 'column',
+    '> div, button': {
+      width: '100%'
+    }
+  }
+})
+
+const NewMeetingDialog = styled(DialogContainer)({
+  width: '860px',
+  borderRadius: Radius.FIELD,
+
+  [MEDIA_QUERY_FUZZY_TABLET]: {
+    minWidth: '100vw',
+    maxHeight: '100vh',
+    minHeight: '100vh',
+    borderRadius: 0
+  }
+})
 
 const Title = styled(DialogTitle)({
   fontSize: 24,
@@ -132,7 +145,6 @@ const NewMeeting = (props: Props) => {
       history.replace(nextPath, location.state)
     }
   }, [])
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const selectedTeam = teams.find((team) => team.id === teamId)
   useEffect(() => {
     if (!selectedTeam) return
@@ -161,7 +173,7 @@ const NewMeeting = (props: Props) => {
   }
   if (!teamId || !selectedTeam) return null
   return (
-    <NewMeetingDialog isDesktop={isDesktop}>
+    <NewMeetingDialog>
       <Title>
         New meeting
         <CloseButton onClick={onClose}>
@@ -175,11 +187,13 @@ const NewMeeting = (props: Props) => {
           meetingOrder={meetingOrder}
           onStartMeetingClick={onStartMeetingClick}
         />
-        <TeamAndSettings isDesktop={isDesktop}>
-          <TeamAndSettingsInner>
-            <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
+        <TeamAndSettings>
+          <SettingsFirstRow>
+            <NewMeetingTeamPicker selectedTeamRef={selectedTeam} teamsRef={teams} />
+          </SettingsFirstRow>
+          <SettingsRow>
             <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
-          </TeamAndSettingsInner>
+          </SettingsRow>
         </TeamAndSettings>
       </NewMeetingInner>
       <NewMeetingActions

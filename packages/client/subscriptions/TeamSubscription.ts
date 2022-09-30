@@ -43,6 +43,7 @@ const subscription = graphql`
     teamSubscription {
       __typename
       ...StartRecurrenceMutation_team @relay(mask: false)
+      ...StopRecurrenceMutation_team @relay(mask: false)
       ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
       ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
       ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
@@ -73,7 +74,7 @@ const subscription = graphql`
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectTemplateMutation_team @relay(mask: false)
       ...SetAppLocationMutation_team @relay(mask: false)
-      ...SetCheckInEnabledMutation_team @relay(mask: false)
+      ...SetMeetingSettingsMutation_team @relay(mask: false)
       ...StartCheckInMutation_team @relay(mask: false)
       ...StartRetrospectiveMutation_team @relay(mask: false)
       ...StartSprintPokerMutation_team @relay(mask: false)

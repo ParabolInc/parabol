@@ -1,5 +1,5 @@
-import {getDiscussionsByIdsQuery} from './generated/getDiscussionsByIdsQuery'
 import getPg from '../getPg'
+import {getDiscussionsByIdsQuery} from './generated/getDiscussionsByIdsQuery'
 
 export const getDiscussionsByIds = async (ids: readonly string[]) => {
   const discussions = await getDiscussionsByIdsQuery.run({ids}, getPg())

@@ -13,11 +13,12 @@ import {Breakpoint} from '../types/constEnums'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 
-const VoteSettingsMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'VoteSettingsMenu' */
-    './VoteSettingsMenu'
-  )
+const VoteSettingsMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'VoteSettingsMenu' */
+      './VoteSettingsMenu'
+    )
 )
 
 const VoteMeta = styled('div')({

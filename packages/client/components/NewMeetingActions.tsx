@@ -17,15 +17,14 @@ const ActionRow = styled('div')({
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   padding: 24,
-  paddingTop: 16,
   [narrowScreenMediaQuery]: {
-      flexDirection: 'column',
-      justifyContent: 'center',
-      flexWrap: 'nowrap',
-      alignContent: 'center',
-      alignSelf:'center',
-      marginTop: 'auto',
-      paddingBottom: '24px',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    flexWrap: 'nowrap',
+    alignContent: 'center',
+    alignSelf: 'center',
+    marginTop: 'auto',
+    paddingBottom: '24px'
   }
 })
 

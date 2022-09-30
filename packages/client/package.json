@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.69.0",
+  "version": "6.76.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -19,6 +19,7 @@
     "lint": "eslint --fix . --ext .ts,.tsx",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
@@ -65,9 +66,11 @@
     "@sentry/browser": "^5.8.0",
     "@tiptap/extension-character-count": "^2.0.0-beta.25",
     "@tiptap/extension-link": "^2.0.0-beta.38",
+    "@tiptap/extension-mention": "^2.0.0-beta.102",
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
     "@tiptap/react": "^2.0.0-beta.109",
     "@tiptap/starter-kit": "^2.0.0-beta.185",
+    "@tiptap/suggestion": "^2.0.0-beta.97",
     "chart.js": "^3.8.0",
     "chartjs-adapter-dayjs-3": "^1.2.3",
     "core-js": "3.8.1",

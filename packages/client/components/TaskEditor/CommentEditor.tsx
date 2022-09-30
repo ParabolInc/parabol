@@ -7,15 +7,15 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useRef} from 'react'
-import completeEntity from '../../utils/draftjs/completeEntity'
-import linkify from '../../utils/linkify'
+import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import {AriaLabels, Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
+import completeEntity from '../../utils/draftjs/completeEntity'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import lazyPreload from '../../utils/lazyPreload'
+import linkify from '../../utils/linkify'
 import blockStyleFn from './blockStyleFn'
 import './Draft.css'
 import useCommentPlugins from './useCommentPlugins'
@@ -26,8 +26,8 @@ const RootEditor = styled('div')({
   width: '100%'
 })
 
-const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -53,6 +53,7 @@ interface Props extends DraftProps {
   onSubmit: () => void
   teamId: string
   dataCy: string
+  discussionId?: string
 }
 
 const CommentEditor = (props: Props) => {
@@ -66,6 +67,7 @@ const CommentEditor = (props: Props) => {
     onSubmit,
     onBlur,
     onFocus,
+    discussionId,
     dataCy
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
@@ -189,6 +191,12 @@ const CommentEditor = (props: Props) => {
     if (renderModal || !onBlur) return
     onBlur(e)
   }
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.focus()
+    }
+  }, [editorRef, discussionId])
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)

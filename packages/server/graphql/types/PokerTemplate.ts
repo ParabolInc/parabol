@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import connectionDefinitions from '../connectionDefinitions'
-import {GQLContext} from '../graphql'
-import TemplateDimension from './TemplateDimension'
-import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import connectionDefinitions from '../connectionDefinitions'
+import {GQLContext} from '../graphql'
+import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
+import TemplateDimension from './TemplateDimension'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerTemplate',

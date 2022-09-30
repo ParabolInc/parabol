@@ -1,13 +1,13 @@
-import React, {MouseEvent} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
-import FlatButton from './FlatButton'
+import React, {MouseEvent} from 'react'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
+import {PALETTE} from '~/styles/paletteV3'
+import {Breakpoint} from '~/types/constEnums'
+import FlatButton from './FlatButton'
 import Icon from './Icon'
 import RetroPrompt from './RetroPrompt'
-import {Breakpoint} from '~/types/constEnums'
-import useBreakpoint from '~/hooks/useBreakpoint'
 
 const AddReflectionButton = styled(FlatButton)({
   border: 0,

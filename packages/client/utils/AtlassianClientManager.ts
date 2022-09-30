@@ -1,9 +1,9 @@
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import makeHref from './makeHref'
-import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 import AtlassianManager, {JiraPermissionScope} from './AtlassianManager'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import makeHref from './makeHref'
 
 class AtlassianClientManager extends AtlassianManager {
   fetch = window.fetch.bind(window)
@@ -14,9 +14,7 @@ class AtlassianClientManager extends AtlassianManager {
     scopes: JiraPermissionScope[] = AtlassianManager.SCOPE
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
     const redirect = makeHref('/auth/atlassian')
     const uri = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
       window.__ACTION__.atlassian

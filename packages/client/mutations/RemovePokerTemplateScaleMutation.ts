@@ -1,10 +1,10 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import handleRemovePokerTemplateScale from './handlers/handleRemovePokerTemplateScale'
-import {RemovePokerTemplateScaleMutation_scale} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
-import {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
+import {commitMutation} from 'react-relay'
 import getInProxy from '~/utils/relay/getInProxy'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
+import {RemovePokerTemplateScaleMutation_scale} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
+import handleRemovePokerTemplateScale from './handlers/handleRemovePokerTemplateScale'
 
 graphql`
   fragment RemovePokerTemplateScaleMutation_scale on RemovePokerTemplateScalePayload {
@@ -25,10 +25,9 @@ const mutation = graphql`
   }
 `
 
-export const removePokerTemplateScaleTeamUpdater: SharedUpdater<RemovePokerTemplateScaleMutation_scale> = (
-  payload,
-  {store}
-) => {
+export const removePokerTemplateScaleTeamUpdater: SharedUpdater<
+  RemovePokerTemplateScaleMutation_scale
+> = (payload, {store}) => {
   const scaleId = getInProxy(payload, 'scale', 'id')
   const teamId = getInProxy(payload, 'scale', 'teamId')
   handleRemovePokerTemplateScale(scaleId, teamId, store)

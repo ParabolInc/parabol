@@ -1,5 +1,5 @@
-import addNodeToArray from '../../utils/relay/addNodeToArray'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddReflectionToGroup = (
   reflectionProxy: RecordProxy,

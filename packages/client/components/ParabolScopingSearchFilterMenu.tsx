@@ -45,9 +45,8 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
         const toggleStatusFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const meeting = store.get(meetingId)!
-            const parabolSearchQuery = meeting.getLinkedRecord<ParabolSearchQuery>(
-              'parabolSearchQuery'
-            )
+            const parabolSearchQuery =
+              meeting.getLinkedRecord<ParabolSearchQuery>('parabolSearchQuery')
             const statusFiltersProxy = parabolSearchQuery.getValue('statusFilters').slice()
             const keyIdx = statusFiltersProxy.indexOf(status)
             keyIdx !== -1 ? statusFiltersProxy.splice(keyIdx, 1) : statusFiltersProxy.push(status)

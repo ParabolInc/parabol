@@ -1,6 +1,6 @@
 import {GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const NextPeriodCharges = new GraphQLObjectType<any, GQLContext>({
   name: 'NextPeriodCharges',

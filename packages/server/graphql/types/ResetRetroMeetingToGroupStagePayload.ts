@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import NewMeeting from './NewMeeting'
-import {resolveNewMeeting} from '../resolvers'
-import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
+import {resolveNewMeeting} from '../resolvers'
+import NewMeeting from './NewMeeting'
+import StandardMutationError from './StandardMutationError'
 
 const ResetRetroMeetingToGroupStagePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'ResetRetroMeetingToGroupStagePayload',

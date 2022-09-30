@@ -35,7 +35,8 @@ const TemplateDimensionList = (props: Props) => {
       destination.droppableId !== TEMPLATE_DIMENSION ||
       source.droppableId !== TEMPLATE_DIMENSION ||
       destination.index === source.index ||
-      !sourceDimension || !destinationDimension
+      !sourceDimension ||
+      !destinationDimension
     ) {
       return
     }

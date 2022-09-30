@@ -11,11 +11,12 @@ import {ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {TemplateSharing_template} from '../../../__generated__/TemplateSharing_template.graphql'
 
-const SelectSharingScopeDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'SelectSharingScopeDropdown' */
-    '../../../components/SelectSharingScopeDropdown'
-  )
+const SelectSharingScopeDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'SelectSharingScopeDropdown' */
+      '../../../components/SelectSharingScopeDropdown'
+    )
 )
 
 const HR = styled('hr')({
@@ -83,9 +84,12 @@ const TemplateSharing = (props: Props) => {
       }
     }
   )
-  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.LOWER_CENTER, {
+  const {
+    openTooltip,
+    tooltipPortal,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER, {
     disabled: isLead
   })
   if (!isOwner) return null
@@ -93,8 +97,8 @@ const TemplateSharing = (props: Props) => {
     scope === 'TEAM'
       ? `Only visible to ${teamName}`
       : scope === 'ORGANIZATION'
-        ? `Sharing with ${orgName}`
-        : 'Sharing publicly'
+      ? `Sharing with ${orgName}`
+      : 'Sharing publicly'
   return (
     <>
       <HR />

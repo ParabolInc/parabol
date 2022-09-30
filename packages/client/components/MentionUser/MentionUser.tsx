@@ -1,7 +1,7 @@
 import React from 'react'
 import Avatar from '../Avatar/Avatar'
-import DraftMentionRow from '../MentionTag/DraftMentionRow'
 import DraftMentionDescription from '../MentionTag/DraftMentionDescription'
+import DraftMentionRow from '../MentionTag/DraftMentionRow'
 
 export interface MentionUserProps {
   active: boolean

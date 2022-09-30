@@ -1,6 +1,6 @@
 import React from 'react'
-import MeetingCopy from '../MeetingCopy/MeetingCopy'
 import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
+import MeetingCopy from '../MeetingCopy/MeetingCopy'
 
 const AgendaShortcutHint = () => {
   return (

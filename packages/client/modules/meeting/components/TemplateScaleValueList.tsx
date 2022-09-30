@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Droppable, Draggable, DropResult} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueList_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -23,7 +23,6 @@ const ScaleList = styled('div')({
   overflow: 'auto',
   width: '100%'
 })
-
 
 const TemplateScaleValueList = (props: Props) => {
   const {isOwner, scale} = props
@@ -72,7 +71,8 @@ const TemplateScaleValueList = (props: Props) => {
                             scale={scale}
                             scaleValue={scaleValue}
                             isDragging={dragSnapshot.isDragging}
-                            dragProvided={dragProvided} />
+                            dragProvided={dragProvided}
+                          />
                         )
                       }}
                     </Draggable>

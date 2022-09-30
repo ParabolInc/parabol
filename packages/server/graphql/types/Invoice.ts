@@ -7,17 +7,17 @@ import {
   GraphQLString
 } from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
-import CreditCard from './CreditCard'
+import {GQLContext} from '../graphql'
 import Coupon from './Coupon'
+import CreditCard from './CreditCard'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import NextPeriodCharges from './NextPeriodCharges'
 import InvoiceLineItem from './InvoiceLineItem'
 import InvoiceStatusEnum from './InvoiceStatusEnum'
+import NextPeriodCharges from './NextPeriodCharges'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import TierEnum from './TierEnum'
-import {GQLContext} from '../graphql'
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.

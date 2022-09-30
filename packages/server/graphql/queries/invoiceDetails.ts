@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {Threshold} from '../../../client/types/constEnums'
 import generateUpcomingInvoice from '../../billing/helpers/generateUpcomingInvoice'
@@ -6,6 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import Invoice from '../types/Invoice'
+import {GQLContext} from './../graphql'
 
 export default {
   type: Invoice,

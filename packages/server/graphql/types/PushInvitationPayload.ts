@@ -1,8 +1,8 @@
-import {GraphQLObjectType, GraphQLID} from 'graphql'
-import StandardMutationError from './StandardMutationError'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import User from './User'
+import StandardMutationError from './StandardMutationError'
 import Team from './Team'
+import User from './User'
 
 const PushInvitationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'PushInvitationPayload',

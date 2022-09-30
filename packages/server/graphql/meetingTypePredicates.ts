@@ -1,8 +1,8 @@
+import EstimateStage from '../database/types/EstimateStage'
+import GenericMeetingStage from '../database/types/GenericMeetingStage'
+import MeetingAction from '../database/types/MeetingAction'
 import MeetingPoker from '../database/types/MeetingPoker'
 import MeetingRetrospective from '../database/types/MeetingRetrospective'
-import MeetingAction from '../database/types/MeetingAction'
-import GenericMeetingStage from '../database/types/GenericMeetingStage'
-import EstimateStage from '../database/types/EstimateStage'
 import {AnyMeeting} from '../postgres/types/Meeting'
 
 export const isRetroMeeting = (meeting: AnyMeeting): meeting is MeetingRetrospective =>

@@ -7,10 +7,7 @@ interface Props {
 }
 
 const CloneTemplate = (props: Props) => {
-  const {
-    canClone,
-    onClick,
-  } = props
+  const {canClone, onClick} = props
   const tooltip = canClone ? 'Clone & Edit Template' : 'Too many team templates! Remove one first'
   return (
     <DetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={onClick} />

@@ -12,6 +12,7 @@ graphql`
         id
         recurrenceRule
         duration
+        cancelledAt
       }
       scheduledEndTime
     }

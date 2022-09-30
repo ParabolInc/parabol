@@ -170,7 +170,7 @@ const NewGitLabIssueInput = (props: Props) => {
   const {dirty, error} = fields.newIssue
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
-      ref.current && ref.current.focus()
+      ref.current?.focus()
     }
   }, [portalStatus])
 

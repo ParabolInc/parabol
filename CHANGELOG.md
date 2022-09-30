@@ -5,6 +5,161 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.75.0 2022-September-28
+
+### Added
+- Add password reset to user profile (#7183)
+- Option to unsubscribe from summary emails (#7190)
+- **Analytics**: 'Copied Invite Link' event (#7232)
+- **Analytics**: 'Sent invite accepted' event (#7231)
+
+### Fixed
+- **Notifications**: UTM params on notification email link (#7224)
+
+### Changed
+- Tweak review stats schedule to match other reminders (#7227)
+- Add jira server key generation script (#7180)
+- Let super users invite to team (#7226)
+
+## 6.75.0 2022-September-21
+
+### Added
+
+- feat(metrics): Add metrics about disableAnonymity in retro meetings (#7171)
+
+### Fixed
+
+- fix: Fix cannot read email of undefined in ErrorBoundary (#7198)
+- fix: 'Estimate phase is already complete' error message (#7194)
+
+### Changed
+
+- style(lint): run yarn format on server side (#7186)
+- ci: update to Lerna V5 and integrate with Nx (#7184)
+- ci: setting write permissions to the PR for external contributor (#7195)
+- chore: add Standup smoke test into the testing basics (#7189)
+- chore: Weekly review stats in Slack (#7205)
+
+## 6.74.0 2022-September-15
+
+### Fixed
+
+- fix: Disallow comments only consisting of whitespace (#7137)
+- fix: New Add Meeting button is pushing the Add Team button out of reach (#7157)
+- fix(demo): prevent demo meeting auto-start after page refresh (#7131)
+- fix: card quick return to original position without hangs (#7138)
+- fix: Misleading error message when inviting existing team mate (#7159)
+- fix: Long title create UI issue on mobile (#7168)
+- fix: only check clientGraphQLServer for isDemoRoute (#7176)
+- fix(poker): fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
+
+### Changed
+
+- chore: Automatically add reviewers (#7172)
+
+## 6.73.0 2022-September-08
+
+### Added
+
+- Datadog sourcemaps: add source maps to deploy (#7063)
+- **Metrics**: clean up some properties for Task Created events (#7067)
+- **Metrics**: Add Task Estimate Set event (#7117)
+- **Metrics**: identify if user is patient 0 upon login (#7129)
+- Usage stats clarity improvements (#7112)
+- **Standups recurrence**: restart recurrence in startRecurrence mutation (#7049)
+- Allow disable anonymity for retrospective meeting reflections (#7076)
+- **Standups/tiptap**: Client-side mentions (#7118)
+- **DX**: createFragmentContainer -> useFragment codeshift automation (#7135)
+
+### Fixed
+
+- Fix empty discuss phase (#7070)
+- Increase line-height of text in Standups responses (#7115)
+- **New meeting dialog**: fixed truncated template dropdown text (#7096)
+- Fixed azure work item id & change item link to project name (#7093)
+- Fixed azure refresh auth (#7097)
+- Fixed facilitator's name is tiny and hard to read (#7113)
+- Increase font size of standup meeting title (#7142)
+- **DX**: Turn on noImplicitAny for server (#7011)
+- **DX**: Fix the PR labeler (#7109)
+
+### Changed
+
+- Changed copy on /create-account page (#7132)
+- Add pull-request-stats github workflow (#7111)
+
+## 6.72.1 2022-August-26
+
+### Fixed
+
+- fix: Update stripe.subscription.create prorate parameter (#7119)
+
+## 6.72.0 2022-August-25
+
+### Added
+
+- feat: Update location of "add meeting" to left sidebar (#7012)
+- feat(standups): Recurrence - stopRecurrence mutation (#7023)
+- feat(standups): Recurrence - processRecurrence mutation (#7041)
+- feat: create azure issue (#7053)
+- feat(retro): prompt user to go to next phase (#6942)
+- feat(tiptap): Emoji Support (#7102)
+
+### Fixed
+
+- fix: show the team lead first in the preview of team selector (#7091)
+- fix(metrics): Move identify inactive up to within changePause() (#7083)
+- fix: title of the reflection columns should not be italic (#7044)
+- fix: Contrast of selected highlight of the current phase is low (#6940)
+- fix: hyperlink default focus (#7078)
+- fix: demo comments are always anonymous (#7065)
+- fix: center new meeting dialog slides on mobile (#7079)
+- fix: support documentation easier to find in-app (#7080)
+
+### Changed
+
+- chore: update vscode import settings (#7077)
+
+## 6.71.0 2022-August-17
+
+### Added
+
+- Updated new meeting settings area (#6989)
+- Added Team members preview in new meeting team selector (#7001)
+- **Metrics**: Added `inviterId` to Invite Accepted events (#7058)
+- Added scrum template (#7064)
+- Implemented Azure task integration (#7007)
+
+### Fixed
+
+- **Usage Stats**: active teams definition (#7060)
+- Removed double scrollbar on discuss phase (#7066)
+
+## 6.70.1 2022-August-11
+
+### Fixed
+
+- fix: Email summaries not sending for non-standup meetings.
+
+## 6.70.0 2022-August-10
+
+### Added
+
+- feat(graphiql): persist schema for tabs (#6813)
+- feat(metrics): Add isActive and featureFlags as new User Properties for Segment identify calls (#6997)
+- feat(standups): startRecurrence mutation (#6957)
+- feat(metrics): identify user's tier upon login (#7003)
+- feat(metrics): Use HubSpot Private apps access token for HubSpot calls ( #7010)
+
+### Fixed
+
+- fix(resetPassword): Reset request count daily (#6955)
+- fix: add billing info (#7000)
+- fix: fix truncated sprint poker description in new meeting dialog (#7027)
+- fix(metrics): remove duplicate viewerId in various Segment events (#7009)
+- fix: bug that set org count to 0 (#7008)
+- fix(standups): Update 'lastMeetingType' after a team prompt meeting starts (#7029)
+
 ## 6.69.0 2022-August-03
 
 ### Added

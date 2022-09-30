@@ -1,7 +1,7 @@
+import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
+import filterNodesInConn from '../../utils/relay/filterNodesInConn'
 import getNotificationsConn from '../connections/getNotificationsConn'
 import pluralizeHandler from './pluralizeHandler'
-import filterNodesInConn from '../../utils/relay/filterNodesInConn'
-import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
 
 const handleAddNotification = (newNode: RecordProxy | null, store: RecordSourceProxy) => {
   if (!newNode) return

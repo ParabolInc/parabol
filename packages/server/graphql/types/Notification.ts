@@ -1,15 +1,8 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import NotificationEnum, {NotificationEnumType} from './NotificationEnum'
-import NotificationMeetingStageTimeLimitEnd from './NotificationMeetingStageTimeLimitEnd'
+import NotificationEnum from './NotificationEnum'
 import NotificationStatusEnum from './NotificationStatusEnum'
-import NotificationTeamInvitation from './NotificationTeamInvitation'
-import NotifyKickedOut from './NotifyKickedOut'
-import NotifyPaymentRejected from './NotifyPaymentRejected'
-import NotifyPromoteToOrgLeader from './NotifyPromoteToOrgLeader'
-import NotifyTaskInvolves from './NotifyTaskInvolves'
-import NotifyTeamArchived from './NotifyTeamArchived'
 import PageInfoDateCursor from './PageInfoDateCursor'
 
 export const notificationInterfaceFields = {
@@ -41,22 +34,7 @@ export const notificationInterfaceFields = {
 
 const Notification: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'Notification',
-  fields: () => notificationInterfaceFields,
-  resolveType({type}: {type: NotificationEnumType}) {
-    // type lookup needs to be resolved in a thunk since there is a circular reference when loading
-    // alternative to treating it like a DB driver if GCing is an issue
-    const resolveTypeLookup = {
-      KICKED_OUT: NotifyKickedOut,
-      PAYMENT_REJECTED: NotifyPaymentRejected,
-      TASK_INVOLVES: NotifyTaskInvolves,
-      PROMOTE_TO_BILLING_LEADER: NotifyPromoteToOrgLeader,
-      TEAM_ARCHIVED: NotifyTeamArchived,
-      TEAM_INVITATION: NotificationTeamInvitation,
-      MEETING_STAGE_TIME_LIMIT_END: NotificationMeetingStageTimeLimitEnd
-    } as const
-
-    return resolveTypeLookup[type]
-  }
+  fields: () => notificationInterfaceFields
 })
 
 const {connectionType, edgeType} = connectionDefinitions({

@@ -17,6 +17,5 @@ export default class DiscussStage extends GenericMeetingStage {
     this.sortOrder = sortOrder
     this.discussionId = discussionId ?? generateUID()
     this.reflectionGroupId = reflectionGroupId
-    this.isNavigableByFacilitator = true
   }
 }

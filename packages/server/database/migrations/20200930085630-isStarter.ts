@@ -1,5 +1,5 @@
 import {R} from 'rethinkdb-ts'
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   const starters = [
     'sailboatTemplate',
     'startStopContinueTemplate',
@@ -8,17 +8,13 @@ export const up = async function(r: R) {
     'gladSadMadTemplate'
   ]
   try {
-    await r
-      .table('MeetingTemplate')
-      .getAll(r.args(starters))
-      .update({isStarter: true})
-      .run()
+    await r.table('MeetingTemplate').getAll(r.args(starters)).update({isStarter: true}).run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   const starters = [
     'sailboatTemplate',
     'startStopContinueTemplate',

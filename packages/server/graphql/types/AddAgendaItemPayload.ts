@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import AgendaItem from './AgendaItem'
-import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
+import AgendaItem from './AgendaItem'
 import NewMeeting from './NewMeeting'
+import StandardMutationError from './StandardMutationError'
 
 const AddAgendaItemPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddAgendaItemPayload',

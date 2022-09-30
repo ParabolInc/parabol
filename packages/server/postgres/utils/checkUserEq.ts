@@ -1,7 +1,7 @@
-import User from '../../database/types/User'
 import getRethink from '../../database/rethinkDriver'
-import {checkTableEq} from './checkEqBase'
+import User from '../../database/types/User'
 import {getUsersByIds} from '../queries/getUsersByIds'
+import {checkTableEq} from './checkEqBase'
 
 const alwaysDefinedFields: (keyof Partial<User>)[] = [
   'email',

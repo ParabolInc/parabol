@@ -1,8 +1,8 @@
-import pluralizeHandler from './pluralizeHandler'
-import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveAgendaItem = (
   agendaItemId: string,

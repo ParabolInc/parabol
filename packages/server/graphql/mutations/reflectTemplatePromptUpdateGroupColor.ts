@@ -29,10 +29,7 @@ const reflectTemplatePromptUpdateGroupColor = {
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
-    const prompt = await r
-      .table('ReflectPrompt')
-      .get(promptId)
-      .run()
+    const prompt = await r.table('ReflectPrompt').get(promptId).run()
 
     // AUTH
     if (!prompt || prompt.removedAt) {
