@@ -36,11 +36,16 @@ query($searchQuery: String!) {
               comments(first: 1) {
                 totalCount
               }
+              bodyText
               submittedAt
               state
             }
             ... on MergedEvent {
               actor { ...UserFragment }
+              createdAt
+            }
+            ... on IssueComment {
+              author { ...UserFragment }
               createdAt
             }
           }
@@ -140,6 +145,9 @@ const parseStats = (rawData: any) => {
 
         reviewers.add(login)
         comments += item.comments.totalCount
+        if (item.bodyText) {
+          comments++
+        }
         reviews++
       }
       if (item.__typename === 'MergedEvent') {
@@ -166,6 +174,25 @@ const parseStats = (rawData: any) => {
           reviews++
         }
       }
+      if (item.__typename === 'IssueComment') {
+        const login = item.author.login
+        // no bots
+        if (login !== undefined) {
+          if (login !== pr.author.login) {
+            if (!reviewerStats[login]) {
+              reviewerStats[login] = {
+                ...item.author,
+                timesToReview: [],
+                reviewStates: [],
+                comments: 0,
+                reviewedPRs: 0,
+              }
+            }
+            reviewerStats[login].comments++
+            comments++
+          }
+        }
+      }
     })
     reviewers.forEach(reviewer => {
       reviewerStats[reviewer].reviewedPRs++
@@ -173,6 +200,7 @@ const parseStats = (rawData: any) => {
 
     return {
       number: pr.number,
+      url: pr.url,
       author: pr.author,
       timeToMerge: timeToMerge,
       comments,
@@ -275,6 +303,19 @@ const main = async () => {
   console.log(`Total ${prs.length} PRs merged`)
   console.log(formatPrs(prs))
 
+  if (process.argv.includes('--debug')) {
+    console.log('\nDEBUG')
+    console.log('Read following PRs')
+    prs.forEach((pr) => {
+      console.log(`#${pr.number} ${pr.url}`)
+      console.log(`- author: ${pr.author.login}`)
+      console.log(`- comments: ${pr.comments}`)
+      console.log(`- reviews: ${pr.reviews}`)
+      console.log(`- time to merge: ${ms(pr.timeToMerge)}`)
+    })
+    console.log('DEBUG - Not sending to Slack')
+    return
+  }
 
   const slackMessage = {
     blocks: [{
