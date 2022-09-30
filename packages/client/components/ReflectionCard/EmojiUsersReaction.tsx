@@ -4,7 +4,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
 
-const EmojiUsersReactionParent = styled('div')({
+const EmojiUsersReactionRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -42,9 +42,9 @@ const EmojiUsersReaction = ({reactjiRef}: Props) => {
   )
 
   return (
-    <EmojiUsersReactionParent>
+    <EmojiUsersReactionRoot>
       {LIST_FORMATTER.format(reactji.users.map(({preferredName}) => preferredName))}
-    </EmojiUsersReactionParent>
+    </EmojiUsersReactionRoot>
   )
 }
 

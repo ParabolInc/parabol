@@ -75,11 +75,6 @@ const ReactjiCount = (props: Props) => {
         id
         count
         isViewerReactji
-        users {
-          id
-          preferredName
-          picture
-        }
         ...EmojiUsersReaction_reactji
       }
     `,

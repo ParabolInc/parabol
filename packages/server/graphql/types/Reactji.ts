@@ -30,8 +30,8 @@ const Reactji = new GraphQLObjectType<ReactjiType, GQLContext>({
     users: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(require('./User').default))),
       description: 'The users who added a reactji',
-      resolve: (parent, _args: any, {dataLoader}) => {
-        return dataLoader.get('users').loadMany(parent.userIds)
+      resolve: ({userIds}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('users').loadMany(userIds)
       }
     },
     isViewerReactji: {
