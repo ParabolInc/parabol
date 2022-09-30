@@ -65,7 +65,7 @@ const ActionMeeting = (props: Props) => {
           <Phase
             meeting={meeting}
             toggleSidebar={toggleSidebar}
-            avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
+            avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
           />
         </Suspense>
       </MeetingArea>

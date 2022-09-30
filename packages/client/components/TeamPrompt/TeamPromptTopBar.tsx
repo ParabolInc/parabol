@@ -107,7 +107,7 @@ const TeamPromptTopBar = (props: Props) => {
       </TeamPromptHeader>
       <IconGroupBlock>
         {isDesktop && <BetaBadge>BETA</BetaBadge>}
-        <NewMeetingAvatarGroup meeting={meeting} />
+        <NewMeetingAvatarGroup meetingRef={meeting} />
         <ButtonContainer>
           <TeamPromptOptions meetingRef={meeting} />
         </ButtonContainer>

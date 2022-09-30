@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
@@ -11,7 +11,7 @@ import {DECELERATE} from '../../../../styles/animation'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
-import {NewMeetingAvatarGroup_meeting} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
+import {NewMeetingAvatarGroup_meeting$key} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
 import NewMeetingAvatar from './NewMeetingAvatar'
 
 const MeetingAvatarGroupRoot = styled('div')({
@@ -72,7 +72,7 @@ const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
 }))
 
 interface Props {
-  meeting: NewMeetingAvatarGroup_meeting
+  meetingRef: NewMeetingAvatarGroup_meeting$key
 }
 
 const MAX_AVATARS_DESKTOP = 7
@@ -81,7 +81,37 @@ const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting} = props
+  const {meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment NewMeetingAvatarGroup_meeting on NewMeeting {
+        id
+        team {
+          id
+          teamMembers {
+            id
+            ...AddTeamMemberAvatarButton_teamMembers
+          }
+        }
+        meetingMembers {
+          id
+          userId
+          user {
+            isConnected
+            lastSeenAt
+            lastSeenAtURLs
+          }
+          teamMember {
+            ...NewMeetingAvatar_teamMember
+            id
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+
   const {id: meetingId, team, meetingMembers} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -128,7 +158,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         return (
           <OverlappingBlock key={meetingMember.child.id}>
             <NewMeetingAvatar
-              teamMember={meetingMember.child.teamMember}
+              teamMemberRef={meetingMember.child.teamMember}
               onTransitionEnd={meetingMember.onTransitionEnd}
               status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
             />
@@ -146,30 +176,4 @@ const NewMeetingAvatarGroup = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingAvatarGroup, {
-  meeting: graphql`
-    fragment NewMeetingAvatarGroup_meeting on NewMeeting {
-      id
-      team {
-        id
-        teamMembers {
-          id
-          ...AddTeamMemberAvatarButton_teamMembers
-        }
-      }
-      meetingMembers {
-        id
-        userId
-        user {
-          isConnected
-          lastSeenAt
-          lastSeenAtURLs
-        }
-        teamMember {
-          ...NewMeetingAvatar_teamMember
-          id
-        }
-      }
-    }
-  `
-})
+export default NewMeetingAvatarGroup
