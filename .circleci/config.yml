@@ -105,7 +105,7 @@ jobs:
           path: ./packages/server/reports/junit
       - run:
           name: Install Playwright system dependencies
-          command: sudo yarn workspace integration-tests playwright install-deps
+          command: sudo --preserve-env yarn workspace integration-tests playwright install-deps
       - run:
           name: Run Playwright tests
           command: yarn workspace integration-tests test --workers 2 --reporter list,junit
