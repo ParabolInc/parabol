@@ -17,7 +17,6 @@ graphql`
         users {
           id
           preferredName
-          picture
         }
       }
     }

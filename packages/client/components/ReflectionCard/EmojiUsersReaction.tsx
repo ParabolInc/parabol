@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
+import {PALETTE} from '../../styles/paletteV3'
 
 const EmojiUsersReactionRoot = styled('div')({
   display: 'flex',
@@ -17,6 +18,10 @@ const EmojiUsersReactionRoot = styled('div')({
   whiteSpace: 'normal'
 })
 
+const DarkerGrayPart = styled('span')({
+  color: PALETTE.SLATE_400
+})
+
 const LIST_FORMATTER =
   Intl.ListFormat !== undefined
     ? new Intl.ListFormat('en', {style: 'long', type: 'conjunction'})
@@ -24,9 +29,10 @@ const LIST_FORMATTER =
 
 interface Props {
   reactjiRef: EmojiUsersReaction_reactji$key
+  reactjiShortName?: string
 }
 
-const EmojiUsersReaction = ({reactjiRef}: Props) => {
+const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
   const reactji = useFragment(
     graphql`
       fragment EmojiUsersReaction_reactji on Reactji {
@@ -43,6 +49,7 @@ const EmojiUsersReaction = ({reactjiRef}: Props) => {
   return (
     <EmojiUsersReactionRoot>
       {LIST_FORMATTER.format(reactji.users.map(({preferredName}) => preferredName))}
+      {reactjiShortName && <DarkerGrayPart>reacted with :{reactjiShortName}:</DarkerGrayPart>}
     </EmojiUsersReactionRoot>
   )
 }

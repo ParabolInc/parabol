@@ -8,7 +8,7 @@ import {useFragment} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
-import {BezierCurve} from '~/types/constEnums'
+import {BezierCurve, Times} from '~/types/constEnums'
 import {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
@@ -54,8 +54,6 @@ const Count = styled('div')({
   paddingLeft: 4
 })
 
-export const SHOW_REACTJI_USERS_DELAY = 100 // ms
-
 interface Props {
   reactjiRef: ReactjiCount_reactji$key
   onToggle: (emojiId: string) => void
@@ -67,7 +65,7 @@ const ReactjiCount = (props: Props) => {
   const {onToggle, reactjiRef, status, onTransitionEnd} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,
-    {delay: SHOW_REACTJI_USERS_DELAY}
+    {delay: Times.SHOW_REACTJI_USERS_DELAY}
   )
   const reactji = useFragment(
     graphql`
@@ -84,7 +82,8 @@ const ReactjiCount = (props: Props) => {
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
   const {name} = ReactjiId.split(id)
-  const unified = data.emojis[name]?.unified ?? ''
+  const emoji = data.emojis[name]
+  const unified = emoji?.unified ?? ''
   const unicode = unifiedToNative(unified) || ''
   const onClick = () => {
     onToggle(name)
@@ -101,7 +100,9 @@ const ReactjiCount = (props: Props) => {
       >
         <Emoji>{unicode}</Emoji>
         <Count>{count}</Count>
-        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} />)}
+        {tooltipPortal(
+          <EmojiUsersReaction reactjiRef={reactji} reactjiShortName={emoji?.short_names[0]} />
+        )}
       </Inner>
     </Parent>
   )
