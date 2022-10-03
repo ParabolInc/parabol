@@ -388,7 +388,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const table =
         (reactableType as ReactableEnum) === 'REFLECTION' ? this.db.reflections : this.db.comments
       const reactable = (table as any[]).find(({id}) => id === reactableId)
-      if (!reactable) return null
+      const user = this.db.users.find((user) => user.id === userId)
+      if (!reactable || !user) return null
       const reactjiId = `${reactableId}:${reactji}`
       const reactjis = reactable.reactjis as any[]
       const existingReactjiIdx = reactjis.findIndex((agg) => agg.id === reactjiId)
@@ -410,13 +411,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             id: reactjiId,
             count: 1,
             isViewerReactji: userId === demoViewerId,
-            users: [{__typename: 'user', id: userId}]
+            users: [{__typename: 'user', id: userId, preferredName: user.preferredName}]
           })
         } else {
           existingReactji.count++
           existingReactji.isViewerReactji =
             existingReactji.isViewerReactji || userId === demoViewerId
-          existingReactji.users = [...existingReactji.users, {__typename: 'user', id: userId}]
+          existingReactji.users = [
+            ...existingReactji.users,
+            {__typename: 'user', id: userId, preferredName: user.preferredName}
+          ]
         }
       }
       const data = {

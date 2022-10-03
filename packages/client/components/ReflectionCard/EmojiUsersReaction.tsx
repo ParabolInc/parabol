@@ -34,7 +34,6 @@ const EmojiUsersReaction = ({reactjiRef}: Props) => {
         users {
           id
           preferredName
-          picture
         }
       }
     `,
