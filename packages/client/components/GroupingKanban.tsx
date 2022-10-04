@@ -45,7 +45,8 @@ const GroupingKanban = (props: Props) => {
     spotlightGroup,
     localPhase,
     localStage,
-    meetingNumber
+    meetingNumber,
+    meetingMembers
   } = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
@@ -119,6 +120,10 @@ const GroupingKanban = (props: Props) => {
 
   if (!phaseRef.current) return null
 
+  const reflectionCount = reflectionGroups.reduce(
+    (sum, {reflections}) => sum + reflections.length,
+    0
+  )
   const isGroupPhase = !isComplete && phaseType === 'group'
   const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
@@ -128,7 +133,11 @@ const GroupingKanban = (props: Props) => {
       group.reflections.every((reflection) => !reflection.isViewerDragging && !reflection.isEditing)
     )
   }
-  const showDragHintAnimation = isNotInteracting && isRetrospectiveBeginner
+  const showDragHintAnimation =
+    isNotInteracting &&
+    isRetrospectiveBeginner &&
+    meetingMembers.length === 1 &&
+    reflectionCount > 1
 
   return (
     <PortalProvider>
@@ -182,6 +191,9 @@ export default createFragmentContainer(GroupingKanban, {
       }
       localStage {
         isComplete
+      }
+      meetingMembers {
+        id
       }
       meetingNumber
       phases {
