@@ -69,6 +69,8 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   const hasActiveMeetings = !!meetingSeries?.activeMeetings?.length
   const canStartRecurrence = !isEnded
+  // for now user can end the recurrence only if the meeting is active, or if there are no active meetings in the series
+  // it is somewhat arbitrary and might change in the future
   const canEndRecurrence = !isEnded || !hasActiveMeetings
   const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
 
