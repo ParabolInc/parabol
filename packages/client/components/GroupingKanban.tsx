@@ -38,7 +38,17 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
+  const {
+    reflectionGroups,
+    phases,
+    spotlightReflectionId,
+    spotlightGroup,
+    localPhase,
+    localStage,
+    meetingNumber
+  } = meeting
+  const {phaseType} = localPhase
+  const {isComplete} = localStage
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -108,15 +118,17 @@ const GroupingKanban = (props: Props) => {
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
   if (!phaseRef.current) return null
-  // It is passed down to ReflectionCard
-  const firstReflectionId = groupsByPrompt[reflectPrompts?.[0]?.id ?? '']?.[0]?.reflections?.[0]?.id
+
+  const isGroupPhase = !isComplete && phaseType === 'group'
+  const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
   let isNotInteracting = false
-  if (hasNoGroup) {
+  if (isGroupPhase && hasNoGroup) {
     isNotInteracting = reflectionGroups.every((group) =>
       group.reflections.every((reflection) => !reflection.isViewerDragging && !reflection.isEditing)
     )
   }
+  const showDragHintAnimation = isNotInteracting && isRetrospectiveBeginner
 
   return (
     <PortalProvider>
@@ -127,7 +139,7 @@ const GroupingKanban = (props: Props) => {
           disabled={isViewerDragging}
           ref={isDesktop ? callbackRef : undefined}
         >
-          {reflectPrompts.map((prompt) => (
+          {reflectPrompts.map((prompt, index) => (
             <GroupingKanbanColumn
               columnsRef={columnsRef}
               isAnyEditing={isAnyEditing}
@@ -140,8 +152,7 @@ const GroupingKanban = (props: Props) => {
               reflectionGroups={groupsByPrompt[prompt.id] || []}
               reflectPromptsCount={reflectPromptsCount}
               swipeColumn={swipeColumn}
-              firstReflectionId={firstReflectionId}
-              isNotInteracting={isNotInteracting}
+              showDragHintAnimation={showDragHintAnimation && index === 0}
             />
           ))}
         </ColumnWrapper>
@@ -166,6 +177,13 @@ export default createFragmentContainer(GroupingKanban, {
       ...SpotlightModal_meeting
       id
       teamId
+      localPhase {
+        phaseType
+      }
+      localStage {
+        isComplete
+      }
+      meetingNumber
       phases {
         ... on ReflectPhase {
           phaseType

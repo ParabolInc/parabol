@@ -67,8 +67,7 @@ interface Props {
   showOriginFooter?: boolean
   showReactji?: boolean
   dataCy?: string
-  firstReflectionId?: string
-  isNotInteracting?: boolean
+  showDragHintAnimation?: boolean
 }
 
 const getReadOnly = (
@@ -96,8 +95,7 @@ const ReflectionCard = (props: Props) => {
     stackCount,
     showReactji,
     dataCy,
-    firstReflectionId,
-    isNotInteracting
+    showDragHintAnimation
   } = props
   const reflection = useFragment(
     graphql`
@@ -130,7 +128,6 @@ const ReflectionCard = (props: Props) => {
         localStage {
           isComplete
         }
-        meetingNumber
         phases {
           phaseType
           stages {
@@ -156,8 +153,7 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {localPhase, localStage, meetingNumber, spotlightGroup, phases, spotlightSearchQuery} =
-    meeting
+  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -315,16 +311,6 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
-
-  const isGroupPhase = !isComplete && phaseType === 'group'
-  const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
-
-  const showDragHintAnimation = (() => {
-    if (isGroupPhase && isNotInteracting && isRetrospectiveBeginner) {
-      return reflectionId === firstReflectionId
-    }
-    return false
-  })()
 
   return (
     <ReflectionCardRoot
