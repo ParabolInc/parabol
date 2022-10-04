@@ -31,8 +31,7 @@ interface StyledProps {
 const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'flex-start',
-    backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
+    backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,

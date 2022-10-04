@@ -238,7 +238,6 @@ const useDragAndDrop = (
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
   const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
@@ -270,7 +269,6 @@ const useDragAndDrop = (
         ? `Spotlight result to ${targetType === 'REFLECTION_GROUP' ? 'source' : 'result'}`
         : `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
       SendClientSegmentEventMutation(atmosphere, event, {
-        viewerId,
         reflectionId,
         meetingId,
         spotlightSearchQuery

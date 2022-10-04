@@ -1,5 +1,5 @@
 import {ContentState, EditorState} from 'draft-js'
-import React, {Component, ReactNode, MouseEvent} from 'react'
+import React, {Component, MouseEvent, ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 const baseStyle = {
@@ -18,9 +18,7 @@ const EditorLink = (getEditorState: () => EditorState | undefined) =>
     state = {hasFocus: false}
 
     onClick = (e: MouseEvent<HTMLElement>) => {
-      const hasFocus = getEditorState()
-        ?.getSelection()
-        ?.getHasFocus()
+      const hasFocus = getEditorState()?.getSelection()?.getHasFocus()
       if (hasFocus) return
       e.preventDefault()
       const {contentState, entityKey} = this.props
@@ -29,9 +27,7 @@ const EditorLink = (getEditorState: () => EditorState | undefined) =>
     }
 
     onMouseOver = () => {
-      const hasFocus = getEditorState()
-        ?.getSelection()
-        ?.getHasFocus()
+      const hasFocus = getEditorState()?.getSelection()?.getHasFocus()
       if (this.state.hasFocus !== hasFocus) {
         this.setState({hasFocus})
       }

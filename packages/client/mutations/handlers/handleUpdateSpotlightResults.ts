@@ -1,6 +1,6 @@
-import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
+import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
 const handleUpdateSpotlightResults = (
   reflection: RecordProxy,

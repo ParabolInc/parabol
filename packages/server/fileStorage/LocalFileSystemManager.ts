@@ -1,8 +1,8 @@
-import FileStoreManager from './FileStoreManager'
 import fs from 'fs'
-import path from 'path'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import path from 'path'
 import appOrigin from '../appOrigin'
+import FileStoreManager from './FileStoreManager'
 export default class LocalFileSystemManager extends FileStoreManager {
   protected prependPath(partialPath: string): string {
     return path.join('self-hosted', partialPath)

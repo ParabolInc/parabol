@@ -3,6 +3,7 @@
 
 import ms from 'ms'
 import getRethink from '../database/rethinkDriver'
+import {RDatum} from '../database/stricterR'
 
 // All results must be mapped to their ids!
 const customRedisQueries = {
@@ -14,7 +15,7 @@ const customRedisQueries = {
         .table('NewMeeting')
         .getAll(r.args(templateIds), {index: 'templateId'})
         .pluck('templateId', 'endedAt')
-        .filter((row) => row('endedAt').ge(aQuarterAgo))
+        .filter((row: RDatum) => row('endedAt').ge(aQuarterAgo))
         .group('templateId' as any) as any
     )
       .limit(1000)('endedAt')
@@ -49,7 +50,7 @@ const customRedisQueries = {
           .table('TemplateScale')
           .getAll(teamId, {index: 'teamId'})
           .filter({isStarter: true})
-          .filter((row) => row('removedAt').default(null).eq(null))
+          .filter((row: RDatum) => row('removedAt').default(null).eq(null))
           .run()
       })
     )

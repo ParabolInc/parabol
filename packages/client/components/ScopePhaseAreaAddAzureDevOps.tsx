@@ -50,6 +50,11 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
           teamMember {
             integrations {
               azureDevOps {
+                cloudProvider {
+                  id
+                  tenantId
+                  clientId
+                }
                 sharedProviders {
                   id
                   tenantId
@@ -64,7 +69,9 @@ const ScopePhaseAreaAddAzureDevOps = (props: Props) => {
     meetingRef
   )
   const {teamId, viewerMeetingMember} = meeting
-  const provider = viewerMeetingMember?.teamMember.integrations.azureDevOps.sharedProviders[0]
+  const provider =
+    viewerMeetingMember?.teamMember.integrations.azureDevOps.sharedProviders[0] ??
+    viewerMeetingMember?.teamMember.integrations.azureDevOps.cloudProvider
   if (!provider) {
     return null
   }

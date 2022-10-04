@@ -38,6 +38,7 @@ interface Props {
   handleKeyDownFallback: () => void
   userSelect: string
   dataCy: string
+  disableAnonymity?: boolean
 }
 
 const editorBlockquote = {
@@ -69,8 +70,8 @@ const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) =
   width: '100%'
 })) as any
 
-const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback')
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback')
 )
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
@@ -224,7 +225,8 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       renderModal,
       readOnly,
       userSelect,
-      dataCy
+      dataCy,
+      disableAnonymity
     } = this.props
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
@@ -265,7 +267,9 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             ref={editorRef as any}
             // @ts-ignore
             style={{
-              padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
+              padding: disableAnonymity
+                ? `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL} 0px ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`
+                : `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
               userSelect,
               WebkitUserSelect: userSelect
             }}

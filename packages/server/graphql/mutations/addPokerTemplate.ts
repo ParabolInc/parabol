@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -74,7 +75,7 @@ const addPokerTemplate = {
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .filter({type: 'poker'})
-        .filter((row) => row('name').match(`^${copyName}`) as any)
+        .filter((row: RDatum) => row('name').match(`^${copyName}`) as any)
         .count()
         .run()
       const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`

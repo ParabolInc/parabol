@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React from 'react'
+import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
-import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
-import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
-import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',

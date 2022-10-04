@@ -2,14 +2,14 @@
  * Removes a reflection for the retrospective meeting.
  *
  */
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
-import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
-import {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
-import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import {RemoveReflectionMutation_meeting} from '~/__generated__/RemoveReflectionMutation_meeting.graphql'
+import {commitMutation} from 'react-relay'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {RemoveReflectionMutation_meeting} from '~/__generated__/RemoveReflectionMutation_meeting.graphql'
+import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
+import {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
+import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 
 graphql`
   fragment RemoveReflectionMutation_meeting on RemoveReflectionPayload {

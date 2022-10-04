@@ -126,6 +126,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   GETTING_STARTED_ASYNC_STANDUP = 'https://www.parabol.co/resources/async-standup-meetings',
+  INTEGRATIONS = 'https://www.parabol.co/integrations',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
@@ -196,6 +197,10 @@ export const enum LocalStorageKey {
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
   ERROR_PRONE_AT = 'errorProneAt'
+}
+
+export const enum LOCKED_MESSAGE {
+  TEAM_INVITE = `Sorry! You're unable to join this team because one of your teams has an overdue payment`
 }
 
 export const enum AuthenticationError {
@@ -368,7 +373,6 @@ export const enum Threshold {
   MASS_INVITATION_TOKEN_LIFESPAN = 2592000000, // 30 days
   TEAM_INVITATION_LIFESPAN = 2592000000, // 30 days
   MAX_FREE_TEAMS = 10,
-  MAX_MONTHLY_PAUSES = 4,
   MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,
   MAX_ACCOUNT_DAILY_PASSWORD_RESETS = 3,
   MAX_AVATAR_FILE_SIZE = 1024 * 1024,
@@ -444,6 +448,8 @@ export const enum SprintPokerDefaults {
   AZURE_DEVOPS_USERSTORY_FIELD_LABEL = 'Story point estimate',
   AZURE_DEVOPS_TASK_FIELD = '__origEst',
   AZURE_DEVOPS_TASK_FIELD_LABEL = 'Original Estimate',
+  AZURE_DEVOPS_REMAINING_WORK_FIELD = '__remainingWork',
+  AZURE_DEVOPS_REMAINING_WORK_LABEL = 'Remaining Work',
   AZURE_DEVOPS_EFFORT_FIELD = '__effort',
   AZURE_DEVOPS_EFFORT_LABEL = 'Effort',
   SERVICE_FIELD_COMMENT = '__comment',

@@ -15,7 +15,7 @@ export default class InvoiceLineItemDetail {
   parentId: string
   startAt: Date | null
 
-  constructor (input: Input) {
+  constructor(input: Input) {
     const {amount, id, startAt, endAt, email, parentId} = input
     this.id = id
     this.amount = amount

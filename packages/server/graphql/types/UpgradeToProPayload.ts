@@ -1,10 +1,10 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLList, GraphQLID} from 'graphql'
-import {resolveOrganization, resolveTeams} from '../resolvers'
-import Organization from './Organization'
-import Team from './Team'
-import StandardMutationError from './StandardMutationError'
-import NewMeeting from './NewMeeting'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import {resolveOrganization, resolveTeams} from '../resolvers'
+import NewMeeting from './NewMeeting'
+import Organization from './Organization'
+import StandardMutationError from './StandardMutationError'
+import Team from './Team'
 
 const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpgradeToProPayload',

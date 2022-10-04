@@ -215,6 +215,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               meetingId,
               userId: viewerId,
               url: '',
+              title,
               state: '',
               type: ''
             })
@@ -290,15 +291,13 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
       const {updatePokerScope} = res
       const {meeting} = updatePokerScope
       if (!meeting) return
-      const {viewerId} = atmosphere
       const {meetingId, updates} = variables
       const update = updates[0]!
       const {service, action} = update
       const searchQuery = getSearchQueryFromMeeting(meeting, service)
       if (!searchQuery) return
-      const [searchQueryString, searchQueryFilters] = searchQuery
+      const {searchQueryString, searchQueryFilters} = searchQuery
       SendClientSegmentEventMutation(atmosphere, 'Updated Poker Scope', {
-        viewerId,
         meetingId,
         service,
         action,

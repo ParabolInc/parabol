@@ -1,16 +1,10 @@
-import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql'
-import {
-  makeResolve,
-  resolveMeetingMember,
-  resolveNewMeeting,
-  resolveUnlockedStages
-} from '../resolvers'
-import StandardMutationError from './StandardMutationError'
-import RetroReflectionGroup from './RetroReflectionGroup'
-import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
-import RetrospectiveMeeting from './RetrospectiveMeeting'
-import NewMeetingStage from './NewMeetingStage'
+import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import {makeResolve, resolveMeetingMember, resolveNewMeeting} from '../resolvers'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
+import StandardMutationError from './StandardMutationError'
 
 const VoteForReflectionGroupPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'VoteForReflectionGroupPayload',
@@ -29,11 +23,6 @@ const VoteForReflectionGroupPayload = new GraphQLObjectType<any, GQLContext>({
     reflectionGroup: {
       type: RetroReflectionGroup,
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
-    },
-    unlockedStages: {
-      type: new GraphQLList(new GraphQLNonNull(NewMeetingStage)),
-      description: 'The stages that were locked or unlocked by having at least 1 vote',
-      resolve: resolveUnlockedStages
     }
   })
 })

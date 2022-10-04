@@ -1,5 +1,5 @@
-import getPg from '../getPg'
 import OrganizationUser from '../../database/types/OrganizationUser'
+import getPg from '../getPg'
 import {insertStripeQuantityMismatchLoggingQuery} from './generated/insertStripeQuantityMismatchLoggingQuery'
 
 const insertStripeQuantityMismatchLogging = async (

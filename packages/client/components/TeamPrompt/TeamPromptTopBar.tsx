@@ -5,15 +5,21 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import {PALETTE} from '~/styles/paletteV3'
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import {meetingAvatarMediaQueries} from '../../styles/meeting'
-import BackButton from '../BackButton'
 import EditableText from '../EditableText'
+import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import TeamPromptOptions from './TeamPromptOptions'
 
+const TeamPromptLogoBlock = styled(LogoBlock)({
+  marginRight: '8px',
+  paddingLeft: '0'
+})
+
 const TeamPromptHeaderTitle = styled('h1')({
-  fontSize: 16,
+  fontSize: 18,
   lineHeight: '24px',
   margin: 0,
   padding: 0,
@@ -44,12 +50,24 @@ const ButtonContainer = styled('div')({
   }
 })
 
+const BetaBadge = styled('div')({
+  borderRadius: 44,
+  backgroundColor: PALETTE.GRAPE_500,
+  color: PALETTE.SLATE_100,
+  fontWeight: 600,
+  fontSize: 12,
+  lineHeight: '11px',
+  marginRight: 53,
+  padding: '8px 16px 8px 16px'
+})
+
 interface Props {
   meetingRef: TeamPromptTopBar_meeting$key
+  isDesktop: boolean
 }
 
 const TeamPromptTopBar = (props: Props) => {
-  const {meetingRef} = props
+  const {meetingRef, isDesktop} = props
 
   const meeting = useFragment(
     graphql`
@@ -72,7 +90,7 @@ const TeamPromptTopBar = (props: Props) => {
   return (
     <MeetingTopBarStyles>
       <TeamPromptHeader>
-        <BackButton ariaLabel='Back to Meetings' to='/meetings' />
+        <TeamPromptLogoBlock />
         {isFacilitator ? (
           <EditableTeamPromptHeaderTitle
             error={error?.message}
@@ -88,7 +106,8 @@ const TeamPromptTopBar = (props: Props) => {
         )}
       </TeamPromptHeader>
       <IconGroupBlock>
-        <NewMeetingAvatarGroup meeting={meeting} />
+        {isDesktop && <BetaBadge>BETA</BetaBadge>}
+        <NewMeetingAvatarGroup meetingRef={meeting} />
         <ButtonContainer>
           <TeamPromptOptions meetingRef={meeting} />
         </ButtonContainer>

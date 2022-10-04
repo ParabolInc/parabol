@@ -1,6 +1,6 @@
+import styled from '@emotion/styled'
 import React from 'react'
 import Icon from '../../../../components/Icon'
-import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 

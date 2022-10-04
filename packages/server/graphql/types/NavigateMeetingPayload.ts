@@ -1,11 +1,11 @@
-import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql'
-import NewMeeting from './NewMeeting'
-import StandardMutationError from './StandardMutationError'
-import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {GQLContext} from '../graphql'
+import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
+import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
 import PhaseCompletePayload from './PhaseCompletePayload'
-import {GQLContext} from '../graphql'
+import StandardMutationError from './StandardMutationError'
 
 const NavigateMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'NavigateMeetingPayload',

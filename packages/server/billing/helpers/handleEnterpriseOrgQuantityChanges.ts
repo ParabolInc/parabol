@@ -8,17 +8,18 @@ const sendEnterpriseOverageToSegment = async (organization: Organization) => {
   const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
   if (!stripeSubscriptionId) return
-  const [orgUserCount, subscription] = await Promise.all([
+  const [orgUserCount, subscriptionItem] = await Promise.all([
     r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null, inactive: false})
       .count()
       .run(),
-    manager.retrieveSubscription(stripeSubscriptionId)
+    manager.getSubscriptionItem(stripeSubscriptionId)
   ])
-  if (!subscription) return
-  const {quantity} = subscription
+  if (!subscriptionItem) return
+
+  const quantity = subscriptionItem.quantity
   if (!quantity) return
   if (orgUserCount > quantity) {
     const billingLeaderOrgUser = await r

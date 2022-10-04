@@ -7,6 +7,7 @@ import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -15,7 +16,6 @@ import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
-import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -70,7 +70,7 @@ export default {
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType})) as MeetingSettingsRetrospective
-    const {totalVotes, maxVotesPerGroup, selectedTemplateId} = meetingSettings
+    const {totalVotes, maxVotesPerGroup, selectedTemplateId, disableAnonymity} = meetingSettings
     const meeting = new MeetingRetrospective({
       id: meetingId,
       teamId,
@@ -80,6 +80,7 @@ export default {
       facilitatorUserId: viewerId,
       totalVotes,
       maxVotesPerGroup,
+      disableAnonymity,
       templateId: selectedTemplateId
     })
 
@@ -103,8 +104,7 @@ export default {
     }
 
     const updates = {
-      lastMeetingType: meetingType,
-      updatedAt: new Date()
+      lastMeetingType: meetingType
     }
     await Promise.all([
       r
@@ -117,7 +117,7 @@ export default {
     ])
 
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-    sendMeetingStartToSegment(meeting, template)
+    analytics.meetingStarted(viewerId, meeting, template)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data

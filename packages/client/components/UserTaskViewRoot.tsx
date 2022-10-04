@@ -3,12 +3,12 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
-const MyDashboardTasksRoot = lazy(() =>
-  import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../components/MyDashboardTasksRoot')
+const MyDashboardTasksRoot = lazy(
+  () => import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../components/MyDashboardTasksRoot')
 )
 
-const ArchiveTaskUserRoot = lazy(() =>
-  import(/* webpackChunkName: 'ArchiveTaskUserRoot' */ '../components/ArchiveTaskUserRoot')
+const ArchiveTaskUserRoot = lazy(
+  () => import(/* webpackChunkName: 'ArchiveTaskUserRoot' */ '../components/ArchiveTaskUserRoot')
 )
 
 const UserTaskViewRoot = () => {

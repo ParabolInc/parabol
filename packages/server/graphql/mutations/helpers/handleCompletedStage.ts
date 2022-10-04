@@ -1,10 +1,12 @@
 import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
+import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
+import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -60,6 +62,17 @@ const handleCompletedRetrospectiveStage = async (
       )
 
       data.reflectionGroups = sortedReflectionGroups
+    } else if (stage.phaseType === GROUP) {
+      const {phases} = meeting
+      unlockAllStagesForPhase(phases, 'discuss', true)
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({
+          phases
+        })
+        .run()
+      data.meeting = meeting
     }
 
     return {[stage.phaseType]: data}

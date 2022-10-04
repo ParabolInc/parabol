@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsPoker_team$key} from '~/__generated__/NewMeetingSettingsPoker_team.graphql'
-import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
 import PokerTemplatePicker from '../modules/meeting/components/PokerTemplatePicker'
+import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
 
 interface Props {
   teamRef: NewMeetingSettingsPoker_team$key
@@ -26,7 +26,7 @@ const NewMeetingSettingsPoker = (props: Props) => {
   return (
     <>
       <PokerTemplatePicker settings={pokerSettings} />
-      <NewMeetingSettingsToggleCheckIn settings={pokerSettings} />
+      <NewMeetingSettingsToggleCheckIn settingsRef={pokerSettings} />
     </>
   )
 }

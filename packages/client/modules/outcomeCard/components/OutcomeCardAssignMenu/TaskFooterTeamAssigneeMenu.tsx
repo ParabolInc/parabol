@@ -194,16 +194,15 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
           />
         )
       })}
-      {addIntegrationModalPortal(
-        (isGitHubTask || isJiraTask) && (
+      {(isGitHubTask || isJiraTask) &&
+        addIntegrationModalPortal(
           <TaskFooterTeamAssigneeAddIntegrationDialog
             onClose={handleClose}
             onConfirm={handleAddIntegrationConfirmed}
             serviceName={isGitHubTask ? 'GitHub' : 'Jira'}
             teamName={newTeam.name}
           />
-        )
-      )}
+        )}
     </Menu>
   )
 }

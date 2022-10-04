@@ -1,5 +1,5 @@
-import getPg from '../postgres/getPg'
 import getRethink from '../database/rethinkDriver'
+import getPg from '../postgres/getPg'
 import isCompanyDomain from './isCompanyDomain'
 
 // Most used company domain for a given orgId

@@ -4,8 +4,11 @@ import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/gene
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
+import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager, {
+  ProjectRes,
   Resource,
   TeamProjectReference,
   WorkItem
@@ -16,6 +19,14 @@ import RootDataLoader from './RootDataLoader'
 type TeamUserKey = {
   teamId: string
   userId: string
+}
+
+export interface AzureDevOpsAllUserWorkItemsKey {
+  teamId: string
+  userId: string
+  queryString: string | null
+  projectKeyFilters: string[] | null
+  isWIQL: boolean
 }
 
 export interface AzureDevOpsAccessibleOrgsKey {
@@ -34,7 +45,7 @@ export interface AzureDevOpsRemoteProjectKey {
   userId: string
   teamId: string
   instanceId: string
-  projectKey: string
+  projectId: string
 }
 
 export interface AzureDevOpsIssueKey {
@@ -68,6 +79,7 @@ export interface AzureDevOpsDimensionFieldMapKey {
   dimensionName: string
   instanceId: string
   projectKey: string
+  workItemType: string
 }
 
 export interface AzureDevOpsDimensionFieldMapEntry {
@@ -78,6 +90,7 @@ export interface AzureDevOpsDimensionFieldMapEntry {
   instanceId: string
   fieldType: string
   projectKey: string
+  workItemType: string
 }
 
 export interface AzureDevOpsWorkItem {
@@ -99,6 +112,18 @@ export interface AzureUserInfo {
   coreRevision: number
   revision: number
   timeStamp: string
+}
+
+export interface AzureAccountProject extends TeamProjectReference {
+  userId: string
+  teamId: string
+  service: 'azureDevOps'
+}
+
+interface AzureProject extends ProjectRes {
+  userId: string
+  teamId: string
+  service: 'azureDevOps'
 }
 
 export const freshAzureDevOpsAuth = (
@@ -135,6 +160,10 @@ export const freshAzureDevOpsAuth = (
             )
             const oauthRes = await manager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
+              // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
+              if (oauthRes.message === 'invalid_grant') {
+                await removeTeamMemberIntegrationAuthQuery('azureDevOps', teamId, userId)
+              }
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
@@ -161,12 +190,11 @@ export const freshAzureDevOpsAuth = (
 
 export const azureDevOpsAllWorkItems = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, WorkItem[] | undefined, string> => {
-  return new DataLoader<TeamUserKey, WorkItem[] | undefined, string>(
+): DataLoader<AzureDevOpsAllUserWorkItemsKey, AzureDevOpsWorkItem[] | undefined, string> => {
+  return new DataLoader<AzureDevOpsAllUserWorkItemsKey, AzureDevOpsWorkItem[] | undefined, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => {
-          const returnWorkItems = [] as WorkItem[]
+        keys.map(async ({userId, teamId, queryString, projectKeyFilters, isWIQL}) => {
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return undefined
@@ -177,14 +205,33 @@ export const azureDevOpsAllWorkItems = (
             provider as IntegrationProviderAzureDevOps
           )
 
-          const restResult = await manager.getAllUserWorkItems(null, null, false)
+          const restResult = await manager.getAllUserWorkItems(
+            queryString,
+            projectKeyFilters,
+            isWIQL
+          )
+
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
             console.log(error)
-          } else {
-            returnWorkItems.push(...workItems)
+            return [] as AzureDevOpsWorkItem[]
           }
-          return returnWorkItems
+
+          const mappedWorkItems: AzureDevOpsWorkItem[] = await Promise.all(
+            workItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
+              const instanceId = getInstanceId(new URL(returnedWorkItem.url))
+              const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
+                manager,
+                userId,
+                teamId,
+                instanceId,
+                returnedWorkItem
+              )
+              return mappedWorkItem
+            })
+          )
+
+          return mappedWorkItems
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : undefined))
@@ -271,8 +318,8 @@ export const allAzureDevOpsAccessibleOrgs = (
 
 export const allAzureDevOpsProjects = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, TeamProjectReference[], string> => {
-  return new DataLoader<TeamUserKey, TeamProjectReference[], string>(
+): DataLoader<TeamUserKey, AzureAccountProject[], string> => {
+  return new DataLoader<TeamUserKey, AzureAccountProject[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
@@ -312,6 +359,45 @@ export const allAzureDevOpsProjects = (
   )
 }
 
+export const azureDevOpsProject = (
+  parent: RootDataLoader
+): DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string> => {
+  return new DataLoader<AzureDevOpsRemoteProjectKey, AzureProject | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({instanceId, userId, teamId, projectId}) => {
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return null
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          if (!provider) return null
+          const manager = new AzureDevOpsServerManager(
+            auth,
+            provider as IntegrationProviderAzureDevOps
+          )
+          const projectRes = await manager.getProject(instanceId, projectId)
+          if (projectRes instanceof Error) {
+            console.log(projectRes)
+            return null
+          }
+          return {
+            ...projectRes,
+            teamId,
+            userId,
+            self: projectRes._links.self.href,
+            instanceId,
+            service: 'azureDevOps' as const
+          }
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}:${key.instanceId}:${key.projectId}`
+    }
+  )
+}
+
 export const azureDevOpsDimensionFieldMap = (
   parent: RootDataLoader
 ): DataLoader<
@@ -326,15 +412,28 @@ export const azureDevOpsDimensionFieldMap = (
   >(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, instanceId, projectKey}) => {
-          return getAzureDevOpsDimensionFieldMaps(teamId, dimensionName, instanceId, projectKey)
+        keys.map(async ({teamId, dimensionName, instanceId, projectKey, workItemType}) => {
+          const azureDevOpsDimensionFieldMap = await getAzureDevOpsDimensionFieldMaps(
+            teamId,
+            dimensionName,
+            instanceId,
+            projectKey,
+            workItemType
+          )
+          if (!azureDevOpsDimensionFieldMap) {
+            return null
+          }
+          return {
+            ...azureDevOpsDimensionFieldMap
+          } as AzureDevOpsDimensionFieldMapEntry
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}`
+      cacheKeyFn: (key) =>
+        `${key.teamId}:${key.dimensionName}:${key.instanceId}:${key.projectKey}:${key.workItemType}`
     }
   )
 }
@@ -373,18 +472,13 @@ export const azureDevOpsUserStory = (
             return null
           } else {
             const returnedWorkItem: WorkItem = workItems[0]
-            const azureDevOpsWorkItem = {
-              id: returnedWorkItem.id.toString(),
-              title: returnedWorkItem.fields['System.Title'],
-              teamProject: getProjectId(new URL(returnedWorkItem.url)),
-              url: returnedWorkItem.url,
-              state: returnedWorkItem.fields['System.State'],
-              type: returnedWorkItem.fields['System.WorkItemType'],
-              descriptionHTML: returnedWorkItem.fields['System.Description']
-                ? returnedWorkItem.fields['System.Description']
-                : '',
-              service: 'azureDevOps'
-            } as AzureDevOpsWorkItem
+            const azureDevOpsWorkItem = await getMappedAzureDevOpsWorkItem(
+              manager,
+              userId,
+              teamId,
+              instanceId,
+              returnedWorkItem
+            )
             return azureDevOpsWorkItem
           }
         })
@@ -425,18 +519,13 @@ export const azureDevOpsWorkItem = (
           const {workItems: returnedWorkItems} = workItemDataResponse
           if (returnedWorkItems.length !== 1 || !returnedWorkItems[0]) return null
           const returnedWorkItem = returnedWorkItems[0]
-          const azureDevOpsWorkItem = {
-            id: returnedWorkItem.id.toString(),
-            title: returnedWorkItem.fields['System.Title'],
-            teamProject: getProjectId(new URL(returnedWorkItem.url)),
-            url: returnedWorkItem.url,
-            state: returnedWorkItem.fields['System.State'],
-            type: returnedWorkItem.fields['System.WorkItemType'],
-            descriptionHTML: returnedWorkItem.fields['System.Description']
-              ? returnedWorkItem.fields['System.Description']
-              : '',
-            service: 'azureDevOps'
-          } as AzureDevOpsWorkItem
+          const azureDevOpsWorkItem = await getMappedAzureDevOpsWorkItem(
+            manager,
+            userId,
+            teamId,
+            instanceId,
+            returnedWorkItem
+          )
 
           // update our records
           await Promise.all(
@@ -481,6 +570,43 @@ export const azureDevOpsWorkItem = (
   )
 }
 
+export const getMappedAzureDevOpsWorkItem = async (
+  manager: AzureDevOpsServerManager,
+  userId: string,
+  teamId: string,
+  instanceId: string,
+  returnedWorkItem: WorkItem
+) => {
+  const mappedUrl = returnedWorkItem._links['html']?.href ?? returnedWorkItem.url
+  const azureDevOpsWorkItem = {
+    id: returnedWorkItem.id.toString(),
+    title: returnedWorkItem.fields['System.Title'],
+    teamProject: getProjectId(new URL(returnedWorkItem.url)),
+    url: mappedUrl,
+    state: returnedWorkItem.fields['System.State'],
+    type: returnedWorkItem.fields['System.WorkItemType'],
+    descriptionHTML: returnedWorkItem.fields['System.Description']
+      ? returnedWorkItem.fields['System.Description']
+      : '',
+    service: 'azureDevOps',
+    teamId,
+    userId
+  } as AzureDevOpsWorkItem
+
+  const projectResult = await manager.getProjectProcessTemplate(
+    instanceId,
+    azureDevOpsWorkItem.teamProject
+  )
+  const {error: projectResultError, projectTemplate} = projectResult
+  if (!!projectResultError) {
+    const workItemId = returnedWorkItem.id.toString()
+    sendToSentry(projectResultError, {userId, tags: {instanceId, workItemId, teamId}})
+  } else {
+    azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
+  }
+  return azureDevOpsWorkItem
+}
+
 export const azureDevOpsWorkItems = (
   parent: RootDataLoader
 ): DataLoader<AzureDevOpsWorkItemsKey, AzureDevOpsWorkItem[], string> => {
@@ -507,19 +633,17 @@ export const azureDevOpsWorkItems = (
             console.log(error)
             return []
           }
-          const mappedWorkItems: AzureDevOpsWorkItem[] = returnedWorkItems.map(
-            (returnedWorkItem) => ({
-              id: returnedWorkItem.id.toString(),
-              title: returnedWorkItem.fields['System.Title'],
-              teamProject: getProjectId(new URL(returnedWorkItem.url)),
-              url: returnedWorkItem.url,
-              state: returnedWorkItem.fields['System.State'],
-              type: returnedWorkItem.fields['System.WorkItemType'],
-              descriptionHTML: returnedWorkItem.fields['System.Description']
-                ? returnedWorkItem.fields['System.Description']
-                : '',
 
-              service: 'azureDevOps'
+          const mappedWorkItems: AzureDevOpsWorkItem[] = await Promise.all(
+            returnedWorkItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
+              const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
+                manager,
+                userId,
+                teamId,
+                instanceId,
+                returnedWorkItem
+              )
+              return mappedWorkItem
             })
           )
 

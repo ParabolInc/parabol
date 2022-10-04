@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useGotoStageId from '~/hooks/useGotoStageId'
 import {NewMeetingCheckIn_meeting} from '~/__generated__/NewMeetingCheckIn_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
@@ -16,7 +17,6 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import useGotoStageId from '~/hooks/useGotoStageId'
 
 const CheckIn = styled('div')({
   display: 'flex',

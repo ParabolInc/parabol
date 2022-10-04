@@ -1,7 +1,7 @@
 import {GraphQLInt, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveUser} from '../resolvers'
 import User from './User'
-import {GQLContext} from '../graphql'
 
 const UserTiersCount = new GraphQLObjectType<any, GQLContext>({
   name: 'UserTiersCount',

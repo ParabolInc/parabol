@@ -1,5 +1,6 @@
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
+import {RDatum} from '../../../database/stricterR'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import CheckInStage from '../../../database/types/CheckInStage'
 import EstimateStage from '../../../database/types/EstimateStage'
@@ -68,7 +69,7 @@ const removeTeamMember = async (
       .table('Task')
       .getAll(userId, {index: 'userId'})
       .filter({teamId})
-      .filter((task) => {
+      .filter((task: RDatum) => {
         return r.and(
           task('tags').contains('archived').not(),
           task('integrations').default(null).ne(null)
@@ -79,7 +80,7 @@ const removeTeamMember = async (
       .table('Task')
       .getAll(userId, {index: 'userId'})
       .filter({teamId})
-      .filter((task) =>
+      .filter((task: RDatum) =>
         r.and(task('tags').contains('archived').not(), task('integrations').default(null).eq(null))
       )
       .update(
@@ -106,7 +107,7 @@ const removeTeamMember = async (
   const agendaItemIds = await r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
-    .filter((row) => row('teamMemberId').eq(teamMemberId))
+    .filter((row: RDatum) => row('teamMemberId').eq(teamMemberId))
     .getField('id')
     .run()
 

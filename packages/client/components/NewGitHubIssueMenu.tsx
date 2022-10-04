@@ -3,9 +3,9 @@ import {Repo} from '~/hooks/useGetRepoContributions'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import GitHubMenuItem from './GitHubMenuItem'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
+import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   handleSelectNameWithOwner: (key: string) => void
@@ -44,11 +44,12 @@ const NewGitHubIssueMenu = (props: Props) => {
           handleSelectNameWithOwner(nameWithOwner)
         }
         return (
-          <GitHubMenuItem
+          <TaskIntegrationMenuItem
             key={nameWithOwner}
             query={query}
-            nameWithOwner={nameWithOwner}
+            label={nameWithOwner}
             onClick={onClick}
+            service='github'
           />
         )
       })}

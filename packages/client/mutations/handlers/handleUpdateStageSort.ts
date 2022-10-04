@@ -1,6 +1,10 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
-const handleUpdateStageSort = (store: RecordSourceSelectorProxy, meetingId: string, phaseType: string) => {
+const handleUpdateStageSort = (
+  store: RecordSourceSelectorProxy,
+  meetingId: string,
+  phaseType: string
+) => {
   const meeting = store.get(meetingId)
   if (!meeting) return
   const phases = meeting.getLinkedRecords('phases')!

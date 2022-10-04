@@ -1,5 +1,5 @@
-import useRouter from '~/hooks/useRouter'
 import {useMemo} from 'react'
+import useRouter from '~/hooks/useRouter'
 
 const useUserTaskFilters = (viewerId: string) => {
   const {location} = useRouter()

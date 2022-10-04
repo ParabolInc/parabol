@@ -119,6 +119,7 @@ const TeamPromptResponseCard = (props: Props) => {
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
         id
+        teamId
         meetingId
         meeting {
           ... on TeamPromptMeeting {
@@ -177,7 +178,7 @@ const TeamPromptResponseCard = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const {teamMember, meetingId, meeting, discussion, response} = responseStage
+  const {teamMember, meetingId, meeting, discussion, response, teamId} = responseStage
   const {picture, preferredName, userId} = teamMember
 
   const contentJSON: JSONContent | null = useMemo(
@@ -252,6 +253,7 @@ const TeamPromptResponseCard = (props: Props) => {
         ) : (
           <>
             <PromptResponseEditor
+              teamId={teamId}
               autoFocus={isCurrentViewer}
               handleSubmit={handleSubmit}
               content={contentJSON}

@@ -1,13 +1,13 @@
-import React, {ReactElement, ReactPortal, Ref, Suspense, useEffect} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactElement, ReactNode, ReactPortal, Ref, Suspense, useEffect} from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import ModalError from '../components/ModalError'
-import {LoadingDelayRef} from './useLoadingDelay'
-import usePortal, {PortalStatus} from './usePortal'
 import {DECELERATE} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV3'
 import {Duration, ZIndex} from '../types/constEnums'
+import {LoadingDelayRef} from './useLoadingDelay'
+import usePortal, {PortalStatus} from './usePortal'
 
 const ModalBlock = styled('div')({
   alignItems: 'center',
@@ -19,7 +19,8 @@ const ModalBlock = styled('div')({
   position: 'absolute',
   top: 0,
   width: '100%',
-  zIndex: ZIndex.DIALOG
+  zIndex: ZIndex.DIALOG,
+  overflow: 'scroll'
 })
 
 const backdropStyles = {
@@ -34,7 +35,7 @@ const backdropStyles = {
   [PortalStatus.Mounted]: {
     opacity: 0
   }
-}
+} as const
 
 const modalStyles = {
   [PortalStatus.Mounted]: {
@@ -54,7 +55,8 @@ const modalStyles = {
     transform: 'translateY(-32px)',
     transition: `transform ${Duration.PORTAL_CLOSE}ms ${DECELERATE}, opacity ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   }
-}
+} as const
+
 const Scrim = styled('div')<{
   background: string
   portalStatus: PortalStatus
@@ -64,7 +66,7 @@ const Scrim = styled('div')<{
   height: '100%',
   position: 'fixed',
   width: '100%',
-  ...backdropStyles[portalStatus]
+  ...backdropStyles[portalStatus as keyof typeof backdropStyles]
 }))
 
 // Animating a blur is REALLY expensive, so we blur on the branch above to keep things flowing
@@ -80,7 +82,9 @@ const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus
   flex: '0 1 auto',
   flexDirection: 'column',
   position: 'relative',
-  ...modalStyles[portalStatus]
+  marginTop: 'auto',
+  marginBottom: 'auto',
+  ...modalStyles[portalStatus as keyof typeof backdropStyles]
 }))
 
 const useModalPortal = (
@@ -106,7 +110,7 @@ const useModalPortal = (
       isMounted = false
     }
   }, [portalStatus, setPortalStatus])
-  return (reactEl) => {
+  return (reactEl: ReactNode) => {
     return portal(
       <ModalBlock ref={targetRef as any}>
         <BlurredScrim backdropFilter={backdropFilter}>

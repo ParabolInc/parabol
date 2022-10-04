@@ -4,7 +4,7 @@ import getPgConfig from '../getPgConfig'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
-export async function up(pgm: MigrationBuilder): Promise<void> {
+export async function up(): Promise<void> {
   const client = new Client(getPgConfig())
   await client.connect()
 

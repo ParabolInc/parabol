@@ -1,13 +1,13 @@
-import {InvitationLinkErrorExpired_massInvitation} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import {InvitationLinkErrorExpired_massInvitation} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InviteDialog from './InviteDialog'
 
 interface Props {
   massInvitation: InvitationLinkErrorExpired_massInvitation

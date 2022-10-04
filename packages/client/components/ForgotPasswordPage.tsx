@@ -2,24 +2,24 @@
  * The password reset page. Allows the user to reset their password via email.
  *
  */
-import React from 'react'
 import styled from '@emotion/styled'
-import EmailInputField from './EmailInputField'
-import PlainButton from './PlainButton/PlainButton'
-import PrimaryButton from './PrimaryButton'
-import {emailRegex} from '../validation/regex'
-import Legitity from '../validation/Legitity'
-import AuthenticationDialog from './AuthenticationDialog'
-import {GotoAuthPage} from './GenericAuthentication'
-import DialogTitle from './DialogTitle'
-import {PALETTE} from '../styles/paletteV3'
-import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
+import React from 'react'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
-import StyledError from './StyledError'
+import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
+import {PALETTE} from '../styles/paletteV3'
 import {AuthenticationError} from '../types/constEnums'
+import Legitity from '../validation/Legitity'
+import {emailRegex} from '../validation/regex'
+import AuthenticationDialog from './AuthenticationDialog'
+import DialogTitle from './DialogTitle'
+import EmailInputField from './EmailInputField'
+import {GotoAuthPage} from './GenericAuthentication'
+import PlainButton from './PlainButton/PlainButton'
+import PrimaryButton from './PrimaryButton'
+import StyledError from './StyledError'
 
 interface Props {
   email?: string
@@ -131,6 +131,12 @@ const ForgotPasswordPage = (props: Props) => {
     goToPage('signin', params.toString())
   }
 
+  const errorMessage = {
+    [AuthenticationError.USER_NOT_FOUND]: 'We couldn’t find that email. Please try again.',
+    [AuthenticationError.EXCEEDED_RESET_THRESHOLD]:
+      'Too many reset password attempts. Please try again later.'
+  }
+  const prettyError = error ? errorMessage[error.message] : undefined
   return (
     <AuthenticationDialog>
       <DialogTitle>{'Forgot your password?'}</DialogTitle>
@@ -151,9 +157,7 @@ const ForgotPasswordPage = (props: Props) => {
           </SubmitButton>
           {error && (
             <ErrorMessage>
-              {error.message === AuthenticationError.USER_NOT_FOUND ? (
-                'We couldn’t find that email. Please try again.'
-              ) : (
+              {prettyError || (
                 <>
                   {'Oh no! Something went wrong. Try again or '}{' '}
                   <a

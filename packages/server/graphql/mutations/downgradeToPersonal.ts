@@ -35,10 +35,7 @@ export default {
     }
 
     // VALIDATION
-    const {stripeSubscriptionId, tier} = await r
-      .table('Organization')
-      .get(orgId)
-      .run()
+    const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId).run()
 
     if (tier === 'personal') {
       return standardError(new Error('Already on free tier'), {userId: viewerId})

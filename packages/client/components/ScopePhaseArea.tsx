@@ -42,7 +42,18 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
-  maxWidth: '100%'
+  maxWidth: '100%',
+  overflow: 'hidden',
+  overflowX: 'auto',
+  '&::-webkit-scrollbar': {
+    webkitAppearance: 'none',
+    width: '6px',
+    height: '4px'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    borderRadius: '3px',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  }
 })
 
 const TabIcon = styled(Icon)({
@@ -54,7 +65,7 @@ const TabLabel = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
   minWidth: 80,
-  whiteSpace: 'pre-wrap'
+  whiteSpace: 'nowrap'
 })
 
 const TabContents = styled('div')({
@@ -77,7 +88,8 @@ const ScopePhaseArea = (props: Props) => {
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
   const allowAzureDevOps =
-    !!azureDevOpsIntegration?.sharedProviders.length && featureFlags?.azureDevOps
+    (!!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider) &&
+    featureFlags?.azureDevOps
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
@@ -223,6 +235,9 @@ export default createFragmentContainer(ScopePhaseArea, {
               }
             }
             azureDevOps {
+              cloudProvider {
+                id
+              }
               sharedProviders {
                 id
               }

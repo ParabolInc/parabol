@@ -1,16 +1,25 @@
 import AbortController from 'abort-controller'
 import fetch, {RequestInit} from 'node-fetch'
+import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
+import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
+import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
+import {
+  CreateTaskResponse,
+  TaskIntegrationManager
+} from '../integrations/TaskIntegrationManagerFactory'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -33,6 +42,32 @@ export interface Resource {
 export interface AccessibleResources {
   count: number
   value: Resource[]
+}
+
+export interface ProjectProperty {
+  name: string
+  value: string
+}
+
+export interface ProjectProperties {
+  count: number
+  value: ProjectProperty[]
+}
+
+export interface ProcessType {
+  custom: string
+  inherited: string
+  system: string
+}
+
+export interface Process {
+  _links: ReferenceLinks
+  description: string
+  id: string
+  isDefault: boolean
+  name: string
+  type: ProcessType
+  url: string
 }
 
 export interface WorkItemQueryResult {
@@ -83,18 +118,37 @@ export interface WorkItemBatchResponse {
   value: WorkItem[]
 }
 
+interface WorkItemFields {
+  'System.Title': string
+  'System.State': string
+  'System.WorkItemType': string
+  'System.Description'?: string
+  'Microsoft.VSTS.Scheduling.StoryPoints': string
+  'Microsoft.VSTS.Scheduling.OriginalEstimate': string
+}
+
 export interface WorkItem {
   _links: ReferenceLinks
   commentVersionRef: WorkItemCommentVersionRef
-  fields: object
+  fields: WorkItemFields
   id: number
   relations: WorkItemRelations[]
   rev: number
   url: string
 }
 
+export interface CreateTaskIssueRes {
+  id: number
+  rev: number
+  fields: object
+  _links: ReferenceLinks
+  url: string
+}
+
 export interface ReferenceLinks {
-  links: object
+  html?: {
+    href: string
+  }
 }
 
 export interface WorkItemCommentVersionRef {
@@ -163,19 +217,47 @@ interface WorkItemAddFieldResponse {
   id: number
   rev: number
   fields: object
-  _links: object
+  _links: ReferenceLinks
   url: string
 }
 
-const MAX_REQUEST_TIME = 5000
+export interface ProjectRes {
+  id: string
+  name: string
+  url: string
+  state: string
+  revision: number
+  _links: {
+    self: {
+      href: string
+    }
+    collection: {
+      href: string
+    }
+    web: {
+      href: string
+    }
+  }
+  visibility: string
+  defaultTeam: {
+    id: string
+    name: string
+    url: string
+  }
+  lastUpdateTime: Date
+}
 
-class AzureDevOpsServerManager {
+const MAX_REQUEST_TIME = 8000
+
+class AzureDevOpsServerManager implements TaskIntegrationManager {
+  public title = 'AzureDevOps'
   accessToken = ''
   private headers = {
     Authorization: '',
     Accept: 'application/json' as const,
     'Content-Type': 'application/json'
   }
+  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult | null
 
   async init(code: string, codeVerifier: string | null) {
     if (!codeVerifier) {
@@ -203,12 +285,14 @@ class AzureDevOpsServerManager {
     if (!!provider) {
       this.provider = provider
     }
+    this.auth = auth
   }
 
   setToken(token: string) {
     this.accessToken = token
     this.headers.Authorization = `Bearer ${token}`
   }
+
   private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
     const controller = new AbortController()
     const {signal} = controller
@@ -216,7 +300,7 @@ class AzureDevOpsServerManager {
       controller.abort()
     }, MAX_REQUEST_TIME)
     try {
-      const res = await fetch(url, {...options, signal})
+      const res = await fetch(url, {...options, signal} as any)
       clearTimeout(timeout)
       return res
     } catch (e) {
@@ -275,11 +359,78 @@ class AzureDevOpsServerManager {
     return json
   }
 
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }): Promise<CreateTaskResponse> {
+    const {title} = splitDraftContent(rawContentStr)
+    const {instanceId, projectId} = AzureDevOpsProjectId.split(integrationRepoId)
+    const issueRes = await this.createIssue({title, instanceId, projectId})
+    if (issueRes instanceof Error) return issueRes
+    return {
+      integrationHash: AzureDevOpsIssueId.join(instanceId, projectId, String(issueRes.id)),
+      issueId: String(issueRes.id),
+      integration: {
+        accessUserId: this.auth!.userId,
+        instanceId,
+        service: 'azureDevOps',
+        projectKey: projectId,
+        issueKey: String(issueRes.id)
+      }
+    }
+  }
+
+  async createIssue({
+    title,
+    instanceId,
+    projectId
+  }: {
+    title: string
+    instanceId: string
+    projectId: string
+  }) {
+    const uri = `https://${instanceId}/${projectId}/_apis/wit/workitems/$Issue?api-version=6.0`
+    return this.patch<CreateTaskIssueRes>(uri, [
+      {
+        op: 'add',
+        path: '/fields/System.Title',
+        from: null,
+        value: title
+      }
+    ])
+  }
+
+  async addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string,
+    integrationHash: string
+  ): Promise<string | Error> {
+    const integration = IntegrationHash.split('azureDevOps', integrationHash)
+    if (!integration?.projectKey || !integration?.issueKey) {
+      return new Error(`Invalid integrationHash: ${integrationHash}`)
+    }
+    const {instanceId, projectKey} = integration
+    const comment = makeCreateAzureTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+    const res = await this.post<WorkItemAddCommentResponse>(
+      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${issueId}/comments?api-version=7.1-preview.3`,
+      {text: comment}
+    )
+    return res instanceof Error ? res : res.url
+  }
+
   async getWorkItemData(instanceId: string, workItemIds: number[], fields?: string[]) {
     const workItems = [] as WorkItem[]
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
-    const payload = !!fields ? {ids: workItemIds, fields: fields} : {ids: workItemIds}
+    const payload = !!fields
+      ? {ids: workItemIds, fields: fields}
+      : {ids: workItemIds, $expand: 'Links'}
     const res = await this.post<WorkItemBatchResponse>(uri, payload)
     if (res instanceof Error) {
       if (!firstError) {
@@ -365,7 +516,6 @@ class AzureDevOpsServerManager {
     const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
     if (!!accessibleError) return {error: accessibleError, projects: null}
 
-    // this forEach is not returning
     for (const resource of accessibleOrgs) {
       const {accountName} = resource
       const instanceId = `dev.azure.com/${accountName}`
@@ -442,6 +592,58 @@ class AzureDevOpsServerManager {
     return {error: undefined, projects: teamProjectReferences}
   }
 
+  async getProjectProperties(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
+    const result = await this.get<ProjectProperties>(uri)
+    if (result instanceof Error) {
+      firstError = result
+    }
+    const requestedProperties = result as ProjectProperties
+    return {error: firstError, projectProperties: requestedProperties}
+  }
+
+  async getProjectProcessTemplate(instanceId: string, projectId: string) {
+    let firstError: Error | undefined
+    const result = await this.getProjectProperties(instanceId, projectId)
+    if (result.error) {
+      firstError = result.error
+    }
+    const processTemplateProperty = result.projectProperties.value[0]
+    if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
+      return {error: firstError, projectTemplate: ''}
+    }
+    const processTemplateDetailsResult = await this.getProcessTemplate(
+      instanceId,
+      processTemplateProperty?.value
+    )
+    if (processTemplateDetailsResult.error) {
+      if (!firstError) {
+        firstError = processTemplateDetailsResult.error
+      }
+    }
+    return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+  }
+
+  async getProcessTemplate(instanceId: string, processId: string) {
+    let firstError: Error | undefined
+    const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
+    const result = await this.get<Process>(uri)
+    const unknownProcessErrorCode = 'VS402362'
+    if (result instanceof Error) {
+      if (result.message.includes(unknownProcessErrorCode, 0)) {
+        return {error: firstError, process: 'Basic'}
+      }
+      firstError = result
+    }
+    return {error: firstError, process: result.name}
+  }
+
+  async getProject(instanceId: string, projectId: string) {
+    const uri = `https://${instanceId}/_apis/projects/${projectId}`
+    return this.get<ProjectRes>(uri)
+  }
+
   async getAccountProjects(accountName: string) {
     const teamProjectReferences = [] as TeamProjectReference[]
     let firstError: Error | undefined
@@ -490,7 +692,7 @@ class AzureDevOpsServerManager {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
       scope: '499b84ac-1321-427f-aa17-267ca6975798/.default',
-      redirect_uri: 'http://localhost:8081/'
+      redirect_uri: makeAppURL(appOrigin, 'auth/ado')
     })
   }
 
@@ -507,7 +709,7 @@ class AzureDevOpsServerManager {
     }
 
     const additonalHeaders = {
-      Origin: 'http://localhost:8081'
+      Origin: appOrigin
     }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`

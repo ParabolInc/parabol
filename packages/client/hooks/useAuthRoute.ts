@@ -1,8 +1,8 @@
-import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
 import {useEffect} from 'react'
-import useDeepEqual from './useDeepEqual'
 import {AuthTokenRole} from '../types/constEnums'
+import useAtmosphere from './useAtmosphere'
+import useDeepEqual from './useDeepEqual'
+import useRouter from './useRouter'
 
 interface Options {
   role?: AuthTokenRole

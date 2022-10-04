@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import PlainButton from './PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV3'
+import PlainButton from './PlainButton/PlainButton'
 
 const Reply = styled(PlainButton)({
   fontWeight: 600,

@@ -10,6 +10,8 @@ import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
 import Icon from '../Icon'
+import EmojiMenuTipTap from './EmojiMenuTipTap'
+import MentionsTipTap from './MentionsTipTap'
 import {createEditorExtensions, getLinkProps, LinkMenuProps, LinkPreviewProps} from './tiptapConfig'
 
 const LinkIcon = styled(Icon)({
@@ -65,6 +67,7 @@ const CancelButton = styled(SubmitButton)({
 const StyledEditor = styled('div')`
   .ProseMirror {
     min-height: 40px;
+    line-height: 20px;
   }
 
   .ProseMirror :is(ul, ol) {
@@ -86,6 +89,12 @@ const StyledEditor = styled('div')`
     pointer-events: none;
   }
 
+  .ProseMirror [data-type='mention'] {
+    background-color: #faebd3;
+    border-radius: 2;
+    font-weight: 600;
+  }
+
   .ProseMirror-focused:focus {
     outline: none;
   }
@@ -101,6 +110,7 @@ const StyledEditor = styled('div')`
 
 interface Props {
   autoFocus?: boolean
+  teamId?: string
   content: JSONContent | null
   handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
@@ -108,7 +118,7 @@ interface Props {
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder} = props
+  const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder, teamId} = props
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -234,6 +244,8 @@ const PromptResponseEditor = (props: Props) => {
             </BubbleMenuWrapper>
           </BubbleMenu>
         )}
+        {editor && <EmojiMenuTipTap tiptapEditor={editor} />}
+        {editor && teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
         {editor && linkOverlayProps?.linkMenuProps && (
           <EditorLinkChangerTipTap
             text={linkOverlayProps.linkMenuProps.text}

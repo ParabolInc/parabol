@@ -22,10 +22,7 @@ export default {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await r
-      .table('MeetingMember')
-      .get(meetingMemberId)
-      .run()
+    const meetingMember = await r.table('MeetingMember').get(meetingMemberId).run()
     if (!meetingMember) {
       throw new Error('Not invited to the meeting. Cannot subscribe')
     }

@@ -6,6 +6,7 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
+import {Threadable as ThreadableDB} from '../../database/types/Threadable'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import Comment from './Comment'
@@ -13,7 +14,6 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfo from './PageInfo'
 import Poll from './Poll'
 import Task from './Task'
-import {Threadable as ThreadableDB} from '../../database/types/Threadable'
 
 export const threadableFields = () => ({
   id: {

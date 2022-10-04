@@ -56,6 +56,14 @@ const IntegratedTaskContent = (props: Props) => {
         {descriptionHtml && <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />}
       </Content>
     )
+  } else if (integration.__typename === 'AzureDevOpsWorkItem') {
+    const {descriptionHTML, title} = integration
+    return (
+      <Content>
+        <Summary>{title}</Summary>
+        {descriptionHTML && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
+      </Content>
+    )
   }
   return null
 }
@@ -79,6 +87,10 @@ export default createFragmentContainer(IntegratedTaskContent, {
         }
         ... on _xGitLabIssue {
           descriptionHtml
+          title
+        }
+        ... on AzureDevOpsWorkItem {
+          descriptionHTML
           title
         }
       }

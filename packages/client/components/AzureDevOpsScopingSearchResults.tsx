@@ -4,9 +4,11 @@ import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {AzureDevOpsScopingSearchResultsQuery} from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResults_meeting.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import NewAzureIssueInput from './NewAzureIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
 
@@ -33,6 +35,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
         $isWIQL: Boolean!
       ) {
         viewer {
+          ...NewAzureIssueInput_viewer
           teamMember(teamId: $teamId) {
             integrations {
               azureDevOps {
@@ -53,6 +56,10 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
                       url
                       state
                       type
+                      issueKey
+                      project {
+                        name
+                      }
                     }
                   }
                 }
@@ -98,13 +105,8 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
     return url.pathname.substring(firstIndex + 1, seconedIndex)
   }
 
-  const getInstanceId = (url: URL) => {
-    const firstIndex = url.pathname.indexOf('/', 1)
-    return url.host + '/' + url.pathname.substring(1, firstIndex)
-  }
-
   const getServiceTaskId = (url: URL) => {
-    return getInstanceId(url) + ':' + getProjectId(url)
+    return AzureDevOpsClientManager.getInstanceId(url) + ':' + getProjectId(url)
   }
 
   if (!edges) {
@@ -119,26 +121,34 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
     )
   }
   return (
-    <ResultScroller>
-      {edges.map(({node}) => {
-        return (
+    <>
+      <ResultScroller>
+        {query && (
+          <NewAzureIssueInput
+            isEditing={isEditing}
+            meetingId={meetingId}
+            setIsEditing={setIsEditing}
+            viewerRef={viewer}
+          />
+        )}
+        {edges.map(({node}) => (
           <ScopingSearchResultItem
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
             serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
             meetingId={meetingId}
-            persistQuery={() => {
-              return null
-            }}
             summary={node.title}
             url={node.url}
-            linkText={`${node.type} #${node.id}`}
-            linkTitle={`Azure DevOps Work Item #${node.id}`}
+            linkText={`#${node.issueKey} ${node.project.name}`}
+            linkTitle={`Azure DevOps Work Item #${node.issueKey}`}
           />
-        )
-      })}
-    </ResultScroller>
+        ))}
+      </ResultScroller>
+      {!isEditing && (
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+      )}
+    </>
   )
 }
 

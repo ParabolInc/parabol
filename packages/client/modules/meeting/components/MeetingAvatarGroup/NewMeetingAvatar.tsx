@@ -1,12 +1,14 @@
-import {NewMeetingAvatar_teamMember} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
-import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useTooltip from '../../../../hooks/useTooltip'
 import {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
+import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
+import {NewMeetingAvatar_teamMember$key} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
 
 const Item = styled('div')({
   position: 'relative'
@@ -42,26 +44,42 @@ const AvatarBlock = styled('div')<{status: TransitionStatus}>(({status}) => ({
 interface Props {
   onTransitionEnd: () => void
   status: TransitionStatus
-  teamMember: NewMeetingAvatar_teamMember
+  teamMemberRef: NewMeetingAvatar_teamMember$key
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {onTransitionEnd, status, teamMember} = props
+  const {onTransitionEnd, status, teamMemberRef} = props
+
+  const teamMember = useFragment(
+    graphql`
+      fragment NewMeetingAvatar_teamMember on TeamMember {
+        picture
+        preferredName
+      }
+    `,
+    teamMemberRef
+  )
+
+  const {preferredName, picture} = teamMember
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   return (
     <ErrorBoundary>
       <Item>
-        <AvatarBlock status={status} onTransitionEnd={onTransitionEnd}>
-          <Picture src={teamMember.picture} />
+        <AvatarBlock
+          ref={originRef}
+          onMouseOver={openTooltip}
+          onMouseLeave={closeTooltip}
+          status={status}
+          onTransitionEnd={onTransitionEnd}
+        >
+          <Picture src={picture} />
+          {tooltipPortal(preferredName)}
         </AvatarBlock>
       </Item>
     </ErrorBoundary>
   )
 }
 
-export default createFragmentContainer(NewMeetingAvatar, {
-  teamMember: graphql`
-    fragment NewMeetingAvatar_teamMember on TeamMember {
-      picture
-    }
-  `
-})
+export default NewMeetingAvatar

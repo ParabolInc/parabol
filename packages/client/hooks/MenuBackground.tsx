@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
-import {MenuPosition} from './useCoords'
-import {PortalStatus} from './usePortal'
 import {DECELERATE} from '../styles/animation'
 import {menuShadow} from '../styles/elevation'
 import {Duration, Radius} from '../types/constEnums'
+import {MenuPosition} from './useCoords'
+import {PortalStatus} from './usePortal'
 
 const transformOrigins = {
   [MenuPosition.UPPER_RIGHT]: 'top right',
   [MenuPosition.UPPER_LEFT]: 'top left',
   [MenuPosition.LOWER_LEFT]: 'bottom left',
   [MenuPosition.LOWER_RIGHT]: 'bottom right'
-}
+} as const
 
 const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
   switch (portalStatus) {
@@ -48,7 +48,7 @@ const MenuBackground = styled('div')<BackgroundProps>(
     boxShadow: menuShadow,
     height: '100%',
     position: 'absolute',
-    transformOrigin: transformOrigins[menuPosition],
+    transformOrigin: transformOrigins[menuPosition as keyof typeof transformOrigins],
     width: '100%',
     zIndex: -1,
     ...backgroundStyles(portalStatus, isDropdown)

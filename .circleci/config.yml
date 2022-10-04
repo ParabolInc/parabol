@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: cimg/node:16.14.0
+      - image: cimg/node:16.16.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:
@@ -74,8 +74,13 @@ jobs:
           name: Build Assets
           # Use the staging env to run webpack (NODE_ENV=production)
           command: |
-            cp $DEVOPS_WORKDIR/environments/staging .env
-            yarn build --deploy
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+              cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
+              yarn build --deploy
+            else
+              cp $DEVOPS_WORKDIR/environments/development .env
+              yarn build --deploy
+            fi
       - run:
           name: Push Assets to Databases
           # Use the test env so the ports match up (NODE_ENV=testing)
@@ -100,7 +105,7 @@ jobs:
           path: ./packages/server/reports/junit
       - run:
           name: Install Playwright system dependencies
-          command: sudo yarn workspace integration-tests playwright install-deps
+          command: yarn workspace integration-tests playwright install-deps
       - run:
           name: Run Playwright tests
           command: yarn workspace integration-tests test --workers 2 --reporter list,junit
@@ -175,6 +180,26 @@ jobs:
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/dist
               sentry-cli releases finalize "$ACTION_VERSION"
+            fi
+      - run:
+          name: Upload source maps to datadog
+          # adding the node dep for datadog-ci here as it's not needed in the core app, only used for sourcemap upload
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+              yarn add @datadog/datadog-ci -W
+              yarn datadog-ci sourcemaps upload ./build \
+                --service=parabol-saas-production \
+                --release-version=$ACTION_VERSION \
+                --minified-path-prefix=https://action-files.parabol.co/production/build/v$ACTION_VERSION
+            fi
+            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+              yarn add @datadog/datadog-ci -W
+              yarn datadog-ci sourcemaps upload ./build \
+                --service=parabol-saas-staging \
+                --release-version=$ACTION_VERSION \
+                --minified-path-prefix=https://action-files.parabol.co/staging/build/v$ACTION_VERSION
             fi
 workflows:
   version: 2

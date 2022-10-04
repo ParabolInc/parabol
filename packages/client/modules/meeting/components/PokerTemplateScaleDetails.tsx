@@ -114,9 +114,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
             scales={scales}
             isOwner={isOwner}
           />
-          <ScaleValues>
-            {scaleValueString(values)}
-          </ScaleValues>
+          <ScaleValues>{scaleValueString(values)}</ScaleValues>
           <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
         </ScaleNameAndValues>
       </ScaleHeader>

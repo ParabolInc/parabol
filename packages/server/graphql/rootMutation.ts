@@ -47,7 +47,6 @@ import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import endTeamPrompt from './mutations/endTeamPrompt'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
-import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
@@ -95,8 +94,8 @@ import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupS
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
-import setCheckInEnabled from './mutations/setCheckInEnabled'
 import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
+import setMeetingSettings from './mutations/setMeetingSettings'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setOrgUserRole from './mutations/setOrgUserRole'
 import setPhaseFocus from './mutations/setPhaseFocus'
@@ -187,7 +186,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       endDraggingReflection,
       endRetrospective,
       flagReadyToAdvance,
-      inactivateUser,
       invalidateSessions,
       inviteToTeam,
       loginWithPassword,
@@ -227,7 +225,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       segmentEventTrack,
       selectTemplate,
       setAppLocation,
-      setCheckInEnabled,
+      setMeetingSettings,
       setDefaultSlackChannel,
       setOrgUserRole,
       setPhaseFocus,

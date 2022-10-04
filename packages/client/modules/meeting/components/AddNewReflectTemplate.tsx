@@ -65,7 +65,8 @@ const AddNewReflectTemplate = (props: Props) => {
 
   const containsNewTemplate = reflectTemplates.find((template) => template.name === '*New Template')
 
-  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate) return null
+  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate)
+    return null
   return (
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}

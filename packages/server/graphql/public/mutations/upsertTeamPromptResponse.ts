@@ -4,10 +4,12 @@ import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptRespons
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TeamPromptResponse} from '../../../postgres/queries/getTeamPromptResponsesByIds'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
+import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
@@ -18,15 +20,17 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
+  let oldTeamPromptResponse: TeamPromptResponse | undefined
+
   // VALIDATION
   if (inputTeamPromptResponseId) {
-    const teamPromptResponse: TeamPromptResponse = await dataLoader
+    oldTeamPromptResponse = await dataLoader
       .get('teamPromptResponses')
       .load(inputTeamPromptResponseId)
-    if (!teamPromptResponse) {
+    if (!oldTeamPromptResponse) {
       return standardError(new Error('TeamPromptResponse not found'), {userId: viewerId})
     }
-    const {userId, meetingId: responseMeetingId} = teamPromptResponse
+    const {userId, meetingId: responseMeetingId} = oldTeamPromptResponse
     if (userId !== viewerId) {
       return standardError(new Error("Can't edit other's response"), {userId: viewerId})
     }
@@ -71,10 +75,32 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   dataLoader.get('teamPromptResponses').clear(teamPromptResponseId)
 
+  const newTeamPromptResponse = await dataLoader
+    .get('teamPromptResponses')
+    .loadNonNull(teamPromptResponseId)
+
+  const notifications = await createTeamPromptMentionNotifications(
+    oldTeamPromptResponse,
+    newTeamPromptResponse
+  )
+
   const data = {
     meetingId,
-    teamPromptResponseId
+    teamPromptResponseId,
+    addedNotificationIds: notifications.map((notification) => notification.id)
   }
+
+  notifications.forEach((notification) => {
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      notification.userId,
+      'UpsertTeamPromptResponseSuccess',
+      data,
+      subOptions
+    )
+  })
+
+  analytics.responseAdded(viewerId, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
   publish(
     SubscriptionChannel.MEETING,
     meetingId,

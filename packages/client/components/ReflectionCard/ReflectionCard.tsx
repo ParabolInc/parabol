@@ -33,6 +33,7 @@ import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
+import ReflectionCardAuthor from './ReflectionCardAuthor'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
 
@@ -114,6 +115,9 @@ const ReflectionCard = (props: Props) => {
           isViewerReactji
         }
         sortOrder
+        creator {
+          preferredName
+        }
       }
     `,
     reflectionRef
@@ -138,6 +142,7 @@ const ReflectionCard = (props: Props) => {
         spotlightGroup {
           id
         }
+        disableAnonymity
         spotlightSearchQuery
       }
     `,
@@ -151,9 +156,11 @@ const ReflectionCard = (props: Props) => {
     isViewerCreator,
     meetingId,
     reactjis,
-    reflectionGroupId
+    reflectionGroupId,
+    creator
   } = reflection
-  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery} = meeting
+  const {localPhase, localStage, spotlightGroup, phases, disableAnonymity, spotlightSearchQuery} =
+    meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -273,7 +280,11 @@ const ReflectionCard = (props: Props) => {
     phases,
     isSpotlightSource
   )
-  const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
+  const userSelect = readOnly
+    ? phaseType === 'discuss' || phaseType === 'vote'
+      ? 'text'
+      : 'none'
+    : undefined
 
   const onToggleReactji = (emojiId: string) => {
     if (submitting) return
@@ -335,6 +346,7 @@ const ReflectionCard = (props: Props) => {
         readOnly={readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
+        disableAnonymity={disableAnonymity}
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
@@ -344,6 +356,7 @@ const ReflectionCard = (props: Props) => {
           reflectionId={reflectionId}
         />
       )}
+      {disableAnonymity && <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <SpotlightButton

@@ -1,6 +1,6 @@
-import handleDisconnect from './handleDisconnect'
-import sendToSentry from '../utils/sendToSentry'
 import {WebSocket} from 'uWebSockets.js'
+import sendToSentry from '../utils/sendToSentry'
+import handleDisconnect from './handleDisconnect'
 
 const handleClose = (ws: WebSocket) => {
   if (!ws.connectionContext) return

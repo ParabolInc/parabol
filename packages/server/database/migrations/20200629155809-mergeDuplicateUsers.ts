@@ -1,7 +1,7 @@
 import {R} from 'rethinkdb-ts'
 import User from '../types/User'
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   const updateTeamMember = async (goodUserId: string, badUserId: string) => {
     // we don't want to delete the team member because the NewMeeting object
     // references it in the TeamMemberStages (checkin & update stages)
@@ -36,10 +36,7 @@ export const up = async function(r: R) {
         teamMembersToInsert.push(badTeamMember)
       }
     })
-    await r
-      .table('TeamMember')
-      .insert(badTeamMembers)
-      .run()
+    await r.table('TeamMember').insert(badTeamMembers).run()
     // update org user
     // it's possible 2 user objects could exist on the same, that's OK for now
     await r
@@ -51,24 +48,14 @@ export const up = async function(r: R) {
       .run()
 
     // replace meeting members with updated ones
-    const meetingMembers = await r
-      .table('MeetingMember')
-      .getAll(badUserId, {index: 'userId'})
-      .run()
+    const meetingMembers = await r.table('MeetingMember').getAll(badUserId, {index: 'userId'}).run()
     const updatedMeetingMembers = meetingMembers.map((meetingMember) => ({
       ...meetingMember,
       id: `${goodUserId}::${meetingMember.meetingId}`,
       userId: goodUserId
     }))
-    await r
-      .table('MeetingMember')
-      .getAll(badUserId, {index: 'userId'})
-      .delete()
-      .run()
-    await r
-      .table('MeetingMember')
-      .insert(updatedMeetingMembers)
-      .run()
+    await r.table('MeetingMember').getAll(badUserId, {index: 'userId'}).delete().run()
+    await r.table('MeetingMember').insert(updatedMeetingMembers).run()
 
     // replace team invitations
     await r
@@ -109,12 +96,7 @@ export const up = async function(r: R) {
     const allDuplicates = [] as Promise<User[]>[]
     affectedEmails.forEach((email) => {
       allDuplicates.push(
-        r
-          .table('User')
-          .getAll(email, {index: 'email'})
-          .orderBy('createdAt')
-          .coerceTo('array')
-          .run()
+        r.table('User').getAll(email, {index: 'email'}).orderBy('createdAt').coerceTo('array').run()
       )
     })
 
@@ -162,11 +144,7 @@ export const up = async function(r: R) {
       })
       .run()
 
-    await r
-      .table('User')
-      .getAll(r.args(toDeleteIds))
-      .delete({returnChanges: true})
-      .run()
+    await r.table('User').getAll(r.args(toDeleteIds)).delete({returnChanges: true}).run()
   } catch (e) {
     console.log(e)
   }

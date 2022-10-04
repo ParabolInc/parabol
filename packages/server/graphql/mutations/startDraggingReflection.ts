@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',

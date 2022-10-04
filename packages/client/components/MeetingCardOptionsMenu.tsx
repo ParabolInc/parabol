@@ -4,8 +4,10 @@ import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
@@ -40,6 +42,7 @@ const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
       team(teamId: $teamId) {
+        id
         massInvitation(meetingId: $meetingId) {
           id
         }
@@ -65,6 +68,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const canEndMeeting = meetingType === 'teamPrompt'
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
+  const {history} = useRouter()
 
   const {closePortal} = menuProps
   return (
@@ -82,6 +86,11 @@ const MeetingCardOptionsMenu = (props: Props) => {
           closePortal()
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
+
+          SendClientSegmentEventMutation(atmosphere, 'Copied Invite Link', {
+            teamId: team?.id,
+            meetingId: meetingId
+          })
         }}
       />
       {canEndMeeting && (
@@ -96,7 +105,11 @@ const MeetingCardOptionsMenu = (props: Props) => {
           onClick={() => {
             popTooltip()
             closePortal()
-            EndMeetingMutationLookup[meetingType]?.(atmosphere, {meetingId}, {onError, onCompleted})
+            EndMeetingMutationLookup[meetingType]?.(
+              atmosphere,
+              {meetingId},
+              {onError, onCompleted, history}
+            )
           }}
         />
       )}

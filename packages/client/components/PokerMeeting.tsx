@@ -18,12 +18,12 @@ interface Props {
 }
 
 const phaseLookup = {
-  checkin: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  checkin: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  ESTIMATE: lazyPreload(() =>
-    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  ESTIMATE: lazyPreload(
+    () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
@@ -35,9 +35,8 @@ export interface PokerMeetingPhaseProps {
 
 const PokerMeeting = (props: Props) => {
   const {meeting} = props
-  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} = useMeeting(
-    meeting
-  )
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} =
+    useMeeting(meeting)
   const {showSidebar, localPhase} = meeting
 
   if (!safeRoute) return null
@@ -58,7 +57,7 @@ const PokerMeeting = (props: Props) => {
           gotoStageId={gotoStageId}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
-          avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
+          avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
         />
       </Suspense>
       <MeetingControlBar

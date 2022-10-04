@@ -1,4 +1,4 @@
-import React, {ReactElement, useCallback, useEffect, useRef} from 'react'
+import React, {ReactNode, useCallback, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from '../utils/hideBodyScroll'
@@ -31,6 +31,7 @@ export type PortalId =
   | 'StageTimerMinutePicker'
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
+  | 'newMeetingRoot'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void
@@ -170,7 +171,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
   })
 
   const portal = useCallback(
-    (reactEl: ReactElement) => {
+    (reactEl: ReactNode) => {
       const targetEl = portalRef.current
       return !targetEl || portalStatusRef.current === PortalStatus.Exited
         ? null

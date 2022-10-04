@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import React from 'react'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -6,7 +7,6 @@ import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
-import styled from '@emotion/styled'
 
 const CopyBlock = styled('div')({
   marginBottom: 48,
@@ -43,7 +43,7 @@ const AuthenticationPage = (props: Props) => {
           Better Meetings, <br />
           Less Effort
         </h1>
-        <p>Help your team connect &amp; improve with an agile meeting co-pilot</p>
+        <p>92&#37; of users agreed that Parabol improves the efficiency of their meetings.</p>
       </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>

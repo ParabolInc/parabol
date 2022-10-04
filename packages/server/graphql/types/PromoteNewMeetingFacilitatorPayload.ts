@@ -1,10 +1,10 @@
 import {GraphQLObjectType} from 'graphql'
-import {makeResolve, resolveNewMeeting, resolveGQLStageFromId} from '../resolvers'
-import StandardMutationError from './StandardMutationError'
-import NewMeeting from './NewMeeting'
-import User from './User'
 import {GQLContext} from '../graphql'
+import {makeResolve, resolveGQLStageFromId, resolveNewMeeting} from '../resolvers'
+import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
+import StandardMutationError from './StandardMutationError'
+import User from './User'
 
 const PromoteNewMeetingFacilitatorPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'PromoteNewMeetingFacilitatorPayload',

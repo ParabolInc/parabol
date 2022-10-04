@@ -34,11 +34,7 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('SuggestedAction')
-      .get(suggestedActionId)
-      .update({removedAt: now})
-      .run()
+    await r.table('SuggestedAction').get(suggestedActionId).update({removedAt: now}).run()
 
     // no need to publish since that'll only affect their other open tabs
     return {
