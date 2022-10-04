@@ -1,9 +1,8 @@
 import {GraphQLResolveInfo} from 'graphql'
-import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {GQLContext} from '../../graphql'
 import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchGitLabProjects from './fetchGitLabProjects'
-import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
+import {getPermsByTaskService} from './repoIntegrationHelpers'
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -15,14 +14,14 @@ const fetchAllRepoIntegrations = async (
 
   const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
   const [
-    prevRepoIntegrations,
+    // prevRepoIntegrations,
     jiraProjects,
     githubRepos,
     gitlabProjects,
     jiraServerProjects,
     azureProjects
   ] = await Promise.all([
-    getPrevRepoIntegrations(userId, teamId, permLookup),
+    // getPrevRepoIntegrations(userId, teamId, permLookup),
     dataLoader.get('allJiraProjects').load({teamId, userId}),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info),
     fetchGitLabProjects(teamId, userId, context, info),
@@ -37,11 +36,11 @@ const fetchAllRepoIntegrations = async (
     ...azureProjects
   ]
   const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
-  prevRepoIntegrations.forEach((integration) => {
-    const integrationId = IntegrationRepoId.join(integration)
-    if (!integrationId) return
-    repoIntegrationsLastUsedAt[integrationId] = integration.lastUsedAt
-  })
+  // prevRepoIntegrations.forEach((integration) => {
+  //   const integrationId = IntegrationRepoId.join(integration)
+  //   if (!integrationId) return
+  //   repoIntegrationsLastUsedAt[integrationId] = integration.lastUsedAt
+  // })
   return fetchedRepoIntegrations
     .map((repo) => ({
       ...repo,

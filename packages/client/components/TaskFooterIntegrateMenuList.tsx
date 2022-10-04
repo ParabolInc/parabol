@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -153,6 +153,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     filteredItems: filteredIntegrations,
     onQueryChange
   } = useSearchFilter(items, getValue)
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // when typing into the search input, show all repoIntegrations if there are no matching prevRepoIntegrations
@@ -175,6 +176,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   //   teamId,
   //   userId
   // )
+
   return (
     <Menu
       keepParentFocus
@@ -309,13 +311,17 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         return null
       })}
-      <MenuItemHR />
       {!hasRepoIntegrations && (
-        <MenuItem
-          onClick={handleShowMore}
-          label={<StyledMenuItemLabel>{'Show more'}</StyledMenuItemLabel>}
-          noCloseOnClick
-        />
+        <>
+          <MenuItemHR />
+          <MenuItem
+            ref={ref}
+            key={'show-more'}
+            onClick={handleShowMore}
+            label={<StyledMenuItemLabel>{'Show more'}</StyledMenuItemLabel>}
+            noCloseOnClick
+          />
+        </>
       )}
       {status === 'loading' && (
         <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />

@@ -7,21 +7,22 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import getPrevRepoIntegrationRedisKey from '../../../client/utils/getPrevRepoIntegrationRedisKey'
 import {getUserId} from '../../utils/authorization'
+import getRedis from '../../utils/getRedis'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchAllRepoIntegrations from '../queries/helpers/fetchAllRepoIntegrations'
-import {
-  getPermsByTaskService,
-  getPrevRepoIntegrations
-} from '../queries/helpers/repoIntegrationHelpers'
+import {getPermsByTaskService} from '../queries/helpers/repoIntegrationHelpers'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
+import {IntegrationProviderServiceEnumType} from './IntegrationProviderServiceEnum'
 import RepoIntegration from './RepoIntegration'
 import RepoIntegrationQueryPayload from './RepoIntegrationQueryPayload'
 import {TaskConnection} from './Task'
@@ -105,9 +106,18 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     prevRepoIntegrations: {
       description: 'The integrations that the user has previously used',
       type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
-      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
+      resolve: async ({userId, teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
         const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-        return await getPrevRepoIntegrations(userId, teamId, permLookup)
+        const redis = getRedis()
+        const prevRepoIntegrationPromises = Object.keys(permLookup)
+          .filter((service) => service !== 'PARABOL' && permLookup[service])
+          .map((service) => {
+            const prevRepoIntegrationsKey = getPrevRepoIntegrationRedisKey(teamId, service)
+            return redis.get(prevRepoIntegrationsKey)
+          })
+        const prevRepoIntegrationsStr = await Promise.all(prevRepoIntegrationPromises)
+        const prevRepoIntegrations = JSON.parse(prevRepoIntegrationsStr)
+        return prevRepoIntegrations
       }
     },
     repoIntegrations: {
@@ -138,7 +148,30 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
             return standardError(new Error('Not on same team as user'), {userId: viewerId})
           }
         }
+
         const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
+        const redis = getRedis()
+        const threeMonths = ms('90d')
+        const allRepoIntegrationsObj = {} as Record<IntegrationProviderServiceEnumType, any> // TODO: change any
+        allRepoIntegrations.forEach((repoIntegration) => {
+          if (allRepoIntegrationsObj[repoIntegration.service]) {
+            allRepoIntegrationsObj[repoIntegration.service] = [
+              ...allRepoIntegrationsObj[repoIntegration.service],
+              repoIntegration
+            ]
+          } else {
+            allRepoIntegrationsObj[repoIntegration.service] = [repoIntegration]
+          }
+        })
+        const keys = Object.keys(allRepoIntegrationsObj)
+        for await (const key of keys) {
+          const prevRepoIntegrationsKey = getPrevRepoIntegrationRedisKey(teamId, key)
+          await redis.set(
+            prevRepoIntegrationsKey,
+            JSON.stringify(allRepoIntegrationsObj[key], 'PX', threeMonths)
+          )
+        }
+
         if (allRepoIntegrations.length > first) {
           return {hasMore: true, items: allRepoIntegrations.slice(0, first)}
         } else {
