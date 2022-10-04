@@ -48,6 +48,14 @@ export const newMeetingFields = () => ({
     type: GraphQLISO8601Type,
     description: 'The timestamp the meeting officially ended'
   },
+  meetingSeriesId: {
+    type: GraphQLID,
+    description: 'The id of the meeting series this meeting belongs to'
+  },
+  scheduledEndTime: {
+    type: GraphQLISO8601Type,
+    description: 'If meeting has a meeting series associated, this is the time the meeting will end'
+  },
   facilitatorStageId: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'The location of the facilitator in the meeting'
