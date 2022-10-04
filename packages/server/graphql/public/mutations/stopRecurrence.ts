@@ -20,8 +20,8 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
   const now = new Date()
 
   // VALIDATION
-  const id = MeetingSeriesId.split(meetingSeriesId)
-  const meetingSeries = await dataLoader.get('meetingSeries').load(id)
+  const meetingSeriesDbId = MeetingSeriesId.split(meetingSeriesId)
+  const meetingSeries = await dataLoader.get('meetingSeries').load(meetingSeriesDbId)
   if (!meetingSeries) {
     return standardError(new Error('Meeting Series not found'), {userId: viewerId})
   }
@@ -35,13 +35,13 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
   }
 
-  await updateMeetingSeries({cancelledAt: now}, id)
-  dataLoader.get('meetingSeries').clear(id)
+  await updateMeetingSeries({cancelledAt: now}, meetingSeriesDbId)
+  dataLoader.get('meetingSeries').clear(meetingSeriesDbId)
   analytics.recurrenceStopped(viewerId, meetingSeries)
 
   await r
     .table('NewMeeting')
-    .getAll(id, {index: 'meetingSeriesId'})
+    .getAll(meetingSeriesDbId, {index: 'meetingSeriesId'})
     .filter({endedAt: null}, {default: true})
     .update({
       scheduledEndTime: null
@@ -49,7 +49,7 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     .run()
 
   // RESOLUTION
-  const data = {meetingSeriesId}
+  const data = {meetingSeriesId: meetingSeriesDbId}
   publish(SubscriptionChannel.TEAM, teamId, 'StopRecurrenceSuccess', data, subOptions)
   return data
 }
