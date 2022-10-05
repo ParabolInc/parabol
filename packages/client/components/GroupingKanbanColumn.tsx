@@ -185,7 +185,9 @@ const GroupingKanbanColumn = (props: Props) => {
                       phaseRef={phaseRef}
                       reflectionGroupRef={reflectionGroup}
                       swipeColumn={swipeColumn}
-                      showDragHintAnimation={showDragHintAnimation && idx === 0}
+                      showDragHintAnimation={
+                        showDragHintAnimation && subColumnIdx === 0 && idx === 0
+                      }
                     />
                   )
                 })}

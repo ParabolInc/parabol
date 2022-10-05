@@ -127,12 +127,12 @@ const GroupingKanban = (props: Props) => {
   const isGroupPhase = !isComplete && phaseType === 'group'
   const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
-  let isNotInteracting = false
-  if (isGroupPhase && hasNoGroup) {
-    isNotInteracting = reflectionGroups.every((group) =>
+  const isNotInteracting =
+    isGroupPhase &&
+    hasNoGroup &&
+    reflectionGroups.every((group) =>
       group.reflections.every((reflection) => !reflection.isViewerDragging && !reflection.isEditing)
     )
-  }
   const showDragHintAnimation =
     isNotInteracting &&
     isRetrospectiveBeginner &&
