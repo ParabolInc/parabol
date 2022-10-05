@@ -32,3 +32,19 @@ interface Window {
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}
+
+//TODO: remove after migrating to es2021 - https://github.com/microsoft/TypeScript/issues/46907
+declare namespace Intl {
+  type ListType = 'conjunction' | 'disjunction'
+
+  interface ListFormatOptions {
+    localeMatcher?: 'lookup' | 'best fit'
+    type?: ListType
+    style?: 'long' | 'short' | 'narrow'
+  }
+
+  class ListFormat {
+    constructor(locales?: string | string[], options?: ListFormatOptions)
+    format(values: any[]): string
+  }
+}

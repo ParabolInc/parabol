@@ -4,13 +4,16 @@ import data from 'emoji-mart/data/apple.json'
 import {uncompress} from 'emoji-mart/dist-modern/utils/data.js'
 import {unifiedToNative} from 'emoji-mart/dist-modern/utils/index.js'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
-import {BezierCurve} from '~/types/constEnums'
-import {ReactjiCount_reactji} from '~/__generated__/ReactjiCount_reactji.graphql'
+import {BezierCurve, Times} from '~/types/constEnums'
+import {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
+import {MenuPosition} from '../../hooks/useCoords'
+import useTooltip from '../../hooks/useTooltip'
 import ReactjiId from '../../shared/gqlIds/ReactjiId'
+import EmojiUsersReaction from './EmojiUsersReaction'
 
 uncompress(data)
 
@@ -52,38 +55,57 @@ const Count = styled('div')({
 })
 
 interface Props {
-  reactji: ReactjiCount_reactji
+  reactjiRef: ReactjiCount_reactji$key
   onToggle: (emojiId: string) => void
   onTransitionEnd: any
   status: TransitionStatus
 }
 
 const ReactjiCount = (props: Props) => {
-  const {onToggle, reactji, status, onTransitionEnd} = props
+  const {onToggle, reactjiRef, status, onTransitionEnd} = props
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
+    MenuPosition.UPPER_CENTER,
+    {delay: Times.SHOW_REACTJI_USERS_DELAY}
+  )
+  const reactji = useFragment(
+    graphql`
+      fragment ReactjiCount_reactji on Reactji {
+        id
+        count
+        isViewerReactji
+        ...EmojiUsersReaction_reactji
+      }
+    `,
+    reactjiRef
+  )
+
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
   const {name} = ReactjiId.split(id)
-  const unified = data.emojis[name]?.unified ?? ''
+  const emoji = data.emojis[name]
+  const unified = emoji?.unified ?? ''
   const unicode = unifiedToNative(unified) || ''
   const onClick = () => {
     onToggle(name)
   }
+
   return (
     <Parent onTransitionEnd={onTransitionEnd} status={status}>
-      <Inner isViewerReactji={isViewerReactji} onClick={onClick}>
+      <Inner
+        isViewerReactji={isViewerReactji}
+        onClick={onClick}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        ref={originRef}
+      >
         <Emoji>{unicode}</Emoji>
         <Count>{count}</Count>
+        {tooltipPortal(
+          <EmojiUsersReaction reactjiRef={reactji} reactjiShortName={emoji?.short_names[0]} />
+        )}
       </Inner>
     </Parent>
   )
 }
 
-export default createFragmentContainer(ReactjiCount, {
-  reactji: graphql`
-    fragment ReactjiCount_reactji on Reactji {
-      id
-      count
-      isViewerReactji
-    }
-  `
-})
+export default ReactjiCount
