@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.76.0 2022-October-5
+## 6.77.0 2022-October-5
 
 ### Added
 
@@ -31,7 +31,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Update code review policy (#7228)
 - Upgrade node to 16.16.0 (#6998)
 
-## 6.75.0 2022-September-28
+## 6.76.0 2022-September-28
 
 ### Added
 
