@@ -14,10 +14,7 @@ graphql`
         id
         isViewerReactji
         count
-        users {
-          id
-          preferredName
-        }
+        ...ReactjiCount_reactji
       }
     }
   }
@@ -80,6 +77,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           reactji.setValue(false, 'isViewerReactji')
 
           const existingReactjiUsers = reactji.getLinkedRecords('users')
+          if (!existingReactjiUsers) return
           const updatedReactjiUsers = existingReactjiUsers.filter(
             (existingReactjiUser) => existingReactjiUser.getValue('id') !== atmosphere.viewerId
           )
@@ -103,6 +101,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           reactji.setValue(true, 'isViewerReactji')
 
           const existingReactjiUsers = reactji.getLinkedRecords('users')
+          if (!existingReactjiUsers) return
           const updatedReactjiUsers = [...existingReactjiUsers, viewer]
           reactji.setLinkedRecords(updatedReactjiUsers, 'users')
         }
