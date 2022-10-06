@@ -9,7 +9,7 @@ import NotificationTaskInvolves from '../../database/types/NotificationTaskInvol
 import Task, {TaskServiceEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
-import updateRepoIntegrationsCache from '../../integrations/updateRepoIntegrationsCache'
+import updateRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
