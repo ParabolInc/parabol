@@ -1,8 +1,13 @@
-import {ContentState, EditorState, Modifier, SelectionState} from 'draft-js'
+import {ContentState, DraftEntityMutability, EditorState, Modifier, SelectionState} from 'draft-js'
 import getAnchorLocation from '../../components/TaskEditor/getAnchorLocation'
 import getWordAt from '../../components/TaskEditor/getWordAt'
 
-const operationTypes = {
+type ENTITY_NAME = 'EMOJI' | 'TAG' | 'LINK' | 'MENTION'
+
+const OPERATION_TYPES: Record<
+  ENTITY_NAME,
+  {editorChangeType: 'apply-entity'; entityType: DraftEntityMutability}
+> = {
   EMOJI: {
     editorChangeType: 'apply-entity',
     entityType: 'IMMUTABLE'
@@ -21,7 +26,7 @@ const operationTypes = {
   }
 }
 
-const getExpandedSelectionState = (editorState: EditorState) => {
+export const getExpandedSelectionState = (editorState: EditorState) => {
   const selectionState = editorState.getSelection()
   if (selectionState.isCollapsed()) {
     const {block, anchorOffset} = getAnchorLocation(editorState)
@@ -34,20 +39,6 @@ const getExpandedSelectionState = (editorState: EditorState) => {
   return selectionState as SelectionState
 }
 
-const contentStateWithFocusAtEnd = (givenContentState, givenSelectionState) => {
-  const endKey = givenContentState.getSelectionAfter().getEndKey()
-  const endOffset = givenContentState.getSelectionAfter().getEndOffset()
-  const collapsedSelectionState = givenSelectionState.merge({
-    anchorKey: endKey,
-    anchorOffset: endOffset,
-    focusKey: endKey,
-    focusOffset: endOffset
-  })
-  return givenContentState.merge({
-    selectionAfter: collapsedSelectionState
-  }) as ContentState
-}
-
 export const makeContentWithEntity = (
   contentState: ContentState,
   selectionState: SelectionState,
@@ -58,7 +49,7 @@ export const makeContentWithEntity = (
     // anchorKey && focusKey should be different here (used for EditorLinkChanger)
     return Modifier.applyEntity(contentState, selectionState, entityKey)
   }
-  return Modifier.insertText(contentState, selectionState, mention, undefined, entityKey)
+  return Modifier.replaceText(contentState, selectionState, mention, undefined, entityKey)
 }
 
 export const autoCompleteEmoji = (editorState: EditorState, emoji: string) => {
@@ -86,68 +77,37 @@ interface Options {
 }
 const completeEntity = (
   editorState: EditorState,
-  entityName: string,
+  entityName: ENTITY_NAME,
   entityData: any,
   mention: string,
   options: Options = {}
 ) => {
   const {keepSelection} = options
-  const {editorChangeType, entityType} = operationTypes[entityName]
+  const {editorChangeType, entityType} = OPERATION_TYPES[entityName]
   const contentState = editorState.getCurrentContent()
-  // for https://github.com/ParabolInc/parabol/issues/7088
-  const nonWhitespaceFromStart = mention.search(/\S/)
-  const nonWhitespaceFromEnd = mention.search(/\s*$/)
-  let startStr = ''
-  let endStr = ''
-  if (nonWhitespaceFromStart > -1) {
-    startStr = mention.slice(0, nonWhitespaceFromStart)
-  }
-  if (nonWhitespaceFromEnd > -1) {
-    endStr = mention.slice(nonWhitespaceFromEnd)
-  }
+  const contentStateWithEntity = contentState.createEntity(entityName, entityType, entityData)
+  const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
   const expandedSelectionState = keepSelection
     ? editorState.getSelection()
     : getExpandedSelectionState(editorState)
-  let contentStateAfterStartStr
-  if (expandedSelectionState.isCollapsed()) {
-    contentStateAfterStartStr = Modifier.insertText(contentState, expandedSelectionState, startStr)
-  } else {
-    contentStateAfterStartStr = Modifier.replaceText(contentState, expandedSelectionState, startStr)
-  }
-  const contentStateWithEntity = contentStateAfterStartStr.createEntity(
-    entityName,
-    entityType,
-    entityData
-  )
-  const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
-  editorState = EditorState.push(
-    editorState,
-    contentStateWithFocusAtEnd(contentStateAfterStartStr, expandedSelectionState),
-    'insert-characters'
-  )
-  const selectionStateAfterStartStr = editorState.getSelection()
   const contentWithEntity = makeContentWithEntity(
-    contentStateAfterStartStr,
-    selectionStateAfterStartStr,
-    mention.trim(),
+    contentState,
+    expandedSelectionState,
+    mention,
     entityKey
   )
-  editorState = EditorState.push(
-    editorState,
-    contentStateWithFocusAtEnd(contentWithEntity, selectionStateAfterStartStr),
-    'insert-characters'
-  )
-  const selectionStateAfterMention = editorState.getSelection()
-  const contentStateAfterEndStr = Modifier.insertText(
-    contentWithEntity,
-    selectionStateAfterMention,
-    endStr
-  )
-  return EditorState.push(
-    editorState,
-    contentStateWithFocusAtEnd(contentStateAfterEndStr, selectionStateAfterMention),
-    editorChangeType
-  )
+  const endKey = contentWithEntity.getSelectionAfter().getEndKey()
+  const endOffset = contentWithEntity.getSelectionAfter().getEndOffset()
+  const collapsedSelectionState = expandedSelectionState.merge({
+    anchorKey: endKey,
+    anchorOffset: endOffset,
+    focusKey: endKey,
+    focusOffset: endOffset
+  })
+  const finalContent = contentWithEntity.merge({
+    selectionAfter: collapsedSelectionState
+  }) as ContentState
+  return EditorState.push(editorState, finalContent, editorChangeType)
 }
 
 export default completeEntity
