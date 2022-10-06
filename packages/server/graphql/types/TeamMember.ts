@@ -11,13 +11,14 @@ import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getPrevRepoIntegrationRedisKey from '../../../client/utils/getPrevRepoIntegrationRedisKey'
+import {isNotNull} from '../../../client/utils/predicates'
 import {getUserId} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
+import getTaskServicesWithPerms from '../../utils/getTaskServicesWithPerms'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchAllRepoIntegrations from '../queries/helpers/fetchAllRepoIntegrations'
-import {getPermsByTaskService} from '../queries/helpers/repoIntegrationHelpers'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -107,17 +108,17 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       description: 'The integrations that the user has previously used',
       type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
       resolve: async ({userId, teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
-        const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+        const taskServicesWithPerms = await getTaskServicesWithPerms(dataLoader, teamId, userId)
         const redis = getRedis()
-        const prevRepoIntegrationPromises = Object.keys(permLookup)
-          .filter((service) => service !== 'PARABOL' && permLookup[service])
+        const prevRepoIntegrationPromises = taskServicesWithPerms
           .map((service) => {
             const prevRepoIntegrationsKey = getPrevRepoIntegrationRedisKey(teamId, service)
             return redis.get(prevRepoIntegrationsKey)
           })
-        const prevRepoIntegrationsStr = await Promise.all(prevRepoIntegrationPromises)
-        const prevRepoIntegrations = JSON.parse(prevRepoIntegrationsStr)
-        return prevRepoIntegrations
+          .filter(isNotNull)
+
+        const [prevRepoIntegrationsRes] = await Promise.all(prevRepoIntegrationPromises)
+        return prevRepoIntegrationsRes ? JSON.parse(prevRepoIntegrationsRes) : []
       }
     },
     repoIntegrations: {
