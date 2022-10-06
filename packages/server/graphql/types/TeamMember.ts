@@ -21,6 +21,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchAllRepoIntegrations from '../queries/helpers/fetchAllRepoIntegrations'
+import getCachedRepoIntegrations from '../queries/helpers/getCachedRepoIntegrations'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -152,6 +153,8 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         context,
         info
       ) => {
+        const ignoreCache = false // TODO: make an arg
+
         const {authToken, dataLoader} = context
         const viewerId = getUserId(authToken)
         if (userId !== viewerId) {
@@ -163,19 +166,29 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           }
         }
 
-        const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
-        console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
+        if (ignoreCache) {
+          const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
+          console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
 
-        const redis = getRedis()
-        const threeMonths = ms('90d')
-        const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
-        const allRepoIntegrationsStr = JSON.stringify(allRepoIntegrations)
-        await redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', threeMonths)
+          const redis = getRedis()
+          const threeMonths = ms('90d')
+          const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
+          const allRepoIntegrationsStr = JSON.stringify(allRepoIntegrations)
+          redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', threeMonths)
 
-        if (allRepoIntegrations.length > first) {
-          return {hasMore: true, items: allRepoIntegrations.slice(0, first)}
+          if (allRepoIntegrations.length > first) {
+            return {hasMore: true, items: allRepoIntegrations.slice(0, first)}
+          } else {
+            return {hasMore: false, items: allRepoIntegrations}
+          }
         } else {
-          return {hasMore: false, items: allRepoIntegrations}
+          const cachedRepoIntegrations = await getCachedRepoIntegrations(teamId)
+
+          if (cachedRepoIntegrations.length > first) {
+            return {hasMore: true, items: cachedRepoIntegrations.slice(0, first)}
+          } else {
+            return {hasMore: false, items: cachedRepoIntegrations}
+          }
         }
       }
     },

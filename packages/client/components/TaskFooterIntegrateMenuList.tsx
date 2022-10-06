@@ -130,7 +130,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     {teamId},
     {
       UNSTABLE_renderPolicy: 'full',
-      fetchPolicy: showRepoIntegrations ? 'store-or-network' : 'store-only'
+      // fetchPolicy: showRepoIntegrations ? 'store-or-network' : 'store-only'
+      fetchPolicy: true ? 'store-or-network' : 'store-only'
     }
   )
   const repoIntegrations = viewer?.teamMember?.repoIntegrations

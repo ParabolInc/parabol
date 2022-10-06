@@ -27,7 +27,7 @@ const fetchAllRepoIntegrations = async (
   ]
 
   // alternate the repoIntegrations by service so the user is aware of all available services
-  const repoIntegrationsAltServices = []
+  const repoIntegrationsAltServices = [] // TODO: add type
   let loopCount = 0
   while (repoIntegrationsAltServices.length < fetchedRepoIntegrations.length) {
     if (jiraProjects[loopCount]) {
