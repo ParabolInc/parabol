@@ -61,7 +61,7 @@ const EditorLinkChangerDraftjs = (props: Props) => {
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
     let newEditorState = focusedEditorState
     // For whitespace only links
-    if (trimmedText) {
+    if (text.trim()) {
       const contentState = focusedEditorState.getCurrentContent()
       const expandedSelectionState = keepSelection
         ? focusedEditorState.getSelection()
@@ -80,7 +80,7 @@ const EditorLinkChangerDraftjs = (props: Props) => {
     })
     const selectionStateAfterTrimmedText = newEditorState.getSelection()
     let contentStateAfterEndStr = newEditorState.getCurrentContent()
-    if (trimmedText) {
+    if (text.trim()) {
       const contentWithEntity = newEditorState.getCurrentContent()
       contentStateAfterEndStr = Modifier.insertText(
         contentWithEntity,
