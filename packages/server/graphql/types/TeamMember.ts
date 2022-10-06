@@ -10,11 +10,13 @@ import {
 import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getPrevRepoIntegrationRedisKey from '../../../client/utils/getPrevRepoIntegrationRedisKey'
-import {isNotNull} from '../../../client/utils/predicates'
+import IntegrationRepoId, {
+  RepoIntegration as RepoIntegrationType
+} from '../../../client/shared/gqlIds/IntegrationRepoId'
 import {getUserId} from '../../utils/authorization'
+import getAllRepoIntegrationsRedisKey from '../../utils/getAllRepoIntegrationsRedisKey'
+import getPrevUsedRepoIntegrationsRedisKey from '../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../utils/getRedis'
-import getTaskServicesWithPerms from '../../utils/getTaskServicesWithPerms'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -23,7 +25,6 @@ import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import {IntegrationProviderServiceEnumType} from './IntegrationProviderServiceEnum'
 import RepoIntegration from './RepoIntegration'
 import RepoIntegrationQueryPayload from './RepoIntegrationQueryPayload'
 import {TaskConnection} from './Task'
@@ -107,18 +108,30 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     prevRepoIntegrations: {
       description: 'The integrations that the user has previously used',
       type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
-      resolve: async ({userId, teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
-        const taskServicesWithPerms = await getTaskServicesWithPerms(dataLoader, teamId, userId)
+      resolve: async ({teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
         const redis = getRedis()
-        const prevRepoIntegrationPromises = taskServicesWithPerms
-          .map((service) => {
-            const prevRepoIntegrationsKey = getPrevRepoIntegrationRedisKey(teamId, service)
-            return redis.get(prevRepoIntegrationsKey)
-          })
-          .filter(isNotNull)
+        const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
+        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+        const [allRepoIntegrationsRes, prevUsedRepoIntegrationsRes] = await Promise.all([
+          redis.get(allRepoIntegrationsKey),
+          redis.get(prevUsedRepoIntegrationsKey)
+        ])
+        if (!allRepoIntegrationsRes) return []
 
-        const [prevRepoIntegrationsRes] = await Promise.all(prevRepoIntegrationPromises)
-        return prevRepoIntegrationsRes ? JSON.parse(prevRepoIntegrationsRes) : []
+        const allRepoIntegrations = JSON.parse(allRepoIntegrationsRes) as RepoIntegrationType[]
+        if (!prevUsedRepoIntegrationsRes) return allRepoIntegrations
+
+        const prevUsedRepoIntegrations = JSON.parse(
+          prevUsedRepoIntegrationsRes
+        ) as RepoIntegrationType[]
+        const prevUsedRepoIntegrationIds = prevUsedRepoIntegrations.map((repoIntegration) =>
+          IntegrationRepoId.join(repoIntegration)
+        )
+        const filteredRepoIntegrations = allRepoIntegrations.filter((repoIntegration) => {
+          const repoIntegrationId = IntegrationRepoId.join(repoIntegration)
+          return !prevUsedRepoIntegrationIds.includes(repoIntegrationId)
+        })
+        return [...prevUsedRepoIntegrations, ...filteredRepoIntegrations]
       }
     },
     repoIntegrations: {
@@ -151,27 +164,13 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         }
 
         const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
+        console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
+
         const redis = getRedis()
         const threeMonths = ms('90d')
-        const allRepoIntegrationsObj = {} as Record<IntegrationProviderServiceEnumType, any> // TODO: change any
-        allRepoIntegrations.forEach((repoIntegration) => {
-          if (allRepoIntegrationsObj[repoIntegration.service]) {
-            allRepoIntegrationsObj[repoIntegration.service] = [
-              ...allRepoIntegrationsObj[repoIntegration.service],
-              repoIntegration
-            ]
-          } else {
-            allRepoIntegrationsObj[repoIntegration.service] = [repoIntegration]
-          }
-        })
-        const keys = Object.keys(allRepoIntegrationsObj)
-        for await (const key of keys) {
-          const prevRepoIntegrationsKey = getPrevRepoIntegrationRedisKey(teamId, key)
-          await redis.set(
-            prevRepoIntegrationsKey,
-            JSON.stringify(allRepoIntegrationsObj[key], 'PX', threeMonths)
-          )
-        }
+        const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
+        const allRepoIntegrationsStr = JSON.stringify(allRepoIntegrations)
+        await redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', threeMonths)
 
         if (allRepoIntegrations.length > first) {
           return {hasMore: true, items: allRepoIntegrations.slice(0, first)}

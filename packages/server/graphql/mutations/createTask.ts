@@ -9,6 +9,7 @@ import NotificationTaskInvolves from '../../database/types/NotificationTaskInvol
 import Task, {TaskServiceEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
+import updateRepoIntegrationsCache from '../../integrations/updateRepoIntegrationsCache'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
@@ -196,6 +197,10 @@ export default {
 
     // push to integration
     const {integrationHash, integration} = integrationRes
+    console.log('🚀 ~ create task _______', integrationRes)
+    if (integration) {
+      updateRepoIntegrationsCache(teamId, integration)
+    }
     const task = new Task({
       content,
       createdBy: viewerId,

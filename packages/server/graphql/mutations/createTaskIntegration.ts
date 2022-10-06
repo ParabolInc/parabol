@@ -4,6 +4,7 @@ import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
+import updateRepoIntegrationsCache from '../../integrations/updateRepoIntegrationsCache'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
@@ -134,6 +135,16 @@ export default {
     }
 
     const {issueId, ...updateTaskInput} = createTaskResponse
+    console.log('🚀 ~ create task integrations --->', {
+      createTaskResponse,
+      taskInt: task.integration
+    })
+    if (createTaskResponse.integration) {
+      updateRepoIntegrationsCache(teamId, {
+        ...createTaskResponse.integration,
+        id: integrationRepoId
+      })
+    }
 
     if (userId && viewerId !== userId) {
       const addCommentResponse = await taskIntegrationManager.addCreatedBySomeoneElseComment(
