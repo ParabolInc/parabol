@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
-import getRefreshPeriod from '../../utils/getRefreshPeriod'
 import Ellipsis from '../Ellipsis/Ellipsis'
 import {TimestampType} from './EditingStatus'
 
@@ -22,7 +21,7 @@ const useTimeFrom = (timestamp: string) => {
   useEffect(() => {
     timeoutRef.current = window.setTimeout(() => {
       setTimeFrom(makeTimeFrom())
-    }, getRefreshPeriod(timestamp))
+    }, 600)
     return () => {
       window.clearTimeout(timeoutRef.current)
     }
