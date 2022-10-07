@@ -56,7 +56,10 @@ const CommentAvatar = styled(Avatar)({
 
 const EditorWrap = styled('div')({
   flex: 1,
-  margin: '14px 0'
+  margin: '14px 0',
+  overflowWrap: 'break-word',
+  // width below the required size does not have effect
+  width: 0
 })
 
 const ActionsContainer = styled('div')({
@@ -275,6 +278,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             setEditorState={setEditorState}
             teamId={teamId}
             readOnly={!allowComments}
+            discussionId={discussion.id}
           />
         </EditorWrap>
         <SendCommentButton

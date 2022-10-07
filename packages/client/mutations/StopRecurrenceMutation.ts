@@ -5,23 +5,22 @@ import {StopRecurrenceMutation as TStopRecurrenceMutation} from '../__generated_
 
 graphql`
   fragment StopRecurrenceMutation_team on StopRecurrenceSuccess {
-    meeting {
+    meetingSeries {
       id
-      meetingSeriesId
-      meetingSeries {
+      recurrenceRule
+      duration
+      cancelledAt
+      activeMeetings {
         id
-        recurrenceRule
-        duration
-        cancelledAt
+        scheduledEndTime
       }
-      scheduledEndTime
     }
   }
 `
 
 const mutation = graphql`
-  mutation StopRecurrenceMutation($meetingId: ID!) {
-    stopRecurrence(meetingId: $meetingId) {
+  mutation StopRecurrenceMutation($meetingSeriesId: ID!) {
+    stopRecurrence(meetingSeriesId: $meetingSeriesId) {
       ... on ErrorPayload {
         error {
           message

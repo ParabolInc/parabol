@@ -5,6 +5,87 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.77.0 2022-October-5
+
+### Added
+
+- **Standups**: Replace back arrow with logo (#7141)
+- **Standups**: Starting and stopping recurrence from meeting menu (#7105)
+- **Notifications**: Open notification menu when opening app from notification email (#7225)
+- **Retro**: Prompt user to drag cards in group phase (#6910)
+- **Reactions**: Show users who added a reactji (#7147)
+
+### Fixed
+
+- **Sprint Poker**: Scope phase styling issue in header (#7043)
+- **Discussion Threads**: Text without spaces breaks the UI in discussion (#7140)
+- **Discussion Threads**: Autofocus the input in the discussion drawer when opened (#7238)
+- **Accessibility**: Aria-label “edit this reflection” should not exist when the reflection is no longer editable (#7218)
+- Hover over avatar to see names not working for some users (#7239)
+
+### Changed
+
+- **Review Stats**: Correct node version (#7242)
+- **Review Stats**: Count IssueComment events towards comment count (#7230)
+- Boot message changed to include Server ID and task. (#7237)
+- Update code review policy (#7228)
+- Upgrade node to 16.16.0 (#6998)
+
+## 6.76.0 2022-September-28
+
+### Added
+
+- Add password reset to user profile (#7183)
+- Option to unsubscribe from summary emails (#7190)
+- **Analytics**: 'Copied Invite Link' event (#7232)
+- **Analytics**: 'Sent invite accepted' event (#7231)
+
+### Fixed
+
+- **Notifications**: UTM params on notification email link (#7224)
+
+### Changed
+
+- Tweak review stats schedule to match other reminders (#7227)
+- Add jira server key generation script (#7180)
+- Let super users invite to team (#7226)
+
+## 6.75.0 2022-September-21
+
+### Added
+
+- feat(metrics): Add metrics about disableAnonymity in retro meetings (#7171)
+
+### Fixed
+
+- fix: Fix cannot read email of undefined in ErrorBoundary (#7198)
+- fix: 'Estimate phase is already complete' error message (#7194)
+
+### Changed
+
+- style(lint): run yarn format on server side (#7186)
+- ci: update to Lerna V5 and integrate with Nx (#7184)
+- ci: setting write permissions to the PR for external contributor (#7195)
+- chore: add Standup smoke test into the testing basics (#7189)
+- chore: Weekly review stats in Slack (#7205)
+
+## 6.74.0 2022-September-15
+
+### Fixed
+
+- fix: Disallow comments only consisting of whitespace (#7137)
+- fix: New Add Meeting button is pushing the Add Team button out of reach (#7157)
+- fix(demo): prevent demo meeting auto-start after page refresh (#7131)
+- fix: card quick return to original position without hangs (#7138)
+- fix: Misleading error message when inviting existing team mate (#7159)
+- fix: Long title create UI issue on mobile (#7168)
+- fix: only check clientGraphQLServer for isDemoRoute (#7176)
+- fix(poker): fix an bug where task estimate is not written to DB when it's a Parabol task (#7170)
+
+### Changed
+
+- chore: Automatically add reviewers (#7172)
+
 ## 6.73.0 2022-September-08
 
 ### Added

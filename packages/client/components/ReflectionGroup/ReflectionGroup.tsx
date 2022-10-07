@@ -76,6 +76,7 @@ interface Props {
   expandedReflectionGroupPortalParentId?: PortalId
   reflectionIdsToHide?: string[] | null
   isSpotlightEntering?: boolean
+  showDragHintAnimation?: boolean
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -88,7 +89,8 @@ const ReflectionGroup = (props: Props) => {
     dataCy,
     expandedReflectionGroupPortalParentId,
     reflectionIdsToHide,
-    isSpotlightEntering
+    isSpotlightEntering,
+    showDragHintAnimation
   } = props
   const meeting = useFragment(
     graphql`
@@ -291,6 +293,7 @@ const ReflectionGroup = (props: Props) => {
                   staticReflections={staticReflections}
                   swipeColumn={swipeColumn}
                   isSpotlightEntering={!!isSpotlightEntering}
+                  showDragHintAnimation={showDragHintAnimation}
                 />
               </ReflectionWrapper>
             )

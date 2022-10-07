@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
@@ -86,9 +85,10 @@ const voteForPokerStory = {
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    if (isPhaseComplete('ESTIMATE', phases)) {
-      return {error: {message: 'Estimate phase is already complete'}}
-    }
+    // No need to check for now (https://github.com/ParabolInc/parabol/issues/7191)
+    // if (isPhaseComplete('ESTIMATE', phases)) {
+    //   return {error: {message: 'Estimate phase is already complete'}}
+    // }
 
     // VALIDATION
     const estimatePhase = getPhase(phases, 'ESTIMATE')

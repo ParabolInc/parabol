@@ -238,7 +238,7 @@ const PhaseItemEditor = (props: Props) => {
         <ReflectionEditorWrapper
           dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
-          ariaLabel='Edit this reflection'
+          ariaLabel={readOnly ? '' : 'Edit this reflection'}
           editorState={editorState}
           editorRef={editorRef}
           onBlur={onBlur}

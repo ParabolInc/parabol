@@ -42,7 +42,18 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
-  maxWidth: '100%'
+  maxWidth: '100%',
+  overflow: 'hidden',
+  overflowX: 'auto',
+  '&::-webkit-scrollbar': {
+    webkitAppearance: 'none',
+    width: '6px',
+    height: '4px'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    borderRadius: '3px',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  }
 })
 
 const TabIcon = styled(Icon)({
@@ -54,7 +65,7 @@ const TabLabel = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
   minWidth: 80,
-  whiteSpace: 'pre-wrap'
+  whiteSpace: 'nowrap'
 })
 
 const TabContents = styled('div')({

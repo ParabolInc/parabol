@@ -43,6 +43,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
         meetingSeries {
           id
           cancelledAt
+          activeMeetings {
+            id
+          }
         }
         endedAt
         viewerMeetingMember {
@@ -62,14 +65,21 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
+  const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+  const hasActiveMeetings = !!meetingSeries?.activeMeetings?.length
+  const canStartRecurrence = !isEnded
+  // for now user can end the recurrence only if the meeting is active, or if there are no active meetings in the series
+  // it is somewhat arbitrary and might change in the future
+  const canEndRecurrence = !isEnded || !hasActiveMeetings
+  const canToggleRecurrence = hasRecurrenceEnabled ? canEndRecurrence : canStartRecurrence
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
       {recurrence && (
         <MenuItem
           key='copy'
-          isDisabled={!!endedAt}
+          isDisabled={!canToggleRecurrence}
           label={
             <OptionMenuItem>
               <StyledIcon>replay</StyledIcon>
@@ -80,7 +90,11 @@ const TeamPromptOptionsMenu = (props: Props) => {
             menuProps.closePortal()
 
             if (hasRecurrenceEnabled) {
-              StopRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+              StopRecurrenceMutation(
+                atmosphere,
+                {meetingSeriesId: meetingSeries.id},
+                {onCompleted, onError}
+              )
             } else {
               StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
             }
@@ -89,7 +103,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
       )}
       <MenuItem
         key='end'
-        isDisabled={!!endedAt}
+        isDisabled={isEnded}
         label={
           <OptionMenuItem>
             <StyledIcon>flag</StyledIcon>
