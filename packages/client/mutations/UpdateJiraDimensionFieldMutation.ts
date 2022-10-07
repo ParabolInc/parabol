@@ -21,19 +21,6 @@ graphql`
         }
       }
     }
-    team {
-      integrations {
-        atlassian {
-          jiraDimensionFields {
-            cloudId
-            projectKey
-            dimensionName
-            fieldName
-            issueType
-          }
-        }
-      }
-    }
   }
 `
 
@@ -73,34 +60,9 @@ const UpdateJiraDimensionFieldMutation: StandardMutation<TUpdateJiraDimensionFie
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, cloudId, dimensionName, fieldName, projectKey} = variables
+      const {meetingId, cloudId, dimensionName, fieldName} = variables
       const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) return
-      const teamId = meeting.getValue('teamId')
-      // handle team record
-      const atlassianTeamIntegration = store.get(`atlassianTeamIntegration:${teamId}`)
-      if (atlassianTeamIntegration) {
-        const jiraDimensionFields =
-          atlassianTeamIntegration.getLinkedRecords('jiraDimensionFields') || []
-        const existingField = jiraDimensionFields.find(
-          (dimensionField) =>
-            dimensionField.getValue('dimensionName') === dimensionName &&
-            dimensionField.getValue('cloudId') === cloudId &&
-            dimensionField.getValue('projectKey') === projectKey
-        )
-        if (existingField) {
-          existingField.setValue(fieldName, 'fieldName')
-        } else {
-          const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {
-            fieldName,
-            dimensionName,
-            cloudId,
-            projectKey
-          })
-          const nextJiraDimensionFields = [...jiraDimensionFields, optimisticJiraDimensionField]
-          atlassianTeamIntegration.setLinkedRecords(nextJiraDimensionFields, 'jiraDimensionFields')
-        }
-      }
       // handle meeting records
       const phases = meeting.getLinkedRecords('phases')
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
