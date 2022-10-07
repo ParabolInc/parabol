@@ -26,8 +26,6 @@ const updatePrevUsedRepoIntegrationsCache = async (
     await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
   }
   await redis.zadd(prevUsedRepoIntegrationsKey, now, JSON.stringify(repoIntegration))
-
-  // TODO: remove all that are older than 90 days
 }
 
 export default updatePrevUsedRepoIntegrationsCache

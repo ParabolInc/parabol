@@ -2,7 +2,6 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
@@ -18,12 +17,14 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchAllRepoIntegrations from '../queries/helpers/fetchAllRepoIntegrations'
-import getCachedRepoIntegrations from '../queries/helpers/getCachedRepoIntegrations'
+import getAllCachedRepoIntegrations from '../queries/helpers/getAllCachedRepoIntegrations'
+import getPrevUsedRepoIntegrations from '../queries/helpers/getPrevUsedRepoIntegrations'
+import removeStalePrevUsedRepoIntegrations from '../queries/helpers/removeStalePrevUsedRepoIntegations'
+import {default as sortRepoIntegrations} from '../queries/helpers/sortRepoIntegrations'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import RepoIntegration from './RepoIntegration'
 import RepoIntegrationQueryPayload from './RepoIntegrationQueryPayload'
 import {TaskConnection} from './Task'
 import Team from './Team'
@@ -103,18 +104,18 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
     },
-    prevRepoIntegrations: {
-      description: 'The integrations that the user has previously used',
-      type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
-      resolve: async ({teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
-        const redis = getRedis()
-        const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
-        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-        const [allRepoIntegrationsRes] = await Promise.all([redis.get(allRepoIntegrationsKey)])
-        if (!allRepoIntegrationsRes) return []
-        return []
-      }
-    },
+    // prevRepoIntegrations: {
+    //   description: 'The integrations that the user has previously used',
+    //   type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
+    //   resolve: async ({teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
+    //     const redis = getRedis()
+    //     const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
+    //     const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+    //     const [allRepoIntegrationsRes] = await Promise.all([redis.get(allRepoIntegrationsKey)])
+    //     if (!allRepoIntegrationsRes) return []
+    //     return []
+    //   }
+    // },
     repoIntegrations: {
       description: 'The integrations that the user would probably like to use',
       type: new GraphQLNonNull(RepoIntegrationQueryPayload),
@@ -146,28 +147,31 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           }
         }
 
+        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+        const [allRepoIntegrations, prevUsedRepoIntegrations] = await Promise.all([
+          ignoreCache
+            ? fetchAllRepoIntegrations(teamId, userId, context, info)
+            : getAllCachedRepoIntegrations(teamId),
+          getPrevUsedRepoIntegrations(teamId)
+        ])
+        console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
+        console.log('🚀 ~ prevUsedRepoIntegrations', prevUsedRepoIntegrations)
         if (ignoreCache) {
-          const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
-          // console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
-
+          // create a new cache with newly fetched allRepoIntegrations
           const redis = getRedis()
           const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
           const allRepoIntegrationsStr = JSON.stringify(allRepoIntegrations)
           redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', ms('90d'))
-
-          if (allRepoIntegrations.length > first) {
-            return {hasMore: true, items: allRepoIntegrations.slice(0, first)}
-          } else {
-            return {hasMore: false, items: allRepoIntegrations}
-          }
+        }
+        removeStalePrevUsedRepoIntegrations(prevUsedRepoIntegrations, prevUsedRepoIntegrationsKey)
+        const sortedRepoIntegrations = await sortRepoIntegrations(
+          allRepoIntegrations,
+          prevUsedRepoIntegrations
+        )
+        if (sortedRepoIntegrations.length > first) {
+          return {hasMore: true, items: sortedRepoIntegrations.slice(0, first)}
         } else {
-          const cachedRepoIntegrations = await getCachedRepoIntegrations(teamId)
-
-          if (cachedRepoIntegrations.length > first) {
-            return {hasMore: true, items: cachedRepoIntegrations.slice(0, first)}
-          } else {
-            return {hasMore: false, items: cachedRepoIntegrations}
-          }
+          return {hasMore: false, items: sortedRepoIntegrations}
         }
       }
     },
