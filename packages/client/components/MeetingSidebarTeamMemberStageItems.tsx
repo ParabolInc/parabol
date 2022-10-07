@@ -63,7 +63,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigableByFacilitator,
             isNavigable
           } = stage
-          if (!teamMember) {
+          if (!teamMember || !teamMemberId) {
             return null
           }
           const {picture, preferredName} = teamMember
@@ -79,7 +79,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
                 </AvatarBlock>
               }
               isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
-              onClick={gotoStage(teamMemberId!)}
+              onClick={gotoStage(teamMemberId)}
               isActive={localStageId === stageId}
               isComplete={isComplete}
               isDragging={false}

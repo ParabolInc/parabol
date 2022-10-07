@@ -45,11 +45,11 @@ const SwipableEstimateItem = styled('div')<{isDesktop: boolean}>(({isDesktop}) =
   paddingBottom: isDesktop ? 8 * 19 : 8 * 12
 }))
 
-const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
+const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean): React.CSSProperties => {
   return {
     height: '100%',
-    margin: isDesktop ? '0 auto' : null,
-    maxWidth: hasSingleDimension ? (isDesktop ? 1536 : null) : isDesktop ? 1600 : null,
+    margin: isDesktop ? '0 auto' : undefined,
+    maxWidth: hasSingleDimension ? (isDesktop ? 1536 : undefined) : isDesktop ? 1600 : undefined,
     padding: hasSingleDimension
       ? isDesktop
         ? '12px 8px 0'
@@ -59,7 +59,7 @@ const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
       : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
-  } as React.CSSProperties
+  }
 }
 
 const containerStyle = {

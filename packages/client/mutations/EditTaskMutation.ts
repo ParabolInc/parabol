@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitMutation, Disposable} from 'react-relay'
+import {commitMutation} from 'react-relay'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import isTempId from '../utils/relay/isTempId'
@@ -36,7 +36,7 @@ export const editTaskTaskUpdater: SharedUpdater<EditTaskMutation_task> = (payloa
 }
 
 const EditTaskMutation: SimpleMutation<TEditTaskMutation> = (atmosphere, {taskId, isEditing}) => {
-  if (isTempId(taskId)) return undefined as unknown as Disposable
+  if (isTempId(taskId)) return undefined
   return commitMutation<TEditTaskMutation>(atmosphere, {
     mutation,
     variables: {taskId, isEditing},

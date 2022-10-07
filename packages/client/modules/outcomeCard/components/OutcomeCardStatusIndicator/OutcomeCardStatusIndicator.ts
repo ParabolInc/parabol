@@ -1,18 +1,16 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {TaskStatus} from '../../../../types/constEnums'
-import {TaskStatusEnum} from '../../../../__generated__/CreateTaskMutation.graphql'
 
 const taskStatusColors = {
-  [TaskStatus.DONE]: PALETTE.GRAPE_600,
-  [TaskStatus.ACTIVE]: PALETTE.JADE_400,
-  [TaskStatus.STUCK]: PALETTE.TOMATO_500,
-  [TaskStatus.FUTURE]: PALETTE.AQUA_400,
-  [TaskStatus.ARCHIVED]: PALETTE.SLATE_500,
-  [TaskStatus.PRIVATE]: PALETTE.GOLD_300
+  done: PALETTE.GRAPE_600,
+  active: PALETTE.JADE_400,
+  stuck: PALETTE.TOMATO_500,
+  future: PALETTE.AQUA_400,
+  archived: PALETTE.SLATE_500,
+  private: PALETTE.GOLD_300
 } as const
 
-const OutcomeCardStatusIndicator = styled('div')<{status: TaskStatusEnum | 'private' | 'archived'}>(
+const OutcomeCardStatusIndicator = styled('div')<{status: keyof typeof taskStatusColors}>(
   ({status}) => ({
     backgroundColor: taskStatusColors[status],
     borderRadius: 4,

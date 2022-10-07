@@ -1,7 +1,11 @@
 import {useEffect, useState} from 'react'
 import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
-import {SlackConversation} from '../utils/SlackManager'
+
+interface MinimalChannel {
+  id: string
+  name: string
+}
 
 const useSlackChannels = (
   slackAuth: {botAccessToken: string | null; slackUserId: string} | null
@@ -22,7 +26,7 @@ const useSlackChannels = (
         console.error(publicChannelRes.error)
         return
       }
-      let availableChannels: SlackConversation[]
+      let availableChannels: MinimalChannel[]
       const {channels: publicChannels} = publicChannelRes
       if (privateChannelRes.ok && privateChannelRes.channels.length) {
         availableChannels = [...privateChannelRes.channels, ...publicChannels]
@@ -34,7 +38,7 @@ const useSlackChannels = (
         id: slackUserId,
         name: '@Parabol'
       }
-      availableChannels.unshift({...botChannel, name: '@Parabol'} as SlackConversation)
+      availableChannels.unshift({...botChannel, name: '@Parabol'})
       setChannels(availableChannels)
     }
     getChannels().catch()

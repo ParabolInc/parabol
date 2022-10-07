@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {PropsToType} from '../types/generics'
+import {WithFieldsAsType} from '../types/generics'
 import {StandardMutation} from '../types/relayMutations'
 import {UpdateTaskDueDateMutation as TUpdateTaskDueDateMutation} from '../__generated__/UpdateTaskDueDateMutation.graphql'
 graphql`
@@ -22,7 +22,11 @@ const mutation = graphql`
     }
   }
 `
-type DTUpdateTaskDueDateMutation = PropsToType<TUpdateTaskDueDateMutation, Date | null, 'dueDate'>
+type DTUpdateTaskDueDateMutation = WithFieldsAsType<
+  TUpdateTaskDueDateMutation,
+  Date | null,
+  'dueDate'
+>
 
 const UpdateTaskDueDateMutation: StandardMutation<DTUpdateTaskDueDateMutation> = (
   atmosphere,

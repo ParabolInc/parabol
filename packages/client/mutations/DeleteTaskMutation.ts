@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {commitMutation, Disposable} from 'react-relay'
+import {commitMutation} from 'react-relay'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import isTempId from '../utils/relay/isTempId'
 import {DeleteTaskMutation as TDeleteTaskMutation} from '../__generated__/DeleteTaskMutation.graphql'
@@ -32,7 +32,7 @@ export const deleteTaskTaskUpdater: SharedUpdater<DeleteTaskMutation_task> = (pa
 
 const DeleteTaskMutation: SimpleMutation<TDeleteTaskMutation> = (atmosphere, variables) => {
   const {taskId} = variables
-  if (isTempId(taskId)) return undefined as unknown as Disposable
+  if (isTempId(taskId)) return undefined
   return commitMutation<TDeleteTaskMutation>(atmosphere, {
     mutation,
     variables,
