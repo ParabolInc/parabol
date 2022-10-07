@@ -317,7 +317,6 @@ class Analytics {
   }
 
   toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
-    //
     this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
   }
 
