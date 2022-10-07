@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import {
   createImageUrlHash,
   createParabolImageUrl,
@@ -12,7 +13,14 @@ import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
 import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
 
-const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
+export type JiraRemoteProjectSource = JiraProject & {
+  service: 'jira'
+  cloudId: string
+  teamId: string
+  userId: string
+}
+
+const JiraRemoteProject = new GraphQLObjectType<JiraRemoteProjectSource, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
   interfaces: () => [RepoIntegration],

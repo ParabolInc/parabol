@@ -3,6 +3,7 @@ import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import {JiraIssueResolvers} from '../resolverTypes'
 
 const JiraIssue: JiraIssueResolvers = {
+  __isTypeOf: ({cloudId, issueKey}) => !!(cloudId && issueKey),
   id: ({cloudId, issueKey}) => {
     return JiraIssueId.join(cloudId, issueKey)
   },
