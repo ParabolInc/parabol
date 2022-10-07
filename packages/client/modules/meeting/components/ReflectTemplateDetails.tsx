@@ -125,9 +125,9 @@ const ReflectTemplateDetails = (props: Props) => {
     mountainClimberTemplate: mountainClimberTemplate,
     threeLittlePigsTemplate: threeLittlePigsTemplate,
     winningStreakTemplate: winningStreakTemplate
-  }
-  const headerImg = defaultIllustrations[templateId]
-    ? defaultIllustrations[templateId]
+  } as const
+  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
+    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (

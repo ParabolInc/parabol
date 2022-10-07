@@ -22,7 +22,7 @@ const InheritedStyles = styled('div')({
 
 const EditableTeamName = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const handleSubmit = (rawName) => {
+  const handleSubmit = (rawName: string) => {
     const {
       onError,
       onCompleted,
@@ -40,7 +40,7 @@ const EditableTeamName = (props: Props) => {
       id: teamId,
       name
     }
-    UpdateTeamNameMutation(atmosphere, updatedTeam, onError, onCompleted)
+    UpdateTeamNameMutation(atmosphere, {updatedTeam}, {onError, onCompleted})
   }
 
   const validate = (rawTeamName: string) => {

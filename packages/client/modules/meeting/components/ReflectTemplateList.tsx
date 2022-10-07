@@ -125,7 +125,7 @@ const ReflectTemplateList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
   const templateType = Object.keys(templateIdxs).find(
-    (key) => templateIdxs[key] === activeIdx
+    (key) => templateIdxs[key as keyof typeof templateIdxs] === activeIdx
   ) as SharingScopeEnum
 
   const clearSearch = () => {
@@ -141,7 +141,7 @@ const ReflectTemplateList = (props: Props) => {
     clearSearch()
   }
 
-  const onChangeIdx = (idx: number, _fromIdx: unknown, props: {reason: string}) => {
+  const onChangeIdx = (idx: number, _fromIdx: number, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
@@ -192,10 +192,10 @@ const ReflectTemplateList = (props: Props) => {
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
-        onChangeIndex={onChangeIdx}
+        onChangeIndex={onChangeIdx as any /* typedef is wrong */}
         containerStyle={containerStyle}
         style={innerStyle}
-        slideStyle={slideStyle}
+        slideStyle={slideStyle as any}
       >
         <TabContents>
           <ReflectTemplateListTeam

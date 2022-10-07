@@ -60,7 +60,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
     [userId, teamMembers]
   )
-  const handleTaskUpdate = (newAssignee) => () => {
+  const handleTaskUpdate = (newAssignee: {userId: string}) => () => {
     const newUserId = newAssignee.userId === userId ? null : newAssignee.userId
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
   }

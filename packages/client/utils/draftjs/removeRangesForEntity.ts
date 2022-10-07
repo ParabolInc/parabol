@@ -23,7 +23,7 @@ const getUTF16Range = (text: string, range: RawDraftEntityRange) => {
 const getEntities = (
   entityMap: RawDraftContentState['entityMap'],
   entityType: string,
-  eqFn: (entityData: any) => void
+  eqFn: (entityData: any) => boolean
 ) => {
   const entities = [] as string[]
   for (const [key, entity] of Object.entries(entityMap)) {

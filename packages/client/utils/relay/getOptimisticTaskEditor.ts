@@ -1,8 +1,13 @@
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from './createProxyRecord'
 
-const getOptimisticTaskEditor = (store, taskId, isEditing) => {
+const getOptimisticTaskEditor = (
+  store: RecordSourceSelectorProxy,
+  taskId: string,
+  isEditing: boolean
+) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  const task = store.get(taskId)
+  const task = store.get(taskId)!
   const payload = createProxyRecord(store, 'EditTaskMutationPayload', {
     isEditing
   })

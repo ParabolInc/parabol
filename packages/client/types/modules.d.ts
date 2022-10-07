@@ -9,6 +9,15 @@ declare module '*.svg'
 declare module '*.woff2'
 declare module 'json2csv/lib/JSON2CSVParser'
 declare module 'string-score'
+declare module 'babel-plugin-relay/macro' {
+  export {graphql as default} from 'react-relay'
+}
+declare module 'unicode-substring'
+declare module 'emoji-mart/dist-modern/utils/index.js'
+declare module 'emoji-mart/dist-modern/utils/data.js'
+declare module 'emoji-mart/dist-modern/components/picker/nimble-picker'
+declare module 'react-textarea-autosize'
+declare module 'react-copy-to-clipboard'
 
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string

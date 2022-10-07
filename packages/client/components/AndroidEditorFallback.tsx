@@ -69,7 +69,7 @@ const AndroidEditorFallback = (props: Props) => {
     <TextAreaStyles
       className={className}
       aria-label={ariaLabel}
-      onHeightChange={(height) => setHeight(height)}
+      onHeightChange={(height: number) => setHeight(height)}
       style={{height}}
       inputRef={editorRef}
       spellCheck

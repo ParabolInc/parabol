@@ -7,9 +7,9 @@ const getTokenFromSSO = (url: string) => {
   const popup = window.open(url, 'SSO', getOAuthPopupFeatures({width: 385, height: 550, top: 64}))
   if (!popup) return {token: null, error: 'Failed to open login popup'}
   popup.location.href = url
-  let closeCheckerId
+  let closeCheckerId: undefined | number
   return new Promise<{token: string | null; error: string | null}>((resolve) => {
-    const handler = (event) => {
+    const handler = (event: MessageEvent) => {
       // an extension posted to the opener
       if (typeof event.data !== 'object') return
       const {token, error} = event.data

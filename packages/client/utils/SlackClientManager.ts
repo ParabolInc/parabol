@@ -16,7 +16,7 @@ class SlackClientManager extends SlackManager {
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 600, top: 56})
     )
-    const handler = (event) => {
+    const handler = (event: MessageEvent) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
         return
       }

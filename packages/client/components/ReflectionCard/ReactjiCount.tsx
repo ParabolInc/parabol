@@ -81,9 +81,11 @@ const ReactjiCount = (props: Props) => {
 
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
-  const {name} = ReactjiId.split(id)
-  const emoji = data.emojis[name]
-  const unified = emoji?.unified ?? ''
+  const reactjiObj = ReactjiId.split(id)
+  const name = reactjiObj.name as keyof typeof emojis
+  const {emojis} = data
+  const emojiData = emojis[name] as any
+  const unified = emojiData?.unified ?? ''
   const unicode = unifiedToNative(unified) || ''
   const onClick = () => {
     onToggle(name)
@@ -101,7 +103,7 @@ const ReactjiCount = (props: Props) => {
         <Emoji>{unicode}</Emoji>
         <Count>{count}</Count>
         {tooltipPortal(
-          <EmojiUsersReaction reactjiRef={reactji} reactjiShortName={emoji?.short_names[0]} />
+          <EmojiUsersReaction reactjiRef={reactji} reactjiShortName={emojiData?.short_names[0]} />
         )}
       </Inner>
     </Parent>
