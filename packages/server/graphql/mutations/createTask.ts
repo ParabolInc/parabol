@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import IntegrationRepoId from '../../../client/shared/gqlIds/IntegrationRepoId'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
@@ -198,7 +199,9 @@ export default {
     // push to integration
     const {integrationHash, integration} = integrationRes
     if (integration) {
-      updateRepoIntegrationsCache(teamId, integration)
+      const integrationRepoId = IntegrationRepoId.join(integration)
+      console.log('🚀 ~ integrationRepoId.....', integrationRepoId)
+      updateRepoIntegrationsCache(teamId, integrationRepoId)
     }
     const task = new Task({
       content,

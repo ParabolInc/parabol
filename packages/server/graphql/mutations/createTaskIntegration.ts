@@ -1,10 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from '~/utils/makeAppURL'
+import IntegrationRepoId from '../../../client/shared/gqlIds/IntegrationRepoId'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
-import updateRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
+import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
@@ -137,10 +138,12 @@ export default {
     const {issueId, ...updateTaskInput} = createTaskResponse
 
     if (createTaskResponse.integration) {
-      updateRepoIntegrationsCache(teamId, {
-        ...createTaskResponse.integration,
-        id: integrationRepoId
-      })
+      const repoId =
+        integrationProviderService === 'azureDevOps'
+          ? IntegrationRepoId.split(integrationRepoId).repositoryId
+          : integrationRepoId
+      console.log('🚀 ~ repoId', {repoId, integrationRepoId})
+      updatePrevUsedRepoIntegrationsCache(teamId, repoId)
     }
 
     if (userId && viewerId !== userId) {
