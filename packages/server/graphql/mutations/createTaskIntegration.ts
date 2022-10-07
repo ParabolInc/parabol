@@ -135,10 +135,7 @@ export default {
     }
 
     const {issueId, ...updateTaskInput} = createTaskResponse
-    console.log('🚀 ~ create task integrations --->', {
-      createTaskResponse,
-      taskInt: task.integration
-    })
+
     if (createTaskResponse.integration) {
       updateRepoIntegrationsCache(teamId, {
         ...createTaskResponse.integration,

@@ -89,12 +89,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     }
   `
 
+  // prevRepoIntegrations {
+  //   ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+  // }
   const {prevRepoIntegrations} = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuList_teamMember on TeamMember {
-        prevRepoIntegrations {
-          ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-        }
+        id
       }
     `,
     teamMemberRef
@@ -110,7 +111,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     taskRef
   )
   const {id: taskId, teamId, userId} = task
-  const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
+  // const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
+  const [showRepoIntegrations, setShowRepoIntegrations] = useState(true)
   const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
     graphql`
       query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!) {

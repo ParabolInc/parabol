@@ -10,9 +10,6 @@ import {
 import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import IntegrationRepoId, {
-  RepoIntegration as RepoIntegrationType
-} from '../../../client/shared/gqlIds/IntegrationRepoId'
 import {getUserId} from '../../utils/authorization'
 import getAllRepoIntegrationsRedisKey from '../../utils/getAllRepoIntegrationsRedisKey'
 import getPrevUsedRepoIntegrationsRedisKey from '../../utils/getPrevUsedRepoIntegrationsRedisKey'
@@ -113,26 +110,9 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         const redis = getRedis()
         const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
         const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-        const [allRepoIntegrationsRes, prevUsedRepoIntegrationsRes] = await Promise.all([
-          redis.get(allRepoIntegrationsKey),
-          redis.get(prevUsedRepoIntegrationsKey)
-        ])
+        const [allRepoIntegrationsRes] = await Promise.all([redis.get(allRepoIntegrationsKey)])
         if (!allRepoIntegrationsRes) return []
-
-        const allRepoIntegrations = JSON.parse(allRepoIntegrationsRes) as RepoIntegrationType[]
-        if (!prevUsedRepoIntegrationsRes) return allRepoIntegrations
-
-        const prevUsedRepoIntegrations = JSON.parse(
-          prevUsedRepoIntegrationsRes
-        ) as RepoIntegrationType[]
-        const prevUsedRepoIntegrationIds = prevUsedRepoIntegrations.map((repoIntegration) =>
-          IntegrationRepoId.join(repoIntegration)
-        )
-        const filteredRepoIntegrations = allRepoIntegrations.filter((repoIntegration) => {
-          const repoIntegrationId = IntegrationRepoId.join(repoIntegration)
-          return !prevUsedRepoIntegrationIds.includes(repoIntegrationId)
-        })
-        return [...prevUsedRepoIntegrations, ...filteredRepoIntegrations]
+        return []
       }
     },
     repoIntegrations: {
@@ -168,13 +148,12 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
 
         if (ignoreCache) {
           const allRepoIntegrations = await fetchAllRepoIntegrations(teamId, userId, context, info)
-          console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
+          // console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
 
           const redis = getRedis()
-          const threeMonths = ms('90d')
           const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
           const allRepoIntegrationsStr = JSON.stringify(allRepoIntegrations)
-          redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', threeMonths)
+          redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', ms('90d'))
 
           if (allRepoIntegrations.length > first) {
             return {hasMore: true, items: allRepoIntegrations.slice(0, first)}

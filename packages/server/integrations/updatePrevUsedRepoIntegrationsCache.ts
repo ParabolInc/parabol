@@ -12,41 +12,22 @@ const updatePrevUsedRepoIntegrationsCache = async (
 ) => {
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const prevUsedRepoIntegrationsRes = await redis.get(prevUsedRepoIntegrationsKey)
-  const repoIntegrationWithLastUsedAt = {
-    ...repoIntegration,
-    lastUsedAt: new Date()
+  const prevUsedRepoIntegrationsRes = await redis.zrange(prevUsedRepoIntegrationsKey, 0, -1)
+  const now = Date.now()
+  const prevUsedRepoIntegrations = prevUsedRepoIntegrationsRes.map((prevUsedRepoIntegration) => {
+    return JSON.parse(prevUsedRepoIntegration)
+  }) as RepoIntegrationWithLastUsedAt[]
+  const repoIntegrationId = IntegrationRepoId.join(repoIntegration)
+  const oldPrevUsedRepoIntegration = prevUsedRepoIntegrations.find((prevUsedRepoIntegration) => {
+    const prevUsedRepoIntegrationId = IntegrationRepoId.join(prevUsedRepoIntegration)
+    return prevUsedRepoIntegrationId === repoIntegrationId
+  })
+  if (oldPrevUsedRepoIntegration) {
+    await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
   }
-  if (!prevUsedRepoIntegrationsRes) {
-    redis.set(prevUsedRepoIntegrationsKey, JSON.stringify([repoIntegrationWithLastUsedAt]))
-  } else {
-    const prevUsedRepoIntegrations = JSON.parse(
-      prevUsedRepoIntegrationsRes
-    ) as RepoIntegrationWithLastUsedAt[]
-    const repoIntegrationId = IntegrationRepoId.join(repoIntegration)
-    const hasRepoIntegration = prevUsedRepoIntegrations.some((prevUsedRepoIntegration) => {
-      const prevUsedRepoIntegrationId = IntegrationRepoId.join(prevUsedRepoIntegration)
-      return prevUsedRepoIntegrationId === repoIntegrationId
-    })
-    if (hasRepoIntegration) {
-      const updatedPrevUsedRepoIntegrations = prevUsedRepoIntegrations.map(
-        (prevUsedRepoIntegration) => {
-          const prevUsedRepoIntegrationId = IntegrationRepoId.join(prevUsedRepoIntegration)
-          if (prevUsedRepoIntegrationId === repoIntegrationId) {
-            return repoIntegrationWithLastUsedAt
-          }
-          return prevUsedRepoIntegration
-        }
-      )
-      redis.set(prevUsedRepoIntegrationsKey, JSON.stringify(updatedPrevUsedRepoIntegrations))
-    } else {
-      const updatedPrevUsedRepoIntegrations = [
-        repoIntegrationWithLastUsedAt,
-        ...prevUsedRepoIntegrations
-      ]
-      redis.set(prevUsedRepoIntegrationsKey, JSON.stringify(updatedPrevUsedRepoIntegrations))
-    }
-  }
+  await redis.zadd(prevUsedRepoIntegrationsKey, now, JSON.stringify(repoIntegration))
+
+  // TODO: remove all that are older than 90 days
 }
 
 export default updatePrevUsedRepoIntegrationsCache

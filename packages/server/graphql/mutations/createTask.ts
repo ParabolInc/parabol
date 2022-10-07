@@ -197,7 +197,6 @@ export default {
 
     // push to integration
     const {integrationHash, integration} = integrationRes
-    console.log('🚀 ~ create task _______', integrationRes)
     if (integration) {
       updateRepoIntegrationsCache(teamId, integration)
     }

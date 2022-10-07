@@ -11,14 +11,16 @@ const getCachedRepoIntegrations = async (teamId: string) => {
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
   const [allRepoIntegrationsRes, prevUsedRepoIntegrationsRes] = await Promise.all([
     redis.get(allRepoIntegrationsKey),
-    redis.get(prevUsedRepoIntegrationsKey)
+    redis.zrange(prevUsedRepoIntegrationsKey, 0, -1, 'REV')
   ])
   if (!allRepoIntegrationsRes) return []
 
   const allRepoIntegrations = JSON.parse(allRepoIntegrationsRes) as RepoIntegrationType[]
   if (!prevUsedRepoIntegrationsRes) return allRepoIntegrations
 
-  const prevUsedRepoIntegrations = JSON.parse(prevUsedRepoIntegrationsRes) as RepoIntegrationType[]
+  const prevUsedRepoIntegrations = prevUsedRepoIntegrationsRes.map((prevUsedRepoIntegration) => {
+    return JSON.parse(prevUsedRepoIntegration)
+  })
   const prevUsedRepoIntegrationIds = prevUsedRepoIntegrations.map((repoIntegration) =>
     IntegrationRepoId.join(repoIntegration)
   )
