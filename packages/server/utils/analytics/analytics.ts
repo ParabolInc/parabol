@@ -320,7 +320,7 @@ class Analytics {
     this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
   }
 
-  private track = (userId: string, event: AnalyticsEvent, properties?: any) =>
+  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>
     this.segmentAnalytics.track(userId, event, properties)
 }
 
