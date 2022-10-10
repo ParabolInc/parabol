@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -89,17 +89,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     }
   `
 
-  // prevRepoIntegrations {
-  //   ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-  // }
-  const {prevRepoIntegrations} = useFragment(
-    graphql`
-      fragment TaskFooterIntegrateMenuList_teamMember on TeamMember {
-        id
-      }
-    `,
-    teamMemberRef
-  )
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuList_task on Task {
@@ -136,18 +125,19 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
   const hasMore = repoIntegrations?.hasMore
   const hasRepoIntegrations = !!repoIntegrations?.items?.length
-  const items = useMemo(() => {
-    if (!hasRepoIntegrations) prevRepoIntegrations ?? []
-    if (!prevRepoIntegrations) return repoIntegrations?.items ?? []
+  // const items = useMemo(() => {
+  //   if (!hasRepoIntegrations) prevRepoIntegrations ?? []
+  //   if (!prevRepoIntegrations) return repoIntegrations?.items ?? []
 
-    const filteredItems =
-      repoIntegrations?.items?.filter((item) => {
-        return !prevRepoIntegrations.some(
-          (prevRepoIntegration) => getValue(item) === getValue(prevRepoIntegration as any)
-        )
-      }) ?? []
-    return [...prevRepoIntegrations, ...filteredItems]
-  }, [prevRepoIntegrations?.length, showRepoIntegrations, hasRepoIntegrations])
+  //   const filteredItems =
+  //     repoIntegrations?.items?.filter((item) => {
+  //       return !prevRepoIntegrations.some(
+  //         (prevRepoIntegration) => getValue(item) === getValue(prevRepoIntegration as any)
+  //       )
+  //     }) ?? []
+  //   return [...prevRepoIntegrations, ...filteredItems]
+  // }, [prevRepoIntegrations?.length, showRepoIntegrations, hasRepoIntegrations])
+  const items = repoIntegrations?.items ?? []
   const {
     query,
     filteredItems: filteredIntegrations,

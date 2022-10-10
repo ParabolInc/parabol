@@ -16,27 +16,25 @@ const getTaskServicesWithPerms = async (
     dataLoader.get('teamMemberIntegrationAuths').load({service: 'jiraServer', teamId, userId})
   ])
   const allPossibleTaskServices = IntegrationProviderServiceEnum.getValues().map(
-    (service) => service.name
-  )
+    ({name}) => name
+  ) as IntegrationProviderServiceEnumType[]
 
-  return allPossibleTaskServices.filter(
-    (service): service is IntegrationProviderServiceEnumType => {
-      switch (service) {
-        case 'jira':
-          return !!atlassianAuth
-        case 'github':
-          return !!githubAuth
-        case 'gitlab':
-          return !!gitlabAuth
-        case 'azure':
-          return !!azureAuth
-        case 'jiraServer':
-          return !!jiraServerAuth
-        default:
-          return false
-      }
+  return allPossibleTaskServices.filter((service) => {
+    switch (service) {
+      case 'jira':
+        return !!atlassianAuth
+      case 'github':
+        return !!githubAuth
+      case 'gitlab':
+        return !!gitlabAuth
+      case 'azureDevOps':
+        return !!azureAuth
+      case 'jiraServer':
+        return !!jiraServerAuth
+      default:
+        return false
     }
-  )
+  })
 }
 
 export default getTaskServicesWithPerms

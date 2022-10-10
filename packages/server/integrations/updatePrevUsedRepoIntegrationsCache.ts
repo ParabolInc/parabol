@@ -7,11 +7,11 @@ import getRedis from '../utils/getRedis'
 const updatePrevUsedRepoIntegrationsCache = async (teamId: string, repoIntegrationId: string) => {
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const [prevUsedRepoIntegrations, allRepoIntegrations] = await Promise.all([
+  const [prevUsedRepoIntegrations, allCachedRepoIntegrations] = await Promise.all([
     getPrevUsedRepoIntegrations(teamId),
     getAllCachedRepoIntegrations(teamId)
   ])
-  const remoteRepoIntegration = allRepoIntegrations?.find((remoteRepoIntegration) => {
+  const remoteRepoIntegration = allCachedRepoIntegrations?.find((remoteRepoIntegration) => {
     const remoteRepoIntegrationId = IntegrationRepoId.join(remoteRepoIntegration)
     return remoteRepoIntegrationId === repoIntegrationId
   })

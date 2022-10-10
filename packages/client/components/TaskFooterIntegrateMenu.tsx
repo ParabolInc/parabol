@@ -176,12 +176,6 @@ graphql`
 `
 
 graphql`
-  fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
-    ...TaskFooterIntegrateMenuList_teamMember
-  }
-`
-
-graphql`
   fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {
     integrations {
       ...TaskFooterIntegrateMenuSignup_TeamMemberIntegrations
@@ -201,7 +195,6 @@ graphql`
         ...TaskFooterIntegrateMenuViewerAzureDevOpsIntegration @relay(mask: false)
       }
     }
-    ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)
   }
 `
 

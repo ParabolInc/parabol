@@ -15,7 +15,6 @@ graphql`
         }
       }
       # after adding, check for new integrations (populates the menu)
-      ...TaskFooterIntegrateMenuViewerRepoIntegrations
     }
   }
 `
