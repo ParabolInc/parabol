@@ -12,3 +12,13 @@ export const isValidEstimationField = (fieldType: string, fieldName: string, fie
 
   return true
 }
+
+export const hasDefaultEstimationField = (fieldNames: string[]) => {
+  return !!fieldNames.find((fieldName) => {
+    const fieldNameLower = fieldName.toLowerCase()
+    return (
+      fieldNameLower === SprintPokerDefaults.JIRA_FIELD_DEFAULT.toLocaleLowerCase() ||
+      fieldNameLower === SprintPokerDefaults.JIRA_FIELD_LEGACY_DEFAULT.toLowerCase()
+    )
+  })
+}

@@ -1,3 +1,8 @@
+enum JiraIssueMissingEstimationFieldHintEnum {
+  teamManagedStoryPoints
+  companyManagedStoryPoints
+}
+
 """
 The Jira Issue that comes direct from Jira
 """
@@ -61,6 +66,11 @@ type JiraIssue implements TaskIntegration {
   Field names that exists on the issue and can be used as estimation fields
   """
   possibleEstimationFieldNames: [String!]!
+
+  """
+  Missing estimation field
+  """
+  missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum
 
   """
   The stringified ADF of the jira issue description

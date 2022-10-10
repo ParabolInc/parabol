@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -9,12 +10,17 @@ import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
+import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
   stage: JiraFieldMenu_stage
   submitScore(): void
 }
+
+const HintLabel = styled(MenuItemLabel)({
+  fontStyle: 'italic'
+})
 
 const JiraFieldMenu = (props: Props) => {
   const {menuProps, stage, submitScore} = props
@@ -23,7 +29,10 @@ const JiraFieldMenu = (props: Props) => {
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {integration} = task
-  const {cloudId, projectKey, issueType, possibleEstimationFieldNames} = integration
+  const {cloudId, projectKey, issueType, possibleEstimationFieldNames, missingEstimationFieldHint} =
+    integration
+  console.log('GEORG missingEstimationFieldHint', missingEstimationFieldHint)
+
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   /* eslint-disable react-hooks/rules-of-hooks */
@@ -36,6 +45,14 @@ const JiraFieldMenu = (props: Props) => {
     const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, possibleEstimationFieldNames])
+
+  const handleClickMissingField = () => {
+    if (missingEstimationFieldHint === 'companyManagedStoryPoints') {
+      // goto company
+    } else if (missingEstimationFieldHint === 'teamManagedStoryPoints') {
+      // goto team
+    }
+  }
 
   const handleClick = (fieldName: string) => () => {
     UpdateJiraDimensionFieldMutation(
@@ -67,7 +84,7 @@ const JiraFieldMenu = (props: Props) => {
       {possibleEstimationFieldNames.map((fieldName) => {
         return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
       })}
-      <MenuItemHR />
+      {possibleEstimationFieldNames.length > 0 && <MenuItemHR />}
       <MenuItem
         key={'__comment'}
         label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
@@ -78,6 +95,12 @@ const JiraFieldMenu = (props: Props) => {
         label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
       />
+      {missingEstimationFieldHint && (
+        <MenuItem
+          onClick={handleClickMissingField}
+          label={<HintLabel>Where is my field?</HintLabel>}
+        />
+      )}
     </Menu>
   )
 }
@@ -100,6 +123,7 @@ export default createFragmentContainer(JiraFieldMenu, {
             cloudId
             issueType
             possibleEstimationFieldNames
+            missingEstimationFieldHint
           }
         }
       }
