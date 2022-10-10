@@ -126,16 +126,18 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         },
         after: {
           type: GraphQLISO8601Type
+        },
+        networkOnly: {
+          type: new GraphQLNonNull(GraphQLBoolean),
+          description: 'true if we should fetch from the network, false if we should use the cache'
         }
       },
       resolve: async (
         {teamId, userId}: {teamId: string; userId: string},
-        {first},
+        {first, networkOnly},
         context,
         info
       ) => {
-        const ignoreCache = false // TODO: make an arg
-
         const {authToken, dataLoader} = context
         const viewerId = getUserId(authToken)
         if (userId !== viewerId) {
@@ -148,22 +150,22 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         }
 
         const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+        const allCachedRepoIntegrations = await getAllCachedRepoIntegrations(teamId)
+        const ignoreCache = networkOnly || !allCachedRepoIntegrations?.length
         const [allRepoIntegrations, prevUsedRepoIntegrations] = await Promise.all([
           ignoreCache
             ? fetchAllRepoIntegrations(teamId, userId, context, info)
-            : getAllCachedRepoIntegrations(teamId),
+            : allCachedRepoIntegrations,
           getPrevUsedRepoIntegrations(teamId)
         ])
-        console.log('🚀 ~ allRepoIntegrations', allRepoIntegrations)
-        console.log('🚀 ~ prevUsedRepoIntegrations', prevUsedRepoIntegrations)
         if (ignoreCache) {
           // create a new cache with newly fetched allRepoIntegrations
           const redis = getRedis()
           const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
-          const allRepoIntegrationsStr = JSON.stringify(allRepoIntegrations)
-          redis.set(allRepoIntegrationsKey, allRepoIntegrationsStr, 'PX', ms('90d'))
+          redis.set(allRepoIntegrationsKey, JSON.stringify(allRepoIntegrations), 'PX', ms('90d'))
         }
         removeStalePrevUsedRepoIntegrations(prevUsedRepoIntegrations, prevUsedRepoIntegrationsKey)
+        if (!allRepoIntegrations) return []
         const sortedRepoIntegrations = await sortRepoIntegrations(
           allRepoIntegrations,
           prevUsedRepoIntegrations

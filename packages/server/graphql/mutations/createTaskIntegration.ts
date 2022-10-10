@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from '~/utils/makeAppURL'
-import IntegrationRepoId from '../../../client/shared/gqlIds/IntegrationRepoId'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
@@ -138,12 +137,7 @@ export default {
     const {issueId, ...updateTaskInput} = createTaskResponse
 
     if (createTaskResponse.integration) {
-      const repoId =
-        integrationProviderService === 'azureDevOps'
-          ? IntegrationRepoId.split(integrationRepoId).repositoryId
-          : integrationRepoId
-      console.log('🚀 ~ repoId', {repoId, integrationRepoId})
-      updatePrevUsedRepoIntegrationsCache(teamId, repoId)
+      updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId)
     }
 
     if (userId && viewerId !== userId) {

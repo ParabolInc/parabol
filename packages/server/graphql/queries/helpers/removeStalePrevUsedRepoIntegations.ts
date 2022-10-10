@@ -1,9 +1,9 @@
 import ms from 'ms'
-import {RepoIntegration as RepoIntegrationType} from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import getRedis from '../../../utils/getRedis'
+import {RemoteRepoIntegration} from './fetchAllRepoIntegrations'
 
 const removeStalePrevUsedRepoIntegrations = async (
-  prevUsedRepoIntegrations: RepoIntegrationType[] | null,
+  prevUsedRepoIntegrations: RemoteRepoIntegration[] | null,
   prevUsedRepoIntegrationsKey: string
 ) => {
   if (!prevUsedRepoIntegrations) return

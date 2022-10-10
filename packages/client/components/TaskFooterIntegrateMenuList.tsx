@@ -111,14 +111,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     taskRef
   )
   const {id: taskId, teamId, userId} = task
-  // const [showRepoIntegrations, setShowRepoIntegrations] = useState(!prevRepoIntegrations)
-  const [showRepoIntegrations, setShowRepoIntegrations] = useState(true)
+  const [showRepoIntegrations, setShowRepoIntegrations] = useState(false)
   const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
     graphql`
-      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!) {
+      query TaskFooterIntegrateMenuListLocalQuery($teamId: ID!, $networkOnly: Boolean!) {
         viewer {
           teamMember(teamId: $teamId) {
-            repoIntegrations(first: 50) {
+            repoIntegrations(first: 100, networkOnly: $networkOnly) {
               __typename
               hasMore
               items {
@@ -129,11 +128,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
       }
     `,
-    {teamId},
+    {teamId, networkOnly: showRepoIntegrations},
     {
-      UNSTABLE_renderPolicy: 'full',
-      // fetchPolicy: showRepoIntegrations ? 'store-or-network' : 'store-only'
-      fetchPolicy: true ? 'store-or-network' : 'store-only'
+      UNSTABLE_renderPolicy: 'full'
     }
   )
   const repoIntegrations = viewer?.teamMember?.repoIntegrations
@@ -202,12 +199,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       )) ||
         null}
       {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
-        const {id, service, __typename} = repoIntegration
+        const {id: integrationRepoId, service} = repoIntegration
+        console.log('🚀 ~ integrationRepoId', {integrationRepoId, repoIntegration})
         const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira' && repoIntegration.name) {
           const onClick = () => {
             const variables = {
-              integrationRepoId: repoIntegration.id,
+              integrationRepoId,
               taskId,
               integrationProviderService: 'jira' as const
             }
@@ -216,7 +214,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
               onClick={onClick}
@@ -227,7 +225,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         if (service === 'jiraServer' && repoIntegration.name) {
           const onClick = () => {
             const variables = {
-              integrationRepoId: repoIntegration.id,
+              integrationRepoId,
               taskId,
               integrationProviderService: 'jiraServer' as const
             }
@@ -236,7 +234,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
               onClick={onClick}
@@ -257,7 +255,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={repoIntegration.nameWithOwner}
               onClick={onClick}
@@ -278,7 +276,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={fullPath}
               onClick={onClick}
@@ -304,7 +302,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={name}
               onClick={onClick}

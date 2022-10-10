@@ -11,16 +11,11 @@ const updatePrevUsedRepoIntegrationsCache = async (teamId: string, repoIntegrati
     getPrevUsedRepoIntegrations(teamId),
     getAllCachedRepoIntegrations(teamId)
   ])
-  // repoIntegration is from the taskIntegration, which doesn't include all remote fields
-  // grab from allRepoIntegrations cache as this has all remote fields
   const remoteRepoIntegration = allRepoIntegrations?.find((remoteRepoIntegration) => {
-    // const remoteRepoIntegrationId = IntegrationRepoId.join(remoteRepoIntegration)
-    console.log('🚀 ~ remote id ----', remoteRepoIntegration.id)
-    return remoteRepoIntegration.id === repoIntegrationId
-  }) // TODO: add remote types
-  console.log('🚀 ~ remoteRepoIntegration', remoteRepoIntegration)
+    const remoteRepoIntegrationId = IntegrationRepoId.join(remoteRepoIntegration)
+    return remoteRepoIntegrationId === repoIntegrationId
+  })
   if (!remoteRepoIntegration) return
-
   const now = Date.now()
   const oldPrevUsedRepoIntegration = prevUsedRepoIntegrations?.find((prevUsedRepoIntegration) => {
     const prevUsedRepoIntegrationId = IntegrationRepoId.join(prevUsedRepoIntegration)

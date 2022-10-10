@@ -8,7 +8,8 @@ type GitHubRepoIntegration = {
 
 export type JiraRepoIntegration = {
   cloudId: string
-  projectKey: string
+  projectKey?: string
+  key?: string
   service: 'jira'
 }
 
@@ -25,7 +26,7 @@ type AzureDevOpsRepoIntegration = {
 
 type JiraServerRepoIntegration = {
   id: string
-  providerId: string
+  providerId: number
   key: string
   service: 'jiraServer'
 }
@@ -44,7 +45,7 @@ const IntegrationRepoId = {
       case 'github':
         return integration.nameWithOwner
       case 'jira':
-        return JiraProjectId.join(integration.cloudId, integration.projectKey)
+        return JiraProjectId.join(integration.cloudId, integration.projectKey ?? integration.key!)
       case 'jiraServer':
         return `${integration.service}:${integration.providerId}:${integration.id}:${integration.key}`
       case 'azureDevOps':
