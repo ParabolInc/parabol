@@ -42,7 +42,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'An ID for the teamMember. userId::teamId'
     },
-    allAvailableRepoIntegrations: require('../queries/allAvailableRepoIntegrations').default,
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team member was created'
@@ -106,18 +105,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
     },
-    // prevRepoIntegrations: {
-    //   description: 'The integrations that the user has previously used',
-    //   type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
-    //   resolve: async ({teamId}: {teamId: string; userId: string}, _args, {dataLoader}) => {
-    //     const redis = getRedis()
-    //     const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
-    //     const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-    //     const [allRepoIntegrationsRes] = await Promise.all([redis.get(allRepoIntegrationsKey)])
-    //     if (!allRepoIntegrationsRes) return []
-    //     return []
-    //   }
-    // },
     repoIntegrations: {
       description: 'The integrations that the user would probably like to use',
       type: new GraphQLNonNull(RepoIntegrationQueryPayload),

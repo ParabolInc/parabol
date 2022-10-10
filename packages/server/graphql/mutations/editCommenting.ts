@@ -46,7 +46,8 @@ export default {
     const redis = getRedis()
     const key = `commenting:${discussionId}`
     if (isCommenting) {
-      const [numAddedRes] = await redis.multi().sadd(key, viewerId).pexpire(key, ms('5m')).exec()
+      const [numAddedRes] =
+        (await redis.multi().sadd(key, viewerId).pexpire(key, ms('5m')).exec()) ?? []
       const numAdded = numAddedRes![1]
       if (numAdded !== 1) {
         // this is primarily to avoid publishing a useless message to the pubsub

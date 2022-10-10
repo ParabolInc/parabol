@@ -72,28 +72,6 @@ const fetchAllRepoIntegrations = async (
   }
 
   return repoIntegrationsAltServices
-
-  // const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
-  // // prevRepoIntegrations.forEach((integration) => {
-  // //   const integrationId = IntegrationRepoId.join(integration)
-  // //   if (!integrationId) return
-  // //   repoIntegrationsLastUsedAt[integrationId] = integration.lastUsedAt
-  // // })
-  // return fetchedRepoIntegrations
-  //   .map((repo) => ({
-  //     ...repo,
-  //     // always have lastUsedAt be a Date (to make the sort easier below)
-  //     lastUsedAt: repoIntegrationsLastUsedAt[repo.id] ?? new Date(0)
-  //   }))
-  //   .sort((a, b) =>
-  //     a.lastUsedAt > b.lastUsedAt
-  //       ? -1
-  //       : a.service < b.service
-  //       ? -1
-  //       : a.id.toLowerCase() < b.id.toLowerCase()
-  //       ? -1
-  //       : 1
-  //   )
 }
 
 export default fetchAllRepoIntegrations

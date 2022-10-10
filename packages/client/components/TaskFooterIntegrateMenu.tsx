@@ -107,7 +107,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         menuProps={menuProps}
         mutationProps={mutationProps}
         placeholder={placeholder}
-        teamMemberRef={viewerTeamMember}
         task={task}
         label={label}
       />
@@ -122,7 +121,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         menuProps={menuProps}
         mutationProps={mutationProps}
         placeholder={placeholder}
-        teamMemberRef={assigneeTeamMember}
         task={task}
         label={label}
       />

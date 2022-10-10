@@ -200,7 +200,6 @@ export default {
     const {integrationHash, integration} = integrationRes
     if (integration) {
       const integrationRepoId = IntegrationRepoId.join(integration)
-      console.log('🚀 ~ integrationRepoId.....', integrationRepoId)
       updateRepoIntegrationsCache(teamId, integrationRepoId)
     }
     const task = new Task({
