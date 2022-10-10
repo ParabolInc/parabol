@@ -96,8 +96,8 @@ const ReflectionStack = (props: Props) => {
                 >
                   <ReflectionCard
                     dataCy={`${dataCy}-card-${idx}`}
-                    meeting={meeting}
-                    reflection={reflection}
+                    meetingRef={meeting}
+                    reflectionRef={reflection}
                     stackCount={reflectionStack.length}
                     isClipped={idx !== 0}
                   />

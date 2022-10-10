@@ -1,5 +1,5 @@
 # First, install all dependencies, including devDependencies, to run the build process
-FROM node:16.14.0 as build
+FROM node:16.16.0 as build
 
 WORKDIR /parabol
 
@@ -17,7 +17,7 @@ COPY . .
 RUN yarn build
 
 # Now, start over with a new stage so we don't pull over devDependencies
-FROM node:16.14.0 as prod
+FROM node:16.16.0 as prod
 
 WORKDIR /parabol
 

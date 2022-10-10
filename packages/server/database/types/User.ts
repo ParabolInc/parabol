@@ -18,6 +18,7 @@ interface Input {
   isWatched?: boolean
   createdAt?: Date
   segmentId?: string | null
+  sendSummaryEmail?: boolean
   tier?: TierEnum
   tms?: string[]
 }
@@ -42,6 +43,7 @@ export default class User {
   isWatched?: boolean
   createdAt: Date
   segmentId?: string
+  sendSummaryEmail?: boolean
   tier: TierEnum
   tms: string[]
   reasonRemoved?: string
@@ -63,6 +65,7 @@ export default class User {
       isWatched,
       preferredName,
       segmentId,
+      sendSummaryEmail,
       tier
     } = input
     const avatarName =
@@ -87,6 +90,7 @@ export default class User {
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     this.segmentId = segmentId ?? undefined
+    this.sendSummaryEmail = sendSummaryEmail ?? true
     this.tier = tier ?? 'personal'
   }
 }

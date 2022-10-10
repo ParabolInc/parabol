@@ -13,6 +13,7 @@ import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
 import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
+import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
@@ -33,6 +34,11 @@ graphql`
     }
     team {
       name
+      organization {
+        id
+        name
+      }
+      ...DashNavListTeam
     }
   }
 `
@@ -111,6 +117,10 @@ export const acceptTeamInvitationTeamUpdater: SharedUpdater<AcceptTeamInvitation
 ) => {
   const teamMember = payload.getLinkedRecord('teamMember')
   handleAddTeamMembers(teamMember, store)
+  const team = payload.getLinkedRecord('team')
+  const organization = team.getLinkedRecord('organization')
+  handleAddOrganization(organization, store)
+  handleAddTeams(team, store)
 }
 
 export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationMutation_team> = (
@@ -118,6 +128,7 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
   {atmosphere}
 ) => {
   const {team, teamMember} = payload
+  const {viewerId} = atmosphere
   if (!team || !teamMember) return
   const {name: teamName} = team
   const {id: teamMemberId, preferredName} = teamMember
@@ -126,11 +137,14 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
     'removeSnackbar',
     (snack) => snack.key === `pushInvitation:${teamId}:${userId}`
   )
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    autoDismiss: 5,
-    key: `acceptTeamInvitation:${teamMemberId}`,
-    message: `${preferredName} just joined team ${teamName}`
-  })
+
+  if (userId !== viewerId) {
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      autoDismiss: 5,
+      key: `acceptTeamInvitation:${teamMemberId}`,
+      message: `${preferredName} just joined team ${teamName}`
+    })
+  }
 }
 
 interface LocalHandler extends HistoryMaybeLocalHandler {

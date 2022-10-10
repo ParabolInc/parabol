@@ -39,7 +39,7 @@ class MasonryCSSGrid extends Component<Props> {
     window.addEventListener('resize', this.setSpans, {passive: true})
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (this.props.items !== prevProps.items) {
       // the setTimeout is required for the task list (issue #2432), but it shouldn't be.
       setTimeout(() => this.setSpans())

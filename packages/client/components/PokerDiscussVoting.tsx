@@ -44,7 +44,7 @@ const PokerDiscussVoting = (props: Props) => {
   const isLocallyValidatedRef = useRef(true)
   const [cardScore, setCardScore] = useState(finalScore)
 
-  const isStale = (score) => {
+  const isStale = (score: string) => {
     return score !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   }
 

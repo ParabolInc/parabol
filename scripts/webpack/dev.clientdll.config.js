@@ -34,7 +34,6 @@ module.exports = {
       'mousetrap',
       'ms',
       'oy-vey',
-      'prop-types',
       'protoo-client',
       'react',
       'react-beautiful-dnd',

@@ -126,6 +126,9 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   // Tell the rest of the team about the new team member
   publish(SubscriptionChannel.TEAM, teamId, 'AcceptTeamInvitationPayload', data, subOptions)
 
+  // Send individualized message to the user
+  publish(SubscriptionChannel.TEAM, viewerId, 'AcceptTeamInvitationPayload', data, subOptions)
+
   // Give the team lead new suggested actions
   if (teamLeadUserIdWithNewActions) {
     // the team lead just needs data about themselves. alternatively we could make an eg AcceptTeamInvitationTeamLeadPayload, but nulls are just as good

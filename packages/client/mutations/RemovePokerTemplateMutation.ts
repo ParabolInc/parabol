@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import getInProxy from '../utils/relay/getInProxy'
 import {RemovePokerTemplateMutation as TRemovePokerTemplateMutation} from '../__generated__/RemovePokerTemplateMutation.graphql'
 import {RemovePokerTemplateMutation_team} from '../__generated__/RemovePokerTemplateMutation_team.graphql'
 import handleRemovePokerTemplate from './handlers/handleRemovePokerTemplate'
@@ -33,8 +32,8 @@ export const removePokerTemplateTeamUpdater: SharedUpdater<RemovePokerTemplateMu
   payload,
   {store}
 ) => {
-  const templateId = getInProxy(payload, 'pokerTemplate', 'id')
-  const teamId = getInProxy(payload, 'pokerTemplate', 'teamId')
+  const templateId = payload.getLinkedRecord('pokerTemplate').getValue('id')
+  const teamId = payload.getLinkedRecord('pokerTemplate').getValue('teamId')
   handleRemovePokerTemplate(templateId, teamId, store)
 }
 

@@ -85,7 +85,7 @@ const PokerTemplateList = (props: Props) => {
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
-  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+  const onChangeIdx = (idx: number, _fromIdx: number, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
@@ -130,7 +130,7 @@ const PokerTemplateList = (props: Props) => {
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
-        onChangeIndex={onChangeIdx}
+        onChangeIndex={onChangeIdx as any}
         containerStyle={containerStyle}
         style={innerStyle}
       >

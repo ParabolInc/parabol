@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import Panel from '../../../../components/Panel/Panel'
-import {withRouter} from 'react-router-dom'
 import styled from '@emotion/styled'
+import React from 'react'
+import Panel from '../../../../components/Panel/Panel'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import useRouter from '../../../../hooks/useRouter'
 
 const Body = styled('div')({
   padding: '32px',
@@ -26,9 +25,8 @@ const StyledButton = styled(PrimaryButton)({
   margin: '0 auto'
 })
 
-const EmptyOrgsCallOut = (props) => {
-  const {history} = props
-
+const EmptyOrgsCallOut = () => {
+  const {history} = useRouter()
   const gotoNewTeam = () => {
     history.push('/newteam')
   }
@@ -50,8 +48,4 @@ const EmptyOrgsCallOut = (props) => {
   )
 }
 
-EmptyOrgsCallOut.propTypes = {
-  history: PropTypes.object
-}
-
-export default withRouter(EmptyOrgsCallOut)
+export default EmptyOrgsCallOut

@@ -1,4 +1,6 @@
-const findNodeInConn = (connection, nodeId) => {
+import {RecordProxy} from 'relay-runtime'
+
+const findNodeInConn = (connection: RecordProxy, nodeId: string) => {
   if (!connection) return null
   const edges = connection.getLinkedRecords('edges')
   if (!edges) return null

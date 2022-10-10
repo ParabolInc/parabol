@@ -12,14 +12,14 @@ const TallMenu = styled(Menu)({
 })
 
 interface Props {
-  onClick: (emoji) => void
+  onClick: (emoji: string) => void
   menuProps: MenuProps
 }
 
 const ReactjiPicker = (props: Props) => {
   const {menuProps, onClick} = props
   const {closePortal} = menuProps
-  const handleClick = (emoji) => {
+  const handleClick = (emoji: {id: string}) => {
     onClick(emoji.id)
     closePortal()
   }

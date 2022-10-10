@@ -1,5 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
+import {UpdateCreditCardMutation as TUpdateCreditCardMutation} from '../__generated__/UpdateCreditCardMutation.graphql'
 graphql`
   fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
     organization {
@@ -34,8 +36,12 @@ const mutation = graphql`
   }
 `
 
-const UpdateCreditCardMutation = (environment, orgId, stripeToken, onError, onCompleted) => {
-  return commitMutation(environment, {
+const UpdateCreditCardMutation: StandardMutation<TUpdateCreditCardMutation> = (
+  atmosphere,
+  {orgId, stripeToken},
+  {onError, onCompleted}
+) => {
+  return commitMutation<TUpdateCreditCardMutation>(atmosphere, {
     mutation,
     variables: {
       orgId,
