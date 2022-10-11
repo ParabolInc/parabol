@@ -80,6 +80,7 @@ const RetroMeetingSidebar = (props: Props) => {
 
             if (
               isComplete ||
+              !prevItemStage ||
               isPrevItemStageComplete ||
               !isConfirmRequired ||
               confirmingPhase === phaseType
