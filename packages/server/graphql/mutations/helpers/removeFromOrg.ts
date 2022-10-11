@@ -56,7 +56,6 @@ const removeFromOrg = async (
 
   // need to make sure the org doc is updated before adjusting this
   const {joinedAt, newUserUntil, role} = organizationUser
-  console.log('🚀 ~ organizationUser', organizationUser)
   const prorationDate = newUserUntil >= now ? new Date(joinedAt) : undefined
   if (role === 'BILLING_LEADER') {
     const organization = await r.table('Organization').get(orgId).run()
