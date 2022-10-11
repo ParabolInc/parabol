@@ -42,7 +42,18 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
-  maxWidth: '100%'
+  maxWidth: '100%',
+  overflow: 'hidden',
+  overflowX: 'auto',
+  '&::-webkit-scrollbar': {
+    webkitAppearance: 'none',
+    width: '6px',
+    height: '4px'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    borderRadius: '3px',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  }
 })
 
 const TabIcon = styled(Icon)({
@@ -54,7 +65,7 @@ const TabLabel = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
   minWidth: 80,
-  whiteSpace: 'pre-wrap'
+  whiteSpace: 'nowrap'
 })
 
 const TabContents = styled('div')({
@@ -130,7 +141,7 @@ const ScopePhaseArea = (props: Props) => {
     window.localStorage.setItem('favoriteService', service)
   }
 
-  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+  const onChangeIdx = (idx: number, _fromIdx: number, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
@@ -160,7 +171,7 @@ const ScopePhaseArea = (props: Props) => {
       <SwipeableViews
         enableMouseEvents={false} // disable because this works even if a modal is on top of it
         index={activeIdx}
-        onChangeIndex={onChangeIdx}
+        onChangeIndex={onChangeIdx as any}
         containerStyle={containerStyle}
         style={innerStyle}
       >

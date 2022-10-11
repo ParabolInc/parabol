@@ -64,6 +64,7 @@ export type AnalyticsEvent =
   | 'Integration Removed'
   | 'Invite Email Sent'
   | 'Invite Accepted'
+  | 'Sent Invite Accepted'
   // org
   | 'Organization Upgraded'
   | 'Organization Downgraded'
@@ -71,6 +72,8 @@ export type AnalyticsEvent =
   | 'Task Created'
   | 'Task Published'
   | 'Task Estimate Set'
+  // user
+  | 'Summary Email Setting Changed'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -272,6 +275,13 @@ class Analytics {
       isNewUser,
       acceptAt
     })
+
+    this.track(inviterId, 'Sent Invite Accepted', {
+      teamId,
+      inviteeId: userId,
+      isNewUser,
+      acceptAt
+    })
   }
 
   //org
@@ -304,6 +314,10 @@ class Analytics {
 
   taskEstimateSet = (userId: string, taskEstimateProperties: TaskEstimateProperties) => {
     this.track(userId, 'Task Estimate Set', taskEstimateProperties)
+  }
+
+  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
+    this.track(userId, 'Summary Email Setting Changed', subscribeToSummaryEmail)
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: any) =>

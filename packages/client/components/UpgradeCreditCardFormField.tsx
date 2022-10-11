@@ -72,7 +72,7 @@ const UpgradeCreditCardFormField = (props: Props) => {
     value
   } = props
 
-  const requireNumeric = (e) => {
+  const requireNumeric = (e: React.KeyboardEvent) => {
     // keep Enter around to let them submit
     if (e.key !== 'Enter' && isNaN(parseInt(e.key, 10))) {
       e.preventDefault()

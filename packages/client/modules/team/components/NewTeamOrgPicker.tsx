@@ -26,7 +26,7 @@ const MenuToggleLabel = styled('div')({
 
 interface Props {
   disabled: boolean
-  onChange: (orgId) => void
+  onChange: (orgId: string) => void
   orgId: string
   organizations: NewTeamOrgPicker_organizations
 }

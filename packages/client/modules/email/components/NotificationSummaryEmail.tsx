@@ -24,7 +24,8 @@ const linkStyle = {
 export const notificationSummaryUrlParams = {
   utm_source: 'notification email',
   utm_medium: 'email',
-  utm_campaign: 'notifications'
+  utm_campaign: 'notifications',
+  openNotifs: '1'
 }
 
 export interface NotificationSummaryProps {

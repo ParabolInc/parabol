@@ -35,7 +35,7 @@ const useTaskChildFocus = (taskId: string) => {
       const isEditing = isTaskFocused()
       if (lastIsEditingRef.current !== isEditing) {
         lastIsEditingRef.current = isEditing
-        EditTaskMutation(atmosphere, taskId, isEditing)
+        EditTaskMutation(atmosphere, {taskId, isEditing})
       }
     })
   }

@@ -395,7 +395,7 @@ export const enum Threshold {
   UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
 }
 
-export const enum Times {
+export const enum Times { // ms
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
   MEETING_CONFIRM_TOOLTIP_DELAY = 0,
@@ -413,7 +413,8 @@ export const enum Times {
   SPOTLIGHT_SOURCE_DURATION = 300,
   SPOTLIGHT_MODAL_DURATION = 300,
   TOUCH_LONGPRESS = 120,
-  WEBSOCKET_KEEP_ALIVE = 10000
+  WEBSOCKET_KEEP_ALIVE = 10000,
+  SHOW_REACTJI_USERS_DELAY = 100
 }
 
 export const enum TrebuchetCloseReason {

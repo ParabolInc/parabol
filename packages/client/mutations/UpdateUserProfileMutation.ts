@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-
+import {StandardMutation} from '../types/relayMutations'
+import {UpdateUserProfileMutation as TUpdateUserProfileMutation} from '../__generated__/UpdateUserProfileMutation.graphql'
 graphql`
   fragment UpdateUserProfileMutation_team on UpdateUserProfilePayload {
     teamMembers {
@@ -25,14 +26,19 @@ const mutation = graphql`
   }
 `
 
-const UpdateUserProfileMutation = (environment, updatedUser, {onError, onCompleted}) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const UpdateUserProfileMutation: StandardMutation<TUpdateUserProfileMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
+  const {viewerId} = atmosphere
+  return commitMutation<TUpdateUserProfileMutation>(atmosphere, {
     mutation,
-    variables: {updatedUser},
+    variables,
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId)
       if (!viewer) return
+      const {updatedUser} = variables
       const {picture, preferredName} = updatedUser
       if (viewer) {
         if (preferredName) {

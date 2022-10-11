@@ -8,6 +8,7 @@ import Atmosphere from '../Atmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {CompletedHandler} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -75,17 +76,19 @@ const UpvoteColumn = styled('div')({
   width: 96
 })
 
-const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
-  onCompleted()
-  const error = getGraphQLError(res, errors)
-  if (error) {
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      key: 'voteError',
-      message: error.message || 'Error submitting vote',
-      autoDismiss: 5
-    })
+const makeHandleCompleted =
+  (onCompleted: () => void, atmosphere: Atmosphere): CompletedHandler =>
+  (res, errors) => {
+    onCompleted()
+    const error = getGraphQLError(res, errors)
+    if (error) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'voteError',
+        message: error.message || 'Error submitting vote',
+        autoDismiss: 5
+      })
+    }
   }
-}
 
 const ReflectionGroupVoting = (props: Props) => {
   const {isExpanded, meeting, reflectionGroup} = props

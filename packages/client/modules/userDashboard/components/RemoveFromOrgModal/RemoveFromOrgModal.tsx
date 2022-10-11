@@ -31,7 +31,7 @@ const RemoveFromOrgModal = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const handleClick = () => {
     submitMutation()
-    RemoveOrgUserMutation(atmosphere, {orgId, userId}, {history}, onError, onCompleted)
+    RemoveOrgUserMutation(atmosphere, {orgId, userId}, {history, onError, onCompleted})
   }
   return (
     <StyledDialogContainer>

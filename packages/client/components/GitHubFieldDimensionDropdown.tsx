@@ -76,7 +76,8 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
   }
 
   const label =
-    labelLookup[serviceFieldName] || interpolateGitHubLabelTemplate(serviceFieldName, finalScore)
+    labelLookup[serviceFieldName as keyof typeof labelLookup] ||
+    interpolateGitHubLabelTemplate(serviceFieldName, finalScore)
 
   return (
     <>

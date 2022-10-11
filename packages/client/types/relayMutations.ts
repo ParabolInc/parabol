@@ -64,13 +64,8 @@ export type OnNextHandler<TSubResponse, C = OnNextBaseContext> = (
   context: C
 ) => void
 
-export type UpdaterHandler<T = any> = (
-  payload: RecordProxy<T>,
-  context: {atmosphere: Atmosphere; store: RecordSourceSelectorProxy}
-) => void
-
 export type SimpleMutation<T extends MutationParameters> = {
-  (atmosphere: Atmosphere, variables: T['variables']): ReturnType<typeof commitMutation>
+  (atmosphere: Atmosphere, variables: T['variables']): ReturnType<typeof commitMutation> | undefined
 }
 export type StandardMutation<T extends MutationParameters, C = BaseLocalHandlers> = {
   (atmosphere: Atmosphere, variables: T['variables'], localHandlers: C): ReturnType<

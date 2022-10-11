@@ -1,11 +1,11 @@
-import {KeyBindingUtil, RichUtils} from 'draft-js'
+import {EditorProps, KeyBindingUtil, RichUtils} from 'draft-js'
 import React, {Component} from 'react'
 
 const {hasCommandModifier} = KeyBindingUtil
 
-const withKeyboardShortcuts = (ComposedComponent) => {
+const withKeyboardShortcuts = (ComposedComponent: any) => {
   class WithKeyboardShortcuts extends Component<any> {
-    handleKeyCommand = (command) => {
+    handleKeyCommand: EditorProps['handleKeyCommand'] = (command) => {
       const {handleKeyCommand, editorState, setEditorState} = this.props
       if (handleKeyCommand) {
         const result = handleKeyCommand(command)
@@ -27,7 +27,7 @@ const withKeyboardShortcuts = (ComposedComponent) => {
       return 'not-handled'
     }
 
-    keyBindingFn = (e) => {
+    keyBindingFn: EditorProps['keyBindingFn'] = (e) => {
       const {keyBindingFn} = this.props
       if (keyBindingFn) {
         const result = keyBindingFn(e)

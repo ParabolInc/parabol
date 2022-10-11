@@ -16,7 +16,7 @@ interface Props {
   organization: ArchiveOrganizationForm_organization
 }
 
-const normalize = (str) => str && str.toLowerCase().replace('’', "'")
+const normalize = (str: string | null | undefined) => str && str.toLowerCase().replace('’', "'")
 
 const ArchiveOrganizationForm = (props: Props) => {
   const atmosphere = useAtmosphere()

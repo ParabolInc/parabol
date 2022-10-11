@@ -105,8 +105,8 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     JiraServerIssue: 'Jira Server',
     _xGitLabIssue: 'GitLab',
     AzureDevOpsWorkItem: 'Azure DevOps'
-  }
-  const title = titleByType[integrationType]
+  } as const
+  const title = titleByType[integrationType as keyof typeof titleByType]
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const focusInput = () => inputRef.current!.focus()
   return (

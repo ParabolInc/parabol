@@ -32,56 +32,40 @@ const subscription = graphql`
 
 const onNextHandlers = {
   UpdateTaskPayload: updateTaskTaskOnNext
-}
+} as const
+
+const updateHandlers = {
+  ChangeTaskTeamPayload: changeTaskTeamTaskUpdater,
+  CreateTaskPayload: createTaskTaskUpdater,
+  DeleteTaskPayload: deleteTaskTaskUpdater,
+  EditTaskPayload: editTaskTaskUpdater,
+  RemoveOrgUserPayload: removeOrgUserTaskUpdater,
+  UpdateTaskPayload: updateTaskTaskUpdater
+} as const
 
 const TaskSubscription = (
   atmosphere: Atmosphere,
   variables: TaskSubscriptionVariables,
   router: {history: RouterProps['history']}
 ) => {
-  const {viewerId} = atmosphere
   return requestSubscription<TTaskSubscription>(atmosphere, {
     subscription,
     variables,
     updater: (store) => {
       const payload = store.getRootField('taskSubscription') as any
       if (!payload) return
-      const type = payload.getValue('__typename')
+      const type = payload.getValue('__typename') as keyof typeof updateHandlers
       const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
-      switch (type) {
-        case 'CreateTaskIntegrationPayload':
-          break
-        case 'ChangeTaskTeamPayload':
-          changeTaskTeamTaskUpdater(payload, context)
-          break
-        case 'CreateTaskPayload':
-          createTaskTaskUpdater(payload, context)
-          break
-        case 'DeleteTaskPayload':
-          deleteTaskTaskUpdater(payload, store)
-          break
-        case 'EditTaskPayload':
-          editTaskTaskUpdater(payload, store)
-          break
-        case 'RemoveOrgUserPayload':
-          removeOrgUserTaskUpdater(payload, store, viewerId)
-          break
-        case 'UpdateTaskPayload':
-          updateTaskTaskUpdater(payload, context)
-          break
-        case 'UpdateTaskDueDatePayload':
-          break
-        default:
-          console.error('TaskSubscription case fail', type)
-      }
+      const updater = updateHandlers[type]
+      updater?.(payload, context)
     },
     onNext: (result) => {
       if (!result) return
       const {taskSubscription} = result
       const {__typename: type} = taskSubscription
-      const handler = onNextHandlers[type]
+      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
       if (handler) {
-        handler(taskSubscription, {...router, atmosphere})
+        handler(taskSubscription as any, {...router, atmosphere})
       }
     },
     onCompleted: () => {

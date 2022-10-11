@@ -1,15 +1,22 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
-import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '~/__generated__/RemoveOrgUserMutation.graphql'
+import {RemoveOrgUserMutation as TRemoveOrgUserMutation} from '~/__generated__/RemoveOrgUserMutation.graphql'
 import {RemoveOrgUserMutation_team} from '~/__generated__/RemoveOrgUserMutation_team.graphql'
-import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
+import {
+  HistoryLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  SharedUpdater,
+  StandardMutation
+} from '../types/relayMutations'
 import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
-import getInProxy from '../utils/relay/getInProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
+import {RemoveOrgUserMutation_organization} from '../__generated__/RemoveOrgUserMutation_organization.graphql'
+import {RemoveOrgUserMutation_task} from '../__generated__/RemoveOrgUserMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveOrganization from './handlers/handleRemoveOrganization'
 import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
@@ -61,6 +68,9 @@ graphql`
     }
     teams {
       ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
+      activeMeetings {
+        id
+      }
     }
     user {
       id
@@ -92,11 +102,14 @@ const mutation = graphql`
   }
 `
 
-export const removeOrgUserOrganizationUpdater = (payload, {atmosphere, store}) => {
+export const removeOrgUserOrganizationUpdater: SharedUpdater<RemoveOrgUserMutation_organization> = (
+  payload,
+  {atmosphere, store}
+) => {
   const {viewerId} = atmosphere
-  const removedUserId = getInProxy(payload, 'user', 'id')
-  const removedOrgUserId = getInProxy(payload, 'organizationUserId')
-  const orgId = getInProxy(payload, 'organization', 'id')
+  const removedUserId = payload.getLinkedRecord('user').getValue('id')
+  const removedOrgUserId = payload.getValue('organizationUserId')
+  const orgId = payload.getLinkedRecord('organization').getValue('id')
   if (removedUserId === viewerId) {
     handleRemoveOrganization(orgId, store)
   } else {
@@ -104,7 +117,10 @@ export const removeOrgUserOrganizationUpdater = (payload, {atmosphere, store}) =
   }
 }
 
-export const removeOrgUserNotificationUpdater = (payload, store) => {
+export const removeOrgUserNotificationUpdater: SharedUpdater<RemoveOrgUserMutation_notification> = (
+  payload,
+  {store}
+) => {
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
   handleAddNotifications(kickOutNotifications, store)
 }
@@ -113,61 +129,71 @@ export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team>
   payload,
   {atmosphere, store}
 ) => {
-  const removedUserId = getInProxy(payload, 'user', 'id')
+  const removedUserId = payload.getLinkedRecord('user').getValue('id')
   const {viewerId} = atmosphere
   if (removedUserId === viewerId) {
     const teams = payload.getLinkedRecords('teams')
-    const teamIds = getInProxy(teams, 'id')
+    const teamIds = teams.map((team) => team.getValue('id'))
     handleRemoveTeams(teamIds, store)
   } else {
     const teamMembers = payload.getLinkedRecords('teamMembers')
-    const teamMemberIds = getInProxy(teamMembers, 'id')
+    const teamMemberIds = teamMembers.map((teamMember) => teamMember.getValue('id'))
     handleRemoveTeamMembers(teamMemberIds, store)
   }
 }
 
-export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'user', 'id')
+export const removeOrgUserTaskUpdater: SharedUpdater<RemoveOrgUserMutation_task> = (
+  payload,
+  {atmosphere, store}
+) => {
+  const removedUserId = payload.getLinkedRecord('user').getValue('id')
   const tasks = payload.getLinkedRecords('updatedTasks')
-  if (removedUserId === viewerId) {
-    const taskIds = getInProxy(tasks, 'id')
+  if (removedUserId === atmosphere.viewerId) {
+    const taskIds = tasks.map((task) => task.getValue('id'))
     handleRemoveTasks(taskIds, store)
   } else {
     handleUpsertTasks(tasks, store)
   }
 }
 
-export const removeOrgUserTeamOnNext = (payload, context) => {
+export const removeOrgUserTeamOnNext: OnNextHandler<RemoveOrgUserMutation_team> = (
+  payload,
+  context
+) => {
   const {atmosphere} = context
   const {teams} = payload
+  if (!teams) return
   teams.forEach((team) => {
-    const {newMeeting} = team
-    if (!newMeeting) return
-    const {id: meetingId, facilitatorStageId, phases} = newMeeting
-    // a meeting is going on, see if the are on the removed user's phase & if so, redirect them
-    commitLocalUpdate(atmosphere, (store) => {
-      const meetingProxy = store.get(meetingId)
-      if (!meetingProxy) return
-      const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id')
-      const stageRes = findStageById(phases, viewerStageId)
-      if (!stageRes) {
-        setLocalStageAndPhase(store, meetingId, facilitatorStageId)
-      }
+    const {activeMeetings} = team
+    activeMeetings.forEach((newMeeting) => {
+      const {id: meetingId, facilitatorStageId, phases} = newMeeting
+      // a meeting is going on, see if the are on the removed user's phase & if so, redirect them
+      commitLocalUpdate(atmosphere, (store) => {
+        const meetingProxy = store.get(meetingId)
+        if (!meetingProxy) return
+        const viewerStageId = meetingProxy.getLinkedRecord('localStage')!.getValue('id') as string
+        const stageRes = findStageById(phases, viewerStageId)
+        if (!stageRes) {
+          setLocalStageAndPhase(store, meetingId, facilitatorStageId)
+        }
+      })
     })
   })
 }
 
-export const removeOrgUserOrganizationOnNext = (payload, context) => {
+export const removeOrgUserOrganizationOnNext: OnNextHandler<
+  RemoveOrgUserMutation_organization,
+  OnNextHistoryContext
+> = (payload, context) => {
   // FIXME currently, the server doesn't send this to the user in other tabs, so they don't get redirected in their other tabs
   const {
     atmosphere: {viewerId},
     history
   } = context
   const {pathname} = history.location
-  const {
-    user: {id: userId},
-    organization: {id: orgId}
-  } = payload
+  const {user, organization} = payload
+  const userId = user?.id
+  const orgId = organization?.id ?? ''
   if (userId === viewerId && onExOrgRoute(pathname, orgId)) {
     history.push('/meetings')
   }
@@ -203,9 +229,12 @@ export const removeOrgUserNotificationOnNext: OnNextHandler<
   }
 }
 
-const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onCompleted) => {
-  const {viewerId} = atmosphere
-  return commitMutation<IRemoveOrgUserMutation>(atmosphere, {
+const RemoveOrgUserMutation: StandardMutation<TRemoveOrgUserMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {history, onError, onCompleted}
+) => {
+  return commitMutation<TRemoveOrgUserMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -213,22 +242,15 @@ const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onComple
       if (!payload) return
       removeOrgUserOrganizationUpdater(payload, {atmosphere, store})
       removeOrgUserTeamUpdater(payload, {atmosphere, store})
-      removeOrgUserTaskUpdater(payload, store, viewerId)
+      removeOrgUserTaskUpdater(payload, {atmosphere, store})
     },
-    // optimisticUpdater: (store) => {
-    //   const {orgId, userId} = variables;
-    //   const {viewerId} = atmosphere;
-    //   if (viewerId === userId) {
-    //     handleRemoveOrganization(orgId, store, viewerId);
-    //   }
-    // },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
-
+      if (!res.removeOrgUser) return
       removeOrgUserOrganizationOnNext(res.removeOrgUser, {
-        ...context,
+        history,
         atmosphere
       })
     },
