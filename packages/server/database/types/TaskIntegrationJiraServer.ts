@@ -5,8 +5,6 @@ interface Input {
   providerId: number
   issueId: string
   repositoryId: string
-  name: string
-  key: string
 }
 
 export default class TaskIntegrationJiraServer extends BaseTaskIntegration {

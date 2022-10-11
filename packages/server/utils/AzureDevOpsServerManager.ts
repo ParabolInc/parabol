@@ -140,9 +140,6 @@ export interface WorkItem {
 export interface CreateTaskIssueRes {
   id: number
   rev: number
-  fields: {
-    'System.TeamProject': string
-  }
   _links: ReferenceLinks
   url: string
 }

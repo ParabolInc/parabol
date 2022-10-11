@@ -26,7 +26,7 @@ const updateRepoIntegrationsCacheByPerms = async (
     (service) => !taskServicesWithPerms.includes(service)
   )
   if (missingServices.length) {
-    // user has added a new integration since we last updated the cache. Clear allRepos cache so we can fetch from network
+    // user has added a new integration(s) since we last updated the cache. Clear allRepos cache so we can fetch from network
     await redis.del(allRepoIntegrationsKey)
     return [[], prevUsedRepoIntegrations]
   } else if (cachedRepoIntWithoutPerms.length) {

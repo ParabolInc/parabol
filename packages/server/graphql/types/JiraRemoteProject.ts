@@ -1,13 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import {RateLimitError} from '../../../client/utils/AtlassianManager'
 import {
   createImageUrlHash,
   createParabolImageUrl,
   downloadAndCacheImage
 } from '../../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import sendToSentry from '../../utils/sendToSentry'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
@@ -48,30 +46,7 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString)
     },
     name: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: async (
-        {
-          name,
-          cloudId,
-          key,
-          teamId,
-          userId
-        }: {name?: string; cloudId: string; key: string; teamId: string; userId: string},
-        _args,
-        {dataLoader}
-      ) => {
-        if (name) return name
-        const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-        if (!auth) return null
-        const {accessToken} = auth
-        const manager = new AtlassianServerManager(accessToken)
-        const projectRes = await manager.getProject(cloudId, key)
-        if (projectRes instanceof Error || projectRes instanceof RateLimitError) {
-          sendToSentry(projectRes, {userId, tags: {teamId, key}})
-          return null
-        }
-        return projectRes.name
-      }
+      type: new GraphQLNonNull(GraphQLString)
     },
     avatar: {
       type: new GraphQLNonNull(GraphQLString),
