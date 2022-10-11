@@ -114,8 +114,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     {teamId, networkOnly, first},
     {UNSTABLE_renderPolicy: 'full'}
   )
-  const repoIntegrations = viewer?.teamMember?.repoIntegrations
-  const items = repoIntegrations?.items ?? []
+  const items = viewer?.teamMember?.repoIntegrations.items ?? []
   const {
     query,
     filteredItems: filteredIntegrations,

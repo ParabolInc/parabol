@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {getInstanceId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
@@ -34,7 +35,8 @@ const AzureDevOpsRemoteProject = new GraphQLObjectType<any, GQLContext>({
     },
     instanceId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The instance ID that the project lives on'
+      description: 'The instance ID that the project lives on',
+      resolve: ({url}: {url: string}) => getInstanceId(new URL(url))
     },
     name: {
       type: new GraphQLNonNull(GraphQLString)
