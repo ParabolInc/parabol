@@ -37,16 +37,6 @@ const JiraFieldMenu = (props: Props) => {
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, possibleEstimationFieldNames])
 
-  /*
-  if (possibleEstimationFieldNames.length === 0) {
-    return (
-      <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
-        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
-      </Menu>
-    )
-  }
-   */
-
   const handleClick = (fieldName: string) => () => {
     UpdateJiraDimensionFieldMutation(
       atmosphere,

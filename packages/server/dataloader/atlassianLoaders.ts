@@ -227,13 +227,9 @@ export const jiraIssue = (
               })
             )
 
-            const simplified = !!issueRes.fields.project?.simplified
-
             const possibleEstimationFieldNames = [] as string[]
             Object.entries<any>(issueRes.editmeta?.fields)?.forEach(([fieldId, {schema}]) => {
-              if (
-                isValidEstimationField(schema.type, issueRes.names[fieldId], fieldId, simplified)
-              ) {
+              if (isValidEstimationField(schema.type, issueRes.names[fieldId], fieldId)) {
                 possibleEstimationFieldNames.push(issueRes.names[fieldId])
               }
               if (schema.type === 'timetracking') {
