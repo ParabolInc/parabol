@@ -72,15 +72,13 @@ const RetroMeetingSidebar = (props: Props) => {
               ? getSidebarItemStage(prevPhaseType, phases, facilitatorStageId)
               : null
 
-            const {isComplete: isPrevItemStageComplete = false, readyCount = 0} =
-              prevItemStage ?? {}
+            const {isComplete: isPrevItemStageComplete = true, readyCount = 0} = prevItemStage ?? {}
 
             const activeCount = meetingMembers.length
             const isConfirmRequired = readyCount < activeCount - 1 && activeCount > 1
 
             if (
               isComplete ||
-              !prevItemStage ||
               isPrevItemStageComplete ||
               !isConfirmRequired ||
               confirmingPhase === phaseType
