@@ -82,33 +82,23 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           const projectKey = JiraProjectKeyId.join(issueKey)
           const [dimensionName, jiraIssue] = await Promise.all([
             getDimensionName(meetingId),
-            dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
+            dataLoader
+              .get('jiraIssue')
+              .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
           ])
           if (!jiraIssue) return null
-          const {issueType} = jiraIssue
+          const {issueType, possibleEstimationFieldNames} = jiraIssue
 
-          const dimensionField = await dataLoader
+          const dimensionFields = await dataLoader
             .get('jiraDimensionFieldMap')
             .load({teamId, cloudId, projectKey, issueType, dimensionName})
+          const dimensionField = dimensionFields.find(({fieldName}) =>
+            possibleEstimationFieldNames.includes(fieldName)
+          )
           if (dimensionField) {
             return {
               name: dimensionField.fieldName,
               type: dimensionField.fieldType
-            }
-          }
-
-          // Fallback field for transitioning
-          // We used to not distinguish types for estimating, so check if there is a stored field with no type associated
-          const legacyDimensionField = await dataLoader
-            .get('jiraDimensionFieldMap')
-            .load({teamId, cloudId, projectKey, issueType, dimensionName})
-          if (legacyDimensionField) {
-            const {possibleEstimationFieldNames} = jiraIssue
-            if (possibleEstimationFieldNames.includes(legacyDimensionField.fieldName)) {
-              return {
-                name: legacyDimensionField.fieldName,
-                type: legacyDimensionField.fieldType
-              }
             }
           }
 

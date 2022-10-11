@@ -121,23 +121,27 @@ const setTaskEstimate = {
           break
         }
         const {issueType} = jiraIssue
- 
-        let dimensionField = await dataLoader
+
+        const dimensionFields = await dataLoader
           .get('jiraDimensionFieldMap')
           .load({teamId, cloudId, projectKey, issueType, dimensionName})
 
-        // Check if there are legacy dimension fields stored without issue type
-        if (!dimensionField) {
-          const legacyField = await dataLoader
-            .get('jiraDimensionFieldMap')
-            .load({teamId, cloudId, projectKey, issueType: '', dimensionName})
-          const {possibleEstimationFieldNames} = jiraIssue
-          if (legacyField && possibleEstimationFieldNames.includes(legacyField.fieldName)) {
-            dimensionField = legacyField
+        // Find the best match
+        const {possibleEstimationFieldNames} = jiraIssue
+        const dimensionField = dimensionFields.find(({fieldName}) =>
+          possibleEstimationFieldNames.includes(fieldName)
+        )
 
-            // store the new match so we can at some point remove the fallback
-            // don't remove the fallback just yet, because people might have more issue types they vote on
-            const {fieldId, fieldName, fieldType} = legacyField
+        // If we're using a field stored for a different issueType, update the DB to store the new match
+        if (dimensionField && dimensionField.issueType !== issueType) {
+          // Legacy unknown field type, replace it with an actual issueType
+          if (dimensionField.issueType === '') {
+            dimensionField.issueType = issueType
+            await upsertJiraDimensionFieldMap(dimensionField)
+          }
+          // Add the type in addition
+          else {
+            const {fieldId, fieldName, fieldType} = dimensionField
             const newField = {
               teamId,
               cloudId,
@@ -151,7 +155,7 @@ const setTaskEstimate = {
             await upsertJiraDimensionFieldMap(newField)
           }
         }
- 
+
         const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
         if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
           const res = await manager.addComment(

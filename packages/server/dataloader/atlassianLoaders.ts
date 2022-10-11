@@ -12,12 +12,12 @@ import {
 import JiraIssue from '../graphql/types/JiraIssue'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
-import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
-import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import getJiraDimensionFieldMap, {
   GetJiraDimensionFieldMapParams,
   JiraDimensionFieldMap
 } from '../postgres/queries/getJiraDimensionFieldMap'
+import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
+import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
@@ -172,11 +172,11 @@ export const jiraRemoteProject = (
 }
 
 export type JiraIssue = JiraGetIssueRes['fields'] & {
-    issueType: string,
-    possibleEstimationFieldNames: string[],
-    descriptionHTML: string,
-    teamId: string,
-    userId: string
+  issueType: string
+  possibleEstimationFieldNames: string[]
+  descriptionHTML: string
+  teamId: string
+  userId: string
 }
 
 export const jiraIssue = (
@@ -338,7 +338,7 @@ export const atlassianCloudName = (
 }
 
 export const jiraDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<GetJiraDimensionFieldMapParams, JiraDimensionFieldMap | null, string>(
+  new DataLoader<GetJiraDimensionFieldMapParams, JiraDimensionFieldMap[], string>(
     async (keys) => {
       return Promise.all(
         keys.map(async (params) => {
