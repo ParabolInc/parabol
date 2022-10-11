@@ -72,6 +72,7 @@ const JiraFieldDimensionDropdown = (props: Props) => {
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
+      id: 'JiraFieldDimensionDropdown',
       isDropdown: true
     }
   )
@@ -94,11 +95,13 @@ const JiraFieldDimensionDropdown = (props: Props) => {
   const label =
     labelLookup[lookupServiceFieldName as keyof typeof labelLookup] ?? lookupServiceFieldName
   return (
+    <>
     <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
       <CurrentValue>{label}</CurrentValue>
       <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
-      {menuPortal(<JiraFieldMenu menuProps={menuProps} stage={stage} submitScore={submitScore} />)}
     </Wrapper>
+    {menuPortal(<JiraFieldMenu menuProps={menuProps} stage={stage} submitScore={submitScore} />)}
+    </>
   )
 }
 
