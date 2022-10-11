@@ -717,7 +717,6 @@ export default abstract class AtlassianManager {
     } as const
     const timeTrackingFieldName =
       timeTrackingFieldLookup[fieldId as keyof typeof timeTrackingFieldLookup]
-    console.log('GEORG timeTrackingFieldName', timeTrackingFieldName)
     if (!!timeTrackingFieldName) {
       payload = {
         update: {
@@ -748,7 +747,6 @@ export default abstract class AtlassianManager {
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'
       )
     }
-    console.log('GEORG res.message', res.message)
     if (
       res.message.startsWith(timeTrackingFieldName ? timeTrackingFieldId : fieldId) &&
       res.message.includes('is not on the appropriate screen')

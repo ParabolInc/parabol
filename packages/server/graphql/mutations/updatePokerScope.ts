@@ -1,16 +1,13 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-//import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import {Writeable} from '../../../client/types/generics'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {TaskServiceEnum} from '../../database/types/Task'
-//import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
 import insertDiscussions, {InputDiscussions} from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-//import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
@@ -115,27 +112,11 @@ const updatePokerScope = {
       // add stages
       const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
       const {dimensions} = templateRef
-      //const firstDimensionName = dimensions[0].name
       const newDiscussions = [] as Writeable<InputDiscussions>
       const additiveUpdates = updates.filter((update) => {
         const {action, serviceTaskId} = update
         return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
       })
-
-      /*
-      const requiredJiraMappers = additiveUpdates
-        .filter((update) => update.service === 'jira')
-        .map((update) => {
-          const {cloudId, issueKey, projectKey} = JiraIssueId.split(update.serviceTaskId)
-          return {
-            cloudId,
-            issueKey,
-            projectKey,
-            dimensionName: firstDimensionName
-          } as JiraDimensionField
-        })
-      await ensureJiraDimensionField(requiredJiraMappers, teamId, viewerId, dataLoader)
-      */
 
       const additiveUpdatesWithTaskIds = await importTasksForPoker(
         additiveUpdates,
