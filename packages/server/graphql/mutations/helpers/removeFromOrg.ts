@@ -87,7 +87,6 @@ const removeFromOrg = async (
         await resolveDowngradeToPersonal(orgId, organization.stripeSubscriptionId!, userId)
       }
     }
-    // }
   }
   try {
     await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, {prorationDate})
