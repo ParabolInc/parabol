@@ -5,7 +5,6 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
-import addMissingJiraField from './mutations/addMissingJiraField'
 import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
@@ -265,7 +264,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       pokerAnnounceDeckHover,
       movePokerTemplateScaleValue,
       joinMeeting,
-      addMissingJiraField,
       setPokerSpectate,
       persistGitHubSearchQuery,
       setTaskEstimate,

@@ -8116,11 +8116,6 @@ type Mutation {
   joinMeeting(meetingId: ID!): JoinMeetingPayload!
 
   """
-  Adds a missing Jira field to a screen currently assigned to a Jira project
-  """
-  addMissingJiraField(meetingId: ID!, stageId: ID!): AddMissingJiraFieldPayload!
-
-  """
   Set whether the user is spectating poker meeting
   """
   setPokerSpectate(
@@ -10277,18 +10272,6 @@ type JoinMeetingSuccess {
   The meeting with the updated stages, if any
   """
   meeting: NewMeeting!
-}
-
-"""
-Return object for AddMissingJiraFieldPayload
-"""
-union AddMissingJiraFieldPayload = ErrorPayload | AddMissingJiraFieldSuccess
-
-type AddMissingJiraFieldSuccess {
-  """
-  Jira field which was just added to an issue screen
-  """
-  dimensionField: JiraDimensionField
 }
 
 """
