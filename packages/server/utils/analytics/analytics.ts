@@ -326,8 +326,7 @@ class Analytics {
       isInvited,
       // properties below needed for Google Analytics goal setting
       category: 'All',
-      label: 'isPatient0',
-      value: isPatient0 ? 1 : 0
+      label: isPatient0 ? 'isPatient0' : 'isNotPatient0'
     })
   }
 
