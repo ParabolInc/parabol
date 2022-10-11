@@ -22,6 +22,7 @@ const updatePrevUsedRepoIntegrationsCache = async (teamId: string, repoIntegrati
     return prevUsedRepoIntegrationId === repoIntegrationId
   })
   if (oldPrevUsedRepoIntegration) {
+    // if it already exists in the cache, remove it so we can add the new timestamp
     await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
   }
   await redis.zadd(prevUsedRepoIntegrationsKey, now, JSON.stringify(remoteRepoIntegration))

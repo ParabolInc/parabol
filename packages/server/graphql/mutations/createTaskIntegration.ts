@@ -136,10 +136,6 @@ export default {
 
     const {issueId, ...updateTaskInput} = createTaskResponse
 
-    if (createTaskResponse.integration) {
-      updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId)
-    }
-
     if (userId && viewerId !== userId) {
       const addCommentResponse = await taskIntegrationManager.addCreatedBySomeoneElseComment(
         viewerName,
@@ -154,6 +150,8 @@ export default {
         sendToSentry(addCommentResponse)
       }
     }
+
+    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId)
 
     await r
       .table('Task')

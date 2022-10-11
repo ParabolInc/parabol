@@ -4,6 +4,7 @@ import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import GitHubIssueId from '../../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
+import IntegrationRepoId from '../../../../client/shared/gqlIds/IntegrationRepoId'
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import removeRangesForEntity from '../../../../client/utils/draftjs/removeRangesForEntity'
@@ -42,13 +43,15 @@ const createTaskInService = async (
     const jiraTaskRes = await createJiraTask(taglessContentJSON, cloudId, projectKey, atlassianAuth)
     if (jiraTaskRes.error) return {error: jiraTaskRes.error}
     const {issueKey} = jiraTaskRes
+    const integrationRepoId = IntegrationRepoId.join({cloudId, projectKey, service})
     return {
       integration: new TaskIntegrationJira({
         accessUserId,
         cloudId,
         issueKey
       }),
-      integrationHash: JiraIssueId.join(cloudId, issueKey)
+      integrationHash: JiraIssueId.join(cloudId, issueKey),
+      integrationRepoId
     }
   } else if (service === 'github') {
     const {repoOwner, repoName} = GitHubRepoId.split(serviceProjectHash)
@@ -68,13 +71,15 @@ const createTaskInService = async (
       return {error: githubTaskRes.error}
     }
     const {issueNumber} = githubTaskRes
+    const integrationRepoId = IntegrationRepoId.join({nameWithOwner: serviceProjectHash, service})
     return {
       integration: new TaskIntegrationGitHub({
         accessUserId,
         nameWithOwner: serviceProjectHash,
         issueNumber
       }),
-      integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber)
+      integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber),
+      integrationRepoId
     }
   } else if (service === 'gitlab') {
     const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
@@ -93,15 +98,16 @@ const createTaskInService = async (
       return {error: gitlabTaskRes.error}
     }
     const {gid, providerId, fullPath} = gitlabTaskRes
+    const integrationRepoId = IntegrationRepoId.join({fullPath, service})
     const integrationProviderId = IntegrationProviderId.join(providerId)
     return {
       integration: new TaskIntegrationGitLab({
         accessUserId,
         providerId: integrationProviderId,
-        gid,
-        fullPath
+        gid
       }),
-      integrationHash: GitLabIssueId.join(integrationProviderId, gid)
+      integrationHash: GitLabIssueId.join(integrationProviderId, gid),
+      integrationRepoId
     }
   } else if (service === 'azureDevOps') {
     const azureAuth = await dataLoader
@@ -118,19 +124,18 @@ const createTaskInService = async (
     )
     if (azureTaskRes instanceof Error) return {error: azureTaskRes}
     const {integrationHash} = azureTaskRes
-    const integration = azureTaskRes.integration as TaskIntegrationAzureDevOps
-    const {name, url} = integration
     const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(integrationHash)
+    // TODO: fix inconsistencies with projectKey & projectId: https://github.com/ParabolInc/parabol/issues/7073
+    const integrationRepoId = IntegrationRepoId.join({instanceId, projectId: projectKey, service})
     return {
       integration: new TaskIntegrationAzureDevOps({
         instanceId,
         accessUserId,
         projectKey,
-        issueKey,
-        name,
-        url
+        issueKey
       }),
-      integrationHash
+      integrationHash,
+      integrationRepoId
     }
   }
   return {error: new Error('Unknown integration')}

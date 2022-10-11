@@ -380,9 +380,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         instanceId,
         service: 'azureDevOps',
         projectKey: projectId,
-        issueKey: String(issueRes.id),
-        url: issueRes.url,
-        name: issueRes.fields['System.TeamProject']
+        issueKey: String(issueRes.id)
       }
     }
   }

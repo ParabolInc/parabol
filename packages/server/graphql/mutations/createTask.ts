@@ -3,14 +3,13 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import IntegrationRepoId from '../../../client/shared/gqlIds/IntegrationRepoId'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task, {TaskServiceEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
-import updateRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
+import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
@@ -197,10 +196,9 @@ export default {
     // RESOLUTION
 
     // push to integration
-    const {integrationHash, integration} = integrationRes
-    if (integration) {
-      const integrationRepoId = IntegrationRepoId.join(integration)
-      updateRepoIntegrationsCache(teamId, integrationRepoId)
+    const {integrationHash, integration, integrationRepoId} = integrationRes
+    if (integrationRepoId) {
+      updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId)
     }
     const task = new Task({
       content,
