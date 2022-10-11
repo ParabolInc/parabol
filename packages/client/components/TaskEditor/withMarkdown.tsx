@@ -1,11 +1,10 @@
-import {EditorState, Modifier} from 'draft-js'
+import {ContentBlock, ContentState, EditorProps, EditorState, Modifier} from 'draft-js'
 import {List, Map, OrderedSet} from 'immutable'
-import PropTypes from 'prop-types'
-import React, {Component} from 'react'
-import getAnchorLocation from './getAnchorLocation'
+import React, {Component, ReactNode} from 'react'
 import addSpace from '../../utils/draftjs/addSpace'
 import splitBlock from '../../utils/draftjs/splitBlock'
 import linkify from '../../utils/linkify'
+import getAnchorLocation from './getAnchorLocation'
 
 const inlineMatchers = {
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},
@@ -21,19 +20,22 @@ const CODE_FENCE = '```'
 
 const styles = Object.keys(inlineMatchers)
 
-const extractStyle = (editorState, getNextState, style, blockKey, extractedStyles) => {
-  const {regex, matchIdx} = inlineMatchers[style]
-  const blockText = editorState
-    .getCurrentContent()
-    .getBlockForKey(blockKey)
-    .getText()
+const extractStyle = (
+  editorState: EditorState,
+  getNextState: () => EditorState,
+  style: string,
+  blockKey: string,
+  extractedStyles: any
+) => {
+  const {regex, matchIdx} = inlineMatchers[style as keyof typeof inlineMatchers]
+  const blockText = editorState.getCurrentContent().getBlockForKey(blockKey).getText()
   const result = regex.exec(blockText)
   if (result) {
     const es = extractedStyles.length === 0 ? getNextState() : editorState
     const contentState = es.getCurrentContent()
     const selectionState = es.getSelection()
-    const beforePhrase = result[0]
-    const afterPhrase = result[matchIdx]
+    const beforePhrase = result[0]!
+    const afterPhrase = result[matchIdx]!
     const selectionToReplace = selectionState.merge({
       anchorKey: blockKey,
       focusKey: blockKey,
@@ -68,17 +70,21 @@ const extractStyle = (editorState, getNextState, style, blockKey, extractedStyle
       OrderedSet.of(...extractedStyles)
     ).merge({
       selectionAfter
-    })
+    }) as ContentState
     return EditorState.push(es, markdownedContent, 'change-inline-style')
   }
   return editorState
 }
 
-const extractMarkdownStyles = (editorState, getNextState, blockKey) => {
-  const extractedStyles = []
+const extractMarkdownStyles = (
+  editorState: EditorState,
+  getNextState: () => EditorState,
+  blockKey: string
+) => {
+  const extractedStyles = [] as any[]
   let es = editorState
   for (let i = 0; i < styles.length; i++) {
-    es = extractStyle(es, getNextState, styles[i], blockKey, extractedStyles)
+    es = extractStyle(es, getNextState, styles[i]!, blockKey, extractedStyles)
   }
   if (es !== editorState) {
     // squash the undo stack so hitting undo (or transitively backspace) undoes all the styling
@@ -99,23 +105,21 @@ const extractMarkdownStyles = (editorState, getNextState, blockKey) => {
 //   return count === 1 ? nextEditorState : doUndo(nextEditorState, count - 1)
 // }
 
-const withMarkdown = (ComposedComponent) => {
-  return class WithMarkdown extends Component {
-    static propTypes = {
-      editorState: PropTypes.object.isRequired,
-      handleBeforeInput: PropTypes.func,
-      handleChange: PropTypes.func,
-      handleKeyCommand: PropTypes.func,
-      keyBindingFn: PropTypes.func,
-      removeModal: PropTypes.func,
-      renderModal: PropTypes.func,
-      // could be readOnly, so not strictly required
-      setEditorState: PropTypes.func
-    }
-
+interface Props {
+  editorState: EditorState
+  handleBeforeInput: (char: string) => any
+  handleChange: (editorState: EditorState) => void
+  handleKeyCommand: (command: string) => any
+  keyBindingFn: EditorProps['keyBindingFn']
+  removeModal: () => void
+  renderModal: () => ReactNode
+  setEditorState(editorState: EditorState): void
+}
+const withMarkdown = (ComposedComponent: any) => {
+  return class WithMarkdown extends Component<Props> {
     state = {}
-
-    getMaybeMarkdownState = (getNextState, editorState) => {
+    undoMarkdown: undefined | boolean
+    getMaybeMarkdownState = (getNextState: () => EditorState, editorState: EditorState) => {
       this.undoMarkdown = undefined
       const {block, anchorOffset} = getAnchorLocation(editorState)
       const blockKey = block.getKey()
@@ -130,7 +134,7 @@ const withMarkdown = (ComposedComponent) => {
       return this.getMaybeCodeBlockState(editorState)
     }
 
-    getMaybeCodeBlockState = (editorState) => {
+    getMaybeCodeBlockState = (editorState: EditorState) => {
       const contentState = editorState.getCurrentContent()
       const selectionState = editorState.getSelection()
       const currentBlockKey = selectionState.getAnchorKey()
@@ -139,13 +143,13 @@ const withMarkdown = (ComposedComponent) => {
       if (!currentBlockText.startsWith(CODE_FENCE) || selectionState.getAnchorOffset() < 3) {
         return undefined
       }
-      const lastCodeBlock = contentState.getBlockBefore(currentBlockKey)
+      const lastCodeBlock = contentState.getBlockBefore(currentBlockKey)!
       let cb = lastCodeBlock
       while (cb) {
         if (cb.getText().startsWith(CODE_FENCE)) {
           break
         }
-        cb = contentState.getBlockBefore(cb.getKey())
+        cb = contentState.getBlockBefore(cb.getKey())!
       }
       if (!cb) return undefined
       const blockMap = contentState.getBlockMap()
@@ -153,11 +157,11 @@ const withMarkdown = (ComposedComponent) => {
         text: '',
         characterList: List(),
         data: Map()
-      })
+      }) as ContentBlock
       const contentStateWithoutFences = contentState.merge({
         blockMap: blockMap.set(currentBlockKey, updatedLastline).delete(cb.getKey())
-      })
-      const firstCodeBlock = contentState.getBlockAfter(cb.getKey())
+      }) as ContentState
+      const firstCodeBlock = contentState.getBlockAfter(cb.getKey())!
       const selectedCode = selectionState.merge({
         anchorOffset: 0,
         focusOffset: lastCodeBlock.getLength(),
@@ -174,11 +178,11 @@ const withMarkdown = (ComposedComponent) => {
           anchorOffset: 0,
           focusOffset: 0
         })
-      })
+      }) as ContentState
       return EditorState.push(editorState, styledContent, 'change-block-type')
     }
 
-    getMaybeBlockquote = (editorState, command) => {
+    getMaybeBlockquote = (editorState: EditorState, command: string) => {
       const initialContentState = editorState.getCurrentContent()
       const initialSelectionState = editorState.getSelection()
       const currentBlockKey = initialSelectionState.getAnchorKey()
@@ -197,7 +201,7 @@ const withMarkdown = (ComposedComponent) => {
       })
       const contentState = startingEditorState.getCurrentContent()
       const selectionState = startingEditorState.getSelection()
-      const triggerPhrase = matchedBlockQuote[1]
+      const triggerPhrase = matchedBlockQuote[1]!
       const selectionToRemove = selectionState.merge({
         anchorOffset: 0,
         focusOffset: triggerPhrase.length
@@ -214,11 +218,11 @@ const withMarkdown = (ComposedComponent) => {
         selectionAfter: fullBlockSelection.merge({
           anchorOffset: fullBlockSelection.getFocusOffset()
         })
-      })
+      }) as ContentState
       return EditorState.push(startingEditorState, styledContent, 'change-block-type')
     }
 
-    getMaybeLink = (editorState, command) => {
+    getMaybeLink = (editorState: EditorState, command: string) => {
       const initialContentState = editorState.getCurrentContent()
       const selectionState = editorState.getSelection()
       const currentBlockKey = selectionState.getAnchorKey()
@@ -233,16 +237,16 @@ const withMarkdown = (ComposedComponent) => {
       const [phrase, text, link] = matchedLink
       const selectionToRemove = selectionState.merge({
         anchorOffset: matchedLink.index,
-        focusOffset: matchedLink.index + phrase.length
+        focusOffset: matchedLink.index + phrase!.length
       })
-      const href = linkify.match(link)[0].url
+      const href = linkify.match(link!)![0]!.url
       const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', {href})
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
       const linkifiedContent = Modifier.replaceText(
         contentState,
         selectionToRemove,
-        text,
-        null,
+        text!,
+        undefined,
         entityKey
       )
 
@@ -256,12 +260,12 @@ const withMarkdown = (ComposedComponent) => {
       const adjustedSelectionContent = linkifiedContent.merge({
         selectionAfter,
         selectionBefore: selectionAfter
-      })
+      }) as ContentState
       this.undoMarkdown = true
       return EditorState.push(preSplitES, adjustedSelectionContent, 'apply-entity')
     }
 
-    handleKeyCommand = (command) => {
+    handleKeyCommand = (command: string) => {
       const {handleKeyCommand, editorState, setEditorState} = this.props
       if (handleKeyCommand) {
         const result = handleKeyCommand(command)
@@ -289,7 +293,7 @@ const withMarkdown = (ComposedComponent) => {
       return undefined
     }
 
-    keyBindingFn = (e) => {
+    keyBindingFn = (e: React.KeyboardEvent) => {
       const {keyBindingFn} = this.props
       if (keyBindingFn) {
         const result = keyBindingFn(e)
@@ -300,7 +304,7 @@ const withMarkdown = (ComposedComponent) => {
       return undefined
     }
 
-    handleBeforeInput = (char) => {
+    handleBeforeInput = (char: string) => {
       const {handleBeforeInput, editorState, setEditorState} = this.props
       if (handleBeforeInput) {
         const result = handleBeforeInput(char)
@@ -322,7 +326,7 @@ const withMarkdown = (ComposedComponent) => {
       return undefined
     }
 
-    handleChange = (editorState) => {
+    handleChange = (editorState: EditorState) => {
       const {handleChange} = this.props
       if (handleChange) {
         handleChange(editorState)

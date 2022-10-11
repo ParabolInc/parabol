@@ -1,4 +1,4 @@
-import {EditorState} from 'draft-js'
+import {EditorProps, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
 import getDraftCoords from '../../utils/getDraftCoords'
@@ -6,7 +6,7 @@ import EmojiMenuContainer from './EmojiMenuContainer'
 import getAnchorLocation from './getAnchorLocation'
 import getWordAt from './getWordAt'
 
-const withEmojis = (ComposedComponent) => {
+const withEmojis = (ComposedComponent: any) => {
   class WithEmojis extends Component<any> {
     cachedCoords: any
 
@@ -16,7 +16,7 @@ const withEmojis = (ComposedComponent) => {
       query: ''
     }
 
-    keyBindingFn = (e) => {
+    keyBindingFn: EditorProps['keyBindingFn'] = (e) => {
       const {keyBindingFn} = this.props
       if (keyBindingFn) {
         const result = keyBindingFn(e)
@@ -31,7 +31,7 @@ const withEmojis = (ComposedComponent) => {
 
     menuRef = React.createRef<any>()
 
-    static getDerivedStateFromProps(nextProps, prevState) {
+    static getDerivedStateFromProps(nextProps: any, prevState: any) {
       const {editorState} = nextProps
       return {
         // clicking on a menu will cause the editorStateSelection to lose focus, so we persist the last state before that point
@@ -41,7 +41,7 @@ const withEmojis = (ComposedComponent) => {
       }
     }
 
-    onSelectEmoji = (emoji) => {
+    onSelectEmoji = (emoji: string) => {
       const {setEditorState} = this.props
       const nextEditorState = autoCompleteEmoji(
         this.state.focusedEditorState! as EditorState,
@@ -57,7 +57,7 @@ const withEmojis = (ComposedComponent) => {
       })
     }
 
-    handleChange = (editorState) => {
+    handleChange = (editorState: EditorState) => {
       const {handleChange} = this.props
       if (handleChange) {
         handleChange(editorState)

@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RouteComponentProps} from 'react-router'
 import relativeDate from '../utils/date/relativeDate'
 import plural from '../utils/plural'
 import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
@@ -11,7 +10,7 @@ import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
-interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props {
   timelineEvent: TimelineEventCompletedActionMeeting_timelineEvent
 }
 

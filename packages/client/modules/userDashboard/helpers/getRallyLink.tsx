@@ -160,7 +160,7 @@ const rallyList = [
   }
 ]
 
-const rally = rallyList[Math.floor(Math.random() * rallyList.length)]
+const rally = rallyList[Math.floor(Math.random() * rallyList.length)]!
 
 const rallyPhrase = `${rally.phrase}!`
 

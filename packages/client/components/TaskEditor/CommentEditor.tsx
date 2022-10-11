@@ -110,7 +110,7 @@ const CommentEditor = (props: Props) => {
     setEditorState(editorState)
   }
 
-  const onReturn = (e) => {
+  const onReturn: EditorProps['handleReturn'] = (e) => {
     if (handleReturn) {
       return handleReturn(e, editorState)
     }
@@ -128,7 +128,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyBindingFn = (e) => {
+  const onKeyBindingFn: EditorProps['keyBindingFn'] = (e) => {
     if (ensureCommenting) {
       ensureCommenting()
     }
@@ -187,7 +187,7 @@ const CommentEditor = (props: Props) => {
     onSubmit()
   }
 
-  const handleBlur = (e) => {
+  const handleBlur = (e: React.FocusEvent) => {
     if (renderModal || !onBlur) return
     onBlur(e)
   }

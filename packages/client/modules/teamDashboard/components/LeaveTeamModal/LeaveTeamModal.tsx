@@ -33,7 +33,7 @@ const LeaveTeamModal = (props: Props) => {
   const handleClick = () => {
     history.push('/meetings')
     closePortal()
-    RemoveTeamMemberMutation(atmosphere, teamMemberId)
+    RemoveTeamMemberMutation(atmosphere, {teamMemberId})
   }
   return (
     <StyledDialogContainer>

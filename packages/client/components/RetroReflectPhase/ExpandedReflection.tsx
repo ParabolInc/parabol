@@ -27,7 +27,7 @@ const ExpandedReflection = (props: Props) => {
   const staticIdx = staticReflections.indexOf(reflection)
   const atmosphere = useAtmosphere()
   const setIsEditing = (reflectionId: string) => () => {
-    const watchForClick = (e) => {
+    const watchForClick = (e: MouseEvent) => {
       const isClickOnCard = e.composedPath().find((el) => el === cardRef.current)
       if (!isClickOnCard) {
         document.removeEventListener('click', watchForClick)

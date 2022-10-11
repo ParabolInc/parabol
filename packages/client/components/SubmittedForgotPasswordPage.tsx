@@ -130,7 +130,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       )
     }
   } as CopyType
-  const copy = copyTypes[forgotPasswordResType]
+  const copy = copyTypes[forgotPasswordResType as keyof typeof copyTypes]
 
   return (
     <AuthenticationDialog>

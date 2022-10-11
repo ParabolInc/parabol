@@ -38,7 +38,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
     }
   )
   const {activeMeetings} = team
-  useSnacksForNewMeetings(activeMeetings)
+  useSnacksForNewMeetings(activeMeetings as any)
   const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   return (

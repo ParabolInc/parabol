@@ -13,6 +13,7 @@ import {Layout} from '../../types/constEnums'
 import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import makeTasksByStatus from '../../utils/makeTasksByStatus'
+import {TaskStatusEnum} from '../../__generated__/CreateTaskMutation.graphql'
 import {TaskColumns_tasks} from '../../__generated__/TaskColumns_tasks.graphql'
 import {AreaEnum} from '../../__generated__/UpdateTaskMutation.graphql'
 
@@ -58,7 +59,7 @@ const TaskColumns = (props: Props) => {
     if (!destination) return
     const isSameColumn = destination.droppableId === source.droppableId
     if (isSameColumn && destination.index === source.index) return
-    const destinationTasks = groupedTasks[destination.droppableId]
+    const destinationTasks = groupedTasks[destination.droppableId as TaskStatusEnum]
 
     let sortOrder
     if (destination.index === 0) {
@@ -68,12 +69,12 @@ const TaskColumns = (props: Props) => {
       (isSameColumn && destination.index === destinationTasks.length - 1) ||
       (!isSameColumn && destination.index === destinationTasks.length)
     ) {
-      sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
+      sortOrder = destinationTasks[destinationTasks.length - 1]!.sortOrder - SORT_STEP + dndNoise()
     } else {
       const offset = !isSameColumn || source.index > destination.index ? -1 : 1
       sortOrder =
-        (destinationTasks[destination.index + offset].sortOrder +
-          destinationTasks[destination.index].sortOrder) /
+        (destinationTasks[destination.index + offset]!.sortOrder +
+          destinationTasks[destination.index]!.sortOrder) /
           2 +
         dndNoise()
     }

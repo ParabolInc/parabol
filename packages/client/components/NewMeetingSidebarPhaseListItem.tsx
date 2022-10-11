@@ -142,9 +142,9 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     phaseType,
     isConfirming
   } = props
-  const label = phaseLabelLookup[phaseType]
-  const icon = phaseIconLookup[phaseType]
-  const Image = phaseImageLookup[phaseType]
+  const label = phaseLabelLookup[phaseType] as string | undefined
+  const icon = phaseIconLookup[phaseType] as string | undefined
+  const Image = phaseImageLookup[phaseType as keyof typeof phaseImageLookup]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
 
   const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(

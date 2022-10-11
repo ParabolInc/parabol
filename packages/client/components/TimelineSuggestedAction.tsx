@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {ValueOf} from '../types/generics'
 import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import DelayUnmount from './DelayUnmount'
 
@@ -37,7 +38,7 @@ const lookup = {
         /* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam'
       )
   )
-}
+} as const
 
 const Wrapper = styled('div')({
   paddingBottom: 16
@@ -47,15 +48,15 @@ function TimelineSuggestedAction(props: Props) {
   const {viewer} = props
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions
-  let AsyncComponent
+  let AsyncComponent: ValueOf<typeof lookup> | undefined
   if (suggestedAction) {
     const {__typename} = suggestedAction
-    AsyncComponent = lookup[__typename]
+    AsyncComponent = lookup[__typename as keyof typeof lookup]
   }
   return (
     <Wrapper>
       <DelayUnmount unmountAfter={500}>
-        {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction} /> : null}
+        {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction!} /> : null}
       </DelayUnmount>
     </Wrapper>
   )

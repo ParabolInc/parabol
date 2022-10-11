@@ -38,7 +38,7 @@ const TaskFooterTagMenu = (props: Props) => {
   const {area, menuProps, editorState, isAgenda, task, useTaskChild} = props
   useTaskChild('tag')
   const atmosphere = useAtmosphere()
-  const {id: taskId, status: taskStatus, tags, content, teamId} = task
+  const {id: taskId, status: taskStatus, tags, content} = task
   const isPrivate = isTaskPrivate(tags)
   const handlePrivate = () => {
     isPrivate
@@ -80,7 +80,7 @@ const TaskFooterTagMenu = (props: Props) => {
               {'Delete this Task'}
             </MenuItemLabel>
           }
-          onClick={() => DeleteTaskMutation(atmosphere, taskId, teamId)}
+          onClick={() => DeleteTaskMutation(atmosphere, {taskId})}
         />
       ) : (
         <MenuItem
@@ -111,7 +111,6 @@ export default createFragmentContainer(TaskFooterTagMenu, {
       content
       status
       tags
-      teamId
     }
   `
 })

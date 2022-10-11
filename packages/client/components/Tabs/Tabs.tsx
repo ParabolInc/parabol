@@ -37,26 +37,26 @@ const TabHeaders = styled('div')({
 
 class Tabs extends Component<Props> {
   activeChildRef?: HTMLDivElement
-  parentRef?: HTMLDivElement
+  parentRef?: HTMLDivElement | null
 
   state = {
     transform: `scaleX(0)`
   }
-  setChildRef = (c) => {
+  setChildRef = (c: HTMLDivElement | undefined) => {
     if (c && c !== this.activeChildRef) {
       this.moveInkBar(this.parentRef, c)
     }
     this.activeChildRef = c
   }
 
-  setParentRef = (c) => {
+  setParentRef = (c: HTMLDivElement | null) => {
     if (c && c !== this.parentRef) {
       this.moveInkBar(c, this.activeChildRef)
     }
     this.parentRef = c
   }
 
-  moveInkBar = (parent: HTMLDivElement | undefined, child: HTMLDivElement | undefined) => {
+  moveInkBar = (parent: HTMLDivElement | undefined | null, child: HTMLDivElement | undefined) => {
     const childBBox = child && getBBox(child)
     const parentBBox = parent && getBBox(parent)
     if (!childBBox || !parentBBox) return

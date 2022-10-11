@@ -2,7 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
+import {
+  AutoSizer,
+  CellMeasurer,
+  CellMeasurerCache,
+  Grid,
+  InfiniteLoader,
+  InfiniteLoaderProps
+} from 'react-virtualized'
+import {GridCellRenderer, GridCoreProps} from 'react-virtualized/dist/es/Grid'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
@@ -201,7 +209,8 @@ const TeamArchive = (props: Props) => {
   const getIndex = (columnIndex: number, rowIndex: number) => {
     return columnCount * rowIndex + columnIndex
   }
-  const isRowLoaded = ({index}) => index < edges.length || index === noMoreMsgIndex
+  const isRowLoaded: InfiniteLoaderProps['isRowLoaded'] = ({index}) =>
+    index < edges.length || index === noMoreMsgIndex
   const maybeLoadMore = () => {
     if (!hasNext || isLoadingNext) return Promise.resolve()
     return new Promise<void>((resolve, reject) => {
@@ -216,7 +225,7 @@ const TeamArchive = (props: Props) => {
       })
   )
 
-  const invalidateOnAddRemove = (oldEdges, edges) => {
+  const invalidateOnAddRemove = (oldEdges: readonly any[] | undefined, edges: readonly any[]) => {
     if (
       edges &&
       oldEdges &&
@@ -254,7 +263,7 @@ const TeamArchive = (props: Props) => {
     oldEdgesRef.current = edges
   }, [edges, oldEdgesRef])
 
-  const cellRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
+  const cellRenderer: GridCellRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const index = getIndex(columnIndex, rowIndex)
     if (!isRowLoaded({index})) return undefined
@@ -300,7 +309,12 @@ const TeamArchive = (props: Props) => {
     )
   }
 
-  const onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
+  const onSectionRendered: GridCoreProps['onSectionRendered'] = ({
+    columnStartIndex,
+    columnStopIndex,
+    rowStartIndex,
+    rowStopIndex
+  }) => {
     if (!_onRowsRenderedRef.current) return
     _onRowsRenderedRef.current({
       startIndex: getIndex(columnStartIndex, rowStartIndex),

@@ -1,4 +1,4 @@
-import {Variables} from 'relay-runtime'
+import {RecordProxy, Variables} from 'relay-runtime'
 
 interface Options {
   storageKeyArgs?: Variables
@@ -6,7 +6,7 @@ interface Options {
 
 const safeRemoveNodeFromArray = (
   nodeId: string | null | undefined,
-  parent,
+  parent: RecordProxy | null | undefined,
   arrayName: string,
   options: Options = {}
 ) => {

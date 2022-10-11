@@ -1,4 +1,6 @@
-const getFullLinkSelection = (editorState) => {
+import {EditorState} from 'draft-js'
+
+const getFullLinkSelection = (editorState: EditorState) => {
   const selectionState = editorState.getSelection()
   const contentState = editorState.getCurrentContent()
   const anchorOffset = selectionState.getAnchorOffset()
@@ -12,7 +14,7 @@ const getFullLinkSelection = (editorState) => {
   const curLeft = {...anchor}
   for (let i = 0; i < 1e5; i++) {
     if (curLeft.offset === 0) {
-      curLeft.block = contentState.getBlockBefore(curLeft.block.getKey())
+      curLeft.block = contentState.getBlockBefore(curLeft.block.getKey())!
       if (!curLeft.block) break
       curLeft.offset = curLeft.block.getLength()
     }
@@ -30,7 +32,7 @@ const getFullLinkSelection = (editorState) => {
 
   for (let i = 0; i < 1e5; i++) {
     if (curRight.offset === curRight.block.getLength()) {
-      curRight.block = contentState.getBlockAfter(curRight.block.getKey())
+      curRight.block = contentState.getBlockAfter(curRight.block.getKey())!
       if (!curRight.block) break
       curRight.offset = 0
     }

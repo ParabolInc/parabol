@@ -6,7 +6,7 @@ import LabelHeading from '../LabelHeading/LabelHeading'
 const FieldLabelStyles = styled(LabelHeading)<
   Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>
 >(({customStyles, fieldSize, indent, inline}) => {
-  const size = fieldSize || ui.buttonSizeOptions[1]
+  const size = (fieldSize || ui.buttonSizeOptions[1]) as 'small' | 'medium' | 'large'
   const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0
   const inlineSizeStyles = ui.fieldSizeStyles[size]
   const inlineStyles = {

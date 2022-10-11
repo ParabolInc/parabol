@@ -121,7 +121,7 @@ const PhaseItemEditor = (props: Props) => {
 
   const {disableAnonymity, viewerMeetingMember} = meeting
 
-  const handleSubmit = (content) => {
+  const handleSubmit = (content: string) => {
     const input = {
       content,
       meetingId,
