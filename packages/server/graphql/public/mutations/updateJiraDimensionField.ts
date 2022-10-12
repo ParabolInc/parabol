@@ -30,15 +30,8 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
 }
 
 const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = async (
-    _source,
-    {
-      meetingId,
-      cloudId,
-      projectKey,
-      issueType,
-      dimensionName,
-      fieldName
-    },
+  _source,
+  {meetingId, cloudId, projectKey, issueType, dimensionName, fieldName},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -63,8 +56,15 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
 
   // RESOLUTION
   const data = {teamId, meetingId}
-  const existingDimensionField = await dataLoader.get('jiraDimensionFieldMap').load({teamId, cloudId, projectKey, issueType, dimensionName})
-  if (existingDimensionField?.fieldName === fieldName) return data
+  const dimensionFields = await dataLoader
+    .get('jiraDimensionFieldMap')
+    .load({teamId, cloudId, projectKey, issueType, dimensionName})
+  const existingDimensionField = dimensionFields[0]
+  if (
+    existingDimensionField?.fieldName === fieldName &&
+    existingDimensionField.issueType === issueType
+  )
+    return data
 
   const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
   if (!auth) {
@@ -86,11 +86,11 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
     fieldType
   }
 
-  // udpate dataloader object
-  if (existingDimensionField) {
-    Object.assign(existingDimensionField, newField)
-  }
   await upsertJiraDimensionFieldMap(newField)
+  // we might replace the existing item or add a new one, let's just clear to avoid errors
+  dataLoader
+    .get('jiraDimensionFieldMap')
+    .clear({teamId, cloudId, projectKey, issueType, dimensionName})
 
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateDimensionFieldSuccess', data, subOptions)
   return data

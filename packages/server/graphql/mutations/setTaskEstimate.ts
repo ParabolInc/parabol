@@ -8,6 +8,7 @@ import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraS
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import updateJiraDimensionFieldMap from '../../postgres/queries/updateJiraDimensionFieldMap'
 import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
 import {analytics} from '../../utils/analytics/analytics'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -128,8 +129,13 @@ const setTaskEstimate = {
 
         // Find the best match
         const {possibleEstimationFieldNames} = jiraIssue
+        const validFields = [
+          SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+          SprintPokerDefaults.SERVICE_FIELD_NULL,
+          ...possibleEstimationFieldNames
+        ]
         const dimensionField = dimensionFields.find(({fieldName}) =>
-          possibleEstimationFieldNames.includes(fieldName)
+          validFields.includes(fieldName)
         )
 
         // If we're using a field stored for a different issueType, update the DB to store the new match
@@ -137,7 +143,7 @@ const setTaskEstimate = {
           // Legacy unknown field type, replace it with an actual issueType
           if (dimensionField.issueType === '') {
             dimensionField.issueType = issueType
-            await upsertJiraDimensionFieldMap(dimensionField)
+            await updateJiraDimensionFieldMap(dimensionField)
           }
           // Add the type in addition
           else {
@@ -154,9 +160,29 @@ const setTaskEstimate = {
             }
             await upsertJiraDimensionFieldMap(newField)
           }
+          dataLoader
+            .get('jiraDimensionFieldMap')
+            .clear({teamId, cloudId, projectKey, issueType, dimensionName})
+        }
+        // Store the default if we don't have a field yet
+        if (!dimensionField) {
+          const newField = {
+            teamId,
+            cloudId,
+            projectKey,
+            issueType,
+            dimensionName,
+            fieldId: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            fieldName: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            fieldType: 'string'
+          }
+          await upsertJiraDimensionFieldMap(newField)
+          dataLoader
+            .get('jiraDimensionFieldMap')
+            .clear({teamId, cloudId, projectKey, issueType, dimensionName})
         }
 
-        const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+        const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
         if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
           const res = await manager.addComment(
             cloudId,
