@@ -49,7 +49,6 @@ const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
     reactjiRef
   )
   const userNames: string[] = []
-
   users.forEach(({id, preferredName}) =>
     id === viewerId ? userNames.unshift('You') : userNames.push(preferredName)
   )
