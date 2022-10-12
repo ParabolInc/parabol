@@ -73,6 +73,7 @@ const removeFromOrg = async (
         .filter({removedAt: null})
         .orderBy('joinedAt')
         .nth(0)
+        .default(null)
         .run()
       if (nextInLine) {
         await r
