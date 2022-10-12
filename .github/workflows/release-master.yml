@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - staging
+      - master
 name: release-please
 jobs:
   release-please:
