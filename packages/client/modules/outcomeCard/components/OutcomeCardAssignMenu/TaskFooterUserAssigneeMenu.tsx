@@ -60,6 +60,12 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
     [userId, teamMembers]
   )
+
+  const selectedMember = teamMembers.filter((member) => {
+    return assignees.indexOf(member) < 0
+  })
+  const disableSelectedMember = selectedMember.find((member) => member.id)
+  
   const handleTaskUpdate = (newAssignee: {userId: string}) => () => {
     const newUserId = newAssignee.userId === userId ? null : newAssignee.userId
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
@@ -69,7 +75,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     query,
     filteredItems: matchedAssignees,
     onQueryChange
-  } = useSearchFilter(assignees, (assignee) => assignee.preferredName)
+  } = useSearchFilter(teamMembers, (assignee) => assignee.preferredName)
 
   if (!team) return null
   return (
@@ -80,7 +86,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      {assignees.length > 5 && (
+      {teamMembers.length > 5 && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedAssignees.length === 0 && (
@@ -88,10 +94,12 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
           No team members found!
         </EmptyDropdownMenuItemLabel>
       )}
+
       {matchedAssignees.map((assignee) => {
         return (
           <MenuItem
             key={assignee.id}
+            isDisabled={assignee?.id === disableSelectedMember?.id}
             label={
               <MenuItemLabel>
                 <MenuAvatar alt={assignee.preferredName} src={assignee.picture || avatarUser} />
