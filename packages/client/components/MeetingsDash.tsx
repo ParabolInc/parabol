@@ -70,6 +70,7 @@ const MeetingsDash = (props: Props) => {
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
+                containerRef={meetingsDashRef}
               />
             )
           })}

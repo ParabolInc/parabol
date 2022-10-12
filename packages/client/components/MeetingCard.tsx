@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import action from '../../../static/images/illustrations/action.png'
@@ -138,6 +138,7 @@ interface Props {
   meeting: MeetingCard_meeting
   status: TransitionStatus
   displayIdx: number
+  containerRef?: RefObject<HTMLDivElement>
 }
 
 const ILLUSTRATIONS = {
@@ -160,7 +161,10 @@ const MeetingCard = (props: Props) => {
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+    parentId: meetingId,
+    cardContainerRef: props.containerRef
+  })
   const ref = useAnimatedCard(displayIdx, status)
   const popTooltip = () => {
     openTooltip()
@@ -191,6 +195,7 @@ const MeetingCard = (props: Props) => {
       maybeTabletPlus={maybeTabletPlus}
       status={status}
       onTransitionEnd={onTransitionEnd}
+      id={meetingId}
     >
       <MeetingImgWrapper>
         <MeetingImgBackground meetingType={meetingType} />
