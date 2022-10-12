@@ -9,7 +9,7 @@ import isDemoRoute from '../utils/isDemoRoute'
 
 const shakeAnimation = keyframes`
   20%, 40%, 60% {
-    padding: 4px 4px 8px;
+    padding: 0px;
     overflow: hidden;
     background: #a06bd6;
     color: white;
