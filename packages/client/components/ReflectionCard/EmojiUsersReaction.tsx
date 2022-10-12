@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {PALETTE} from '../../styles/paletteV3'
 
 const EmojiUsersReactionRoot = styled('div')({
@@ -33,7 +34,9 @@ interface Props {
 }
 
 const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
-  const reactji = useFragment(
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const {users} = useFragment(
     graphql`
       fragment EmojiUsersReaction_reactji on Reactji {
         id
@@ -45,10 +48,15 @@ const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
     `,
     reactjiRef
   )
+  const userNames: string[] = []
+
+  users.forEach(({id, preferredName}) =>
+    id === viewerId ? userNames.unshift('You') : userNames.push(preferredName)
+  )
 
   return (
     <EmojiUsersReactionRoot>
-      {LIST_FORMATTER.format(reactji.users.map(({preferredName}) => preferredName))}
+      {LIST_FORMATTER.format(userNames)}
       {reactjiShortName && <DarkerGrayPart>reacted with :{reactjiShortName}:</DarkerGrayPart>}
     </EmojiUsersReactionRoot>
   )
