@@ -5,6 +5,7 @@
   "draft-pull-request": true,
   "group-pull-request-title-pattern": "chore: release v${version}",
   "include-component-in-tag": false,
+  "prerelease": true,
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
