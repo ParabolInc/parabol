@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [6.77.1](https://github.com/ParabolInc/parabol/compare/parabol-action-v6.77.0...parabol-action-v6.77.1) (2022-10-12)
+
+
+### Bug Fixes
+
+* add the prerelease config ([de250b5](https://github.com/ParabolInc/parabol/commit/de250b5bc0e9243ee13ba15251930b823cb53174))
+* added component name back ([5737df3](https://github.com/ParabolInc/parabol/commit/5737df32893ac169fb66aa8e798f1ef6f208bc94))
+* just have a try for pre-release ([755d36d](https://github.com/ParabolInc/parabol/commit/755d36df84952217f0f22d8b513f0f6ccd2b4a56))
+* **noImplicitAny:** Fixup 200 ts rules (Part 2 of 2) ([#7193](https://github.com/ParabolInc/parabol/issues/7193)) ([c5b7306](https://github.com/ParabolInc/parabol/commit/c5b73062d4935b14af6b0d332e4e74e864a83620))
+* other tabs break when accepting a team invitation via a link ([#7200](https://github.com/ParabolInc/parabol/issues/7200)) ([d51ca5a](https://github.com/ParabolInc/parabol/commit/d51ca5a1836756c284530e79f3ba17615e8cbf68))
+* update the boostrap version & git hash ([fd69037](https://github.com/ParabolInc/parabol/commit/fd69037430eba8237bf3af61421328d64c434338))
+* update the prerelease to true ([4c544a0](https://github.com/ParabolInc/parabol/commit/4c544a02c831230ec53d0c9eea02522a6f3f4fe1))
+* update the typo ([39af8d0](https://github.com/ParabolInc/parabol/commit/39af8d0fc600a0cad1bec2226c6225ab126d3cbf))
+
 ## 6.77.0 2022-October-5
 
 ### Added
