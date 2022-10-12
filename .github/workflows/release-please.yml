@@ -1,8 +1,7 @@
 on:
   push:
     branches:
-      - master
-      - staging
+      - release-please/bootstrap/default
 name: release-please
 jobs:
   release-please:
@@ -10,5 +9,7 @@ jobs:
     steps:
       - uses: google-github-actions/release-please-action@v3
         with:
+          default-branch: release-please/bootstrap/default
+          pre-release: beta
           command: manifest
           token: ${{secrets.GITHUB_TOKEN}}
