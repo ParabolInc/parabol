@@ -15,7 +15,6 @@ export const up = async function (r: R) {
     title: 'Keep',
     updatedAt: now
   }
-
   await r.db('actionDevelopment').table('ReflectPrompt').insert(missingKeepPrompt).run()
 }
 
