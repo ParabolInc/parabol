@@ -73,6 +73,7 @@ export type AnalyticsEvent =
   | 'Task Published'
   | 'Task Estimate Set'
   // user
+  | 'Account Created'
   | 'Summary Email Setting Changed'
 
 /**
@@ -317,10 +318,19 @@ class Analytics {
   }
 
   toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
-    this.track(userId, 'Summary Email Setting Changed', subscribeToSummaryEmail)
+    this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
   }
 
-  private track = (userId: string, event: AnalyticsEvent, properties?: any) =>
+  accountCreated = (userId: string, isInvited: boolean, isPatient0: boolean) => {
+    this.track(userId, 'Account Created', {
+      isInvited,
+      // properties below needed for Google Analytics goal setting
+      category: 'All',
+      label: isPatient0 ? 'isPatient0' : 'isNotPatient0'
+    })
+  }
+
+  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>
     this.segmentAnalytics.track(userId, event, properties)
 }
 

@@ -61,7 +61,7 @@ class Legitity {
     return this
   }
 
-  normalize(fn: (value: any) => boolean, msg: string) {
+  normalize(fn: (value: any) => string | null | undefined, msg: string) {
     if (!this.error) {
       this.value = this.value !== undefined && fn(this.value)
       if (this.value === null) {

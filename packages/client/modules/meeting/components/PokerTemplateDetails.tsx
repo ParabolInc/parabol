@@ -103,9 +103,9 @@ const PokerTemplateDetails = (props: Props) => {
   const defaultIllustrations = {
     estimatedEffortTemplate: estimatedEffortTemplate,
     wsjfTemplate: wsjfTemplate
-  }
-  const headerImg = defaultIllustrations[templateId]
-    ? defaultIllustrations[templateId]
+  } as const
+  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
+    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (

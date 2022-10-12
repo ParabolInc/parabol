@@ -42,7 +42,7 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
 const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
-}
+} as const
 
 const JiraServerFieldDimensionDropdown = (props: Props) => {
   const {clearError, stageRef, isFacilitator, submitScore} = props
@@ -91,7 +91,8 @@ const JiraServerFieldDimensionDropdown = (props: Props) => {
     ? serviceFieldName
     : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
-  const label = labelLookup[lookupServiceFieldName] ?? lookupServiceFieldName
+  const label =
+    labelLookup[lookupServiceFieldName as keyof typeof labelLookup] ?? lookupServiceFieldName
   return (
     <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
       <CurrentValue>{label}</CurrentValue>

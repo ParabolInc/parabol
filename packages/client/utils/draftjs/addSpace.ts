@@ -1,6 +1,6 @@
 import {EditorState, Modifier} from 'draft-js'
 
-const addSpace = (editorState) => {
+const addSpace = (editorState: EditorState) => {
   const contentState = Modifier.insertText(
     editorState.getCurrentContent(),
     editorState.getSelection(),

@@ -1,9 +1,8 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from '../../utils/relay/createProxyRecord'
-import getInProxy from '../../utils/relay/getInProxy'
 
 const handleEditTask = (payload: RecordProxy, store: RecordSourceSelectorProxy) => {
-  const taskId = getInProxy(payload, 'task', 'id')
+  const taskId = payload.getLinkedRecord('task')?.getValue('id') as string
   const task = store.get(taskId)
   if (!task) return
   const editor = payload.getLinkedRecord('editor')!

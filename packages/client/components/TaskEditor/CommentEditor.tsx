@@ -7,7 +7,7 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import React, {RefObject, Suspense, useRef} from 'react'
 import {AriaLabels, Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import completeEntity from '../../utils/draftjs/completeEntity'
@@ -53,7 +53,6 @@ interface Props extends DraftProps {
   onSubmit: () => void
   teamId: string
   dataCy: string
-  discussionId?: string
 }
 
 const CommentEditor = (props: Props) => {
@@ -67,7 +66,6 @@ const CommentEditor = (props: Props) => {
     onSubmit,
     onBlur,
     onFocus,
-    discussionId,
     dataCy
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
@@ -110,7 +108,7 @@ const CommentEditor = (props: Props) => {
     setEditorState(editorState)
   }
 
-  const onReturn = (e) => {
+  const onReturn: EditorProps['handleReturn'] = (e) => {
     if (handleReturn) {
       return handleReturn(e, editorState)
     }
@@ -128,7 +126,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyBindingFn = (e) => {
+  const onKeyBindingFn: EditorProps['keyBindingFn'] = (e) => {
     if (ensureCommenting) {
       ensureCommenting()
     }
@@ -187,16 +185,10 @@ const CommentEditor = (props: Props) => {
     onSubmit()
   }
 
-  const handleBlur = (e) => {
+  const handleBlur = (e: React.FocusEvent) => {
     if (renderModal || !onBlur) return
     onBlur(e)
   }
-
-  useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.focus()
-    }
-  }, [editorRef, discussionId])
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)

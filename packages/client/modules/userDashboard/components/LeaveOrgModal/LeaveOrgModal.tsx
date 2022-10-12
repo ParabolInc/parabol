@@ -33,9 +33,11 @@ const LeaveOrgModal = (props: Props) => {
     RemoveOrgUserMutation(
       atmosphere,
       {orgId, userId: atmosphere.viewerId},
-      {history},
-      onError,
-      onCompleted
+      {
+        history,
+        onError,
+        onCompleted
+      }
     )
   }
   return (

@@ -29,7 +29,7 @@ const EditableTemplatePrompt = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const handleSubmit = (rawQuestion) => {
+  const handleSubmit = (rawQuestion: string) => {
     if (submitting) return
     const {error, value: question} = validate(rawQuestion)
     if (error) return

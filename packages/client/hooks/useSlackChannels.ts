@@ -2,6 +2,11 @@ import {useEffect, useState} from 'react'
 import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
 
+interface MinimalChannel {
+  id: string
+  name: string
+}
+
 const useSlackChannels = (
   slackAuth: {botAccessToken: string | null; slackUserId: string} | null
 ) => {
@@ -21,7 +26,7 @@ const useSlackChannels = (
         console.error(publicChannelRes.error)
         return
       }
-      let availableChannels
+      let availableChannels: MinimalChannel[]
       const {channels: publicChannels} = publicChannelRes
       if (privateChannelRes.ok && privateChannelRes.channels.length) {
         availableChannels = [...privateChannelRes.channels, ...publicChannels]

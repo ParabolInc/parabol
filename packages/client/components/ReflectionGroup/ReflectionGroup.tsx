@@ -194,7 +194,7 @@ const ReflectionGroup = (props: Props) => {
     })
   }
 
-  const watchForClick = useEventCallback((e) => {
+  const watchForClick = useEventCallback((e: MouseEvent) => {
     const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
     if (!isClickOnGroup) {
       document.removeEventListener('click', watchForClick)

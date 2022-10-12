@@ -37,7 +37,7 @@ const UpdateReflectionGroupTitleMutation: StandardMutation<TUpdateReflectionGrou
     onError,
     optimisticUpdater: (store) => {
       const {reflectionGroupId, title} = variables
-      const reflectionGroupProxy = store.get(reflectionGroupId)
+      const reflectionGroupProxy = store.get(reflectionGroupId)!
       const nowISO = new Date().toJSON()
       const optimisticReflection = {
         title,
