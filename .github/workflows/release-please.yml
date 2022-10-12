@@ -10,6 +10,6 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         with:
           default-branch: release-please/bootstrap/default
-          pre-release: beta
+          prerelease: beta
           command: manifest
           token: ${{secrets.GITHUB_TOKEN}}
