@@ -11,5 +11,6 @@ jobs:
         with:
           default-branch: release-please/bootstrap/default
           prerelease: true
+          changelog-types: '[{"type":"feat","section":"Added","hidden":false},{"type":"fix","section":"Fixed","hidden":false},{"type":"chore","section":"Changed","hidden":false}]'
           command: manifest
           token: ${{secrets.GITHUB_TOKEN}}
