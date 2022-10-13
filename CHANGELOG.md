@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [6.78.2](https://github.com/ParabolInc/parabol/compare/v6.78.1...v6.78.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* add release PR for staging branch (if bugfix) ([47a7794](https://github.com/ParabolInc/parabol/commit/47a7794c014a5c0eff5d13fd96d290e6870e82fa))
+* update the release please name & trigger branch ([2c1587b](https://github.com/ParabolInc/parabol/commit/2c1587bf809f3c0e8be9c7c594a3b77e9d2e92a1))
+
 ## [6.78.1](https://github.com/ParabolInc/parabol/compare/v6.78.0...v6.78.1) (2022-10-12)
 
 
