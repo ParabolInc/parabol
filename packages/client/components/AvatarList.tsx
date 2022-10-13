@@ -83,7 +83,7 @@ const AvatarList = (props: Props) => {
               isAnimated={showAnimated}
               onTransitionEnd={onTransitionEnd}
               status={status}
-              offset={offsetSize * displayIdx}
+              offset={offsetSize * (displayIdx - overflowCount)}
               overflowCount={overflowCount}
               onClick={onOverflowClick}
               width={size}
