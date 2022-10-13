@@ -15,9 +15,9 @@ export const up = async function (r: R) {
     title: 'Keep',
     updatedAt: now
   }
-  await r.db('actionDevelopment').table('ReflectPrompt').insert(missingKeepPrompt).run()
+  await r.table('ReflectPrompt').insert(missingKeepPrompt).run()
 }
 
 export const down = async function (r: R) {
-  await r.db('actionDevelopment').table('ReflectPrompt').get('keepPrompt').delete().run()
+  await r.table('ReflectPrompt').get('keepPrompt').delete().run()
 }
