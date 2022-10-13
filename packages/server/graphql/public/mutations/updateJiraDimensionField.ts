@@ -63,8 +63,9 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   if (
     existingDimensionField?.fieldName === fieldName &&
     existingDimensionField.issueType === issueType
-  )
+  ) {
     return data
+  }
 
   const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
   if (!auth) {

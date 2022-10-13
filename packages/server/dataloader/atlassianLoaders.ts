@@ -228,15 +228,17 @@ export const jiraIssue = (
             )
 
             const possibleEstimationFieldNames = [] as string[]
-            Object.entries<any>(issueRes.editmeta?.fields)?.forEach(([fieldId, {schema}]) => {
-              if (isValidEstimationField(schema.type, issueRes.names[fieldId], fieldId)) {
-                possibleEstimationFieldNames.push(issueRes.names[fieldId])
+            Object.entries<{schema: {type: string}}>(issueRes.editmeta?.fields)?.forEach(
+              ([fieldId, {schema}]) => {
+                if (isValidEstimationField(schema.type, issueRes.names[fieldId], fieldId)) {
+                  possibleEstimationFieldNames.push(issueRes.names[fieldId])
+                }
+                if (schema.type === 'timetracking') {
+                  possibleEstimationFieldNames.push(issueRes.names['timeestimate'])
+                  possibleEstimationFieldNames.push(issueRes.names['timeoriginalestimate'])
+                }
               }
-              if (schema.type === 'timetracking') {
-                possibleEstimationFieldNames.push(issueRes.names['timeestimate'])
-                possibleEstimationFieldNames.push(issueRes.names['timeoriginalestimate'])
-              }
-            })
+            )
             possibleEstimationFieldNames.sort()
 
             return {
