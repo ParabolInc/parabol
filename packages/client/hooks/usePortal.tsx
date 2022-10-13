@@ -32,8 +32,6 @@ export type PortalId =
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
   | 'newMeetingRoot'
-  | 'JiraFieldDimensionDropdown'
-  | 'JiraMissingFieldModal'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

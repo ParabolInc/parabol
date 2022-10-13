@@ -241,6 +241,7 @@ export const jiraIssue = (
             )
             possibleEstimationFieldNames.sort()
 
+            const simplified = !!issueRes.fields.project?.simplified
             const missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum | undefined =
               hasDefaultEstimationField(possibleEstimationFieldNames)
                 ? undefined

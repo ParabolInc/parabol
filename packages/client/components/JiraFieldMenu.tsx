@@ -4,15 +4,13 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import useModal from '../hooks/useModal'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
-import {SprintPokerDefaults} from '../types/constEnums'
+import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
-import JiraMissingFieldModal from './JiraMissingFieldModal'
 
 interface Props {
   menuProps: MenuProps
@@ -29,10 +27,6 @@ const JiraFieldMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
-  const {openPortal: toggleMissingFieldModal, closePortal: closeMissingFieldModal, modalPortal} = useModal({
-    id: 'JiraMissingFieldModal',
-    parentId: 'JiraFieldDimensionDropdown'
-  })
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {integration} = task
   const {cloudId, projectKey, issueType, possibleEstimationFieldNames, missingEstimationFieldHint} =
@@ -55,14 +49,19 @@ const JiraFieldMenu = (props: Props) => {
     if (!missingEstimationFieldHint) {
       return
     }
-    toggleMissingFieldModal()
 
-    
-    
     if (missingEstimationFieldHint === 'companyManagedStoryPoints') {
-      // goto company
+      window.open(
+        ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_COMPANY_MANAGED,
+        '_blank',
+        'noreferrer'
+      )
     } else if (missingEstimationFieldHint === 'teamManagedStoryPoints') {
-      // goto team
+      window.open(
+        ExternalLinks.INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_TEAM_MANAGED,
+        '_blank',
+        'noreferrer'
+      )
     }
   }
 
@@ -114,7 +113,6 @@ const JiraFieldMenu = (props: Props) => {
           noCloseOnClick
         />
       )}
-      {missingEstimationFieldHint && modalPortal(<JiraMissingFieldModal missingField={missingEstimationFieldHint}/>)}
     </Menu>
   )
 }

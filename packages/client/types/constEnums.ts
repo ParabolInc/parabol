@@ -135,6 +135,9 @@ export const enum ExternalLinks {
   INTEGRATIONS_SLACK = 'https://www.parabol.co/integrations/slack',
   INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   INTEGRATIONS_SUPPORT_JIRA = 'https://www.parabol.co/integrations/jira',
+  // WIP version until beautified
+  INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_TEAM_MANAGED = 'https://parabol.notion.site/Estimation-for-a-team-managed-project-54a428827a914029918dae1bf9c8a95d',
+  INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_COMPANY_MANAGED = 'https://parabol.notion.site/Estimation-for-a-company-managed-project-ff5cd850bfb543c8818f298c16d742cf',
   INTEGRATIONS_SUPPORT_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_SUPPORT_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_SUPPORT_GITLAB = 'https://www.parabol.co/integrations/gitlab',
