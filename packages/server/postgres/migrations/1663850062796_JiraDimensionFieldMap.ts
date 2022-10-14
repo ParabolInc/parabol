@@ -22,13 +22,13 @@ export async function up() {
 
   INSERT INTO "JiraDimensionFieldMap" ("teamId", "cloudId", "projectKey", "issueType", "dimensionName", "fieldId", "fieldName", "fieldType")
     SELECT "Team"."id", jdf->>'cloudId', jdf->>'projectKey', '', jdf->>'dimensionName', jdf->>'fieldId', jdf->>'fieldName', jdf->>'fieldType'
-    FROM "Team", unnest("jiraDimensionFields") as jdf WHERE "jiraDimensionFields" != '{}';
+    FROM "Team", unnest("jiraDimensionFields") as jdf WHERE "jiraDimensionFields" != '{}'
+    ON CONFLICT ("teamId", "cloudId", "projectKey", "issueType", "dimensionName") DO NOTHING;
   `)
   // not dropping column yet to have an easy down migration
   /* ALTER TABLE "Team"
     DROP COLUMN IF EXISTS "jiraDimensionFields",
   */
-
 
   await client.end()
 }
