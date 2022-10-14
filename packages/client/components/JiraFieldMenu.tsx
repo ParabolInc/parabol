@@ -4,6 +4,7 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
@@ -28,7 +29,7 @@ const JiraFieldMenu = (props: Props) => {
   const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
-  const {integration} = task
+  const {id: taskId, teamId, integration} = task
   const {cloudId, projectKey, issueType, possibleEstimationFieldNames, missingEstimationFieldHint} =
     integration
 
@@ -63,6 +64,13 @@ const JiraFieldMenu = (props: Props) => {
         'noreferrer'
       )
     }
+    SendClientSegmentEventMutation(atmosphere, 'Jira Missing Field Doc Link Clicked', {
+      meetingId,
+      teamId,
+      taskId,
+      jiraProjectType:
+        missingEstimationFieldHint === 'companyManagedStoryPoints' ? 'COMPANY' : 'TEAM'
+    })
   }
 
   const handleClick = (fieldName: string) => () => {
@@ -128,6 +136,8 @@ export default createFragmentContainer(JiraFieldMenu, {
         name
       }
       task {
+        id
+        teamId
         integration {
           ... on JiraIssue {
             __typename
