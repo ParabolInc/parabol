@@ -2,7 +2,7 @@ import {ContentState, EditorState, Modifier, SelectionState} from 'draft-js'
 import React, {RefObject} from 'react'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {BBox} from '../../types/animations'
-import completeEntity, {getExpandedSelectionState} from '../../utils/draftjs/completeEntity'
+import completeEntity from '../../utils/draftjs/completeEntity'
 import EditorLinkChangerModal from './EditorLinkChangerModal'
 
 interface Props {
@@ -51,21 +51,19 @@ const EditorLinkChangerDraftjs = (props: Props) => {
   } = props
   useTaskChild('editor-link-changer')
   const handleSubmit = ({text, href}: {text: string; href: string}) => {
-    const keepSelection = true
     // don't include leading and trailing whitespace in the link text
     const nonWhitespaceFromStart = text.search(/\S/)
     const nonWhitespaceFromEnd = text.search(/\s*$/)
     const startStr = nonWhitespaceFromStart === -1 ? '' : text.slice(0, nonWhitespaceFromStart)
     const endStr = nonWhitespaceFromEnd === -1 ? '' : text.slice(nonWhitespaceFromEnd)
-    const trimmedText = text.trim() ? text.trim() : text
+    const hasTextTitle = text.trim()
+    // trim link text if it contains any non-whitespace characters, otherwise keep it verbatim
+    const trimmedText = hasTextTitle || text
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
     let newEditorState = focusedEditorState
-    // For whitespace only links
-    if (text.trim()) {
+    if (hasTextTitle) {
       const contentState = focusedEditorState.getCurrentContent()
-      const expandedSelectionState = keepSelection
-        ? focusedEditorState.getSelection()
-        : getExpandedSelectionState(focusedEditorState)
+      const expandedSelectionState = focusedEditorState.getSelection()
       const contentStateAfterStartStr: ContentState = expandedSelectionState.isCollapsed()
         ? Modifier.insertText(contentState, expandedSelectionState, startStr)
         : Modifier.replaceText(contentState, expandedSelectionState, startStr)
@@ -76,11 +74,11 @@ const EditorLinkChangerDraftjs = (props: Props) => {
       )
     }
     newEditorState = completeEntity(newEditorState, 'LINK', {href}, trimmedText, {
-      keepSelection
+      keepSelection: true
     })
     const selectionStateAfterTrimmedText = newEditorState.getSelection()
     let contentStateAfterEndStr = newEditorState.getCurrentContent()
-    if (text.trim()) {
+    if (hasTextTitle) {
       const contentWithEntity = newEditorState.getCurrentContent()
       contentStateAfterEndStr = Modifier.insertText(
         contentWithEntity,

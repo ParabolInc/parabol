@@ -21,7 +21,7 @@ const operationTypes = {
   }
 }
 
-export const getExpandedSelectionState = (editorState: EditorState) => {
+const getExpandedSelectionState = (editorState: EditorState) => {
   const selectionState = editorState.getSelection()
   if (selectionState.isCollapsed()) {
     const {block, anchorOffset} = getAnchorLocation(editorState)
