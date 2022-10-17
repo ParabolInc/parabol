@@ -56,9 +56,9 @@ const EditorLinkChangerDraftjs = (props: Props) => {
     const nonWhitespaceFromEnd = text.search(/\s*$/)
     const startStr = nonWhitespaceFromStart === -1 ? '' : text.slice(0, nonWhitespaceFromStart)
     const endStr = nonWhitespaceFromEnd === -1 ? '' : text.slice(nonWhitespaceFromEnd)
-    const hasTextTitle = text.trim()
+    const hasTextTitle = !!text.trim()
     // trim link text if it contains any non-whitespace characters, otherwise keep it verbatim
-    const trimmedText = hasTextTitle || text
+    const trimmedText = hasTextTitle ? text.trim() : text
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
     let newEditorState = focusedEditorState
     if (hasTextTitle) {
