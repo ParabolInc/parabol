@@ -1,3 +1,4 @@
-const getPrevUsedRepoIntegrationsRedisKey = (teamId: string) => `prevUsedRepoIntegrations:${teamId}`
+const getPrevUsedRepoIntegrationsRedisKey = (teamId: string, viewerId: string) =>
+  `prevUsedRepoIntegrations:${teamId}:${viewerId}`
 
 export default getPrevUsedRepoIntegrationsRedisKey

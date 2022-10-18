@@ -151,7 +151,7 @@ export default {
       }
     }
 
-    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId)
+    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
 
     await r
       .table('Task')

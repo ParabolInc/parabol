@@ -9,12 +9,13 @@ const updateRepoIntegrationsCacheByPerms = async (
   allCachedRepoIntegrations: RemoteRepoIntegration[] | null,
   prevUsedRepoIntegrations: RemoteRepoIntegration[] | null,
   taskServicesWithPerms: IntegrationProviderServiceEnumType[],
-  teamId: string
+  teamId: string,
+  viewerId: string
 ) => {
   if (!allCachedRepoIntegrations) return [null, prevUsedRepoIntegrations]
   const redis = getRedis()
-  const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
-  const prevUsedIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+  const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
+  const prevUsedIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId, viewerId)
   const allRepoIntServices = new Set<IntegrationProviderServiceEnumType>()
   allCachedRepoIntegrations.forEach(({service}) => {
     allRepoIntServices.add(service)

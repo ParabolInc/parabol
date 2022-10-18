@@ -137,10 +137,12 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
             return standardError(new Error('Not on same team as user'), {userId: viewerId})
           }
         }
+        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId, viewerId)
+        const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
         const [allCachedRepoIntegrationsRes, prevUsedRepoIntegrationsRes, taskServicesWithPerms] =
           await Promise.all([
-            getAllCachedRepoIntegrations(teamId),
-            getPrevUsedRepoIntegrations(teamId),
+            getAllCachedRepoIntegrations(allRepoIntegrationsKey),
+            getPrevUsedRepoIntegrations(prevUsedRepoIntegrationsKey),
             getTaskServicesWithPerms(dataLoader, teamId, userId)
           ])
         const [allCachedRepoIntegrations, prevUsedRepoIntegrations] =
@@ -148,9 +150,9 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
             allCachedRepoIntegrationsRes,
             prevUsedRepoIntegrationsRes,
             taskServicesWithPerms,
-            teamId
+            teamId,
+            viewerId
           )
-        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
         const ignoreCache = networkOnly || !allCachedRepoIntegrations?.length
         const allRepoIntegrations = ignoreCache
           ? await fetchAllRepoIntegrations(teamId, userId, context, info)
@@ -158,7 +160,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         if (ignoreCache) {
           // create a new cache with newly fetched allRepoIntegrations
           const redis = getRedis()
-          const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
+          const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
           redis.set(allRepoIntegrationsKey, JSON.stringify(allRepoIntegrations), 'PX', ms('90d'))
         }
         removeStalePrevUsedRepoIntegrations(prevUsedRepoIntegrations, prevUsedRepoIntegrationsKey)

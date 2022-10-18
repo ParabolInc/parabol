@@ -1,11 +1,9 @@
-import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
 import {RemoteRepoIntegration} from './fetchAllRepoIntegrations'
 
-const getAllCachedRepoIntegrations = async (teamId: string) => {
+const getAllCachedRepoIntegrations = async (key: string) => {
   const redis = getRedis()
-  const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId)
-  const allRepoIntegrationsRes = await redis.get(allRepoIntegrationsKey)
+  const allRepoIntegrationsRes = await redis.get(key)
   return allRepoIntegrationsRes
     ? (JSON.parse(allRepoIntegrationsRes) as RemoteRepoIntegration[])
     : null

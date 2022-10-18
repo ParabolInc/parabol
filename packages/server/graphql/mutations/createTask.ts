@@ -198,7 +198,7 @@ export default {
     // push to integration
     const {integrationHash, integration, integrationRepoId} = integrationRes
     if (integrationRepoId) {
-      updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId)
+      updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
     }
     const task = new Task({
       content,
