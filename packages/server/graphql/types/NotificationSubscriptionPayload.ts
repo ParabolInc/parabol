@@ -13,7 +13,6 @@ import EndNewMeetingPayload from './EndNewMeetingPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import InvalidateSessionsPayload from './InvalidateSessionsPayload'
 import InviteToTeamPayload from './InviteToTeamPayload'
-import JiraIssue from './JiraIssue'
 import JiraServerIssue from './JiraServerIssue'
 import MeetingStageTimeLimitPayload from './MeetingStageTimeLimitPayload'
 import {PersistGitHubSearchQuerySuccess} from './PersistGitHubSearchQueryPayload'
@@ -47,7 +46,6 @@ const types = [
   // a one off used so the server can sniff it & update its connection context
   AuthTokenPayload,
   PersistGitHubSearchQuerySuccess,
-  JiraIssue,
   JiraServerIssue
 ]
 

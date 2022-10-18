@@ -9,7 +9,6 @@ import {
   JiraProject,
   RateLimitError
 } from 'parabol-client/utils/AtlassianManager'
-import JiraIssue from '../graphql/types/JiraIssue'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import getJiraDimensionFieldMap, {
@@ -253,7 +252,7 @@ export const jiraIssue = (
 
           const publishUpdatedIssue = async (issue: JiraGetIssueRes) => {
             const res = await cacheImagesUpdateEstimates(issue)
-            publish(SubscriptionChannel.NOTIFICATION, viewerId, JiraIssue, res)
+            publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JiraIssue', res)
           }
           const issueRes = await getIssue(
             manager,
