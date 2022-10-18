@@ -8,44 +8,17 @@ import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
 import insertUser from '../../../postgres/queries/insertUser'
 import IUser from '../../../postgres/types/IUser'
+import {analytics} from '../../../utils/analytics/analytics'
 import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
 import isPatientZero from './isPatientZero'
 
-// no waiting necessary, it's just analytics
-const handleSegment = async (user: User, isInvited: boolean) => {
-  const {id: userId, createdAt, email, featureFlags, tier, segmentId, preferredName} = user
-  const domain = email.split('@')[1]
-  segmentIo.identify({
-    userId,
-    traits: {
-      createdAt,
-      email,
-      name: preferredName,
-      isActive: true,
-      featureFlags,
-      highestTier: tier,
-      isPatient0: await isPatientZero(userId, domain)
-    },
-    anonymousId: segmentId
-  })
-  segmentIo.track({
-    userId,
-    event: 'Account Created',
-    properties: {
-      isInvited,
-      // properties below required for Google Analytics destination
-      category: 'All',
-      label: 'isInvited',
-      value: isInvited ? 1 : 0
-    }
-  })
-}
-
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
-  const {id: userId, preferredName, email} = newUser
+  const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
+  const domain = email.split('@')[1]
+  const isPatient0 = await isPatientZero(userId, domain)
   const r = await getRethink()
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
@@ -56,6 +29,21 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     }).run(),
     insertUser(newUser)
   ])
+
+  // Identify the user so user properties are set before any events are sent
+  segmentIo.identify({
+    userId,
+    traits: {
+      createdAt,
+      email,
+      name: preferredName,
+      isActive: true,
+      featureFlags,
+      highestTier: tier,
+      isPatient0
+    },
+    anonymousId: segmentId
+  })
 
   const tms = [] as string[]
   if (isOrganic) {
@@ -90,7 +78,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
       .insert([new SuggestedActionTryTheDemo({userId}), new SuggestedActionCreateNewTeam({userId})])
       .run()
   }
-  handleSegment(newUser, !isOrganic).catch()
+  analytics.accountCreated(userId, !isOrganic, isPatient0)
 
   return new AuthToken({sub: userId, tms})
 }

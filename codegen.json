@@ -36,6 +36,7 @@
           "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
+          "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",

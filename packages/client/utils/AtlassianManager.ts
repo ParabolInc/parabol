@@ -165,7 +165,7 @@ interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
 }
 
 export type JiraIssueRaw = JiraIssueBean<
-  {description: string; summary: string},
+  {description: string; summary: string; issuetype: {id: string}},
   {description: string}
 >
 
@@ -197,6 +197,9 @@ interface JiraAddCommentResponse {
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 export interface JiraGQLFields {
+  issuetype: {
+    id: string
+  }
   project?: {
     simplified: boolean
   }
@@ -206,7 +209,7 @@ export interface JiraGQLFields {
   issueKey: string
   summary: string
 }
-interface JiraSearchResponse<T = {summary: string; description: string}> {
+interface JiraSearchResponse<T = {summary: string; description: string; issuetype: {id: string}}> {
   expand: string
   startAt: number
   maxResults: number
@@ -224,6 +227,9 @@ interface JiraSearchResponse<T = {summary: string; description: string}> {
 }
 
 interface JiraField {
+  issuetype: {
+    id: string
+  }
   clauseNames: string[]
   custom: boolean
   id: string
@@ -574,8 +580,8 @@ export default abstract class AtlassianManager {
   ) {
     const reqFields = extraFieldIds.includes('*all')
       ? '*all'
-      : ['summary', 'description', ...extraFieldIds].join(',')
-    const expand = ['renderedFields', ...extraExpand].join(',')
+      : ['summary', 'description', 'issuetype', ...extraFieldIds].join(',')
+    const expand = ['renderedFields', 'editmeta', 'names', ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
@@ -605,7 +611,7 @@ export default abstract class AtlassianManager {
       const payload = {
         jql,
         maxResults: 100,
-        fields: ['summary', 'description'],
+        fields: ['summary', 'description', 'issuetype'],
         expand: ['renderedFields']
       }
 
@@ -621,9 +627,10 @@ export default abstract class AtlassianManager {
       }
       const issues = res.issues.map((issue) => {
         const {key: issueKey, fields, renderedFields} = issue
-        const {description, summary} = fields
+        const {description, summary, issuetype} = fields
         const {description: descriptionHTML} = renderedFields
         return {
+          issuetype,
           summary,
           description,
           descriptionHTML,
