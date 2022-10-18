@@ -2291,11 +2291,6 @@ type Team {
   ): MassInvitation!
 
   """
-  Integration details that are shared by all team members. Nothing user specific
-  """
-  integrations: TeamIntegrations!
-
-  """
   true if the underlying org has a validUntil date greater than now. if false, subs do not work
   """
   isPaid: Boolean
@@ -2424,36 +2419,6 @@ type MassInvitation {
   """
   expiration: DateTime!
   meetingId: ID
-}
-
-"""
-All the available integrations available for this team member
-"""
-type TeamIntegrations {
-  """
-  composite
-  """
-  id: ID!
-
-  """
-  All things associated with an atlassian integration for a team member
-  """
-  atlassian: AtlassianTeamIntegration!
-}
-
-"""
-The atlassian integration details shared across an entire team
-"""
-type AtlassianTeamIntegration {
-  """
-  shortid
-  """
-  id: ID!
-
-  """
-  The dimensions and their corresponding Jira fields
-  """
-  jiraDimensionFields: [JiraDimensionField!]!
 }
 
 """
@@ -8146,41 +8111,9 @@ type Mutation {
   ): MovePokerTemplateScaleValuePayload!
 
   """
-  Set the jira field that the poker dimension should map to
-  """
-  updateJiraDimensionField(
-    dimensionName: String!
-
-    """
-    The jira field name that we should push estimates to
-    """
-    fieldName: String!
-
-    """
-    The cloudId the field lives on
-    """
-    cloudId: ID!
-
-    """
-    The project the field lives on
-    """
-    projectKey: ID!
-
-    """
-    The meeting the update happend in. Returns a meeting object with updated serviceField
-    """
-    meetingId: ID!
-  ): UpdateJiraDimensionFieldPayload!
-
-  """
   Create a meeting member for a user
   """
   joinMeeting(meetingId: ID!): JoinMeetingPayload!
-
-  """
-  Adds a missing Jira field to a screen currently assigned to a Jira project
-  """
-  addMissingJiraField(meetingId: ID!, stageId: ID!): AddMissingJiraFieldPayload!
 
   """
   Set whether the user is spectating poker meeting
@@ -10328,22 +10261,6 @@ type MovePokerTemplateScaleValueSuccess {
 }
 
 """
-Return object for UpdateJiraDimensionFieldPayload
-"""
-union UpdateJiraDimensionFieldPayload = ErrorPayload | UpdateJiraDimensionFieldSuccess
-
-type UpdateJiraDimensionFieldSuccess {
-  teamId: ID!
-  meetingId: ID
-  team: Team!
-
-  """
-  The poker meeting the field was updated from
-  """
-  meeting: PokerMeeting
-}
-
-"""
 Return object for JoinMeetingPayload
 """
 union JoinMeetingPayload = ErrorPayload | JoinMeetingSuccess
@@ -10355,18 +10272,6 @@ type JoinMeetingSuccess {
   The meeting with the updated stages, if any
   """
   meeting: NewMeeting!
-}
-
-"""
-Return object for AddMissingJiraFieldPayload
-"""
-union AddMissingJiraFieldPayload = ErrorPayload | AddMissingJiraFieldSuccess
-
-type AddMissingJiraFieldSuccess {
-  """
-  Jira field which was just added to an issue screen
-  """
-  dimensionField: JiraDimensionField
 }
 
 """
@@ -11179,7 +11084,6 @@ union TeamSubscriptionPayload =
   | UpdateUserProfilePayload
   | PersistJiraSearchQuerySuccess
   | MovePokerTemplateScaleValueSuccess
-  | UpdateJiraDimensionFieldSuccess
   | SetDefaultSlackChannelSuccess
   | SetAppLocationSuccess
   | UpdateGitHubDimensionFieldSuccess

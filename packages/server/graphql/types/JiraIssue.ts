@@ -54,6 +54,10 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The key of the issue as found in Jira'
     },
+    issueType: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'Type id of the issue'
+    },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The key of the project, which is the prefix to the issueKey',

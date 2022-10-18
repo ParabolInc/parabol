@@ -82,7 +82,12 @@ const JiraFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const lookupServiceFieldName = possibleEstimationFieldNames.includes(serviceFieldName)
+  const validFields = [
+    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+    SprintPokerDefaults.SERVICE_FIELD_NULL,
+    ...possibleEstimationFieldNames
+  ]
+  const lookupServiceFieldName = validFields.includes(serviceFieldName)
     ? serviceFieldName
     : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 

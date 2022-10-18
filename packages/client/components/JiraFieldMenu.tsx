@@ -23,7 +23,7 @@ const JiraFieldMenu = (props: Props) => {
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {integration} = task
-  const {cloudId, projectKey, possibleEstimationFieldNames} = integration
+  const {cloudId, projectKey, issueType, possibleEstimationFieldNames} = integration
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   /* eslint-disable react-hooks/rules-of-hooks */
@@ -37,14 +37,6 @@ const JiraFieldMenu = (props: Props) => {
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, possibleEstimationFieldNames])
 
-  if (possibleEstimationFieldNames.length === 0) {
-    return (
-      <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
-        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
-      </Menu>
-    )
-  }
-
   const handleClick = (fieldName: string) => () => {
     UpdateJiraDimensionFieldMutation(
       atmosphere,
@@ -53,7 +45,8 @@ const JiraFieldMenu = (props: Props) => {
         fieldName,
         meetingId,
         cloudId,
-        projectKey
+        projectKey,
+        issueType
       },
       {
         onCompleted: submitScore,
@@ -105,6 +98,7 @@ export default createFragmentContainer(JiraFieldMenu, {
             __typename
             projectKey
             cloudId
+            issueType
             possibleEstimationFieldNames
           }
         }
