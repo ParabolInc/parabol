@@ -137,7 +137,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
             return standardError(new Error('Not on same team as user'), {userId: viewerId})
           }
         }
-        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId, viewerId)
+        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
         const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
         const [allCachedRepoIntegrationsRes, prevUsedRepoIntegrationsRes, taskServicesWithPerms] =
           await Promise.all([

@@ -15,7 +15,7 @@ const updateRepoIntegrationsCacheByPerms = async (
   if (!allCachedRepoIntegrations) return [null, prevUsedRepoIntegrations]
   const redis = getRedis()
   const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
-  const prevUsedIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId, viewerId)
+  const prevUsedIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
   const allRepoIntServices = new Set<IntegrationProviderServiceEnumType>()
   allCachedRepoIntegrations.forEach(({service}) => {
     allRepoIntServices.add(service)

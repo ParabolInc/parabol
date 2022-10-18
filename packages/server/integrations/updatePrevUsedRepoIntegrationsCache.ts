@@ -11,7 +11,7 @@ const updatePrevUsedRepoIntegrationsCache = async (
   viewerId: string
 ) => {
   const redis = getRedis()
-  const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId, viewerId)
+  const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
   const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
   const [prevUsedRepoIntegrations, allCachedRepoIntegrations] = await Promise.all([
     getPrevUsedRepoIntegrations(prevUsedRepoIntegrationsKey),
