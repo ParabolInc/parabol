@@ -9,6 +9,7 @@ import {
   JiraProject,
   RateLimitError
 } from 'parabol-client/utils/AtlassianManager'
+import {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import getJiraDimensionFieldMap, {
@@ -17,7 +18,7 @@ import getJiraDimensionFieldMap, {
 } from '../postgres/queries/getJiraDimensionFieldMap'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
-import {isValidEstimationField} from '../utils/atlassian/jiraFields'
+import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
@@ -240,10 +241,19 @@ export const jiraIssue = (
             )
             possibleEstimationFieldNames.sort()
 
+            const simplified = !!issueRes.fields.project?.simplified
+            const missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum | undefined =
+              hasDefaultEstimationField(possibleEstimationFieldNames)
+                ? undefined
+                : simplified
+                ? 'teamManagedStoryPoints'
+                : 'companyManagedStoryPoints'
+
             return {
               ...fields,
               issueType: fields.issuetype.id,
               possibleEstimationFieldNames,
+              missingEstimationFieldHint,
               descriptionHTML: updatedDescription,
               teamId,
               userId
