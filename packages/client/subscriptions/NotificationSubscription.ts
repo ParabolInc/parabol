@@ -83,6 +83,12 @@ const subscription = graphql`
       ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
       ...UpsertTeamPromptResponseMutation_notification @relay(mask: false)
 
+      ... on AddedNotification {
+        addedNotification {
+          ...NotificationPicker_notification @relay(mask: false)
+        }
+      }
+
       ... on AuthTokenPayload {
         id
       }
@@ -289,6 +295,11 @@ const NotificationSubscription = (
           break
         case 'UpsertTeamPromptResponseSuccess':
           upsertTeamPromptResponseNotificationUpdater(payload, context)
+          break
+        case 'AddedNotification':
+          const notification = payload.getLinkedRecord('addedNotification' as any)
+          if (!notification) break
+          handleAddNotifications(notification, context.store)
           break
         default:
           console.error('NotificationSubscription case fail', type)

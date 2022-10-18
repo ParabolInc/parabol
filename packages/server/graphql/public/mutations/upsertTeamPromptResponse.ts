@@ -94,8 +94,10 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     publish(
       SubscriptionChannel.NOTIFICATION,
       notification.userId,
-      'UpsertTeamPromptResponseSuccess',
-      data,
+      'AddedNotification',
+      {
+        addedNotificationId: notification.id
+      },
       subOptions
     )
   })

@@ -1,0 +1,8 @@
+type AddedNotification {
+  """
+  A notification
+  """
+  addedNotification: Notification
+}
+
+extend union NotificationSubscriptionPayload = AddedNotification
