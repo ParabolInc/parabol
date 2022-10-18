@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
+import UpgradeCreditCardNumberFormField from '../../../../components/UpgradeCreditCardNumberFormField'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -26,7 +27,7 @@ const Form = styled('form')({
   width: '100%'
 })
 
-const CreditCardNumber = styled(UpgradeCreditCardFormField)({
+const CreditCardNumber = styled(UpgradeCreditCardNumberFormField)({
   marginBottom: 8
 })
 
@@ -191,14 +192,10 @@ const CreditCardForm = (props: Props) => {
       <Form onSubmit={handleSubmit}>
         <CreditCardNumber
           {...fields.creditCardNumber}
-          autoComplete='cc-number'
           autoFocus
-          iconName='credit_card'
-          maxLength={20}
           name={'creditCardNumber'}
           onBlur={() => setDirtyField('creditCardNumber')}
           onChange={onChange}
-          placeholder='Card number'
         />
         <CardDetails>
           <CardExpiry
