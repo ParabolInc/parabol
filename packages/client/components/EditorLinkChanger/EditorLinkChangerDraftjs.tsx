@@ -23,7 +23,10 @@ interface Props {
   useTaskChild: UseTaskChild
 }
 
-const contentStateWithFocusAtEnd = (givenContentState, givenSelectionState) => {
+const contentStateWithFocusAtEnd = (
+  givenContentState: ContentState,
+  givenSelectionState: SelectionState
+) => {
   const endKey = givenContentState.getSelectionAfter().getEndKey()
   const endOffset = givenContentState.getSelectionAfter().getEndOffset()
   const collapsedSelectionState = givenSelectionState.merge({
