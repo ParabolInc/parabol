@@ -38,7 +38,7 @@ export interface UsePortalOptions {
   onClose?: () => void
   id?: PortalId
   // if you nest portals, this should be the id of the parent portal
-  parentId?: PortalId | string
+  parentId?: PortalId
   // allow body to scroll while modal is open
   allowScroll?: boolean
   // ignore click, tap, and ESC handlers

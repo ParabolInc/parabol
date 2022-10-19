@@ -19,6 +19,8 @@ export interface MenuProps {
   isDropdown: boolean
 }
 
+const TOP_POSITION_EXCESS = 64
+
 /**
  * Wrapper around {@link usePortal} to display menus
  */
@@ -68,16 +70,14 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
 
   const menuCoords = useMemo(() => {
     if (
-      portalStatus === PortalStatus.Mounted ||
-      portalStatus === PortalStatus.Entering ||
-      portalStatus === PortalStatus.Entered
+      [PortalStatus.Mounted, PortalStatus.Entering, PortalStatus.Entered].includes(portalStatus)
     ) {
-      setTopOffset(cardContainerRef?.current?.scrollTop || 0)
+      setTopOffset((cardContainerRef?.current?.scrollTop || 0) - TOP_POSITION_EXCESS)
     }
-    return (coords as {right: number; top: number}).top
+    return 'top' in coords
       ? {
           ...coords,
-          top: (coords as {right: number; top: number}).top - 64 + topOffset
+          top: coords.top + topOffset
         }
       : coords
   }, [coords, portalStatus])

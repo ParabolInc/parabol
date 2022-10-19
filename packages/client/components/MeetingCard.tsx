@@ -13,6 +13,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import useMenu from '../hooks/useMenu'
+import {PortalId} from '../hooks/usePortal'
 import useTooltip from '../hooks/useTooltip'
 import {TransitionStatus} from '../hooks/useTransition'
 import {Elevation} from '../styles/elevation'
@@ -162,7 +163,7 @@ const MeetingCard = (props: Props) => {
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
-    parentId: meetingId,
+    parentId: meetingId as PortalId,
     cardContainerRef: props.containerRef
   })
   const ref = useAnimatedCard(displayIdx, status)
