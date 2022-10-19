@@ -64,6 +64,11 @@ const query = graphql`
       id
       assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
         preferredName
+        prevUsedRepoIntegrations(first: 1) {
+          items {
+            id
+          }
+        }
         ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
       }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
@@ -93,12 +98,18 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {integrations: viewerIntegrations} = viewerTeamMember
-  const {integrations: assigneeIntegrations, preferredName: assigneeName} = assigneeTeamMember
+  const {
+    integrations: assigneeIntegrations,
+    preferredName: assigneeName,
+    prevUsedRepoIntegrations
+  } = assigneeTeamMember
   const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
   const isViewerIntegrated = isIntegrated(viewerIntegrations)
   const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
-
+  const showAssigneeIntegrations = !!(
+    isAssigneeIntegrated && prevUsedRepoIntegrations.items?.length
+  )
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Push with your credentials'
@@ -113,7 +124,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
   }
 
-  if (isAssigneeIntegrated) {
+  if (showAssigneeIntegrations) {
     const placeholder = makePlaceholder(isAssigneeIntegrated)
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (

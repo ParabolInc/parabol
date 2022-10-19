@@ -105,6 +105,41 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
     },
+    prevUsedRepoIntegrations: {
+      description: 'The integrations that the team has previously used',
+      type: new GraphQLNonNull(RepoIntegrationQueryPayload),
+      args: {
+        first: {
+          type: new GraphQLNonNull(GraphQLInt),
+          description: 'the number of repo integrations to return'
+        },
+        after: {
+          type: GraphQLISO8601Type
+        }
+      },
+      resolve: async ({teamId, userId}: {teamId: string; userId: string}, {first}, context) => {
+        const {authToken, dataLoader} = context
+        const viewerId = getUserId(authToken)
+        if (userId !== viewerId) {
+          const user = await dataLoader.get('users').loadNonNull(userId)
+          const {tms} = user
+          const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
+          if (!onTeam) {
+            return standardError(new Error('Not on same team as user'), {userId: viewerId})
+          }
+        }
+        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+        const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(
+          prevUsedRepoIntegrationsKey
+        )
+        if (!prevUsedRepoIntegrations) return []
+        if (prevUsedRepoIntegrations.length > first) {
+          return {hasMore: true, items: prevUsedRepoIntegrations.slice(0, first)}
+        } else {
+          return {hasMore: false, items: prevUsedRepoIntegrations}
+        }
+      }
+    },
     repoIntegrations: {
       description: 'The integrations that the user would probably like to use',
       type: new GraphQLNonNull(RepoIntegrationQueryPayload),
