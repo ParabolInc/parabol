@@ -1,7 +1,6 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import getAllCachedRepoIntegrations from '../graphql/queries/helpers/getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from '../graphql/queries/helpers/getPrevUsedRepoIntegrations'
-import getAllRepoIntegrationsRedisKey from '../utils/getAllRepoIntegrationsRedisKey'
 import getPrevUsedRepoIntegrationsRedisKey from '../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../utils/getRedis'
 
@@ -12,10 +11,9 @@ const updatePrevUsedRepoIntegrationsCache = async (
 ) => {
   const redis = getRedis()
   const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-  const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
   const [prevUsedRepoIntegrations, allCachedRepoIntegrations] = await Promise.all([
-    getPrevUsedRepoIntegrations(prevUsedRepoIntegrationsKey),
-    getAllCachedRepoIntegrations(allRepoIntegrationsKey)
+    getPrevUsedRepoIntegrations(teamId),
+    getAllCachedRepoIntegrations(teamId, viewerId)
   ])
   const remoteRepoIntegration = allCachedRepoIntegrations?.find((remoteRepoIntegration) => {
     const remoteRepoIntegrationId = IntegrationRepoId.join(remoteRepoIntegration)

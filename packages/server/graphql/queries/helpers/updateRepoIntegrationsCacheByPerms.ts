@@ -2,36 +2,40 @@ import ms from 'ms'
 import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
 import getPrevUsedRepoIntegrationsRedisKey from '../../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
+import getTaskServicesWithPerms from '../../../utils/getTaskServicesWithPerms'
+import {DataLoaderWorker} from '../../graphql'
 import {IntegrationProviderServiceEnumType} from '../../types/IntegrationProviderServiceEnum'
-import {RemoteRepoIntegration} from './fetchAllRepoIntegrations'
+import getAllCachedRepoIntegrations from './getAllCachedRepoIntegrations'
+import getPrevUsedRepoIntegrations from './getPrevUsedRepoIntegrations'
 
 const updateRepoIntegrationsCacheByPerms = async (
-  allCachedRepoIntegrations: RemoteRepoIntegration[] | null,
-  prevUsedRepoIntegrations: RemoteRepoIntegration[] | null,
-  taskServicesWithPerms: IntegrationProviderServiceEnumType[],
+  dataLoader: DataLoaderWorker,
+  viewerId: string,
   teamId: string,
-  viewerId: string
+  hasAddedIntegration: boolean
 ) => {
-  if (!allCachedRepoIntegrations) return [null, prevUsedRepoIntegrations]
   const redis = getRedis()
   const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
+  if (hasAddedIntegration) {
+    // clear allRepos cache so we can fetch from network
+    await redis.del(allRepoIntegrationsKey)
+    return
+  }
   const prevUsedIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
+  const [allCachedRepoIntegrations, prevUsedRepoIntegrations, taskServicesWithPerms] =
+    await Promise.all([
+      getAllCachedRepoIntegrations(teamId, viewerId),
+      getPrevUsedRepoIntegrations(teamId),
+      getTaskServicesWithPerms(dataLoader, teamId, viewerId)
+    ])
   const allRepoIntServices = new Set<IntegrationProviderServiceEnumType>()
-  allCachedRepoIntegrations.forEach(({service}) => {
+  allCachedRepoIntegrations?.forEach(({service}) => {
     allRepoIntServices.add(service)
   })
-  const missingServices = taskServicesWithPerms.filter(
-    (service) => ![...allRepoIntServices].includes(service)
-  )
   const cachedRepoIntWithoutPerms = [...allRepoIntServices].filter(
     (service) => !taskServicesWithPerms.includes(service)
   )
-  if (missingServices.length) {
-    // user has added a new integration(s) since we last updated the cache. Clear allRepos cache so we can fetch from network
-    await redis.del(allRepoIntegrationsKey)
-    return [[], prevUsedRepoIntegrations]
-  } else if (cachedRepoIntWithoutPerms.length) {
-    // user has removed an integration(s) since we last updated the cache. Filter service(s) from both caches
+  if (allCachedRepoIntegrations && cachedRepoIntWithoutPerms.length) {
     const allRepoIntegrationsWithPerms = allCachedRepoIntegrations.filter(
       ({service}) => !cachedRepoIntWithoutPerms.includes(service)
     )
@@ -41,24 +45,17 @@ const updateRepoIntegrationsCacheByPerms = async (
       'PX',
       ms('90d')
     )
-    const prevUsedRepoIntsWithoutPerms = prevUsedRepoIntegrations?.filter(({service}) =>
+  }
+  if (prevUsedRepoIntegrations) {
+    const prevUsedRepoIntsWithoutPerms = prevUsedRepoIntegrations.filter(({service}) =>
       cachedRepoIntWithoutPerms.includes(service)
     )
-    if (!prevUsedRepoIntsWithoutPerms) {
-      return [allRepoIntegrationsWithPerms, prevUsedRepoIntegrations]
-    }
     await Promise.all(
       prevUsedRepoIntsWithoutPerms.map((repoInt) => {
         redis.zrem(prevUsedIntegrationsKey, JSON.stringify(repoInt))
       })
     )
-    const prevUsedRepoIntsWithPerms =
-      prevUsedRepoIntegrations?.filter(
-        ({service}) => !cachedRepoIntWithoutPerms.includes(service)
-      ) ?? []
-    return [allRepoIntegrationsWithPerms, prevUsedRepoIntsWithPerms]
   }
-  return [allCachedRepoIntegrations, prevUsedRepoIntegrations] as const
 }
 
 export default updateRepoIntegrationsCacheByPerms

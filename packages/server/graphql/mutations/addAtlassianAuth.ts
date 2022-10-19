@@ -8,6 +8,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLMutation} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
 
 export default {
@@ -80,6 +81,7 @@ export default {
       },
       ...atlassianAuthsToUpdate
     ])
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
     analytics.integrationAdded(viewerId, teamId, 'jira')
     const data = {teamId, userId: viewerId}

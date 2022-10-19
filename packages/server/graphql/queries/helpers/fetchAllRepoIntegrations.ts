@@ -1,4 +1,5 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {isNotNull} from '../../../../client/utils/predicates'
 import {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
 import {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
 import {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
@@ -41,37 +42,18 @@ const fetchAllRepoIntegrations = async (
       dataLoader.get('allJiraServerProjects').load({teamId, userId}),
       dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
     ])
-  const fetchedRepoIntegrations: RemoteRepoIntegration[] = [
-    ...jiraProjects,
-    ...githubRepos,
-    ...gitlabProjects,
-    ...jiraServerProjects,
-    ...azureProjects
+  const repos: RemoteRepoIntegration[][] = [
+    jiraProjects,
+    githubRepos,
+    gitlabProjects,
+    jiraServerProjects,
+    azureProjects
   ]
-
-  // alternate the repoIntegrations by service so the user is aware of all available services
-  const repoIntegrationsAltServices: RemoteRepoIntegration[] = []
-  let loopCount = 0
-  while (repoIntegrationsAltServices.length < fetchedRepoIntegrations.length) {
-    if (jiraProjects[loopCount]) {
-      repoIntegrationsAltServices.push(jiraProjects[loopCount]!)
-    }
-    if (githubRepos[loopCount]) {
-      repoIntegrationsAltServices.push(githubRepos[loopCount]!)
-    }
-    if (gitlabProjects[loopCount]) {
-      repoIntegrationsAltServices.push(gitlabProjects[loopCount]!)
-    }
-    if (jiraServerProjects[loopCount]) {
-      repoIntegrationsAltServices.push(jiraServerProjects[loopCount]!)
-    }
-    if (azureProjects[loopCount]) {
-      repoIntegrationsAltServices.push(azureProjects[loopCount]!)
-    }
-    loopCount++
-  }
-
-  return repoIntegrationsAltServices
+  const maxRepos = Math.max(...repos.map((repo) => repo.length))
+  return new Array(maxRepos)
+    .fill(0)
+    .map((_, idx) => repos.map((repoArr) => repoArr[idx]).filter(isNotNull))
+    .flat()
 }
 
 export default fetchAllRepoIntegrations

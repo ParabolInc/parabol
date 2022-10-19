@@ -13,7 +13,6 @@ import {getUserId} from '../../utils/authorization'
 import getAllRepoIntegrationsRedisKey from '../../utils/getAllRepoIntegrationsRedisKey'
 import getPrevUsedRepoIntegrationsRedisKey from '../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../utils/getRedis'
-import getTaskServicesWithPerms from '../../utils/getTaskServicesWithPerms'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -22,7 +21,6 @@ import getAllCachedRepoIntegrations from '../queries/helpers/getAllCachedRepoInt
 import getPrevUsedRepoIntegrations from '../queries/helpers/getPrevUsedRepoIntegrations'
 import removeStalePrevUsedRepoIntegrations from '../queries/helpers/removeStalePrevUsedRepoIntegations'
 import {default as sortRepoIntegrations} from '../queries/helpers/sortRepoIntegrations'
-import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -128,10 +126,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
             return standardError(new Error('Not on same team as user'), {userId: viewerId})
           }
         }
-        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-        const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(
-          prevUsedRepoIntegrationsKey
-        )
+        const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(teamId)
         if (!prevUsedRepoIntegrations) return []
         if (prevUsedRepoIntegrations.length > first) {
           return {hasMore: true, items: prevUsedRepoIntegrations.slice(0, first)}
@@ -172,22 +167,10 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
             return standardError(new Error('Not on same team as user'), {userId: viewerId})
           }
         }
-        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-        const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
-        const [allCachedRepoIntegrationsRes, prevUsedRepoIntegrationsRes, taskServicesWithPerms] =
-          await Promise.all([
-            getAllCachedRepoIntegrations(allRepoIntegrationsKey),
-            getPrevUsedRepoIntegrations(prevUsedRepoIntegrationsKey),
-            getTaskServicesWithPerms(dataLoader, teamId, userId)
-          ])
-        const [allCachedRepoIntegrations, prevUsedRepoIntegrations] =
-          await updateRepoIntegrationsCacheByPerms(
-            allCachedRepoIntegrationsRes,
-            prevUsedRepoIntegrationsRes,
-            taskServicesWithPerms,
-            teamId,
-            viewerId
-          )
+        const [allCachedRepoIntegrations, prevUsedRepoIntegrations] = await Promise.all([
+          getAllCachedRepoIntegrations(teamId, viewerId),
+          getPrevUsedRepoIntegrations(teamId)
+        ])
         const ignoreCache = networkOnly || !allCachedRepoIntegrations?.length
         const allRepoIntegrations = ignoreCache
           ? await fetchAllRepoIntegrations(teamId, userId, context, info)
@@ -198,6 +181,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
           redis.set(allRepoIntegrationsKey, JSON.stringify(allRepoIntegrations), 'PX', ms('90d'))
         }
+        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
         removeStalePrevUsedRepoIntegrations(prevUsedRepoIntegrations, prevUsedRepoIntegrationsKey)
         const sortedRepoIntegrations = await sortRepoIntegrations(
           allRepoIntegrations,
