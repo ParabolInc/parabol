@@ -61,8 +61,8 @@ const query = graphql`
       }
       meeting(meetingId: $meetingId) {
         id
-        facilitatorUserId
         meetingType
+        facilitatorUserId
       }
     }
   }
