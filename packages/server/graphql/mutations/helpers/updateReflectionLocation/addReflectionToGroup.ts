@@ -77,6 +77,7 @@ const addReflectionToGroup = async (
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle &&
       oldReflections.length === 0
     ) {
+      // Edge case of dragging a single card with a custom group name on another single card without group name
       await r
         .table('RetroReflectionGroup')
         .get(reflectionGroupId)
