@@ -7,11 +7,16 @@ import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
+import EndCheckInMutation from '../mutations/EndCheckInMutation'
+import EndRetrospectiveMutation from '../mutations/EndRetrospectiveMutation'
+import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
+import {MeetingTypeEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
 import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -34,13 +39,20 @@ const OptionMenuItem = styled('div')({
   width: '200px'
 })
 
-const EndMeetingMutationLookup = {
-  teamPrompt: EndTeamPromptMutation
+const EndMeetingMutationLookup: Record<
+  MeetingTypeEnum,
+  StandardMutation<any, HistoryMaybeLocalHandler>
+> = {
+  teamPrompt: EndTeamPromptMutation,
+  action: EndCheckInMutation,
+  retrospective: EndRetrospectiveMutation,
+  poker: EndSprintPokerMutation
 }
 
 const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
+      id
       team(teamId: $teamId) {
         id
         massInvitation(meetingId: $meetingId) {
@@ -49,6 +61,7 @@ const query = graphql`
       }
       meeting(meetingId: $meetingId) {
         id
+        facilitatorUserId
         meetingType
       }
     }
@@ -61,11 +74,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  const {team, meeting} = viewer
+  const {id: viewerId, team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
   const {id: meetingId, meetingType} = meeting!
-  const canEndMeeting = meetingType === 'teamPrompt'
+  const isViewerFacilitator = meeting!.facilitatorUserId === viewerId
+  const canEndMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
