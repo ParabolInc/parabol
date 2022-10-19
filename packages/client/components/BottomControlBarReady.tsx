@@ -158,7 +158,7 @@ const BottomControlBarReady = (props: Props) => {
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>
       </BottomNavControl>
-      {tooltipPortal(`Tap 'Next' again to Confirm`)}
+      {tooltipPortal(`Tap 'Next' again if everyone is ready`)}
     </>
   )
 }

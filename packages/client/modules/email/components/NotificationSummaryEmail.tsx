@@ -44,7 +44,7 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
         <p style={copyStyle}>
           {'You have '}
           <span style={{fontWeight: 600}}>
-            {`${notificationCount} new ${plural(notificationCount, 'notification')}`}
+            {`${notificationCount} new unread ${plural(notificationCount, 'notification')}`}
           </span>
           {' — see what’s changed with your teams.'}
         </p>
