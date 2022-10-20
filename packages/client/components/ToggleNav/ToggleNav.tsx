@@ -51,9 +51,21 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
   })
 )
 
+const Icons = {
+  group: <Group />,
+  extension: <Extension />,
+  credit_card: <CreditCard />
+} as const
+
+interface Item {
+  label: string
+  icon: keyof typeof Icons
+  isActive: boolean
+  onClick?: () => void
+}
+
 interface Props {
-  //FIXME 6062: change item.icon to React.ComponentType
-  items: any[]
+  items: Item[]
 }
 
 const ToggleNav = (props: Props) => {
@@ -71,15 +83,7 @@ const ToggleNav = (props: Props) => {
             isFirst={index === 0}
             isLast={index === items.length - 1}
           >
-            <StyledIcon>
-              {
-                {
-                  group: <Group />,
-                  extension: <Extension />,
-                  credit_card: <CreditCard />
-                }[item.icon]
-              }
-            </StyledIcon>
+            <StyledIcon>{Icons[item.icon]}</StyledIcon>
             {item.label}
           </Item>
         )
