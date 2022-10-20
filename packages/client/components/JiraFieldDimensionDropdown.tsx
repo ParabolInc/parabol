@@ -82,17 +82,25 @@ const JiraFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const lookupServiceFieldName = possibleEstimationFieldNames.includes(serviceFieldName)
+  const validFields = [
+    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+    SprintPokerDefaults.SERVICE_FIELD_NULL,
+    ...possibleEstimationFieldNames
+  ]
+  const lookupServiceFieldName = validFields.includes(serviceFieldName)
     ? serviceFieldName
     : SprintPokerDefaults.SERVICE_FIELD_COMMENT
 
-  const label = labelLookup[lookupServiceFieldName] ?? lookupServiceFieldName
+  const label =
+    labelLookup[lookupServiceFieldName as keyof typeof labelLookup] ?? lookupServiceFieldName
   return (
-    <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
-      <CurrentValue>{label}</CurrentValue>
-      <StyledIcon isFacilitator={isFacilitator} />
+    <>
+      <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
+        <CurrentValue>{label}</CurrentValue>
+        <StyledIcon isFacilitator={isFacilitator} />
+      </Wrapper>
       {menuPortal(<JiraFieldMenu menuProps={menuProps} stage={stage} submitScore={submitScore} />)}
-    </Wrapper>
+    </>
   )
 }
 

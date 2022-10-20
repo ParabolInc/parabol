@@ -26,7 +26,6 @@ import NewMeeting from './NewMeeting'
 import Organization from './Organization'
 import ReflectPrompt from './ReflectPrompt'
 import {TaskConnection} from './Task'
-import TeamIntegrations from './TeamIntegrations'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
@@ -102,11 +101,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         invitationTokens[0] = massInvitation
         return massInvitation
       }
-    },
-    integrations: {
-      type: new GraphQLNonNull(TeamIntegrations),
-      description: 'Integration details that are shared by all team members. Nothing user specific',
-      resolve: (source) => source
     },
     isPaid: {
       type: GraphQLBoolean,

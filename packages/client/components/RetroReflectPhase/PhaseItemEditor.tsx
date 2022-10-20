@@ -121,7 +121,7 @@ const PhaseItemEditor = (props: Props) => {
 
   const {disableAnonymity, viewerMeetingMember} = meeting
 
-  const handleSubmit = (content) => {
+  const handleSubmit = (content: string) => {
     const input = {
       content,
       meetingId,
@@ -238,7 +238,7 @@ const PhaseItemEditor = (props: Props) => {
         <ReflectionEditorWrapper
           dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
-          ariaLabel='Edit this reflection'
+          ariaLabel={readOnly ? '' : 'Edit this reflection'}
           editorState={editorState}
           editorRef={editorRef}
           onBlur={onBlur}

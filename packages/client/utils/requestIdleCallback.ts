@@ -1,6 +1,6 @@
-const shimRIC = (cb) => {
+const shimRIC: Window['requestIdleCallback'] = (cb) => {
   const start = Date.now()
-  return setTimeout(() => {
+  return window.setTimeout(() => {
     // eslint-disable-next-line
     cb({
       didTimeout: false,
@@ -10,7 +10,7 @@ const shimRIC = (cb) => {
   }, 100)
 }
 
-const shimCancel = (id) => clearTimeout(id)
+const shimCancel = (id: number | undefined) => window.clearTimeout(id)
 
 export const requestIdleCallback =
   (typeof window !== 'undefined' && (window as any).requestIdleCallback) || shimRIC

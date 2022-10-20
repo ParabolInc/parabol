@@ -16,7 +16,7 @@ interface Props {
   team: ArchiveTeamForm_team
 }
 
-const normalize = (str) => str && str.toLowerCase().replace('’', "'")
+const normalize = (str: string | undefined | null) => str && str.toLowerCase().replace('’', "'")
 
 const ArchiveTeamForm = (props: Props) => {
   const atmosphere = useAtmosphere()

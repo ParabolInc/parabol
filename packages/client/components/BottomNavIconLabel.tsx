@@ -21,7 +21,7 @@ interface Props {
   children?: ReactNode
 }
 
-const StyledIcon = styled('div')<{iconColor?: string}>(({iconColor}) => ({
+const StyledIcon = styled('div')<{iconColor?: keyof typeof paletteColors}>(({iconColor}) => ({
   color: iconColor ? paletteColors[iconColor] : 'inherit',
   height: 24,
   width: 24

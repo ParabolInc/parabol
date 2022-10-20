@@ -10,6 +10,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {Card} from '../../../../types/constEnums'
+import {CompletedHandler} from '../../../../types/relayMutations'
 import {USER_DASH} from '../../../../utils/constants'
 import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskArchived from '../../../../utils/isTaskArchived'
@@ -67,7 +68,7 @@ const TaskFooter = (props: Props) => {
       setLocalTaskError(atmosphere, taskId, err.message)
     }
   }
-  const handleCompleted = (res, errors) => {
+  const handleCompleted: CompletedHandler = (res, errors) => {
     onCompleted(res, errors)
     const payload = res?.[Object.keys(res)[0]!]
     const error = payload?.error?.message ?? errors?.[0]?.message ?? null

@@ -7,7 +7,7 @@ interface Props {
   activeIdx: number
   children: ReactNode
   disabled?: boolean
-  setActiveIdx: (number) => void
+  setActiveIdx: (number: number) => void
   focusedIdx?: number
 }
 

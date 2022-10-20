@@ -24,7 +24,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
     return
   }
   const meetingId = task.getValue('meetingId')
-  const meeting = store.get(meetingId!)
+  const meeting = store.get(meetingId!)!
   const team = store.get(teamId)
   const {userIds, teamIds} = parseUserTaskFilterQueryParams(viewer.getDataID(), window.location)
   const archiveConns = [

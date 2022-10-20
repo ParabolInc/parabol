@@ -70,7 +70,7 @@ const StandardHubUserMenu = (props: Props) => {
             <MenuItemIcon>
               <AccountBox />
             </MenuItemIcon>
-            {'Profile'}
+            {'My Settings'}
           </MenuItemLink>
         }
       />

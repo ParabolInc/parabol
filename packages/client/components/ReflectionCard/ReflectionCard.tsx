@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw} from 'draft-js'
+import {convertToRaw, EditorProps} from 'draft-js'
 import React, {MouseEvent, useEffect, useRef, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {
   NewMeetingPhaseTypeEnum,
-  ReflectionCard_meeting
+  ReflectionCard_meeting$key
 } from '~/__generated__/ReflectionCard_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
@@ -25,7 +25,7 @@ import isAndroid from '../../utils/draftjs/isAndroid'
 import remountDecorators from '../../utils/draftjs/remountDecorators'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
-import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
+import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import CardButton from '../CardButton'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import IconLabel from '../IconLabel'
@@ -61,13 +61,14 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
 
 interface Props {
   isClipped?: boolean
-  reflection: ReflectionCard_reflection
-  meeting: ReflectionCard_meeting
+  reflectionRef: ReflectionCard_reflection$key
+  meetingRef: ReflectionCard_meeting$key
   openSpotlight?: OpenSpotlight
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
   dataCy?: string
+  showDragHintAnimation?: boolean
 }
 
 const getReadOnly = (
@@ -87,7 +88,67 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, openSpotlight, stackCount, showReactji, dataCy} = props
+  const {
+    meetingRef,
+    reflectionRef,
+    isClipped,
+    openSpotlight,
+    stackCount,
+    showReactji,
+    dataCy,
+    showDragHintAnimation
+  } = props
+  const reflection = useFragment(
+    graphql`
+      fragment ReflectionCard_reflection on RetroReflection {
+        ...ColorBadge_reflection
+        isViewerCreator
+        id
+        isEditing
+        meetingId
+        reflectionGroupId
+        promptId
+        content
+        reactjis {
+          ...ReactjiSection_reactjis
+          id
+          isViewerReactji
+        }
+        sortOrder
+        creator {
+          preferredName
+        }
+      }
+    `,
+    reflectionRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment ReflectionCard_meeting on RetrospectiveMeeting {
+        id
+        localPhase {
+          phaseType
+        }
+        localStage {
+          isComplete
+        }
+        phases {
+          phaseType
+          stages {
+            id
+            isComplete
+          }
+        }
+        spotlightGroup {
+          id
+        }
+        disableAnonymity
+        spotlightSearchQuery
+      }
+    `,
+    meetingRef
+  )
+
   const {
     id: reflectionId,
     content,
@@ -106,7 +167,7 @@ const ReflectionCard = (props: Props) => {
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
-  const reflectionRef = useRef<HTMLDivElement>(null)
+  const reflectionDivRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
@@ -195,7 +256,7 @@ const ReflectionCard = (props: Props) => {
     EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
   }
 
-  const handleReturn = (e) => {
+  const handleReturn: EditorProps['handleReturn'] = (e) => {
     if (e.shiftKey) return 'not-handled'
     editorRef.current && editorRef.current.blur()
     return 'handled'
@@ -250,8 +311,8 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    if (openSpotlight && reflectionRef.current) {
-      openSpotlight(reflectionId, reflectionRef)
+    if (openSpotlight && reflectionDivRef.current) {
+      openSpotlight(reflectionId, reflectionDivRef)
     }
   }
 
@@ -261,18 +322,20 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
+
   return (
     <ReflectionCardRoot
       data-cy={`${dataCy}-root`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      ref={reflectionRef}
+      showDragHintAnimation={showDragHintAnimation}
+      ref={reflectionDivRef}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
         isClipped={isClipped}
-        ariaLabel='Edit this reflection'
+        ariaLabel={readOnly ? '' : 'Edit this reflection'}
         editorRef={editorRef}
         editorState={editorState}
         onBlur={handleEditorBlur}
@@ -309,49 +372,4 @@ const ReflectionCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectionCard, {
-  reflection: graphql`
-    fragment ReflectionCard_reflection on RetroReflection {
-      ...ColorBadge_reflection
-      isViewerCreator
-      id
-      isEditing
-      meetingId
-      reflectionGroupId
-      promptId
-      content
-      reactjis {
-        ...ReactjiSection_reactjis
-        id
-        isViewerReactji
-      }
-      sortOrder
-      creator {
-        preferredName
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment ReflectionCard_meeting on RetrospectiveMeeting {
-      id
-      localPhase {
-        phaseType
-      }
-      localStage {
-        isComplete
-      }
-      phases {
-        phaseType
-        stages {
-          id
-          isComplete
-        }
-      }
-      spotlightGroup {
-        id
-      }
-      disableAnonymity
-      spotlightSearchQuery
-    }
-  `
-})
+export default ReflectionCard

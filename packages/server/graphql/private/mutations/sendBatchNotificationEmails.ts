@@ -23,6 +23,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
       .table('Notification')
       // Only include notifications which occurred within the last day
       .filter((row) => row('createdAt').gt(yesterday))
+      .filter({status: 'UNREAD'})
       // de-dup users
       .group('userId') as any
   )
@@ -34,6 +35,10 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
     }))
     .run()) as {userId: string; notificationCount: number}[]
 
+  // :TODO: (jmtaber129): Filter out team invitations for users who are already on the team.
+  // :TODO: (jmtaber129): Filter out "stage timer" notifications if the meeting has already
+  // progressed to the next stage.
+
   const userNotificationMap = new Map(
     userNotificationCount.map((value) => [value.userId, value.notificationCount])
   )
@@ -41,10 +46,11 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
   const users = await pg.query<{id: string; email: string; preferredName: string}>(
     `SELECT id, email, "preferredName" FROM "User"
     WHERE "id" = ANY($1::text[])
-    AND NOT inactive
-    AND "lastSeenAt" <= $2`,
-    [[...userNotificationMap.keys()], yesterday]
+    AND NOT inactive`,
+    [[...userNotificationMap.keys()]]
   )
+
+  // :TODO: (jmtaber129): Filter out users whose only notification is a team invitation
 
   await Promise.all(
     users.rows.map((user) => {

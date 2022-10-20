@@ -4,8 +4,8 @@ import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../__generated__/AddAgendaItemMutation.graphql'
+import {AddAgendaItemMutation_team} from '../__generated__/AddAgendaItemMutation_team.graphql'
 import handleAddAgendaItems from './handlers/handleAddAgendaItems'
-
 graphql`
   fragment AddAgendaItemMutation_team on AddAgendaItemPayload {
     agendaItem {
@@ -44,9 +44,10 @@ const mutation = graphql`
   }
 `
 
-export const addAgendaItemUpdater: SharedUpdater<
-  TAddAgendaItemMutation['response']['addAgendaItem']
-> = (payload, {store}) => {
+export const addAgendaItemUpdater: SharedUpdater<AddAgendaItemMutation_team> = (
+  payload,
+  {store}
+) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
   if (!agendaItem) return
   handleAddAgendaItems(agendaItem, store)

@@ -22,7 +22,7 @@ const DropdownBlock = styled('div')({
 interface InputStyleProps {
   disabled: boolean
   flat: boolean | undefined
-  size?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
 const InputBlock = styled('div')<InputStyleProps>(
@@ -56,7 +56,7 @@ interface Props {
   onMouseEnter?: () => void
   // style hacks until a better pattern
   flat?: boolean
-  size?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {

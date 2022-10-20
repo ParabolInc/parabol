@@ -9,6 +9,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
+import {CompletedHandler} from '../types/relayMutations'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
 import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
@@ -135,7 +136,7 @@ const AddTeamMemberModal = (props: Props) => {
     if (rawInvitees === nextValue) return
     const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
     const allInvitees = parsedInvitees
-      ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
       : []
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))
@@ -176,7 +177,7 @@ const AddTeamMemberModal = (props: Props) => {
   const sendInvitations = () => {
     if (invitees.length === 0) return
     submitMutation()
-    const handleCompleted = (res) => {
+    const handleCompleted: CompletedHandler = (res) => {
       setIsSubmitted(true)
       onCompleted()
       if (res) {

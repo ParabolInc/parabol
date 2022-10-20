@@ -33,7 +33,7 @@ const EditableTemplateScaleName = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const handleSubmit = (rawName) => {
+  const handleSubmit = (rawName: string) => {
     if (submitting) return
     const {error, value: name} = validate(rawName)
     if (error) return
@@ -41,7 +41,7 @@ const EditableTemplateScaleName = (props: Props) => {
     RenamePokerTemplateScaleMutation(atmosphere, {scaleId, name}, {onError, onCompleted})
   }
 
-  const legitify = (value) => {
+  const legitify = (value: string) => {
     return new Legitity(value)
       .trim()
       .required('Please enter a scale name')

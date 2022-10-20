@@ -39,8 +39,8 @@ const withForm =
 
       state = {
         fields: Object.keys(fields).reduce((obj, name) => {
-          obj[name] = {
-            value: fields[name].getDefault(this.props),
+          obj[name as K] = {
+            value: fields[name as K].getDefault(this.props),
             error: undefined,
             dirty: false
           }
@@ -72,9 +72,9 @@ const withForm =
       validate = (name?: K) => {
         if (!name) {
           return Object.keys(this.state.fields).reduce((obj, name) => {
-            obj[name] = this.validate(name as K)
+            obj[name as K] = this.validate(name as K) as any
             return obj
-          }, {})
+          }, {} as FieldState<K>)
         }
         const field = this.state.fields[name]
         const {value, error} = field
@@ -99,7 +99,7 @@ const withForm =
           Object.keys(this.state.fields).forEach((name) => this.setDirty(name))
           return
         }
-        const field = this.state.fields[name]
+        const field = this.state.fields[name as K]
         if (!field?.dirty) {
           this.setState({
             fields: {

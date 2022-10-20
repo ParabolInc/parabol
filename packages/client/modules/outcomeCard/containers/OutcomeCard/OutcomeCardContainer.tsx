@@ -45,8 +45,7 @@ const OutcomeCardContainer = memo((props: Props) => {
     isViewerMeetingSection,
     meetingId
   } = props
-  const {id: taskId, team, content} = task
-  const {id: teamId} = team
+  const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
@@ -73,7 +72,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value && !isFocused) {
-        DeleteTaskMutation(atmosphere, taskId, teamId)
+        DeleteTaskMutation(atmosphere, {taskId})
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
@@ -89,7 +88,7 @@ const OutcomeCardContainer = memo((props: Props) => {
     const nextContentState = editorState.getCurrentContent()
     const hasText = nextContentState.hasText()
     if (!hasText && !isFocused) {
-      DeleteTaskMutation(atmosphere, taskId, teamId)
+      DeleteTaskMutation(atmosphere, {taskId})
     } else {
       const content = JSON.stringify(convertToRaw(nextContentState))
       const initialContent = JSON.stringify(convertToRaw(contentState))
@@ -137,9 +136,6 @@ export default createFragmentContainer(OutcomeCardContainer, {
       }
       content
       id
-      team {
-        id
-      }
       ...OutcomeCard_task @arguments(meetingId: $meetingId)
     }
   `

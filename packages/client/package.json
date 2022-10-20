@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.73.0",
+  "version": "6.77.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -36,6 +36,8 @@
     "@types/react-relay": "^11.0.2",
     "@types/react-router": "^5.0.3",
     "@types/react-router-dom": "^4.3.2",
+    "@types/react-swipeable-views": "^0.13.1",
+    "@types/react-textarea-autosize": "^8.0.0",
     "@types/react-virtualized": "^9.21.20",
     "@types/relay-runtime": "^12.0.0",
     "@types/segment-analytics": "^0.0.31",
@@ -94,7 +96,6 @@
     "linkify-it": "^2.0.3",
     "mousetrap": "^1.6.3",
     "ms": "^2.0.0",
-    "prop-types": "^15.5.10",
     "react": "^17.0.2",
     "react-beautiful-dnd": "13.0.0",
     "react-chartjs-2": "^4.2.0",

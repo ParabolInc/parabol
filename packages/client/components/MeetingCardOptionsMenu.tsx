@@ -8,6 +8,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
@@ -44,6 +45,7 @@ const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
       team(teamId: $teamId) {
+        id
         massInvitation(meetingId: $meetingId) {
           id
         }
@@ -89,6 +91,11 @@ const MeetingCardOptionsMenu = (props: Props) => {
           closePortal()
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
+
+          SendClientSegmentEventMutation(atmosphere, 'Copied Invite Link', {
+            teamId: team?.id,
+            meetingId: meetingId
+          })
         }}
       />
       {canEndMeeting && (

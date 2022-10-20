@@ -10,9 +10,11 @@ import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 
 const detailDescriptionMaker = {
-  ADDED_USERS: (detail) => `${detail.email} joined ${makeDateString(detail.startAt)}`,
-  REMOVED_USERS: (detail) => `${detail.email} left ${makeDateString(detail.startAt)}`,
-  INACTIVITY_ADJUSTMENTS: (detail) => {
+  ADDED_USERS: (detail: InvoiceLineItemDetails_details[0]) =>
+    `${detail.email} joined ${makeDateString(detail.startAt)}`,
+  REMOVED_USERS: (detail: InvoiceLineItemDetails_details[0]) =>
+    `${detail.email} left ${makeDateString(detail.startAt)}`,
+  INACTIVITY_ADJUSTMENTS: (detail: InvoiceLineItemDetails_details[0]) => {
     if (!detail.endAt) {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`
     } else if (!detail.startAt) {

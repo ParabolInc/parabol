@@ -27,7 +27,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
-  const oldTeamsRef = useRef<any>([])
+  const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams

@@ -50,7 +50,7 @@ const RevealLabel = styled('div')<{color: string}>(({color}) => ({
   paddingLeft: 8
 }))
 
-const RevealButton = styled(RaisedButton)<{color}>(({color}) => ({
+const RevealButton = styled(RaisedButton)<{color: string}>(({color}) => ({
   backgroundColor: '#fff',
   color,
   fontWeight: 600,

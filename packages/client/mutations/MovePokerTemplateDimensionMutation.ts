@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {MovePokerTemplateDimensionMutation as TMovePokerTemplateDimensionMutation} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
-import getInProxy from '../utils/relay/getInProxy'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {MovePokerTemplateDimensionMutation_team} from '../__generated__/MovePokerTemplateDimensionMutation_team.graphql'
 import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
 
 graphql`
@@ -25,9 +25,11 @@ const mutation = graphql`
   }
 `
 
-export const movePokerTemplateDimensionTeamUpdater = (payload, {store}) => {
+export const movePokerTemplateDimensionTeamUpdater: SharedUpdater<
+  MovePokerTemplateDimensionMutation_team
+> = (payload, {store}) => {
   if (!payload) return
-  const templateId = getInProxy(payload, 'dimension', 'templateId')
+  const templateId = payload.getLinkedRecord('dimension').getValue('templateId')
   handleMovePokerTemplateDimension(store, templateId)
 }
 
@@ -41,7 +43,7 @@ const MovePokerTemplateDimensionMutation: StandardMutation<
     updater: (store) => {
       const payload = store.getRootField('movePokerTemplateDimension')
       if (!payload) return
-      movePokerTemplateDimensionTeamUpdater(payload, {store})
+      movePokerTemplateDimensionTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {sortOrder, dimensionId} = variables

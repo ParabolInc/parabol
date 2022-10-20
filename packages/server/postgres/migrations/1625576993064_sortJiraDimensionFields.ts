@@ -1,11 +1,13 @@
-import stringify from 'fast-json-stable-stringify'
+//import stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
-import {r} from 'rethinkdb-ts'
-import Team from '../../database/types/Team'
+//import {r} from 'rethinkdb-ts'
+//import Team from '../../database/types/Team'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
+  // With JiraDimensionFieldMap migration, sorting this field is not necessary anymore
+  /*
   const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
   await r.connectPool({
     host,
@@ -44,6 +46,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     SET "jiraDimensionFields" = arr_sort("jiraDimensionFields")
     WHERE array_length("jiraDimensionFields", 1) > 1;
   `)
+  */
 }
 
 export async function down(): Promise<void> {

@@ -11,8 +11,10 @@ import {
 } from '@mui/icons-material'
 import React from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
 import {PALETTE} from '../styles/paletteV3'
-import {NavSidebar} from '../types/constEnums'
+import {NavSidebar, Times} from '../types/constEnums'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
 
@@ -136,6 +138,7 @@ interface Props {
   isUnsyncedFacilitatorStage?: boolean
   phaseCount?: number | null
   phaseType: NewMeetingPhaseTypeEnum
+  isConfirming?: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
@@ -147,13 +150,27 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     isUnsyncedFacilitatorPhase,
     isUnsyncedFacilitatorStage,
     phaseCount,
-    phaseType
+    phaseType,
+    isConfirming
   } = props
-  const label = phaseLabelLookup[phaseType]
-  //FIXME 6062: change to React.ComponentType
-  const icon = phaseIconLookup[phaseType]
-  const Image = phaseImageLookup[phaseType]
+  const label = phaseLabelLookup[phaseType] as string | undefined
+  const icon = phaseIconLookup[phaseType] as string | undefined
+  const Image = phaseImageLookup[phaseType as keyof typeof phaseImageLookup]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
+
+  const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      disabled: !isConfirming,
+      delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
+    }
+  )
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      openTooltip()
+    }
+  }, [isConfirming])
 
   return (
     <NavListItemLink
@@ -164,6 +181,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={handleClick}
       title={label}
+      ref={originRef}
     >
       {icon && (
         <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
@@ -192,6 +210,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
           <StyledBadge>{phaseCount}</StyledBadge>
         </PhaseCountBlock>
       )}
+      {tooltipPortal(`Tap '${label}' again if everyone is ready`)}
     </NavListItemLink>
   )
 }

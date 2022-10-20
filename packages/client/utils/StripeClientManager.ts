@@ -63,7 +63,7 @@ export default class StripeClientManager {
     }
   }
 
-  createToken = (fields) => {
+  createToken = (fields: stripe.StripeCardTokenData) => {
     return new Promise<stripe.StripeCardTokenResponse>((resolve, reject) => {
       if (!this.stripe) {
         reject('Stripe not loaded')

@@ -102,7 +102,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
     DragDiscussionTopicMutation(atmosphere, variables)
   }
 
-  const handleClick = (id) => {
+  const handleClick = (id: string) => {
     gotoStageId(id).catch()
     handleMenuClick()
   }

@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import getInProxy from '~/utils/relay/getInProxy'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import {RemoveReflectTemplatePromptMutation as IRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
+import {RemoveReflectTemplatePromptMutation as TRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
 import {RemoveReflectTemplatePromptMutation_team} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 
@@ -26,15 +25,15 @@ const mutation = graphql`
 export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<
   RemoveReflectTemplatePromptMutation_team
 > = (payload, {store}) => {
-  const promptId = getInProxy(payload, 'prompt', 'id')
-  const teamId = getInProxy(payload, 'prompt', 'teamId')
+  const promptId = payload.getLinkedRecord('prompt').getValue('id')
+  const teamId = payload.getLinkedRecord('prompt').getValue('teamId')
   handleRemoveReflectTemplatePrompt(promptId, teamId, store)
 }
 
 const RemoveReflectTemplatePromptMutation: StandardMutation<
-  IRemoveReflectTemplatePromptMutation
+  TRemoveReflectTemplatePromptMutation
 > = (atmosphere, variables, {onError, onCompleted}) => {
-  return commitMutation<IRemoveReflectTemplatePromptMutation>(atmosphere, {
+  return commitMutation<TRemoveReflectTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

@@ -1,10 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {MoveReflectTemplatePromptMutation as TMoveReflectTemplatePromptMutation} from '~/__generated__/MoveReflectTemplatePromptMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
-import getInProxy from '../utils/relay/getInProxy'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {MoveReflectTemplatePromptMutation_team} from '../__generated__/MoveReflectTemplatePromptMutation_team.graphql'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
-
 interface Context {
   templateId: string
 }
@@ -29,9 +28,11 @@ const mutation = graphql`
   }
 `
 
-export const moveReflectTemplatePromptTeamUpdater = (payload, {store}) => {
+export const moveReflectTemplatePromptTeamUpdater: SharedUpdater<
+  MoveReflectTemplatePromptMutation_team
+> = (payload, {store}) => {
   if (!payload) return
-  const templateId = getInProxy(payload, 'prompt', 'templateId')
+  const templateId = payload.getLinkedRecord('prompt').getValue('templateId')
   handleMoveTemplatePrompt(store, templateId)
 }
 
@@ -45,7 +46,7 @@ const MoveReflectTemplatePromptMutation: StandardMutation<
     updater: (store) => {
       const payload = store.getRootField('moveReflectTemplatePrompt')
       if (!payload) return
-      moveReflectTemplatePromptTeamUpdater(payload, {store})
+      moveReflectTemplatePromptTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {sortOrder, promptId} = variables

@@ -105,7 +105,7 @@ interface Props {
   isArchived?: boolean
 }
 
-const formatDueDate = (dueDate) => {
+const formatDueDate = (dueDate: string) => {
   const date = new Date(dueDate)
   const month = date.getMonth()
   const day = date.getDate()
@@ -114,7 +114,7 @@ const formatDueDate = (dueDate) => {
 }
 
 const action = 'tap to change'
-const getDateInfo = (dueDate) => {
+const getDateInfo = (dueDate: string | null) => {
   if (!dueDate) return {title: 'Add a Due Date'}
   const date = new Date(dueDate)
   const timeDiff = date.getTime() - Date.now()
