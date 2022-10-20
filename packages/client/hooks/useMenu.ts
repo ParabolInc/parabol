@@ -74,12 +74,12 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
     ) {
       setTopOffset((cardContainerRef?.current?.scrollTop || 0) - TOP_POSITION_EXCESS)
     }
-    return 'top' in coords
-      ? {
-          ...coords,
-          top: coords.top + topOffset
-        }
-      : coords
+
+    if ('top' in coords) {
+      return {...coords, top: coords.top + topOffset}
+    }
+
+    return coords
   }, [coords, portalStatus])
 
   const menuPortal = useMenuPortal(
