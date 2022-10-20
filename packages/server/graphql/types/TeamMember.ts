@@ -11,7 +11,6 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import getAllRepoIntegrationsRedisKey from '../../utils/getAllRepoIntegrationsRedisKey'
-import getPrevUsedRepoIntegrationsRedisKey from '../../utils/getPrevUsedRepoIntegrationsRedisKey'
 import getRedis from '../../utils/getRedis'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -19,7 +18,6 @@ import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import fetchAllRepoIntegrations from '../queries/helpers/fetchAllRepoIntegrations'
 import getAllCachedRepoIntegrations from '../queries/helpers/getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from '../queries/helpers/getPrevUsedRepoIntegrations'
-import removeStalePrevUsedRepoIntegrations from '../queries/helpers/removeStalePrevUsedRepoIntegations'
 import {default as sortRepoIntegrations} from '../queries/helpers/sortRepoIntegrations'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
@@ -181,8 +179,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           const allRepoIntegrationsKey = getAllRepoIntegrationsRedisKey(teamId, viewerId)
           redis.set(allRepoIntegrationsKey, JSON.stringify(allRepoIntegrations), 'PX', ms('90d'))
         }
-        const prevUsedRepoIntegrationsKey = getPrevUsedRepoIntegrationsRedisKey(teamId)
-        removeStalePrevUsedRepoIntegrations(prevUsedRepoIntegrations, prevUsedRepoIntegrationsKey)
         const sortedRepoIntegrations = await sortRepoIntegrations(
           allRepoIntegrations,
           prevUsedRepoIntegrations

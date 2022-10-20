@@ -1,3 +1,4 @@
+import ms from 'ms'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import getAllCachedRepoIntegrations from '../graphql/queries/helpers/getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from '../graphql/queries/helpers/getPrevUsedRepoIntegrations'
@@ -30,6 +31,7 @@ const updatePrevUsedRepoIntegrationsCache = async (
     await redis.zrem(prevUsedRepoIntegrationsKey, JSON.stringify(oldPrevUsedRepoIntegration))
   }
   await redis.zadd(prevUsedRepoIntegrationsKey, now, JSON.stringify(remoteRepoIntegration))
+  await redis.pexpire(prevUsedRepoIntegrationsKey, ms('180d'))
 }
 
 export default updatePrevUsedRepoIntegrationsCache
