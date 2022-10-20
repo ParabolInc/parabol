@@ -195,7 +195,6 @@ export default createFragmentContainer(PokerDimensionValueControl, {
   stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
       ...PokerDimensionFinalScorePicker_stage
-      ...AddMissingJiraFieldModal_stage
       id
       meetingId
       teamId

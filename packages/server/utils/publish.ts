@@ -10,7 +10,7 @@ const {SERVER_ID} = process.env
 const publish = <T>(
   topic: T,
   channel: string,
-  type: any,
+  type: string,
   payload: {[key: string]: any},
   subOptions: SubOptions = {}
 ) => {
