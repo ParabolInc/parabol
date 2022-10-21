@@ -5,8 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## [6.78.1](https://github.com/ParabolInc/parabol/compare/v6.78.0...v6.78.1) (2022-10-12)
+## 6.79.0 2022-October-21
 
+### Added
+
+- Add confirmation tooltip on the retro meeting sidebar (#7248)
+- show you in emoji list instead of viewer name (#7285)
+- **notifications**: Update which users receive notification batch emails (#7286)
+
+### Fixed
+
+- assign new billing leader after deleting billing leader (#7267)
+- AdjustMeetingMemberCountPosition (#7202)
+- missing daki prompt (#7279)
+- Hyperlink removes whitespace (#7089)
+- **Jira**: show only available fields in Sprint Poker (#7257)
+- **Jira**: Link to documentation if we cannot find a story point field (#7264)
+- **Retro**: a card dragged from an expanded group disappeared (#7317)
+
+### Changed
+
+- use SDL for JiraIssue (#7258)
+- Fix missing types (#7300)
+- Run auto assign reviewer workflow on pull request target (#7296)
+- Change auto assign reviewer PAT (#7318)
+
+## [6.78.1](https://github.com/ParabolInc/parabol/compare/v6.78.0...v6.78.1) (2022-10-12)
 
 ### Bug Fixes
 
