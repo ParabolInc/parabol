@@ -1,16 +1,11 @@
 import getPatientZeroByDomain from '../../../postgres/queries/getPatientZeroByDomain'
+import isCompanyDomain from '../../../utils/isCompanyDomain'
 
-const isPatientZero = async (userId: string, domain?: string | null) => {
-  if (domain) {
-    const patient0 = await getPatientZeroByDomain(domain)
-    if (!patient0) {
-      return true
-    } else {
-      return userId === patient0.id
-    }
-  } else {
-    return false
-  }
+const isPatientZero = async (domain?: string | null) => {
+  if (!domain) return false
+  if (!isCompanyDomain(domain)) return false
+  const userWithSameDomain = await getPatientZeroByDomain(domain)
+  return !userWithSameDomain
 }
 
 export default isPatientZero
