@@ -4,12 +4,13 @@ import getPgConfig from '../getPgConfig'
 export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
+  // original query that run did not have quotes on the pkey constraint, so i removed them from the drop constraint call
   await client.query(`
     ALTER TABLE "AzureDevOpsDimensionFieldMap"
     ADD COLUMN IF NOT EXISTS "workItemType" VARCHAR(255) NOT NULL;
 
     ALTER TABLE "AzureDevOpsDimensionFieldMap"
-    DROP CONSTRAINT "AzureDevOpsDimensionFieldMap_pkey";
+    DROP CONSTRAINT IF EXISTS AzureDevOpsDimensionFieldMap_pkey;
 
     ALTER TABLE "AzureDevOpsDimensionFieldMap"
     ADD CONSTRAINT AzureDevOpsDimensionFieldMap_pkey PRIMARY KEY ("teamId", "dimensionName", "instanceId", "projectKey", "workItemType");
@@ -22,7 +23,7 @@ export async function down() {
   await client.connect()
   await client.query(`
     ALTER TABLE "AzureDevOpsDimensionFieldMap"
-    DROP CONSTRAINT "AzureDevOpsDimensionFieldMap_pkey";
+    DROP CONSTRAINT IF EXISTS "AzureDevOpsDimensionFieldMap_pkey";
 
     ALTER TABLE "AzureDevOpsDimensionFieldMap"
     ADD CONSTRAINT AzureDevOpsDimensionFieldMap_pkey PRIMARY KEY ("teamId", "dimensionName", "instanceId", "projectKey");
