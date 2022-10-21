@@ -77,8 +77,8 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const {id: viewerId, team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const {id: meetingId, meetingType} = meeting!
-  const isViewerFacilitator = meeting!.facilitatorUserId === viewerId
+  const {id: meetingId, meetingType, facilitatorUserId} = meeting!
+  const isViewerFacilitator = facilitatorUserId === viewerId
   const canEndMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
