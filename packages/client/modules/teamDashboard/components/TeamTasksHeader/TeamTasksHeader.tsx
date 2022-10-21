@@ -157,7 +157,7 @@ const TeamTasksHeader = (props: Props) => {
       <DashSectionControls>
         {/* Filter by Owner */}
         <TeamMeta>
-          {teamMembers.length && (
+          {teamMembers.length > 1 && (
             <DashFilterToggle
               label='Team Member'
               onClick={togglePortal}
