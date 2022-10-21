@@ -9,7 +9,6 @@ export const up = async function (r: R) {
 }
 
 export const down = async function (r: R) {
-  //
   await r
     .table('MeetingTemplate')
     .get('aChristmasCarolRetrospectiveTemplate')
