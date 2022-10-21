@@ -130,7 +130,7 @@
     "nodemailer": "^6.4.6",
     "oauth-1.0a": "^2.2.6",
     "oy-vey": "^0.11.0",
-    "parabol-client": "^6.79.0",
+    "parabol-client": "^6.78.0",
     "pg": "^8.5.1",
     "pm2": "^5.2.0",
     "react": "^17.0.2",
