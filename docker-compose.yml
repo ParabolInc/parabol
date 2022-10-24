@@ -4,9 +4,9 @@ services:
   db:
     image: rethinkdb:latest
     ports:
-      - '8080:8080'
-      - '29015:29015'
-      - '28015:28015'
+      - '127.0.0.1:8080:8080'
+      - '127.0.0.1:29015:29015'
+      - '127.0.0.1:28015:28015'
     volumes:
       - rethink-data:/data
     networks:
@@ -16,7 +16,7 @@ services:
     restart: always
     env_file: .env
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       - './packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf'
       - 'postgres-data:/data'
@@ -26,7 +26,7 @@ services:
   redis:
     image: redis
     ports:
-      - '6379:6379'
+      - '127.0.0.1:6379:6379'
     volumes:
       - redis-data:/data
     networks:
@@ -38,7 +38,7 @@ services:
       target: prod
     env_file: .env
     ports:
-      - '3000:3000'
+      - '127.0.0.1:3000:3000'
     depends_on:
       - db
       - redis
