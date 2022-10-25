@@ -71,13 +71,11 @@ const addReflectionToGroup = async (
     }).run()
 
     const nextTitle = getGroupSmartTitle(nextReflections)
-    if (
-      reflectionGroup.title === reflectionGroup.smartTitle &&
-      nextReflections.length === 2 &&
-      oldReflectionGroup.title !== oldReflectionGroup.smartTitle &&
-      oldReflections.length === 0
-    ) {
-      // Edge case of dragging a single card with a custom group name on another single card without group name
+    const oldGroupHasSingleReflectionCustomTitle =
+      oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
+    const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
+    if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
+      // Edge case of dragging a single card with a custom group name on a group with smart name
       await r
         .table('RetroReflectionGroup')
         .get(reflectionGroupId)
