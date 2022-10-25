@@ -1,6 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
-const premiumTemplateIds = [
+const freeTemplateIds = [
   'startStopContinueTemplate',
   'gladSadMadTemplate',
   'whatWentWellTemplate',
@@ -11,16 +11,8 @@ const premiumTemplateIds = [
 ]
 
 export const up = async function (r: R) {
-  await r
-    .table('MeetingTemplate')
-    .getAll(r.args(premiumTemplateIds))
-    .update({isPremium: true})
-    .run()
+  await r.table('MeetingTemplate').getAll(r.args(freeTemplateIds)).update({isFree: true}).run()
 }
 export const down = async function (r: R) {
-  await r
-    .table('MeetingTemplate')
-    .getAll(r.args(premiumTemplateIds))
-    .update({isPremium: false})
-    .run()
+  await r.table('MeetingTemplate').getAll(r.args(freeTemplateIds)).update({isFree: false}).run()
 }

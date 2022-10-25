@@ -12,7 +12,7 @@ interface Input {
   lastUsedAt?: Date
   type: MeetingTypeEnum
   isStarter?: boolean
-  isPremium?: boolean
+  isFree?: boolean
 }
 
 export default class MeetingTemplate {
@@ -28,10 +28,10 @@ export default class MeetingTemplate {
   parentTemplateId?: string
   type: MeetingTypeEnum
   isStarter?: boolean
-  isPremium?: boolean
+  isFree?: boolean
 
   constructor(input: Input) {
-    const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type, isStarter, isPremium} =
+    const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type, isStarter, isFree} =
       input
     const now = new Date()
     this.id = generateUID()
@@ -46,6 +46,6 @@ export default class MeetingTemplate {
     this.lastUsedAt = lastUsedAt ?? undefined
     this.type = type
     this.isStarter = isStarter
-    this.isPremium = isPremium
+    this.isFree = isFree
   }
 }
