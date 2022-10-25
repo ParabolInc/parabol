@@ -1,0 +1,15 @@
+extend type Mutation {
+  """
+  Set the isFree tier on a meeting template to determine if it's accessible to free users
+  """
+  setIsFreeMeetingTemplate(isFree: Boolean!, templateIds: [ID!]!): SetIsFreeMeetingTemplatePayload
+}
+
+type SetIsFreeMeetingTemplatePayload {
+  error: StandardMutationError
+
+  """
+  The meeting templates that have been updated
+  """
+  templates: [MeetingTemplate!]
+}
