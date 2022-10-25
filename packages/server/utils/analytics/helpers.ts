@@ -27,7 +27,7 @@ export const createMeetingProperties = (
       meetingType === 'teamPrompt' ? (meeting as MeetingTeamPrompt).meetingSeriesId : undefined,
     disableAnonymity:
       meetingType === 'retrospective'
-        ? (meeting as MeetingRetrospective).disableAnonymity
+        ? (meeting as MeetingRetrospective).disableAnonymity ?? false
         : undefined
   }
 }
