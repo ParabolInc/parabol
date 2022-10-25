@@ -17,7 +17,6 @@ export const up = async function (r: R) {
     .update({isPremium: true})
     .run()
 }
-
 export const down = async function (r: R) {
   await r
     .table('MeetingTemplate')
