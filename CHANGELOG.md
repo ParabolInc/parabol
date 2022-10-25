@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.79.1 2022-October-25
+
+### Fixed
+
+- EstimateStage was broken for Jira if the issue could not be fetched (#7337)
+
 ## 6.79.0 2022-October-21
 
 ### Added
