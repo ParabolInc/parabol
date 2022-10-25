@@ -330,9 +330,12 @@ const useDragAndDrop = (
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
       drag.id = clientTempId()
+      // There are some constraints here.
+      // We want to clone the reflection card after the properties were set correctly, especially isDragging, thus the mutation needs to run first.
+      // in some cases, e.g. moving a card out of a reflection group, the component tree is shuffled which will set the drag.ref to null.
+      const dragRef = drag.ref
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
-      // clone is done after mutation as earlier it was creating issue (https://github.com/ParabolInc/parabol/pull/6910#issuecomment-1193069249)
-      drag.clone = cloneReflection(drag.ref, reflectionId)
+      drag.clone = cloneReflection(dragRef, reflectionId)
     }
     if (!drag.clone) return
     drag.clientY = clientY

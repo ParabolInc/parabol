@@ -34,7 +34,10 @@ const getRaw = () => {
     const PROJECT_ROOT = path.join(__dirname, '../')
     const htmlPath = PROD ? './build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(PROJECT_ROOT, htmlPath), 'utf8')
-    const extraHead = `<script>${dehydrate('__ACTION__', clientIds)}</script>`
+    // Hide staging & PPMIs from search engines
+    const noindex =
+      process.env.HOST === 'action.parabol.co' ? '' : `<meta name="robots" content="noindex"/>`
+    const extraHead = `${noindex}<script>${dehydrate('__ACTION__', clientIds)}</script>`
     const devBody = PROD
       ? ''
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
