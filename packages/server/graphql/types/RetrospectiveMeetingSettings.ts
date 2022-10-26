@@ -26,6 +26,11 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
   interfaces: () => [TeamMeetingSettings],
   fields: () => ({
     ...teamMeetingSettingsFields(),
+    accessiblePremiumTemplateId: {
+      type: GraphQLID,
+      description:
+        'The premium template id that the team was using when we restricted some templates, null if they joined after the restriction'
+    },
     totalVotes: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of votes each team member receives for the voting phase'
