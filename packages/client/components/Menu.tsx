@@ -12,11 +12,12 @@ import React, {
   useState
 } from 'react'
 import {PortalStatus} from '../hooks/usePortal'
+import useRouter from '../hooks/useRouter'
+import {isReactElement} from '../utils/isReactElement'
 import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick
-const REACT_ELEMENT = Symbol.for('react.element')
-const isReactElement = (child: any) => child && child.$$typeof === REACT_ELEMENT
+const isMenuLink = (node: any) => node && node.to
 
 const MenuStyles = styled('div')({
   maxHeight: 224,
@@ -54,8 +55,11 @@ const Menu = forwardRef((props: Props, ref: any) => {
   } = props
   const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx)
   const menuRef = useRef<HTMLDivElement>(null)
-  const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
+  const itemHandles = useRef<
+    {to?: string; onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]
+  >([])
   const initialDefaultActiveIdxRef = useRef(activeIdx)
+  const {history} = useRouter()
   useEffect(() => {
     // support an active index that is async fetched
     if (defaultActiveIdx && !initialDefaultActiveIdxRef.current) {
@@ -91,14 +95,14 @@ const Menu = forwardRef((props: Props, ref: any) => {
       const childArr = itemHandles.current
       const menuItemIdxs = [] as number[]
       childArr.forEach((item, index) => {
-        if (isMenuItem(item)) {
+        if (isMenuItem(item) || isMenuLink(item)) {
           menuItemIdxs.push(index)
         }
       })
 
       const firstIndex = menuItemIdxs[0]
       const lastIndex = menuItemIdxs[menuItemIdxs.length - 1]
-      if (!firstIndex || !lastIndex) return
+      if (typeof firstIndex === 'undefined' || typeof lastIndex === 'undefined') return
 
       if (idx === null) setActiveIdx(firstIndex)
       else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)
@@ -132,7 +136,10 @@ const Menu = forwardRef((props: Props, ref: any) => {
         if (!child) return null
         if (!isReactElement(child)) return child
         // overloading a ref callback with useful props means intermediary components only need to forward the ref
-        const ref = (c: {onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}) => {
+        const ref = (c: {
+          to?: string
+          onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void
+        }) => {
           itemHandles.current[idx] = c
         }
         ref.closePortal = closePortal
@@ -167,10 +174,12 @@ const Menu = forwardRef((props: Props, ref: any) => {
         if (activeIdx !== null) {
           const itemHandle = itemHandles.current[activeIdx]
           itemHandle?.onClick?.(e)
+          if (itemHandle?.to) {
+            history.push(itemHandle?.to)
+          }
         }
       } else if (e.key === 'Tab') {
         e.preventDefault()
-        closePortal?.()
       }
       return e.defaultPrevented
     },

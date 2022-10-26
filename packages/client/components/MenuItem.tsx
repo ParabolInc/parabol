@@ -8,6 +8,7 @@ import React, {
   useRef
 } from 'react'
 import {PALETTE} from '../styles/paletteV3'
+import {isReactElement} from '../utils/isReactElement'
 import MenuItemLabel from './MenuItemLabel'
 
 export interface MenuItemProps {
@@ -27,19 +28,21 @@ interface Props {
   parentRef?: RefObject<HTMLDivElement>
 }
 
-const MenuItemStyles = styled('div')<{isActive: boolean; isDisabled: boolean | undefined}>(
-  ({isActive, isDisabled}) => ({
-    alignItems: 'center',
-    backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
-    color: isDisabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    display: 'flex',
-    '&:hover,:focus': {
-      backgroundColor: isActive ? PALETTE.SLATE_200 : PALETTE.SLATE_100,
-      outline: 0
-    }
-  })
-)
+const MenuItemStyles = styled('div')<{
+  isActive: boolean
+  isDisabled: boolean | undefined
+  to?: string
+}>(({isActive, isDisabled}) => ({
+  alignItems: 'center',
+  backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
+  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
+  cursor: isDisabled ? 'not-allowed' : 'pointer',
+  display: 'flex',
+  '&:hover,:focus': {
+    backgroundColor: isActive ? PALETTE.SLATE_200 : PALETTE.SLATE_100,
+    outline: 0
+  }
+}))
 
 const MINIMUM_VIEW_TIME = 300
 
@@ -102,8 +105,11 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
     }
   }
 
+  const to = isReactElement(label) ? (label as React.ReactElement)?.props?.to : undefined
+
   useImperativeHandle(ref, () => ({
-    onClick: handleClick
+    onClick: handleClick,
+    to
   }))
 
   return (
@@ -112,6 +118,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
       role='menuitem'
       ref={itemRef}
       isActive={isActive}
+      to={to}
       onClick={handleClick}
       onMouseEnter={onMouseEnter}
     >
