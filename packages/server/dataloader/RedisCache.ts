@@ -21,7 +21,7 @@ const msetpx = (key: string, value: Record<string, unknown>) => {
 
 export default class RedisCache<T extends keyof CacheType> {
   rethinkDBCache = new RethinkDBCache()
-  redis?: Redis.Redis
+  redis?: Redis
   // remote invalidation is stuck on upgrading to Redis v6 in prod
   // invalidator = new Redis(process.env.REDIS_URL)
   cachedTypes = new Set<string>()
@@ -51,7 +51,7 @@ export default class RedisCache<T extends keyof CacheType> {
   // }
   private getRedis() {
     if (!this.redis) {
-      this.redis = new Redis(process.env.REDIS_URL, {connectionName: 'redisCache'})
+      this.redis = new Redis(6379, process.env.REDIS_URL!, {connectionName: 'redisCache'})
     }
     return this.redis
   }
