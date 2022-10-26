@@ -69,6 +69,16 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     return
   }
   const {id: hookId, type, prorationDate, isProrated, orgId, userId} = hook
+
+  const orgUsers = await r
+    .table('OrganizationUser')
+    .getAll(orgId, {index: 'orgId'})
+    .filter({
+      inactive: false,
+      removedAt: null
+    })
+    .run()
+
   const tentativeProrationDate = isProrated
     ? prorationDate ?? toEpochSeconds(new Date())
     : undefined
@@ -108,14 +118,6 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     .run()
 
   if (isFlushed) {
-    const orgUsers = await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({
-        inactive: false,
-        removedAt: null
-      })
-      .run()
     const orgUserCount = orgUsers.length
     if (orgUserCount !== nextQuantity) {
       insertStripeQuantityMismatchLogging(
