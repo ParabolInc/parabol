@@ -23,7 +23,7 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
         {isFree},
         {returnChanges: true}
       )('changes')('new_val')('id')
-      .default([])
+      .default(null)
       .run()
     return {templateIds: updatedTemplateIds}
   } else {
@@ -34,6 +34,7 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
         {isFree},
         {returnChanges: true}
       )('changes')('new_val')('id')
+      .default(null)
       .run()
     return {templateIds: updatedTemplateIds}
   }
