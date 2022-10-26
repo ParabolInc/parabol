@@ -8,8 +8,8 @@ export type SetIsFreeMeetingTemplateSource =
   | {error: {message: string}}
 
 const SetIsFreeMeetingTemplate: SetIsFreeMeetingTemplatePayloadResolvers = {
-  templates: async ({templateIds}, _args, {dataLoader}) => {
-    // if (!templateIds) return null
+  templates: async ({templateIds}) => {
+    if (!templateIds) return null
     const r = await getRethink()
     return r.table('MeetingTemplate').getAll(r.args(templateIds)).run()
   }

@@ -2,7 +2,11 @@ extend type Mutation {
   """
   Set the isFree tier on a meeting template to determine if it's accessible to free users
   """
-  setIsFreeMeetingTemplate(isFree: Boolean!, templateIds: [ID!]!): SetIsFreeMeetingTemplatePayload
+  setIsFreeMeetingTemplate(
+    isFree: Boolean!
+    templateIds: [ID!]
+    templateNames: [String!]
+  ): SetIsFreeMeetingTemplatePayload
 }
 
 type SetIsFreeMeetingTemplatePayload {
