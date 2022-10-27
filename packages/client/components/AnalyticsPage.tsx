@@ -4,6 +4,7 @@ import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
+import ReactGA from 'react-ga4'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
@@ -16,6 +17,7 @@ const query = graphql`
   query AnalyticsPageQuery {
     viewer {
       id
+      segmentId
       email
       isWatched
     }
@@ -33,7 +35,13 @@ declare global {
   }
 }
 
-const {sentry: dsn, datadogClientToken, datadogApplicationId, datadogService} = window.__ACTION__
+const {
+  sentry: dsn,
+  datadogClientToken,
+  datadogApplicationId,
+  datadogService,
+  googleAnalytics: gaMeasurementId
+} = window.__ACTION__
 const ignoreErrors = [
   'Failed to update a ServiceWorker for scope',
   'ResizeObserver loop limit exceeded'
@@ -80,6 +88,25 @@ if (datadogEnabled) {
 const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    const initializeGA4 = async () => {
+      const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+      if (!res) return
+      const {viewer} = res
+      const {id, segmentId} = viewer
+      ReactGA.initialize(gaMeasurementId, {
+        gaOptions: {
+          userId: id,
+          clientId: segmentId
+        }
+      })
+    }
+    if (gaMeasurementId) {
+      initializeGA4().catch()
+    }
+  })
+
   if (!__PRODUCTION__) {
     return null
   }
@@ -104,7 +131,6 @@ const AnalyticsPage = () => {
       crossOrigin: true
     }
   )
-  const atmosphere = useAtmosphere()
 
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return
