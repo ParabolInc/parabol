@@ -69,6 +69,7 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
+        endedAt
         isRightDrawerOpen
         phases {
           ... on TeamPromptResponsesPhase {
@@ -124,8 +125,8 @@ const TeamPromptMeeting = (props: Props) => {
   }, [phase])
   const transitioningStages = useTransition(stages)
   const {safeRoute, isDesktop} = useMeeting(meeting)
-  const {isRightDrawerOpen} = meeting
-
+  const {isRightDrawerOpen, endedAt} = meeting
+  const isMeetingEnded = !!endedAt
   if (!safeRoute) return null
 
   return (
@@ -138,7 +139,7 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
-              {!isDesktop && (
+              {!isDesktop && isMeetingEnded && (
                 <BadgeContainer>
                   <TeamPromptEndedBadge />
                 </BadgeContainer>
