@@ -275,6 +275,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
+    TaskFooterIntegrateMenuListLocalQuery: (
+      _teamId: unknown
+      // _networkOnly: boolean,
+      // _first: number
+    ) => {
+      const user = this.db.users[0]
+      return {
+        viewer: {
+          ...user
+        }
+      }
+    },
     NewMeetingSummaryQuery: () => {
       return {
         viewer: {
