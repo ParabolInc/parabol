@@ -5,6 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
+import db from '../../db'
 import {GQLContext} from './../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import SharingScopeEnum from './SharingScopeEnum'
@@ -26,8 +27,10 @@ export const meetingTemplateFields = () => ({
     type: new GraphQLNonNull(GraphQLBoolean),
     description:
       'True if template is available to all teams including non-paying teams, else false',
-    resolve: ({lastUsedAt, isFree}: {lastUsedAt?: Date; isFree?: boolean}) => {
-      if (lastUsedAt) return true // if a premium template was used before we restricted them, it's free forever
+    resolve: async ({id: templateId, isFree}: {id: string; isFree?: boolean}) => {
+      const endTimes = await db.readMany('endTimesByTemplateId', [templateId])
+      const hasUsedTemplate = !!endTimes[0]?.length
+      if (hasUsedTemplate) return true // if the team used a premium template before we implemented the restriction, let them use it
       return !!isFree
     }
   },
