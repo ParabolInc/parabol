@@ -103,7 +103,7 @@ export const freshAtlassianAuth = (
   )
 }
 
-interface JiraGQLProject extends JiraProject {
+export interface JiraGQLProject extends JiraProject {
   cloudId: string
   teamId: string
   userId: string
