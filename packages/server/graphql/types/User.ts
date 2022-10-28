@@ -98,9 +98,15 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         return connectedSocketsCount > 0
       }
     },
-    isPatientZero: {
+    isPatient0: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is the first to sign up from their domain, else false'
+    },
+    isPatientZero: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the user is the first to sign up from their domain, else false',
+      deprecationReason: 'Use isPatient0 instead',
+      resolve: ({isPatient0}) => isPatient0
     },
     reasonRemoved: {
       type: GraphQLString,
