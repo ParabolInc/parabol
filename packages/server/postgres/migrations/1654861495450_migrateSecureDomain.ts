@@ -21,16 +21,20 @@ export async function up() {
     id: string
     domain: string
   }[]
-  await Promise.all(
-    securedDomains.map((sd) => {
-      return client.query(
-        `
+  try {
+    await Promise.all(
+      securedDomains.map((sd) => {
+        return client.query(
+          `
     INSERT INTO "OrganizationApprovedDomain" ("domain", "orgId", "addedByUserId")
     VALUES($1, $2, $3)`,
-        [sd.domain.trim().toLowerCase(), 'aGhostOrg', 'aGhostUser']
-      )
-    })
-  )
+          [sd.domain.trim().toLowerCase(), 'aGhostOrg', 'aGhostUser']
+        )
+      })
+    )
+  } catch {
+    // already exists
+  }
   await client.end()
   await r.getPoolMaster()?.drain()
 }
