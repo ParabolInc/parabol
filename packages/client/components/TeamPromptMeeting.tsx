@@ -17,6 +17,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
+import {TeamPromptEndedBadge} from './TeamPrompt/TeamPromptEndedBadge'
 import {
   GRID_PADDING_LEFT_RIGHT_PERCENT,
   ResponsesGridBreakpoints
@@ -43,6 +44,12 @@ const ResponsesGrid = styled('div')({
   gap: 32
 })
 
+const BadgeContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
+})
+
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
@@ -62,6 +69,7 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
+        endedAt
         isRightDrawerOpen
         phases {
           ... on TeamPromptResponsesPhase {
@@ -116,11 +124,9 @@ const TeamPromptMeeting = (props: Props) => {
     })
   }, [phase])
   const transitioningStages = useTransition(stages)
-
   const {safeRoute, isDesktop} = useMeeting(meeting)
-
-  const {isRightDrawerOpen} = meeting
-
+  const {isRightDrawerOpen, endedAt} = meeting
+  const isMeetingEnded = !!endedAt
   if (!safeRoute) return null
 
   return (
@@ -133,6 +139,11 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
+              {!isDesktop && isMeetingEnded && (
+                <BadgeContainer>
+                  <TeamPromptEndedBadge />
+                </BadgeContainer>
+              )}
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
