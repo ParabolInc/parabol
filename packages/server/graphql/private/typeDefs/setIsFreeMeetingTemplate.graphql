@@ -6,14 +6,14 @@ extend type Mutation {
     isFree: Boolean!
     templateIds: [ID!]
     templateNames: [String!]
-  ): SetIsFreeMeetingTemplatePayload
+  ): SetIsFreeMeetingTemplatePayload!
 }
 
-type SetIsFreeMeetingTemplatePayload {
-  error: StandardMutationError
+union SetIsFreeMeetingTemplatePayload = ErrorPayload | SetIsFreeMeetingTemplateSuccess
 
+type SetIsFreeMeetingTemplateSuccess {
   """
   The meeting templates that have been updated
   """
-  templates: [MeetingTemplate!]
+  updatedTemplates: [MeetingTemplate!]
 }

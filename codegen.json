@@ -20,7 +20,7 @@
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "ProcessRecurrenceSuccess": "./types/ProcessRecurrenceSuccess#ProcessRecurrenceSuccessSource",
           "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
-          "SetIsFreeMeetingTemplate": "./types/SetIsFreeMeetingTemplate#SetIsFreeMeetingTemplateSource",
+          "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
           "User": "../../postgres/types/IUser#default as IUser"
