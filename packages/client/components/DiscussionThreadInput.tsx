@@ -219,6 +219,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       const {value} = editorEl
       if (!ensureHasText(value)) return
       addComment(convertToTaskContent(value))
+      editorEl.value = ''
       return
     }
     const content = editorState.getCurrentContent()
@@ -259,6 +260,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
+  const isSubmitDisabled = Boolean(
+    editorState.getCurrentContent().getPlainText().length || editorRef.current?.value?.length
+  )
+
   const isActionsContainerVisible = allowTasks || allowPolls
   const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
@@ -284,6 +289,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           dataCy={`${dataCy}`}
           commentSubmitState={commentSubmitState}
           onSubmit={onSubmit}
+          isSubmitDisabled={isSubmitDisabled}
         />
       </CommentContainer>
       {isActionsContainerVisible && (

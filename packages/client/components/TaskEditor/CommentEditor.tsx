@@ -180,9 +180,7 @@ const CommentEditor = (props: Props) => {
     if (ensureCommenting) {
       ensureCommenting()
     }
-    if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
-    onSubmit()
   }
 
   const handleBlur = (e: React.FocusEvent) => {

@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
+import isAndroid from '../utils/draftjs/isAndroid'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -41,29 +42,52 @@ interface Props {
   commentSubmitState: CommentSubmitState
   onSubmit: () => void
   dataCy: string
+  isSubmitDisabled: boolean
 }
 
 const SendCommentButton = (props: Props) => {
-  const {commentSubmitState, onSubmit, dataCy} = props
+  const {commentSubmitState, onSubmit, dataCy, isSubmitDisabled} = props
   const {
     tooltipPortal,
     openTooltip,
     closeTooltip,
     originRef: tipRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
-  const isDisabled = commentSubmitState === 'idle'
+
+  const androidCommentSubmitState = isSubmitDisabled ? 'typing' : 'idle'
+
+  useEffect(() => {
+    const btn = document.querySelector('.send-comment-button')
+    const submitListener = () => {
+      if (isAndroid) {
+        btn?.addEventListener('touchend', (e) => {
+          e.preventDefault()
+          onSubmit()
+        })
+      } else {
+        onSubmit()
+      }
+    }
+    btn?.addEventListener('click', submitListener, true)
+    return () => {
+      btn?.removeEventListener('click', submitListener, true)
+    }
+  }, [onSubmit])
+
   return (
     <>
       <StyledPlainButton
         data-cy={`${dataCy}-send`}
-        onClick={onSubmit}
+        className='send-comment-button'
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
-        commentSubmitState={commentSubmitState}
-        disabled={isDisabled}
+        commentSubmitState={isAndroid ? androidCommentSubmitState : commentSubmitState}
+        disabled={!isSubmitDisabled}
         ref={tipRef}
       >
-        <SendIcon commentSubmitState={commentSubmitState}>arrow_upward</SendIcon>
+        <SendIcon commentSubmitState={isAndroid ? androidCommentSubmitState : commentSubmitState}>
+          arrow_upward
+        </SendIcon>
       </StyledPlainButton>
       {tooltipPortal(<div>{'Send comment'}</div>)}
     </>
