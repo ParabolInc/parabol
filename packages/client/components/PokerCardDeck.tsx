@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import React, {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {FragmentRefs} from 'relay-runtime'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -29,6 +30,11 @@ const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpec
 interface Props {
   meeting: PokerCardDeck_meeting
   estimateAreaRef: RefObject<HTMLDivElement>
+}
+
+interface Card {
+  readonly label: string
+  readonly ' $fragmentRefs': FragmentRefs<'PokerCard_scaleValue'>
 }
 
 const swipe = {
@@ -185,6 +191,35 @@ const PokerCardDeck = (props: Props) => {
     }
   }, [maxSlide, isCollapsed])
   // const transform = maxSlide > 0 && !isCollapsed ? `translateX(${swipe.translateX}px)` : undefined
+
+  const onKeyDown = (event: Event | KeyboardEvent) => {
+    // Ignore action if the card list is empty
+    if (cards.length <= 0) return
+    // When the up key is pressed
+    if ((event as KeyboardEvent).key === 'ArrowUp') {
+      if (typeof selectedIdx === 'undefined' || selectedIdx === cards.length - 1) {
+        // Select the left-most card if no card is selected or if the right-most card was previously selected
+        vote((cards[0] as Card).label)
+      } else {
+        // Otherwise select the card to the right
+        vote((cards[selectedIdx + 1] as Card).label)
+      }
+    }
+
+    // When the down key is pressed
+    if ((event as KeyboardEvent).key === 'ArrowDown') {
+      if (typeof selectedIdx === 'undefined' || selectedIdx === 0) {
+        // Select the right-most card if no card is selected or if the left-most card was previously selected
+        vote((cards[cards.length - 1] as Card).label)
+      } else {
+        // Otherwise select the card to the left
+        vote((cards[selectedIdx - 1] as Card).label)
+      }
+    }
+  }
+
+  window.onkeydown = onKeyDown
+
   return (
     <Deck
       ref={deckRef}
