@@ -4,7 +4,7 @@
 INSERT INTO "User" (
   "id",
   "email",
-  "createdAt", 
+  "createdAt",
   "updatedAt",
   "inactive",
   "lastSeenAt",
@@ -15,7 +15,8 @@ INSERT INTO "User" (
   "featureFlags",
   "lastSeenAtURLs",
   "segmentId",
-  "identities"
+  "identities",
+  "isPatient0"
 ) VALUES (
   :id,
   :email,
@@ -30,5 +31,6 @@ INSERT INTO "User" (
   :featureFlags,
   :lastSeenAtURLs,
   :segmentId,
-  :identities
+  :identities,
+  :isPatient0
 );
