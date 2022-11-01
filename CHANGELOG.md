@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.80.2 2022-November-01
+
+### Fixed
+- Release version mismatch
+
 ## 6.80.1 2022-November-01
 
 ### Fixed
