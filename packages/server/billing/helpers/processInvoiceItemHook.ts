@@ -70,23 +70,22 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
   }
   const {id: hookId, type, prorationDate, isProrated, orgId, userId} = hook
 
-  const orgUsers = await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({
-      inactive: false,
-      removedAt: null
-    })
-    .run()
-
   const tentativeProrationDate = isProrated
     ? prorationDate ?? toEpochSeconds(new Date())
     : undefined
 
   const manager = getStripeManager()
-  const [safeProrationDate, stripeSubscriptionItem] = await Promise.all([
+  const [safeProrationDate, stripeSubscriptionItem, orgUsers] = await Promise.all([
     getSafeProrationDate(stripeSubscriptionId, tentativeProrationDate),
-    manager.getSubscriptionItem(stripeSubscriptionId)
+    manager.getSubscriptionItem(stripeSubscriptionId),
+    r
+      .table('OrganizationUser')
+      .getAll(orgId, {index: 'orgId'})
+      .filter({
+        inactive: false,
+        removedAt: null
+      })
+      .run()
   ])
   if (!stripeSubscriptionItem) return
   const stripeQty = stripeSubscriptionItem.quantity || 0
