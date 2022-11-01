@@ -7,6 +7,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
+import useHotkey from '../hooks/useHotkey'
 import useInitialRender from '../hooks/useInitialRender'
 import useLeft from '../hooks/useLeft'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
@@ -218,7 +219,7 @@ const PokerCardDeck = (props: Props) => {
     }
   }
 
-  window.onkeydown = onKeyDown
+  useHotkey(['up', 'down'], onKeyDown)
 
   return (
     <Deck
