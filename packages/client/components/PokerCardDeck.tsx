@@ -50,12 +50,11 @@ const PokerCardDeck = (props: Props) => {
   const {meeting, estimateAreaRef} = props
   const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
   const isSpectating = !!viewerMeetingMember?.isSpectating
-  const stageId = localStage.id!
-  const {dimensionRef} = localStage
-  const scores = localStage.scores!
-  const isVoting = localStage.isVoting!
-  const {scale} = dimensionRef!
-  const {values: cards} = scale
+  // fallbacks used here to test https://github.com/ParabolInc/parabol/issues/6247
+  const stageId = localStage.id ?? ''
+  const cards = localStage.dimensionRef?.scale.values ?? []
+  const scores = localStage.scores ?? []
+  const isVoting = localStage.isVoting ?? false
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [estimateAreaWidth, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)

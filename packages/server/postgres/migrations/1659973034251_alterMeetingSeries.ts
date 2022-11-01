@@ -6,6 +6,12 @@ export async function up() {
   await client.connect()
   await client.query(`
     ALTER TABLE "MeetingSeries"
+    DROP CONSTRAINT IF EXISTS "fk_teamId";
+
+    ALTER TABLE "MeetingSeries"
+    DROP CONSTRAINT IF EXISTS "fk_facilitatorId";
+
+    ALTER TABLE "MeetingSeries"
       ADD COLUMN IF NOT EXISTS "teamId" VARCHAR(100) NOT NULL,
       ADD COLUMN IF NOT EXISTS "facilitatorId" VARCHAR(100) NOT NULL,
       ADD CONSTRAINT "fk_teamId"

@@ -85,7 +85,7 @@ test('First user is patientZero', async () => {
       query User($userId: ID!) {
         user(userId: $userId) {
           id
-          isPatientZero
+          isPatient0
         }
       }
     `
@@ -101,7 +101,7 @@ test('First user is patientZero', async () => {
     data: {
       user: {
         id: user1Id,
-        isPatientZero: true
+        isPatient0: true
       }
     }
   })
@@ -118,7 +118,7 @@ test('First user is patientZero', async () => {
     data: {
       user: {
         id: user2Id,
-        isPatientZero: false
+        isPatient0: false
       }
     }
   })
