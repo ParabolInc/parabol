@@ -17,7 +17,6 @@ import {isReactElement} from '../utils/isReactElement'
 import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick
-const isMenuLink = (node: any) => node && node.to
 
 const MenuStyles = styled('div')({
   maxHeight: 224,
@@ -80,22 +79,12 @@ const Menu = forwardRef((props: Props, ref: any) => {
       ]
   )
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if (keepParentFocus) {
-        // used for e.g. the emoji menu
-        e.preventDefault()
-      }
-    },
-    [keepParentFocus]
-  )
-
   const setSafeIdx = useCallback(
     (idx: number | null) => {
       const childArr = itemHandles.current
       const menuItemIdxs = [] as number[]
       childArr.forEach((item, index) => {
-        if (isMenuItem(item) || isMenuLink(item)) {
+        if (isMenuItem(item)) {
           menuItemIdxs.push(index)
         }
       })
@@ -103,7 +92,6 @@ const Menu = forwardRef((props: Props, ref: any) => {
       const firstIndex = menuItemIdxs[0]
       const lastIndex = menuItemIdxs[menuItemIdxs.length - 1]
       if (typeof firstIndex === 'undefined' || typeof lastIndex === 'undefined') return
-
       if (idx === null) setActiveIdx(firstIndex)
       else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)
       else if (idx < firstIndex) setActiveIdx(lastIndex)
@@ -180,6 +168,8 @@ const Menu = forwardRef((props: Props, ref: any) => {
         }
       } else if (e.key === 'Tab') {
         e.preventDefault()
+      } else if (e.key === 'Escape') {
+        closePortal?.()
       }
       return e.defaultPrevented
     },
@@ -192,7 +182,6 @@ const Menu = forwardRef((props: Props, ref: any) => {
       aria-label={ariaLabel}
       className={className}
       tabIndex={-1}
-      onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
       ref={menuRef}
     >

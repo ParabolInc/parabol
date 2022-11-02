@@ -155,3 +155,5 @@ export const MAX_REDUCTION_PERCENTAGE = 1
 export const MAX_RESULT_GROUP_SIZE = 10
 export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
+
+export const REACT_ELEMENT = Symbol.for('react.element')

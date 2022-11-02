@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useCallback, useRef} from 'react'
+import React, {useRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 interface Props {
@@ -31,16 +31,13 @@ interface Props {
 const MenuSearch = (props: Props) => {
   const {onChange, placeholder, value} = props
   const ref = useRef<HTMLInputElement>(null)
-  const onBlur = useCallback(() => {
-    ref.current && ref.current.focus()
-  }, [])
+
   return (
     <Input
       autoFocus
       autoComplete='off'
       ref={ref}
       name='search'
-      onBlur={onBlur}
       onChange={onChange}
       placeholder={placeholder}
       value={value}

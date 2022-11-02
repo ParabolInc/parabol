@@ -72,15 +72,18 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   } = useSearchFilter(assignees, (assignee) => assignee.preferredName)
 
   if (!team) return null
+
+  const showSearch = assignees.length > 5
+
   return (
     <Menu
-      keepParentFocus
+      keepParentFocus={showSearch}
       ariaLabel={'Assign this task to a teammate'}
       defaultActiveIdx={userId ? taskUserIdx : undefined}
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      {assignees.length > 5 && (
+      {showSearch && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedAssignees.length === 0 && (

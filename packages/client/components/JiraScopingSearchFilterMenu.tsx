@@ -104,7 +104,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   }
   return (
     <StyledMenu
-      keepParentFocus
+      keepParentFocus={showSearch}
       ariaLabel={'Define the Jira search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}

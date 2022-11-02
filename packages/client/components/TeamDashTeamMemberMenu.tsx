@@ -24,6 +24,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   const teamMemberFilterId = teamMemberFilter && teamMemberFilter.id
   const defaultActiveIdx =
     teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
+  const showSearch = teamMembers.length > 5
 
   const {
     query,
@@ -33,13 +34,13 @@ const TeamDashTeamMemberMenu = (props: Props) => {
 
   return (
     <Menu
-      keepParentFocus
+      keepParentFocus={showSearch}
       ariaLabel={'Select the team member to filter by'}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      {teamMembers.length > 5 && (
+      {showSearch && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedTeamMembers.length === 0 && (

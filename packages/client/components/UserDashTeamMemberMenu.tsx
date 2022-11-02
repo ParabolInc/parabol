@@ -65,15 +65,17 @@ const UserDashTeamMemberMenu = (props: Props) => {
     onQueryChange
   } = useSearchFilter(filteredTeamMembers, (item) => item.preferredName)
 
+  const showSearch = filteredTeamMembers.length > 5
+
   return (
     <Menu
-      keepParentFocus
+      keepParentFocus={showSearch}
       ariaLabel={'Select the team member to filter by'}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      {filteredTeamMembers.length > 5 && (
+      {showSearch && (
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedFilteredTeamMembers.length === 0 && (
