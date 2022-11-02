@@ -5,28 +5,88 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## [6.78.1](https://github.com/ParabolInc/parabol/compare/v6.78.0...v6.78.1) (2022-10-12)
+## 6.80.2 2022-November-01
 
+### Fixed
+- Release version mismatch
+
+## 6.80.1 2022-November-01
+
+### Fixed
+- **Jira**: issues sometimes are not loading in poker meeting
+
+## 6.80.0 2022-October-26
+
+### Added
+
+- End meeting from meetings view (#7313)
+
+### Fixed
+
+- **Metrics:** set disableAnonymity default to false in Meeting related events (#7320)
+- Removed the last-release-sha & unused yaml file (#7294)
+- Revert the release-please-config
+- Add noindex for ppmis (#7324)
+- Fix whitespace in links (#7326)
+- Add credit card formatting (#7303)
+- Filtering is still able to be done when only one state is available (#7295)
+- Avoid overriding custom group name with a single card (#7312)
+
+### Changed
+
+- Rename christmas template (#7323)
+- Speed up repo integrations query (#7234)
+
+## 6.79.1 2022-October-25
+
+### Fixed
+
+- EstimateStage was broken for Jira if the issue could not be fetched (#7337)
+
+## 6.79.0 2022-October-21
+
+### Added
+
+- Add confirmation tooltip on the retro meeting sidebar (#7248)
+- show you in emoji list instead of viewer name (#7285)
+- **notifications**: Update which users receive notification batch emails (#7286)
+
+### Fixed
+
+- assign new billing leader after deleting billing leader (#7267)
+- AdjustMeetingMemberCountPosition (#7202)
+- missing daki prompt (#7279)
+- Hyperlink removes whitespace (#7089)
+- **Jira**: show only available fields in Sprint Poker (#7257)
+- **Jira**: Link to documentation if we cannot find a story point field (#7264)
+- **Retro**: a card dragged from an expanded group disappeared (#7317)
+
+### Changed
+
+- use SDL for JiraIssue (#7258)
+- Fix missing types (#7300)
+- Run auto assign reviewer workflow on pull request target (#7296)
+- Change auto assign reviewer PAT (#7318)
+
+## [6.78.1](https://github.com/ParabolInc/parabol/compare/v6.78.0...v6.78.1) (2022-10-12)
 
 ### Bug Fixes
 
-* add release PR for staging branch (if bugfix) ([47a7794](https://github.com/ParabolInc/parabol/commit/47a7794c014a5c0eff5d13fd96d290e6870e82fa))
-* update the release please name & trigger branch ([2c1587b](https://github.com/ParabolInc/parabol/commit/2c1587bf809f3c0e8be9c7c594a3b77e9d2e92a1))
+- add release PR for staging branch (if bugfix) ([47a7794](https://github.com/ParabolInc/parabol/commit/47a7794c014a5c0eff5d13fd96d290e6870e82fa))
+- update the release please name & trigger branch ([2c1587b](https://github.com/ParabolInc/parabol/commit/2c1587bf809f3c0e8be9c7c594a3b77e9d2e92a1))
 
 ## [6.78.0](https://github.com/ParabolInc/parabol/compare/v6.77.0...v6.78.0) (2022-10-12)
 
-
 ### Features
 
-* **metrics:** Send isPatient0 property to Google Analytics ([#7261](https://github.com/ParabolInc/parabol/issues/7261)) ([a046fe7](https://github.com/ParabolInc/parabol/commit/a046fe7d03581e3400f0f12790ceea848a2f0e73))
-
+- **metrics:** Send isPatient0 property to Google Analytics ([#7261](https://github.com/ParabolInc/parabol/issues/7261)) ([a046fe7](https://github.com/ParabolInc/parabol/commit/a046fe7d03581e3400f0f12790ceea848a2f0e73))
 
 ### Bug Fixes
 
-* **noImplicitAny:** Fixup 200 ts rules (Part 2 of 2) ([#7193](https://github.com/ParabolInc/parabol/issues/7193)) ([c5b7306](https://github.com/ParabolInc/parabol/commit/c5b73062d4935b14af6b0d332e4e74e864a83620))
-* other tabs break when accepting a team invitation via a link ([#7200](https://github.com/ParabolInc/parabol/issues/7200)) ([d51ca5a](https://github.com/ParabolInc/parabol/commit/d51ca5a1836756c284530e79f3ba17615e8cbf68))
-* participants follow facilitator ([#7269](https://github.com/ParabolInc/parabol/issues/7269)) ([1800d0f](https://github.com/ParabolInc/parabol/commit/1800d0f062d21cdc1d98dc59cda4ea190c2b4667))
-* unsubscribe analytics bug ([#7255](https://github.com/ParabolInc/parabol/issues/7255)) ([39e9d38](https://github.com/ParabolInc/parabol/commit/39e9d3805fdde52e608c8c82bead2016b07872ac))
+- **noImplicitAny:** Fixup 200 ts rules (Part 2 of 2) ([#7193](https://github.com/ParabolInc/parabol/issues/7193)) ([c5b7306](https://github.com/ParabolInc/parabol/commit/c5b73062d4935b14af6b0d332e4e74e864a83620))
+- other tabs break when accepting a team invitation via a link ([#7200](https://github.com/ParabolInc/parabol/issues/7200)) ([d51ca5a](https://github.com/ParabolInc/parabol/commit/d51ca5a1836756c284530e79f3ba17615e8cbf68))
+- participants follow facilitator ([#7269](https://github.com/ParabolInc/parabol/issues/7269)) ([1800d0f](https://github.com/ParabolInc/parabol/commit/1800d0f062d21cdc1d98dc59cda4ea190c2b4667))
+- unsubscribe analytics bug ([#7255](https://github.com/ParabolInc/parabol/issues/7255)) ([39e9d38](https://github.com/ParabolInc/parabol/commit/39e9d3805fdde52e608c8c82bead2016b07872ac))
 
 ## 6.77.0 2022-October-5
 

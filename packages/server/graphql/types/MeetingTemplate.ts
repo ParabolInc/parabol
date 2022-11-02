@@ -22,6 +22,12 @@ export const meetingTemplateFields = () => ({
     type: new GraphQLNonNull(GraphQLBoolean),
     description: 'True if template can be used, else false'
   },
+  isFree: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description:
+      'True if template is available to all teams including non-paying teams, else false',
+    resolve: ({isFree}: {isFree?: boolean}) => !!isFree
+  },
   lastUsedAt: {
     type: GraphQLISO8601Type,
     description: 'The time of the meeting the template was last used'

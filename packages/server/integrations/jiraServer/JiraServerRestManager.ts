@@ -304,7 +304,6 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       return createdIssue
     }
     const {id: issueId} = createdIssue
-
     return {
       integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
       issueId,

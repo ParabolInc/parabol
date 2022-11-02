@@ -61,7 +61,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       ) => {
         const {dataLoader, authToken} = context
         const viewerId = getUserId(authToken)
-        const NULL_FIELD = {name: '', type: 'string'}
+        const NULL_FIELD = {name: SprintPokerDefaults.SERVICE_FIELD_NULL, type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
         const {integration} = task
@@ -86,7 +86,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
               .get('jiraIssue')
               .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
           ])
-          if (!jiraIssue) return null
+          if (!jiraIssue) return NULL_FIELD
           const {issueType, possibleEstimationFieldNames} = jiraIssue
 
           const dimensionFields = await dataLoader
@@ -122,7 +122,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           const jiraServerIssue = await dataLoader
             .get('jiraServerIssue')
             .load({providerId, teamId, userId: accessUserId, issueId})
-          if (!jiraServerIssue) return null
+          if (!jiraServerIssue) return NULL_FIELD
           const {issueType} = jiraServerIssue
 
           const existingDimensionField = await dataLoader
