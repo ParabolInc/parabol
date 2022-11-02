@@ -12,8 +12,9 @@ type Handlers = Pick<EditorProps, 'keyBindingFn' | 'onChange'> & {
   removeModal?: () => void
 }
 
-interface MenuRef {
+export interface MenuRef {
   handleKeyDown: (e: React.KeyboardEvent<any>) => 'handled' | 'not-handled'
+  handleMenuFocus?: () => void
 }
 
 const useEmojis = (

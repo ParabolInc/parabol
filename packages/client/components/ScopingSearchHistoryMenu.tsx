@@ -51,6 +51,7 @@ const ScopingSearchHistoryMenu = (props: Props) => {
 
   return (
     <Menu
+      keepParentFocus
       ariaLabel={'Select a search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}

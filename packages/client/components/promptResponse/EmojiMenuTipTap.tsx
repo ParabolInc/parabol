@@ -1,8 +1,9 @@
 import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import EmojiMenuContainer from '../TaskEditor/EmojiMenuContainer'
+import {MenuRef} from '../TaskEditor/useEmojis'
 import {getSelectionBoundingBox} from './tiptapConfig'
 
 interface Props {
@@ -12,10 +13,12 @@ interface Props {
 const pluginKey = new PluginKey('emojiMenu')
 
 const EmojiMenuTipTap = (props: Props) => {
+  const menuRef = useRef<MenuRef>()
   const {tiptapEditor} = props
   const [openEmojiMenu, setOpenEmojiMenu] = useState(false)
   const [emojiQuery, setEmojiQuery] = useState('')
   const [range, setRange] = useState<Range | null>(null)
+  const [menuIsFocused, setMenuIsFocused] = useState<boolean>(false)
 
   useEffect(() => {
     if (tiptapEditor.isDestroyed) {
@@ -42,7 +45,16 @@ const EmojiMenuTipTap = (props: Props) => {
           setOpenEmojiMenu(true)
           setRange(range)
           setEmojiQuery(query)
-        }
+        },
+        onKeyDown: (e) => {
+          // Disables EmojiMenu's `keepParentFocus` once user navigates into menu items.
+          if((e.event.key === 'ArrowDown' || e.event.key === 'ArrowUp') && menuRef.current){
+            setMenuIsFocused(true)
+            menuRef.current.handleMenuFocus?.()
+            menuRef.current.handleKeyDown(e.event as any)
+          }
+          return false
+        },
       })
     }) as any
 
@@ -64,11 +76,12 @@ const EmojiMenuTipTap = (props: Props) => {
       .run()
   }
 
-  return openEmojiMenu && tiptapEditor.isFocused ? (
+  return openEmojiMenu && (tiptapEditor.isFocused || menuIsFocused) ? (
     <EmojiMenuContainer
       originCoords={getSelectionBoundingBox(tiptapEditor)}
       onSelectEmoji={onSelectEmoji}
       query={emojiQuery}
+      menuRef={menuRef}
     />
   ) : null
 }

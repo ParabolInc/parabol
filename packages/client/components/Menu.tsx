@@ -66,7 +66,8 @@ const Menu = forwardRef((props: Props, ref: any) => {
     }
   }, [defaultActiveIdx])
   useImperativeHandle(ref, () => ({
-    handleKeyDown
+    handleKeyDown,
+    handleMenuFocus: () => menuRef.current?.focus()
   }))
 
   useEffect(
@@ -77,6 +78,16 @@ const Menu = forwardRef((props: Props, ref: any) => {
       [
         /* eslint-disable-line react-hooks/exhaustive-deps*/
       ]
+  )
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (keepParentFocus) {
+        // used for e.g. the emoji menu
+        e.preventDefault()
+      }
+    },
+    [keepParentFocus]
   )
 
   const setSafeIdx = useCallback(
@@ -182,6 +193,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
       aria-label={ariaLabel}
       className={className}
       tabIndex={-1}
+      onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
       ref={menuRef}
     >
