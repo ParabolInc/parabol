@@ -155,6 +155,7 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
   handleAddNotifications(notification, store)
 
   const removedTasks = payload.getLinkedRecords('updatedTasks')
+  if (!removedTasks) return
   const taskIds = removedTasks.map((task) => task.getValue('id'))
   handleRemoveTasks(taskIds, store)
 }
