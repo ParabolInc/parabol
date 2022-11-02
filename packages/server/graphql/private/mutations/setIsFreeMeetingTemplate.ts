@@ -8,10 +8,10 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
   const r = await getRethink()
   // VALIDATION
   if (!templateIds?.length && !templateNames?.length) {
-    throw new Error('Must provide template ids or names')
+    return {error: {message: 'Must provide template ids or names'}}
   }
   if (templateIds?.length && templateNames?.length) {
-    throw new Error('Please provide template ids or names, not both')
+    return {error: {message: 'Please provide template ids or names, not both'}}
   }
 
   // RESOLUTION
@@ -23,7 +23,7 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
         {isFree},
         {returnChanges: true}
       )('changes')('new_val')('id')
-      .default(null)
+      .default([])
       .run()
     return {updatedTemplateIds}
   } else {
@@ -35,7 +35,7 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
         {isFree},
         {returnChanges: true}
       )('changes')('new_val')('id')
-      .default(null)
+      .default([])
       .run()
     return {updatedTemplateIds}
   }

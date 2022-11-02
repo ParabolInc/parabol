@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import {ResolversTypes, SetIsFreeMeetingTemplateSuccessResolvers} from '../../private/resolverTypes'
+import {SetIsFreeMeetingTemplateSuccessResolvers} from '../../private/resolverTypes'
 
 export type SetIsFreeMeetingTemplateSuccessSource = {
   updatedTemplateIds: string[]
@@ -7,12 +7,11 @@ export type SetIsFreeMeetingTemplateSuccessSource = {
 
 const SetIsFreeMeetingTemplateSuccess: SetIsFreeMeetingTemplateSuccessResolvers = {
   updatedTemplates: async ({updatedTemplateIds}) => {
-    if (!updatedTemplateIds) return null
     const r = await getRethink()
-    const updatedTemplates = (await r
+    const updatedTemplates = await r
       .table('MeetingTemplate')
       .getAll(r.args(updatedTemplateIds))
-      .run()) as ResolversTypes['MeetingTemplate'][]
+      .run()
     return updatedTemplates
   }
 }

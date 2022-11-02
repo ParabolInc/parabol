@@ -23,6 +23,7 @@
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
+          "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },

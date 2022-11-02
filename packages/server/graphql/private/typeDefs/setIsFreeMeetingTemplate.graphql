@@ -15,5 +15,5 @@ type SetIsFreeMeetingTemplateSuccess {
   """
   The meeting templates that have been updated
   """
-  updatedTemplates: [MeetingTemplate!]
+  updatedTemplates: [MeetingTemplate!]!
 }
