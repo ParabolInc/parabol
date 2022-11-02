@@ -22,7 +22,7 @@ const Info = styled('div')({
   height: 18,
   width: 18,
   color: PALETTE.SLATE_600,
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   marginLeft: 8

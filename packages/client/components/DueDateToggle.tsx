@@ -87,7 +87,7 @@ const Toggle = styled(CardButton)<StyleProps>(
 )
 
 const DueDateIcon = styled('div')({
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 18,

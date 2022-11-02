@@ -19,7 +19,7 @@ const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
   cursor: 'pointer',
   height: 24,
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   margin: '3px 3px 3px 11px',

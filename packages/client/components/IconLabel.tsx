@@ -48,7 +48,7 @@ const StyledIcon = styled('div')<{iconAfter: boolean | undefined; iconLarge: boo
     justifyContent: 'center',
     alignItems: 'center',
     order: iconAfter ? 2 : undefined,
-    '& svg': {
+    svg: {
       fontSize: iconLarge ? 24 : 18
     }
   })

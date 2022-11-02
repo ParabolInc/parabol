@@ -12,7 +12,7 @@ import {Layout} from '../../../../types/constEnums'
 const EnvelopeIcon = styled('div')({
   height: 18,
   width: 18,
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   marginLeft: 4

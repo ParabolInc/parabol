@@ -18,7 +18,7 @@ const StyledIcon = styled('div')<{iconLarge: boolean | undefined}>(({iconLarge})
   justifyContent: 'center',
   height: iconLarge ? 24 : 18,
   width: iconLarge ? 24 : 18,
-  '& svg': {
+  svg: {
     fontSize: iconLarge ? 24 : 18
   }
 }))

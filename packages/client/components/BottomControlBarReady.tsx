@@ -40,8 +40,8 @@ const StyledIcon = styled('div')<{progress: number; isNext: boolean; isViewerRea
     // 20px to 16 = 0.75
     transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
     transition: `transform 100ms ${BezierCurve.DECELERATE}`,
-    '& svg': {
-      // without fill property the icon will have different color inside
+    svg: {
+      // without fill property the stroke property will be ignored
       fill: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
       stroke: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
       strokeWidth: 1
@@ -157,7 +157,7 @@ const BottomControlBarReady = (props: Props) => {
           <BottomControlBarProgress isNext={isNext} progress={progress} />
           <BottomNavIconLabel label={label} ref={originRef}>
             <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-              {isNext ?  <ArrowForward /> : <Check />}
+              {isNext ? <ArrowForward /> : <Check />}
             </StyledIcon>
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>

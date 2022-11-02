@@ -55,7 +55,7 @@ const RemoveScaleValueIcon = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 24,

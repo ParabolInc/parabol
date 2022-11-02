@@ -21,7 +21,7 @@ const FieldIcon = styled('div')<StyleProps>(({hasError}) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   opacity: 0.5,

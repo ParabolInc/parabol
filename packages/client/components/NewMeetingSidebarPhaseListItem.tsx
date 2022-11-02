@@ -23,8 +23,8 @@ const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
     height: 24,
     margin: '0 16px',
     width: 24,
-    '& svg': {
-      '& path': {
+    svg: {
+      path: {
         fill: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : PALETTE.SLATE_600
       }
     }

@@ -33,7 +33,7 @@ const ArrowIcon = styled('div')({
   justifyContent: 'center',
   //added little margin to separate from username
   margin: 3,
-  '& svg': {
+  svg: {
     strokeWidth: 2,
     stroke: 'white',
     fill: 'white',

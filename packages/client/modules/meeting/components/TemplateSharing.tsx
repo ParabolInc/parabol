@@ -32,7 +32,7 @@ const DropdownDecoratorIcon = styled('div')({
   margin: '8px 16px',
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 24,

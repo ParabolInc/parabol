@@ -37,7 +37,7 @@ const ScaleValueItem = styled('div')<{isHover: boolean; isDragging: boolean}>(
 const RemoveScaleValueIcon = styled('div')<{isHover: boolean}>(({isHover}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 24,

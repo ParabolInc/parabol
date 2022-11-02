@@ -11,7 +11,7 @@ import {PALETTE} from '../../styles/paletteV3'
 const StyledIcon = styled('div')({
   height: 18,
   width: 18,
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   marginRight: '.25rem',

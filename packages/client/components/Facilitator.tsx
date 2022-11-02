@@ -29,7 +29,7 @@ const FacilitatorToggle = styled('div')<{isActive: boolean; isReadOnly: boolean}
     // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
     padding: '2px 4px',
     // StyledIcon when toggle isActive or not
-    '& > span': {
+    span: {
       backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
       color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600
     },

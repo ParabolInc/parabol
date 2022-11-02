@@ -33,7 +33,7 @@ const MeetingIcon = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   width: 24,
   height: 24,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  '& svg': {
+  svg: {
     stroke: 'white',
     fill: 'white',
     strokeWidth: 0.4

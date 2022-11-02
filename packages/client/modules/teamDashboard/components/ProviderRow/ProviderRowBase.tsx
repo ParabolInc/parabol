@@ -38,7 +38,7 @@ const StatusLabel = styled('div')({
 })
 
 const StatusIcon = styled('div')({
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   width: 18,
@@ -47,7 +47,7 @@ const StatusIcon = styled('div')({
 })
 
 const MenuSmallIcon = styled(MoreVertIcon)({
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   width: 18,

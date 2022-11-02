@@ -38,7 +38,7 @@ const MessageClose = styled('div')({
 
 const MessageCloseIcon = styled('div')({
   color: '#FFFFFF',
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 18,

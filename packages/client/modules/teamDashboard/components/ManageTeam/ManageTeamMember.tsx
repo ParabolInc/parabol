@@ -48,7 +48,7 @@ const Content = styled('div')({
 })
 
 const StyledIcon = styled('div')({
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 18,

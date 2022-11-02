@@ -45,7 +45,7 @@ const ColorBadge = styled('div')<{color?: string}>(({color}) => ({
 const DropdownIcon = styled('div')({
   bottom: 0,
   color: PALETTE.SLATE_600,
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 24,

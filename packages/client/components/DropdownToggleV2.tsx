@@ -8,7 +8,7 @@ const DropdownIcon = styled('div')<{opened: boolean | undefined}>(({opened}) => 
   color: PALETTE.SLATE_600,
   height: 36,
   width: 36,
-  '& svg': {
+  svg: {
     fontSize: 36
   },
   alignSelf: 'center',

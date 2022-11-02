@@ -7,7 +7,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientManager'
 
 const LineIcon = styled('div')({
-  '& svg': {
+  svg: {
     fontSize: 19
   },
   display: 'flex',

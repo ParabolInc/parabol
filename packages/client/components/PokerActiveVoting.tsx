@@ -76,7 +76,7 @@ const RevealButtonIcon = styled('div')<{color: string}>(({color}) => ({
   position: 'absolute',
   top: 7,
   width: 40,
-  '& svg': {
+  svg: {
     fill: color,
     stroke: color,
     strokeWidth: 1

@@ -86,7 +86,7 @@ const StyledIcon = styled('div')({
   color: PALETTE.WHITE,
   cursor: 'pointer',
   display: 'flex',
-  '& svg': {
+  svg: {
     fontSize: 22
   },
   height: 22,

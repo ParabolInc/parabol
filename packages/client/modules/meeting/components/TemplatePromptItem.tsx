@@ -43,7 +43,7 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
 const RemovePromptIcon = styled('div')<StyledProps>(({isHover}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  '& svg': {
+  svg: {
     fontSize: 18
   },
   height: 24,

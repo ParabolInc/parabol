@@ -26,7 +26,7 @@ const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
   height: 24,
   width: 24,
-  '& svg': {
+  svg: {
     fontSize: 24
   },
   marginRight: 8

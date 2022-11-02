@@ -59,7 +59,7 @@ const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
   height: 18,
   width: 18,
-  '& svg': {
+  svg: {
     fontSize: 18
   }
 })
