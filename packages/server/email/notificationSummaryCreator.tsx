@@ -1,13 +1,16 @@
-import Oy from 'oy-vey'
-import NotificationSummaryEmail, {
-  NotificationSummaryProps
-} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
+import {NotificationSummaryProps} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
+import NotificationSummaryEmailRoot from 'parabol-client/modules/email/components/NotificationSummaryEmailRoot'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
+import emailTemplate from './emailTemplate'
+import renderSSRElement from './renderSSRElement'
+import ServerEnvironment from './ServerEnvironment'
 
-const textOnlySummary = (props: NotificationSummaryProps) => {
+type TextSummaryProps = Omit<NotificationSummaryProps, 'notificationRefs'>
+const textOnlySummary = (props: TextSummaryProps) => {
   const {preferredName, notificationCount, appOrigin} = props
   const taskUrl = makeAppURL(appOrigin, 'me/tasks')
   return `Hi ${preferredName} -
@@ -27,19 +30,36 @@ ${ExternalLinks.TEAM}
 `
 }
 
-const notificationSummaryCreator = (props: NotificationSummaryProps) => {
+interface Props {
+  appOrigin: string
+  preferredName: string
+  notificationCount: number
+  environment: ServerEnvironment
+}
+
+const notificationSummaryCreator = async (props: Props) => {
   const {notificationCount} = props
   const subject = `You have ${notificationCount} new ${plural(
     notificationCount,
     'notification'
   )} 👀`
+
+  const bodyContent = await renderSSRElement(
+    <NotificationSummaryEmailRoot {...props} environment={props.environment as any} />,
+    props.environment
+  )
+
+  const html = emailTemplate({
+    bodyContent,
+    title: subject,
+    previewText: subject,
+    bgColor: PALETTE.SLATE_200
+  })
+
   return {
     subject,
     body: textOnlySummary(props),
-    html: Oy.renderTemplate(<NotificationSummaryEmail {...props} />, {
-      title: subject,
-      previewText: subject
-    })
+    html
   }
 }
 
