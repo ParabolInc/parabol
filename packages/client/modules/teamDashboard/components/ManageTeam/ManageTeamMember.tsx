@@ -36,7 +36,8 @@ const Name = styled('div')({
   fontWeight: 400,
   color: PALETTE.SLATE_700,
   lineHeight: '20px',
-  padding: '0px 16px'
+  padding: '0px 16px',
+  wordBreak: 'break-word'
 })
 
 const Content = styled('div')({
