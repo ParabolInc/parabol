@@ -1,5 +1,4 @@
 import fetch from 'node-fetch'
-import sleep from 'parabol-client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import IUser from '../postgres/types/IUser'
 import sendToSentry from './sendToSentry'
@@ -42,16 +41,6 @@ const contactKeys: Record<string, string> = {
   tier: 'highest_tier'
 } as const
 
-const companyKeys: Record<string, string> = {
-  lastMetAt: 'last_met_at',
-  userCount: 'user_count',
-  activeUserCount: 'active_user_count',
-  activeTeamCount: 'active_team_count',
-  meetingCount: 'meeting_count',
-  monthlyTeamStreakMax: 'monthly_team_streak_max',
-  tier: 'highest_tier'
-} as const
-
 const queries: Record<string, string> = {
   'Changed name': `
 query ChangedName($userId: ID!) {
@@ -62,14 +51,6 @@ query ChangedName($userId: ID!) {
 }`,
   'Meeting Completed': `
 query MeetingCompleted($userIds: [ID!]!, $userId: ID!) {
-  company(userId: $userId) {
-    tier
-    lastMetAt
-    meetingCount
-    activeUserCount
-    activeTeamCount
-    monthlyTeamStreakMax
-  }
   users(userIds: $userIds) {
     id
     email
@@ -91,10 +72,6 @@ query NewOrg($userId: ID!) {
   user(userId: $userId) {
     email
     isAnyBillingLeader
-    company {
-      tier
-      activeTeamCount
-    }
   }
 }`,
   'User Role Billing Leader Granted': `
@@ -119,11 +96,6 @@ query AccountCreated($userId: ID!) {
     email
     createdAt
     isPatientZero
-    company {
-      userCount
-      activeUserCount
-      activeTeamCount
-    }
   }
 }`,
   'Account Removed': `
@@ -131,41 +103,24 @@ query AccountRemoved($userId: ID!) {
   user(userId: $userId) {
     email
     isRemoved
-    company {
-      userCount
-      activeUserCount
-      activeTeamCount
-    }
   }
 }`,
   'Account Paused': `
 query AccountPaused($userId: ID!) {
   user(userId: $userId) {
     email
-    company {
-      activeUserCount
-      activeTeamCount
-    }
   }
 }`,
   'Account Unpaused': `
 query AccountUnpaused($userId: ID!) {
   user(userId: $userId) {
     email
-    company {
-      activeUserCount
-      activeTeamCount
-    }
   }
 }`,
   'New Team': `
 query NewTeam($userId: ID!) {
   user(userId: $userId) {
     email
-    company {
-      tier
-      activeTeamCount
-    }
   }
 }`,
   'Archive Team': `
@@ -308,80 +263,13 @@ const updateHubspotBulkContact = async (records: BulkRecord[], retryCount = 0) =
   }
 }
 
-const updateHubspotCompany = async (
-  email: string,
-  propertiesObj: {[key: string]: string | number},
-  retryCount = 0
-) => {
-  if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
-  const contactRes = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${hapiKey}`,
-      'Content-Type': 'application/json'
-    }
-  })
-  const contactStatus = String(contactRes.status)
-  if (!contactStatus.startsWith('2')) {
-    await sleep(2000)
-    if (contactStatus !== '404') {
-      // 404 happens when the contact isn't created yet. don't send that error to sentry
-      sendToSentry(new Error('HS Update Company Fail. No Contact'), {tags: {email}})
-    }
-    if (retryCount >= 3) return
-    updateHubspotCompany(email, propertiesObj, retryCount + 1)
-    return
-  }
-  const contactResJSON = await contactRes.json()
-  const associatedCompany = contactResJSON['associated-company']
-  const companyId = associatedCompany ? associatedCompany['company-id'] : undefined
-  if (!companyId) {
-    sendToSentry(new Error('HS No CompanyID'), {
-      tags: {email, associatedCompany: JSON.stringify(associatedCompany)}
-    })
-    if (retryCount >= 3) return
-    updateHubspotCompany(email, propertiesObj, retryCount + 1)
-    return
-  }
-  const body = JSON.stringify({
-    properties: Object.keys(propertiesObj).map((key) => ({
-      name: companyKeys[key],
-      value: normalize(propertiesObj[key])
-    }))
-  })
-  const companyRes = await fetch(`https://api.hubapi.com/companies/v2/companies/${companyId}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${hapiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body
-  })
-  if (!String(companyRes.status).startsWith('2')) {
-    let errBody
-    try {
-      errBody = await companyRes.json()
-    } catch {
-      errBody = ''
-    }
-
-    sendToSentry(new Error('HS Bad Compamny Update'), {
-      tags: {email, body, companyId, error: JSON.stringify(errBody)}
-    })
-    if (retryCount >= 3) return
-    updateHubspotCompany(email, propertiesObj, retryCount + 1)
-    return
-  }
-}
-
 const updateHubspotParallel = async (query: string | undefined, userId: string) => {
   if (!query) return
   const parabolPayload = await parabolFetch(query, {userId})
   if (!parabolPayload) return
   const {user} = parabolPayload
   const {email, company, ...contact} = user
-  await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
+  await upsertHubspotContact(email, contact)
 }
 
 const updateHubspot = async (event: string, user: IUser, properties: BulkRecord) => {
@@ -395,31 +283,25 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
     if (!userIds) return
     const parabolPayload = await parabolFetch(query, {userIds, userId})
     if (!parabolPayload) return
-    const {users, company} = parabolPayload
-    const facilitator = users.find((user: any) => user.id === userId)
-    const {email} = facilitator
-    await Promise.all([updateHubspotBulkContact(users), updateHubspotCompany(email, company)])
+    const {users} = parabolPayload
+    await updateHubspotBulkContact(users)
   } else if (event === 'Account Created') {
     const parabolPayload = await parabolFetch(query, {userId})
     if (!parabolPayload) return
     const {user} = parabolPayload
     const {email, company, ...contact} = user
     await upsertHubspotContact(email, contact)
-    // wait for hubspot to associate the contact with the company, fn must run in 5 seconds
-    await sleep(5000)
-    await updateHubspotCompany(email, company)
   } else if (event === 'Account Removed') {
     const {parabolPayload} = properties
     if (!parabolPayload) return
     const {user} = parabolPayload as unknown as ParabolPayload
     const {email, company, ...contact} = user
-    await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
+    await upsertHubspotContact(email, contact)
   } else if (tierChanges.includes(event)) {
-    const {email} = properties
     const parabolPayload = await parabolFetch(query, {userId})
     if (!parabolPayload) return
     const {company} = parabolPayload
-    const {tier, organizations} = company
+    const {organizations} = company
     const users = [] as {email: string; [key: string]: string | number}[]
     const emails = new Set<string>()
     organizations.forEach((organization: any) => {
@@ -434,7 +316,7 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
         users.push(user)
       })
     })
-    await Promise.all([updateHubspotBulkContact(users), updateHubspotCompany(email, {tier})])
+    await updateHubspotBulkContact(users)
   } else {
     // standard handler
     await updateHubspotParallel(query, userId)
