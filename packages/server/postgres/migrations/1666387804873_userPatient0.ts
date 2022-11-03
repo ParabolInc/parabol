@@ -9,7 +9,7 @@ export async function up() {
     ADD COLUMN IF NOT EXISTS "isPatient0" BOOLEAN DEFAULT FALSE;
 
     DROP TABLE IF EXISTS "tmp_patient0";
-    SELECT DISTINCT ON ("domain") "domain", "id" INTO "tmp_patient0" FROM "User" ORDER BY "domain", "createdAt";
+    SELECT DISTINCT ON ("domain") "domain", "id" INTO TEMP "tmp_patient0" FROM "User" ORDER BY "domain", "createdAt";
     ALTER TABLE "tmp_patient0" ADD PRIMARY KEY ("id");
 
     UPDATE "User" u
