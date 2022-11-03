@@ -1,18 +1,19 @@
 import styled from '@emotion/styled'
+import {CheckCircle} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(CheckCircle)({
   color: PALETTE.JADE_400,
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   marginRight: 8,
   opacity: 1
 })
 
 const ModalCopy = styled('p')({
   alignItems: 'center',
+  justifyContent: 'flex-start',
   display: 'flex',
   fontSize: 15,
   lineHeight: '32px',
@@ -31,7 +32,7 @@ const UpgradeBenefits = () => {
       {benefits.map((benefit, idx) => {
         return (
           <ModalCopy key={`modalBulletCopy-${idx + 1}`}>
-            <StyledIcon>check_circle</StyledIcon>
+            <StyledIcon />
             {benefit}
           </ModalCopy>
         )

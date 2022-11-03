@@ -1,4 +1,14 @@
 import styled from '@emotion/styled'
+import {
+  Comment,
+  Edit,
+  Group,
+  GroupWork,
+  PlaylistAdd,
+  Receipt,
+  ThumbsUpDown,
+  Update
+} from '@mui/icons-material'
 import React from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {MenuPosition} from '../hooks/useCoords'
@@ -7,28 +17,29 @@ import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar, Times} from '../types/constEnums'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
-import Icon from './Icon'
-
-const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
-  {
-    color: PALETTE.SLATE_600,
-    margin: '0 16px'
-  },
-  ({isUnsyncedFacilitatorPhase}) => ({
-    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
-  })
-)
 
 const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
   ({isUnsyncedFacilitatorPhase}) => ({
     height: 24,
     margin: '0 16px',
     width: 24,
-    '& svg': {
-      '& path': {
+    svg: {
+      path: {
         fill: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : PALETTE.SLATE_600
       }
     }
+  })
+)
+
+const NavItemIcon = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
+  {
+    color: PALETTE.SLATE_600,
+    height: 24,
+    width: 24,
+    margin: '0 16px'
+  },
+  ({isUnsyncedFacilitatorPhase}) => ({
+    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
   })
 )
 
@@ -173,7 +184,20 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       ref={originRef}
     >
       {icon && (
-        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+          {
+            {
+              group: <Group />,
+              edit: <Edit />,
+              thumbs_up_down: <ThumbsUpDown />,
+              comment: <Comment />,
+              group_work: <GroupWork />,
+              playlist_add: <PlaylistAdd />,
+              update: <Update />,
+              receipt: <Receipt />
+            }[icon]
+          }
+        </NavItemIcon>
       )}
       {Image && (
         <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>

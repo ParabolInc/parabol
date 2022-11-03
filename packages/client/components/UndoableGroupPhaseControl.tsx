@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {Edit} from '@mui/icons-material'
 import React from 'react'
 import FlatButton from '~/components/FlatButton'
-import Icon from '~/components/Icon'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
 import useModal from '~/hooks/useModal'
@@ -19,7 +19,7 @@ const StyledButton = styled(FlatButton)({
   padding: 0
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Edit)({
   marginRight: 4
 })
 
@@ -38,7 +38,7 @@ const UndoableGroupPhaseControl = (props: Props) => {
   return (
     <>
       <StyledButton onClick={toggleModal} palette={'blue'}>
-        <StyledIcon>edit</StyledIcon>
+        <StyledIcon />
         {' Edit Groups'}
       </StyledButton>
       {modalPortal(<UndoableGroupPhaseDialog closePortal={closeModal} meetingId={meetingId} />)}

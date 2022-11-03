@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
+import {Close as CloseIcon} from '@mui/icons-material'
 import React from 'react'
-import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const Message = styled('div')({
   padding: '0 16px 16px'
@@ -37,9 +36,13 @@ const MessageClose = styled('div')({
   }
 })
 
-const MessageCloseIcon = styled(Icon)({
+const MessageCloseIcon = styled('div')({
   color: '#FFFFFF',
-  fontSize: ICON_SIZE.MD18
+  svg: {
+    fontSize: 18
+  },
+  height: 18,
+  width: 18
 })
 
 interface Props {
@@ -55,7 +58,9 @@ const OutcomeCardMessage = (props: Props) => {
         {message}
         {onClose && (
           <MessageClose onClick={onClose} tabIndex={0}>
-            <MessageCloseIcon>close</MessageCloseIcon>
+            <MessageCloseIcon>
+              <CloseIcon />
+            </MessageCloseIcon>
           </MessageClose>
         )}
       </Inner>

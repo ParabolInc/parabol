@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -8,9 +9,8 @@ import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
 import {RetroVoteMetaHeader_meeting} from '~/__generated__/RetroVoteMetaHeader_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
-import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
+import {FONT_FAMILY} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
-import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 
 const VoteSettingsMenu = lazyPreload(
@@ -80,9 +80,8 @@ const FacilitatorLabel = styled(VoteLabelHeading)({
   color: PALETTE.SLATE_800
 })
 
-const FacilitatorDropdownIcon = styled(Icon)({
-  color: PALETTE.SLATE_800,
-  fontSize: ICON_SIZE.MD24
+const FacilitatorDropdownIcon = styled(ExpandMore)({
+  color: PALETTE.SLATE_800
 })
 
 const TeamVotesCountLabel = styled(VoteCountLabel)({
@@ -126,7 +125,7 @@ const RetroVoteMetaHeader = (props: Props) => {
             onMouseEnter={VoteSettingsMenu.preload}
           >
             <FacilitatorLabel>{'Vote Settings'}</FacilitatorLabel>
-            <FacilitatorDropdownIcon>{'expand_more'}</FacilitatorDropdownIcon>
+            <FacilitatorDropdownIcon />
           </FacilitatorVoteBlock>
           {menuPortal(<VoteSettingsMenu meeting={meeting} menuProps={menuProps} />)}
         </>

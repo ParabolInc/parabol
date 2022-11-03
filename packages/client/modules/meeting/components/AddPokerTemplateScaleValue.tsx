@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
 
 const AddScaleValueLink = styled(LinkButton)({
@@ -19,7 +19,7 @@ const AddScaleValueLink = styled(LinkButton)({
   }
 })
 
-const AddScaleValueLinkPlus = styled(Icon)({
+const AddScaleValueLinkPlus = styled(Add)({
   display: 'block',
   margin: '0 16px 0 16px'
 })
@@ -32,7 +32,7 @@ const AddTemplateScaleValue = (props: Props) => {
   const {onClick} = props
   return (
     <AddScaleValueLink palette='blue' onClick={onClick}>
-      <AddScaleValueLinkPlus>add</AddScaleValueLinkPlus>
+      <AddScaleValueLinkPlus />
       <div>Add value</div>
     </AddScaleValueLink>
   )
