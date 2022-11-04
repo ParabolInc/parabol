@@ -51,9 +51,9 @@ module.exports = ({isDeploy}) => ({
     __dirname: false
   },
   entry: {
-    // web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
-    // gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-    // postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
+    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
+    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
+    postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
     migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/runMigrations.js')]
   },
   output: {
@@ -84,7 +84,7 @@ module.exports = ({isDeploy}) => ({
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
       'process.platform': JSON.stringify(process.platform),
       'process.arch': JSON.stringify(process.arch),
-      'process.versions.modules': JSON.stringify(process.versions.modules),
+      'process.versions.modules': JSON.stringify(process.versions.modules)
     }),
     // if we need canvas for SSR we can just install it to our own package.json
     new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
