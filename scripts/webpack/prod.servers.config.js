@@ -26,14 +26,35 @@ const getNormalizedWebpackPublicPath = () => {
   return normalizedPath
 }
 
+class IgnoreDynamicRequire {
+  apply(compiler) {
+    compiler.hooks.normalModuleFactory.tap('IgnoreDynamicRequire', (factory) => {
+      factory.hooks.parser.for('javascript/auto').tap('IgnoreDynamicRequire', (parser, options) => {
+        parser.hooks.call.for('require').tap('IgnoreDynamicRequire', (expression) => {
+          // This is a SyncBailHook, so returning anything stops the parser, and nothing allows to continue
+          if (expression.arguments.length !== 1 || expression.arguments[0].type === 'Literal') {
+            return
+          }
+          const arg = parser.evaluateExpression(expression.arguments[0])
+          if (!arg.isString() && !arg.isConditional()) {
+            return true
+          }
+        })
+      })
+    })
+  }
+}
+
 module.exports = ({isDeploy}) => ({
   mode: 'production',
   node: {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
-    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
+    // web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
+    // gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
+    // postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
+    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/runMigrations.js')]
   },
   output: {
     filename: '[name].js',
@@ -53,15 +74,22 @@ module.exports = ({isDeploy}) => ({
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
   target: 'node',
-  externals: [
-    nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/]
-    })
-  ],
+  optimization: {
+    minimize: false
+  },
   plugins: [
+    new IgnoreDynamicRequire(),
     new webpack.DefinePlugin({
-      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT)
+      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
+      'process.platform': JSON.stringify(process.platform),
+      'process.arch': JSON.stringify(process.arch),
+      'process.versions.modules': JSON.stringify(process.versions.modules),
     }),
+    // if we need canvas for SSR we can just install it to our own package.json
+    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    // native bindings might be faster, but abandonware & not currently used
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[fullhash].js.map',
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
