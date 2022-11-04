@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
-import React, {useEffect} from 'react'
+import {ArrowUpward} from '@mui/icons-material'
+import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import isAndroid from '../utils/draftjs/isAndroid'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
 export type CommentSubmitState = 'idle' | 'typing'
@@ -30,23 +29,25 @@ const StyledPlainButton = styled(PlainButton)<{commentSubmitState: CommentSubmit
   })
 )
 
-const SendIcon = styled(Icon)<{commentSubmitState: CommentSubmitState}>(({commentSubmitState}) => ({
-  opacity: 1,
-  transition: 'color 0.1s ease',
-  color: commentSubmitState === 'idle' ? PALETTE.SLATE_500 : PALETTE.WHITE,
-  fontSize: 20,
-  padding: 4
-}))
+const SendIcon = styled(ArrowUpward)<{commentSubmitState: CommentSubmitState}>(
+  ({commentSubmitState}) => ({
+    opacity: 1,
+    transition: 'color 0.1s ease',
+    color: commentSubmitState === 'idle' ? PALETTE.SLATE_500 : PALETTE.WHITE,
+    height: 20,
+    width: 20,
+    margin: 4
+  })
+)
 
 interface Props {
   commentSubmitState: CommentSubmitState
   onSubmit: () => void
   dataCy: string
-  isSubmitDisabled: boolean
 }
 
 const SendCommentButton = (props: Props) => {
-  const {commentSubmitState, onSubmit, dataCy, isSubmitDisabled} = props
+  const {commentSubmitState, onSubmit, dataCy} = props
   const {
     tooltipPortal,
     openTooltip,
@@ -54,40 +55,28 @@ const SendCommentButton = (props: Props) => {
     originRef: tipRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
 
-  const androidCommentSubmitState = isSubmitDisabled ? 'typing' : 'idle'
+  const isDisabled = commentSubmitState === 'idle'
 
-  useEffect(() => {
-    const btn = document.querySelector('.send-comment-button')
-    const submitListener = () => {
-      if (isAndroid) {
-        btn?.addEventListener('touchend', (e) => {
-          e.preventDefault()
-          onSubmit()
-        })
-      } else {
-        onSubmit()
-      }
-    }
-    btn?.addEventListener('click', submitListener, true)
-    return () => {
-      btn?.removeEventListener('click', submitListener, true)
-    }
-  }, [onSubmit])
+  const handleTouched = (e: React.TouchEvent) => {
+    // Ensure that on Android the keyboard  doesn't disappear after submitting a comment.
+    e.preventDefault()
+    onSubmit()
+  }
 
   return (
     <>
       <StyledPlainButton
         data-cy={`${dataCy}-send`}
+        onClick={onSubmit}
+        onTouchEnd={handleTouched}
         className='send-comment-button'
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
-        commentSubmitState={isAndroid ? androidCommentSubmitState : commentSubmitState}
-        disabled={!isSubmitDisabled}
+        commentSubmitState={commentSubmitState}
+        disabled={isDisabled}
         ref={tipRef}
       >
-        <SendIcon commentSubmitState={isAndroid ? androidCommentSubmitState : commentSubmitState}>
-          arrow_upward
-        </SendIcon>
+        <SendIcon commentSubmitState={commentSubmitState} />
       </StyledPlainButton>
       {tooltipPortal(<div>{'Send comment'}</div>)}
     </>

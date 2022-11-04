@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
+import {Check} from '@mui/icons-material'
 import React from 'react'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 interface Props {
   color: {
@@ -38,7 +38,7 @@ const ColorItem = styled(PlainButton)<{color: string}>(({color}) => ({
   transition: 'all 0.3s'
 }))
 
-const SelectedIcon = styled(Icon)({
+const SelectedIcon = styled(Check)({
   color: '#fff'
 })
 
@@ -61,7 +61,7 @@ const PaletteColor = (props: Props) => {
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
         >
-          {isCurrentColor && <SelectedIcon>check</SelectedIcon>}
+          {isCurrentColor && <SelectedIcon />}
         </ColorItem>
       </Border>
       {tooltipPortal(<div>{name}</div>)}

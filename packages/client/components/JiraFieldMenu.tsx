@@ -7,14 +7,13 @@ import {MenuProps} from '../hooks/useMenu'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
+import {OpenInNew} from '@mui/icons-material'
 
 interface Props {
   menuProps: MenuProps
@@ -26,11 +25,12 @@ const HintLabel = styled(MenuItemLabel)({
   fontStyle: 'italic'
 })
 
-const ExternalIcon = styled(Icon)({
+const ExternalIcon = styled(OpenInNew)({
   marginLeft: 'auto',
-  paddingLeft: 12,
   color: PALETTE.SLATE_500,
-  fontSize: ICON_SIZE.MD18
+  paddingLeft: 12,
+  width: 30,
+  height: 18,
 })
 
 const JiraFieldMenu = (props: Props) => {
@@ -128,7 +128,7 @@ const JiraFieldMenu = (props: Props) => {
         <MenuItem
           label={
             <HintLabel>
-              Where's my field?<ExternalIcon>open_in_new</ExternalIcon>
+              Where's my field?<ExternalIcon/>
             </HintLabel>
           }
           onClick={handleClickMissingField}

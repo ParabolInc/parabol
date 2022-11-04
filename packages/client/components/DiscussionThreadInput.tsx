@@ -159,8 +159,16 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }
 
   const ensureHasText = (value: string) => value.trim().length
+  const getCurrentText = () => {
+    const editorEl = editorRef.current
+    if (isAndroid) {
+      if (!editorEl || editorEl.type !== 'textarea') return ''
+      return editorEl.value
+    }
 
-  const hasText = ensureHasText(editorState.getCurrentContent().getPlainText())
+    return editorState.getCurrentContent().getPlainText()
+  }
+  const hasText = ensureHasText(getCurrentText())
   const commentSubmitState = hasText ? 'typing' : 'idle'
 
   const addComment = (rawContent: string) => {
@@ -219,7 +227,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       const {value} = editorEl
       if (!ensureHasText(value)) return
       addComment(convertToTaskContent(value))
-      editorEl.value = ''
+      // editorEl.value = ''
       return
     }
     const content = editorState.getCurrentContent()
@@ -260,10 +268,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const isSubmitDisabled = Boolean(
-    editorState.getCurrentContent().getPlainText().length || editorRef.current?.value?.length
-  )
-
   const isActionsContainerVisible = allowTasks || allowPolls
   const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
@@ -289,7 +293,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           dataCy={`${dataCy}`}
           commentSubmitState={commentSubmitState}
           onSubmit={onSubmit}
-          isSubmitDisabled={isSubmitDisabled}
         />
       </CommentContainer>
       {isActionsContainerVisible && (
