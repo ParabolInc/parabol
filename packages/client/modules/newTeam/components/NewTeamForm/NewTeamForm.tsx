@@ -84,7 +84,7 @@ const NewTeamForm = (props: Props) => {
 
   const validateTeamName = (teamName: string) => {
     let teamNames: string[] = []
-    if (!isNewOrg) {
+    if (isNewOrg) {
       const org = organizations.find((org) => org.id === orgId)
       if (org) {
         teamNames = org.teams.map((team) => team.name)
