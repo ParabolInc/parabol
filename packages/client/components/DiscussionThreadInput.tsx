@@ -227,7 +227,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       const {value} = editorEl
       if (!ensureHasText(value)) return
       addComment(convertToTaskContent(value))
-      // editorEl.value = ''
       return
     }
     const content = editorState.getCurrentContent()
