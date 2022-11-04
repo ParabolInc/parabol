@@ -1,10 +1,13 @@
 import styled from '@emotion/styled'
+import {HelpOutline, Notifications, Search} from '@mui/icons-material'
 import React, {forwardRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
-const ButtonIcon = styled(Icon)({})
+const ButtonIcon = styled('div')({
+  height: 24,
+  width: 24
+})
 
 const Button = styled(PlainButton)({
   borderRadius: 100,
@@ -35,6 +38,7 @@ const Badge = styled('div')({
 })
 
 interface Props {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   onClick?: () => void
   onMouseEnter?: () => void
@@ -46,7 +50,15 @@ const TopBarIcon = forwardRef((props: Props, ref: any) => {
   const {icon, hasBadge, onClick, onMouseEnter, ariaLabel} = props
   return (
     <Button onClick={onClick} ref={ref} onMouseEnter={onMouseEnter} aria-label={ariaLabel}>
-      <ButtonIcon>{icon}</ButtonIcon>
+      <ButtonIcon>
+        {
+          {
+            search: <Search />,
+            help_outline: <HelpOutline />,
+            notifications: <Notifications />
+          }[icon]
+        }
+      </ButtonIcon>
       {hasBadge && <Badge />}
     </Button>
   )

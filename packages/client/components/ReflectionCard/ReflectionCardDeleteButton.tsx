@@ -3,13 +3,13 @@
  * corner of the card.
  */
 import styled from '@emotion/styled'
+import {Cancel} from '@mui/icons-material'
 import React from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ICON_SIZE} from '../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
-import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 
 interface Props extends WithMutationProps {
@@ -42,12 +42,12 @@ const Background = styled('div')({
   zIndex: 1
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Cancel)({
   color: PALETTE.SLATE_600,
   display: 'block',
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   position: 'relative',
-  textAlign: 'center',
   zIndex: 2
 })
 
@@ -65,7 +65,7 @@ const ReflectionCardDeleteButton = (props: Props) => {
   if (submitting) return null
   return (
     <DeleteButton data-cy={dataCy} aria-label={userLabel} onClick={handleDelete} title={userLabel}>
-      <StyledIcon>cancel</StyledIcon>
+      <StyledIcon />
       <Background />
     </DeleteButton>
   )

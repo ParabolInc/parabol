@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {ThumbUp} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
@@ -8,7 +9,6 @@ import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroDiscussPhase_meeting} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
@@ -17,7 +17,6 @@ import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
-import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -90,9 +89,10 @@ const VoteMeta = styled('div')({
   padding: '2px 12px'
 })
 
-const VoteIcon = styled(Icon)({
+const VoteIcon = styled(ThumbUp)({
   color: '#FFFFFF',
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   marginRight: '.125rem'
 })
 
@@ -185,7 +185,7 @@ const RetroDiscussPhase = (props: Props) => {
               <DiscussHeader>
                 <TopicHeading>{`“${title}”`}</TopicHeading>
                 <VoteMeta>
-                  <VoteIcon>{'thumb_up'}</VoteIcon>
+                  <VoteIcon />
                   {voteCount || 0}
                 </VoteMeta>
               </DiscussHeader>

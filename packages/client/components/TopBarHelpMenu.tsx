@@ -36,7 +36,7 @@ const TopBarHelpMenu = (props: Props) => {
         />
       )}
       <MenuItem
-        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Get help'} icon={'comment '} />}
+        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Get help'} icon={'comment'} />}
         onClick={gotoContact}
       />
     </Menu>

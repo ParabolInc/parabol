@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
+import {AccountCircle, ChangeHistory, GroupAdd, GroupWork, History} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
-import Icon from './Icon'
 import TimelineEventDate from './TimelineEventDate'
 import TimelineEventHeaderMenuToggle from './TimelineEventHeaderMenuToggle'
 
 interface Props {
   children: ReactNode
+  //FIXME 6062: change to React.ComponentType
   iconName?: string
   IconSVG?: ReactNode
   title: ReactNode
@@ -41,12 +41,11 @@ const CardTitleBlock = styled('div')({
   display: 'flex'
 })
 
-const EventIcon = styled(Icon)({
+const EventIcon = styled('div')({
   alignSelf: 'flex-start',
   borderRadius: '100%',
   color: PALETTE.SLATE_600,
   display: 'block',
-  fontSize: ICON_SIZE.MD24,
   height: 24,
   userSelect: 'none',
   width: 24
@@ -69,7 +68,19 @@ const TimelineEventCard = (props: Props) => {
     <Surface>
       <CardHeader>
         <CardTitleBlock>
-          {iconName && <EventIcon>{iconName}</EventIcon>}
+          {iconName && (
+            <EventIcon>
+              {
+                {
+                  change_history: <ChangeHistory />,
+                  history: <History />,
+                  account_circle: <AccountCircle />,
+                  group_add: <GroupAdd />,
+                  group_work: <GroupWork />
+                }[iconName]
+              }
+            </EventIcon>
+          )}
           {IconSVG}
           <HeaderText>
             {title}

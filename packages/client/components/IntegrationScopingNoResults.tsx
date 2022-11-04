@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {Info as InfoIcon, Warning} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
 
 const Message = styled('div')({
   display: 'flex',
@@ -17,8 +17,10 @@ const Message = styled('div')({
   padding: '8px 16px'
 })
 
-const Info = styled(Icon)({
-  paddingRight: 16
+const Info = styled('div')({
+  marginRight: 16,
+  height: 24,
+  width: 24
 })
 
 interface Props {
@@ -30,7 +32,7 @@ const IntegrationScopingNoResults = (props: Props) => {
   const {error, msg} = props
   return (
     <Message>
-      <Info>{error ? 'warning' : 'info'}</Info>
+      <Info>{error ? <Warning /> : <InfoIcon />}</Info>
       {error || msg || 'No records found'}
     </Message>
   )

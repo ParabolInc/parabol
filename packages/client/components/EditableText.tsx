@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Edit} from '@mui/icons-material'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
-import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
+import {FONT_FAMILY} from '../styles/typographyV2'
 import Legitity from '../validation/Legitity'
-import Icon from './Icon'
 
 const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   alignItems: 'center',
@@ -42,9 +42,10 @@ const Error = styled('div')({
   fontSize: 14
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Edit)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   marginLeft: 8
 })
 
@@ -204,7 +205,7 @@ const EditableText = forwardRef((props: Props, ref: any) => {
       >
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
-        {!hideIcon && !disabled && <StyledIcon>edit</StyledIcon>}
+        {!hideIcon && !disabled && <StyledIcon />}
       </StaticBlock>
     </div>
   )

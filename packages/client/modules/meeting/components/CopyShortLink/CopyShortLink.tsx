@@ -1,12 +1,14 @@
 import styled from '@emotion/styled'
+import {Link} from '@mui/icons-material'
 import React, {ReactNode} from 'react'
 import CopyLink from '../../../../components/CopyLink'
-import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const CopyIcon = styled(Icon)({
+const CopyIcon = styled('div')({
   color: 'inherit',
   display: 'block',
+  height: 24,
+  width: 24,
   marginRight: 12
 })
 
@@ -33,6 +35,7 @@ const CopyBlock = styled('div')({
 
 interface Props {
   className?: string
+  //FIXME 6062: change to React.ComponentType
   icon?: string
   label?: ReactNode
   title?: string | undefined
@@ -46,7 +49,15 @@ const CopyShortLink = (props: Props) => {
   return (
     <CopyLink url={url} title={title} tooltip={tooltip} onCopy={onCopy}>
       <CopyBlock className={className}>
-        {icon && <CopyIcon>{icon}</CopyIcon>}
+        {icon && (
+          <CopyIcon>
+            {
+              {
+                link: <Link />
+              }[icon]
+            }
+          </CopyIcon>
+        )}
         <CopyLabel>{theLabel}</CopyLabel>
       </CopyBlock>
     </CopyLink>
