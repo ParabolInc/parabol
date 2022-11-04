@@ -88,6 +88,7 @@
     "jscodeshift": "^0.13.0",
     "lerna": "^5.5.1",
     "minimist": "^1.2.5",
+    "node-loader": "^2.0.0",
     "nx": "14.7.5",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
