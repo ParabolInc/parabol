@@ -153,6 +153,13 @@ const AgendaItem = (props: Props) => {
         gotoStageId(stageRes.stage.id)
       }
     }
+    if (viewerId !== facilitatorUserId && isFacilitatorStage) {
+      // navigate to the next best stage. onward!
+      const stageRes = findStageAfterId(phases, facilitatorStageId!)
+      if (gotoStageId && stageRes) {
+        gotoStageId(stageRes.stage.id)
+      }
+    }
     RemoveAgendaItemMutation(atmosphere, {agendaItemId}, {meetingId})
   }
 
