@@ -1,4 +1,5 @@
 /*
+ * See Notion doc with Loom explanation: https://www.notion.so/parabol/How-Invoices-Work-23457349c2b84645b1669c862d3ea236
  * Stripe doesn't offer atmoic quantity updates, so we do it ourselves
  * All quantity changes must go through this flow, even if they're not prorated or prorated with a past date
  * Because we need to get a lock on the quantity change
