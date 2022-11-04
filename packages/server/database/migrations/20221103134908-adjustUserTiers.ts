@@ -1,8 +1,6 @@
 import {R, RDatum, RValue} from 'rethinkdb-ts'
 import getPg, {closePg} from '../../postgres/getPg'
-import {updateUserTiersQuery} from '../../postgres/queries/generated/updateUserTiersQuery'
-import {getUsersByIds} from '../../postgres/queries/getUsersByIds'
-import catchAndLog from '../../postgres/utils/catchAndLog'
+import IUser from '../../postgres/types/IUser'
 import segmentIo from '../../utils/segmentIo'
 import {TierEnum} from '../types/Invoice'
 import OrganizationUser from '../types/OrganizationUser'
@@ -65,8 +63,27 @@ export const up = async function (r: R) {
     }))
     .run()) as {id: string; tier: TierEnum}[]
 
-  await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
-  const users = await getUsersByIds(removedOrgUserIds)
+  const pg = getPg()
+  await Promise.all(
+    userTiers.map((userTier) => {
+      return pg.query(
+        `UPDATE "User" AS u SET "tier" = $1::"TierEnum"
+        WHERE $2 = u."id";
+        `,
+        [userTier.tier, userTier.id]
+      )
+    })
+  )
+  const usersRes = await Promise.all(
+    removedOrgUserIds.map((userId) => {
+      return pg.query(
+        `SELECT * FROM "User"
+        WHERE id = $1;`,
+        [userId]
+      )
+    })
+  )
+  const users = usersRes.map((user) => user.rows[0]) as unknown as IUser[]
   users.forEach((user) => {
     user &&
       segmentIo.identify({
