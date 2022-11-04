@@ -6,7 +6,6 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   insights: ({insights}) => !!insights,
   recurrence: ({recurrence}) => !!recurrence,
   templateLimit: ({templateLimit}) => !!templateLimit
-  //
 }
 
 export default UserFeatureFlags
