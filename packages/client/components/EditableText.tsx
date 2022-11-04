@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
+import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import Legitity from '../validation/Legitity'
@@ -26,7 +27,14 @@ const Placeholder = styled('div')({
 })
 
 const StaticValue = styled('div')({
-  color: PALETTE.SLATE_700
+  color: PALETTE.SLATE_700,
+  paddingTop: '10px',
+  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
+    maxWidth: '150px',
+    lineHeight: '20px',
+    wordWrap: 'break-word',
+    paddingTop: '10px'
+  }
 })
 
 const Error = styled('div')({
@@ -64,7 +72,10 @@ const TextArea = styled(TextAreaAutoSize)({
   outline: 'none',
   padding: 0,
   resize: 'none',
-  width: '100%'
+  width: '100%',
+  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
+    marginTop: '10px'
+  }
 })
 
 const Form = styled('form')({
@@ -177,7 +188,7 @@ const EditableText = forwardRef((props: Props, ref: any) => {
       <div className={className} ref={ref}>
         <Form onSubmit={onSubmit}>
           {isWrap ? <TextArea {...inProps} maxRows={3} /> : <Input {...inProps} />}
-          {error && <Error>{error}</Error>}
+          {error && maxLength && <Error>{error}</Error>}
         </Form>
       </div>
     )

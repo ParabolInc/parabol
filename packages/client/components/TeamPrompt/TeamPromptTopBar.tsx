@@ -23,7 +23,8 @@ const TeamPromptHeaderTitle = styled('h1')({
   lineHeight: '24px',
   margin: 0,
   padding: 0,
-  fontWeight: 600
+  fontWeight: 600,
+  maxWidth: '480px'
 })
 
 const EditableTeamPromptHeaderTitle = TeamPromptHeaderTitle.withComponent(EditableText)

@@ -36,7 +36,7 @@ class Legitity {
   }
 
   max(len: number, msg?: string) {
-    if (!this.error && this.value && this.value.length > len) {
+    if (!this.error && this.value && this.value.length >= len) {
       this.error = msg || 'max'
     }
     return this
