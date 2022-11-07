@@ -205,4 +205,14 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - draft/testCircleCIApproval
+      - build:
+          filters:
+            branches:
+              ignore:
+                - draft/testCircleCIApproval
