@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton from '../../../../components/FlatButton'
-import Icon from '../../../../components/Icon'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -48,8 +48,12 @@ const Content = styled('div')({
   flexDirection: 'column'
 })
 
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const StyledIcon = styled('div')({
+  svg: {
+    fontSize: 18
+  },
+  height: 18,
+  width: 18
 })
 
 const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
@@ -125,7 +129,9 @@ const ManageTeamMember = (props: Props) => {
         onMouseEnter={TeamMemberAvatarMenu.preload}
         ref={originRef}
       >
-        <StyledIcon>more_vert</StyledIcon>
+        <StyledIcon>
+          <MoreVertIcon />
+        </StyledIcon>
       </StyledButton>
       {menuPortal(
         <TeamMemberAvatarMenu

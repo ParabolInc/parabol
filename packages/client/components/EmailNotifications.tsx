@@ -27,7 +27,9 @@ const ErrorMessage = styled(StyledError)({
 })
 
 const StyledCheckbox = styled(Checkbox)({
-  paddingRight: 8,
+  width: 24,
+  height: 24,
+  marginRight: 8,
   color: PALETTE.SKY_500
 })
 

@@ -1,5 +1,5 @@
+import {Add as AddIcon} from '@mui/icons-material'
 import React from 'react'
-import Icon from '../../../../components/Icon'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'
@@ -18,7 +18,7 @@ const ConnectButton = (props: Props) => {
     submitting,
     onConnectClick,
     connectButtonText = 'Connect',
-    connectButtonIcon = <Icon>add</Icon>
+    connectButtonIcon = <AddIcon />
   } = props
 
   return (

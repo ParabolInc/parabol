@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Whatshot} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
@@ -8,12 +9,10 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {DroppableType} from '../types/constEnums'
 import {ACTIVE, ACTIVE_TASK, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
-import Icon from './Icon'
 import TimelineNoTasks from './TimelineNoTasks'
 
 interface Props {
@@ -31,8 +30,9 @@ const PriorityTasksHeader = styled('div')({
   zIndex: 2
 })
 
-const ActiveIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
+const ActiveIcon = styled(Whatshot)({
+  height: 18,
+  width: 18,
   verticalAlign: 'bottom',
   marginRight: 4
 })
@@ -87,7 +87,7 @@ const TimelinePriorityTasks = (props: Props) => {
         {(dropProvided: DroppableProvided) => (
           <TaskList>
             <PriorityTasksHeader>
-              <ActiveIcon>whatshot</ActiveIcon>
+              <ActiveIcon />
               Active Tasks
             </PriorityTasksHeader>
             <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
