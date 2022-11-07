@@ -10,6 +10,7 @@ import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {BezierCurve} from '../../../types/constEnums'
 import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
@@ -64,6 +65,9 @@ const SelectTemplate = (props: Props) => {
     closePortal()
   }
   const goToBilling = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'publicTemplate'
+    })
     history.push(`/me/organizations/${orgId}`)
   }
   const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal'
