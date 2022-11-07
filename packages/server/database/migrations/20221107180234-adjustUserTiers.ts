@@ -1,7 +1,5 @@
 import {R, RDatum, RValue} from 'rethinkdb-ts'
 import getPg, {closePg} from '../../postgres/getPg'
-import IUser from '../../postgres/types/IUser'
-import segmentIo from '../../utils/segmentIo'
 import {TierEnum} from '../types/Invoice'
 import OrganizationUser from '../types/OrganizationUser'
 import User from '../types/User'
@@ -74,25 +72,6 @@ export const up = async function (r: R) {
       )
     })
   )
-  const usersRes = await Promise.all(
-    removedOrgUserIds.map((userId) => {
-      return pg.query(
-        `SELECT * FROM "User"
-        WHERE id = $1;`,
-        [userId]
-      )
-    })
-  )
-  const users = usersRes.map((user) => user.rows[0]) as unknown as IUser[]
-  users.forEach((user) => {
-    user &&
-      segmentIo.identify({
-        userId: user.id,
-        traits: {
-          highestTier: user.tier
-        }
-      })
-  })
   closePg()
 }
 
