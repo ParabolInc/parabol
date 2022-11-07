@@ -40,6 +40,7 @@ const query = graphql`
       id
       team(teamId: $teamId) {
         id
+        tier
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
             templateSearchQuery
@@ -70,7 +71,7 @@ const ReflectTemplateListPublic = (props: Props) => {
   })
   const {viewer} = data
   const team = viewer.team!
-  const {id: teamId, meetingSettings} = team
+  const {id: teamId, meetingSettings, tier} = team
   const {templateSearchQuery, publicTemplates, activeTemplate} = meetingSettings
   const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
@@ -90,6 +91,7 @@ const ReflectTemplateListPublic = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
+            tier={tier}
             templateSearchQuery={searchQuery}
             viewerRef={viewer}
           />

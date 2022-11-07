@@ -59,7 +59,7 @@ interface Props {
 const PokerTemplateItem = (props: Props) => {
   const {lowestScope, isActive, teamId, template} = props
   const {id: templateId, name: templateName} = template
-  const description = makeTemplateDescription(lowestScope, template, null)
+  const description = makeTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)

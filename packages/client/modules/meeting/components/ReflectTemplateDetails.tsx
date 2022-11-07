@@ -92,13 +92,14 @@ interface Props {
 
 const ReflectTemplateDetails = (props: Props) => {
   const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {featureFlags} = viewer
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts} = activeTemplate
-  const {id: teamId, orgId} = team
+  const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer)
+  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer, tier)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -131,7 +132,7 @@ const ReflectTemplateDetails = (props: Props) => {
   const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
-  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
+  const isActiveTemplate = templateId === settings.selectedTemplate.id
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -163,7 +164,13 @@ const ReflectTemplateDetails = (props: Props) => {
         <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
       {!isActiveTemplate && (
-        <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />
+        <SelectTemplate
+          closePortal={closePortal}
+          template={activeTemplate}
+          teamId={teamId}
+          hasFeatureFlag={featureFlags.templateLimit}
+          tier={tier}
+        />
       )}
     </PromptEditor>
   )
@@ -201,11 +208,15 @@ export default createFragmentContainer(ReflectTemplateDetails, {
       team {
         id
         orgId
+        tier
       }
     }
   `,
   viewer: graphql`
     fragment ReflectTemplateDetails_viewer on User {
+      featureFlags {
+        templateLimit
+      }
       ...makeTemplateDescription_viewer
     }
   `

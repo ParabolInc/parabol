@@ -12,6 +12,7 @@ import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 import {ReflectTemplateItem_viewer$key} from '../../../__generated__/ReflectTemplateItem_viewer.graphql'
+import {TierEnum} from '../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
@@ -57,11 +58,12 @@ interface Props {
   templateRef: ReflectTemplateItem_template$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
+  tier?: TierEnum
   viewerRef: ReflectTemplateItem_viewer$key | null
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, templateRef, templateSearchQuery, viewerRef} = props
+  const {lowestScope, isActive, teamId, templateRef, templateSearchQuery, tier, viewerRef} = props
   const template = useFragment(
     graphql`
       fragment ReflectTemplateItem_template on ReflectTemplate {
@@ -85,7 +87,7 @@ const ReflectTemplateItem = (props: Props) => {
     viewerRef
   )
   const {id: templateId, name: templateName} = template
-  const description = makeTemplateDescription(lowestScope, template, viewer)
+  const description = makeTemplateDescription(lowestScope, template, viewer, tier)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive, true)
