@@ -57,7 +57,7 @@ interface Props {
   templateRef: ReflectTemplateItem_template$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
-  viewerRef: ReflectTemplateItem_viewer$key
+  viewerRef: ReflectTemplateItem_viewer$key | null
 }
 
 const ReflectTemplateItem = (props: Props) => {
@@ -106,22 +106,3 @@ const ReflectTemplateItem = (props: Props) => {
 }
 
 export default ReflectTemplateItem
-
-// export default createFragmentContainer(ReflectTemplateItem, {
-//   template: graphql`
-//     fragment ReflectTemplateItem_template on ReflectTemplate {
-//       #get the details here so we can show them in the details view
-//       ...ReflectTemplateDetailsTemplate
-//       ...makeTemplateDescription_template
-//       id
-//       name
-//       lastUsedAt
-//       scope
-//     }
-//   `,
-//   viewer: graphql`
-//     fragment ReflectTemplateItem_viewer on User {
-//       ...makeTemplateDescription_viewer
-//     }
-//   `
-// })

@@ -34,11 +34,10 @@ const makeTemplateDescription = (
     `,
     viewerRef
   )
-  if (!viewer) return ''
-  const {featureFlags} = viewer
+  const showTemplateLimit = viewer?.featureFlags.templateLimit
   const {lastUsedAt, team, isFree} = template
   const {name: teamName, tier} = team
-  if (lowestScope === 'PUBLIC' && featureFlags.templateLimit) {
+  if (lowestScope === 'PUBLIC' && showTemplateLimit) {
     if (isFree) return 'Free template'
     return `Premium template ${tier === 'personal' ? '🔒' : '✨'}`
   }
