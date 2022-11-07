@@ -170,6 +170,7 @@ const ReflectTemplateDetails = (props: Props) => {
           teamId={teamId}
           hasFeatureFlag={featureFlags.templateLimit}
           tier={tier}
+          orgId={orgId}
         />
       )}
     </PromptEditor>

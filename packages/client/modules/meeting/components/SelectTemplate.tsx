@@ -4,6 +4,7 @@ import {Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {useHistory} from 'react-router'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -49,23 +50,27 @@ interface Props {
   teamId: string
   hasFeatureFlag?: boolean
   tier?: TierEnum
+  orgId?: string
 }
 
 const SelectTemplate = (props: Props) => {
-  const {template, closePortal, teamId, hasFeatureFlag, tier} = props
+  const {template, closePortal, teamId, hasFeatureFlag, tier, orgId} = props
   const {id: templateId, isFree} = template
   const atmosphere = useAtmosphere()
+  const history = useHistory()
   const {submitting, error} = useMutationProps()
   const selectTemplate = () => {
     SelectTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
     closePortal()
   }
+  const goToBilling = () => {
+    history.push(`/me/organizations/${orgId}`)
+  }
   const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal'
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>
-        {/* <Button onClick={selectTemplate} palette='pink' waiting={submitting}> */}
-        <Button palette='pink' waiting={submitting}>
+        <Button onClick={goToBilling} palette='pink' waiting={submitting}>
           {'Upgrade Now'}
         </Button>
       </ButtonBlock>
