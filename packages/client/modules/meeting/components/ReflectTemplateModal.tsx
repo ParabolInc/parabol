@@ -1,18 +1,20 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
+import {ReflectTemplateModal_retroMeetingSettings$key} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
+import {ReflectTemplateModal_viewer$key} from '../../../__generated__/ReflectTemplateModal_viewer.graphql'
 import ReflectTemplateDetails from './ReflectTemplateDetails'
 import ReflectTemplateList from './ReflectTemplateList'
 
 interface Props {
   closePortal: () => void
-  retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
+  retroMeetingSettingsRef: ReflectTemplateModal_retroMeetingSettings$key
+  viewerRef: ReflectTemplateModal_viewer$key
 }
 
 const StyledDialogContainer = styled(DialogContainer)({
@@ -25,7 +27,32 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const ReflectTemplateModal = (props: Props) => {
-  const {closePortal, retroMeetingSettings} = props
+  const {closePortal, retroMeetingSettingsRef, viewerRef} = props
+  const retroMeetingSettings = useFragment(
+    graphql`
+      fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
+        ...ReflectTemplateList_settings
+        ...ReflectTemplateDetails_settings
+        team {
+          id
+          orgId
+        }
+        selectedTemplate {
+          id
+          ...getTemplateList_template
+        }
+      }
+    `,
+    retroMeetingSettingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateModal_viewer on User {
+        ...ReflectTemplateDetails_viewer
+      }
+    `,
+    viewerRef
+  )
   const {selectedTemplate, team} = retroMeetingSettings
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
@@ -55,23 +82,9 @@ const ReflectTemplateModal = (props: Props) => {
         gotoTeamTemplates={gotoTeamTemplates}
         gotoPublicTemplates={gotoPublicTemplates}
         closePortal={closePortal}
+        viewer={viewer}
       />
     </StyledDialogContainer>
   )
 }
-export default createFragmentContainer(ReflectTemplateModal, {
-  retroMeetingSettings: graphql`
-    fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
-      ...ReflectTemplateList_settings
-      ...ReflectTemplateDetails_settings
-      team {
-        id
-        orgId
-      }
-      selectedTemplate {
-        id
-        ...getTemplateList_template
-      }
-    }
-  `
-})
+export default ReflectTemplateModal

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import TypeAheadLabel from '~/components/TypeAheadLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
@@ -10,7 +10,8 @@ import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
+import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
+import {ReflectTemplateItem_viewer$key} from '../../../__generated__/ReflectTemplateItem_viewer.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
@@ -53,15 +54,38 @@ const TemplateItemAction = styled('div')({})
 interface Props {
   isActive: boolean
   teamId: string
-  template: ReflectTemplateItem_template
+  templateRef: ReflectTemplateItem_template$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
+  viewerRef: ReflectTemplateItem_viewer$key
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, template, templateSearchQuery} = props
+  const {lowestScope, isActive, teamId, templateRef, templateSearchQuery, viewerRef} = props
+  const template = useFragment(
+    graphql`
+      fragment ReflectTemplateItem_template on ReflectTemplate {
+        #get the details here so we can show them in the details view
+        ...ReflectTemplateDetailsTemplate
+        ...makeTemplateDescription_template
+        id
+        name
+        lastUsedAt
+        scope
+      }
+    `,
+    templateRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateItem_viewer on User {
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef
+  )
   const {id: templateId, name: templateName} = template
-  const description = makeTemplateDescription(lowestScope, template)
+  const description = makeTemplateDescription(lowestScope, template, viewer)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive, true)
@@ -81,16 +105,23 @@ const ReflectTemplateItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateItem, {
-  template: graphql`
-    fragment ReflectTemplateItem_template on ReflectTemplate {
-      #get the details here so we can show them in the details view
-      ...ReflectTemplateDetailsTemplate
-      ...makeTemplateDescription_template
-      id
-      name
-      lastUsedAt
-      scope
-    }
-  `
-})
+export default ReflectTemplateItem
+
+// export default createFragmentContainer(ReflectTemplateItem, {
+//   template: graphql`
+//     fragment ReflectTemplateItem_template on ReflectTemplate {
+//       #get the details here so we can show them in the details view
+//       ...ReflectTemplateDetailsTemplate
+//       ...makeTemplateDescription_template
+//       id
+//       name
+//       lastUsedAt
+//       scope
+//     }
+//   `,
+//   viewer: graphql`
+//     fragment ReflectTemplateItem_viewer on User {
+//       ...makeTemplateDescription_viewer
+//     }
+//   `
+// })

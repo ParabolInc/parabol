@@ -86,11 +86,12 @@ const ReflectTemplateListTeam = (props: Props) => {
         return (
           <ReflectTemplateItem
             key={template.id}
-            template={template}
+            templateRef={template}
             isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
             templateSearchQuery={searchQuery}
+            viewerRef={null}
           />
         )
       })}

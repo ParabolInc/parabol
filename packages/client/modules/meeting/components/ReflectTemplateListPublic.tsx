@@ -36,6 +36,7 @@ const getValue = (item: {node: {id: string; name: string}}) => {
 const query = graphql`
   query ReflectTemplateListPublicQuery($teamId: ID!) {
     viewer {
+      ...ReflectTemplateItem_viewer
       id
       team(teamId: $teamId) {
         id
@@ -85,11 +86,12 @@ const ReflectTemplateListPublic = (props: Props) => {
         return (
           <ReflectTemplateItem
             key={template.id}
-            template={template}
+            templateRef={template}
             isActive={template.id === activeTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
             templateSearchQuery={searchQuery}
+            viewerRef={viewer}
           />
         )
       })}

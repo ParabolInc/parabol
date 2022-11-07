@@ -24,6 +24,7 @@ import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
+import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -86,17 +87,18 @@ interface Props {
   gotoPublicTemplates: () => void
   closePortal: () => void
   settings: ReflectTemplateDetails_settings
+  viewer: ReflectTemplateDetails_viewer
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts} = activeTemplate
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate)
+  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -200,6 +202,11 @@ export default createFragmentContainer(ReflectTemplateDetails, {
         id
         orgId
       }
+    }
+  `,
+  viewer: graphql`
+    fragment ReflectTemplateDetails_viewer on User {
+      ...makeTemplateDescription_viewer
     }
   `
 })

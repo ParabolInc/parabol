@@ -85,7 +85,7 @@ const PokerTemplateDetails = (props: Props) => {
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate)
+  const description = makeTemplateDescription(lowestScope, activeTemplate, null)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
