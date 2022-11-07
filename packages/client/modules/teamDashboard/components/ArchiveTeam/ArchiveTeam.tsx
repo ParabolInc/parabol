@@ -32,7 +32,7 @@ const ArchiveTeam = (props: Props) => {
   const handleClick = () => {
     setShowConfirmationField(true)
   }
-  const handleFormBlur = () => {
+  const handleCancel = () => {
     setShowConfirmationField(false)
   }
   return (
@@ -51,7 +51,7 @@ const ArchiveTeam = (props: Props) => {
           </Hint>
         </div>
       ) : (
-        <ArchiveTeamForm handleFormBlur={handleFormBlur} team={team} />
+        <ArchiveTeamForm handleCancel={handleCancel} team={team} />
       )}
     </div>
   )
