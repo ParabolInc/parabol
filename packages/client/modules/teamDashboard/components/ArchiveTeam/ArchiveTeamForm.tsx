@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'
 import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
-import {ArchiveTeamForm_team} from '~/__generated__/ArchiveTeamForm_team.graphql'
+import {ArchiveTeamForm_team$key} from '~/__generated__/ArchiveTeamForm_team.graphql'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
@@ -13,7 +13,7 @@ import Legitity from '../../../../validation/Legitity'
 
 interface Props {
   handleFormBlur: () => any
-  team: ArchiveTeamForm_team
+  team: ArchiveTeamForm_team$key
 }
 
 const normalize = (str: string | undefined | null) => str && str.toLowerCase().replace('’', "'")
@@ -22,7 +22,16 @@ const ArchiveTeamForm = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const {history} = useRouter()
-  const {handleFormBlur, team} = props
+  const {handleFormBlur, team: teamRef} = props
+  const team = useFragment(
+    graphql`
+      fragment ArchiveTeamForm_team on Team {
+        id
+        name
+      }
+    `,
+    teamRef
+  )
   const {id: teamId, name: teamName} = team
   const {validateField, setDirtyField, onChange, fields} = useForm({
     archivedTeamName: {
@@ -70,11 +79,4 @@ const ArchiveTeamForm = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ArchiveTeamForm, {
-  team: graphql`
-    fragment ArchiveTeamForm_team on Team {
-      id
-      name
-    }
-  `
-})
+export default ArchiveTeamForm
