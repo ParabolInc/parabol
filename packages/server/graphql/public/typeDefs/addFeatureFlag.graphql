@@ -7,6 +7,7 @@ enum UserFlagEnum {
   msTeams
   insights
   recurrence
+  templateLimit
 }
 
 """
@@ -18,6 +19,7 @@ type UserFeatureFlags {
   msTeams: Boolean!
   insights: Boolean!
   recurrence: Boolean!
+  templateLimit: Boolean!
 }
 
 extend type Mutation {
