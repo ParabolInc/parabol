@@ -1,7 +1,6 @@
 import {R} from 'rethinkdb-ts'
 
 const buggyMeetingIds = ['hmcyIBcqI0', 'dqoFvbCljO']
-
 export const up = async function (r: R) {
   const now = new Date()
   await r
