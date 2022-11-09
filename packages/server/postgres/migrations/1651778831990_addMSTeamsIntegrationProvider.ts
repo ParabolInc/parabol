@@ -7,7 +7,7 @@ export async function up() {
   await client.query(`
   DO $$
   BEGIN
-    ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE 'msTeams';
+    ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE IF NOT EXISTS 'msTeams';
   END $$;
   `)
   await client.end()

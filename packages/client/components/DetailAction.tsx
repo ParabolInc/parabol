@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
+import {ContentCopy, Delete, Edit} from '@mui/icons-material'
 import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import FlatButton from './FlatButton'
-import Icon from './Icon'
 
 const Button = styled(FlatButton)({
   alignItems: 'center',
@@ -16,14 +15,19 @@ const Button = styled(FlatButton)({
   width: 32
 })
 
-const ActionButton = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const ActionButton = styled('div')({
+  svg: {
+    fontSize: 18
+  },
+  height: 18,
+  width: 18
 })
 
 interface Props {
   disabled?: boolean
   onClick: React.MouseEventHandler
   tooltip: string
+  //FIXME 6062: change to React.ComponentType
   icon: string
 }
 
@@ -41,7 +45,15 @@ const DetailAction = (props: Props) => {
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
       >
-        <ActionButton>{icon}</ActionButton>
+        <ActionButton>
+          {
+            {
+              content_copy: <ContentCopy />,
+              delete: <Delete />,
+              edit: <Edit />
+            }[icon]
+          }
+        </ActionButton>
       </Button>
       {tooltipPortal(<div>{tooltip}</div>)}
     </>

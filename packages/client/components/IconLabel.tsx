@@ -1,7 +1,31 @@
 import styled from '@emotion/styled'
+import {
+  Add,
+  Archive,
+  ArrowBack,
+  ArrowForward,
+  Close,
+  Code,
+  FormatBold,
+  FormatItalic,
+  FormatQuote,
+  FormatStrikethrough,
+  FormatUnderlined,
+  Keyboard,
+  Label as LabelIcon,
+  Link,
+  MoreVert,
+  OpenInNew,
+  PersonPin,
+  Publish,
+  RemoveCircle,
+  Reply,
+  Search,
+  SentimentSatisfied,
+  UnfoldMore,
+  WebAsset
+} from '@mui/icons-material'
 import React, {forwardRef, ReactNode} from 'react'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 
 const LabelBlock = styled('div')({
   alignItems: 'center',
@@ -17,16 +41,21 @@ const Label = styled('div')<{iconAfter?: boolean}>(({iconAfter}) => ({
   whiteSpace: 'nowrap'
 }))
 
-const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconLarge'>>(
+const StyledIcon = styled('div')<{iconAfter: boolean | undefined; iconLarge: boolean | undefined}>(
   ({iconAfter, iconLarge}) => ({
     color: 'inherit',
-    display: 'block',
-    fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18,
-    order: iconAfter ? 2 : undefined
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    order: iconAfter ? 2 : undefined,
+    svg: {
+      fontSize: iconLarge ? 24 : 18
+    }
   })
 )
 
 interface Props {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   iconAfter?: boolean
   iconLarge?: boolean
@@ -41,7 +70,34 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
   return (
     <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onClick}>
       <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
-        {icon}
+        {
+          {
+            format_bold: <FormatBold />,
+            format_italic: <FormatItalic />,
+            format_underline: <FormatUnderlined />,
+            format_strikethrough: <FormatStrikethrough />,
+            link: <Link />,
+            label: <LabelIcon />,
+            sentiment_satisfied: <SentimentSatisfied />,
+            person_pin: <PersonPin />,
+            code: <Code />,
+            web_asset: <WebAsset />,
+            format_quote: <FormatQuote />,
+            remove_circle: <RemoveCircle />,
+            more_vert: <MoreVert />,
+            open_in_new: <OpenInNew />,
+            unfold_more: <UnfoldMore />,
+            arrow_back: <ArrowBack />,
+            add: <Add />,
+            keyboard: <Keyboard />,
+            search: <Search />,
+            reply: <Reply />,
+            arrow_forward: <ArrowForward />,
+            archive: <Archive />,
+            close: <Close />,
+            publish: <Publish />
+          }[icon]
+        }
       </StyledIcon>
       {label && <Label iconAfter={iconAfter}>{label}</Label>}
     </LabelBlock>

@@ -11,7 +11,6 @@ import {PALETTE} from '../styles/paletteV3'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
-import Icon from './Icon'
 import JiraServerSVG from './JiraServerSVG'
 import JiraSVG from './JiraSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
@@ -56,8 +55,10 @@ const StyledTabsBar = styled(Tabs)({
   }
 })
 
-const TabIcon = styled(Icon)({
-  padding: '0px 4px'
+const TabIcon = styled('div')({
+  height: 24,
+  width: 24,
+  margin: '0px 4px'
 })
 
 const TabLabel = styled('div')({

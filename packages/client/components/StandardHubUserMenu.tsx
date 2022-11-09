@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {AccountBalance, AccountBox, BarChart, ExitToApp, Star} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -66,7 +67,9 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLink to={'/me/profile'}>
-            <MenuItemIcon>account_box</MenuItemIcon>
+            <MenuItemIcon>
+              <AccountBox />
+            </MenuItemIcon>
             {'My Settings'}
           </MenuItemLink>
         }
@@ -74,7 +77,9 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLink to={'/me/organizations'}>
-            <MenuItemIcon>account_balance</MenuItemIcon>
+            <MenuItemIcon>
+              <AccountBalance />
+            </MenuItemIcon>
             {'Organizations'}
           </MenuItemLink>
         }
@@ -83,7 +88,9 @@ const StandardHubUserMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemLink to={'/usage'}>
-              <MenuItemIcon>bar_chart</MenuItemIcon>
+              <MenuItemIcon>
+                <BarChart />
+              </MenuItemIcon>
               {'Usage'}
             </MenuItemLink>
           }
@@ -94,7 +101,9 @@ const StandardHubUserMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemLink to={`/me/organizations${routeSuffix}`}>
-              <UpgradeIcon>star</UpgradeIcon>
+              <UpgradeIcon>
+                <Star />
+              </UpgradeIcon>
               <UpgradeCTA>
                 {'Upgrade to '}
                 <b>{TierLabel.PRO}</b>
@@ -107,7 +116,9 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLink to={`/${SIGNOUT_SLUG}`}>
-            <MenuItemIcon>exit_to_app</MenuItemIcon>
+            <MenuItemIcon>
+              <ExitToApp />
+            </MenuItemIcon>
             {SIGNOUT_LABEL}
           </MenuItemLink>
         }
