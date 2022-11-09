@@ -17,6 +17,7 @@ import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
 import {ReflectTemplateList_settings$key} from '../../../__generated__/ReflectTemplateList_settings.graphql'
+import {ReflectTemplateList_viewer$key} from '../../../__generated__/ReflectTemplateList_viewer.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
 import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
@@ -81,6 +82,7 @@ interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
   settingsRef: ReflectTemplateList_settings$key
+  viewerRef: ReflectTemplateList_viewer$key
 }
 
 const useReadyToSmoothScroll = (activeTemplateId: string) => {
@@ -100,7 +102,7 @@ export const templateIdxs = {
 } as const
 
 const ReflectTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settingsRef} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef} = props
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
@@ -123,6 +125,14 @@ const ReflectTemplateList = (props: Props) => {
       }
     `,
     settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateList_viewer on User {
+        ...ReflectTemplateListTeam_viewer
+      }
+    `,
+    viewerRef
   )
   const {id: settingsId, team, teamTemplates} = settings
   const {id: teamId} = team
@@ -219,6 +229,7 @@ const ReflectTemplateList = (props: Props) => {
             settingsRef={settings}
             teamId={teamId}
             isActive={activeIdx === 0}
+            viewerRef={viewer}
           />
         </TabContents>
         <TabContents>

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -9,6 +10,7 @@ import {
   ReflectTemplateListTeam_settings,
   ReflectTemplateListTeam_settings$key
 } from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
+import {ReflectTemplateListTeam_viewer$key} from '../../../__generated__/ReflectTemplateListTeam_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({
@@ -43,6 +45,7 @@ interface Props {
   showPublicTemplates: () => void
   teamId: string
   settingsRef: ReflectTemplateListTeam_settings$key
+  viewerRef: ReflectTemplateListTeam_viewer$key
 }
 
 const getValue = (item: ReflectTemplateListTeam_settings['teamTemplates'][0]) => {
@@ -50,7 +53,7 @@ const getValue = (item: ReflectTemplateListTeam_settings['teamTemplates'][0]) =>
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef} = props
+  const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef, viewerRef} = props
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateListTeam_settings on RetrospectiveMeetingSettings {
@@ -60,16 +63,41 @@ const ReflectTemplateListTeam = (props: Props) => {
           id
           name
         }
+        team {
+          orgId
+          tier
+        }
       }
     `,
     settingsRef
   )
-  const {teamTemplates, templateSearchQuery} = settings
+  const {featureFlags} = useFragment(
+    graphql`
+      fragment ReflectTemplateListTeam_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+      }
+    `,
+    viewerRef
+  )
+  const history = useHistory()
+  const {teamTemplates, templateSearchQuery, team} = settings
+  const {orgId, tier} = team
   const searchQuery = templateSearchQuery ?? ''
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
   const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
+    if (tier === 'personal' || !featureFlags.templateLimit) {
+      const goToBilling = () => history.push(`/me/organizations/${orgId}`)
+      return (
+        <Message>
+          <StyledLink onClick={goToBilling}>Upgrade to Pro </StyledLink>
+          <span>to create custom templates for your team</span>
+        </Message>
+      )
+    }
     return (
       <Message>
         <span>Your custom templates will show up here. Get started with a </span>
