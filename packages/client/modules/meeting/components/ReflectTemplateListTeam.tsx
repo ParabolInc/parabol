@@ -5,6 +5,8 @@ import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {
   ReflectTemplateListTeam_settings,
@@ -82,6 +84,7 @@ const ReflectTemplateListTeam = (props: Props) => {
     viewerRef
   )
   const history = useHistory()
+  const atmosphere = useAtmosphere()
   const {teamTemplates, templateSearchQuery, team} = settings
   const {orgId, tier} = team
   const searchQuery = templateSearchQuery ?? ''
@@ -90,7 +93,12 @@ const ReflectTemplateListTeam = (props: Props) => {
   const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
     if (tier === 'personal' || !featureFlags.templateLimit) {
-      const goToBilling = () => history.push(`/me/organizations/${orgId}`)
+      const goToBilling = () => {
+        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+          upgradeCTALocation: 'teamTemplate'
+        })
+        history.push(`/me/organizations/${orgId}`)
+      }
       return (
         <Message>
           <StyledLink onClick={goToBilling}>Upgrade to Pro </StyledLink>
