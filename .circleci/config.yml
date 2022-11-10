@@ -23,7 +23,7 @@ jobs:
           name: DevOps checkout
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
-      - backup:
+      - run:
           name: Backup
           command: |
             ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
