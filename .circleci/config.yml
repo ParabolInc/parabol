@@ -19,6 +19,7 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` Backing up..."}' $SLACK_DEVOPS_URL
+      - checkout
       - run:
           name: DevOps checkout
           command: |
