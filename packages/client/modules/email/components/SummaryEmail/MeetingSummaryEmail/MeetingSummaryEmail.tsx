@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {CorsOptions} from '../../../../../types/cors'
 // import './reactEmailDeclarations'
 import SummarySheet from './SummarySheet'
 import ViewInBrowserHeader from './ViewInBrowserHeader'
@@ -26,6 +27,7 @@ interface Props {
   meetingUrl: string
   appOrigin: string
   urlAction?: 'csv'
+  corsOptions: CorsOptions
 }
 
 const pagePadding = {
