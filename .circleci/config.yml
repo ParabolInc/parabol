@@ -233,6 +233,13 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - production
+  production-build-and-deploy:
+    jobs:
       - approve-for-deploy:
           type: approval
           filters:
@@ -245,11 +252,6 @@ workflows:
           filters:
             branches:
               only:
-                - production
-      - build:
-          filters:
-            branches:
-              ignore:
                 - production
   backup:
     jobs:
