@@ -4,9 +4,9 @@ import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
-import isValid from '../isValid'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,

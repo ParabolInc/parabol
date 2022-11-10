@@ -1,7 +1,9 @@
 import Oy from 'oy-vey'
-import React from 'react'
+import UpcomingInvoiceEmail, {
+  UpcomingInvoiceEmailProps
+} from 'parabol-client/modules/email/components/UpcomingInvoiceEmail'
 import {headCSS} from 'parabol-client/modules/email/styles'
-import UpcomingInvoiceEmail, {UpcomingInvoiceEmailProps} from 'parabol-client/modules/email/components/UpcomingInvoiceEmail'
+import React from 'react'
 
 const subject = 'Your monthly summary'
 

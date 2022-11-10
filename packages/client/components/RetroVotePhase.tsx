@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroVotePhase_meeting} from '~/__generated__/RetroVotePhase_meeting.graphql'
+import useCallbackRef from '../hooks/useCallbackRef'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
@@ -14,7 +15,6 @@ import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import RetroVoteMetaHeader from './RetroVoteMetaHeader'
 import StageTimerDisplay from './StageTimerDisplay'
-import useCallbackRef from '../hooks/useCallbackRef'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroVotePhase_meeting

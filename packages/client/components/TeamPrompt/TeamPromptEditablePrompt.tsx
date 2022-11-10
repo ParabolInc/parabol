@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -7,9 +8,7 @@ import useModal from '~/hooks/useModal'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPromptEditablePrompt_meeting.graphql'
-import Icon from '../Icon'
 import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 
 const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
@@ -27,9 +26,8 @@ const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
   }
 }))
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Edit)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
   marginLeft: 16
 })
 
@@ -71,7 +69,7 @@ const TeamPromptEditablePrompt = (props: Props) => {
         <>
           <Prompt isEditable={isFacilitator} onClick={openPortal}>
             {meetingPrompt}
-            <StyledIcon>edit</StyledIcon>
+            <StyledIcon />
           </Prompt>
           {modalPortal(
             <TeamPromptEditablePromptModal

@@ -28,7 +28,9 @@ const TaskColumnInner = memo((props: Props) => {
 
 export default createFragmentContainer(TaskColumnInner, {
   tasks: graphql`
-    fragment TaskColumnInner_tasks on Task @relay(plural: true)  @argumentDefinitions(meetingId: {type: "ID"}) {
+    fragment TaskColumnInner_tasks on Task
+    @relay(plural: true)
+    @argumentDefinitions(meetingId: {type: "ID"}) {
       ...DraggableTask_task @arguments(meetingId: $meetingId)
       id
     }

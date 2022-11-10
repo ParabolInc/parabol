@@ -59,9 +59,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(
-    serviceTaskId
-  )
+  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} =
+    useTaskChildFocus(serviceTaskId)
   const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
@@ -92,7 +91,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value && !isFocused) {
-        DeleteTaskMutation(atmosphere, serviceTaskId, teamId)
+        DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
@@ -108,7 +107,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
     const nextContentState = editorState.getCurrentContent()
     const hasText = nextContentState.hasText()
     if (!hasText && !isFocused) {
-      DeleteTaskMutation(atmosphere, serviceTaskId, teamId)
+      DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
     } else {
       const nextContent = JSON.stringify(convertToRaw(nextContentState))
       if (nextContent === content) return

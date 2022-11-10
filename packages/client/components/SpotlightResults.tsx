@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import {ElementHeight, ElementWidth} from '~/types/constEnums'
-import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
-import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
+import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import {SpotlightResultsQuery} from '~/__generated__/SpotlightResultsQuery.graphql'
+import useGroupMatrix from '../hooks/useGroupMatrix'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
+import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
 
 const ResultsWrapper = styled('div')({
   padding: '40px 0px 24px',

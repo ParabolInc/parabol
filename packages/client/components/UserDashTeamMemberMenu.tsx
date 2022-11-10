@@ -1,19 +1,19 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useRouter from '~/hooks/useRouter'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {MenuProps} from '../hooks/useMenu'
+import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {MenuProps} from '../hooks/useMenu'
-import DropdownMenuLabel from './DropdownMenuLabel'
-import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
-import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import useRouter from '~/hooks/useRouter'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import {UserTaskViewFilterLabels} from '~/types/constEnums'
-import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
@@ -27,7 +27,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
-  const oldTeamsRef = useRef<any>([])
+  const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams

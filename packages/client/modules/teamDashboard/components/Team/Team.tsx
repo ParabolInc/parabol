@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, ReactNode, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Layout} from '~/types/constEnums'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import FlatButton from '../../../../components/FlatButton'
-import Icon from '../../../../components/Icon'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Team_team} from '../../../../__generated__/Team_team.graphql'
@@ -31,14 +31,15 @@ const TeamDashHeaderInner = styled('div')({
   width: '100%'
 })
 
-const BackIcon = styled(Icon)({
+const BackIcon = styled(ArrowBack)({
   color: 'inherit'
 })
 
-const UnpaidTeamModalRoot = lazy(() =>
-  import(
-    /* webpackChunkName: 'UnpaidTeamModalRoot' */ '../../containers/UnpaidTeamModal/UnpaidTeamModalRoot'
-  )
+const UnpaidTeamModalRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'UnpaidTeamModalRoot' */ '../../containers/UnpaidTeamModal/UnpaidTeamModalRoot'
+    )
 )
 
 interface Props {
@@ -74,7 +75,7 @@ const Team = (props: Props) => {
           <TeamDashHeaderInner>
             <>
               <IconButton aria-label='Back to Team Dashboard' key='1' onClick={goToTeamDashboard}>
-                <BackIcon>arrow_back</BackIcon>
+                <BackIcon />
               </IconButton>
               <EditableTeamName team={team} />
             </>

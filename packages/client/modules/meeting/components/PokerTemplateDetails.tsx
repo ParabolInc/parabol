@@ -5,21 +5,21 @@ import {createFragmentContainer} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.png'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV3'
+import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {PokerTemplateDetails_settings} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
+import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
-import TemplateSharing from './TemplateSharing'
-import TemplateDimensionList from './TemplateDimensionList'
 import SelectTemplate from './SelectTemplate'
-import AddPokerTemplateDimension from './AddPokerTemplateDimension'
-import {Threshold} from '../../../types/constEnums'
-import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
+import TemplateDimensionList from './TemplateDimensionList'
+import TemplateSharing from './TemplateSharing'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -103,9 +103,9 @@ const PokerTemplateDetails = (props: Props) => {
   const defaultIllustrations = {
     estimatedEffortTemplate: estimatedEffortTemplate,
     wsjfTemplate: wsjfTemplate
-  }
-  const headerImg = defaultIllustrations[templateId]
-    ? defaultIllustrations[templateId]
+  } as const
+  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
+    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (

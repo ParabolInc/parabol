@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import RemoteReflectionDrag from './RemoteReflectionDrag'
 import {GQLContext} from '../graphql'
+import RemoteReflectionDrag from './RemoteReflectionDrag'
 
 const UpdateDragLocationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateDragLocationPayload',

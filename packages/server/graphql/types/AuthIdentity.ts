@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import AuthIdentityTypeEnum from './AuthIdentityTypeEnum'
-import AuthIdentityGoogle from './AuthIdentityGoogle'
 import {AuthIdentityTypeEnum as EAuthIdentityTypeEnum} from '../../../client/types/constEnums'
+import AuthIdentityGoogle from './AuthIdentityGoogle'
 import AuthIdentityLocal from './AuthIdentityLocal'
+import AuthIdentityTypeEnum from './AuthIdentityTypeEnum'
 
 export const authStrategyFields = () => ({
   isEmailVerified: {

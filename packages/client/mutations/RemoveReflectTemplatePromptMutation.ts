@@ -1,10 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
+import {RemoveReflectTemplatePromptMutation as TRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
 import {RemoveReflectTemplatePromptMutation_team} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
-import {RemoveReflectTemplatePromptMutation as IRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
-import getInProxy from '~/utils/relay/getInProxy'
+import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 
 graphql`
   fragment RemoveReflectTemplatePromptMutation_team on RemoveReflectTemplatePromptPayload {
@@ -23,21 +22,18 @@ const mutation = graphql`
   }
 `
 
-export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<RemoveReflectTemplatePromptMutation_team> = (
-  payload,
-  {store}
-) => {
-  const promptId = getInProxy(payload, 'prompt', 'id')
-  const teamId = getInProxy(payload, 'prompt', 'teamId')
+export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<
+  RemoveReflectTemplatePromptMutation_team
+> = (payload, {store}) => {
+  const promptId = payload.getLinkedRecord('prompt').getValue('id')
+  const teamId = payload.getLinkedRecord('prompt').getValue('teamId')
   handleRemoveReflectTemplatePrompt(promptId, teamId, store)
 }
 
-const RemoveReflectTemplatePromptMutation: StandardMutation<IRemoveReflectTemplatePromptMutation> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted}
-) => {
-  return commitMutation<IRemoveReflectTemplatePromptMutation>(atmosphere, {
+const RemoveReflectTemplatePromptMutation: StandardMutation<
+  TRemoveReflectTemplatePromptMutation
+> = (atmosphere, variables, {onError, onCompleted}) => {
+  return commitMutation<TRemoveReflectTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

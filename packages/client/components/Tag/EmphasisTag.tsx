@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import BaseTag from './BaseTag'
 import {PALETTE} from '../../styles/paletteV3'
+import BaseTag from './BaseTag'
 
 const EmphasisTag = styled(BaseTag)({
   backgroundColor: PALETTE.ROSE_500,

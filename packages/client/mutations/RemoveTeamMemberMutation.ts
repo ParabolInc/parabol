@@ -1,10 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
+import {
+  OnNextHandler,
+  OnNextHistoryContext,
+  SharedUpdater,
+  SimpleMutation
+} from '../types/relayMutations'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
-import getInProxy from '../utils/relay/getInProxy'
-import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
+import {RemoveTeamMemberMutation as TRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
+import {RemoveTeamMemberMutation_task} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
 import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
@@ -123,42 +128,50 @@ export const removeTeamMemberTeamOnNext: OnNextHandler<
   }
 }
 
-export const removeTeamMemberTasksUpdater = (payload, store) => {
+export const removeTeamMemberTasksUpdater: SharedUpdater<RemoveTeamMemberMutation_task> = (
+  payload,
+  {store}
+) => {
   const tasks = payload.getLinkedRecords('updatedTasks')
-  handleUpsertTasks(tasks, store)
+  // FIXME: noImplcitAny found this as a bug, it probably is! The fix will be a little too involved to include in this linting PR
+  handleUpsertTasks(tasks as any, store)
 }
 
 export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation_team> = (
   payload,
   {atmosphere, store}
 ) => {
-  const removedUserId = getInProxy(payload, 'teamMember', 'userId')
+  const removedUserId = payload.getLinkedRecord('teamMember').getValue('userId')
   const {viewerId} = atmosphere
   if (removedUserId !== viewerId) {
-    const teamMemberId = getInProxy(payload, 'teamMember', 'id')
+    const teamMemberId = payload.getLinkedRecord('teamMember').getValue('id')
     handleRemoveTeamMembers(teamMemberId, store)
     return
   }
-  const teamId = getInProxy(payload, 'team', 'id')
+  const teamId = payload.getLinkedRecord('team').getValue('id')
   handleRemoveTeams(teamId, store)
 
   const notification = payload.getLinkedRecord('kickOutNotification')
   handleAddNotifications(notification, store)
 
   const removedTasks = payload.getLinkedRecords('updatedTasks')
-  const taskIds = getInProxy(removedTasks, 'id')
+  if (!removedTasks) return
+  const taskIds = removedTasks.map((task) => task.getValue('id'))
   handleRemoveTasks(taskIds, store)
 }
 
 export const removeTeamMemberUpdater: SharedUpdater<any> = (payload, context) => {
-  removeTeamMemberTasksUpdater(payload, context.store)
+  removeTeamMemberTasksUpdater(payload, context)
   removeTeamMemberTeamUpdater(payload, context)
 }
 
-const RemoveTeamMemberMutation = (atmosphere, teamMemberId) => {
-  return commitMutation<IRemoveTeamMemberMutation>(atmosphere, {
+const RemoveTeamMemberMutation: SimpleMutation<TRemoveTeamMemberMutation> = (
+  atmosphere,
+  variables
+) => {
+  return commitMutation<TRemoveTeamMemberMutation>(atmosphere, {
     mutation,
-    variables: {teamMemberId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('removeTeamMember')
       if (!payload) return

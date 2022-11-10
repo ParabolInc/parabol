@@ -1,9 +1,31 @@
 import {GraphQLResolveInfo} from 'graphql'
-import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import {isNotNull} from '../../../../client/utils/predicates'
+import {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
+import {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
+import {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
 import {GQLContext} from '../../graphql'
 import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchGitLabProjects from './fetchGitLabProjects'
-import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
+
+type GitHubRepo = {
+  id: string
+  nameWithOwner: string
+  service: 'github'
+}
+
+type GitLabProject = {
+  id: string
+  service: 'gitlab'
+  __typename: 'Project'
+  fullPath: string
+}
+
+export type RemoteRepoIntegration =
+  | JiraGQLProject
+  | GitHubRepo
+  | GitLabProject
+  | JiraServerProject
+  | AzureAccountProject
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -12,51 +34,26 @@ const fetchAllRepoIntegrations = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-
-  const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-  const [
-    prevRepoIntegrations,
+  const [jiraProjects, githubRepos, gitlabProjects, jiraServerProjects, azureProjects] =
+    await Promise.all([
+      dataLoader.get('allJiraProjects').load({teamId, userId}),
+      fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+      fetchGitLabProjects(teamId, userId, context, info),
+      dataLoader.get('allJiraServerProjects').load({teamId, userId}),
+      dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
+    ])
+  const repos: RemoteRepoIntegration[][] = [
     jiraProjects,
     githubRepos,
     gitlabProjects,
     jiraServerProjects,
     azureProjects
-  ] = await Promise.all([
-    getPrevRepoIntegrations(userId, teamId, permLookup),
-    dataLoader.get('allJiraProjects').load({teamId, userId}),
-    fetchGitHubRepos(teamId, userId, dataLoader, context, info),
-    fetchGitLabProjects(teamId, userId, context, info),
-    dataLoader.get('allJiraServerProjects').load({teamId, userId}),
-    dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
-  ])
-  const fetchedRepoIntegrations = [
-    ...jiraProjects,
-    ...githubRepos,
-    ...gitlabProjects,
-    ...jiraServerProjects,
-    ...azureProjects
   ]
-  const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
-  prevRepoIntegrations.forEach((integration) => {
-    const integrationId = IntegrationRepoId.join(integration)
-    if (!integrationId) return
-    repoIntegrationsLastUsedAt[integrationId] = integration.lastUsedAt
-  })
-  return fetchedRepoIntegrations
-    .map((repo) => ({
-      ...repo,
-      // always have lastUsedAt be a Date (to make the sort easier below)
-      lastUsedAt: repoIntegrationsLastUsedAt[repo.id] ?? new Date(0)
-    }))
-    .sort((a, b) =>
-      a.lastUsedAt > b.lastUsedAt
-        ? -1
-        : a.service < b.service
-        ? -1
-        : a.id.toLowerCase() < b.id.toLowerCase()
-        ? -1
-        : 1
-    )
+  const maxRepos = Math.max(...repos.map((repo) => repo.length))
+  return new Array(maxRepos)
+    .fill(0)
+    .map((_, idx) => repos.map((repoArr) => repoArr[idx]).filter(isNotNull))
+    .flat()
 }
 
 export default fetchAllRepoIntegrations

@@ -1,20 +1,9 @@
-import {getTeamsByIdsQuery, IGetTeamsByIdsQueryResult} from './generated/getTeamsByIdsQuery'
-import getPg from '../getPg'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import getPg from '../getPg'
+import {getTeamsByIdsQuery, IGetTeamsByIdsQueryResult} from './generated/getTeamsByIdsQuery'
 import {IGetTeamsByOrgIdsQueryResult} from './generated/getTeamsByOrgIdsQuery'
 
-export interface JiraDimensionField {
-  dimensionName: string
-  cloudId: string
-  issueKey: string
-  projectKey: string
-  fieldName: string
-  fieldType: 'string' | 'number'
-  fieldId: string
-}
-
 export interface Team extends Omit<IGetTeamsByIdsQueryResult, 'jiraDimensionFields'> {
-  jiraDimensionFields: JiraDimensionField[]
 }
 
 export const mapToTeam = (result: IGetTeamsByIdsQueryResult[] | IGetTeamsByOrgIdsQueryResult[]) => {

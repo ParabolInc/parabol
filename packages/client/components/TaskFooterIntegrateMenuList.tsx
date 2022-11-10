@@ -1,19 +1,20 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {useEffect, useState} from 'react'
+import {useFragment, useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
-import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
-import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import {
+  TaskFooterIntegrateMenuListLocalQuery,
+  TaskFooterIntegrateMenuListLocalQueryResponse
+} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import {SearchMenuItem} from './SearchMenuItem'
@@ -23,8 +24,7 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   placeholder: string
-  repoIntegrations: TaskFooterIntegrateMenuList_repoIntegrations
-  task: TaskFooterIntegrateMenuList_task
+  task: TaskFooterIntegrateMenuList_task$key
   label?: string
 }
 
@@ -34,39 +34,109 @@ const Label = styled('div')({
   padding: '8px 8px 0'
 })
 
-const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations['items']>[0]) => {
-  const jiraItemName = item?.name ?? ''
-  const githubName = item?.nameWithOwner ?? ''
-  return jiraItemName || githubName
+type Item = NonNullable<
+  NonNullable<
+    TaskFooterIntegrateMenuListLocalQueryResponse['viewer']['teamMember']
+  >['repoIntegrations']['items']
+>[0]
+
+const getValue = (item: Item) => {
+  const {service} = item
+  if (service === 'jira' || service === 'azureDevOps' || service === 'jiraServer')
+    return item.name ?? ''
+  else if (service === 'github') return item.nameWithOwner ?? ''
+  else if (service === 'gitlab') return item.fullPath ?? ''
+  return ''
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {mutationProps, menuProps, placeholder, repoIntegrations, task, label} = props
-  const {hasMore} = repoIntegrations
-  const items = repoIntegrations.items || []
-  const {id: taskId, teamId, userId} = task
+  const {mutationProps, menuProps, placeholder, task: taskRef, label} = props
 
+  graphql`
+    fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
+      __typename
+      id
+      service
+      ... on JiraRemoteProject {
+        cloudId
+        key
+        name
+      }
+      ... on _xGitHubRepository {
+        nameWithOwner
+      }
+      ... on _xGitLabProject {
+        fullPath
+      }
+      ... on AzureDevOpsRemoteProject {
+        id
+        name
+        instanceId
+      }
+      ... on JiraServerRemoteProject {
+        name
+      }
+    }
+  `
+
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterIntegrateMenuList_task on Task {
+        id
+        teamId
+      }
+    `,
+    taskRef
+  )
+  const {id: taskId, teamId} = task
+  const [networkOnly, setNetworkOnly] = useState(false)
+  const [keepParentFocus, setKeepParentFocus] = useState(true)
+  const [first, setFirst] = useState(50)
+  const {viewer} = useLazyLoadQuery<TaskFooterIntegrateMenuListLocalQuery>(
+    graphql`
+      query TaskFooterIntegrateMenuListLocalQuery(
+        $teamId: ID!
+        $networkOnly: Boolean!
+        $first: Int!
+      ) {
+        viewer {
+          teamMember(teamId: $teamId) {
+            repoIntegrations(first: $first, networkOnly: $networkOnly) {
+              __typename
+              items {
+                ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+              }
+            }
+          }
+        }
+      }
+    `,
+    {teamId, networkOnly, first},
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const items = viewer?.teamMember?.repoIntegrations.items ?? []
   const {
     query,
     filteredItems: filteredIntegrations,
     onQueryChange
   } = useSearchFilter(items, getValue)
-
   const atmosphere = useAtmosphere()
-  const {allItems, status} = useAllIntegrations(
-    atmosphere,
-    query,
-    filteredIntegrations,
-    !!hasMore,
-    teamId,
-    userId
-  )
+
+  useEffect(() => {
+    // if searching for a repoIntegration that doesnt exist in the cache, it could be stale so use the network
+    if (!networkOnly && filteredIntegrations.length === 0) {
+      setNetworkOnly(true)
+      setKeepParentFocus(false)
+      setFirst((first) => first + 50)
+    }
+  }, [filteredIntegrations.length])
+
   return (
     <Menu
-      keepParentFocus
+      keepParentFocus={keepParentFocus}
       ariaLabel={'Export the task'}
       {...menuProps}
-      resetActiveOnChanges={[allItems]}
+      resetActiveOnChanges={[filteredIntegrations]}
     >
       {label && (
         <>
@@ -75,19 +145,19 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         </>
       )}
       <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
-      {(query && allItems.length === 0 && status !== 'loading' && (
+      {(query && filteredIntegrations.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No integrations found!
         </EmptyDropdownMenuItemLabel>
       )) ||
         null}
-      {allItems.slice(0, 10).map((repoIntegration) => {
-        const {id, __typename} = repoIntegration
+      {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
+        const {id: integrationRepoId, service} = repoIntegration
         const {submitMutation, onError, onCompleted} = mutationProps
-        if (__typename === 'JiraRemoteProject') {
+        if (service === 'jira' && repoIntegration.name) {
           const onClick = () => {
             const variables = {
-              integrationRepoId: repoIntegration.id,
+              integrationRepoId,
               taskId,
               integrationProviderService: 'jira' as const
             }
@@ -96,7 +166,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
               onClick={onClick}
@@ -104,10 +174,10 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === 'JiraServerRemoteProject') {
+        if (service === 'jiraServer' && repoIntegration.name) {
           const onClick = () => {
             const variables = {
-              integrationRepoId: repoIntegration.id,
+              integrationRepoId,
               taskId,
               integrationProviderService: 'jiraServer' as const
             }
@@ -116,7 +186,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
               onClick={onClick}
@@ -124,9 +194,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === '_xGitHubRepository') {
+        if (service === 'github' && repoIntegration.nameWithOwner) {
+          const {nameWithOwner} = repoIntegration
           const onClick = () => {
-            const {nameWithOwner} = repoIntegration
             const variables = {
               integrationRepoId: nameWithOwner,
               taskId,
@@ -137,7 +207,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={repoIntegration.nameWithOwner}
               onClick={onClick}
@@ -145,7 +215,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === '_xGitLabProject') {
+        if (service === 'gitlab' && repoIntegration.fullPath) {
           const {fullPath} = repoIntegration
           const onClick = () => {
             const variables = {
@@ -158,7 +228,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={fullPath}
               onClick={onClick}
@@ -166,11 +236,11 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === 'AzureDevOpsRemoteProject') {
+        if (service === 'azureDevOps' && repoIntegration.name) {
           const {name, id: projectId, instanceId} = repoIntegration
           const onClick = () => {
             const integrationRepoId = IntegrationRepoId.join({
-              instanceId,
+              instanceId: instanceId!,
               projectId,
               service: 'azureDevOps'
             })
@@ -184,7 +254,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           }
           return (
             <TaskIntegrationMenuItem
-              key={id}
+              key={integrationRepoId}
               query={query}
               label={name}
               onClick={onClick}
@@ -194,54 +264,8 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         return null
       })}
-      {status === 'loading' && (
-        <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
-      )}
     </Menu>
   )
 }
 
-graphql`
-  fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
-    __typename
-    id
-    service
-    ... on JiraRemoteProject {
-      cloudId
-      key
-      name
-    }
-    ... on _xGitHubRepository {
-      nameWithOwner
-    }
-    ... on _xGitLabProject {
-      fullPath
-    }
-    ... on AzureDevOpsRemoteProject {
-      id
-      name
-      instanceId
-    }
-    ... on JiraServerRemoteProject {
-      name
-    }
-  }
-`
-
-export default createFragmentContainer(TaskFooterIntegrateMenuList, {
-  repoIntegrations: graphql`
-    fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
-      hasMore
-      items {
-        ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-      }
-    }
-  `,
-  task: graphql`
-    fragment TaskFooterIntegrateMenuList_task on Task {
-      id
-      teamId
-      userId
-    }
-  `
-})
+export default TaskFooterIntegrateMenuList

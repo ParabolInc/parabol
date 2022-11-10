@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import rateLimit from '../rateLimit'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
+import rateLimit from '../rateLimit'
 
 export interface SSOParams {
   RelayState: string

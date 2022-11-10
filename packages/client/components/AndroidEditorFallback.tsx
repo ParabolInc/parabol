@@ -1,9 +1,9 @@
+import styled from '@emotion/styled'
 import {EditorState} from 'draft-js'
 import React, {ChangeEvent, ClipboardEvent, RefObject, useEffect, useState} from 'react'
-import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
-import {Card, Gutters} from '../types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
+import {Card, Gutters} from '../types/constEnums'
 
 interface Props {
   className?: string
@@ -69,7 +69,7 @@ const AndroidEditorFallback = (props: Props) => {
     <TextAreaStyles
       className={className}
       aria-label={ariaLabel}
-      onHeightChange={(height) => setHeight(height)}
+      onHeightChange={(height: number) => setHeight(height)}
       style={{height}}
       inputRef={editorRef}
       spellCheck

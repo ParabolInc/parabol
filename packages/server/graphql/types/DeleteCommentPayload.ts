@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import Comment from './Comment'
 import makeMutationPayload from './makeMutationPayload'

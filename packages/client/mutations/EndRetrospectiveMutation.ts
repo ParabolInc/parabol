@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {RecordProxy} from 'relay-runtime'
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndRetrospectiveMutation_notification} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
 import {EndRetrospectiveMutation_team} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
@@ -12,9 +13,8 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__generated__/EndRetrospectiveMutation.graphql'
-import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
-import {RecordProxy} from 'relay-runtime'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
@@ -91,10 +91,9 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   }
 }
 
-export const endRetrospectiveNotificationUpdater: SharedUpdater<EndRetrospectiveMutation_notification> = (
-  payload,
-  {store}
-) => {
+export const endRetrospectiveNotificationUpdater: SharedUpdater<
+  EndRetrospectiveMutation_notification
+> = (payload, {store}) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }

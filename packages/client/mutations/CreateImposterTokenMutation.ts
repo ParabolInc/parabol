@@ -32,7 +32,7 @@ const CreateImposterTokenMutation: SimpleMutation<ICreateImposterTokenMutation> 
   atmosphere: Atmosphere,
   variables
 ) => {
-  const onError = (err) => {
+  const onError = (err: Error) => {
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 5,
       key: 'imposterError',

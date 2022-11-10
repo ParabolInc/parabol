@@ -104,7 +104,7 @@ const handleUpdateTemplateScope = (
   // default to TEAM in case the template belongs to another TEAM & therefore didn't exist before this upscope
   const oldScope = oldTemplate?.scope ?? 'TEAM'
   const isDecreasing = SCOPES.indexOf(oldScope) > SCOPES.indexOf(newScope)
-  const filterFn = (obj) => obj && obj.__typename === 'Team' && obj.orgId === nextTemplateOrgId
+  const filterFn = (obj: any) => obj && obj.__typename === 'Team' && obj.orgId === nextTemplateOrgId
   const teamRecords = getCachedRecord(store, filterFn, {isPlural: true})
   const teamIds = teamRecords.map(({id}) => id)
   teamIds.forEach((teamId) => {
@@ -129,10 +129,9 @@ const handleUpdateTemplateScope = (
   })
 }
 
-export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdatePokerTemplateScopeMutation_organization> = (
-  payload: any,
-  {store}
-) => {
+export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
+  UpdatePokerTemplateScopeMutation_organization
+> = (payload: any, {store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
   const clonedTemplate = payload.getLinkedRecord('clonedTemplate')

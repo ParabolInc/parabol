@@ -1,11 +1,11 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import MoveReflectTemplatePromptPayload from '../types/MoveReflectTemplatePromptPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import MoveReflectTemplatePromptPayload from '../types/MoveReflectTemplatePromptPayload'
 
 const moveReflectTemplate = {
   description: 'Move a reflect template',
@@ -27,10 +27,7 @@ const moveReflectTemplate = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r
-      .table('ReflectPrompt')
-      .get(promptId)
-      .run()
+    const prompt = await r.table('ReflectPrompt').get(promptId).run()
     const viewerId = getUserId(authToken)
 
     // AUTH

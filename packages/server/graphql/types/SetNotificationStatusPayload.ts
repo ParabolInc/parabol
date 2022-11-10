@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import Notification from './Notification'
 import StandardMutationError from './StandardMutationError'
-import {GQLContext} from '../graphql'
 
 const SetNotificationStatusPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetNotificationStatusPayload',

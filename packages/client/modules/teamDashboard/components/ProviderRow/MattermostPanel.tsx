@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
+import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
 import {useFragment} from 'react-relay'
-import Icon from '~/components/Icon'
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
 import useTooltip from '~/hooks/useTooltip'
@@ -27,9 +27,11 @@ interface Props {
   teamId: string
 }
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  paddingLeft: '4px',
+  height: 24,
+  width: 24,
+  marginLeft: 4,
   ':hover': {
     cursor: 'pointer'
   }
@@ -195,7 +197,7 @@ const MattermostPanel = (props: Props) => {
           <Label>
             Mattermost Webhook
             <StyledIcon onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
-              {'info'}
+              <InfoIcon />
             </StyledIcon>
           </Label>
           {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}

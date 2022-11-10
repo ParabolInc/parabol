@@ -8,7 +8,7 @@ import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphq
 import {UpdateJiraDimensionFieldMutation as TUpdateJiraDimensionFieldMutation} from '../__generated__/UpdateJiraDimensionFieldMutation.graphql'
 
 graphql`
-  fragment UpdateJiraDimensionFieldMutation_team on UpdateJiraDimensionFieldSuccess {
+  fragment UpdateJiraDimensionFieldMutation_team on UpdateDimensionFieldSuccess {
     meeting {
       phases {
         ... on EstimatePhase {
@@ -17,18 +17,6 @@ graphql`
               name
               type
             }
-          }
-        }
-      }
-    }
-    team {
-      integrations {
-        atlassian {
-          jiraDimensionFields {
-            cloudId
-            projectKey
-            dimensionName
-            fieldName
           }
         }
       }
@@ -43,6 +31,7 @@ const mutation = graphql`
     $meetingId: ID!
     $cloudId: ID!
     $projectKey: ID!
+    $issueType: ID!
   ) {
     updateJiraDimensionField(
       dimensionName: $dimensionName
@@ -50,6 +39,7 @@ const mutation = graphql`
       meetingId: $meetingId
       cloudId: $cloudId
       projectKey: $projectKey
+      issueType: $issueType
     ) {
       ... on ErrorPayload {
         error {
@@ -70,34 +60,9 @@ const UpdateJiraDimensionFieldMutation: StandardMutation<TUpdateJiraDimensionFie
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, cloudId, dimensionName, fieldName, projectKey} = variables
+      const {meetingId, cloudId, dimensionName, fieldName} = variables
       const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) return
-      const teamId = meeting.getValue('teamId')
-      // handle team record
-      const atlassianTeamIntegration = store.get(`atlassianTeamIntegration:${teamId}`)
-      if (atlassianTeamIntegration) {
-        const jiraDimensionFields =
-          atlassianTeamIntegration.getLinkedRecords('jiraDimensionFields') || []
-        const existingField = jiraDimensionFields.find(
-          (dimensionField) =>
-            dimensionField.getValue('dimensionName') === dimensionName &&
-            dimensionField.getValue('cloudId') === cloudId &&
-            dimensionField.getValue('projectKey') === projectKey
-        )
-        if (existingField) {
-          existingField.setValue(fieldName, 'fieldName')
-        } else {
-          const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {
-            fieldName,
-            dimensionName,
-            cloudId,
-            projectKey
-          })
-          const nextJiraDimensionFields = [...jiraDimensionFields, optimisticJiraDimensionField]
-          atlassianTeamIntegration.setLinkedRecords(nextJiraDimensionFields, 'jiraDimensionFields')
-        }
-      }
       // handle meeting records
       const phases = meeting.getLinkedRecords('phases')
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!

@@ -2,7 +2,7 @@ mutation addComment($input: AddCommentInput!) {
   addComment(input: $input) {
     __typename
     subject {
-        id
+      id
     }
   }
 }

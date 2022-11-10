@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
-import Poll from './../types/Poll'
 import PollId from '../../../client/shared/gqlIds/PollId'
+import {GQLContext} from '../graphql'
+import Poll from './../types/Poll'
+import makeMutationPayload from './makeMutationPayload'
 
 export const CreatePollSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'CreatePollSuccess',

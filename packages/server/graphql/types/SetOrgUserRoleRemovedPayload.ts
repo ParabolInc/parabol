@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 import {GQLContext} from '../graphql'
+import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 
 const SetOrgUserRoleRemovedPayload: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
   any,

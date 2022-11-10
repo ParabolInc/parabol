@@ -1,19 +1,18 @@
+import styled from '@emotion/styled'
+import {Edit} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, Ref, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import styled from '@emotion/styled'
-import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
+import {PortalStatus} from '../hooks/usePortal'
+import {PALETTE} from '../styles/paletteV3'
+import {ElementWidth, Gutters} from '../types/constEnums'
 import {GROUP, VOTE} from '../utils/constants'
+import plural from '../utils/plural'
+import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
+import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
+import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
 import ReflectionGroupVoting from './ReflectionGroupVoting'
 import BaseTag from './Tag/BaseTag'
-import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
-import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
-import plural from '../utils/plural'
-import {PortalStatus} from '../hooks/usePortal'
-import {ElementWidth, Gutters} from '../types/constEnums'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import Icon from './Icon'
 
 interface Props {
   meeting: ReflectionGroupHeader_meeting
@@ -48,13 +47,13 @@ const IconGroup = styled('div')({
   alignItems: 'center'
 })
 
-const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
+const PencilIcon = styled(Edit)<{isExpanded?: boolean}>(({isExpanded}) => ({
   color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_600,
   display: 'block',
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   opacity: 0.5,
   marginRight: 4,
-  textAlign: 'center',
   top: 1,
   '&:hover': {
     cursor: 'pointer'
@@ -91,11 +90,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       />
       {phaseType === GROUP && (
         <IconGroup>
-          {canEdit && (
-            <PencilIcon isExpanded={isExpanded} onClick={onClick}>
-              edit
-            </PencilIcon>
-          )}
+          {canEdit && <PencilIcon isExpanded={isExpanded} onClick={onClick} />}
           <StyledTag
             dialogClosed={
               portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting

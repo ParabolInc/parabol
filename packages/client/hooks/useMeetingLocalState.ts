@@ -1,5 +1,5 @@
-import {useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {readInlineData} from 'relay-runtime'
 import useInitialSafeRoute from './useInitialSafeRoute'
 import useUpdatedSafeRoute from './useUpdatedSafeRoute'

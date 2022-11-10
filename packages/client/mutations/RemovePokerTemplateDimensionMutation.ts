@@ -1,10 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import handleRemovePokerTemplateDimension from './handlers/handleRemovePokerTemplateDimension'
-import {RemovePokerTemplateDimensionMutation_team} from '../__generated__/RemovePokerTemplateDimensionMutation_team.graphql'
 import {RemovePokerTemplateDimensionMutation as IRemovePokerTemplateDimensionMutation} from '../__generated__/RemovePokerTemplateDimensionMutation.graphql'
-import getInProxy from '~/utils/relay/getInProxy'
+import {RemovePokerTemplateDimensionMutation_team} from '../__generated__/RemovePokerTemplateDimensionMutation_team.graphql'
+import handleRemovePokerTemplateDimension from './handlers/handleRemovePokerTemplateDimension'
 
 graphql`
   fragment RemovePokerTemplateDimensionMutation_team on RemovePokerTemplateDimensionPayload {
@@ -23,20 +22,17 @@ const mutation = graphql`
   }
 `
 
-export const removePokerTemplateDimensionTeamUpdater: SharedUpdater<RemovePokerTemplateDimensionMutation_team> = (
-  payload,
-  {store}
-) => {
-  const dimensionId = getInProxy(payload, 'dimension', 'id')
-  const teamId = getInProxy(payload, 'dimension', 'teamId')
+export const removePokerTemplateDimensionTeamUpdater: SharedUpdater<
+  RemovePokerTemplateDimensionMutation_team
+> = (payload, {store}) => {
+  const dimensionId = payload.getLinkedRecord('dimension').getValue('id')
+  const teamId = payload.getLinkedRecord('dimension').getValue('teamId')
   handleRemovePokerTemplateDimension(dimensionId, teamId, store)
 }
 
-const RemovePokerTemplateDimensionMutation: StandardMutation<IRemovePokerTemplateDimensionMutation> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted}
-) => {
+const RemovePokerTemplateDimensionMutation: StandardMutation<
+  IRemovePokerTemplateDimensionMutation
+> = (atmosphere, variables, {onError, onCompleted}) => {
   return commitMutation<IRemovePokerTemplateDimensionMutation>(atmosphere, {
     mutation,
     variables,

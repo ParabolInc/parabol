@@ -1,5 +1,5 @@
-import React, {Component, ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {Component, ReactNode} from 'react'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {
@@ -39,7 +39,7 @@ class MasonryCSSGrid extends Component<Props> {
     window.addEventListener('resize', this.setSpans, {passive: true})
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (this.props.items !== prevProps.items) {
       // the setTimeout is required for the task list (issue #2432), but it shouldn't be.
       setTimeout(() => this.setSpans())

@@ -7,6 +7,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import RemoveAtlassianAuthPayload from '../types/RemoveAtlassianAuthPayload'
 
 export default {
@@ -40,6 +41,7 @@ export default {
     }
 
     await removeAtlassianAuth(viewerId, teamId)
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
     analytics.integrationRemoved(viewerId, teamId, 'jira')
 
     const data = {teamId, userId: viewerId}

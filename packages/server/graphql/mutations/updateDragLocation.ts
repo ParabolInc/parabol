@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {GQLContext} from '../graphql'
 import UpdateDragLocationInput, {
   UpdateDragLocationInputType
 } from '../types/UpdateDragLocationInput'
-import publish from '../../utils/publish'
-import {getUserId} from '../../utils/authorization'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
 
 const updateDragLocation = {
   description:

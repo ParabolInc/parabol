@@ -1,6 +1,6 @@
-import MeetingSettings from './MeetingSettings'
-import JiraSearchQuery from './JiraSearchQuery'
 import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
+import JiraSearchQuery from './JiraSearchQuery'
+import MeetingSettings from './MeetingSettings'
 
 interface Input {
   teamId: string

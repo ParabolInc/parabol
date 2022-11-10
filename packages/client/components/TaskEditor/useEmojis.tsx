@@ -52,7 +52,7 @@ const useEmojis = (
     setQuery('')
   }
 
-  const handleChange = (editorState) => {
+  const handleChange = (editorState: EditorState) => {
     if (onChange) {
       onChange(editorState)
     }

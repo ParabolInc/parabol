@@ -1,12 +1,12 @@
-import React, {Component} from 'react'
-import styled from '@emotion/styled'
 import {keyframes} from '@emotion/core'
+import styled from '@emotion/styled'
+import React, {Component} from 'react'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import {PALETTE} from '../../styles/paletteV3'
 import {Elevation} from '../../styles/elevation'
+import {PALETTE} from '../../styles/paletteV3'
+import {ElementWidth} from '../../types/constEnums'
 import plural from '../../utils/plural'
 import TinyLabel from '../TinyLabel'
-import {ElementWidth} from '../../types/constEnums'
 
 interface Props {
   count: number
@@ -28,7 +28,7 @@ const PROGRESS_MARGIN = 2
 // we need 4 things to fake a circle:
 // pos at 0%, % when pos is at progress width, % when pos is back at 0, and pos at 100%
 // doing this gives the illusion that there is a single progress bar & each chit is just a mask
-const shiftColor = (idx) => keyframes`
+const shiftColor = (idx: number) => keyframes`
   0% {
     background-position: ${idx * OFFSET}px;
   }

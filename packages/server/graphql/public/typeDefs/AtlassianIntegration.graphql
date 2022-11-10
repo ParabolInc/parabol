@@ -1,0 +1,24 @@
+extend type AtlassianIntegration {
+  """
+  A list of issues coming straight from the jira integration for a specific team member
+  """
+  issues(
+    first: Int = 100
+
+    """
+    the datetime cursor
+    """
+    after: DateTime
+
+    """
+    A string of text to search for, or JQL if isJQL is true
+    """
+    queryString: String
+
+    """
+    true if the queryString is JQL, else false
+    """
+    isJQL: Boolean!
+    projectKeyFilters: [ID!]
+  ): JiraIssueConnection!
+}

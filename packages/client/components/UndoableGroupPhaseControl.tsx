@@ -1,12 +1,12 @@
+import styled from '@emotion/styled'
+import {Edit} from '@mui/icons-material'
 import React from 'react'
-import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
+import FlatButton from '~/components/FlatButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
 import useModal from '~/hooks/useModal'
+import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import lazyPreload from '~/utils/lazyPreload'
-import styled from '@emotion/styled'
-import FlatButton from '~/components/FlatButton'
-import Icon from '~/components/Icon'
 
 interface Props {
   meetingId: string
@@ -19,12 +19,12 @@ const StyledButton = styled(FlatButton)({
   padding: 0
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Edit)({
   marginRight: 4
 })
 
-const UndoableGroupPhaseDialog = lazyPreload(() =>
-  import(/* webpackChunkName: 'UndoableGroupPhaseDialog' */ './UndoableGroupPhaseDialog')
+const UndoableGroupPhaseDialog = lazyPreload(
+  () => import(/* webpackChunkName: 'UndoableGroupPhaseDialog' */ './UndoableGroupPhaseDialog')
 )
 
 const UndoableGroupPhaseControl = (props: Props) => {
@@ -37,7 +37,10 @@ const UndoableGroupPhaseControl = (props: Props) => {
   })
   return (
     <>
-      <StyledButton onClick={toggleModal} palette={'blue'}><StyledIcon>edit</StyledIcon>{' Edit Groups'}</StyledButton>
+      <StyledButton onClick={toggleModal} palette={'blue'}>
+        <StyledIcon />
+        {' Edit Groups'}
+      </StyledButton>
       {modalPortal(<UndoableGroupPhaseDialog closePortal={closeModal} meetingId={meetingId} />)}
     </>
   )

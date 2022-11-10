@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
-import EditableText from '../../../components/EditableText'
-import Legitity from '../../../validation/Legitity'
-import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 import {PALETTE} from '~/styles/paletteV3'
+import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
+import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
+import Legitity from '../../../validation/Legitity'
+import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.SLATE_700,
@@ -32,7 +32,7 @@ const EditableTemplateDimension = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const handleSubmit = (rawDimensionName) => {
+  const handleSubmit = (rawDimensionName: string) => {
     if (submitting) return
     const {error, value: name} = validate(rawDimensionName)
     if (error) return

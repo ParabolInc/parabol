@@ -1,8 +1,8 @@
 import {useEffect, useRef} from 'react'
 import EditTaskMutation from '../mutations/EditTaskMutation'
 import useAtmosphere from './useAtmosphere'
-import useRefState from './useRefState'
 import useEventCallback from './useEventCallback'
+import useRefState from './useRefState'
 
 export type TaskChildName =
   | 'root'
@@ -35,7 +35,7 @@ const useTaskChildFocus = (taskId: string) => {
       const isEditing = isTaskFocused()
       if (lastIsEditingRef.current !== isEditing) {
         lastIsEditingRef.current = isEditing
-        EditTaskMutation(atmosphere, taskId, isEditing)
+        EditTaskMutation(atmosphere, {taskId, isEditing})
       }
     })
   }

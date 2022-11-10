@@ -11,7 +11,10 @@ import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import {UserTasksHeader_viewer$key} from '~/__generated__/UserTasksHeader_viewer.graphql'
+import {
+  UserTasksHeader_viewer,
+  UserTasksHeader_viewer$key
+} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
@@ -22,18 +25,20 @@ import lazyPreload from '../../../../utils/lazyPreload'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const UserDashTeamMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'UserDashTeamMenu' */
-    '../../../../components/UserDashTeamMenu'
-  )
+const UserDashTeamMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMenu' */
+      '../../../../components/UserDashTeamMenu'
+    )
 )
 
-const UserDashTeamMemberMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'UserDashTeamMemberMenu' */
-    '../../../../components/UserDashTeamMemberMenu'
-  )
+const UserDashTeamMemberMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMemberMenu' */
+      '../../../../components/UserDashTeamMemberMenu'
+    )
 )
 
 const StyledDashFilterToggle = styled(DashFilterToggle)({
@@ -116,7 +121,7 @@ const UserTasksHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const oldTeamsRef = useRef<any>([])
+  const oldTeamsRef = useRef<UserTasksHeader_viewer['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams

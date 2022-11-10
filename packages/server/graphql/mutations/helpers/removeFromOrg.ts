@@ -59,33 +59,32 @@ const removeFromOrg = async (
   const prorationDate = newUserUntil >= now ? new Date(joinedAt) : undefined
   if (role === 'BILLING_LEADER') {
     const organization = await r.table('Organization').get(orgId).run()
-    if (organization.tier !== 'personal') {
-      // if paid org & no other billing leader, promote the oldest
-      // if no other member, downgrade to personal
-      const otherBillingLeaders = await r
+    // if no other billing leader, promote the oldest
+    // if pro tier & no other member, downgrade to personal
+    const otherBillingLeaders = await r
+      .table('OrganizationUser')
+      .getAll(orgId, {index: 'orgId'})
+      .filter({removedAt: null, role: 'BILLING_LEADER'})
+      .run()
+    if (otherBillingLeaders.length === 0) {
+      const nextInLine = await r
         .table('OrganizationUser')
         .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null, role: 'BILLING_LEADER'})
+        .filter({removedAt: null})
+        .orderBy('joinedAt')
+        .nth(0)
+        .default(null)
         .run()
-      if (otherBillingLeaders.length === 0) {
-        const nextInLine = await r
+      if (nextInLine) {
+        await r
           .table('OrganizationUser')
-          .getAll(orgId, {index: 'orgId'})
-          .filter({removedAt: null})
-          .orderBy('joinedAt')
-          .nth(0)
+          .get(nextInLine.id)
+          .update({
+            role: 'BILLING_LEADER'
+          })
           .run()
-        if (nextInLine) {
-          await r
-            .table('OrganizationUser')
-            .get(nextInLine.id)
-            .update({
-              role: 'BILLING_LEADER'
-            })
-            .run()
-        } else {
-          await resolveDowngradeToPersonal(orgId, organization.stripeSubscriptionId!, userId)
-        }
+      } else if (organization.tier !== 'personal') {
+        await resolveDowngradeToPersonal(orgId, organization.stripeSubscriptionId!, userId)
       }
     }
   }

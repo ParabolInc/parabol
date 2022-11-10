@@ -1,20 +1,21 @@
-import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
-import EditorHelpModalContainer from '../../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import TaskColumn from '../../modules/teamDashboard/components/TaskColumn/TaskColumn'
-import {Layout} from '../../types/constEnums'
-import {AreaEnum} from '../../__generated__/UpdateTaskMutation.graphql'
-import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/constants'
-import makeTasksByStatus from '../../utils/makeTasksByStatus'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {TaskColumns_tasks} from '../../__generated__/TaskColumns_tasks.graphql'
+import React, {useMemo} from 'react'
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
-import useEventCallback from '../../hooks/useEventCallback'
-import dndNoise from '../../utils/dndNoise'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
+import {createFragmentContainer} from 'react-relay'
 import {TaskColumns_teams} from '~/__generated__/TaskColumns_teams.graphql'
+import EditorHelpModalContainer from '../../containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useEventCallback from '../../hooks/useEventCallback'
+import TaskColumn from '../../modules/teamDashboard/components/TaskColumn/TaskColumn'
+import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
+import {Layout} from '../../types/constEnums'
+import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/constants'
+import dndNoise from '../../utils/dndNoise'
+import makeTasksByStatus from '../../utils/makeTasksByStatus'
+import {TaskStatusEnum} from '../../__generated__/CreateTaskMutation.graphql'
+import {TaskColumns_tasks} from '../../__generated__/TaskColumns_tasks.graphql'
+import {AreaEnum} from '../../__generated__/UpdateTaskMutation.graphql'
 
 const ColumnsBlock = styled('div')({
   display: 'flex',
@@ -58,7 +59,7 @@ const TaskColumns = (props: Props) => {
     if (!destination) return
     const isSameColumn = destination.droppableId === source.droppableId
     if (isSameColumn && destination.index === source.index) return
-    const destinationTasks = groupedTasks[destination.droppableId]
+    const destinationTasks = groupedTasks[destination.droppableId as TaskStatusEnum]
 
     let sortOrder
     if (destination.index === 0) {
@@ -68,12 +69,12 @@ const TaskColumns = (props: Props) => {
       (isSameColumn && destination.index === destinationTasks.length - 1) ||
       (!isSameColumn && destination.index === destinationTasks.length)
     ) {
-      sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
+      sortOrder = destinationTasks[destinationTasks.length - 1]!.sortOrder - SORT_STEP + dndNoise()
     } else {
       const offset = !isSameColumn || source.index > destination.index ? -1 : 1
       sortOrder =
-        (destinationTasks[destination.index + offset].sortOrder +
-          destinationTasks[destination.index].sortOrder) /
+        (destinationTasks[destination.index + offset]!.sortOrder +
+          destinationTasks[destination.index]!.sortOrder) /
           2 +
         dndNoise()
     }
@@ -107,7 +108,9 @@ const TaskColumns = (props: Props) => {
 
 export default createFragmentContainer(TaskColumns, {
   tasks: graphql`
-    fragment TaskColumns_tasks on Task @relay(plural: true)  @argumentDefinitions(meetingId: {type: "ID"}) {
+    fragment TaskColumns_tasks on Task
+    @relay(plural: true)
+    @argumentDefinitions(meetingId: {type: "ID"}) {
       ...TaskColumn_tasks @arguments(meetingId: $meetingId)
       status
       sortOrder

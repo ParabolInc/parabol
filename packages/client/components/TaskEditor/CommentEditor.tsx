@@ -8,14 +8,14 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
-import completeEntity from '../../utils/draftjs/completeEntity'
-import linkify from '../../utils/linkify'
 import {AriaLabels, Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
+import completeEntity from '../../utils/draftjs/completeEntity'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import lazyPreload from '../../utils/lazyPreload'
+import linkify from '../../utils/linkify'
 import blockStyleFn from './blockStyleFn'
 import './Draft.css'
 import useCommentPlugins from './useCommentPlugins'
@@ -26,8 +26,8 @@ const RootEditor = styled('div')({
   width: '100%'
 })
 
-const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
+const AndroidEditorFallback = lazyPreload(
+  () => import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -108,7 +108,7 @@ const CommentEditor = (props: Props) => {
     setEditorState(editorState)
   }
 
-  const onReturn = (e) => {
+  const onReturn: EditorProps['handleReturn'] = (e) => {
     if (handleReturn) {
       return handleReturn(e, editorState)
     }
@@ -126,7 +126,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyBindingFn = (e) => {
+  const onKeyBindingFn: EditorProps['keyBindingFn'] = (e) => {
     if (ensureCommenting) {
       ensureCommenting()
     }
@@ -185,7 +185,7 @@ const CommentEditor = (props: Props) => {
     onSubmit()
   }
 
-  const handleBlur = (e) => {
+  const handleBlur = (e: React.FocusEvent) => {
     if (renderModal || !onBlur) return
     onBlur(e)
   }

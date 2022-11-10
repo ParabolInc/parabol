@@ -1,8 +1,8 @@
-import sanitizeAnalyzedEntitiesResponse from './autoGroup/sanitizeAnalyzedEntititesResponse'
-import addLemmaToEntities from './autoGroup/addLemmaToEntities'
-import sendToSentry from '../../../utils/sendToSentry'
 import getGoogleLanguageManager from '../../../getGoogleLanguageManager'
 import {GoogleErrorResponse} from '../../../GoogleLanguageManager'
+import sendToSentry from '../../../utils/sendToSentry'
+import addLemmaToEntities from './autoGroup/addLemmaToEntities'
+import sanitizeAnalyzedEntitiesResponse from './autoGroup/sanitizeAnalyzedEntititesResponse'
 
 const manageErrorResponse = <T>(res: T) => {
   if (Array.isArray(res)) {

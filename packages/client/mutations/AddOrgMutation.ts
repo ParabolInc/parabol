@@ -1,17 +1,18 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleAddOrganization from './handlers/handleAddOrganization'
-import handleAddTeams from './handlers/handleAddTeams'
-import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import {commitMutation} from 'react-relay'
 import {
   HistoryLocalHandler,
   OnNextHandler,
-  StandardMutation,
-  SharedUpdater
+  SharedUpdater,
+  StandardMutation
 } from '../types/relayMutations'
-import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
-import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 import getGraphQLError from '../utils/relay/getGraphQLError'
+import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
+import {AddOrgMutation_notification} from '../__generated__/AddOrgMutation_notification.graphql'
+import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
+import handleAddOrganization from './handlers/handleAddOrganization'
+import handleAddTeams from './handlers/handleAddTeams'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -78,7 +79,10 @@ export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_org
   handleAddTeams(team, store)
 }
 
-export const addOrgMutationNotificationUpdater = (payload, {store}) => {
+export const addOrgMutationNotificationUpdater: SharedUpdater<AddOrgMutation_notification> = (
+  payload,
+  {store}
+) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }

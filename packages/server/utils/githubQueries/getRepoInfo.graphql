@@ -1,4 +1,4 @@
-query getRepoInfo($assigneeLogin: String!, $repoOwner: String!, $repoName: String!){
+query getRepoInfo($assigneeLogin: String!, $repoOwner: String!, $repoName: String!) {
   user(login: $assigneeLogin) {
     id
     avatarUrl

@@ -6,7 +6,6 @@ import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 import {
   DragAttribute,
   ElementWidth,
@@ -21,6 +20,7 @@ import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
+import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -76,6 +76,7 @@ interface Props {
   expandedReflectionGroupPortalParentId?: PortalId
   reflectionIdsToHide?: string[] | null
   isSpotlightEntering?: boolean
+  showDragHintAnimation?: boolean
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -88,7 +89,8 @@ const ReflectionGroup = (props: Props) => {
     dataCy,
     expandedReflectionGroupPortalParentId,
     reflectionIdsToHide,
-    isSpotlightEntering
+    isSpotlightEntering,
+    showDragHintAnimation
   } = props
   const meeting = useFragment(
     graphql`
@@ -192,7 +194,7 @@ const ReflectionGroup = (props: Props) => {
     })
   }
 
-  const watchForClick = useEventCallback((e) => {
+  const watchForClick = useEventCallback((e: MouseEvent) => {
     const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
     if (!isClickOnGroup) {
       document.removeEventListener('click', watchForClick)
@@ -291,6 +293,7 @@ const ReflectionGroup = (props: Props) => {
                   staticReflections={staticReflections}
                   swipeColumn={swipeColumn}
                   isSpotlightEntering={!!isSpotlightEntering}
+                  showDragHintAnimation={showDragHintAnimation}
                 />
               </ReflectionWrapper>
             )

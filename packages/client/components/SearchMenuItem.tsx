@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
+import {Search} from '@mui/icons-material'
 import React, {forwardRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'
@@ -22,9 +21,10 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18
+const SearchIcon = styled(Search)({
+  height: 18,
+  width: 18,
+  color: PALETTE.SLATE_600
 })
 
 interface Props {
@@ -38,7 +38,7 @@ export const SearchMenuItem = forwardRef((props: Props, ref: any) => {
   return (
     <SearchItem ref={ref}>
       <StyledMenuItemIcon>
-        <SearchIcon>search</SearchIcon>
+        <SearchIcon />
       </StyledMenuItemIcon>
       <MenuSearch placeholder={placeholder} onChange={onChange} value={value} />
     </SearchItem>

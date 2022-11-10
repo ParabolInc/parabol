@@ -1,22 +1,22 @@
-import plural from '../utils/plural'
-import StageTimerMinutePicker from './StageTimerMinutePicker'
-import SecondaryButton from './SecondaryButton'
-import React, {useState} from 'react'
-import useMenu from '../hooks/useMenu'
-import {MenuPosition} from '../hooks/useCoords'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import DropdownMenuToggle from './DropdownMenuToggle'
-import {StageTimerModalTimeLimit_stage} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
+import {Timer} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
+import React, {useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuPosition} from '../hooks/useCoords'
+import useMenu from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
-import StyledError from './StyledError'
-import Icon from './Icon'
+import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
+import plural from '../utils/plural'
+import {StageTimerModalTimeLimit_stage} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
+import DropdownMenuToggle from './DropdownMenuToggle'
+import SecondaryButton from './SecondaryButton'
+import StageTimerMinutePicker from './StageTimerMinutePicker'
+import StyledError from './StyledError'
 
 interface Props {
   closePortal: () => void
@@ -43,7 +43,7 @@ const SetLimit = styled('div')({
   padding: '16px 16px 8px'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Timer)({
   color: PALETTE.SLATE_600
 })
 
@@ -62,9 +62,12 @@ const StageTimerModalTimeLimit = (props: Props) => {
   // scheduledEndTime means we're editing an existing timer
   const atmosphere = useAtmosphere()
   const [minuteTimeLimit, setMinuteTimeLimit] = useState(initialTimeLimit)
-  const {menuPortal, togglePortal, menuProps: minutePickerProps, originRef} = useMenu<
-    HTMLDivElement
-  >(MenuPosition.LOWER_LEFT, {
+  const {
+    menuPortal,
+    togglePortal,
+    menuProps: minutePickerProps,
+    originRef
+  } = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
     id: 'StageTimerMinutePicker',
     parentId: 'StageTimerModal',
     isDropdown: true
@@ -88,7 +91,7 @@ const StageTimerModalTimeLimit = (props: Props) => {
   return (
     <SetLimit>
       <Row>
-        <StyledIcon>timer</StyledIcon>
+        <StyledIcon />
         <Toggle
           defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
           onClick={togglePortal}

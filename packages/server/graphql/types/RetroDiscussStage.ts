@@ -1,12 +1,12 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import {GQLContext} from '../graphql'
 import Discussion from './Discussion'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const DUMMY_DISCUSSION = {
   id: 'dummy-discussion-id',

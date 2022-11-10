@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {RecordProxy} from 'relay-runtime'
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndCheckInMutation_notification} from '~/__generated__/EndCheckInMutation_notification.graphql'
 import {EndCheckInMutation_team} from '~/__generated__/EndCheckInMutation_team.graphql'
@@ -11,11 +12,10 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import {EndCheckInMutation as TEndCheckInMutation} from '../__generated__/EndCheckInMutation.graphql'
+import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
-import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
-import {RecordProxy} from 'relay-runtime'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`

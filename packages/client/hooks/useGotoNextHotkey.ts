@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef} from 'react'
-import useHotkey from './useHotkey'
 import handleHotkey from '../utils/meetings/handleHotkey'
 import useGotoNext from './useGotoNext'
+import useHotkey from './useHotkey'
 
 export const useGotoNextHotkey = (gotoNext: ReturnType<typeof useGotoNext>['gotoNext']) => {
   const latestHandler = useRef<typeof gotoNext>()

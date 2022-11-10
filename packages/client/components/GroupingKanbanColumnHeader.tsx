@@ -1,13 +1,13 @@
-import React, {MouseEvent} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
-import FlatButton from './FlatButton'
+import {Add, UnfoldLess, UnfoldMore} from '@mui/icons-material'
+import React, {MouseEvent} from 'react'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
-import Icon from './Icon'
-import RetroPrompt from './RetroPrompt'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import useBreakpoint from '~/hooks/useBreakpoint'
+import FlatButton from './FlatButton'
+import RetroPrompt from './RetroPrompt'
 
 const AddReflectionButton = styled(FlatButton)({
   border: 0,
@@ -55,7 +55,12 @@ const Wrapper = styled('div')({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: 24,
+  width: 24,
   transform: 'rotate(45deg)'
 })
 
@@ -115,7 +120,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
               ref={addReflectionRef}
               waiting={submitting}
             >
-              <Icon>add</Icon>
+              <Add />
             </AddReflectionButton>
           )}
           {addReflectionPortal(<div>Add new reflection</div>)}
@@ -127,7 +132,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
                 onMouseLeave={closeTooltip}
                 ref={originRef}
               >
-                <StyledIcon>{isWidthExpanded ? 'unfold_less' : 'unfold_more'}</StyledIcon>
+                <StyledIcon>{isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}</StyledIcon>
               </ExpandButton>
               {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
             </>

@@ -27,10 +27,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
@@ -41,21 +38,18 @@ export default {
 
     // RESOLUTION
     const {subscribedUserIds} = await r({
-      task: r
-        .table('Task')
-        .get(taskId)
-        .delete(),
+      task: r.table('Task').get(taskId).delete(),
       taskHistory: r
         .table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {
           index: 'taskIdUpdatedAt'
         })
         .delete(),
-      subscribedUserIds: (r
+      subscribedUserIds: r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
-        .coerceTo('array') as unknown) as string[]
+        .coerceTo('array') as unknown as string[]
     }).run()
     const {tags, userId: taskUserId} = task
 

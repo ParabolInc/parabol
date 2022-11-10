@@ -1,14 +1,14 @@
-import {NewTeamOrgPicker_organizations} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
+import TierTag from '../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import lazyPreload from '../../../utils/lazyPreload'
-import styled from '@emotion/styled'
-import TierTag from '../../../components/Tag/TierTag'
 import sortByTier from '../../../utils/sortByTier'
+import {NewTeamOrgPicker_organizations} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',
@@ -26,18 +26,19 @@ const MenuToggleLabel = styled('div')({
 
 interface Props {
   disabled: boolean
-  onChange: (orgId) => void
+  onChange: (orgId: string) => void
   orgId: string
   organizations: NewTeamOrgPicker_organizations
 }
 
 const NO_ORGS = 'No organizations available'
 
-const NewTeamOrgDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'NewTeamOrgDropdown' */
-    '../../../components/NewTeamOrgDropdown'
-  )
+const NewTeamOrgDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'NewTeamOrgDropdown' */
+      '../../../components/NewTeamOrgDropdown'
+    )
 )
 
 const NewTeamOrgPicker = (props: Props) => {

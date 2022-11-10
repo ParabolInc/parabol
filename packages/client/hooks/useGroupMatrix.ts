@@ -1,9 +1,9 @@
-import {SpotlightResultsQueryResponse} from './../__generated__/SpotlightResultsQuery.graphql'
 import {RefObject, useEffect, useState} from 'react'
-import {ElementWidth} from '../types/constEnums'
-import useResizeObserver from './useResizeObserver'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
+import {ElementWidth} from '../types/constEnums'
+import {SpotlightResultsQueryResponse} from './../__generated__/SpotlightResultsQuery.graphql'
 import useInitialRender from './useInitialRender'
+import useResizeObserver from './useResizeObserver'
 
 type Group = SpotlightResultsQueryResponse['viewer']['similarReflectionGroups'][0]
 
@@ -40,13 +40,13 @@ const useGroupMatrix = (
     setGroupMatrix(matrix)
   }
 
-  const getEmptiestColumnIdx = (groupMatrix) => {
+  const getEmptiestColumnIdx = (groupMatrix: {id: string}[][]) => {
     const columnsCount = getColumnsCount()
     // Use initColumns to get emptiest column vs emptiest column with a group in it.
     // For example, column 1 & column 2 both contain 1 group, group in column 2 is
     // grouped into column 1, column with min len in groupMatrix is column 1.
     const initColumns = Array.from([...Array(columnsCount).keys()].fill(0))
-    const counts: number[] = groupMatrix.reduce((arr: number[], row, idx) => {
+    const counts: number[] = groupMatrix.reduce((arr: number[], row: any[], idx: number) => {
       arr[idx] = row.length
       return arr
     }, initColumns)

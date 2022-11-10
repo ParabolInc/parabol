@@ -23,7 +23,7 @@ const fetchGitLabProjects = async (
   }
   return (
     data.projects?.edges
-      ?.map((edge) => edge?.node && {...edge.node, service: 'gitlab'})
+      ?.map((edge) => edge?.node && {...edge.node, service: 'gitlab' as const})
       .filter(isNotNull) ?? []
   )
 }

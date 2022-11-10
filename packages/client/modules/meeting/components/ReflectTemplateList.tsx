@@ -1,11 +1,15 @@
 import styled from '@emotion/styled'
+import {
+  Business as BusinessIcon,
+  Group as GroupIcon,
+  Public as PublicIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
-import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import useBreakpoint from '../../../hooks/useBreakpoint'
@@ -65,7 +69,9 @@ const TabLabel = styled('div')({
   alignItems: 'center'
 })
 
-const TabIcon = styled(Icon)({
+const TabIcon = styled('div')({
+  width: 24,
+  height: 24,
   marginRight: 4
 })
 
@@ -125,7 +131,7 @@ const ReflectTemplateList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const slideStyle = {scrollBehavior: readyToScrollSmooth ? 'smooth' : undefined}
   const templateType = Object.keys(templateIdxs).find(
-    (key) => templateIdxs[key] === activeIdx
+    (key) => templateIdxs[key as keyof typeof templateIdxs] === activeIdx
   ) as SharingScopeEnum
 
   const clearSearch = () => {
@@ -141,7 +147,7 @@ const ReflectTemplateList = (props: Props) => {
     clearSearch()
   }
 
-  const onChangeIdx = (idx: number, _fromIdx: unknown, props: {reason: string}) => {
+  const onChangeIdx = (idx: number, _fromIdx: number, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
@@ -157,7 +163,10 @@ const ReflectTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'group'}</TabIcon> Team
+              <TabIcon>
+                <GroupIcon />
+              </TabIcon>{' '}
+              Team
             </TabLabel>
           }
           onClick={() => goToTab('TEAM')}
@@ -165,7 +174,10 @@ const ReflectTemplateList = (props: Props) => {
         <WideTab
           label={
             <TabLabel>
-              <TabIcon>{'business'}</TabIcon> Organization
+              <TabIcon>
+                <BusinessIcon />
+              </TabIcon>{' '}
+              Organization
             </TabLabel>
           }
           onClick={() => goToTab('ORGANIZATION')}
@@ -173,7 +185,10 @@ const ReflectTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Public
+              <TabIcon>
+                <PublicIcon />
+              </TabIcon>{' '}
+              Public
             </TabLabel>
           }
           onClick={() => goToTab('PUBLIC')}
@@ -192,10 +207,10 @@ const ReflectTemplateList = (props: Props) => {
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
-        onChangeIndex={onChangeIdx}
+        onChangeIndex={onChangeIdx as any /* typedef is wrong */}
         containerStyle={containerStyle}
         style={innerStyle}
-        slideStyle={slideStyle}
+        slideStyle={slideStyle as any}
       >
         <TabContents>
           <ReflectTemplateListTeam

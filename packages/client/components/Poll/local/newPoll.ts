@@ -1,8 +1,8 @@
 import {commitLocalUpdate, RecordSourceProxy} from 'relay-runtime'
-import clientTempId from '../../../utils/relay/clientTempId'
 import Atmosphere from '../../../Atmosphere'
 import getDiscussionThreadConn from '../../../mutations/connections/getDiscussionThreadConn'
 import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
+import clientTempId from '../../../utils/relay/clientTempId'
 import createProxyRecord from '../../../utils/relay/createProxyRecord'
 
 const NEW_POLL_OPTIONS_COUNT = 2

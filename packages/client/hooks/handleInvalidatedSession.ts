@@ -1,5 +1,5 @@
-import Atmosphere from '../Atmosphere'
 import {RouterProps} from 'react-router'
+import Atmosphere from '../Atmosphere'
 import {LocalStorageKey, TrebuchetCloseReason} from '../types/constEnums'
 
 export const closeMessages = {

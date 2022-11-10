@@ -1,8 +1,42 @@
 version: 2.0
 jobs:
+  backup:
+    docker:
+      - image: cimg/node:16.16.0
+    environment:
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_WORKDIR: "~/action-devops"
+      PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
+      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
+      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
+    working_directory: ~/action
+    resource_class: large
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+      - run:
+          name: Slack setup
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` Backing up..."}' $SLACK_DEVOPS_URL
+      - run:
+          name: DevOps checkout
+          command: |
+            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+      - backup:
+          name: Backup
+          command: |
+            ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
+            $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
+              -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}" \
+              -b "${S3_DB_BACKUPS_BUCKET}" -p "${CIRCLE_BRANCH}"
+      - run:
+          name: Slack completion
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` Backup done"}' $SLACK_DEVOPS_URL
   build:
     docker:
-      - image: cimg/node:16.14.0
+      - image: cimg/node:16.16.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:
@@ -21,11 +55,8 @@ jobs:
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
-      PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
-      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
-      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
     working_directory: ~/action
     resource_class: large
@@ -105,7 +136,7 @@ jobs:
           path: ./packages/server/reports/junit
       - run:
           name: Install Playwright system dependencies
-          command: sudo yarn workspace integration-tests playwright install-deps
+          command: yarn workspace integration-tests playwright install-deps
       - run:
           name: Run Playwright tests
           command: yarn workspace integration-tests test --workers 2 --reporter list,junit
@@ -144,12 +175,6 @@ jobs:
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
               ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
-            fi &&
-            if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
-              ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
-              $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
-                -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}" \
-                -b "${S3_DB_BACKUPS_BUCKET}" -p "${CIRCLE_BRANCH}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master
@@ -201,8 +226,41 @@ jobs:
                 --release-version=$ACTION_VERSION \
                 --minified-path-prefix=https://action-files.parabol.co/staging/build/v$ACTION_VERSION
             fi
+
 workflows:
   version: 2
+  backup:
+    jobs:
+      - approve-for-backup:
+          type: approval
+          filters:
+            branches:
+              only:
+                - production
+      - backup:
+          requires:
+            - approve-for-backup
+          filters:
+            branches:
+              only:
+                - production
   build-and-deploy:
     jobs:
-      - build
+      - approve-for-deploy:
+          type: approval
+          filters:
+            branches:
+              only:
+                - production
+      - build:
+          requires:
+            - approve-for-deploy
+          filters:
+            branches:
+              only:
+                - production
+      - build:
+          filters:
+            branches:
+              ignore:
+                - production

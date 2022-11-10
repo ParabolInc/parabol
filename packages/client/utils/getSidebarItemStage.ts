@@ -6,6 +6,8 @@ interface Phase {
     id: string
     isNavigable: boolean
     isNavigableByFacilitator: boolean
+    isComplete: boolean
+    readyCount?: number
   }[]
 }
 

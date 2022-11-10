@@ -1,15 +1,14 @@
-import SecondaryButton from '../../../../components/SecondaryButton'
-import Panel from '../../../../components/Panel/Panel'
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
-import Icon from '../../../../components/Icon'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Layout} from '../../../../types/constEnums'
+import {CreditCard} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {OrgBillingCreditCardInfo_organization} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {OrgBillingCreditCardInfo_organization} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
+import Panel from '../../../../components/Panel/Panel'
+import SecondaryButton from '../../../../components/SecondaryButton'
 import useModal from '../../../../hooks/useModal'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Breakpoint, Layout} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 const CreditCardInfo = styled('div')({
@@ -20,9 +19,8 @@ const CreditCardInfo = styled('div')({
   lineHeight: '20px'
 })
 
-const CreditCardIcon = styled(Icon)({
+const CreditCardIcon = styled(CreditCard)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
   marginRight: 16
 })
 
@@ -55,11 +53,12 @@ const InfoBlocks = styled('div')({
   }
 })
 
-const CreditCardModal = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'CreditCardModal' */
-    '../CreditCardModal/CreditCardModal'
-  )
+const CreditCardModal = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'CreditCardModal' */
+      '../CreditCardModal/CreditCardModal'
+    )
 )
 
 interface Props {
@@ -77,7 +76,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
     <Panel label='Credit Card Information'>
       <InfoAndUpdate>
         <CreditCardInfo>
-          <CreditCardIcon>credit_card</CreditCardIcon>
+          <CreditCardIcon />
           <InfoBlocks>
             <div>
               <CreditCardProvider>{brand}</CreditCardProvider>

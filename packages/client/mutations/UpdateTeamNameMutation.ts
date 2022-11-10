@@ -1,5 +1,7 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
+import {UpdateTeamNameMutation as TUpdateTeamNameMutation} from '../__generated__/UpdateTeamNameMutation.graphql'
 graphql`
   fragment UpdateTeamNameMutation_team on UpdateTeamNamePayload {
     team {
@@ -19,11 +21,16 @@ const mutation = graphql`
   }
 `
 
-const UpdateTeamNameMutation = (atmosphere, updatedTeam, onError, onCompleted) => {
-  return commitMutation(atmosphere, {
+const UpdateTeamNameMutation: StandardMutation<TUpdateTeamNameMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
+  return commitMutation<TUpdateTeamNameMutation>(atmosphere, {
     mutation,
-    variables: {updatedTeam},
+    variables,
     optimisticUpdater: (store) => {
+      const {updatedTeam} = variables
       const {id: teamId, name: teamName} = updatedTeam
       store.get(teamId)!.setValue(teamName, 'name')
     },

@@ -1,7 +1,6 @@
 import {
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -12,24 +11,12 @@ import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
-import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
-
-type IssueArgs = {
-  first: number
-  after?: string
-  queryString: string | null
-  isJQL: boolean
-  projectKeyFilters: string[] | null
-}
 
 const AtlassianIntegration = new GraphQLObjectType<AtlassianAuth, GQLContext>({
   name: 'AtlassianIntegration',
@@ -78,79 +65,6 @@ const AtlassianIntegration = new GraphQLObjectType<AtlassianAuth, GQLContext>({
     userId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The user that the access token is attached to'
-    },
-    issues: {
-      type: new GraphQLNonNull(JiraIssueConnection),
-      description:
-        'A list of issues coming straight from the jira integration for a specific team member',
-      args: {
-        first: {
-          type: GraphQLInt,
-          defaultValue: 100
-        },
-        after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
-        },
-        queryString: {
-          type: GraphQLString,
-          description: 'A string of text to search for, or JQL if isJQL is true'
-        },
-        isJQL: {
-          type: new GraphQLNonNull(GraphQLBoolean),
-          description: 'true if the queryString is JQL, else false'
-        },
-        projectKeyFilters: {
-          type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
-          descrption:
-            'A list of projects to restrict the search to. format is cloudId:projectKey. If null, will search all'
-        }
-      },
-      resolve: async ({teamId, userId, accessToken, cloudIds}, args: any, {authToken}) => {
-        const {first, queryString, isJQL, projectKeyFilters} = args as IssueArgs
-        const viewerId = getUserId(authToken)
-        if (viewerId !== userId) {
-          const err = new Error('Cannot access another team members issues')
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
-        }
-        const manager = new AtlassianServerManager(accessToken)
-        const projectKeyFiltersByCloudId = {} as {[cloudId: string]: string[]}
-        if (projectKeyFilters && projectKeyFilters.length > 0) {
-          projectKeyFilters.forEach((globalProjectKey) => {
-            const [cloudId, projectKey] = globalProjectKey.split(':') as [string, string]
-            projectKeyFiltersByCloudId[cloudId] = projectKeyFiltersByCloudId[cloudId] || []
-            // guaranteed from line above
-            projectKeyFiltersByCloudId[cloudId]!.push(projectKey)
-          })
-        } else {
-          cloudIds.forEach((cloudId) => {
-            projectKeyFiltersByCloudId[cloudId] = []
-          })
-        }
-        const issueRes = await manager.getIssues(queryString, isJQL, projectKeyFiltersByCloudId)
-        const {error, issues} = issueRes
-        const mappedIssues = issues.map((issue) => {
-          const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
-            issue.cloudId,
-            issue.descriptionHTML
-          )
-          downloadAndCacheImages(manager, imageUrlToHash)
-
-          return {
-            ...issue,
-            teamId,
-            userId,
-            descriptionHTML: updatedDescription,
-            updatedAt: new Date()
-          }
-        })
-        return connectionFromTasks(
-          mappedIssues,
-          first,
-          error ? {message: error.message} : undefined
-        )
-      }
     },
     projects: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),

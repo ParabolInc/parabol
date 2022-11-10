@@ -2111,6 +2111,11 @@ type JiraIssue implements TaskIntegration {
   issueKey: ID!
 
   """
+  Type id of the issue
+  """
+  issueType: ID!
+
+  """
   The key of the project, which is the prefix to the issueKey
   """
   projectKey: ID!
@@ -2966,11 +2971,6 @@ type Team {
   ): MassInvitation!
 
   """
-  Integration details that are shared by all team members. Nothing user specific
-  """
-  integrations: TeamIntegrations!
-
-  """
   true if the underlying org has a validUntil date greater than now. if false, subs do not work
   """
   isPaid: Boolean
@@ -3102,36 +3102,6 @@ type MassInvitation {
 }
 
 """
-All the available integrations available for this team member
-"""
-type TeamIntegrations {
-  """
-  composite
-  """
-  id: ID!
-
-  """
-  All things associated with an atlassian integration for a team member
-  """
-  atlassian: AtlassianTeamIntegration!
-}
-
-"""
-The atlassian integration details shared across an entire team
-"""
-type AtlassianTeamIntegration {
-  """
-  shortid
-  """
-  id: ID!
-
-  """
-  The dimensions and their corresponding Jira fields
-  """
-  jiraDimensionFields: [JiraDimensionField!]!
-}
-
-"""
 Poker dimensions mapped to their corresponding fields in jira
 """
 type JiraDimensionField {
@@ -3151,6 +3121,11 @@ type JiraDimensionField {
   The project under the atlassian cloud the field lives in
   """
   projectKey: ID!
+
+  """
+  Type id of the issue
+  """
+  issueType: ID!
 
   """
   The ID referring to the field name

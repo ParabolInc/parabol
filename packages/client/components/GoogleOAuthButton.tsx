@@ -1,7 +1,7 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import RaisedButton from './RaisedButton'
+import React from 'react'
 import GoogleSVG from './GoogleSVG'
+import RaisedButton from './RaisedButton'
 
 interface Props {
   label: string
@@ -28,11 +28,11 @@ const StyledButton = styled(RaisedButton)<StyleProps>(({waiting}) => ({
 
 const IconBlock = styled('div')<StyleProps>(({waiting}) => ({
   marginRight: 16,
-  '& svg': {
+  svg: {
     display: 'block',
     height: 18,
     width: 18,
-    '& path': {
+    path: {
       fill: waiting ? '#8D8D8D' : undefined
     }
   }

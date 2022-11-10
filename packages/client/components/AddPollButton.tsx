@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {PollOutlined} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import IconOutlined from './IconOutlined'
 import PlainButton from './PlainButton/PlainButton'
 
 const StyledPlainButton = styled(PlainButton)({
@@ -18,8 +18,7 @@ const StyledPlainButton = styled(PlainButton)({
   transition: 'color 0.1s ease'
 })
 
-const AddPollIcon = styled(IconOutlined)({
-  fontSize: 20,
+const AddPollIcon = styled(PollOutlined)({
   width: 20,
   height: 20,
   margin: '0 4px 0 0'
@@ -40,7 +39,7 @@ const AddPollButton = (props: Props) => {
 
   return (
     <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
-      <AddPollIcon>poll_outline</AddPollIcon>
+      <AddPollIcon />
       <AddPollLabel>Add a poll</AddPollLabel>
     </StyledPlainButton>
   )

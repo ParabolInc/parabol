@@ -33,7 +33,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     CTAType: {type: TierEnum},
     taskId: {type: GraphQLID},
     meetingType: {type: MeetingTypeEnum},
-    inMeeting: {type: GraphQLBoolean}
+    inMeeting: {type: GraphQLBoolean},
+    jiraProjectType: {type: GraphQLString}
   })
 })
 

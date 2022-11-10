@@ -5,6 +5,7 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import IntegrationProviderServiceEnum from '../types/IntegrationProviderServiceEnum'
 import RemoveTeamMemberIntegrationAuthPayload from '../types/RemoveTeamMemberIntegrationAuthPayload'
 
@@ -26,7 +27,7 @@ const removeTeamMemberIntegrationAuth = {
     {service, teamId}: {service: TIntegrationProviderServiceEnum; teamId: string},
     context: GQLContext
   ) => {
-    const {authToken} = context
+    const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -35,6 +36,7 @@ const removeTeamMemberIntegrationAuth = {
 
     // RESOLUTION
     await removeTeamMemberIntegrationAuthQuery(service, teamId, viewerId)
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
     analytics.integrationRemoved(viewerId, teamId, service)
 
     const data = {userId: viewerId, teamId}

@@ -1,8 +1,6 @@
 module.exports = {
-  // prettier comes last to turn off all the eslint rules that conflict with it
   extends: ['plugin:react/recommended', '../../.eslintrc.js'],
   plugins: ['@typescript-eslint', 'emotion', 'react', 'react-hooks'],
-  // plugins: ['@typescript-eslint', 'prettier'], // revert a4963401
   parserOptions: {
     project: 'tsconfig.eslint.json',
     ecmaVersion: 2020,

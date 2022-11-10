@@ -1,24 +1,24 @@
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import SlackNotificationRow from './SlackNotificationRow'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
+import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
+import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
+import StyledError from '../../../../components/StyledError'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useEventCallback from '../../../../hooks/useEventCallback'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import useSlackChannels from '../../../../hooks/useSlackChannels'
+import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Layout} from '../../../../types/constEnums'
 import {
   SlackNotificationEventEnum,
   SlackNotificationList_viewer
 } from '../../../../__generated__/SlackNotificationList_viewer.graphql'
-import React from 'react'
-import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
-import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import SlackChannelPicker from './SlackChannelPicker'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
-import useSlackChannels from '../../../../hooks/useSlackChannels'
-import StyledError from '../../../../components/StyledError'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout} from '../../../../types/constEnums'
-import useEventCallback from '../../../../hooks/useEventCallback'
-import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
+import SlackNotificationRow from './SlackNotificationRow'
 
 const SlackNotificationListStyles = styled('div')({
   borderTop: `1px solid ${PALETTE.SLATE_300}`,

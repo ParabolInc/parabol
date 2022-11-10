@@ -1,8 +1,8 @@
-import React from 'react'
-import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
 import styled from '@emotion/styled'
+import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {Card} from '../../types/constEnums'
+import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
 import Ellipsis from '../Ellipsis/Ellipsis'
 
 const CardBlock = styled('div')({

@@ -1,8 +1,8 @@
-import React from 'react'
-import IconButton from './IconButton'
 import styled from '@emotion/styled'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import {BaseButtonProps} from './BaseButton'
+import IconButton from './IconButton'
 
 const StyledButton = styled(IconButton)({
   height: 24,
@@ -12,7 +12,7 @@ const StyledButton = styled(IconButton)({
   }
 })
 
-interface Props extends BaseButtonProps { }
+interface Props extends BaseButtonProps {}
 
 const SidebarToggle = (props: Props) => {
   const {dataCy} = props

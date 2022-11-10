@@ -1,17 +1,17 @@
-import React from 'react'
-import makeDateString from '../../../../utils/makeDateString'
-import makeMonthString from '../../../../utils/makeMonthString'
-import {Link} from 'react-router-dom'
-import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
 import styled from '@emotion/styled'
+import {Receipt} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Link} from 'react-router-dom'
+import {InvoiceRow_invoice} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {InvoiceRow_invoice} from '~/__generated__/InvoiceRow_invoice.graphql'
+import makeDateString from '../../../../utils/makeDateString'
+import makeMonthString from '../../../../utils/makeMonthString'
+import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
 
 const InvoiceAmount = styled('span')({
   color: PALETTE.SLATE_700,
@@ -19,7 +19,7 @@ const InvoiceAmount = styled('span')({
   lineHeight: '24px'
 })
 
-const FileIcon = styled(Icon)<{isEstimate: boolean}>(({isEstimate}) => ({
+const FileIcon = styled(Receipt)<{isEstimate: boolean}>(({isEstimate}) => ({
   color: isEstimate ? PALETTE.SKY_500 : PALETTE.SLATE_600
 }))
 
@@ -78,7 +78,7 @@ const InvoiceRow = (props: Props) => {
   return (
     <Row>
       <RowLink rel='noopener noreferrer' target='_blank' to={`/invoice/${invoiceId}`}>
-        <FileIcon isEstimate={isEstimate}>receipt</FileIcon>
+        <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>
           <InfoRow>
             <InvoiceTitle>{makeMonthString(endAt)}</InvoiceTitle>

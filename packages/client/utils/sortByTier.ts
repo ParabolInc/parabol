@@ -4,7 +4,7 @@ const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]
   teamsOrOrgs: T
 ) => {
   const teamsSlice = teamsOrOrgs.slice()
-  const tierVal = (team) => (team.tier === 'enterprise' ? -2 : team.tier === 'pro' ? -1 : 1)
+  const tierVal = (team: T[0]) => (team.tier === 'enterprise' ? -2 : team.tier === 'pro' ? -1 : 1)
   teamsSlice.sort((a, b) =>
     tierVal(a) < tierVal(b)
       ? -1
@@ -14,7 +14,7 @@ const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]
       ? -1
       : 1
   )
-  return (teamsSlice as unknown) as T
+  return teamsSlice as unknown as T
 }
 
 export default sortByTier
