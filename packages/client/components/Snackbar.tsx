@@ -13,8 +13,8 @@ import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
 
-const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean; isStandupRoute: boolean}>(
-  ({isMeetingRoute, isDesktop, isStandupRoute}) => ({
+const Modal = styled('div')<{hasSidebar: boolean; isDesktop: boolean}>(
+  ({hasSidebar, isDesktop}) => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -22,13 +22,10 @@ const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean; isStan
     justifyContent: 'flex-end',
     left: 0,
     padding: 8,
-    paddingBottom: isMeetingRoute ? 64 : 8,
+    paddingBottom: hasSidebar ? 64 : 8,
     position: 'fixed',
     top: 0,
-    width:
-      isMeetingRoute && !isStandupRoute && isDesktop
-        ? `calc(100% + ${NavSidebar.WIDTH}px)`
-        : '100%',
+    width: hasSidebar && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
     pointerEvents: 'none',
     zIndex: ZIndex.SNACKBAR
   })
@@ -59,8 +56,8 @@ const Snackbar = React.memo(() => {
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
   const {location} = useRouter()
-  const isMeetingRoute = location.pathname.startsWith('/meet/')
-  const isStandupRoute = isMeetingRoute && !location.pathname.includes('/checkin')
+  const hasSidebar =
+    location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const transitionChildren = useTransition(activeSnacksRef.current)
   // used to ensure the snack isn't dismissed when the cursor is on it
@@ -157,7 +154,7 @@ const Snackbar = React.memo(() => {
   }, [showSnack, transitionChildren])
 
   return portal(
-    <Modal isMeetingRoute={isMeetingRoute} isDesktop={isDesktop} isStandupRoute={isStandupRoute}>
+    <Modal hasSidebar={hasSidebar} isDesktop={isDesktop}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
         const dismiss = () => {
           if (child.noDismissOnClick) return
