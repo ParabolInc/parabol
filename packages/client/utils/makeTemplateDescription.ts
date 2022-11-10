@@ -10,7 +10,7 @@ const makeTemplateDescription = (
   lowestScope: string,
   templateRef: makeTemplateDescription_template$key,
   viewerRef: makeTemplateDescription_viewer$key | null,
-  tier: TierEnum
+  tier?: TierEnum
 ) => {
   const template = readInlineData(
     graphql`

@@ -59,10 +59,11 @@ const PokerTemplateListTeam = (props: Props) => {
         return (
           <PokerTemplateItem
             key={template.id}
-            template={template}
+            templateRef={template}
             isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
+            viewerRef={null}
           />
         )
       })}
