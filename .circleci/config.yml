@@ -26,6 +26,7 @@ jobs:
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
+          no_output_timeout: 55m
           command: |
             ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
             $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
