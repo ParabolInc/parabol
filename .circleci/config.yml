@@ -231,21 +231,6 @@ jobs:
 
 workflows:
   version: 2
-  backup:
-    jobs:
-      - approve-for-backup:
-          type: approval
-          filters:
-            branches:
-              only:
-                - production
-      - backup:
-          requires:
-            - approve-for-backup
-          filters:
-            branches:
-              only:
-                - production
   build-and-deploy:
     jobs:
       - approve-for-deploy:
@@ -265,4 +250,19 @@ workflows:
           filters:
             branches:
               ignore:
+                - production
+  backup:
+    jobs:
+      - approve-for-backup:
+          type: approval
+          filters:
+            branches:
+              only:
+                - production
+      - backup:
+          requires:
+            - approve-for-backup
+          filters:
+            branches:
+              only:
                 - production
