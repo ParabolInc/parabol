@@ -95,7 +95,8 @@ const ReflectTemplateListTeam = (props: Props) => {
     if (tier === 'personal' || !featureFlags.templateLimit) {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
-          upgradeCTALocation: 'teamTemplate'
+          upgradeCTALocation: 'teamTemplate',
+          meetingType: 'retrospective'
         })
         history.push(`/me/organizations/${orgId}`)
       }
