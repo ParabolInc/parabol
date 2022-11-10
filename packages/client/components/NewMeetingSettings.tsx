@@ -28,6 +28,7 @@ const NewMeetingSettings = (props: Props) => {
     graphql`
       fragment NewMeetingSettings_viewer on User {
         ...NewMeetingSettingsRetrospective_viewer
+        ...NewMeetingSettingsPoker_viewer
       }
     `,
     viewerRef
