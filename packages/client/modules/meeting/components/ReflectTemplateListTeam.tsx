@@ -92,7 +92,7 @@ const ReflectTemplateListTeam = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
   const filteredTemplates = useFilteredItems(searchQuery, teamTemplates, getValue)
   if (teamTemplates.length === 0) {
-    if (tier === 'personal' || !featureFlags.templateLimit) {
+    if (tier === 'personal' && featureFlags.templateLimit) {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',

@@ -52,6 +52,7 @@ const PokerTemplateModal = (props: Props) => {
     graphql`
       fragment PokerTemplateModal_viewer on User {
         ...PokerTemplateDetails_viewer
+        ...PokerTemplateList_viewer
       }
     `,
     viewerRef
@@ -77,11 +78,11 @@ const PokerTemplateModal = (props: Props) => {
   return (
     <StyledDialogContainer>
       <PokerTemplateList
-        settings={pokerMeetingSettings}
+        settingsRef={pokerMeetingSettings}
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
+        viewerRef={viewer}
       />
-
       {editingScaleId ? (
         <PokerTemplateScaleDetails team={team} />
       ) : (
