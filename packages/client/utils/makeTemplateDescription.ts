@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
-import {readInlineData} from 'relay-runtime'
+import {readInlineData, useFragment} from 'react-relay'
 import {makeTemplateDescription_template$key} from '../__generated__/makeTemplateDescription_template.graphql'
 import {makeTemplateDescription_viewer$key} from '../__generated__/makeTemplateDescription_viewer.graphql'
 import {TierEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'

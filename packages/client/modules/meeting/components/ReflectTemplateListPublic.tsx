@@ -87,13 +87,13 @@ const ReflectTemplateListPublic = (props: Props) => {
         return (
           <ReflectTemplateItem
             key={template.id}
-            templateRef={template}
+            template={template}
             isActive={template.id === activeTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
             tier={tier}
             templateSearchQuery={searchQuery}
-            viewerRef={viewer}
+            viewer={viewer}
           />
         )
       })}
