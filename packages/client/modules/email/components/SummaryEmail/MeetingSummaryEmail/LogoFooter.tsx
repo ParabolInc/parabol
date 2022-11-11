@@ -2,6 +2,7 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
 import {ExternalLinks} from '../../../../../types/constEnums'
+import {CorsOptions} from '../../../../../types/cors'
 
 const logoStyle = {
   paddingTop: 64
@@ -27,16 +28,22 @@ const linkStyle = {
   textDecoration: 'none'
 }
 
-const LogoFooter = () => {
+interface Props {
+  corsOptions: CorsOptions
+}
+
+const LogoFooter = (props: Props) => {
+  const {corsOptions} = props
+
   return (
     <>
       <tr>
         <td align='center' style={logoStyle}>
           <img
-            crossOrigin=''
             src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
             height='32'
             width='34'
+            {...corsOptions}
           />
         </td>
       </tr>
