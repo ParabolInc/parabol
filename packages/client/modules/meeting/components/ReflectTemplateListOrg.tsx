@@ -90,12 +90,12 @@ const ReflectTemplateListOrg = (props: Props) => {
         return (
           <ReflectTemplateItem
             key={template.id}
-            templateRef={template}
+            template={template}
             isActive={template.id === activeTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
             templateSearchQuery={searchQuery}
-            viewerRef={null}
+            viewer={null}
           />
         )
       })}
