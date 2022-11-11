@@ -54,22 +54,12 @@ const SendCommentButton = (props: Props) => {
     closeTooltip,
     originRef: tipRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
-
   const isDisabled = commentSubmitState === 'idle'
-
-  const handleTouched = (e: React.TouchEvent) => {
-    // Ensure that on Android the keyboard  doesn't disappear after submitting a comment.
-    e.preventDefault()
-    onSubmit()
-  }
-
   return (
     <>
       <StyledPlainButton
         data-cy={`${dataCy}-send`}
         onClick={onSubmit}
-        onTouchEnd={handleTouched}
-        className='send-comment-button'
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
         commentSubmitState={commentSubmitState}
