@@ -1,11 +1,10 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import React from 'react'
+import {useHistory} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import {BezierCurve} from '../../../types/constEnums'
-import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
-import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 
 const fadein = keyframes`
 0% { opacity: 0; }
@@ -67,14 +66,17 @@ const TemplateImage = styled('img')({
 })
 
 interface Props {
-  gotoTeamTemplates: () => void
-  gotoPublicTemplates: () => void
-  closePortal: () => void
-  settings: ReflectTemplateDetails_settings
-  viewer: ReflectTemplateDetails_viewer
+  orgId: string
 }
 
 const CustomTempateUpgradeMsg = (props: Props) => {
+  const {orgId} = props
+  const history = useHistory()
+
+  const handleClick = () => {
+    history.push(`/me/organizations/${orgId}/billing`)
+  }
+
   return (
     <Container>
       <TemplateImage src={customTemplate} />
@@ -85,7 +87,7 @@ const CustomTempateUpgradeMsg = (props: Props) => {
         }
       </Details>
       <ButtonBlock>
-        <Button onClick={() => {}} palette='pink'>
+        <Button onClick={handleClick} palette='pink'>
           {'Upgrade Now'}
         </Button>
       </ButtonBlock>
