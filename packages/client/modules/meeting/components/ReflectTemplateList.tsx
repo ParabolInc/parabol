@@ -81,6 +81,7 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
+  setShowUpgradeDetails: (showUpgradeDetails: boolean) => void
   settingsRef: ReflectTemplateList_settings$key
   viewerRef: ReflectTemplateList_viewer$key
 }
@@ -102,7 +103,7 @@ export const templateIdxs = {
 } as const
 
 const ReflectTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settingsRef, viewerRef} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef, setShowUpgradeDetails} = props
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
@@ -214,6 +215,7 @@ const ReflectTemplateList = (props: Props) => {
       <AddNewReflectTemplate
         reflectTemplatesRef={teamTemplates}
         teamRef={team}
+        setShowUpgradeDetails={setShowUpgradeDetails}
         viewerRef={viewer}
         gotoTeamTemplates={() => goToTab('TEAM')}
       />

@@ -32,11 +32,12 @@ interface Props {
   gotoTeamTemplates: () => void
   reflectTemplatesRef: AddNewReflectTemplate_reflectTemplates$key
   viewerRef: AddNewReflectTemplate_viewer$key
+  setShowUpgradeDetails: (showUpgradeDetails: boolean) => void
   teamRef: AddNewReflectTemplate_team$key
 }
 
 const AddNewReflectTemplate = (props: Props) => {
-  const {gotoTeamTemplates, reflectTemplatesRef, teamRef, viewerRef} = props
+  const {gotoTeamTemplates, reflectTemplatesRef, teamRef, viewerRef, setShowUpgradeDetails} = props
   const atmosphere = useAtmosphere()
   const reflectTemplates = useFragment(
     graphql`
@@ -75,6 +76,10 @@ const AddNewReflectTemplate = (props: Props) => {
   }, [])
   const addNewTemplate = () => {
     if (submitting) return
+    if (featureFlags.templateLimit && tier === 'personal') {
+      setShowUpgradeDetails(true)
+      return
+    }
     if (reflectTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       errorTimerId.current = window.setTimeout(() => {

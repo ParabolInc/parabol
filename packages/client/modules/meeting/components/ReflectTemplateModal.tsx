@@ -83,9 +83,10 @@ const ReflectTemplateModal = (props: Props) => {
         settingsRef={retroMeetingSettings}
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
+        setShowUpgradeDetails={setShowUpgradeDetails}
         viewerRef={viewer}
       />
-      {true ? (
+      {showUpgradeDetails ? (
         <CustomTemplateUpgradeMsg
           settings={retroMeetingSettings}
           gotoTeamTemplates={gotoTeamTemplates}
