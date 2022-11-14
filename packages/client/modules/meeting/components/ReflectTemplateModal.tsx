@@ -8,6 +8,7 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateModal_retroMeetingSettings$key} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import {ReflectTemplateModal_viewer$key} from '../../../__generated__/ReflectTemplateModal_viewer.graphql'
+import CustomTemplateUpgradeMsg from './CustomTemplateUpgradeMsg'
 import ReflectTemplateDetails from './ReflectTemplateDetails'
 import ReflectTemplateList from './ReflectTemplateList'
 
@@ -59,6 +60,7 @@ const ReflectTemplateModal = (props: Props) => {
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
+  const [showUpgradeDetails, setShowUpgradeDetails] = useState(false)
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
   }
@@ -71,6 +73,10 @@ const ReflectTemplateModal = (props: Props) => {
     setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'retrospective')
   }, [])
 
+  useEffect(() => {
+    if (showUpgradeDetails) setShowUpgradeDetails(false)
+  }, [activeIdx])
+
   return (
     <StyledDialogContainer>
       <ReflectTemplateList
@@ -79,13 +85,23 @@ const ReflectTemplateModal = (props: Props) => {
         setActiveIdx={setActiveIdx}
         viewerRef={viewer}
       />
-      <ReflectTemplateDetails
-        settings={retroMeetingSettings}
-        gotoTeamTemplates={gotoTeamTemplates}
-        gotoPublicTemplates={gotoPublicTemplates}
-        closePortal={closePortal}
-        viewer={viewer}
-      />
+      {true ? (
+        <CustomTemplateUpgradeMsg
+          settings={retroMeetingSettings}
+          gotoTeamTemplates={gotoTeamTemplates}
+          gotoPublicTemplates={gotoPublicTemplates}
+          closePortal={closePortal}
+          viewer={viewer}
+        />
+      ) : (
+        <ReflectTemplateDetails
+          settings={retroMeetingSettings}
+          gotoTeamTemplates={gotoTeamTemplates}
+          gotoPublicTemplates={gotoPublicTemplates}
+          closePortal={closePortal}
+          viewer={viewer}
+        />
+      )}
     </StyledDialogContainer>
   )
 }
