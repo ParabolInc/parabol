@@ -157,7 +157,7 @@ const questions = [
   'What looks easy peasy lemon squeezy but is actually difficult difficult lemon difficult?',
   'What’s something from your childhood that you still love today?',
   'What healthy food tastes just as good to you as unhealthy food?',
-  'You’ve died but instead of entering the afterlife, you’ve entered Earth 2.0. What is something that make Earth 2.0 better?',
+  'You’ve died but instead of entering the afterlife, you’ve entered Earth 2.0. What is something that makes Earth 2.0 better?',
   'What’s a small act of kindness you were once shown, that you’ll never forget?',
   'What’s a movie you always recommend to people? Why do you love it?',
   'What’s normal where you live, but might seem weird to the rest of the world?',
