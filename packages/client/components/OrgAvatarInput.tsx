@@ -72,7 +72,7 @@ const OrgAvatarInput = (props: Props) => {
     <ModalBoundary>
       <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
       <AvatarBlock>
-        <Avatar picture={picture} size={96} />
+        <Avatar picture={picture} size={96} hasBorder />
       </AvatarBlock>
       <AvatarInput error={error?.message} onSubmit={onSubmit} />
     </ModalBoundary>
