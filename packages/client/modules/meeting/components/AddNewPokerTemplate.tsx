@@ -110,7 +110,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        {'Create New Template'}
+        {`Create New Template ${featureFlags.templateLimit && tier === 'personal' ? '🔒' : ''}`}
       </AddPokerTemplateLink>
     </div>
   )
