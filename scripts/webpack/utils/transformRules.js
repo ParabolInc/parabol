@@ -17,8 +17,6 @@ const transformRules = (projectRoot) => {
       test: /\.tsx?$/,
       // things that need the relay plugin
       include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
-      // but don't need the inline-import plugin
-      exclude: [path.join(CLIENT_ROOT, 'utils/GitHubManager.ts')],
       use: [
         {
           loader: 'babel-loader',
