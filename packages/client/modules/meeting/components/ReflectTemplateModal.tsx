@@ -42,6 +42,9 @@ const ReflectTemplateModal = (props: Props) => {
           id
           ...getTemplateList_template
         }
+        activeTemplate {
+          id
+        }
       }
     `,
     retroMeetingSettingsRef
@@ -55,7 +58,7 @@ const ReflectTemplateModal = (props: Props) => {
     `,
     viewerRef
   )
-  const {selectedTemplate, team} = retroMeetingSettings
+  const {selectedTemplate, team, activeTemplate} = retroMeetingSettings
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
@@ -75,7 +78,7 @@ const ReflectTemplateModal = (props: Props) => {
 
   useEffect(() => {
     if (showUpgradeDetails) setShowUpgradeDetails(false)
-  }, [activeIdx])
+  }, [activeTemplate])
 
   return (
     <StyledDialogContainer>

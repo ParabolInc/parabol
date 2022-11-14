@@ -219,7 +219,6 @@ const ReflectTemplateList = (props: Props) => {
         viewerRef={viewer}
         gotoTeamTemplates={() => goToTab('TEAM')}
       />
-
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
