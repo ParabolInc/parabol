@@ -5,14 +5,24 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
 import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 
-const TemplateHeader = styled('div')({
+const Header = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  margin: '16px 0',
-  paddingLeft: 56,
-  paddingRight: 16,
+  padding: '16px 0',
   width: '100%',
-  flexShrink: 0
+  textAlign: 'center',
+  fontSize: 20,
+  fontWeight: 600
+})
+
+const Details = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '16px 48px',
+  width: '100%',
+  lineHeight: '24px',
+  textAlign: 'center',
+  fontSize: 16
 })
 
 const PromptEditor = styled('div')({
@@ -80,9 +90,12 @@ const CustomTempateUpgradeMsg = (props: Props) => {
     <PromptEditor>
       <Scrollable isActiveTemplate={true}>
         <TemplateImage src={customTemplate} />
-        <TemplateHeader>
-          <FirstLine>{'Create Custom Templates'}</FirstLine>
-        </TemplateHeader>
+        <Header>{'Create Custom Templates'}</Header>
+        <Details>
+          {
+            'Upgrade to Pro to create custom templates that you can share with your organization or team'
+          }
+        </Details>
         {/* <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} /> */}
         {/* {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />} */}
         {/* <TemplateSharing teamId={teamId} template={activeTemplate} /> */}
