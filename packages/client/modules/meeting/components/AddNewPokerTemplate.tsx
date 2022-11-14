@@ -1,14 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import LinkButton from '../../../components/LinkButton'
 import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {Threshold} from '../../../types/constEnums'
-import {AddNewPokerTemplate_pokerTemplates} from '../../../__generated__/AddNewPokerTemplate_pokerTemplates.graphql'
+import {AddNewPokerTemplate_pokerTemplates$key} from '../../../__generated__/AddNewPokerTemplate_pokerTemplates.graphql'
+import {AddNewPokerTemplate_team$key} from '../../../__generated__/AddNewPokerTemplate_team.graphql'
+import {AddNewPokerTemplate_viewer$key} from '../../../__generated__/AddNewPokerTemplate_viewer.graphql'
 
 const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
@@ -28,13 +30,43 @@ const AddPokerTemplateLink = styled(LinkButton)({
 
 interface Props {
   gotoTeamTemplates: () => void
-  pokerTemplates: AddNewPokerTemplate_pokerTemplates
-  teamId: string
+  pokerTemplatesRef: AddNewPokerTemplate_pokerTemplates$key
+  viewerRef: AddNewPokerTemplate_viewer$key
+  teamRef: AddNewPokerTemplate_team$key
+  setShowUpgradeDetails: (showUpgradeDetails: boolean) => void
 }
 
 const AddNewPokerTemplate = (props: Props) => {
-  const {gotoTeamTemplates, teamId, pokerTemplates} = props
+  const {gotoTeamTemplates, teamRef, pokerTemplatesRef, viewerRef, setShowUpgradeDetails} = props
   const atmosphere = useAtmosphere()
+  const pokerTemplates = useFragment(
+    graphql`
+      fragment AddNewPokerTemplate_pokerTemplates on PokerTemplate @relay(plural: true) {
+        name
+      }
+    `,
+    pokerTemplatesRef
+  )
+  const {featureFlags} = useFragment(
+    graphql`
+      fragment AddNewPokerTemplate_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+      }
+    `,
+    viewerRef
+  )
+  const team = useFragment(
+    graphql`
+      fragment AddNewPokerTemplate_team on Team {
+        id
+        tier
+      }
+    `,
+    teamRef
+  )
+  const {id: teamId, tier} = team
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const errorTimerId = useRef<undefined | number>()
   useEffect(() => {
@@ -44,6 +76,10 @@ const AddNewPokerTemplate = (props: Props) => {
   }, [])
   const addNewTemplate = () => {
     if (submitting) return
+    if (featureFlags.templateLimit && tier === 'personal') {
+      setShowUpgradeDetails(true)
+      return
+    }
     if (pokerTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       onError(
         new Error(
@@ -80,10 +116,4 @@ const AddNewPokerTemplate = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AddNewPokerTemplate, {
-  pokerTemplates: graphql`
-    fragment AddNewPokerTemplate_pokerTemplates on PokerTemplate @relay(plural: true) {
-      name
-    }
-  `
-})
+export default AddNewPokerTemplate

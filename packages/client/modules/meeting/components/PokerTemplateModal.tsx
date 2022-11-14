@@ -8,6 +8,7 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings$key} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import {PokerTemplateModal_viewer$key} from '../../../__generated__/PokerTemplateModal_viewer.graphql'
+import CustomTemplateUpgradeMsg from './CustomTemplateUpgradeMsg'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
 import PokerTemplateScaleDetails from './PokerTemplateScaleDetails'
@@ -44,6 +45,9 @@ const PokerTemplateModal = (props: Props) => {
           id
           ...getTemplateList_template
         }
+        activeTemplate {
+          id
+        }
       }
     `,
     pokerMeetingSettingsRef
@@ -58,11 +62,12 @@ const PokerTemplateModal = (props: Props) => {
     viewerRef
   )
 
-  const {selectedTemplate, team} = pokerMeetingSettings
+  const {selectedTemplate, team, activeTemplate} = pokerMeetingSettings
   const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
+  const [showUpgradeDetails, setShowUpgradeDetails] = useState(false)
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
   }
@@ -75,6 +80,10 @@ const PokerTemplateModal = (props: Props) => {
     setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'poker')
   }, [])
 
+  useEffect(() => {
+    if (showUpgradeDetails) setShowUpgradeDetails(false)
+  }, [activeTemplate])
+
   return (
     <StyledDialogContainer>
       <PokerTemplateList
@@ -82,8 +91,11 @@ const PokerTemplateModal = (props: Props) => {
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
         viewerRef={viewer}
+        setShowUpgradeDetails={setShowUpgradeDetails}
       />
-      {editingScaleId ? (
+      {showUpgradeDetails ? (
+        <CustomTemplateUpgradeMsg orgId={orgId} />
+      ) : editingScaleId ? (
         <PokerTemplateScaleDetails team={team} />
       ) : (
         <PokerTemplateDetails
