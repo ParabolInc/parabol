@@ -3,6 +3,7 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import OrganizationUser from '../../../database/types/OrganizationUser'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
+import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
@@ -93,6 +94,7 @@ const removeFromOrg = async (
   } catch (e) {
     console.log(e)
   }
+  await setUserTierForUserIds([userId])
   return {
     tms: user?.tms ?? [],
     taskIds,

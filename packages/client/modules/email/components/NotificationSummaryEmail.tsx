@@ -1,6 +1,7 @@
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
+import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import makeAppURL from '../../../utils/makeAppURL'
 import {emailCopyStyle, emailLinkStyle} from '../styles'
 import Button from './Button'
@@ -39,7 +40,7 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header appOrigin={appOrigin} />
+        <Header appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
         <p style={copyStyle}>{`Hi ${preferredName} -`}</p>
         <p style={copyStyle}>
           {'You have '}
