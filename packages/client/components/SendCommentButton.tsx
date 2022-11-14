@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {ArrowUpward} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import isAndroid from '~/utils/draftjs/isAndroid'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import PlainButton from './PlainButton/PlainButton'
@@ -58,7 +59,7 @@ const SendCommentButton = (props: Props) => {
   const isDisabled = commentSubmitState === 'idle'
 
   const handleTouched = (e: React.TouchEvent) => {
-    // Ensure that on Android the keyboard  doesn't disappear after submitting a comment.
+    if (!isAndroid) return
     e.preventDefault()
     onSubmit()
   }
