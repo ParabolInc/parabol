@@ -110,6 +110,7 @@ const ReflectTemplateList = (props: Props) => {
         ...ReflectTemplateListTeam_settings
         id
         team {
+          ...AddNewReflectTemplate_team
           id
         }
         activeTemplate {
@@ -130,6 +131,7 @@ const ReflectTemplateList = (props: Props) => {
     graphql`
       fragment ReflectTemplateList_viewer on User {
         ...ReflectTemplateListTeam_viewer
+        ...AddNewReflectTemplate_viewer
       }
     `,
     viewerRef
@@ -210,10 +212,12 @@ const ReflectTemplateList = (props: Props) => {
         settingsRef={settings}
       />
       <AddNewReflectTemplate
-        teamId={teamId}
-        reflectTemplates={teamTemplates}
+        reflectTemplatesRef={teamTemplates}
+        teamRef={team}
+        viewerRef={viewer}
         gotoTeamTemplates={() => goToTab('TEAM')}
       />
+
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
