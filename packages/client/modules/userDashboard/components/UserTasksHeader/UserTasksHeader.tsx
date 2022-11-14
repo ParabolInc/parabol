@@ -43,6 +43,7 @@ const UserDashTeamMemberMenu = lazyPreload(
 
 const StyledDashFilterToggle = styled(DashFilterToggle)({
   margin: '4px 16px 4px 0',
+  tabindex: '0',
   [desktopBreakpoint]: {
     margin: '0 24px 0 0'
   }

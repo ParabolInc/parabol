@@ -19,9 +19,11 @@ const REACT_ELEMENT = Symbol.for('react.element')
 const isReactElement = (child: any) => child && child.$$typeof === REACT_ELEMENT
 
 const MenuStyles = styled('div')({
-  maxHeight: 224,
+  maxHeight: 280,
   maxWidth: 400,
+  overflowY: 'auto',
   outline: 0,
+
   // VERY important! If not present, draft-js gets confused & thinks the menu is the selection rectangle
   userSelect: 'none'
 })
@@ -102,17 +104,17 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
       if (idx === null) setActiveIdx(firstIndex)
       else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)
-      else if (idx < firstIndex) setActiveIdx(lastIndex)
-      else if (idx > lastIndex) setActiveIdx(firstIndex)
-      else if (activeIdx && idx > activeIdx) {
-        for (let ii = idx; ii <= lastIndex; ii++) {
+      else if (idx > firstIndex) setActiveIdx(lastIndex)
+      else if (idx < lastIndex) setActiveIdx(firstIndex)
+      else if (activeIdx && idx < activeIdx) {
+        for (let ii = idx; ii >= lastIndex; ii--) {
           if (menuItemIdxs.includes(ii)) {
             setActiveIdx(ii)
             break
           }
         }
       } else {
-        for (let ii = idx; ii >= firstIndex; ii--) {
+        for (let ii = idx; ii <= firstIndex; ii++) {
           if (menuItemIdxs.includes(ii)) {
             setActiveIdx(ii)
             break
