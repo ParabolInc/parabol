@@ -1,6 +1,10 @@
 import {GraphQLEnumType} from 'graphql'
 
-export type UpgradeCTALocationEnumType = 'publicTemplates' | 'teamTemplate' | 'orgTemplate'
+export type UpgradeCTALocationEnumType =
+  | 'publicTemplates'
+  | 'teamTemplate'
+  | 'orgTemplate'
+  | 'createNewTemplate'
 
 const UpgradeCTALocationEnum = new GraphQLEnumType({
   name: 'UpgradeCTALocationEnum',
@@ -8,7 +12,8 @@ const UpgradeCTALocationEnum = new GraphQLEnumType({
   values: {
     publicTemplate: {},
     teamTemplate: {},
-    orgTemplate: {}
+    orgTemplate: {},
+    createNewTemplate: {}
   }
 })
 

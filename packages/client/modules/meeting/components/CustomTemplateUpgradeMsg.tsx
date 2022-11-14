@@ -4,7 +4,10 @@ import React from 'react'
 import {useHistory} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import FloatingActionButton from '../../../components/FloatingActionButton'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {BezierCurve} from '../../../types/constEnums'
+import {MeetingTypeEnum} from '../../../__generated__/TeamInvitationQuery.graphql'
 
 const fadein = keyframes`
 0% { opacity: 0; }
@@ -67,13 +70,19 @@ const TemplateImage = styled('img')({
 
 interface Props {
   orgId: string
+  meetingType: MeetingTypeEnum
 }
 
 const CustomTempateUpgradeMsg = (props: Props) => {
-  const {orgId} = props
+  const {orgId, meetingType} = props
   const history = useHistory()
+  const atmosphere = useAtmosphere()
 
   const handleClick = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'createNewTemplate',
+      meetingType
+    })
     history.push(`/me/organizations/${orgId}/billing`)
   }
 

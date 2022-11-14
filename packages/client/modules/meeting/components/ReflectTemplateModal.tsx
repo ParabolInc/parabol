@@ -34,6 +34,7 @@ const ReflectTemplateModal = (props: Props) => {
       fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
         ...ReflectTemplateList_settings
         ...ReflectTemplateDetails_settings
+        meetingType
         team {
           id
           orgId
@@ -58,7 +59,7 @@ const ReflectTemplateModal = (props: Props) => {
     `,
     viewerRef
   )
-  const {selectedTemplate, team, activeTemplate} = retroMeetingSettings
+  const {selectedTemplate, team, activeTemplate, meetingType} = retroMeetingSettings
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
@@ -90,7 +91,7 @@ const ReflectTemplateModal = (props: Props) => {
         viewerRef={viewer}
       />
       {showUpgradeDetails ? (
-        <CustomTemplateUpgradeMsg orgId={orgId} />
+        <CustomTemplateUpgradeMsg orgId={orgId} meetingType={meetingType} />
       ) : (
         <ReflectTemplateDetails
           settings={retroMeetingSettings}

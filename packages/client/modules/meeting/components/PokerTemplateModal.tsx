@@ -35,6 +35,7 @@ const PokerTemplateModal = (props: Props) => {
       fragment PokerTemplateModal_pokerMeetingSettings on PokerMeetingSettings {
         ...PokerTemplateList_settings
         ...PokerTemplateDetails_settings
+        meetingType
         team {
           ...PokerTemplateScaleDetails_team
           id
@@ -62,7 +63,7 @@ const PokerTemplateModal = (props: Props) => {
     viewerRef
   )
 
-  const {selectedTemplate, team, activeTemplate} = pokerMeetingSettings
+  const {selectedTemplate, team, activeTemplate, meetingType} = pokerMeetingSettings
   const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
@@ -94,7 +95,7 @@ const PokerTemplateModal = (props: Props) => {
         setShowUpgradeDetails={setShowUpgradeDetails}
       />
       {showUpgradeDetails ? (
-        <CustomTemplateUpgradeMsg orgId={orgId} />
+        <CustomTemplateUpgradeMsg orgId={orgId} meetingType={meetingType} />
       ) : editingScaleId ? (
         <PokerTemplateScaleDetails team={team} />
       ) : (
