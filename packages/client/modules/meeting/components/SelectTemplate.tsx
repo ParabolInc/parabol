@@ -57,7 +57,7 @@ interface Props {
 
 const SelectTemplate = (props: Props) => {
   const {template, closePortal, teamId, hasFeatureFlag, tier, orgId} = props
-  const {id: templateId, isFree, type} = template
+  const {id: templateId, isFree, type, scope} = template
   const atmosphere = useAtmosphere()
   const history = useHistory()
   const {submitting, error} = useMutationProps()
@@ -72,7 +72,7 @@ const SelectTemplate = (props: Props) => {
     })
     history.push(`/me/organizations/${orgId}`)
   }
-  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal'
+  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal' && scope === 'PUBLIC'
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>
@@ -98,6 +98,7 @@ export default createFragmentContainer(SelectTemplate, {
     fragment SelectTemplate_template on MeetingTemplate {
       id
       teamId
+      scope
       isFree
       type
     }
