@@ -36,7 +36,7 @@ const QuestionBlock = styled('div')({
   fontSize: 24,
   lineHeight: 1.25,
   padding: '16px 0',
-  '.DraftEditor-root': {
+  '.DraftEditor-root, textarea': {
     flexGrow: 1,
     padding: '16px',
     borderRadius: '4px',

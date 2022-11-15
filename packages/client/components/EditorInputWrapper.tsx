@@ -44,7 +44,9 @@ const AndroidEditorFallback = lazyPreload(
 )
 
 const EditorFallback = styled(AndroidEditorFallback)({
-  padding: 0
+  padding: 0,
+  fontSize: 24, // font size 24 is assigned to match the default editor font size.
+  lineHeight: 34 // line height 34 is assigned to match the default editor line height.
 })
 
 const EditorInputWrapper = (props: Props) => {
@@ -160,7 +162,7 @@ const EditorInputWrapper = (props: Props) => {
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
-  
+
   // Make use of AndroidEditorFallback for android users.
   // Usage Reference {@see ./TaskEditor/CommentEditor.tsx}
   return (
