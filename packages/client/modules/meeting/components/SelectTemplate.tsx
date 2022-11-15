@@ -14,7 +14,6 @@ import SendClientSegmentEventMutation from '../../../mutations/SendClientSegment
 import {BezierCurve} from '../../../types/constEnums'
 import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
-import {MeetingTypeEnum} from '../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const fadein = keyframes`
 0% { opacity: 0; }
@@ -57,7 +56,7 @@ interface Props {
 
 const SelectTemplate = (props: Props) => {
   const {template, closePortal, teamId, hasFeatureFlag, tier, orgId} = props
-  const {id: templateId, isFree, type} = template
+  const {id: templateId, isFree, type, scope} = template
   const atmosphere = useAtmosphere()
   const history = useHistory()
   const {submitting, error} = useMutationProps()
@@ -68,11 +67,11 @@ const SelectTemplate = (props: Props) => {
   const goToBilling = () => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'publicTemplate',
-      meetingType: type as MeetingTypeEnum
+      meetingType: type
     })
     history.push(`/me/organizations/${orgId}`)
   }
-  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal'
+  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal' && scope === 'PUBLIC'
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>
@@ -98,6 +97,7 @@ export default createFragmentContainer(SelectTemplate, {
     fragment SelectTemplate_template on MeetingTemplate {
       id
       teamId
+      scope
       isFree
       type
     }
