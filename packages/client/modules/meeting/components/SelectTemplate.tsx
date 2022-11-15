@@ -14,7 +14,6 @@ import SendClientSegmentEventMutation from '../../../mutations/SendClientSegment
 import {BezierCurve} from '../../../types/constEnums'
 import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
-import {MeetingTypeEnum} from '../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const fadein = keyframes`
 0% { opacity: 0; }
@@ -68,7 +67,7 @@ const SelectTemplate = (props: Props) => {
   const goToBilling = () => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'publicTemplate',
-      meetingType: type as MeetingTypeEnum
+      meetingType: type
     })
     history.push(`/me/organizations/${orgId}`)
   }
