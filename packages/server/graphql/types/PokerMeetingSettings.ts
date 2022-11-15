@@ -3,7 +3,6 @@ import MeetingTemplate from '../../database/types/MeetingTemplate'
 import db from '../../db'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
-import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
@@ -71,15 +70,14 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
           description: 'The cursor, which is the templateId'
         }
       },
-      resolve: async ({teamId}, {first, after}, {dataLoader}) => {
-        const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', 'poker'),
-          dataLoader.get('teams').loadNonNull(teamId)
-        ])
-        const {orgId} = team
-        const unownedTemplates = publicTemplates.filter((template) => template.orgId !== orgId)
-        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates)
-        return connectionFromTemplateArray(scoredTemplates, first, after)
+      resolve: async (_src, {first, after}) => {
+        const publicTemplates = await db.read('publicTemplates', 'poker')
+        publicTemplates.sort((a, b) => {
+          if (a.isFree && !b.isFree) return -1
+          if (!a.isFree && b.isFree) return 1
+          return 0
+        })
+        return connectionFromTemplateArray(publicTemplates, first, after)
       }
     }
   })
