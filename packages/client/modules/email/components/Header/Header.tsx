@@ -1,5 +1,6 @@
 import React from 'react'
 import {ExternalLinks} from '../../../../types/constEnums'
+import {CorsOptions} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {emailTableBase} from '../../styles'
 
@@ -20,10 +21,11 @@ const linkStyle = {
 
 interface Props {
   appOrigin: string
+  corsOptions: CorsOptions
 }
 
 const Header = (props: Props) => {
-  const {appOrigin} = props
+  const {appOrigin, corsOptions} = props
   const dashURL = makeAppURL(appOrigin, 'me')
   return (
     <table style={emailTableBase} width='100%'>
@@ -32,12 +34,12 @@ const Header = (props: Props) => {
           <td align='left' style={cellStyle}>
             <a style={linkStyle} href={dashURL}>
               <img
-                crossOrigin=''
                 alt='Parabol, Inc. Logo'
                 height={42}
                 src={`${ExternalLinks.EMAIL_CDN}email-header-branding-color@3x.png`}
                 style={imageStyle}
                 width={204}
+                {...corsOptions}
               />
             </a>
           </td>

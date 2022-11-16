@@ -159,8 +159,16 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }
 
   const ensureHasText = (value: string) => value.trim().length
+  const getCurrentText = () => {
+    const editorEl = editorRef.current
+    if (isAndroid) {
+      if (!editorEl || editorEl.type !== 'textarea') return ''
+      return editorEl.value
+    }
 
-  const hasText = ensureHasText(editorState.getCurrentContent().getPlainText())
+    return editorState.getCurrentContent().getPlainText()
+  }
+  const hasText = ensureHasText(getCurrentText())
   const commentSubmitState = hasText ? 'typing' : 'idle'
 
   const addComment = (rawContent: string) => {
