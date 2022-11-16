@@ -26,7 +26,6 @@ const TeamPromptHeaderTitle = styled('h1')({
   margin: 0,
   padding: 0,
   fontWeight: 600,
-  maxWidth: '480px'
   [meetingTopBarMediaQuery]: {
     fontSize: 18
   }

@@ -40,8 +40,7 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   marginTop: isReply ? 8 : undefined,
   pointerEvents: isDisabled ? 'none' : undefined,
   // required for the shadow to overlay draft-js in the task cards
-  zIndex: 0,
-  overflowX: 'hidden',
+  zIndex: 0
 }))
 
 const CommentContainer = styled('div')({
@@ -58,8 +57,9 @@ const CommentAvatar = styled(Avatar)({
 const EditorWrap = styled('div')({
   flex: 1,
   margin: '14px 0',
-  maxWidth: '100%',
-  overflowX: 'hidden'
+  overflowWrap: 'break-word',
+  // width below the required size does not have effect
+  width: 0
 })
 
 const ActionsContainer = styled('div')({

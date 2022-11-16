@@ -17,8 +17,6 @@ const IconButton = styled(FlatButton)({
 
 const BackIcon = styled(ArrowBack)({
   color: 'inherit'
-  position: 'fixed',
-  bottom: '94%'
 })
 
 interface Props {

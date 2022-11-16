@@ -16,7 +16,7 @@ const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) 
   fontWeight: 'inherit',
   lineHeight: 'inherit',
   outline: disabled ? 'none' : undefined,
-  width: '100%',
+  width: '40vw',
   ':hover': {
     opacity: disabled ? undefined : 0.5
   }
@@ -31,9 +31,7 @@ const StaticValue = styled('div')({
   paddingTop: '10px',
   [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
     maxWidth: '150px',
-    lineHeight: '20px',
-    wordWrap: 'break-word',
-    paddingTop: '10px'
+    lineHeight: '24px'
   }
 })
 
@@ -46,7 +44,8 @@ const StyledIcon = styled(Edit)({
   color: PALETTE.SLATE_600,
   height: 18,
   width: 18,
-  marginLeft: 8
+  marginLeft: 8,
+  margineTop: 8
 })
 
 const Input = styled('input')({
@@ -189,7 +188,7 @@ const EditableText = forwardRef((props: Props, ref: any) => {
       <div className={className} ref={ref}>
         <Form onSubmit={onSubmit}>
           {isWrap ? <TextArea {...inProps} maxRows={3} /> : <Input {...inProps} />}
-          {error && maxLength && <Error>{error}</Error>}
+          {error && <Error>{error}</Error>}
         </Form>
       </div>
     )
