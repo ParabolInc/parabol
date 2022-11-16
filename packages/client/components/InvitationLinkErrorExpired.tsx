@@ -2,10 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
-import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import hasToken from '../utils/hasToken'
 import {InvitationLinkErrorExpired_massInvitation} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
 import DialogContent from './DialogContent'
@@ -13,7 +11,6 @@ import DialogTitle from './DialogTitle'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
-import LinkButton from './LinkButton'
 
 interface Props {
   massInvitation: InvitationLinkErrorExpired_massInvitation
@@ -30,30 +27,12 @@ const DialogActions = styled('div')({
   justifyContent: 'center'
 })
 
-const DashboardButton = styled(LinkButton)({
-  fontWeight: 600,
-  width: '50%'
-})
-
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation} = props
-  const {teamName, teamId} = massInvitation
+  const {teamName} = massInvitation
   useDocumentTitle(`Token Expired | Invitation Link`, 'Invitation Link')
 
   const {history} = useRouter()
-  const atmosphere = useAtmosphere()
-
-  const requestInvite = () => {
-    if (teamId) {
-      PushInvitationMutation(atmosphere, {teamId})
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'inviteRequested',
-        message: 'Invite requested',
-        autoDismiss: 5,
-        showDismissButton: true
-      })
-    }
-  }
 
   return (
     <InviteDialog>
@@ -63,23 +42,14 @@ const InvitationLinkErrorExpired = (props: Props) => {
           The invitation to <TeamName>{teamName}</TeamName> has expired.
         </InvitationDialogCopy>
         <InvitationDialogCopy>
-          {hasToken()
-            ? `Request a new invitation or reach out to the team administrator.`
-            : `Sign in to request a new invitation or reach out to the team administrator.`}
+          Reach out to the team administrator to request a new invitation
         </InvitationDialogCopy>
         <DialogActions>
           {hasToken() ? (
             <>
-              <FlatPrimaryButton onClick={requestInvite} size='medium'>
-                Request Invite
-              </FlatPrimaryButton>
-              <DashboardButton
-                onClick={() => history.push('/meetings')}
-                size='medium'
-                palette='blue'
-              >
+              <FlatPrimaryButton onClick={() => history.push('/meetings')} size='medium'>
                 Go to Dashboard
-              </DashboardButton>
+              </FlatPrimaryButton>
             </>
           ) : (
             <FlatPrimaryButton onClick={() => history.push('/')} size='medium'>
