@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Stop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -9,7 +10,6 @@ import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
 import {StageTimerModalEditTimeEnd_facilitator} from '../__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
 import {StageTimerModalEditTimeEnd_stage} from '../__generated__/StageTimerModalEditTimeEnd_stage.graphql'
-import Icon from './Icon'
 import MenuItemHR from './MenuItemHR'
 import PlainButton from './PlainButton/PlainButton'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
@@ -45,7 +45,7 @@ const HR = styled(MenuItemHR)({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Stop)({
   color: PALETTE.SLATE_600
 })
 
@@ -62,7 +62,7 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
   return (
     <Modal>
       <EndTimer onClick={endTimer}>
-        <StyledIcon>stop</StyledIcon>
+        <StyledIcon />
         <Label>End {MeetingLabels.TIME_LIMIT}</Label>
       </EndTimer>
       <HR />

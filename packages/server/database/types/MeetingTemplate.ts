@@ -28,7 +28,7 @@ export default class MeetingTemplate {
   parentTemplateId?: string
   type: MeetingTypeEnum
   isStarter?: boolean
-  isFree?: boolean
+  isFree: boolean
 
   constructor(input: Input) {
     const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type, isStarter, isFree} =
@@ -46,6 +46,6 @@ export default class MeetingTemplate {
     this.lastUsedAt = lastUsedAt ?? undefined
     this.type = type
     this.isStarter = isStarter
-    this.isFree = isFree
+    this.isFree = isFree ?? false
   }
 }

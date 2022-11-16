@@ -1,16 +1,15 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
-import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -51,10 +50,9 @@ const ThreadColumn = styled('div')({
   width: '100%'
 })
 
-const CloseIcon = styled(Icon)({
+const CloseIcon = styled(Close)({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  fontSize: ICON_SIZE.MD24,
   '&:hover': {
     opacity: 0.5
   }
@@ -96,7 +94,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
       <Header>
         <HeaderLabel>{'Discussion'}</HeaderLabel>
         <StyledCloseButton onClick={onToggle}>
-          <CloseIcon>close</CloseIcon>
+          <CloseIcon />
         </StyledCloseButton>
       </Header>
       <ThreadColumn>

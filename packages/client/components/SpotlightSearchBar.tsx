@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Search as SearchIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -6,10 +7,8 @@ import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMu
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {ElementHeight, ElementWidth} from '../types/constEnums'
 import {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
-import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 
@@ -31,9 +30,8 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 8
 })
 
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
+const StyledSearchIcon = styled(SearchIcon)({
+  color: PALETTE.SLATE_600
 })
 
 const SearchInput = styled('input')({
@@ -105,7 +103,7 @@ const SpotlightSearchBar = (props: Props) => {
     <SearchWrapper>
       <Search>
         <StyledMenuItemIcon>
-          <SearchIcon>search</SearchIcon>
+          <StyledSearchIcon />
         </StyledMenuItemIcon>
         <SearchInput
           onKeyDown={onKeyDown}
