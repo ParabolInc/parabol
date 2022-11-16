@@ -41,6 +41,10 @@ const Button = styled(FloatingActionButton)({
   pointerEvents: 'all'
 })
 
+const UpgradeButton = styled(Button)({
+  padding: '10px 24px'
+})
+
 const StyledIcon = styled(Check)({
   marginRight: 4
 })
@@ -75,9 +79,9 @@ const SelectTemplate = (props: Props) => {
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>
-        <Button onClick={goToBilling} palette='pink' waiting={submitting}>
+        <UpgradeButton onClick={goToBilling} palette='pink' waiting={submitting}>
           {'Upgrade Now'}
-        </Button>
+        </UpgradeButton>
       </ButtonBlock>
     )
   }

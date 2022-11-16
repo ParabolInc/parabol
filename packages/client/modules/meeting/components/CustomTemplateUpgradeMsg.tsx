@@ -28,7 +28,7 @@ const ButtonBlock = styled('div')({
 const Button = styled(FloatingActionButton)({
   border: 0,
   fontSize: 16,
-  padding: '8px 24px',
+  padding: '10px 24px',
   pointerEvents: 'all'
 })
 
