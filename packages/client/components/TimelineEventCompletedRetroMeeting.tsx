@@ -30,12 +30,13 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
     commentCount,
     reflectionCount,
     topicCount,
-    taskCount
+    taskCount,
+    locked
   } = meeting
   const {name: teamName} = team
   return (
     <TimelineEventCard
-      iconName='history'
+      iconName={locked ? 'lock' : 'history'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
@@ -60,9 +61,18 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/discuss/1`}>See the discussion</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        {locked ? (
+          <>
+            <Link to={`/meet/${meetingId}/discuss/1`}>Upgrade now</Link> to get access to the
+            summary and discussion
+          </>
+        ) : (
+          <>
+            <Link to={`/meet/${meetingId}/discuss/1`}>See the discussion</Link>
+            {' in your meeting or '}
+            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+          </>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )
@@ -80,6 +90,7 @@ export default createFragmentContainer(TimelineEventCompletedRetroMeeting, {
         reflectionCount
         taskCount
         topicCount
+        locked
       }
       team {
         id

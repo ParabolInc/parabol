@@ -149,6 +149,23 @@ export const newMeetingFields = () => ({
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
       return meetingMember || null
     }
+  },
+  locked: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description: 'Is this locked for personal plans?',
+    resolve: async (
+      {endedAt, teamId}: {endedAt: Date; teamId: string},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => {
+      const freeLimit = new Date()
+      freeLimit.setDate(freeLimit.getDate() - 30)
+      if (endedAt > freeLimit) {
+        return false
+      }
+      const team = await dataLoader.get('teams').loadNonNull(teamId)
+      return team.tier === 'personal'
+    }
   }
 })
 

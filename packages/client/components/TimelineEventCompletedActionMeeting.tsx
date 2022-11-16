@@ -32,7 +32,8 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
     endedAt,
     agendaItemCount,
     commentCount,
-    taskCount
+    taskCount,
+    locked
   } = meeting
   const {name: teamName} = team
   const meetingDuration = relativeDate(createdAt, {
@@ -43,7 +44,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
   })
   return (
     <TimelineEventCard
-      iconName='change_history'
+      iconName={locked ? 'lock' : 'change_history'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
@@ -55,9 +56,18 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
         {' and '}
         <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
         <br />
-        <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        {locked ? (
+          <>
+            <Link to={`/meet/${meetingId}/agendaitems/1`}>Upgrade now</Link> to see the discussion
+            in your meeting or review a summary
+          </>
+        ) : (
+          <>
+            <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
+            {' in your meeting or '}
+            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+          </>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )
@@ -77,6 +87,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         endedAt
         name
         taskCount
+        locked
       }
       team {
         id

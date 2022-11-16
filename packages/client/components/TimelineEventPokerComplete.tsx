@@ -25,11 +25,12 @@ const Link = styled(StyledLink)({
 const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent} = props
   const {meeting, team} = timelineEvent
-  const {id: meetingId, name: meetingName, commentCount, storyCount} = meeting
+  const {id: meetingId, name: meetingName, commentCount, storyCount, locked} = meeting
   const {name: teamName} = team
   return (
     <TimelineEventCard
-      IconSVG={<CardsSVG />}
+      IconSVG={locked ? undefined : <CardsSVG />}
+      iconName={locked ? 'lock' : undefined}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
@@ -44,9 +45,18 @@ const TimelineEventPokerComplete = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        {locked ? (
+          <>
+            <Link to={`/meet/${meetingId}/discuss/1`}>Upgrade now</Link> to get access to the
+            estimates and summary
+          </>
+        ) : (
+          <>
+            <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
+            {' in your meeting or '}
+            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+          </>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )
@@ -70,6 +80,7 @@ export default createFragmentContainer(TimelineEventPokerComplete, {
             }
           }
         }
+        locked
       }
       team {
         id

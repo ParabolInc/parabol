@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {AccountCircle, ChangeHistory, GroupAdd, GroupWork, History} from '@mui/icons-material'
+import {AccountCircle, ChangeHistory, GroupAdd, GroupWork, History, Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -76,7 +76,8 @@ const TimelineEventCard = (props: Props) => {
                   history: <History />,
                   account_circle: <AccountCircle />,
                   group_add: <GroupAdd />,
-                  group_work: <GroupWork />
+                  group_work: <GroupWork />,
+                  lock: <Lock />
                 }[iconName]
               }
             </EventIcon>

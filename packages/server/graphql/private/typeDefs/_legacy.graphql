@@ -1042,6 +1042,11 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  Is this locked for personal plans?
+  """
+  locked: Boolean!
 }
 
 """

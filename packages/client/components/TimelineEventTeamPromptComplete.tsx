@@ -34,6 +34,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
           responseCount
           taskCount
           commentCount
+          locked
         }
         team {
           id
@@ -49,12 +50,12 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     return null
   }
 
-  const {id: meetingId, name: meetingName, responseCount, commentCount, taskCount} = meeting
+  const {id: meetingId, name: meetingName, responseCount, commentCount, taskCount, locked} = meeting
   const {name: teamName} = team
 
   return (
     <TimelineEventCard
-      iconName='group_work'
+      iconName={locked ? 'lock' : 'group_work'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName}`}</TimelineEventTitle>}
     >
@@ -75,9 +76,18 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
-        {' or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        {locked ? (
+          <>
+            <Link to={`/meet/${meetingId}/responses`}>Upgrade now</Link> to see responses and
+            discussion or review a summary
+          </>
+        ) : (
+          <>
+            <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
+            {' or '}
+            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+          </>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )
