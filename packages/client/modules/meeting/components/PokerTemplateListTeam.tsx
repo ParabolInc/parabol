@@ -63,7 +63,6 @@ const PokerTemplateListTeam = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
-            viewerRef={null}
           />
         )
       })}

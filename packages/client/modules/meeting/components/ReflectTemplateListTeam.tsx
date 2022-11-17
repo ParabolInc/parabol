@@ -91,7 +91,6 @@ const ReflectTemplateListTeam = (props: Props) => {
             lowestScope={'TEAM'}
             teamId={teamId}
             templateSearchQuery={searchQuery}
-            viewer={null}
           />
         )
       })}

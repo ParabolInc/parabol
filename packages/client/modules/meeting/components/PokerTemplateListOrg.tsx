@@ -79,7 +79,6 @@ const PokerTemplateListOrg = (props: Props) => {
             isActive={template.id === activeTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
-            viewerRef={null}
           />
         )
       })}
