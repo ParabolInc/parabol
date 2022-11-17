@@ -33,11 +33,11 @@ interface Props {
   pokerTemplatesRef: AddNewPokerTemplate_pokerTemplates$key
   viewerRef: AddNewPokerTemplate_viewer$key
   teamRef: AddNewPokerTemplate_team$key
-  setShowUpgradeDetails: (showUpgradeDetails: boolean) => void
+  displayUpgradeDetails: () => void
 }
 
 const AddNewPokerTemplate = (props: Props) => {
-  const {gotoTeamTemplates, teamRef, pokerTemplatesRef, viewerRef, setShowUpgradeDetails} = props
+  const {gotoTeamTemplates, teamRef, pokerTemplatesRef, viewerRef, displayUpgradeDetails} = props
   const atmosphere = useAtmosphere()
   const pokerTemplates = useFragment(
     graphql`
@@ -77,7 +77,7 @@ const AddNewPokerTemplate = (props: Props) => {
   const addNewTemplate = () => {
     if (submitting) return
     if (featureFlags.templateLimit && tier === 'personal') {
-      setShowUpgradeDetails(true)
+      displayUpgradeDetails()
       return
     }
     if (pokerTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
@@ -110,7 +110,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        {`Create New Template ${featureFlags.templateLimit && tier === 'personal' ? '🔒' : ''}`}
+        {`Create New Template ${featureFlags.templateLimit && tier === 'personal' && '🔒'}`}
       </AddPokerTemplateLink>
     </div>
   )

@@ -79,11 +79,11 @@ interface Props {
   setActiveIdx: (idx: number) => void
   settingsRef: PokerTemplateList_settings$key
   viewerRef: PokerTemplateList_viewer$key
-  setShowUpgradeDetails: (showUpgradeDetails: boolean) => void
+  displayUpgradeDetails: () => void
 }
 
 const PokerTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settingsRef, viewerRef, setShowUpgradeDetails} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef, displayUpgradeDetails} = props
   const settings = useFragment(
     graphql`
       fragment PokerTemplateList_settings on PokerMeetingSettings {
@@ -176,7 +176,7 @@ const PokerTemplateList = (props: Props) => {
         pokerTemplatesRef={teamTemplates}
         viewerRef={viewer}
         gotoTeamTemplates={gotoTeamTemplates}
-        setShowUpgradeDetails={setShowUpgradeDetails}
+        displayUpgradeDetails={displayUpgradeDetails}
       />
       <SwipeableViews
         enableMouseEvents

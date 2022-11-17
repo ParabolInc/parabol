@@ -81,8 +81,16 @@ const PokerTemplateModal = (props: Props) => {
     setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'poker')
   }, [])
 
+  const displayUpgradeDetails = () => {
+    setShowUpgradeDetails(true)
+  }
+
+  const hideUpgradeDetails = () => {
+    setShowUpgradeDetails(false)
+  }
+
   useEffect(() => {
-    if (showUpgradeDetails) setShowUpgradeDetails(false)
+    if (showUpgradeDetails) hideUpgradeDetails()
   }, [activeTemplate])
 
   return (
@@ -92,7 +100,7 @@ const PokerTemplateModal = (props: Props) => {
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
         viewerRef={viewer}
-        setShowUpgradeDetails={setShowUpgradeDetails}
+        displayUpgradeDetails={displayUpgradeDetails}
       />
       {showUpgradeDetails ? (
         <CustomTemplateUpgradeMsg orgId={orgId} meetingType={meetingType} />

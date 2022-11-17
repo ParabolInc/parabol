@@ -77,8 +77,16 @@ const ReflectTemplateModal = (props: Props) => {
     setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'retrospective')
   }, [])
 
+  const displayUpgradeDetails = () => {
+    setShowUpgradeDetails(true)
+  }
+
+  const hideUpgradeDetails = () => {
+    setShowUpgradeDetails(false)
+  }
+
   useEffect(() => {
-    if (showUpgradeDetails) setShowUpgradeDetails(false)
+    if (showUpgradeDetails) hideUpgradeDetails()
   }, [activeTemplate])
 
   return (
@@ -87,7 +95,7 @@ const ReflectTemplateModal = (props: Props) => {
         settingsRef={retroMeetingSettings}
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
-        setShowUpgradeDetails={setShowUpgradeDetails}
+        displayUpgradeDetails={displayUpgradeDetails}
         viewerRef={viewer}
       />
       {showUpgradeDetails ? (
