@@ -5,7 +5,8 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   msTeams: ({msTeams}) => !!msTeams,
   insights: ({insights}) => !!insights,
   recurrence: ({recurrence}) => !!recurrence,
-  templateLimit: ({templateLimit}) => !!templateLimit
+  templateLimit: ({templateLimit}) => !!templateLimit,
+  teamsLimit: ({teamsLimit}) => !!teamsLimit
 }
 
 export default UserFeatureFlags
