@@ -55,7 +55,7 @@ interface Props {
   isActive: boolean
   teamId: string
   templateRef: PokerTemplateItem_template$key
-  viewerRef: PokerTemplateItem_viewer$key | null
+  viewerRef?: PokerTemplateItem_viewer$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
 }
 
@@ -82,10 +82,10 @@ const PokerTemplateItem = (props: Props) => {
         ...makeTemplateDescription_viewer
       }
     `,
-    viewerRef
+    viewerRef ?? null
   )
   const {id: templateId, name: templateName, scope, isFree} = template
-  const description = makeTemplateDescription(lowestScope, template, viewer)
+  const description = makeTemplateDescription(lowestScope, template, viewer ?? undefined)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)

@@ -1,4 +1,3 @@
-import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../types/constEnums'
