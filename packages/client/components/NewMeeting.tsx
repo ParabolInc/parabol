@@ -100,6 +100,7 @@ const NewMeetingInner = styled('div')({
 const query = graphql`
   query NewMeetingQuery {
     viewer {
+      ...NewMeetingSettings_viewer
       featureFlags {
         insights
       }
@@ -192,7 +193,11 @@ const NewMeeting = (props: Props) => {
             <NewMeetingTeamPicker selectedTeamRef={selectedTeam} teamsRef={teams} />
           </SettingsFirstRow>
           <SettingsRow>
-            <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
+            <NewMeetingSettings
+              selectedTeamRef={selectedTeam}
+              meetingType={meetingType}
+              viewerRef={viewer}
+            />
           </SettingsRow>
         </TeamAndSettings>
       </NewMeetingInner>

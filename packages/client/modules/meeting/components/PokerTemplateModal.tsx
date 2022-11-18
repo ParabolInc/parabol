@@ -1,19 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
+import {PokerTemplateModal_pokerMeetingSettings$key} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
+import {PokerTemplateModal_viewer$key} from '../../../__generated__/PokerTemplateModal_viewer.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
 import PokerTemplateScaleDetails from './PokerTemplateScaleDetails'
 
 interface Props {
   closePortal: () => void
-  pokerMeetingSettings: PokerTemplateModal_pokerMeetingSettings
+  pokerMeetingSettingsRef: PokerTemplateModal_pokerMeetingSettings$key
+  viewerRef: PokerTemplateModal_viewer$key
 }
 
 const StyledDialogContainer = styled(DialogContainer)({
@@ -26,7 +28,35 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const PokerTemplateModal = (props: Props) => {
-  const {closePortal, pokerMeetingSettings} = props
+  const {closePortal, pokerMeetingSettingsRef, viewerRef} = props
+  const pokerMeetingSettings = useFragment(
+    graphql`
+      fragment PokerTemplateModal_pokerMeetingSettings on PokerMeetingSettings {
+        ...PokerTemplateList_settings
+        ...PokerTemplateDetails_settings
+        team {
+          ...PokerTemplateScaleDetails_team
+          id
+          orgId
+          editingScaleId
+        }
+        selectedTemplate {
+          id
+          ...getTemplateList_template
+        }
+      }
+    `,
+    pokerMeetingSettingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment PokerTemplateModal_viewer on User {
+        ...PokerTemplateDetails_viewer
+      }
+    `,
+    viewerRef
+  )
+
   const {selectedTemplate, team} = pokerMeetingSettings
   const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
@@ -60,26 +90,10 @@ const PokerTemplateModal = (props: Props) => {
           gotoTeamTemplates={gotoTeamTemplates}
           gotoPublicTemplates={gotoPublicTemplates}
           closePortal={closePortal}
+          viewer={viewer}
         />
       )}
     </StyledDialogContainer>
   )
 }
-export default createFragmentContainer(PokerTemplateModal, {
-  pokerMeetingSettings: graphql`
-    fragment PokerTemplateModal_pokerMeetingSettings on PokerMeetingSettings {
-      ...PokerTemplateList_settings
-      ...PokerTemplateDetails_settings
-      team {
-        ...PokerTemplateScaleDetails_team
-        id
-        orgId
-        editingScaleId
-      }
-      selectedTemplate {
-        id
-        ...getTemplateList_template
-      }
-    }
-  `
-})
+export default PokerTemplateModal

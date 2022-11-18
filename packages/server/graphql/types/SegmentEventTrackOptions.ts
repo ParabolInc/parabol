@@ -10,6 +10,7 @@ import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import TaskServiceEnum from './TaskServiceEnum'
 import TierEnum from './TierEnum'
+import UpgradeCTALocationEnum from './UpgradeCTALocationEnum'
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
   name: 'SegmentEventTrackOptions',
@@ -34,7 +35,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     taskId: {type: GraphQLID},
     meetingType: {type: MeetingTypeEnum},
     inMeeting: {type: GraphQLBoolean},
-    jiraProjectType: {type: GraphQLString}
+    jiraProjectType: {type: GraphQLString},
+    upgradeCTALocation: {type: UpgradeCTALocationEnum}
   })
 })
 

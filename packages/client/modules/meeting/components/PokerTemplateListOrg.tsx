@@ -75,7 +75,7 @@ const PokerTemplateListOrg = (props: Props) => {
         return (
           <PokerTemplateItem
             key={template.id}
-            template={template}
+            templateRef={template}
             isActive={template.id === activeTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
