@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.83.0 2022-November-17
+
+### Fixed
+
+- Update tier when leaving org (#7377) 
+- Added CorsOptions to email images (#7393)
+- Typo in Earth 2.0 check-in question 
+- Send button is disabled in retro discussion on mobile (#7361) 
+- Snackbar messages are not centered during standups #7203
+- Add delete confirmation button and waiting effect (#7403) 
+- Snack on jira auth error (#7432) 
+
+### Changed
+
+- Cleanup packages to support future bundled server build (#7400) 
+ 
 ## 6.82.0 2022-November-09
 
 ### Added
