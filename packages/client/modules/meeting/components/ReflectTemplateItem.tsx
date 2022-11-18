@@ -59,7 +59,7 @@ interface Props {
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
   tier?: TierEnum
-  viewer: ReflectTemplateItem_viewer | null
+  viewer?: ReflectTemplateItem_viewer
 }
 
 const ReflectTemplateItem = (props: Props) => {
