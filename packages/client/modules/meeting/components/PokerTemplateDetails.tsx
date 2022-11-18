@@ -81,10 +81,12 @@ interface Props {
 
 const PokerTemplateDetails = (props: Props) => {
   const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {featureFlags} = viewer
+  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, dimensions} = activeTemplate
-  const {id: teamId, orgId} = team
+  const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
   const description = makeTemplateDescription(lowestScope, activeTemplate, viewer)
@@ -110,6 +112,7 @@ const PokerTemplateDetails = (props: Props) => {
     ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
+  const showClone = !isOwner && (templateLimitFlag ? tier !== 'personal' : true)
   return (
     <DimensionEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -132,7 +135,7 @@ const PokerTemplateDetails = (props: Props) => {
                 type='poker'
               />
             )}
-            {!isOwner && <CloneTemplate onClick={onClone} canClone={canClone} />}
+            {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
@@ -179,11 +182,15 @@ export default createFragmentContainer(PokerTemplateDetails, {
       team {
         id
         orgId
+        tier
       }
     }
   `,
   viewer: graphql`
     fragment PokerTemplateDetails_viewer on User {
+      featureFlags {
+        templateLimit
+      }
       ...makeTemplateDescription_viewer
     }
   `
