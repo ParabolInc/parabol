@@ -10,7 +10,7 @@ interface Props {
   setMinuteTimeLimit: (n: number) => void
 }
 
-const options = [...Array(9).keys()].map((n) => n + 1)
+const options = [...Array(10).keys()].map((n) => n + 1)
 
 const StageTimerMinutePicker = (props: Props) => {
   const {menuProps, minuteTimeLimit, setMinuteTimeLimit} = props

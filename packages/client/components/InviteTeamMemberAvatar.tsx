@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
+import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import useModal from '../hooks/useModal'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import AddTeamMemberModal from './AddTeamMemberModal'
-import Icon from './Icon'
 
 const Label = styled('div')({
   fontSize: 12,
@@ -17,9 +16,10 @@ const Label = styled('div')({
   textAlign: 'center'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('span')({
   color: PALETTE.SKY_500,
-  fontSize: ICON_SIZE.MD24,
+  height: 24,
+  width: 24,
   alignSelf: 'center'
 })
 
@@ -34,7 +34,7 @@ const Wrapper = styled('div')({
   ':hover': {
     cursor: 'pointer'
   },
-  ':hover i': {
+  ':hover span': {
     color: PALETTE.SKY_600
   }
 })
@@ -60,7 +60,9 @@ const InviteTeamMemberAvatar = (props: Props) => {
     <>
       <Wrapper onClick={toggleModal}>
         <IconWrapper>
-          <StyledIcon>person_add</StyledIcon>
+          <StyledIcon>
+            <PersonAdd />
+          </StyledIcon>
         </IconWrapper>
         <Label>Invite</Label>
       </Wrapper>

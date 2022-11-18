@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Threshold} from '~/types/constEnums'
-import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import dndNoise from '../../../utils/dndNoise'
@@ -24,7 +24,7 @@ const AddPromptLink = styled(LinkButton)({
   padding: '4px 0'
 })
 
-const AddPromptLinkPlus = styled(Icon)({
+const AddPromptLinkPlus = styled(Add)({
   display: 'block',
   margin: '0 16px 0 16px'
 })
@@ -59,7 +59,7 @@ const AddTemplatePrompt = (props: Props) => {
   if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
   return (
     <AddPromptLink palette='blue' onClick={addPrompt} waiting={submitting}>
-      <AddPromptLinkPlus>add</AddPromptLinkPlus>
+      <AddPromptLinkPlus />
       <div>Add another prompt</div>
     </AddPromptLink>
   )

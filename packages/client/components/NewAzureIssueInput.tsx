@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -18,7 +19,6 @@ import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
 import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
-import Icon from './Icon'
 import NewAzureIssueMenu from './NewAzureIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
@@ -37,9 +37,10 @@ const StyledButton = styled(PlainButton)({
   }
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(ExpandMore)({
   color: PALETTE.SKY_500,
-  fontSize: 20,
+  height: 20,
+  width: 20,
   padding: 0,
   alignContent: 'center'
 })

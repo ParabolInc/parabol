@@ -3,7 +3,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
 const MenuItemAvatar = styled(MenuItemComponentAvatar)({
-  '& svg': {
+  svg: {
     display: 'block',
     height: ICON_SIZE.MD18,
     width: ICON_SIZE.MD18

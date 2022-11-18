@@ -1,10 +1,10 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import {Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import FloatingActionButton from '../../../components/FloatingActionButton'
-import Icon from '../../../components/Icon'
 import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -38,7 +38,7 @@ const Button = styled(FloatingActionButton)({
   pointerEvents: 'all'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Check)({
   marginRight: 4
 })
 
@@ -61,7 +61,7 @@ const SelectTemplate = (props: Props) => {
     <ButtonBlock>
       {error && <StyledError>{error.message}</StyledError>}
       <Button onClick={selectTemplate} palette='blue' waiting={submitting}>
-        <StyledIcon>check</StyledIcon>
+        <StyledIcon />
         {'Use Template'}
       </Button>
     </ButtonBlock>
