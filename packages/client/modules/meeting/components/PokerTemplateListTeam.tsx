@@ -1,10 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {PokerTemplateListTeam_teamTemplates} from '../../../__generated__/PokerTemplateListTeam_teamTemplates.graphql'
+import {PokerTemplateListTeam_team$key} from '../../../__generated__/PokerTemplateListTeam_team.graphql'
+import {PokerTemplateListTeam_teamTemplates$key} from '../../../__generated__/PokerTemplateListTeam_teamTemplates.graphql'
+import {PokerTemplateListTeam_viewer$key} from '../../../__generated__/PokerTemplateListTeam_viewer.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
 
 const TemplateList = styled('ul')({
@@ -37,15 +42,64 @@ interface Props {
   isActive: boolean
   activeTemplateId: string
   showPublicTemplates: () => void
-  teamId: string
-  teamTemplates: PokerTemplateListTeam_teamTemplates
+  teamTemplatesRef: PokerTemplateListTeam_teamTemplates$key
+  teamRef: PokerTemplateListTeam_team$key
+  viewerRef: PokerTemplateListTeam_viewer$key
 }
 
 const PokerTemplateListTeam = (props: Props) => {
-  const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
+  const {isActive, activeTemplateId, showPublicTemplates, teamTemplatesRef, viewerRef, teamRef} =
+    props
+  const teamTemplates = useFragment(
+    graphql`
+      fragment PokerTemplateListTeam_teamTemplates on PokerTemplate @relay(plural: true) {
+        id
+        ...PokerTemplateItem_template
+      }
+    `,
+    teamTemplatesRef
+  )
+  const {featureFlags} = useFragment(
+    graphql`
+      fragment PokerTemplateListTeam_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+      }
+    `,
+    viewerRef
+  )
+  const team = useFragment(
+    graphql`
+      fragment PokerTemplateListTeam_team on Team {
+        id
+        orgId
+        tier
+      }
+    `,
+    teamRef
+  )
+  const {id: teamId, tier, orgId} = team
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'poker')
+  const atmosphere = useAtmosphere()
+  const history = useHistory()
   if (teamTemplates.length === 0) {
+    if (tier === 'personal' && featureFlags.templateLimit) {
+      const goToBilling = () => {
+        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+          upgradeCTALocation: 'teamTemplate',
+          meetingType: 'poker'
+        })
+        history.push(`/me/organizations/${orgId}`)
+      }
+      return (
+        <Message>
+          <StyledLink onClick={goToBilling}>Upgrade to Pro </StyledLink>
+          <span>to create custom templates for your team</span>
+        </Message>
+      )
+    }
     return (
       <Message>
         <span>Your custom templates will show up here. Get started with a </span>
@@ -70,11 +124,4 @@ const PokerTemplateListTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerTemplateListTeam, {
-  teamTemplates: graphql`
-    fragment PokerTemplateListTeam_teamTemplates on PokerTemplate @relay(plural: true) {
-      id
-      ...PokerTemplateItem_template
-    }
-  `
-})
+export default PokerTemplateListTeam

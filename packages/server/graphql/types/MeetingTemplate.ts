@@ -7,6 +7,7 @@ import {
 } from 'graphql'
 import {GQLContext} from './../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import MeetingTypeEnum from './MeetingTypeEnum'
 import SharingScopeEnum from './SharingScopeEnum'
 import Team from './Team'
 
@@ -57,7 +58,7 @@ export const meetingTemplateFields = () => ({
     }
   },
   type: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(MeetingTypeEnum),
     description: 'The type of the template'
   },
   updatedAt: {

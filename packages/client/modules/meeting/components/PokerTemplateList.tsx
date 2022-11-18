@@ -6,7 +6,7 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -14,7 +14,8 @@ import useBreakpoint from '../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
-import {PokerTemplateList_settings} from '../../../__generated__/PokerTemplateList_settings.graphql'
+import {PokerTemplateList_settings$key} from '../../../__generated__/PokerTemplateList_settings.graphql'
+import {PokerTemplateList_viewer$key} from '../../../__generated__/PokerTemplateList_viewer.graphql'
 import AddNewPokerTemplate from './AddNewPokerTemplate'
 import PokerTemplateListOrgRoot from './PokerTemplateListOrgRoot'
 import PokerTemplateListPublicRoot from './PokerTemplateListPublicRoot'
@@ -76,11 +77,41 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
-  settings: PokerTemplateList_settings
+  settingsRef: PokerTemplateList_settings$key
+  viewerRef: PokerTemplateList_viewer$key
 }
 
 const PokerTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settings} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef} = props
+  const settings = useFragment(
+    graphql`
+      fragment PokerTemplateList_settings on PokerMeetingSettings {
+        id
+        team {
+          ...PokerTemplateListTeam_team
+          id
+        }
+        activeTemplate {
+          ...getTemplateList_template
+          id
+        }
+        teamTemplates {
+          ...PokerTemplateListTeam_teamTemplates
+          ...AddNewPokerTemplate_pokerTemplates
+          id
+        }
+      }
+    `,
+    settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment PokerTemplateList_viewer on User {
+        ...PokerTemplateListTeam_viewer
+      }
+    `,
+    viewerRef
+  )
   const {team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
@@ -153,9 +184,10 @@ const PokerTemplateList = (props: Props) => {
           <PokerTemplateListTeam
             activeTemplateId={activeTemplateId}
             showPublicTemplates={gotoPublicTemplates}
-            teamTemplates={teamTemplates}
-            teamId={teamId}
+            teamTemplatesRef={teamTemplates}
+            teamRef={team}
             isActive={activeIdx === 0}
+            viewerRef={viewer}
           />
         </TabContents>
         <TabContents>{activeIdx === 1 && <PokerTemplateListOrgRoot teamId={teamId} />}</TabContents>
@@ -168,24 +200,4 @@ const PokerTemplateList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerTemplateList, {
-  settings: graphql`
-    fragment PokerTemplateList_settings on PokerMeetingSettings {
-      id
-      team {
-        id
-      }
-      activeTemplate {
-        ...getTemplateList_template
-        id
-        teamId
-        orgId
-      }
-      teamTemplates {
-        ...PokerTemplateListTeam_teamTemplates
-        ...AddNewPokerTemplate_pokerTemplates
-        id
-      }
-    }
-  `
-})
+export default PokerTemplateList

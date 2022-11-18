@@ -49,6 +49,7 @@ const ReflectTemplateModal = (props: Props) => {
     graphql`
       fragment ReflectTemplateModal_viewer on User {
         ...ReflectTemplateDetails_viewer
+        ...ReflectTemplateList_viewer
       }
     `,
     viewerRef
@@ -76,6 +77,7 @@ const ReflectTemplateModal = (props: Props) => {
         settingsRef={retroMeetingSettings}
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
+        viewerRef={viewer}
       />
       <ReflectTemplateDetails
         settings={retroMeetingSettings}
