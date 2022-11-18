@@ -130,7 +130,6 @@ const ReflectTemplateListOrg = (props: Props) => {
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
             templateSearchQuery={searchQuery}
-            viewer={null}
           />
         )
       })}

@@ -6,6 +6,7 @@ import plural from 'parabol-client/utils/plural'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
+import {APP_CORS_OPTIONS, EMAIL_CORS_OPTIONS} from '../../../../../types/cors'
 import {RetroTopic_stage} from '../../../../../__generated__/RetroTopic_stage.graphql'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
@@ -73,6 +74,7 @@ const RetroTopic = (props: Props) => {
       ? 'See 100+ Comments'
       : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
+  const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
   return (
     <>
       <tr>
@@ -85,7 +87,7 @@ const RetroTopic = (props: Props) => {
       <tr>
         <td align='center' style={votesBlock}>
           <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail}>
-            <img crossOrigin='' height='18' src={src} width='18' style={imageStyle} />
+            <img height='18' src={src} width='18' style={imageStyle} {...corsOptions} />
           </AnchorIfEmail>
           <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail} style={voteCountStyle}>
             {voteCount}
