@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -82,7 +83,7 @@ const PokerTemplateItem = (props: Props) => {
     `,
     viewerRef
   )
-  const {id: templateId, name: templateName} = template
+  const {id: templateId, name: templateName, scope} = template
   const description = makeTemplateDescription(lowestScope, template, viewer)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
@@ -94,6 +95,14 @@ const PokerTemplateItem = (props: Props) => {
       store.get(teamId)?.setValue(null, 'editingScaleId')
     })
   }
+  useEffect(() => {
+    if (!isActive) return
+    SendClientSegmentEventMutation(atmosphere, 'Viewed Template', {
+      meetingType: 'poker',
+      scope,
+      templateName
+    })
+  }, [isActive])
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>
       <TemplateItemDetails>
