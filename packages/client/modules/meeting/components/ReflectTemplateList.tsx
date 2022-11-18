@@ -81,6 +81,7 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
+  displayUpgradeDetails: () => void
   settingsRef: ReflectTemplateList_settings$key
   viewerRef: ReflectTemplateList_viewer$key
 }
@@ -102,7 +103,7 @@ export const templateIdxs = {
 } as const
 
 const ReflectTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settingsRef, viewerRef} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef, displayUpgradeDetails} = props
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
@@ -110,6 +111,7 @@ const ReflectTemplateList = (props: Props) => {
         ...ReflectTemplateListTeam_settings
         id
         team {
+          ...AddNewReflectTemplate_team
           id
         }
         activeTemplate {
@@ -130,6 +132,7 @@ const ReflectTemplateList = (props: Props) => {
     graphql`
       fragment ReflectTemplateList_viewer on User {
         ...ReflectTemplateListTeam_viewer
+        ...AddNewReflectTemplate_viewer
       }
     `,
     viewerRef
@@ -210,8 +213,10 @@ const ReflectTemplateList = (props: Props) => {
         settingsRef={settings}
       />
       <AddNewReflectTemplate
-        teamId={teamId}
-        reflectTemplates={teamTemplates}
+        reflectTemplatesRef={teamTemplates}
+        teamRef={team}
+        displayUpgradeDetails={displayUpgradeDetails}
+        viewerRef={viewer}
         gotoTeamTemplates={() => goToTab('TEAM')}
       />
       <SwipeableViews

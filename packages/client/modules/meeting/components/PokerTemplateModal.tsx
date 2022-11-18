@@ -8,6 +8,7 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings$key} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import {PokerTemplateModal_viewer$key} from '../../../__generated__/PokerTemplateModal_viewer.graphql'
+import CustomTemplateUpgradeMsg from './CustomTemplateUpgradeMsg'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
 import PokerTemplateScaleDetails from './PokerTemplateScaleDetails'
@@ -34,6 +35,7 @@ const PokerTemplateModal = (props: Props) => {
       fragment PokerTemplateModal_pokerMeetingSettings on PokerMeetingSettings {
         ...PokerTemplateList_settings
         ...PokerTemplateDetails_settings
+        meetingType
         team {
           ...PokerTemplateScaleDetails_team
           id
@@ -43,6 +45,9 @@ const PokerTemplateModal = (props: Props) => {
         selectedTemplate {
           id
           ...getTemplateList_template
+        }
+        activeTemplate {
+          id
         }
       }
     `,
@@ -58,11 +63,12 @@ const PokerTemplateModal = (props: Props) => {
     viewerRef
   )
 
-  const {selectedTemplate, team} = pokerMeetingSettings
+  const {selectedTemplate, team, activeTemplate, meetingType} = pokerMeetingSettings
   const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
+  const [showUpgradeDetails, setShowUpgradeDetails] = useState(false)
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
   }
@@ -75,6 +81,18 @@ const PokerTemplateModal = (props: Props) => {
     setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'poker')
   }, [])
 
+  const displayUpgradeDetails = () => {
+    setShowUpgradeDetails(true)
+  }
+
+  const hideUpgradeDetails = () => {
+    setShowUpgradeDetails(false)
+  }
+
+  useEffect(() => {
+    if (showUpgradeDetails) hideUpgradeDetails()
+  }, [activeTemplate])
+
   return (
     <StyledDialogContainer>
       <PokerTemplateList
@@ -82,8 +100,11 @@ const PokerTemplateModal = (props: Props) => {
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
         viewerRef={viewer}
+        displayUpgradeDetails={displayUpgradeDetails}
       />
-      {editingScaleId ? (
+      {showUpgradeDetails ? (
+        <CustomTemplateUpgradeMsg orgId={orgId} meetingType={meetingType} />
+      ) : editingScaleId ? (
         <PokerTemplateScaleDetails team={team} />
       ) : (
         <PokerTemplateDetails
