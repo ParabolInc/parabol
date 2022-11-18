@@ -8,6 +8,7 @@ import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import Panel from '../../../../components/Panel/Panel'
+import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 interface Props {
@@ -101,7 +102,11 @@ const OrgMembers = (props: Props) => {
   return (
     <Panel
       label='Organization Members'
-      controls={isBillingLeader && <ExportToCSVButton handleClick={exportToCSV} />}
+      controls={
+        isBillingLeader && (
+          <ExportToCSVButton handleClick={exportToCSV} corsOptions={APP_CORS_OPTIONS} />
+        )
+      }
     >
       {organizationUsers.edges.map(({node: organizationUser}) => {
         return (

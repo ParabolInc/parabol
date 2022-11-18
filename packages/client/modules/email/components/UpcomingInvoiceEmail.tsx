@@ -1,4 +1,5 @@
 import React from 'react'
+import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
@@ -25,7 +26,7 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header appOrigin={appOrigin} />
+        <Header appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
         <p style={emailCopyStyle}>{'Hello, '}</p>
         <p style={emailCopyStyle}>
           {`Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}.`}

@@ -6,6 +6,7 @@ import {SummaryHeader_meeting} from 'parabol-client/__generated__/SummaryHeader_
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
+import {CorsOptions} from '../../../../../types/cors'
 
 const meetingSummaryLabel = {
   color: PALETTE.SLATE_600,
@@ -36,10 +37,11 @@ const dateLabel = {
 interface Props {
   meeting: SummaryHeader_meeting
   isDemo?: boolean
+  corsOptions: CorsOptions
 }
 
 const SummaryHeader = (props: Props) => {
-  const {meeting, isDemo} = props
+  const {meeting, isDemo, corsOptions} = props
   const {createdAt, name: meetingName, team} = meeting
   const {name: teamName} = team
   const meetingDate = makeDateString(createdAt, {showDay: true})
@@ -49,11 +51,11 @@ const SummaryHeader = (props: Props) => {
         <tr>
           <td align='center' style={{paddingTop: 16}}>
             <img
-              crossOrigin=''
               alt='Parabol Logo'
               src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
               height='32'
               width='34'
+              {...corsOptions}
             />
           </td>
         </tr>
