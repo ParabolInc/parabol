@@ -65,7 +65,7 @@ interface Props {
 
 const ReflectTemplateItem = (props: Props) => {
   const {lowestScope, isActive, teamId, template, templateSearchQuery, tier, viewer} = props
-  const {id: templateId, name: templateName, scope} = template
+  const {id: templateId, name: templateName, scope, isFree} = template
   const description = makeTemplateDescription(lowestScope, template, viewer, tier)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
@@ -78,7 +78,8 @@ const ReflectTemplateItem = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Viewed Template', {
       meetingType: 'retrospective',
       scope,
-      templateName
+      templateName,
+      isFree
     })
   }, [isActive])
   return (
@@ -104,6 +105,7 @@ export default createFragmentContainer(ReflectTemplateItem, {
       name
       lastUsedAt
       scope
+      isFree
     }
   `,
   viewer: graphql`

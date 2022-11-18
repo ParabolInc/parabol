@@ -71,6 +71,7 @@ const PokerTemplateItem = (props: Props) => {
         name
         lastUsedAt
         scope
+        isFree
       }
     `,
     templateRef
@@ -83,7 +84,7 @@ const PokerTemplateItem = (props: Props) => {
     `,
     viewerRef
   )
-  const {id: templateId, name: templateName, scope} = template
+  const {id: templateId, name: templateName, scope, isFree} = template
   const description = makeTemplateDescription(lowestScope, template, viewer)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
@@ -100,7 +101,8 @@ const PokerTemplateItem = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Viewed Template', {
       meetingType: 'poker',
       scope,
-      templateName
+      templateName,
+      isFree
     })
   }, [isActive])
   return (

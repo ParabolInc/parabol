@@ -39,7 +39,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     jiraProjectType: {type: GraphQLString},
     upgradeCTALocation: {type: UpgradeCTALocationEnum},
     scope: {type: SharingScopeEnum},
-    templateName: {type: GraphQLString}
+    templateName: {type: GraphQLString},
+    isFree: {type: GraphQLBoolean}
   })
 })
 
