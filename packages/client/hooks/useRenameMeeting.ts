@@ -46,10 +46,10 @@ export const useRenameMeeting = (
 
   const validate = (rawMeetingName: string) => {
     const res = new Legitity(rawMeetingName)
-      .trim()
       .required(validationSettings.required.errorText)
       .min(validationSettings.minLength.min, validationSettings.minLength.errorText)
       .max(validationSettings.maxLength.max, validationSettings.maxLength.errorText)
+      .trim()
 
     if (res.error) {
       onError(new Error(res.error))
