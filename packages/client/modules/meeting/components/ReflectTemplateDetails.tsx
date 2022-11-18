@@ -93,6 +93,7 @@ interface Props {
 const ReflectTemplateDetails = (props: Props) => {
   const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
   const {featureFlags} = viewer
+  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts} = activeTemplate
@@ -133,6 +134,7 @@ const ReflectTemplateDetails = (props: Props) => {
     ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = templateId === settings.selectedTemplate.id
+  const showClone = !isOwner && (templateLimitFlag ? tier !== 'personal' : true)
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -155,7 +157,7 @@ const ReflectTemplateDetails = (props: Props) => {
                 type='retrospective'
               />
             )}
-            {!isOwner && <CloneTemplate onClick={onClone} canClone={canClone} />}
+            {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
@@ -168,7 +170,7 @@ const ReflectTemplateDetails = (props: Props) => {
           closePortal={closePortal}
           template={activeTemplate}
           teamId={teamId}
-          hasFeatureFlag={featureFlags.templateLimit}
+          hasFeatureFlag={templateLimitFlag}
           tier={tier}
           orgId={orgId}
         />
