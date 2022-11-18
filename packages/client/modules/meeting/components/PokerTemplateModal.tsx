@@ -2,8 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {UpgradeCTALocationEnumType} from '../../../../server/graphql/types/UpgradeCTALocationEnum'
 import DialogContainer from '../../../components/DialogContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings$key} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
@@ -80,6 +82,20 @@ const PokerTemplateModal = (props: Props) => {
   useEffect(() => {
     setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'poker')
   }, [])
+
+  useEffect(() => {
+    const scope = SCOPES[activeIdx]
+    const upgradeCTALocation: UpgradeCTALocationEnumType =
+      scope === 'TEAM'
+        ? 'teamTemplate'
+        : scope === 'ORGANIZATION'
+        ? 'orgTemplate'
+        : 'publicTemplate'
+    SendClientSegmentEventMutation(atmosphere, 'Opened Template Picker', {
+      meetingType: 'poker',
+      upgradeCTALocation
+    })
+  }, [activeIdx])
 
   const displayUpgradeDetails = () => {
     setShowUpgradeDetails(true)
