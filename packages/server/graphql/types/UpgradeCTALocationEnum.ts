@@ -1,7 +1,7 @@
 import {GraphQLEnumType} from 'graphql'
 
 export type UpgradeCTALocationEnumType =
-  | 'publicTemplates'
+  | 'publicTemplate'
   | 'teamTemplate'
   | 'orgTemplate'
   | 'createNewTemplate'
