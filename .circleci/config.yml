@@ -19,12 +19,14 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` Backing up..."}' $SLACK_DEVOPS_URL
+      - checkout
       - run:
           name: DevOps checkout
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
-      - backup:
+      - run:
           name: Backup
+          no_output_timeout: 55m
           command: |
             ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
             $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
@@ -229,22 +231,14 @@ jobs:
 
 workflows:
   version: 2
-  backup:
-    jobs:
-      - approve-for-backup:
-          type: approval
-          filters:
-            branches:
-              only:
-                - production
-      - backup:
-          requires:
-            - approve-for-backup
-          filters:
-            branches:
-              only:
-                - production
   build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - production
+  production-build-and-deploy:
     jobs:
       - approve-for-deploy:
           type: approval
@@ -259,8 +253,18 @@ workflows:
             branches:
               only:
                 - production
-      - build:
+  backup:
+    jobs:
+      - approve-for-backup:
+          type: approval
           filters:
             branches:
-              ignore:
+              only:
+                - production
+      - backup:
+          requires:
+            - approve-for-backup
+          filters:
+            branches:
+              only:
                 - production
