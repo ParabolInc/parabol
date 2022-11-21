@@ -14,6 +14,9 @@ interface Input {
   updatedAt?: Date
   showConversionModal?: boolean
   payLaterClickCount?: number
+  tierLimitExceededAt?: Date
+  scheduledLockAt?: Date
+  lockedAt?: Date
 }
 
 export default class Organization {
@@ -32,6 +35,9 @@ export default class Organization {
   stripeSubscriptionId?: string | null
   upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
+  tierLimitExceededAt?: Date
+  scheduledLockAt?: Date
+  lockedAt?: Date
   updatedAt: Date
   constructor(input: Input) {
     const {
@@ -45,7 +51,10 @@ export default class Organization {
       showConversionModal,
       payLaterClickCount,
       picture,
-      tier
+      tier,
+      tierLimitExceededAt,
+      scheduledLockAt,
+      lockedAt
     } = input
     this.id = id || generateUID()
     this.activeDomain = activeDomain
@@ -58,5 +67,8 @@ export default class Organization {
     this.picture = picture
     this.showConversionModal = showConversionModal === null ? undefined : showConversionModal
     this.payLaterClickCount = payLaterClickCount || 0
+    this.tierLimitExceededAt = tierLimitExceededAt
+    this.scheduledLockAt = scheduledLockAt
+    this.lockedAt = lockedAt
   }
 }
