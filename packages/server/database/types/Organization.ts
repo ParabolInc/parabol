@@ -14,9 +14,6 @@ interface Input {
   updatedAt?: Date
   showConversionModal?: boolean
   payLaterClickCount?: number
-  tierLimitExceededAt?: Date
-  scheduledLockAt?: Date
-  lockedAt?: Date
 }
 
 export default class Organization {
