@@ -51,10 +51,7 @@ export default class Organization {
       showConversionModal,
       payLaterClickCount,
       picture,
-      tier,
-      tierLimitExceededAt,
-      scheduledLockAt,
-      lockedAt
+      tier
     } = input
     this.id = id || generateUID()
     this.activeDomain = activeDomain
@@ -67,8 +64,5 @@ export default class Organization {
     this.picture = picture
     this.showConversionModal = showConversionModal === null ? undefined : showConversionModal
     this.payLaterClickCount = payLaterClickCount || 0
-    this.tierLimitExceededAt = tierLimitExceededAt
-    this.scheduledLockAt = scheduledLockAt
-    this.lockedAt = lockedAt
   }
 }
