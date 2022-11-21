@@ -20,7 +20,7 @@ const resolveSelectedTemplate =
     ])
     const {tier} = team
     const hasFeatureFlag = viewer.featureFlags.includes('templateLimit')
-    if (template && (hasFeatureFlag ? tier !== 'personal' || template.isFree : true)) {
+    if (template && (hasFeatureFlag ? template.isFree || tier !== 'personal' : true)) {
       return template
     }
     // there may be holes in our template deletion or reselection logic, so doing this to be safe
