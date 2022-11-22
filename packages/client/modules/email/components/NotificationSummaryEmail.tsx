@@ -14,7 +14,6 @@ import Header from './Header/Header'
 import Layout from './Layout/Layout'
 
 const innerMaxWidth = 480
-const MAX_NOTIFICATION_COUNT = 5
 
 const copyStyle = {
   ...emailCopyStyle
@@ -41,6 +40,7 @@ export interface NotificationSummaryProps {
 
 export default function NotificationSummaryEmail(props: NotificationSummaryProps) {
   const {appOrigin, notificationCount, preferredName, notificationRefs} = props
+  const additionalNotifications = notificationCount - notificationRefs.length
   const tasksURL = makeAppURL(appOrigin, 'me/tasks', {searchParams: notificationSummaryUrlParams})
   return (
     <Layout maxWidth={544}>
@@ -66,8 +66,8 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
           )
         })}
         <Button url={tasksURL}>
-          {notificationCount > MAX_NOTIFICATION_COUNT
-            ? `...and ${notificationCount - MAX_NOTIFICATION_COUNT} more`
+          {additionalNotifications > 0
+            ? `...and ${additionalNotifications} more`
             : 'See all notifications'}
         </Button>
         <EmptySpace height={24} />

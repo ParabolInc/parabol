@@ -9,7 +9,7 @@ import EmailResponseMentioned from './EmailResponseMentioned'
 import EmailTeamArchived from './EmailTeamArchived'
 import EmailTeamInvitation from './EmailTeamInvitation'
 
-const typePicker = {
+export const typePicker = {
   KICKED_OUT: EmailKickedOut,
   // PAYMENT_REJECTED: EmailPaymentRejected,
   // TASK_INVOLVES: EmailTaskInvolves,

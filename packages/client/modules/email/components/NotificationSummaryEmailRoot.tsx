@@ -4,6 +4,7 @@ import {NotificationSummaryEmailRootQuery} from 'parabol-client/__generated__/No
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import {Environment} from 'relay-runtime'
+import {typePicker} from './EmailNotifications/EmailNotificationPicker'
 import NotificationSummaryEmail from './NotificationSummaryEmail'
 
 const query = graphql`
@@ -16,6 +17,7 @@ const query = graphql`
             id
             createdAt
             status
+            type
             ...EmailNotificationPicker_notification
           }
         }
@@ -50,7 +52,8 @@ const NotificationSummaryEmailRoot = (props: NotificationSummaryRootProps) => {
           .filter(
             (edge) =>
               edge.node.status === 'UNREAD' &&
-              new Date(edge.node.createdAt) > new Date(Date.now() - ms('1d'))
+              new Date(edge.node.createdAt) > new Date(Date.now() - ms('1d')) &&
+              typePicker[edge.node.type] // Filter down to the notifications that have been implemented.
           )
           .map((edge) => edge.node)
           .slice(0, 5)
