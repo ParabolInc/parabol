@@ -107,12 +107,24 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: ({phases, id: meetingId, teamId}: {phases: any; id: string; teamId: string}) => {
-      return phases.map((phase: any) => ({
-        ...phase,
-        meetingId,
-        teamId
-      }))
+    resolve: ({
+      phases,
+      id: meetingId,
+      teamId,
+      facilitatorStageId
+    }: {
+      phases: any
+      id: string
+      teamId: string
+      facilitatorStageId: string
+    }) => {
+      return phases
+        .map((phase: any) => ({
+          ...phase,
+          meetingId,
+          teamId
+        }))
+        .filter((phase: any) => phase.stages.find((stage: any) => stage.id === facilitatorStageId))
     }
   },
   showConversionModal: {

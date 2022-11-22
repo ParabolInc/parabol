@@ -18,6 +18,7 @@ export const setLocalStageAndPhase = (
     )
 
   if (!facilitatorPhaseProxy) return
+  console.log('GEORG set localPhase', facilitatorPhaseProxy)
   meetingProxy
     .setLinkedRecord(stage, 'localStage')
     .setLinkedRecord(facilitatorPhaseProxy, 'localPhase')
