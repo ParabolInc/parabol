@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailNotificationTemplate_notification} from 'parabol-client/__generated__/EmailNotificationTemplate_notification.graphql'
+import {EmailNotificationTemplate_notification$key} from 'parabol-client/__generated__/EmailNotificationTemplate_notification.graphql'
 import React, {ReactNode} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '../../../../styles/paletteV3'
 import relativeDate from '../../../../utils/date/relativeDate'
 import {linkStyle} from '../NotificationSummaryEmail'
@@ -32,14 +32,24 @@ const avatarStyles = {
 interface Props {
   avatar?: string
   message: string
-  notification: EmailNotificationTemplate_notification
+  notificationRef: EmailNotificationTemplate_notification$key
   linkLabel?: string
   linkUrl?: string
   children?: ReactNode
 }
 
-const NotificationTemplate = (props: Props) => {
-  const {avatar, message, notification, linkLabel, linkUrl, children} = props
+const EmailNotificationTemplate = (props: Props) => {
+  const {avatar, message, notificationRef, linkLabel, linkUrl, children} = props
+  const notification = useFragment(
+    graphql`
+      fragment EmailNotificationTemplate_notification on Notification {
+        createdAt
+        status
+      }
+    `,
+    notificationRef
+  )
+
   const {createdAt} = notification
   return (
     <div style={rowStyle}>
@@ -64,11 +74,4 @@ const NotificationTemplate = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NotificationTemplate, {
-  notification: graphql`
-    fragment EmailNotificationTemplate_notification on Notification {
-      createdAt
-      status
-    }
-  `
-})
+export default EmailNotificationTemplate

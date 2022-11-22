@@ -40,7 +40,7 @@ const EmailMeetingStageTimeLimitEnd = (props: Props) => {
   return (
     <EmailNotificationTemplate
       message={`Your meeting ${meetingName} with ${teamName} is ready to move forward`}
-      notification={notification}
+      notificationRef={notification}
       linkLabel={'Go to meeting'}
       linkUrl={linkUrl}
     />

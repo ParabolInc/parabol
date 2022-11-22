@@ -33,7 +33,7 @@ const EmailTeamArchived = (props: Props) => {
     <NotificationTemplate
       avatar={archivorPicture}
       message={`${archivorName} archived the team ${teamName}`}
-      notification={notification}
+      notificationRef={notification}
     />
   )
 }

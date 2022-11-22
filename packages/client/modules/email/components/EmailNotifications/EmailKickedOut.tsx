@@ -34,7 +34,7 @@ const EmailKickedOut = (props: Props) => {
     <NotificationTemplate
       avatar={evictorPicture}
       message={`${evictorName} removed you from the ${teamName} team`}
-      notification={notification}
+      notificationRef={notification}
     />
   )
 }

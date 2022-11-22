@@ -45,7 +45,7 @@ const ResponseMentioned = (props: Props) => {
     <NotificationTemplate
       avatar={authorPicture}
       message={`${authorName} mentioned you in their response in ${meetingName}.`}
-      notification={notification}
+      notificationRef={notification}
       linkLabel={'See their response'}
       linkUrl={linkUrl}
     />

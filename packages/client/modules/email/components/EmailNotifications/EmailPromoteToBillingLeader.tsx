@@ -35,7 +35,7 @@ const EmailPromoteToBillingLeader = (props: Props) => {
   return (
     <EmailNotificationTemplate
       message={`You‘ve been promoted to billing leader for ${orgName}`}
-      notification={notification}
+      notificationRef={notification}
       linkLabel='See organization'
       linkUrl={linkUrl}
     />

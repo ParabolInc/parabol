@@ -1,5 +1,4 @@
 import {NotificationSummaryProps} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
-import NotificationSummaryEmailRoot from 'parabol-client/modules/email/components/NotificationSummaryEmailRoot'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -43,6 +42,9 @@ const notificationSummaryCreator = async (props: Props) => {
     notificationCount,
     'notification'
   )} 👀`
+
+  const NotificationSummaryEmailRoot =
+    require('parabol-client/modules/email/components/NotificationSummaryEmailRoot').default
 
   const bodyContent = await renderSSRElement(
     <NotificationSummaryEmailRoot {...props} environment={props.environment as any} />,
