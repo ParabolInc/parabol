@@ -28,7 +28,7 @@ interface Props {
   appOrigin: string
 }
 
-const NotificationPicker = (props: Props) => {
+const EmailNotificationPicker = (props: Props) => {
   const {notificationRef, appOrigin} = props
   const notification = useFragment(
     graphql`
@@ -54,4 +54,4 @@ const NotificationPicker = (props: Props) => {
   ) : null
 }
 
-export default NotificationPicker
+export default EmailNotificationPicker

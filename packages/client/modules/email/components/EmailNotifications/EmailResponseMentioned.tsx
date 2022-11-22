@@ -11,7 +11,7 @@ interface Props {
   appOrigin: string
 }
 
-const ResponseMentioned = (props: Props) => {
+const EmailResponseMentioned = (props: Props) => {
   const {notificationRef, appOrigin} = props
   const notification = useFragment(
     graphql`
@@ -52,4 +52,4 @@ const ResponseMentioned = (props: Props) => {
   )
 }
 
-export default ResponseMentioned
+export default EmailResponseMentioned
