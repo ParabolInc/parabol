@@ -10,6 +10,9 @@ import NotificationSummaryEmail from './NotificationSummaryEmail'
 // How many notifications to fetch before filtering down to the ones we want to show.
 const FIRST_N_NOTIFICATIONS = 30
 
+// The max number of notifications we want to show in an email.
+const MAX_EMAIL_NOTIFICATIONS = 5
+
 const query = graphql`
   query NotificationSummaryEmailRootQuery($first: Int!, $after: DateTime) {
     viewer {
@@ -59,7 +62,7 @@ const NotificationSummaryEmailRoot = (props: NotificationSummaryRootProps) => {
               typePicker[edge.node.type] // Filter down to the notifications that have been implemented.
           )
           .map((edge) => edge.node)
-          .slice(0, 5)
+          .slice(0, MAX_EMAIL_NOTIFICATIONS)
 
         return (
           <NotificationSummaryEmail
