@@ -29,8 +29,7 @@
     "types/webpackEnv.ts",
     "types/modules.d.ts",
     "server.ts",
-    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
-    "../client/modules/email/components/NotificationSummaryEmail.tsx"
+    "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
   ]
 
   // if "include" or "files" is added, even if they are empty arrays, then strictNullChecks breaks
