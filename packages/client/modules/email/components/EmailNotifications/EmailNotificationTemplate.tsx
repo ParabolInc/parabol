@@ -8,7 +8,7 @@ import {linkStyle} from '../NotificationSummaryEmail'
 
 const notificationBodyStyle = {paddingTop: 8, paddingBottom: 8} as React.CSSProperties
 
-const rowStyle = {
+const rowStyle: React.CSSProperties = {
   background: '#fff',
   cursor: 'default',
   display: 'flex',
@@ -16,13 +16,13 @@ const rowStyle = {
   paddingBottom: 9
 }
 
-const messageStyle = {
+const messageStyle: React.CSSProperties = {
   color: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '20px'
 }
 
-const avatarStyles = {
+const avatarStyles: React.CSSProperties = {
   background: '#fff',
   borderRadius: '100%',
   minWidth: 40,

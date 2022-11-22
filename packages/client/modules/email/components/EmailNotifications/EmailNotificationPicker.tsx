@@ -11,6 +11,7 @@ import EmailTeamInvitation from './EmailTeamInvitation'
 
 export const typePicker = {
   KICKED_OUT: EmailKickedOut,
+  // :TODO: (jmtaber129): Implement these.
   // PAYMENT_REJECTED: EmailPaymentRejected,
   // TASK_INVOLVES: EmailTaskInvolves,
   // PROMOTE_TO_BILLING_LEADER: EmailPromoteToBillingLeader,

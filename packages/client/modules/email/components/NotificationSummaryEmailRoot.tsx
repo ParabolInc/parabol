@@ -7,6 +7,9 @@ import {Environment} from 'relay-runtime'
 import {typePicker} from './EmailNotifications/EmailNotificationPicker'
 import NotificationSummaryEmail from './NotificationSummaryEmail'
 
+// How many notifications to fetch before filtering down to the ones we want to show.
+const FIRST_N_NOTIFICATIONS = 30
+
 const query = graphql`
   query NotificationSummaryEmailRootQuery($first: Int!, $after: DateTime) {
     viewer {
@@ -41,7 +44,7 @@ const NotificationSummaryEmailRoot = (props: NotificationSummaryRootProps) => {
     <QueryRenderer<NotificationSummaryEmailRootQuery>
       environment={environment}
       query={query}
-      variables={{first: 30, after: new Date().toISOString()}}
+      variables={{first: FIRST_N_NOTIFICATIONS, after: new Date().toISOString()}}
       render={({props}) => {
         if (!props) return null
         const {viewer} = props
