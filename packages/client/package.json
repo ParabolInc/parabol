@@ -25,6 +25,7 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@types/cleave.js": "^1.4.7",
+    "@types/dompurify": "^2.4.0",
     "@types/draft-js": "^0.10.24",
     "@types/json2csv": "^4.4.0",
     "@types/jwt-decode": "^2.1.0",
@@ -82,6 +83,7 @@
     "cleave.js": "^1.6.0",
     "core-js": "3.8.1",
     "dayjs": "^1.11.3",
+    "dompurify": "^2.4.1",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
     "draft-js-export-html": "^1.4.1",
     "email-addresses": "^3.0.1",
