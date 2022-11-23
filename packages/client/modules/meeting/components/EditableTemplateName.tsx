@@ -30,7 +30,7 @@ const EditableTemplateName = (props: Props) => {
   const {name, templateId, teamTemplates, isOwner} = props
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
-  const autoFocus = name === '*New Template' || name.slice(-4) === 'Copy'
+  const autoFocus = name === '*New Template' || name.endsWith(' Copy')
 
   const handleSubmit = (rawName: string) => {
     if (submitting) return
