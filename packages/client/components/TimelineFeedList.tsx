@@ -84,6 +84,9 @@ const TimelineFeedList = (props: Props) => {
                 __typename
                 id
                 teamId
+                team {
+                  name
+                }
                 ... on TimelineEventCompletedActionMeeting {
                   meeting {
                     locked
@@ -152,7 +155,8 @@ const TimelineFeedList = (props: Props) => {
               <TimelineEventTitle>Past Meetings Locked</TimelineEventTitle>
             </HeaderText>
             <TimelineEventBody>
-              Your plan includes 30 days of meeting history. Unlock more by upgrading.
+              Your plan includes 30 days of meeting history. Unlock{' '}
+              <i>{lockedHistory[0]!.node.team?.name}</i> by upgrading.
             </TimelineEventBody>
             <PrimaryButton>Unlock past meetings</PrimaryButton>
           </Surface>

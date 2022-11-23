@@ -61,6 +61,10 @@ const HeaderText = styled('div')({
   paddingTop: 2
 })
 
+const GrapeLock = styled(Lock)({
+  color: PALETTE.GRAPE_500
+})
+
 const TimelineEventCard = (props: Props) => {
   const {children, iconName, IconSVG, title, timelineEvent} = props
   const {id: timelineEventId, createdAt, type} = timelineEvent
@@ -77,7 +81,7 @@ const TimelineEventCard = (props: Props) => {
                   account_circle: <AccountCircle />,
                   group_add: <GroupAdd />,
                   group_work: <GroupWork />,
-                  lock: <Lock />
+                  lock: <GrapeLock />
                 }[iconName]
               }
             </EventIcon>
