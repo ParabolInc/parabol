@@ -5,6 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -54,7 +55,9 @@ const addReflectTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (viewerTeam.tier === 'personal') {
+    const viewer = await getUserById(viewerId)
+    const hasTemplateLimitFlag = viewer?.featureFlags?.includes('templateLimit')
+    if (viewerTeam.tier === 'personal' && hasTemplateLimitFlag) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
     let data
