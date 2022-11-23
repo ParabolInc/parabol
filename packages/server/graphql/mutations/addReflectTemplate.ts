@@ -54,6 +54,9 @@ const addReflectTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    if (viewerTeam.tier === 'personal') {
+      return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
+    }
     let data
     if (parentTemplateId) {
       const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
