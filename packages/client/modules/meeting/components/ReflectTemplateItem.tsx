@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import TypeAheadLabel from '~/components/TypeAheadLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -64,7 +65,7 @@ interface Props {
 
 const ReflectTemplateItem = (props: Props) => {
   const {lowestScope, isActive, teamId, template, templateSearchQuery, tier, viewer} = props
-  const {id: templateId, name: templateName} = template
+  const {id: templateId, name: templateName, scope, isFree} = template
   const description = makeTemplateDescription(lowestScope, template, viewer, tier)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
@@ -72,6 +73,15 @@ const ReflectTemplateItem = (props: Props) => {
   const selectTemplate = () => {
     setActiveTemplate(atmosphere, teamId, templateId, 'retrospective')
   }
+  useEffect(() => {
+    if (!isActive) return
+    SendClientSegmentEventMutation(atmosphere, 'Viewed Template', {
+      meetingType: 'retrospective',
+      scope,
+      templateName,
+      isFree
+    })
+  }, [isActive])
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>
       <TemplateItemDetails>
@@ -95,6 +105,7 @@ export default createFragmentContainer(ReflectTemplateItem, {
       name
       lastUsedAt
       scope
+      isFree
     }
   `,
   viewer: graphql`

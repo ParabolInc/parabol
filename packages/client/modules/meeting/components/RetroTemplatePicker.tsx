@@ -2,7 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import lazyPreload from '../../../utils/lazyPreload'
 import {RetroTemplatePicker_settings$key} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
 import {RetroTemplatePicker_viewer$key} from '../../../__generated__/RetroTemplatePicker_viewer.graphql'
@@ -29,6 +31,7 @@ const RetroTemplatePicker = (props: Props) => {
         selectedTemplate {
           id
           name
+          scope
           ...ReflectTemplateDetailsTemplate
         }
       }
@@ -45,18 +48,27 @@ const RetroTemplatePicker = (props: Props) => {
   )
 
   const {selectedTemplate} = settings
-  const {name: templateName} = selectedTemplate
+  const {name: templateName, scope} = selectedTemplate
   const {togglePortal, modalPortal, closePortal} = useModal({
     id: 'templateModal',
     parentId: 'newMeetingRoot'
   })
+  const atmosphere = useAtmosphere()
+
+  const handleClick = () => {
+    togglePortal()
+    SendClientSegmentEventMutation(atmosphere, 'Opened Template Picker', {
+      meetingType: 'retrospective',
+      scope
+    })
+  }
 
   return (
     <>
       <NewMeetingDropdown
         dropdownIcon={'keyboard_arrow_right'}
         label={templateName}
-        onClick={togglePortal}
+        onClick={handleClick}
         onMouseEnter={ReflectTemplateModal.preload}
         title={'Template'}
       />
