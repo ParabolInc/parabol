@@ -4,10 +4,11 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from 'parabol-client/styles/typographyV2'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {APP_CORS_OPTIONS, EMAIL_CORS_OPTIONS} from '../../../../../types/cors'
-import {RetroTopic_stage} from '../../../../../__generated__/RetroTopic_stage.graphql'
+import {RetroTopic_meeting$key} from '../../../../../__generated__/RetroTopic_meeting.graphql'
+import {RetroTopic_stage$key} from '../../../../../__generated__/RetroTopic_stage.graphql'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
 
@@ -78,12 +79,45 @@ const noCommentLinkStyle = {
 interface Props {
   isDemo: boolean
   isEmail: boolean
-  stage: RetroTopic_stage
+  stageRef: RetroTopic_stage$key
   to: string
+  meetingRef: RetroTopic_meeting$key
 }
 
 const RetroTopic = (props: Props) => {
-  const {isDemo, isEmail, to, stage} = props
+  const {isDemo, isEmail, to, stageRef, meetingRef} = props
+  const stage = useFragment(
+    graphql`
+      fragment RetroTopic_stage on RetroDiscussStage {
+        topicSummary
+        reflectionGroup {
+          title
+          voteCount
+          reflections {
+            ...EmailReflectionCard_reflection
+          }
+        }
+        discussion {
+          commentCount
+        }
+      }
+    `,
+    stageRef
+  )
+  const {viewerMeetingMember} = useFragment(
+    graphql`
+      fragment RetroTopic_meeting on RetrospectiveMeeting {
+        viewerMeetingMember {
+          user {
+            featureFlags {
+              aiSummary
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {reflectionGroup, discussion, topicSummary} = stage
   const {commentCount} = discussion
   const {reflections, title, voteCount} = reflectionGroup!
@@ -99,6 +133,7 @@ const RetroTopic = (props: Props) => {
       : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
+  const showAiSummary = viewerMeetingMember?.user.featureFlags.aiSummary && topicSummary
   return (
     <>
       <tr>
@@ -108,21 +143,23 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      <tr>
-        <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-          <tr>
-            <td style={topicTitleStyle}>{'Topic Summary:'}</td>
-          </tr>
-          <tr>
-            <td
-              style={subtitleStyle}
-            >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-          </tr>
-          <tr>
-            <td style={textStyle}>{topicSummary}</td>
-          </tr>
-        </td>
-      </tr>
+      {showAiSummary && (
+        <tr>
+          <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
+            <tr>
+              <td style={topicTitleStyle}>{'Topic Summary:'}</td>
+            </tr>
+            <tr>
+              <td
+                style={subtitleStyle}
+              >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+            </tr>
+            <tr>
+              <td style={textStyle}>{topicSummary}</td>
+            </tr>
+          </td>
+        </tr>
+      )}
       <tr>
         <td align='center' style={votesBlock}>
           <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail}>
@@ -153,20 +190,4 @@ const RetroTopic = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(RetroTopic, {
-  stage: graphql`
-    fragment RetroTopic_stage on RetroDiscussStage {
-      topicSummary
-      reflectionGroup {
-        title
-        voteCount
-        reflections {
-          ...EmailReflectionCard_reflection
-        }
-      }
-      discussion {
-        commentCount
-      }
-    }
-  `
-})
+export default RetroTopic
