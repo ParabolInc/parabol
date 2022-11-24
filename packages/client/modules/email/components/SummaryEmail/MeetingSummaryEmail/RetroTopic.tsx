@@ -46,6 +46,30 @@ const someCommentsLinkStyle = {
   textDecoration: 'none'
 }
 
+const topicTitleStyle = {
+  color: PALETTE.SLATE_700,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontWeight: 600,
+  lineHeight: '22px',
+  fontSize: 14,
+  padding: '8px 48px'
+}
+
+const subtitleStyle = {
+  color: PALETTE.SLATE_700,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontStyle: 'italic',
+  padding: '8px 48px',
+  fontSize: 14
+}
+
+const textStyle = {
+  color: PALETTE.SLATE_700,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  padding: '0px 48px 8px 48px',
+  fontSize: 14
+}
+
 const noCommentLinkStyle = {
   ...someCommentsLinkStyle,
   color: PALETTE.SLATE_600
@@ -60,7 +84,7 @@ interface Props {
 
 const RetroTopic = (props: Props) => {
   const {isDemo, isEmail, to, stage} = props
-  const {reflectionGroup, discussion} = stage
+  const {reflectionGroup, discussion, topicSummary} = stage
   const {commentCount} = discussion
   const {reflections, title, voteCount} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
@@ -82,6 +106,21 @@ const RetroTopic = (props: Props) => {
           <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail} style={stageThemeHeading}>
             {title}
           </AnchorIfEmail>
+        </td>
+      </tr>
+      <tr>
+        <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
+          <tr>
+            <td style={topicTitleStyle}>{'Topic Summary:'}</td>
+          </tr>
+          <tr>
+            <td
+              style={subtitleStyle}
+            >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+          </tr>
+          <tr>
+            <td style={textStyle}>{topicSummary}</td>
+          </tr>
         </td>
       </tr>
       <tr>
@@ -117,6 +156,7 @@ const RetroTopic = (props: Props) => {
 export default createFragmentContainer(RetroTopic, {
   stage: graphql`
     fragment RetroTopic_stage on RetroDiscussStage {
+      topicSummary
       reflectionGroup {
         title
         voteCount
