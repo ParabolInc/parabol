@@ -36,19 +36,17 @@ class OpenAIServerManager {
     return new OpenAIApi(configuration)
   }
 
-  async getSummary(text: string) {
+  async getSummary(text: string | string[]) {
     const response = await openai.createCompletion({
       model: 'text-davinci-002',
-      prompt: text,
+      prompt: `Summarize this for a second-grade student: ${text}`,
       temperature: 0.7,
       max_tokens: 256,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0
     })
-    console.log('🚀 ~ response -->', response.data.choices)
-
-    return response.data.choices[0].text
+    return response.data.choices[0]?.text
   }
 
   // constructor(accessToken: string) {
