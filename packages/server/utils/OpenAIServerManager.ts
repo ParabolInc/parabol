@@ -8,7 +8,8 @@ const openai = new OpenAIApi(configuration)
 
 class OpenAIServerManager {
   fetch = fetch as any
-  static async init(code: string) {
+  // static async init(code: string) {
+  static async init() {
     return OpenAIServerManager.fetchToken()
   }
 

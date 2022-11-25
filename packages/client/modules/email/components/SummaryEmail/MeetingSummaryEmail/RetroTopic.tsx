@@ -133,7 +133,7 @@ const RetroTopic = (props: Props) => {
       : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
-  const showAiSummary = viewerMeetingMember?.user.featureFlags.aiSummary && topicSummary
+  const showSummary = viewerMeetingMember?.user.featureFlags.aiSummary && topicSummary
   return (
     <>
       <tr>
@@ -143,7 +143,7 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {showAiSummary && (
+      {showSummary && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
             <tr>
