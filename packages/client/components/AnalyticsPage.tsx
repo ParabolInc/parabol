@@ -3,7 +3,7 @@
 import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import ReactGA from 'react-ga4'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
@@ -89,8 +89,9 @@ const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
+  const [isGAInitialized, setIsGAInitialized] = useState(false)
   useEffect(() => {
-    const initializeGA4 = async () => {
+    const initializeGA = async () => {
       const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
       if (!res) return
       const {viewer} = res
@@ -102,10 +103,11 @@ const AnalyticsPage = () => {
         }
       })
     }
-    if (gaMeasurementId) {
-      initializeGA4().catch()
+    if (gaMeasurementId && !isGAInitialized) {
+      initializeGA().catch()
+      setIsGAInitialized(true)
     }
-  })
+  }, [isGAInitialized, atmosphere.viewerId])
 
   if (!__PRODUCTION__) {
     return null
