@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Timer} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React, {useState} from 'react'
@@ -13,7 +14,6 @@ import {MeetingLabels} from '../types/constEnums'
 import plural from '../utils/plural'
 import {StageTimerModalTimeLimit_stage} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
 import DropdownMenuToggle from './DropdownMenuToggle'
-import Icon from './Icon'
 import SecondaryButton from './SecondaryButton'
 import StageTimerMinutePicker from './StageTimerMinutePicker'
 import StyledError from './StyledError'
@@ -43,7 +43,7 @@ const SetLimit = styled('div')({
   padding: '16px 16px 8px'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Timer)({
   color: PALETTE.SLATE_600
 })
 
@@ -91,7 +91,7 @@ const StageTimerModalTimeLimit = (props: Props) => {
   return (
     <SetLimit>
       <Row>
-        <StyledIcon>timer</StyledIcon>
+        <StyledIcon />
         <Toggle
           defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
           onClick={togglePortal}

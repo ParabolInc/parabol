@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {TaskServiceEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
-import Icon from './Icon'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -26,10 +26,10 @@ const Wrapper = styled('div')({
   flex: 1
 })
 
-const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
+const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  padding: 12,
+  margin: 12,
   visibility: isEmpty ? 'hidden' : undefined
 }))
 
@@ -91,9 +91,7 @@ const ScopingSearchInput = (props: Props) => {
         onChange={handleOnChange}
         ref={inputRef}
       />
-      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
-        close
-      </ClearSearchIcon>
+      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch} />
     </Wrapper>
   )
 }

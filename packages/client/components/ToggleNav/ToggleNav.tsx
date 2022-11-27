@@ -1,20 +1,22 @@
 import styled from '@emotion/styled'
+import {CreditCard, Extension, Group} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
-import {ICON_SIZE} from '../../styles/typographyV2'
-import Icon from '../Icon'
 
 //    TODO:
 //  • Add themes, not just mid/purple (TA)
 //  • Make icons optional (TA)
 //  • Add disabled styles (TA)
 
-const iconStyles = {
-  fontSize: ICON_SIZE.MD18,
-  lineHeight: ICON_SIZE.MD18,
+const StyledIcon = styled('div')({
+  height: 18,
+  width: 18,
+  svg: {
+    fontSize: 18
+  },
   marginRight: '.25rem',
   verticalAlign: 'middle'
-}
+})
 
 const Nav = styled('div')({
   display: 'flex',
@@ -49,8 +51,21 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
   })
 )
 
+const Icons = {
+  group: <Group />,
+  extension: <Extension />,
+  credit_card: <CreditCard />
+} as const
+
+interface Item {
+  label: string
+  icon: keyof typeof Icons
+  isActive: boolean
+  onClick?: () => void
+}
+
 interface Props {
-  items: any[]
+  items: Item[]
 }
 
 const ToggleNav = (props: Props) => {
@@ -68,7 +83,8 @@ const ToggleNav = (props: Props) => {
             isFirst={index === 0}
             isLast={index === items.length - 1}
           >
-            <Icon style={iconStyles}>{item.icon}</Icon> {item.label}
+            <StyledIcon>{Icons[item.icon]}</StyledIcon>
+            {item.label}
           </Item>
         )
       })}

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -6,7 +7,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {AppBar} from '~/types/constEnums'
 import {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
 import TopBarIcon from './TopBarIcon'
@@ -74,7 +74,7 @@ const MobileDashTopBar = (props: Props) => {
     <Wrapper>
       <LeftNavHeader>
         <LeftNavToggle onClick={toggle}>
-          <Icon>{'menu'}</Icon>
+          <Menu />
         </LeftNavToggle>
         <Title>{pageName}</Title>
       </LeftNavHeader>

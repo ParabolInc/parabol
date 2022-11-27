@@ -2,6 +2,7 @@ import Cleave from 'cleave.js/react';
 import React from 'react'
 import UpgradeCreditCardFormFieldIcon from './UpgradeCreditCardFormFieldIcon'
 import UpgradeCreditCardFormFieldBlock from "./UpgradeCreditCardFormFieldBlock";
+import {CreditCard} from '@mui/icons-material'
 
 interface Props {
   autoFocus?: boolean
@@ -30,7 +31,7 @@ const UpgradeCreditCardNumberFormField = (props: Props) => {
   const hasError = dirty && !!error
   return (
     <UpgradeCreditCardFormFieldBlock className={className} hasError={hasError}>
-      <UpgradeCreditCardFormFieldIcon hasError={hasError}>credit_card</UpgradeCreditCardFormFieldIcon>
+      <UpgradeCreditCardFormFieldIcon hasError={hasError}><CreditCard /></UpgradeCreditCardFormFieldIcon>
       <Cleave
         placeholder={'Card number'}
         options={{creditCard: true}}

@@ -7,7 +7,6 @@ import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUser
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
-import isPatientZero from '../../mutations/helpers/isPatientZero'
 import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
@@ -88,7 +87,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       isActive: true,
       featureFlags: user.featureFlags,
       highestTier: user.tier,
-      isPatient0: await isPatientZero(userId, user.domain)
+      isPatient0: user.isPatient0
     }
   })
   return user

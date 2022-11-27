@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
-import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -23,7 +23,7 @@ const AddDimensionLink = styled(LinkButton)({
   padding: '4px 0'
 })
 
-const AddDimensionLinkPlus = styled(Icon)({
+const AddDimensionLinkPlus = styled(Add)({
   display: 'block',
   margin: '0 16px 0 16px'
 })
@@ -59,7 +59,7 @@ const AddPokerTemplateDimension = (props: Props) => {
   if (dimensions.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
   return (
     <AddDimensionLink palette='blue' onClick={addDimension} waiting={submitting}>
-      <AddDimensionLinkPlus>add</AddDimensionLinkPlus>
+      <AddDimensionLinkPlus />
       <div>Add another dimension</div>
     </AddDimensionLink>
   )

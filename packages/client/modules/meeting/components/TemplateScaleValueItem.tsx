@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
@@ -7,9 +8,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
 import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
-import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
@@ -35,18 +34,20 @@ const ScaleValueItem = styled('div')<{isHover: boolean; isDragging: boolean}>(
   })
 )
 
-const RemoveScaleValueIcon = styled(Icon)<{isHover: boolean}>(({isHover}) => ({
+const RemoveScaleValueIcon = styled('div')<{isHover: boolean}>(({isHover}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  height: ICON_SIZE.MD24,
-  width: ICON_SIZE.MD24,
-  lineHeight: '24px',
+  svg: {
+    fontSize: 18
+  },
+  height: 24,
   marginLeft: 'auto',
   padding: 0,
   opacity: isHover ? 1 : 0,
-  textAlign: 'center'
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: 24
 }))
 
 const ScaleAndDescription = styled('div')({
@@ -95,7 +96,7 @@ const TemplateScaleValueItem = (props: Props) => {
       </ScaleAndDescription>
       {!isSpecial && (
         <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue}>
-          cancel
+          <CancelIcon />
         </RemoveScaleValueIcon>
       )}
     </ScaleValueItem>

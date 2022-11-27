@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
+import {FilterList} from '@mui/icons-material'
 import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import FlatButton from './FlatButton'
-import Icon from './Icon'
 
 const StyledButton = styled(FlatButton)({
   height: 24,
@@ -16,9 +15,10 @@ const StyledButton = styled(FlatButton)({
   }
 })
 
-const FilterIcon = styled(Icon)({
+const FilterIcon = styled(FilterList)({
   color: PALETTE.WHITE,
-  fontSize: ICON_SIZE.MD18
+  height: 18,
+  width: 18
 })
 
 interface Props {
@@ -29,7 +29,7 @@ const FilterButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {onClick} = props
   return (
     <StyledButton onClick={onClick} ref={ref}>
-      <FilterIcon>filter_list</FilterIcon>
+      <FilterIcon />
     </StyledButton>
   )
 })

@@ -8,7 +8,9 @@ const UserFlagEnum = new GraphQLEnumType({
   values: {
     azureDevOps: {},
     msTeams: {},
-    recurrence: {}
+    recurrence: {},
+    templateLimit: {},
+    teamsLimit: {}
   }
 })
 
