@@ -109,10 +109,6 @@ const AnalyticsPage = () => {
     }
   }, [isGAInitialized, atmosphere.viewerId])
 
-  if (!__PRODUCTION__) {
-    return null
-  }
-
   /* eslint-disable */
   const {href, pathname} = location
   const pathnameRef = useRef(pathname)

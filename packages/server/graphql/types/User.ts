@@ -57,8 +57,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'The userId provided by us'
     },
     segmentId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The segmentId for the user'
+      type: GraphQLString,
+      description: 'The optional segmentId for the user'
     },
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
