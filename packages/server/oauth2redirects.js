@@ -14,8 +14,7 @@ async function handleRequest(request) {
     return new Response('No state received in response')
   }
 
-  // can remove fallback in prod
-  const {origin, service} = parsedState.origin
+  const {origin, service} = parsedState
   const pathname = `auth/${service}`
   let destinationURL
   try {
@@ -26,7 +25,7 @@ async function handleRequest(request) {
   destinationURL.pathname = pathname
   destinationURL.search = search
   const destinationStr = destinationURL.toString()
-  return Response.redirect(destinationStr, 301)
+  return Response.redirect(destinationStr, 302)
 }
 
 export default {
