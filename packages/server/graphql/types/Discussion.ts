@@ -10,7 +10,7 @@ import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
-import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
+import DiscussionTopicTypeEnum, {DiscussionTopicEnum} from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {ThreadableConnection} from './Threadable'
 import User from './User'
@@ -79,6 +79,25 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
         {dataLoader}: GQLContext
       ) => {
         return resolveThreadableConnection(discussionId, {dataLoader})
+      }
+    },
+    summary: {
+      type: GraphQLString,
+      description:
+        'The GPT-3 generated summary of the discussion. Currently only exists for reflection groups',
+      resolve: async (
+        {
+          discussionTopicId,
+          discussionTopicType
+        }: {discussionTopicId: string; discussionTopicType: DiscussionTopicEnum},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
+        if (discussionTopicType === 'reflectionGroup') {
+          const group = await dataLoader.get('retroReflectionGroups').load(discussionTopicId)
+          return group.summary
+        }
+        return null
       }
     }
   })

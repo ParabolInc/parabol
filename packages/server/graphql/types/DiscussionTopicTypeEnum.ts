@@ -1,5 +1,7 @@
 import {GraphQLEnumType} from 'graphql'
 
+export type DiscussionTopicEnum = 'agendaItem' | 'reflectionGroup' | 'task' | 'teamPromptResponse'
+
 const DiscussionTopicTypeEnum = new GraphQLEnumType({
   name: 'DiscussionTopicTypeEnum',
   description: 'The topic being discussed',

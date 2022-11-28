@@ -7,7 +7,6 @@ import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
-import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
 import generateTopicSummaries from './generateTopicSummaries'
@@ -74,24 +73,18 @@ const handleCompletedRetrospectiveStage = async (
           phases
         })
         .run()
-      // mutates the meeting discuss phase.stages array
-      const {discussPhaseStages} = await addDiscussionTopics(meeting, dataLoader)
-      meeting.phases.forEach((phase) => {
-        if (phase.phaseType === 'discuss') {
-          phase.stages = discussPhaseStages
-        }
-      })
       data.meeting = meeting
-      generateTopicSummaries(discussPhaseStages, meeting.id, dataLoader)
+      generateTopicSummaries(meeting.id, dataLoader)
     }
 
     return {[stage.phaseType]: data}
   } else if (stage.phaseType === VOTE) {
-    const {phases} = meeting
-    const discussPhase = getPhase(phases, 'discuss')
-    const {stages} = discussPhase
+    // mutates the meeting discuss phase.stages array
+    const data = await addDiscussionTopics(meeting, dataLoader)
+    // create new threads
+    const {discussPhaseStages} = data
     const {id: meetingId, teamId} = meeting
-    const discussions = stages.map((stage) => ({
+    const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
       meetingId,
       teamId,
@@ -99,7 +92,6 @@ const handleCompletedRetrospectiveStage = async (
       discussionTopicId: stage.reflectionGroupId
     }))
     await insertDiscussions(discussions)
-    const data = {meetingId, discussPhaseStages: stages}
     return {[VOTE]: data}
   }
   return {}

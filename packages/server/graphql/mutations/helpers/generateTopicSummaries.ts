@@ -1,39 +1,23 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import {RValue} from 'rethinkdb-ts'
-import {isNotNull} from '../../../../client/utils/predicates'
-import DiscussStage from '../../../database/types/DiscussStage'
-import updateStage from '../../../database/updateStage'
+import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 
-const generateTopicSummaries = async (
-  stages: DiscussStage[],
-  meetingId: string,
-  dataLoader: DataLoaderWorker
-) => {
+const generateTopicSummaries = async (meetingId: string, dataLoader: DataLoaderWorker) => {
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+  const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+  const r = await getRethink()
   const manager = new OpenAIServerManager()
-  const summaryPromises = stages.map((stage) => {
+  for (const group of reflectionGroups) {
     const reflectionsByGroupId = reflections.filter(
-      (reflection) => reflection.reflectionGroupId === stage.reflectionGroupId
+      ({reflectionGroupId}) => reflectionGroupId === group.id
     )
     const reflectionTextByGroupId = reflectionsByGroupId.map((reflection) =>
       extractTextFromDraftString(reflection.content)
     )
-    if (reflectionTextByGroupId.length === 0) return null
-    return manager.getSummary(reflectionTextByGroupId)
-  })
-  const nonNullSummaryPromises = summaryPromises.filter(isNotNull)
-  const summaries = await Promise.all(nonNullSummaryPromises)
-  if (!summaries) return
-  for (const [idx, stage] of stages.entries()) {
-    const summary = summaries[idx]
-    if (!summary) return
-    const updater = (discussStage: RValue) =>
-      discussStage.merge({
-        topicSummary: summary
-      })
-    await updateStage(meetingId, stage.id, 'discuss', updater)
+    if (reflectionTextByGroupId.length === 0) return
+    const summary = await manager.getSummary(reflectionTextByGroupId)
+    await r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
   }
 }
 
