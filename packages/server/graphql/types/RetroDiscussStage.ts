@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
@@ -65,10 +65,6 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order for reprioritizing discussion topics'
-    },
-    topicSummary: {
-      type: GraphQLString,
-      description: `The GPT-3 generated summary of this topic's reflection group`
     }
   })
 })

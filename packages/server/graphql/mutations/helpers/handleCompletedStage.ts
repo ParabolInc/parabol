@@ -9,7 +9,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
-import generateTopicSummaries from './generateTopicSummaries'
+import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 
 /*
@@ -74,7 +74,7 @@ const handleCompletedRetrospectiveStage = async (
         })
         .run()
       data.meeting = meeting
-      generateTopicSummaries(meeting.id, dataLoader)
+      generateGroupSummaries(meeting.id, dataLoader)
     }
 
     return {[stage.phaseType]: data}

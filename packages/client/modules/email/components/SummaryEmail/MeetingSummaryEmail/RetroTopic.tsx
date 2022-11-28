@@ -89,13 +89,13 @@ const RetroTopic = (props: Props) => {
   const stage = useFragment(
     graphql`
       fragment RetroTopic_stage on RetroDiscussStage {
-        topicSummary
         reflectionGroup {
           title
           voteCount
           reflections {
             ...EmailReflectionCard_reflection
           }
+          summary
         }
         discussion {
           commentCount
@@ -118,9 +118,9 @@ const RetroTopic = (props: Props) => {
     `,
     meetingRef
   )
-  const {reflectionGroup, discussion, topicSummary} = stage
+  const {reflectionGroup, discussion} = stage
   const {commentCount} = discussion
-  const {reflections, title, voteCount} = reflectionGroup!
+  const {reflections, title, voteCount, summary} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -133,7 +133,7 @@ const RetroTopic = (props: Props) => {
       : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
-  const showSummary = viewerMeetingMember?.user.featureFlags.aiSummary && topicSummary
+  const showSummary = viewerMeetingMember?.user.featureFlags.aiSummary && summary
   return (
     <>
       <tr>
@@ -155,7 +155,7 @@ const RetroTopic = (props: Props) => {
               >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
             </tr>
             <tr>
-              <td style={textStyle}>{topicSummary}</td>
+              <td style={textStyle}>{summary}</td>
             </tr>
           </td>
         </tr>

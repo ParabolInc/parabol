@@ -3,7 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 
-const generateTopicSummaries = async (meetingId: string, dataLoader: DataLoaderWorker) => {
+const generateGroupSummaries = async (meetingId: string, dataLoader: DataLoaderWorker) => {
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const r = await getRethink()
@@ -21,4 +21,4 @@ const generateTopicSummaries = async (meetingId: string, dataLoader: DataLoaderW
   }
 }
 
-export default generateTopicSummaries
+export default generateGroupSummaries
