@@ -4,8 +4,10 @@ import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 
 const generateGroupSummaries = async (meetingId: string, dataLoader: DataLoaderWorker) => {
-  const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-  const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+  const [reflections, reflectionGroups] = await Promise.all([
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+  ])
   const r = await getRethink()
   const manager = new OpenAIServerManager()
   for (const group of reflectionGroups) {
@@ -17,7 +19,8 @@ const generateGroupSummaries = async (meetingId: string, dataLoader: DataLoaderW
     )
     if (reflectionTextByGroupId.length === 0) return
     const summary = await manager.getSummary(reflectionTextByGroupId)
-    await r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+    if (!summary) return
+    r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
   }
 }
 
