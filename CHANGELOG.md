@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.83.1 2022-November-23
+
+### Fixed
+
+- XSS vulnerability in meeting templates (#7491)
+
 ## 6.83.0 2022-November-17
 
 ### Fixed
