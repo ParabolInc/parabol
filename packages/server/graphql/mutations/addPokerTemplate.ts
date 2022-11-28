@@ -4,7 +4,6 @@ import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
-import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -54,8 +53,8 @@ const addPokerTemplate = {
     if (!viewerTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const viewer = await getUserById(viewerId)
-    const hasTemplateLimitFlag = viewer?.featureFlags?.includes('templateLimit')
+    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+    const hasTemplateLimitFlag = viewer.featureFlags.includes('templateLimit')
     if (viewerTeam.tier === 'personal' && hasTemplateLimitFlag) {
       return standardError(new Error('Creating templates is a premium feature'), {userId: viewerId})
     }
