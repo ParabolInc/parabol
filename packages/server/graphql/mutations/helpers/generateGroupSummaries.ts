@@ -14,12 +14,13 @@ const generateGroupSummaries = async (meetingId: string, dataLoader: DataLoaderW
     const reflectionsByGroupId = reflections.filter(
       ({reflectionGroupId}) => reflectionGroupId === group.id
     )
+    if (reflectionsByGroupId.length <= 1) continue
     const reflectionTextByGroupId = reflectionsByGroupId.map((reflection) =>
       extractTextFromDraftString(reflection.content)
     )
-    if (reflectionTextByGroupId.length === 0) return
+    if (reflectionTextByGroupId.length === 0) continue
     const summary = await manager.getSummary(reflectionTextByGroupId)
-    if (!summary) return
+    if (!summary) continue
     r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
   }
 }

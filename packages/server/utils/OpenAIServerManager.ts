@@ -17,8 +17,8 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     try {
       const response = await this.openAIApi.createCompletion({
-        model: 'text-davinci-002',
-        prompt: `Summarize this for a second-grade student: ${text}`,
+        model: 'text-davinci-003',
+        prompt: `Summarize this for a second-grade student in one or two sentences: ${text}`,
         temperature: 0.7,
         max_tokens: 256,
         top_p: 1,
