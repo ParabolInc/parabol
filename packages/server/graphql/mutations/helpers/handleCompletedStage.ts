@@ -64,7 +64,7 @@ const handleCompletedRetrospectiveStage = async (
 
       data.reflectionGroups = sortedReflectionGroups
     } else if (stage.phaseType === GROUP) {
-      const {phases} = meeting
+      const {facilitatorUserId, phases} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await r
         .table('NewMeeting')
@@ -74,7 +74,7 @@ const handleCompletedRetrospectiveStage = async (
         })
         .run()
       data.meeting = meeting
-      generateGroupSummaries(meeting.id, dataLoader)
+      generateGroupSummaries(meeting.id, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}
