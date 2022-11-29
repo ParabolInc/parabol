@@ -4,10 +4,11 @@ import PROD from '../PROD'
 
 const getSSL = () => {
   try {
-    const PG_ROOT = path.join(__PROJECT_ROOT__, 'packages/server/postgres')
-    const ca = readFileSync(path.join(PG_ROOT, 'root.crt'))
-    const key = readFileSync(path.join(PG_ROOT, 'postgresql.key'))
-    const cert = readFileSync(path.join(PG_ROOT, 'postgresql.crt'))
+    // optional env var, likely outside the app dir
+    const PG_CERT_DIR = process.env.PG_CERT_DIR!
+    const ca = readFileSync(path.join(PG_CERT_DIR, 'root.crt'))
+    const key = readFileSync(path.join(PG_CERT_DIR, 'postgresql.key'))
+    const cert = readFileSync(path.join(PG_CERT_DIR, 'postgresql.crt'))
     return {ca, key, cert, rejectUnauthorized: true}
   } catch (e) {
     return undefined
