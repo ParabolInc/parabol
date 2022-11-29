@@ -96,16 +96,26 @@ const AnalyticsPage = () => {
       if (!res) return
       const {viewer} = res
       const {id, segmentId} = viewer
-      ReactGA.initialize(gaMeasurementId, {
-        gaOptions: {
-          userId: id,
-          clientId: segmentId
-        }
+      ReactGA.initialize(gaMeasurementId)
+      ReactGA.set({
+        userId: id,
+        clientId: segmentId ?? getAnonymousId()
       })
     }
-    if (gaMeasurementId && !isGAInitialized) {
-      initializeGA().catch()
-      setIsGAInitialized(true)
+    if (atmosphere.viewerId && !isGAInitialized && gaMeasurementId) {
+      initializeGA()
+        .catch()
+        .then(() => {
+          setIsGAInitialized(true)
+        })
+    }
+    if (!atmosphere.viewerId && isGAInitialized) {
+      ReactGA.reset()
+      ReactGA.set({
+        userId: null,
+        clientId: null
+      })
+      setIsGAInitialized(false)
     }
   }, [isGAInitialized, atmosphere.viewerId])
 
