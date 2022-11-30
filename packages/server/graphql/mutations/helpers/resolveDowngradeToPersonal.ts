@@ -46,8 +46,8 @@ const resolveDowngradeToPersonal = async (
     orgId,
     domain: org.activeDomain,
     orgName: org.name,
-    oldTier: 'pro',
-    newTier: 'personal',
+    oldTier: 'team',
+    newTier: 'starter',
     billingLeaderEmail: user.email
   })
 }

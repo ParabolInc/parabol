@@ -74,8 +74,8 @@ export default {
       orgId,
       domain,
       orgName,
-      oldTier: 'personal',
-      newTier: 'pro',
+      oldTier: 'starter',
+      newTier: 'team',
       billingLeaderEmail: viewer!.email
     })
     const data = {orgId, teamIds, meetingIds}

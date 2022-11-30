@@ -75,13 +75,13 @@ const InsightsDomainNudge = (props: Props) => {
     .sort((a, b) => (a.orgUserCount > b.orgUserCount ? -1 : 1))
   const [biggestOrganization] = personalOrganizations
   const organizationName = biggestOrganization?.name ?? ''
-  const suggestPro = suggestedTier === 'team' && tier === 'starter'
+  const suggestTeam = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
-  const showNudge = suggestPro || suggestEnterprise
-  const CTACopy = suggestPro ? `Upgrade ${organizationName} to Pro` : 'Contact Us'
-  const CTAType = suggestPro ? 'team' : 'enterprise'
+  const showNudge = suggestTeam || suggestEnterprise
+  const CTACopy = suggestTeam ? `Upgrade ${organizationName} to Team` : 'Contact Us'
+  const CTAType = suggestTeam ? 'team' : 'enterprise'
   const onClickCTA = () => {
-    if (suggestPro) {
+    if (suggestTeam) {
       togglePortal()
     } else if (suggestEnterprise) {
       window.open('mailto:love@parabol.co?subject=Increase Usage Limits')

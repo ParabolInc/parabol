@@ -362,8 +362,8 @@ export const enum TaskStatusLabel {
 }
 
 export const enum TierLabel {
-  PERSONAL = 'Personal',
-  PRO = 'Pro',
+  STARTER = 'Starter',
+  TEAM = 'Team',
   ENTERPRISE = 'Enterprise'
 }
 

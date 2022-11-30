@@ -164,7 +164,7 @@ export default async function adjustUserCount(
 
   const proOrgs = paidOrgs.filter((org) => org.tier === 'team')
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
-  // personal & enterprise tiers do not follow the per-seat model
+  // starter & enterprise tiers do not follow the per-seat model
   if (proOrgs.length === 0) return
   if (type === InvoiceItemType.REMOVE_USER) {
     // if the user is paused, they've already been removed from stripe

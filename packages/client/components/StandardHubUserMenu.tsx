@@ -106,7 +106,7 @@ const StandardHubUserMenu = (props: Props) => {
               </UpgradeIcon>
               <UpgradeCTA>
                 {'Upgrade to '}
-                <b>{TierLabel.PRO}</b>
+                <b>{TierLabel.TEAM}</b>
               </UpgradeCTA>
             </MenuItemLink>
           }

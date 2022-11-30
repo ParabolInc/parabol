@@ -80,9 +80,9 @@ const TeamSettings = (props: Props) => {
         {tier === 'starter' && (
           <Panel>
             <StyledRow>
-              <div>{'This team is currently on a personal plan.'}</div>
+              <div>{'This team is currently on a starter plan.'}</div>
               <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                {`Upgrade Team to ${TierLabel.PRO}`}
+                {`Upgrade Team to ${TierLabel.TEAM}`}
               </PrimaryButton>
             </StyledRow>
           </Panel>

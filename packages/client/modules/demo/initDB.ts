@@ -293,7 +293,7 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: 'pro',
+    tier: 'team',
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
@@ -318,7 +318,7 @@ const initDemoTeam = (
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: 'pro' as TierEnum,
+    tier: 'team' as TierEnum,
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),

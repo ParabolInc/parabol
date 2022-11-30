@@ -92,7 +92,7 @@ const CustomTempateUpgradeMsg = (props: Props) => {
       <Header>{'Create Custom Templates'}</Header>
       <Details>
         {
-          'Upgrade to Pro to create custom templates that you can share with your organization or team'
+          'Upgrade to Team to create custom templates that you can share with your organization or team'
         }
       </Details>
       <ButtonBlock>

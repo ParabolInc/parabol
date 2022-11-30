@@ -15,7 +15,7 @@ const PersonalTag = styled(BaseTag)({
   color: PALETTE.SLATE_700
 })
 
-const ProTag = styled(BaseTag)({
+const TeamTag = styled(BaseTag)({
   backgroundColor: PALETTE.GOLD_300,
   color: PALETTE.GRAPE_700
 })
@@ -28,8 +28,8 @@ const EnterpriseTag = styled(BaseTag)({
 const TierTag = (props: Props) => {
   const {className, tier} = props
   if (tier === 'starter')
-    return <PersonalTag className={className}>{TierLabel.PERSONAL}</PersonalTag>
-  if (tier === 'team') return <ProTag className={className}>{TierLabel.PRO}</ProTag>
+    return <PersonalTag className={className}>{TierLabel.STARTER}</PersonalTag>
+  if (tier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
   if (tier === 'enterprise')
     return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
   return null

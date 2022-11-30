@@ -107,7 +107,7 @@ const OrganizationRow = (props: Props) => {
   const upgradeCTALabel = (
     <span>
       {'Upgrade to '}
-      <b>{TierLabel.PRO}</b>
+      <b>{TierLabel.TEAM}</b>
     </span>
   )
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(

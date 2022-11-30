@@ -29,9 +29,9 @@ const setUserTierForUserIds = async (userIds: string[]) => {
             return r.branch(
               tiers.contains('enterprise'),
               'enterprise',
-              tiers.contains('pro'),
-              'pro',
-              'personal'
+              tiers.contains('team'),
+              'team',
+              'starter'
             )
           })
       }),
@@ -44,7 +44,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({removedAt: null})
     .merge((orgUser: RDatum<OrganizationUser>) => ({
-      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('personal')
+      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('starter')
     }))
     .group('userId')('tier')
     .ungroup()
@@ -53,9 +53,9 @@ const setUserTierForUserIds = async (userIds: string[]) => {
       tier: r.branch(
         row('reduction').contains('enterprise'),
         'enterprise',
-        row('reduction').contains('pro'),
-        'pro',
-        'personal'
+        row('reduction').contains('team'),
+        'team',
+        'starter'
       )
     }))
     .run()) as {id: string; tier: TierEnum}[]

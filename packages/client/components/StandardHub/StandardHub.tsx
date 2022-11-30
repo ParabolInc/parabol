@@ -89,7 +89,7 @@ const DEFAULT_VIEWER = {
   picture: '',
   preferredName: '',
   email: '',
-  tier: 'personal'
+  tier: 'starter'
 } as const
 
 const StandardHub = (props: Props) => {
@@ -119,7 +119,7 @@ const StandardHub = (props: Props) => {
           <VerifiedUserIcon />
           <UpgradeCTA>
             {'Upgrade to '}
-            <b>{TierLabel.PRO}</b>
+            <b>{TierLabel.TEAM}</b>
           </UpgradeCTA>
         </Upgrade>
       ) : (
