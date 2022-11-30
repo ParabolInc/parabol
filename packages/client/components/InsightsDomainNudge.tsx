@@ -71,15 +71,15 @@ const InsightsDomainNudge = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {id: domainId, suggestedTier, tier, organizations} = domain
   const personalOrganizations = organizations
-    .filter((org) => org.tier === 'personal')
+    .filter((org) => org.tier === 'starter')
     .sort((a, b) => (a.orgUserCount > b.orgUserCount ? -1 : 1))
   const [biggestOrganization] = personalOrganizations
   const organizationName = biggestOrganization?.name ?? ''
-  const suggestPro = suggestedTier === 'pro' && tier === 'personal'
+  const suggestPro = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
   const showNudge = suggestPro || suggestEnterprise
   const CTACopy = suggestPro ? `Upgrade ${organizationName} to Pro` : 'Contact Us'
-  const CTAType = suggestPro ? 'pro' : 'enterprise'
+  const CTAType = suggestPro ? 'team' : 'enterprise'
   const onClickCTA = () => {
     if (suggestPro) {
       togglePortal()

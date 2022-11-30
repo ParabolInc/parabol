@@ -97,7 +97,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
-    if (tier === 'personal' && featureFlags.templateLimit) {
+    if (tier === 'starter' && featureFlags.templateLimit) {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',

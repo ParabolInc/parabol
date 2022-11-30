@@ -406,7 +406,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
-          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'personal'
+          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'starter'
         )
         if (isAnyMemberOfPaidOrg) return null
         return overLimitCopy

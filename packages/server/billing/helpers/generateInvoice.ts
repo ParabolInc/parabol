@@ -393,7 +393,7 @@ export default async function generateInvoice(
     startAt: fromEpochSeconds(invoice.period_start),
     startingBalance: invoice.starting_balance,
     status,
-    tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'pro'
+    tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'team'
   })
 
   return r

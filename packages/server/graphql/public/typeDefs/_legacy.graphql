@@ -2694,8 +2694,8 @@ type TemplateScaleValue {
 The pay tier of the team
 """
 enum TierEnum {
-  personal
-  pro
+  starter
+  team
   enterprise
 }
 
@@ -7956,7 +7956,6 @@ type Mutation {
   pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
 
   """
-
   """
   pokerAnnounceDeckHover(
     meetingId: ID!
@@ -8003,7 +8002,6 @@ type Mutation {
   ): SetPokerSpectatePayload!
 
   """
-
   """
   persistGitHubSearchQuery(
     """

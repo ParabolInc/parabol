@@ -41,7 +41,7 @@ export default {
 
     const organization = await dataLoader.get('organizations').load(orgId)
     const {tier} = organization
-    if (tier !== 'personal') {
+    if (tier !== 'starter') {
       return standardError(new Error('You must first downgrade before archiving'), {
         userId: viewerId
       })

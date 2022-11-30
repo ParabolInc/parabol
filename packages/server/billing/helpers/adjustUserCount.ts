@@ -162,7 +162,7 @@ export default async function adjustUserCount(
     .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
-  const proOrgs = paidOrgs.filter((org) => org.tier === 'pro')
+  const proOrgs = paidOrgs.filter((org) => org.tier === 'team')
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
   // personal & enterprise tiers do not follow the per-seat model
   if (proOrgs.length === 0) return

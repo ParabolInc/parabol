@@ -63,7 +63,20 @@ export const up = async function (r: R) {
           )
         }))
         .run()
+      // r
+      //   .table('Team')
+      //   .skip(skip)
+      //   .limit(BATCH_SIZE)
+      //   .update((row) => ({
+      //     tier: r.branch(
+      //       row('tier').eq('personal'),
+      //       'starter',
+      //       r.branch(row('tier').eq('pro'), 'team', row('tier'))
+      //     )
+      //   }))
+      //   .run()
     ])
+
     console.log('🚀 ~ res', res)
     const isComplete = res.every(
       (res) => res.skipped === 0 && res.unchanged === 0 && res.errors === 0 && res.replaced === 0
@@ -71,6 +84,16 @@ export const up = async function (r: R) {
     console.log('🚀 ~ isComplete', isComplete)
     if (isComplete) break
   }
+
+  // const pg = getPg()
+  // await pg.query(
+  //   `
+  //   UPDATE "Team"
+  //   SET "tier" = 'starter'::"TierEnum"
+  //   WHERE "tier" = 'personal'
+  //   `
+  // )
+  // closePg()
 }
 
 export const down = async function (r: R) {
@@ -131,6 +154,18 @@ export const down = async function (r: R) {
           )
         }))
         .run()
+      // r
+      //   .table('Team')
+      //   .skip(skip)
+      //   .limit(BATCH_SIZE)
+      //   .update((row) => ({
+      //     tier: r.branch(
+      //       row('tier').eq('starter'),
+      //       'personal',
+      //       r.branch(row('tier').eq('team'), 'pro', row('tier'))
+      //     )
+      //   }))
+      //   .run()
     ])
     console.log('🚀 ~ res', res)
     const isComplete = res.every(

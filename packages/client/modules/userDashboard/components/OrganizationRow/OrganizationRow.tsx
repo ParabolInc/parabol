@@ -103,7 +103,7 @@ const OrganizationRow = (props: Props) => {
     history.push(`/me/organizations/${orgId}`)
   }
   const totalUsers = activeUserCount + inactiveUserCount
-  const showUpgradeCTA = tier === 'personal'
+  const showUpgradeCTA = tier === 'starter'
   const upgradeCTALabel = (
     <span>
       {'Upgrade to '}
@@ -122,7 +122,7 @@ const OrganizationRow = (props: Props) => {
         <StyledRowInfo>
           <RowInfoHeader>
             <Name onClick={onRowClick}>{name}</Name>
-            {tier !== 'personal' && (
+            {tier !== 'starter' && (
               <StyledTagBlock>
                 <TierTag tier={tier} />
               </StyledTagBlock>

@@ -114,7 +114,7 @@ const StandardHub = (props: Props) => {
           <Email>{email}</Email>
         </NameAndEmail>
       </User>
-      {tier === 'personal' ? (
+      {tier === 'starter' ? (
         <Upgrade onClick={handleUpgradeClick}>
           <VerifiedUserIcon />
           <UpgradeCTA>

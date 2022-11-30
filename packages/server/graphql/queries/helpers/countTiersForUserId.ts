@@ -16,17 +16,17 @@ const countTiersForUserId = async (userId: string) => {
     }))
     .run()) as OrganizationUser[]
   const tierPersonalCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === 'personal'
+    (organizationUser) => organizationUser.tier === 'starter'
   ).length
   const tierProCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === 'pro'
+    (organizationUser) => organizationUser.tier === 'team'
   ).length
   const tierEnterpriseCount = organizationUsers.filter(
     (organizationUser) => organizationUser.tier === 'enterprise'
   ).length
   const tierProBillingLeaderCount = organizationUsers.filter(
     (organizationUser) =>
-      organizationUser.tier === 'pro' && organizationUser.role === 'BILLING_LEADER'
+      organizationUser.tier === 'team' && organizationUser.role === 'BILLING_LEADER'
   ).length
   return {
     tierPersonalCount,

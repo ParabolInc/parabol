@@ -57,7 +57,7 @@ const StandardHubUserMenu = (props: Props) => {
   )
   const {email, featureFlags, organizations} = viewer
   const {insights} = featureFlags
-  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'personal')
+  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'starter')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 

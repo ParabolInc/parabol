@@ -12,7 +12,7 @@ const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
 
   if (teamCountRemainingOnOldOrg > 0) return
   const org = await r.table('Organization').get(orgId).run()
-  if (org.tier !== 'personal') return
+  if (org.tier !== 'starter') return
 
   await r
     .table('OrganizationUser')

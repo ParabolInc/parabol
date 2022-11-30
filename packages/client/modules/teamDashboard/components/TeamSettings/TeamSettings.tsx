@@ -77,7 +77,7 @@ const TeamSettings = (props: Props) => {
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
-        {tier === 'personal' && (
+        {tier === 'starter' && (
           <Panel>
             <StyledRow>
               <div>{'This team is currently on a personal plan.'}</div>

@@ -84,7 +84,7 @@ const removeFromOrg = async (
             role: 'BILLING_LEADER'
           })
           .run()
-      } else if (organization.tier !== 'personal') {
+      } else if (organization.tier !== 'starter') {
         await resolveDowngradeToPersonal(orgId, organization.stripeSubscriptionId!, userId)
       }
     }

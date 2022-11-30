@@ -26,7 +26,7 @@ const resolveDowngradeToPersonal = async (
     r.table('User').get(userId).run() as unknown as User,
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
-        tier: 'personal',
+        tier: 'starter',
         periodEnd: now,
         stripeSubscriptionId: null,
         updatedAt: now
@@ -34,7 +34,7 @@ const resolveDowngradeToPersonal = async (
     }).run(),
     updateTeamByOrgId(
       {
-        tier: 'personal',
+        tier: 'starter',
         isPaid: true
       },
       orgId

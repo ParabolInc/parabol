@@ -87,7 +87,7 @@ const PokerTemplateListOrg = (props: Props) => {
   const history = useHistory()
 
   if (edges.length === 0) {
-    if (tier === 'personal' && featureFlags.templateLimit) {
+    if (tier === 'starter' && featureFlags.templateLimit) {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',

@@ -44,7 +44,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
         .update({
           ...subscriptionFields,
           creditCard: await getCCFromCustomer(customer),
-          tier: 'pro',
+          tier: 'team',
           stripeId: customer.id,
           updatedAt: now
         })
@@ -52,7 +52,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
     updateTeamByOrgId(
       {
         isPaid: true,
-        tier: 'pro'
+        tier: 'team'
       },
       orgId
     )
