@@ -87,7 +87,7 @@ const NewTeamForm = (props: Props) => {
     if (!isNewOrg) {
       const org = organizations.find((org) => org.id === orgId)
       if (org) {
-        teamNames = org.teams.filter((team) => team.isArchived).map((team) => team.name)
+        teamNames = org.teams.map((team) => team.name)
       }
     }
     return teamNameValidation(teamName, teamNames)
@@ -199,7 +199,6 @@ export default createFragmentContainer(NewTeamForm, {
       id
       teams {
         name
-        isArchived
       }
     }
   `

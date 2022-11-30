@@ -95,6 +95,11 @@ export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team> = (
   const teamId = payload.getLinkedRecord('team').getValue('id')
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
+  const orgs = viewer.getLinkedRecords('organizations')!
+  orgs.forEach((org) => {
+    safeRemoveNodeFromArray(teamId, org, 'teams')
+  })
+
   const notification = payload.getLinkedRecord('notification')
   handleAddNotifications(notification, store)
 }
