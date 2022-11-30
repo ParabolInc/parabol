@@ -1,7 +1,7 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import AddOrgPayload from './AddOrgPayload'
 import ArchiveOrganizationPayload from './ArchiveOrganizationPayload'
-import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
+import DowngradeToStarterPayload from './downgradeToStarterPayload'
 import PayLaterPayload from './PayLaterPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import SetOrgUserRoleAddedPayload from './SetOrgUserRoleAddedPayload'
@@ -14,7 +14,7 @@ import UpgradeToProPayload from './UpgradeToProPayload'
 const types = [
   AddOrgPayload,
   ArchiveOrganizationPayload,
-  DowngradeToPersonalPayload,
+  DowngradeToStarterPayload,
   PayLaterPayload,
   RemoveOrgUserPayload,
   SetOrgUserRoleAddedPayload,

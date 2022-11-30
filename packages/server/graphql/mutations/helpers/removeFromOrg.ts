@@ -6,7 +6,7 @@ import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
-import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
+import resolveDowngradeToStarter from './resolveDowngradeToStarter'
 
 const removeFromOrg = async (
   userId: string,
@@ -85,7 +85,7 @@ const removeFromOrg = async (
           })
           .run()
       } else if (organization.tier !== 'starter') {
-        await resolveDowngradeToPersonal(orgId, organization.stripeSubscriptionId!, userId)
+        await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, userId)
       }
     }
   }

@@ -14,7 +14,7 @@ import AddSlackAuthPayload from './AddSlackAuthPayload'
 import AddTeamPayload from './AddTeamPayload'
 import ArchiveTeamPayload from './ArchiveTeamPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
-import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
+import DowngradeToStarterPayload from './downgradeToStarterPayload'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
@@ -79,7 +79,7 @@ const types = [
   AddTeamPayload,
   ArchiveTeamPayload,
   DenyPushInvitationPayload,
-  DowngradeToPersonalPayload,
+  DowngradeToStarterPayload,
   EndNewMeetingPayload,
   EndCheckInSuccess,
   EndRetrospectiveSuccess,

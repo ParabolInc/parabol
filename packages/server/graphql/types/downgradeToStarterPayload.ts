@@ -5,15 +5,15 @@ import Organization from './Organization'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 
-const DowngradeToPersonalPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'DowngradeToPersonalPayload',
+const downgradeToStarterPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'downgradeToStarterPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
     },
     organization: {
       type: Organization,
-      description: 'The new Personal Org',
+      description: 'The new Starter Org',
       resolve: resolveOrganization
     },
     teams: {
@@ -24,4 +24,4 @@ const DowngradeToPersonalPayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default DowngradeToPersonalPayload
+export default downgradeToStarterPayload

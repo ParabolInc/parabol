@@ -5,12 +5,12 @@ import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authoriza
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
-import resolveDowngradeToPersonal from './helpers/resolveDowngradeToPersonal'
+import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
+import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
 
 export default {
-  type: DowngradeToPersonalPayload,
-  description: 'Downgrade a paid account to the personal service',
+  type: DowngradeToStarterPayload,
+  description: 'Downgrade a paid account to the starter service',
   args: {
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -43,17 +43,17 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    await resolveDowngradeToPersonal(orgId, stripeSubscriptionId!, viewerId)
+    await resolveDowngradeToStarter(orgId, stripeSubscriptionId!, viewerId)
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const data = {orgId, teamIds}
-    publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToStarterPayload', data, subOptions)
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(SubscriptionChannel.TEAM, teamId, 'DowngradeToPersonalPayload', teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'DowngradeToStarterPayload', teamData, subOptions)
     })
     return data
   }

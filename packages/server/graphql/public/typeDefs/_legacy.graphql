@@ -7018,12 +7018,12 @@ type Mutation {
   """
   Downgrade a paid account to the personal service
   """
-  downgradeToPersonal(
+  downgradeToStarter(
     """
     the org requesting the upgrade
     """
     orgId: ID!
-  ): DowngradeToPersonalPayload
+  ): downgradeToStarterPayload
 
   """
   Changes the priority of the discussion topics
@@ -7956,6 +7956,7 @@ type Mutation {
   pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
 
   """
+
   """
   pokerAnnounceDeckHover(
     meetingId: ID!
@@ -8002,6 +8003,7 @@ type Mutation {
   ): SetPokerSpectatePayload!
 
   """
+
   """
   persistGitHubSearchQuery(
     """
@@ -8732,7 +8734,7 @@ type DismissSuggestedActionPayload {
   removedSuggestedActionId: ID
 }
 
-type DowngradeToPersonalPayload {
+type DowngradeToStarterPayload {
   error: StandardMutationError
 
   """
@@ -10856,7 +10858,7 @@ type AuthTokenPayload {
 union OrganizationSubscriptionPayload =
     AddOrgPayload
   | ArchiveOrganizationPayload
-  | DowngradeToPersonalPayload
+  | DowngradeToStarterPayload
   | PayLaterPayload
   | RemoveOrgUserPayload
   | SetOrgUserRoleAddedPayload
@@ -10903,7 +10905,7 @@ union TeamSubscriptionPayload =
   | AddTeamPayload
   | ArchiveTeamPayload
   | DenyPushInvitationPayload
-  | DowngradeToPersonalPayload
+  | DowngradeToStarterPayload
   | EndCheckInSuccess
   | EndNewMeetingPayload
   | EndRetrospectiveSuccess

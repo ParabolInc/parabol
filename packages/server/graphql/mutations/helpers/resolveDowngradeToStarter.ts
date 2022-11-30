@@ -7,7 +7,7 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 
-const resolveDowngradeToPersonal = async (
+const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
   userId: string
@@ -52,4 +52,4 @@ const resolveDowngradeToPersonal = async (
   })
 }
 
-export default resolveDowngradeToPersonal
+export default resolveDowngradeToStarter
