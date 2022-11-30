@@ -1,107 +1,142 @@
 import {R} from 'rethinkdb-ts'
 
 export const up = async function (r: R) {
-  const testa = await Promise.all([
-    r
-      .table('Organization')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('personal'),
-          'starter',
-          r.branch(row('tier').eq('pro'), 'team', row('tier'))
-        )
-      }))
-      .run(),
-    r
-      .table('OrganizationUser')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').default(null).eq('personal'),
-          'starter',
-          r.branch(row('tier').default(null).eq('pro'), 'team', row('tier').default(null))
-        ),
-        suggestedTier: r.branch(
-          row('suggestedTier').default(null).eq('personal'),
-          'starter',
-          r.branch(
-            row('suggestedTier').default(null).eq('pro'),
-            'team',
-            row('suggestedTier').default(null)
+  const BATCH_SIZE = 1000
+  for (let i = 0; i < 1e5; i++) {
+    const skip = i * BATCH_SIZE
+    console.log('🚀 ~ skip', {skip, i})
+    const res = await Promise.all([
+      r
+        .table('Organization')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('personal'),
+            'starter',
+            r.branch(row('tier').eq('pro'), 'team', row('tier'))
           )
-        )
-      }))
-      .run(),
-    r
-      .table('Invoice')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('personal'),
-          'starter',
-          r.branch(row('tier').eq('pro'), 'team', row('tier'))
-        )
-      }))
-      .run(),
-    r
-      .table('User')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('personal'),
-          'starter',
-          r.branch(row('tier').eq('pro'), 'team', row('tier'))
-        )
-      }))
-      .run()
-  ])
-  console.log('🚀 ~ testa', testa)
+        }))
+        .run(),
+      r
+        .table('OrganizationUser')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').default(null).eq('personal'),
+            'starter',
+            r.branch(row('tier').default(null).eq('pro'), 'team', row('tier').default(null))
+          ),
+          suggestedTier: r.branch(
+            row('suggestedTier').default(null).eq('personal'),
+            'starter',
+            r.branch(
+              row('suggestedTier').default(null).eq('pro'),
+              'team',
+              row('suggestedTier').default(null)
+            )
+          )
+        }))
+        .run(),
+      r
+        .table('Invoice')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('personal'),
+            'starter',
+            r.branch(row('tier').eq('pro'), 'team', row('tier'))
+          )
+        }))
+        .run(),
+      r
+        .table('User')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('personal'),
+            'starter',
+            r.branch(row('tier').eq('pro'), 'team', row('tier'))
+          )
+        }))
+        .run()
+    ])
+    console.log('🚀 ~ res', res)
+    const isComplete = res.every(
+      (res) => res.skipped === 0 && res.unchanged === 0 && res.errors === 0 && res.replaced === 0
+    )
+    console.log('🚀 ~ isComplete', isComplete)
+    if (isComplete) break
+  }
 }
 
 export const down = async function (r: R) {
-  const testDown = await Promise.all([
-    r
-      .table('Organization')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('starter'),
-          'personal',
-          r.branch(row('tier').eq('team'), 'pro', row('tier'))
-        )
-      }))
-      .run(),
-    r
-      .table('OrganizationUser')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('starter'),
-          'personal',
-          r.branch(row('tier').eq('team'), 'pro', row('tier'))
-        ),
-        suggestedTier: r.branch(
-          row('suggestedTier').eq('starter'),
-          'personal',
-          r.branch(row('suggestedTier').eq('team'), 'pro', row('suggestedTier').default(null))
-        )
-      }))
-      .run(),
-    r
-      .table('Invoice')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('starter'),
-          'personal',
-          r.branch(row('tier').eq('team'), 'pro', row('tier'))
-        )
-      }))
-      .run(),
-    r
-      .table('User')
-      .update((row) => ({
-        tier: r.branch(
-          row('tier').eq('starter'),
-          'personal',
-          r.branch(row('tier').eq('team'), 'pro', row('tier'))
-        )
-      }))
-      .run()
-  ])
-  console.log('🚀 ~ testDown', testDown)
+  const BATCH_SIZE = 1000
+  for (let i = 0; i < 1e5; i++) {
+    const skip = i * BATCH_SIZE
+    const res = await Promise.all([
+      r
+        .table('Organization')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('starter'),
+            'personal',
+            r.branch(row('tier').eq('team'), 'pro', row('tier'))
+          )
+        }))
+        .run(),
+      r
+        .table('OrganizationUser')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('starter'),
+            'personal',
+            r.branch(row('tier').eq('team'), 'pro', row('tier'))
+          ),
+          suggestedTier: r.branch(
+            row('suggestedTier').eq('starter'),
+            'personal',
+            r.branch(row('suggestedTier').eq('team'), 'pro', row('suggestedTier').default(null))
+          )
+        }))
+        .run(),
+      r
+        .table('Invoice')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('starter'),
+            'personal',
+            r.branch(row('tier').eq('team'), 'pro', row('tier'))
+          )
+        }))
+        .run(),
+      r
+        .table('User')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('starter'),
+            'personal',
+            r.branch(row('tier').eq('team'), 'pro', row('tier'))
+          )
+        }))
+        .run()
+    ])
+    console.log('🚀 ~ res', res)
+    const isComplete = res.every(
+      (res) => res.skipped === 0 && res.unchanged === 0 && res.errors === 0 && res.replaced === 0
+    )
+    console.log('🚀 ~ isComplete', isComplete)
+    if (isComplete) break
+  }
 }
