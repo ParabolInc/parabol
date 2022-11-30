@@ -50,7 +50,7 @@ const notificationSummaryCreator = async (props: Props) => {
     require('parabol-client/modules/email/components/NotificationSummaryEmailRoot').default
 
   const bodyContent = await renderSSRElement(
-    <NotificationSummaryEmailRoot {...props} environment={props.environment} />,
+    <NotificationSummaryEmailRoot {...props} />,
     props.environment
   )
 
