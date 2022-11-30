@@ -24,7 +24,11 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
     dataLoader.get('organizations').load(orgId)
   ])
   const {tier, name: orgName} = organization
-  const emailAddresses = users.filter(isValid).map(({email}) => email)
+  const emailAddresses = users
+    .filter(isValid)
+    .filter(({sendSummaryEmail}) => sendSummaryEmail)
+    .map(({email}) => email)
+  if (!emailAddresses.length) return
   const {subject, body, html} = content
   await getMailManager().sendEmail({
     to: emailAddresses,

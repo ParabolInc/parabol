@@ -30,7 +30,7 @@ const RemoveTeamMemberModal = (props: Props) => {
   const {teamMemberId, preferredName} = teamMember
   const handleClick = () => {
     closePortal()
-    RemoveTeamMemberMutation(atmosphere, teamMemberId)
+    RemoveTeamMemberMutation(atmosphere, {teamMemberId})
   }
   return (
     <StyledDialogContainer>

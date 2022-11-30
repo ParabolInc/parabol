@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -10,7 +10,7 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
-import {LeaveTeamModal_teamMember} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
+import {LeaveTeamModal_teamMember$key} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 356
@@ -21,19 +21,27 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 interface Props {
-  teamMember: LeaveTeamModal_teamMember
+  teamMember: LeaveTeamModal_teamMember$key
   closePortal: () => void
 }
 
 const LeaveTeamModal = (props: Props) => {
-  const {closePortal, teamMember} = props
+  const {closePortal, teamMember: teamMemberRef} = props
+  const teamMember = useFragment(
+    graphql`
+      fragment LeaveTeamModal_teamMember on TeamMember {
+        teamMemberId: id
+      }
+    `,
+    teamMemberRef
+  )
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {teamMemberId} = teamMember
   const handleClick = () => {
     history.push('/meetings')
     closePortal()
-    RemoveTeamMemberMutation(atmosphere, teamMemberId)
+    RemoveTeamMemberMutation(atmosphere, {teamMemberId})
   }
   return (
     <StyledDialogContainer>
@@ -50,10 +58,4 @@ const LeaveTeamModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(LeaveTeamModal, {
-  teamMember: graphql`
-    fragment LeaveTeamModal_teamMember on TeamMember {
-      teamMemberId: id
-    }
-  `
-})
+export default LeaveTeamModal

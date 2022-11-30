@@ -8,6 +8,7 @@ import getProfile from '../../utils/githubQueries/getProfile.graphql'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 
 export default {
@@ -27,7 +28,7 @@ export default {
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
-    const {authToken} = context
+    const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -53,6 +54,7 @@ export default {
     const {login} = viewer
 
     await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes})
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
     analytics.integrationAdded(viewerId, teamId, 'github')
 
     return {teamId, userId: viewerId}

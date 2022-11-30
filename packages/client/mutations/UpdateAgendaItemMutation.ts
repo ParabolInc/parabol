@@ -75,7 +75,7 @@ const UpdateAgendaItemMutation: StandardMutation<
   {meetingId: string | undefined}
 > = (atmosphere, variables, {meetingId}) => {
   const {updatedAgendaItem} = variables
-  const [teamId] = updatedAgendaItem.id.split('::')
+  const teamId = updatedAgendaItem.id.split('::')[0]!
   return commitMutation<TUpdateAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
@@ -85,7 +85,7 @@ const UpdateAgendaItemMutation: StandardMutation<
       updateAgendaItemUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
-      const proxyAgendaItem = store.get(updatedAgendaItem.id)
+      const proxyAgendaItem = store.get(updatedAgendaItem.id)!
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem)
       handleUpdateAgendaItems(store, teamId)
       handleUpdateAgendaPhase(store, meetingId)

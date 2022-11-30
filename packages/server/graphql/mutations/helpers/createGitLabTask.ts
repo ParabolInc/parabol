@@ -36,7 +36,7 @@ const createGitLabTask = async (
   if (!issue) {
     return {error: new Error('GitLab create issue failed')}
   }
-  return {gid: issue.id, providerId}
+  return {gid: issue.id, providerId, fullPath}
 }
 
 export default createGitLabTask

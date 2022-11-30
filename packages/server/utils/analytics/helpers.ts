@@ -22,12 +22,13 @@ export const createMeetingProperties = (
     meetingTemplateId: template?.id,
     meetingTemplateName: template?.name,
     meetingTemplateScope: template?.scope,
-    meetingTemplateIsFromParabol: template?.isStarter,
+    meetingTemplateIsFromParabol: template?.isStarter ?? false,
+    meetingTemplateIsFree: template?.isFree ?? false,
     meetingSeriesId:
       meetingType === 'teamPrompt' ? (meeting as MeetingTeamPrompt).meetingSeriesId : undefined,
     disableAnonymity:
       meetingType === 'retrospective'
-        ? (meeting as MeetingRetrospective).disableAnonymity
+        ? (meeting as MeetingRetrospective).disableAnonymity ?? false
         : undefined
   }
 }

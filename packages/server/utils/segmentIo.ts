@@ -1,7 +1,6 @@
 import SegmentIo from 'analytics-node'
 import {getUserById} from '../postgres/queries/getUsersByIds'
 import PROD from '../PROD'
-import updateHubspot from './updateHubspot'
 
 const {SEGMENT_WRITE_KEY} = process.env
 
@@ -15,7 +14,6 @@ segmentIo.track = async (options: any) => {
   const user = options.userId ? await getUserById(options.userId) : null
   const {email, segmentId} = user ?? {}
   const properties = {...inProps, email}
-  user && updateHubspot(event, user, properties)
   return (segmentIo as any)._track({
     userId,
     event,

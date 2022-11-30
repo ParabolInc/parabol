@@ -22,7 +22,7 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {MeetingTypeEnum} from '../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
@@ -509,6 +509,27 @@ export const meetingHighlightedTaskId = (parent: RootDataLoader) => {
       const redisKeys = meetingIds.map((id) => `meetingTaskHighlight:${id}`)
       const highlightedTaskIds = await redis.mget(redisKeys)
       return highlightedTaskIds
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
+  return new DataLoader<number, AnyMeeting[], string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((key) => {
+          return r
+            .table('NewMeeting')
+            .getAll(key, {index: 'meetingSeriesId'})
+            .filter({endedAt: null}, {default: true})
+            .run()
+        })
+      )
+      return res
     },
     {
       ...parent.dataLoaderOptions

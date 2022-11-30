@@ -36,7 +36,7 @@ const getFormattedStr = (
   return commaDelimStr
 }
 
-const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailExists: boolean} => {
+const parseEmailAddressList = (rawStr = '') => {
   // this breaks RFC5322 standards, but people are not standard :-(
   const commaDelimStr = rawStr
     .toLowerCase()

@@ -25,14 +25,14 @@ export async function up() {
         ON DELETE CASCADE
     );
 
-    CREATE UNIQUE INDEX integration_search_query_unique_not_null 
+    CREATE UNIQUE INDEX IF NOT EXISTS integration_search_query_unique_not_null
     ON "IntegrationSearchQuery" ("userId", "teamId", "service", "query", "providerId")
     WHERE "providerId" IS NOT NULL;
-    
-    CREATE UNIQUE INDEX integration_search_query_unique_null 
+
+    CREATE UNIQUE INDEX IF NOT EXISTS integration_search_query_unique_null
     ON "IntegrationSearchQuery" ("userId", "teamId", "service", "query")
     WHERE "providerId" IS NULL;
-    
+
     DROP TRIGGER IF EXISTS "update_IntegrationSearchQuery_updatedAt" ON "IntegrationSearchQuery";
     CREATE TRIGGER "update_IntegrationSearchQuery_updatedAt" BEFORE UPDATE ON "IntegrationSearchQuery" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
   `)

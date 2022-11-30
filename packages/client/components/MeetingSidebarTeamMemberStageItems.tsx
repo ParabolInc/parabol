@@ -38,7 +38,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {facilitatorStageId, facilitatorUserId, localPhase, localStage, phases} = meeting
   const sidebarPhase = phases.find((phase) => phase.phaseType === phaseType)
   const localStageId = (localStage && localStage.id) || ''
-  const gotoStage = (teamMemberId) => () => {
+  const gotoStage = (teamMemberId: string) => () => {
     const teamMemberStage =
       sidebarPhase && sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
@@ -63,7 +63,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigableByFacilitator,
             isNavigable
           } = stage
-          if (!teamMember) {
+          if (!teamMember || !teamMemberId) {
             return null
           }
           const {picture, preferredName} = teamMember

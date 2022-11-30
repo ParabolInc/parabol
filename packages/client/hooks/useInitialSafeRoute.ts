@@ -9,6 +9,7 @@ import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import {phaseTypeToSlug} from '../utils/meetings/lookups'
 import updateLocalStage from '../utils/relay/updateLocalStage'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
@@ -76,7 +77,7 @@ const useInitialSafeRoute = (
         return
       }
 
-      const localPhaseType = findKeyByValue(phaseTypeToSlug, phaseSlug)
+      const localPhaseType = findKeyByValue(phaseTypeToSlug, phaseSlug as NewMeetingPhaseTypeEnum)
       const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0
       const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType)
 

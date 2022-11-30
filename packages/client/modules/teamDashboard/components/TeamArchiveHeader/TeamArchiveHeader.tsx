@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
+import {Archive} from '@mui/icons-material'
 import React from 'react'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
-import Icon from '../../../../components/Icon'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const RootBlock = styled('div')({
   alignItems: 'center',
@@ -25,9 +24,8 @@ const Heading = styled('div')({
   lineHeight: '32px'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Archive)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
   marginRight: 8
 })
 
@@ -42,7 +40,7 @@ const TeamArchiveHeader = (props: Props) => {
   return (
     <RootBlock>
       <HeadingBlock>
-        <StyledIcon>archive</StyledIcon>
+        <StyledIcon />
         <Heading>Archived Tasks</Heading>
       </HeadingBlock>
       <DashNavControl icon='arrow_back' label='Back to Team Tasks' onClick={goToTeamDash} />

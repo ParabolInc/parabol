@@ -43,7 +43,7 @@ const fetchGitHubRepos = async (
     repoSet.add(nameWithOwner)
     repos.push({
       id: nameWithOwner,
-      service: 'github',
+      service: 'github' as const,
       nameWithOwner
     })
   })

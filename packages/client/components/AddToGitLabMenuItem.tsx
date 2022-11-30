@@ -19,7 +19,7 @@ interface Props {
 }
 
 const MenuItemIcon = styled(MenuItemComponentAvatar)({
-  '& svg': {
+  svg: {
     display: 'block',
     height: ICON_SIZE.MD18,
     width: ICON_SIZE.MD18

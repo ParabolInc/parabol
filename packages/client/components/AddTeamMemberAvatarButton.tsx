@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -10,7 +11,6 @@ import {meetingAvatarMediaQueries} from '../styles/meeting'
 import isDemoRoute from '../utils/isDemoRoute'
 import lazyPreload from '../utils/lazyPreload'
 import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
-import Icon from './Icon'
 import OutlinedButton from './OutlinedButton'
 
 interface Props {
@@ -52,19 +52,23 @@ const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
     }
 )
 
-const StyledIcon = styled(Icon)<{isMeeting: boolean}>(
+const StyledIcon = styled(PersonAdd)<{isMeeting: boolean}>(
   {
-    fontSize: 18,
+    height: 18,
+    width: 18,
     marginLeft: -1
   },
   ({isMeeting}) =>
     isMeeting && {
-      fontSize: 18,
+      height: 18,
+      width: 18,
       [meetingAvatarMediaQueries[0]]: {
-        fontSize: 24
+        height: 24,
+        width: 24
       },
       [meetingAvatarMediaQueries[1]]: {
-        fontSize: 36
+        height: 36,
+        width: 36
       }
     }
 )
@@ -104,7 +108,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
         isMeeting={isMeeting}
         palette='blue'
       >
-        <StyledIcon isMeeting={Boolean(isMeeting)}>person_add</StyledIcon>
+        <StyledIcon isMeeting={Boolean(isMeeting)} />
       </AddButton>
       {tooltipPortal('Invite to Team')}
       {modalPortal(modal)}

@@ -75,7 +75,7 @@ function UserSettings(props: UserSettingsProps) {
     const preferredName = preferredNameRes.value
     if (preferredNameRes.error || preferredName === viewer.preferredName || submitting) return
     submitMutation()
-    UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
+    UpdateUserProfileMutation(atmosphere, {updatedUser: {preferredName}}, {onError, onCompleted})
   }
 
   const {picture} = viewer

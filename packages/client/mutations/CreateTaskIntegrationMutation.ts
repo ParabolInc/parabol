@@ -1,12 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import {
+  CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation,
+  CreateTaskIntegrationMutationVariables
+} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
@@ -87,7 +91,10 @@ const mutation = graphql`
   }
 `
 
-const jiraTaskIntegrationOptimisticUpdater = (store, variables) => {
+const jiraTaskIntegrationOptimisticUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: CreateTaskIntegrationMutationVariables
+) => {
   const {integrationRepoId, taskId} = variables
   const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
   const now = new Date()
@@ -110,7 +117,10 @@ const jiraTaskIntegrationOptimisticUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
-const githubTaskIntegrationOptimisitcUpdater = (store, variables) => {
+const githubTaskIntegrationOptimisitcUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: CreateTaskIntegrationMutationVariables
+) => {
   const {integrationRepoId, taskId} = variables
   const now = new Date()
   const task = store.get(taskId)
@@ -133,7 +143,10 @@ const githubTaskIntegrationOptimisitcUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
-const gitlabTaskIntegrationOptimisitcUpdater = (store, variables) => {
+const gitlabTaskIntegrationOptimisitcUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: CreateTaskIntegrationMutationVariables
+) => {
   const {integrationRepoId: fullPath, taskId} = variables
   const now = new Date()
   const task = store.get(taskId)
@@ -159,7 +172,10 @@ const gitlabTaskIntegrationOptimisitcUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
-const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
+const jiraServerTaskIntegrationOptimisticUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: CreateTaskIntegrationMutationVariables
+) => {
   const {taskId} = variables
   const now = new Date()
   const task = store.get(taskId)
@@ -178,7 +194,10 @@ const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
-const azureTaskIntegrationOptimisitcUpdater = (store, variables) => {
+const azureTaskIntegrationOptimisitcUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: CreateTaskIntegrationMutationVariables
+) => {
   const {integrationRepoId: teamProject, taskId} = variables
   const now = new Date()
   const task = store.get(taskId)

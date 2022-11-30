@@ -135,6 +135,8 @@ export const enum ExternalLinks {
   INTEGRATIONS_SLACK = 'https://www.parabol.co/integrations/slack',
   INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
   INTEGRATIONS_SUPPORT_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_TEAM_MANAGED = 'https://www.parabol.co/support/estimation-in-jira-team',
+  INTEGRATIONS_SUPPORT_JIRA_MISSING_FIELD_COMPANY_MANAGED = 'https://www.parabol.co/support/estimation-in-jira-company',
   INTEGRATIONS_SUPPORT_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_SUPPORT_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_SUPPORT_GITLAB = 'https://www.parabol.co/integrations/gitlab',
@@ -395,7 +397,7 @@ export const enum Threshold {
   UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
 }
 
-export const enum Times {
+export const enum Times { // ms
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
   MEETING_CONFIRM_TOOLTIP_DELAY = 0,
@@ -413,7 +415,8 @@ export const enum Times {
   SPOTLIGHT_SOURCE_DURATION = 300,
   SPOTLIGHT_MODAL_DURATION = 300,
   TOUCH_LONGPRESS = 120,
-  WEBSOCKET_KEEP_ALIVE = 10000
+  WEBSOCKET_KEEP_ALIVE = 10000,
+  SHOW_REACTJI_USERS_DELAY = 100
 }
 
 export const enum TrebuchetCloseReason {

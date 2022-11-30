@@ -7,8 +7,8 @@ export async function up() {
   await client.query(`
   DO $$
   BEGIN
-    ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE 'jiraServer';
-    ALTER TYPE "IntegrationProviderAuthStrategyEnum" ADD VALUE 'oauth1';
+    ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE IF NOT EXISTS 'jiraServer';
+    ALTER TYPE "IntegrationProviderAuthStrategyEnum" ADD VALUE IF NOT EXISTS 'oauth1';
     ALTER TABLE "IntegrationProvider"
       ADD COLUMN IF NOT EXISTS "consumerKey" VARCHAR(255),
       ADD COLUMN IF NOT EXISTS "consumerSecret" TEXT;

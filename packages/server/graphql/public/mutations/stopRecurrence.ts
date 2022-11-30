@@ -1,26 +1,32 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
 import getRethink from '../../../database/rethinkDriver'
 import updateMeetingSeries from '../../../postgres/queries/updateMeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
   _source,
-  {meetingId},
+  {meetingSeriesId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
   const viewerId = getUserId(authToken)
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
   const now = new Date()
 
   // VALIDATION
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  if (!meeting) {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+  const meetingSeriesDbId = MeetingSeriesId.split(meetingSeriesId)
+  const meetingSeries = await dataLoader.get('meetingSeries').load(meetingSeriesDbId)
+  if (!meetingSeries) {
+    return standardError(new Error('Meeting Series not found'), {userId: viewerId})
   }
 
-  const {teamId, meetingType, meetingSeriesId} = meeting
+  const {teamId, meetingType} = meetingSeries
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
@@ -29,21 +35,13 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
   }
 
-  if (!meetingSeriesId) {
-    return standardError(new Error('Meeting does not have meeting series associated!'), {
-      userId: viewerId
-    })
-  }
-
-  await updateMeetingSeries({cancelledAt: now}, meetingSeriesId)
-  dataLoader.get('meetingSeries').clear(meetingSeriesId)
-
-  const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meetingSeriesId)
+  await updateMeetingSeries({cancelledAt: now}, meetingSeriesDbId)
+  dataLoader.get('meetingSeries').clear(meetingSeriesDbId)
   analytics.recurrenceStopped(viewerId, meetingSeries)
 
   await r
     .table('NewMeeting')
-    .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
+    .getAll(meetingSeriesDbId, {index: 'meetingSeriesId'})
     .filter({endedAt: null}, {default: true})
     .update({
       scheduledEndTime: null
@@ -51,7 +49,8 @@ const stopRecurrence: MutationResolvers['stopRecurrence'] = async (
     .run()
 
   // RESOLUTION
-  const data = {meetingId}
+  const data = {meetingSeriesId: meetingSeriesDbId}
+  publish(SubscriptionChannel.TEAM, teamId, 'StopRecurrenceSuccess', data, subOptions)
   return data
 }
 

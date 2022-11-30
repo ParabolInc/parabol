@@ -30,8 +30,9 @@ const EditableTemplateName = (props: Props) => {
   const {name, templateId, teamTemplates, isOwner} = props
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+  const autoFocus = name === '*New Template' || name.endsWith(' Copy')
 
-  const handleSubmit = (rawName) => {
+  const handleSubmit = (rawName: string) => {
     if (submitting) return
     const {error, value: name} = validate(rawName)
     if (error) return
@@ -39,7 +40,7 @@ const EditableTemplateName = (props: Props) => {
     RenameMeetingTemplateMutation(atmosphere, {templateId, name}, {onError, onCompleted})
   }
 
-  const legitify = (value) => {
+  const legitify = (value: string) => {
     return new Legitity(value)
       .trim()
       .required('Please enter a template name')
@@ -66,6 +67,7 @@ const EditableTemplateName = (props: Props) => {
   return (
     <InheritedStyles>
       <StyledEditableText
+        autoFocus={autoFocus}
         disabled={!isOwner}
         error={error ? error.message : undefined}
         handleSubmit={handleSubmit}

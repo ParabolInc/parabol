@@ -1,14 +1,15 @@
 import styled from '@emotion/styled'
+import {Error as ErrorIcon, Warning} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
+import {CompletedHandler} from '../types/relayMutations'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
 import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
@@ -16,7 +17,6 @@ import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
-import Icon from './Icon'
 import BasicTextArea from './InputField/BasicTextArea'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
@@ -104,9 +104,10 @@ const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   width: '100%'
 }))
 
-const StyledIcon = styled(Icon)<{isWarning: boolean}>(({isWarning}) => ({
+const StyledIcon = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   color: isWarning ? PALETTE.GOLD_500 : PALETTE.TOMATO_500,
-  fontSize: ICON_SIZE.MD24,
+  height: 24,
+  width: 24,
   marginRight: 8
 }))
 
@@ -135,7 +136,7 @@ const AddTeamMemberModal = (props: Props) => {
     if (rawInvitees === nextValue) return
     const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
     const allInvitees = parsedInvitees
-      ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
       : []
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))
@@ -176,7 +177,7 @@ const AddTeamMemberModal = (props: Props) => {
   const sendInvitations = () => {
     if (invitees.length === 0) return
     submitMutation()
-    const handleCompleted = (res) => {
+    const handleCompleted: CompletedHandler = (res) => {
       setIsSubmitted(true)
       onCompleted()
       if (res) {
@@ -239,7 +240,7 @@ const AddTeamMemberModal = (props: Props) => {
             {error && (
               <ErrorWrapper isWarning={!isSubmitted}>
                 <StyledIcon isWarning={!isSubmitted}>
-                  <Icon>{isSubmitted ? 'error' : 'warning'}</Icon>
+                  {isSubmitted ? <ErrorIcon /> : <Warning />}
                 </StyledIcon>
                 <Label>{error.message}</Label>
               </ErrorWrapper>

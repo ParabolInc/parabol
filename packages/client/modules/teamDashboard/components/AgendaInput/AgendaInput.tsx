@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '../../../../components/Icon'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -66,7 +66,7 @@ const InputField = styled('input')<{disabled: boolean}>(
   }
 )
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Add)({
   color: PALETTE.SKY_500,
   display: 'block',
   left: 16,
@@ -162,7 +162,7 @@ const AgendaInput = (props: Props) => {
           type='text'
           value={value}
         />
-        <StyledIcon>add</StyledIcon>
+        <StyledIcon />
       </InputForm>
     </AgendaInputBlock>
   )

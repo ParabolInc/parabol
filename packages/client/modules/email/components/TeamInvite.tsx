@@ -1,5 +1,6 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import React from 'react'
+import {CorsOptions} from '../../../types/cors'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
@@ -62,6 +63,7 @@ export interface TeamInviteProps {
     meetingType: keyof typeof meetingCopyLabelLookup
     name: string
   }
+  corsOptions: CorsOptions
 }
 
 const TeamInvite = (props: TeamInviteProps) => {
@@ -73,7 +75,8 @@ const TeamInvite = (props: TeamInviteProps) => {
     inviteeName,
     meeting,
     teamName,
-    inviteLink
+    inviteLink,
+    corsOptions
   } = props
   const inviteeEmailBlock = (
     <a href={`mailto:${inviteeEmail}`} style={emailCopyStyle}>
@@ -84,7 +87,7 @@ const TeamInvite = (props: TeamInviteProps) => {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header appOrigin={appOrigin} />
+        <Header appOrigin={appOrigin} corsOptions={corsOptions} />
         {meeting ? (
           <div>
             <p style={emailCopyStyle}>
@@ -137,7 +140,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           style={videoLinkStyle}
           title='Retro 101'
         >
-          <img crossOrigin='' alt='' src={videoGraphicSrc} style={videoGraphicStyle} />
+          <img alt='' src={videoGraphicSrc} style={videoGraphicStyle} {...corsOptions} />
         </a>
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>

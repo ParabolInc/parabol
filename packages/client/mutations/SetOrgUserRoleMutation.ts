@@ -1,7 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
-import getInProxy from '../utils/relay/getInProxy'
+import {
+  OnNextHandler,
+  OnNextHistoryContext,
+  SharedUpdater,
+  StandardMutation
+} from '../types/relayMutations'
+import {SetOrgUserRoleMutation as TSetOrgUserRoleMutation} from '../__generated__/SetOrgUserRoleMutation.graphql'
 import {SetOrgUserRoleMutationAdded_organization} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
@@ -71,20 +76,29 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   })
 }
 
-export const setOrgUserRoleAddedOrganizationUpdater = (payload, {atmosphere, store}) => {
+export const setOrgUserRoleAddedOrganizationUpdater: SharedUpdater<
+  SetOrgUserRoleMutationAdded_organization
+> = (payload, {atmosphere, store}) => {
   const {viewerId} = atmosphere
-  const promotedUserId = getInProxy(payload, 'updatedOrgMember', 'user', 'id')
+  const promotedUserId = payload
+    .getLinkedRecord('updatedOrgMember')
+    .getLinkedRecord('user')
+    .getValue('id')
   if (promotedUserId === viewerId) {
     const notificationsAdded = payload.getLinkedRecords('notificationsAdded')
-    handleAddNotifications(notificationsAdded, store)
+    handleAddNotifications(notificationsAdded as any, store)
 
     const org = payload.getLinkedRecord('organization')
     handleAddOrganization(org, store)
   }
 }
 
-const SetOrgUserRoleMutation = (environment, variables, _options, onError, onCompleted) => {
-  return commitMutation(environment, {
+const SetOrgUserRoleMutation: StandardMutation<TSetOrgUserRoleMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
+  return commitMutation<TSetOrgUserRoleMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

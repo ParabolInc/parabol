@@ -12,8 +12,6 @@ graphql`
           ...TaskFooterIntegrateMenuViewerAtlassianIntegration
         }
       }
-      # after adding, check for new integrations (populates the menu)
-      ...TaskFooterIntegrateMenuViewerRepoIntegrations
     }
   }
 `
@@ -36,7 +34,17 @@ const AddAtlassianAuthMutation: StandardMutation<TAddAtlassianAuthMutation> = (
   return commitMutation<TAddAtlassianAuthMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
+    onCompleted: (res, errors) => {
+      const error = res?.addAtlassianAuth?.error?.message
+      if (error) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          autoDismiss: 0,
+          key: 'atlassianAuthError',
+          message: error
+        })
+      }
+      onCompleted(res, errors)
+    },
     onError
   })
 }
