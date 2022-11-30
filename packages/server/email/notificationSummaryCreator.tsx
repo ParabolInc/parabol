@@ -43,6 +43,9 @@ const notificationSummaryCreator = async (props: Props) => {
     'notification'
   )} 👀`
 
+  // When this component is imported directly, parts of the build fail due to generated relay files
+  // being imported before they're created.
+  // :TODO: (jmtaber129): Investigate why that is, and import this normally.
   const NotificationSummaryEmailRoot =
     require('parabol-client/modules/email/components/NotificationSummaryEmailRoot').default
 
