@@ -4,7 +4,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
-import NotificationTemplate from './EmailNotificationTemplate'
+import EmailNotificationTemplate from './EmailNotificationTemplate'
 
 interface Props {
   notificationRef: EmailResponseMentioned_notification$key
@@ -42,7 +42,7 @@ const EmailResponseMentioned = (props: Props) => {
 
   // :TODO: (jmtaber129): Show mention preview.
   return (
-    <NotificationTemplate
+    <EmailNotificationTemplate
       avatar={authorPicture}
       message={`${authorName} mentioned you in their response in ${meetingName}.`}
       notificationRef={notification}

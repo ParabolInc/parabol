@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {EmailKickedOut_notification$key} from 'parabol-client/__generated__/EmailKickedOut_notification.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import NotificationTemplate from './EmailNotificationTemplate'
+import EmailNotificationTemplate from './EmailNotificationTemplate'
 
 interface Props {
   notificationRef: EmailKickedOut_notification$key
@@ -31,7 +31,7 @@ const EmailKickedOut = (props: Props) => {
   const {name: teamName} = team
   const {preferredName: evictorName, rasterPicture: evictorPicture} = evictor
   return (
-    <NotificationTemplate
+    <EmailNotificationTemplate
       avatar={evictorPicture}
       message={`${evictorName} removed you from the ${teamName} team`}
       notificationRef={notification}

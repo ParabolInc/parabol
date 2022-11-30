@@ -6,7 +6,7 @@ import AuthToken from '../../../database/types/AuthToken'
 import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
 import ServerEnvironment from '../../../email/ServerEnvironment'
-import getPg from '../../../postgres/getPg'
+import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
 
 const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmails'] = async (
@@ -45,23 +45,14 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
   const userNotificationMap = new Map(
     userNotificationCount.map((value) => [value.userId, value.notificationCount])
   )
-  const pg = getPg()
-  const users = await pg.query<{
-    id: string
-    email: string
-    tms: string[]
-    preferredName: string
-  }>(
-    `SELECT id, email, tms, "preferredName" FROM "User"
-    WHERE "id" = ANY($1::text[])
-    AND NOT inactive`,
-    [[...userNotificationMap.keys()]]
+  const users = (await dataLoader.get('users').loadMany([...userNotificationMap.keys()])).filter(
+    isValid
   )
 
   // :TODO: (jmtaber129): Filter out users whose only notification is a team invitation
 
   await Promise.all(
-    users.rows.map(async (user) => {
+    users.map(async (user) => {
       const {email, tms, preferredName} = user
       const notificationCount = userNotificationMap.get(user.id)!
 
@@ -82,7 +73,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
       })
     })
   )
-  return users.rows.map(({email}) => email)
+  return users.map(({email}) => email)
 }
 
 export default sendBatchNotificationEmails

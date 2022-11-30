@@ -44,7 +44,7 @@ const EmailTeamInvitation = (props: Props) => {
   return (
     <EmailNotificationTemplate
       avatar={inviterPicture}
-      message={`${inviterName} invited you to the ${teamName} team`}
+      message={`${inviterName} invited you to join their team ${teamName}`}
       notificationRef={notification}
       linkLabel='Accept invitation'
       linkUrl={linkUrl}

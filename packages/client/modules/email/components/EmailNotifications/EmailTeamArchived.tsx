@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {EmailTeamArchived_notification$key} from 'parabol-client/__generated__/EmailTeamArchived_notification.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import NotificationTemplate from './EmailNotificationTemplate'
+import EmailNotificationTemplate from './EmailNotificationTemplate'
 
 interface Props {
   notificationRef: EmailTeamArchived_notification$key
@@ -30,7 +30,7 @@ const EmailTeamArchived = (props: Props) => {
   const {name: teamName} = team
   const {preferredName: archivorName, rasterPicture: archivorPicture} = archivor
   return (
-    <NotificationTemplate
+    <EmailNotificationTemplate
       avatar={archivorPicture}
       message={`${archivorName} archived the team ${teamName}`}
       notificationRef={notification}

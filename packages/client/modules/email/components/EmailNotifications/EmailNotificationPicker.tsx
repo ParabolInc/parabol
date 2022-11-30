@@ -9,7 +9,7 @@ import EmailResponseMentioned from './EmailResponseMentioned'
 import EmailTeamArchived from './EmailTeamArchived'
 import EmailTeamInvitation from './EmailTeamInvitation'
 
-export const typePicker = {
+export const NOTIFICATION_TEMPLATE_TYPE = {
   KICKED_OUT: EmailKickedOut,
   // :TODO: (jmtaber129): Implement these.
   // PAYMENT_REJECTED: EmailPaymentRejected,
@@ -49,7 +49,9 @@ const EmailNotificationPicker = (props: Props) => {
     notificationRef
   )
   const {type} = notification
-  const SpecificNotification = typePicker[type] as ValueOf<typeof typePicker> | null
+  const SpecificNotification = NOTIFICATION_TEMPLATE_TYPE[type] as ValueOf<
+    typeof NOTIFICATION_TEMPLATE_TYPE
+  > | null
   return SpecificNotification ? (
     <SpecificNotification appOrigin={appOrigin} notificationRef={notification} />
   ) : null
