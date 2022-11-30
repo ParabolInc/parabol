@@ -5,7 +5,6 @@ export const up = async function (r: R) {
   const BATCH_SIZE = 1000
   for (let i = 0; i < 1e5; i++) {
     const skip = i * BATCH_SIZE
-    console.log('🚀 ~ skip', {skip, i})
     const res = await Promise.all([
       r
         .table('Organization')
@@ -63,26 +62,24 @@ export const up = async function (r: R) {
             r.branch(row('tier').eq('pro'), 'team', row('tier'))
           )
         }))
+        .run(),
+      r
+        .table('Team')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('personal'),
+            'starter',
+            r.branch(row('tier').eq('pro'), 'team', row('tier'))
+          )
+        }))
         .run()
-      // r
-      //   .table('Team')
-      //   .skip(skip)
-      //   .limit(BATCH_SIZE)
-      //   .update((row) => ({
-      //     tier: r.branch(
-      //       row('tier').eq('personal'),
-      //       'starter',
-      //       r.branch(row('tier').eq('pro'), 'team', row('tier'))
-      //     )
-      //   }))
-      //   .run()
     ])
 
-    console.log('🚀 ~ res', res)
     const isComplete = res.every(
       (res) => res.skipped === 0 && res.unchanged === 0 && res.errors === 0 && res.replaced === 0
     )
-    console.log('🚀 ~ isComplete', isComplete)
     if (isComplete) break
   }
 
@@ -154,25 +151,23 @@ export const down = async function (r: R) {
             r.branch(row('tier').eq('team'), 'pro', row('tier'))
           )
         }))
+        .run(),
+      r
+        .table('Team')
+        .skip(skip)
+        .limit(BATCH_SIZE)
+        .update((row) => ({
+          tier: r.branch(
+            row('tier').eq('starter'),
+            'personal',
+            r.branch(row('tier').eq('team'), 'pro', row('tier'))
+          )
+        }))
         .run()
-      // r
-      //   .table('Team')
-      //   .skip(skip)
-      //   .limit(BATCH_SIZE)
-      //   .update((row) => ({
-      //     tier: r.branch(
-      //       row('tier').eq('starter'),
-      //       'personal',
-      //       r.branch(row('tier').eq('team'), 'pro', row('tier'))
-      //     )
-      //   }))
-      //   .run()
     ])
-    console.log('🚀 ~ res', res)
     const isComplete = res.every(
       (res) => res.skipped === 0 && res.unchanged === 0 && res.errors === 0 && res.replaced === 0
     )
-    console.log('🚀 ~ isComplete', isComplete)
     if (isComplete) break
   }
   const pg = getPg()
