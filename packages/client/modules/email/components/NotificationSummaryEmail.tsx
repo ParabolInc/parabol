@@ -66,7 +66,7 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
           )
         })}
         <Button url={tasksURL}>
-          {additionalNotifications > 0
+          {additionalNotifications > 0 && notificationRefs.length > 0
             ? `...and ${additionalNotifications} more`
             : 'See all notifications'}
         </Button>
