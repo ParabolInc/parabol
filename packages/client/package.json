@@ -17,6 +17,7 @@
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
     "lint": "eslint --fix . --ext .ts,.tsx",
+    "lint:check": "eslint --fix . --ext .ts,.tsx",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
