@@ -1,4 +1,3 @@
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -21,8 +20,8 @@ const generateGroupSummaries = async (
       ({reflectionGroupId}) => reflectionGroupId === group.id
     )
     if (reflectionsByGroupId.length <= 1) continue
-    const reflectionTextByGroupId = reflectionsByGroupId.map((reflection) =>
-      extractTextFromDraftString(reflection.content)
+    const reflectionTextByGroupId = reflectionsByGroupId.map(
+      ({plaintextContent}) => plaintextContent
     )
     if (reflectionTextByGroupId.length === 0) continue
     const summary = await manager.getSummary(reflectionTextByGroupId)
