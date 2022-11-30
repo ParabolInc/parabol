@@ -1,4 +1,5 @@
 import {R} from 'rethinkdb-ts'
+import getPg, {closePg} from '../../postgres/getPg'
 
 export const up = async function (r: R) {
   const BATCH_SIZE = 1000
@@ -85,15 +86,15 @@ export const up = async function (r: R) {
     if (isComplete) break
   }
 
-  // const pg = getPg()
-  // await pg.query(
-  //   `
-  //   UPDATE "Team"
-  //   SET "tier" = 'starter'::"TierEnum"
-  //   WHERE "tier" = 'personal'
-  //   `
-  // )
-  // closePg()
+  const pg = getPg()
+
+  await pg.query(
+    `
+    ALTER TYPE "TierEnum" RENAME VALUE 'personal' TO 'starter';
+    ALTER TYPE "TierEnum" RENAME VALUE 'pro' TO 'team';
+    `
+  )
+  closePg()
 }
 
 export const down = async function (r: R) {
@@ -174,4 +175,12 @@ export const down = async function (r: R) {
     console.log('🚀 ~ isComplete', isComplete)
     if (isComplete) break
   }
+  const pg = getPg()
+  await pg.query(
+    `
+    ALTER TYPE "TierEnum" RENAME VALUE 'starter' TO 'personal';
+    ALTER TYPE "TierEnum" RENAME VALUE 'team' TO 'pro';
+    `
+  )
+  closePg()
 }
