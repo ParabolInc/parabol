@@ -87,6 +87,7 @@ const promptsInfo = [
 
 const template = makeTemplate(templateName)
 const reflectPrompts = promptsInfo.map((promptInfo) => makePrompt(promptInfo))
+
 export const up = async function (r: R) {
   try {
     await Promise.all([
