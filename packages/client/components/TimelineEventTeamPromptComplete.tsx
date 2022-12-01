@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
 import {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
 import StyledLink from './StyledLink'
@@ -39,6 +41,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         team {
           id
           name
+          orgId
         }
       }
     `,
@@ -51,7 +54,18 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
   }
 
   const {id: meetingId, name: meetingName, responseCount, commentCount, taskCount, locked} = meeting
-  const {name: teamName} = team
+  const {name: teamName, orgId} = team
+
+  const atmosphere = useAtmosphere()
+  const onUpgrade = () => {
+    SendClientSegmentEventMutation(
+      atmosphere,
+      'Timeline History Locked Meeting Upgrade CTA Clicked',
+      {
+        meetingId
+      }
+    )
+  }
 
   return (
     <TimelineEventCard
@@ -78,8 +92,10 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         <br />
         {locked ? (
           <>
-            <Link to={`/meet/${meetingId}/responses`}>Upgrade now</Link> to see responses and
-            discussion or review a summary
+            <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+              Upgrade now
+            </Link>{' '}
+            to see responses and discussion or review a summary
           </>
         ) : (
           <>

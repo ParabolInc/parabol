@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
 import {TimelineEventPokerComplete_timelineEvent} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
 import CardsSVG from './CardsSVG'
@@ -26,7 +28,19 @@ const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent} = props
   const {meeting, team} = timelineEvent
   const {id: meetingId, name: meetingName, commentCount, storyCount, locked} = meeting
-  const {name: teamName} = team
+  const {name: teamName, orgId} = team
+
+  const atmosphere = useAtmosphere()
+  const onUpgrade = () => {
+    SendClientSegmentEventMutation(
+      atmosphere,
+      'Timeline History Locked Meeting Upgrade CTA Clicked',
+      {
+        meetingId
+      }
+    )
+  }
+
   return (
     <TimelineEventCard
       IconSVG={locked ? undefined : <CardsSVG />}
@@ -47,8 +61,10 @@ const TimelineEventPokerComplete = (props: Props) => {
         <br />
         {locked ? (
           <>
-            <Link to={`/meet/${meetingId}/discuss/1`}>Upgrade now</Link> to get access to the
-            estimates and summary
+            <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+              Upgrade now
+            </Link>{' '}
+            to get access to the estimates and summary
           </>
         ) : (
           <>
@@ -85,6 +101,7 @@ export default createFragmentContainer(TimelineEventPokerComplete, {
       team {
         id
         name
+        orgId
       }
     }
   `

@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import relativeDate from '../utils/date/relativeDate'
 import plural from '../utils/plural'
 import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
@@ -35,7 +37,19 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
     taskCount,
     locked
   } = meeting
-  const {name: teamName} = team
+  const {name: teamName, orgId} = team
+
+  const atmosphere = useAtmosphere()
+  const onUpgrade = () => {
+    SendClientSegmentEventMutation(
+      atmosphere,
+      'Timeline History Locked Meeting Upgrade CTA Clicked',
+      {
+        meetingId
+      }
+    )
+  }
+
   const meetingDuration = relativeDate(createdAt, {
     now: endedAt,
     max: 2,
@@ -58,8 +72,10 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
         <br />
         {locked ? (
           <>
-            <Link to={`/meet/${meetingId}/agendaitems/1`}>Upgrade now</Link> to see the discussion
-            in your meeting or review a summary
+            <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+              Upgrade now
+            </Link>{' '}
+            to see the discussion in your meeting or review a summary
           </>
         ) : (
           <>
@@ -92,6 +108,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
       team {
         id
         name
+        orgId
       }
     }
   `
