@@ -1,4 +1,5 @@
 import React from 'react'
+import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
@@ -18,7 +19,7 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header appOrigin={appOrigin} />
+        <Header appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
         <p style={emailCopyStyle}>{'Forget your password?'}</p>
         <p style={emailCopyStyle}>{`No problem, just click the link below.`}</p>
         <p style={emailCopyStyle}>

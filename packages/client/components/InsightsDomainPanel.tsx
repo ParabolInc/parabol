@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -7,11 +8,9 @@ import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
-import Icon from './Icon'
 import InsightsDomainNudge from './InsightsDomainNudge'
 import Panel from './Panel/Panel'
 
@@ -77,9 +76,10 @@ const StatBlockLabel = styled('div')({
   alignItems: 'center'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Info)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
+  width: 18,
+  height: 18,
   paddingLeft: '4px',
   ':hover': {
     cursor: 'pointer'

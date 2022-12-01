@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
+import {Add} from '@mui/icons-material'
 import React from 'react'
 import {ZIndex} from '~/types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
-import Icon from './Icon'
 
 const Button = styled(FloatingActionButton)({
   color: '#fff',
@@ -14,8 +14,8 @@ const Button = styled(FloatingActionButton)({
   zIndex: ZIndex.FAB
 })
 
-const StyledIcon = styled(Icon)({
-  paddingRight: 8
+const StyledIcon = styled(Add)({
+  marginRight: 8
 })
 
 const StyledLabel = styled('div')({
@@ -32,7 +32,7 @@ const NewIntegrationRecordButton = (props: Props) => {
   const {labelText, onClick} = props
   return (
     <Button onClick={onClick} palette='blue'>
-      <StyledIcon>{'add'}</StyledIcon>
+      <StyledIcon />
       <StyledLabel>{labelText}</StyledLabel>
     </Button>
   )

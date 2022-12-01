@@ -5,14 +5,75 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.83.1 2022-November-23
+
+### Fixed
+
+- XSS vulnerability in meeting templates (#7491)
+
+## 6.83.0 2022-November-17
+
+### Fixed
+
+- Update tier when leaving org (#7377) 
+- Added CorsOptions to email images (#7393)
+- Typo in Earth 2.0 check-in question 
+- Send button is disabled in retro discussion on mobile (#7361) 
+- Snackbar messages are not centered during standups #7203
+- Add delete confirmation button and waiting effect (#7403) 
+- Snack on jira auth error (#7432) 
+
+### Changed
+
+- Cleanup packages to support future bundled server build (#7400) 
+ 
+## 6.82.0 2022-November-09
+
+### Added
+
+- **metrics**: disable Company properties update to HubSpot (#7366)
+- Implement setIsFreeMeetingTemplate mutation (#7346)
+- Add invoice explanation to comment (#7399)
+- Add template limit feature flag (#7391)
+
+### Fixed
+
+- Use MaterialUI SvgIcons instead of Font (#7154)
+- Header name should be more general (#7394)
+
+### Changed
+
+- CircleCI: split backup from deployment (#7389)
+
+## 6.81.0 2022-November-02
+
+### Added
+
+- **standups**: Added ended meeting view (#7327)
+- **timer picker**: add 10 minutes option (#7357)
+
+### Fixed
+
+- **Azure DevOps**: fix adding issues to Sprint Poker (#7365)
+- **Team**: leave team does not work until refresh (#7368)
+- use fallback values for PokerCardDeck (#7315)
+
+### Changed
+
+- add isFree to meeting template (#7345)
+- put isPatient0 on User row (#7325)
+- Remove @types/ioredis package (#7367)
+
 ## 6.80.2 2022-November-01
 
 ### Fixed
+
 - Release version mismatch
 
 ## 6.80.1 2022-November-01
 
 ### Fixed
+
 - **Jira**: issues sometimes are not loading in poker meeting
 
 ## 6.80.0 2022-October-26

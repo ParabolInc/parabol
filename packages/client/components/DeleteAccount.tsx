@@ -26,7 +26,7 @@ const DeleteAccount = () => {
           palette='red'
           onClick={togglePortal}
         >
-          <IconLabel icon='remove_circle' label='Delete Account' />
+          <IconLabel iconLarge icon='remove_circle' label='Delete Account' />
         </LinkButton>
         <Hint>
           <b>Note</b>: {'This can’t be undone.'}

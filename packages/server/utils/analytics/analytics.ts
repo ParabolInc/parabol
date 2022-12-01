@@ -5,6 +5,7 @@ import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
+import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
@@ -66,6 +67,7 @@ export type AnalyticsEvent =
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
   // org
+  | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
   | 'Organization Downgraded'
   // task
@@ -286,6 +288,10 @@ class Analytics {
   }
 
   //org
+  clickedUpgradeCTA = (userId: string, upgradeCTALocation: UpgradeCTALocationEnumType) => {
+    this.track(userId, 'Upgrade CTA Clicked', {upgradeCTALocation})
+  }
+
   organizationUpgraded = (userId: string, upgradeEventProperties: OrgTierChangeEventProperties) => {
     this.track(userId, 'Organization Upgraded', upgradeEventProperties)
   }

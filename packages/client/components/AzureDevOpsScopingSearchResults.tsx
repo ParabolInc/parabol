@@ -4,7 +4,6 @@ import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import {AzureDevOpsScopingSearchResultsQuery} from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResults_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResults_meeting.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -99,16 +98,6 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  const getProjectId = (url: URL) => {
-    const firstIndex = url.pathname.indexOf('/', 1)
-    const seconedIndex = url.pathname.indexOf('/', firstIndex + 1)
-    return url.pathname.substring(firstIndex + 1, seconedIndex)
-  }
-
-  const getServiceTaskId = (url: URL) => {
-    return AzureDevOpsClientManager.getInstanceId(url) + ':' + getProjectId(url)
-  }
-
   if (!edges) {
     return <MockScopingList />
   }
@@ -136,7 +125,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             key={node.id}
             service={'azureDevOps'}
             usedServiceTaskIds={usedServiceTaskIds}
-            serviceTaskId={getServiceTaskId(new URL(node.url)) + ':' + node.id}
+            serviceTaskId={node.id}
             meetingId={meetingId}
             summary={node.title}
             url={node.url}

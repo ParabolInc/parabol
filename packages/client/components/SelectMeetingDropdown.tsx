@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
+import {Forum} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '~/components/Icon'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
@@ -38,14 +38,14 @@ const NoMeetings = styled('div')({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Forum)({
   color: PALETTE.SLATE_600,
   marginRight: 16
 })
 
 const NoMeetingItem = () => (
   <NoMeetings>
-    <StyledIcon>{'forum'}</StyledIcon>
+    <StyledIcon />
     {'Start a New Meeting'}
   </NoMeetings>
 )

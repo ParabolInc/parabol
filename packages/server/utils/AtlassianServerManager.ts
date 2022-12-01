@@ -1,7 +1,5 @@
 import fetch from 'node-fetch'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2AuthorizationParams,
@@ -14,7 +12,7 @@ class AtlassianServerManager extends AtlassianManager {
     return AtlassianServerManager.fetchToken({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: makeAppURL(appOrigin, 'auth/atlassian')
+      redirect_uri: process.env.OAUTH2_REDIRECT!
     })
   }
 
