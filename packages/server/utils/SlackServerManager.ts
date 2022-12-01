@@ -1,6 +1,8 @@
 import fetch from 'node-fetch'
 import SlackManager from 'parabol-client/utils/SlackManager'
 import {stringify} from 'querystring'
+import makeAppURL from '../../client/utils/makeAppURL'
+import appOrigin from '../appOrigin'
 
 interface IncomingWebhook {
   url: string
@@ -37,7 +39,9 @@ class SlackServerManager extends SlackManager {
       client_id: process.env.SLACK_CLIENT_ID,
       client_secret: process.env.SLACK_CLIENT_SECRET,
       code,
-      redirect_uri: process.env.OAUTH2_REDIRECT!
+      redirect_uri: makeAppURL(appOrigin, 'auth/slack')
+      // use this after slack approves our app
+      // redirect_uri: process.env.OAUTH2_REDIRECT!
     }
 
     const uri = `https://slack.com/api/oauth.v2.access?${stringify(queryParams)}`
