@@ -194,26 +194,20 @@ const PokerCardDeck = (props: Props) => {
   // const transform = maxSlide > 0 && !isCollapsed ? `translateX(${swipe.translateX}px)` : undefined
 
   const onKeyDown = (event: Event | KeyboardEvent) => {
-    // Ignore action if the card list is empty
     if (cards.length <= 0) return
-    // When the up key is pressed
+
     if ((event as KeyboardEvent).key === 'ArrowUp') {
       if (typeof selectedIdx === 'undefined' || selectedIdx === cards.length - 1) {
-        // Select the left-most card if no card is selected or if the right-most card was previously selected
         vote((cards[0] as Card).label)
       } else {
-        // Otherwise select the card to the right
         vote((cards[selectedIdx + 1] as Card).label)
       }
     }
 
-    // When the down key is pressed
     if ((event as KeyboardEvent).key === 'ArrowDown') {
       if (typeof selectedIdx === 'undefined' || selectedIdx === 0) {
-        // Select the right-most card if no card is selected or if the left-most card was previously selected
         vote((cards[cards.length - 1] as Card).label)
       } else {
-        // Otherwise select the card to the left
         vote((cards[selectedIdx - 1] as Card).label)
       }
     }
