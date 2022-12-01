@@ -55,7 +55,7 @@ const ThreadedItemReply = (props: Props) => {
     if (!editorEl) return
     const hasText = isAndroid
       ? editorEl.value
-      : ((editorEl as any) as Editor).props.editorState.getCurrentContent().hasText()
+      : (editorEl as any as Editor).props.editorState.getCurrentContent().hasText()
     if (!hasText) {
       clearReplyingToCommentId()
     }

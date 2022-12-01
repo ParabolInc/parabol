@@ -1,6 +1,6 @@
-import useAtmosphere from './useAtmosphere'
 import {useCallback} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import useAtmosphere from './useAtmosphere'
 
 export const useToggleSidebar = (meetingId: string) => {
   const atmosphere = useAtmosphere()

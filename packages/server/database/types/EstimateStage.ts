@@ -27,15 +27,8 @@ export default class EstimateStage extends GenericMeetingStage {
   phaseType!: 'ESTIMATE'
   constructor(input: Input) {
     super({phaseType: 'ESTIMATE', durations: input.durations})
-    const {
-      creatorUserId,
-      serviceTaskId,
-      sortOrder,
-      scores,
-      dimensionRefIdx,
-      discussionId,
-      taskId
-    } = input
+    const {creatorUserId, serviceTaskId, sortOrder, scores, dimensionRefIdx, discussionId, taskId} =
+      input
     this.creatorUserId = creatorUserId
     this.serviceTaskId = serviceTaskId
     this.sortOrder = sortOrder

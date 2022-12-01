@@ -49,10 +49,9 @@ const removeHoveringUserFromStage = (stage: RecordProxy<EstimateStage>, userId: 
   ]
   stage.setLinkedRecords(nextHoveringUsers, 'hoveringUsers')
 }
-export const pokerAnnounceDeckHoverMeetingUpdater: SharedUpdater<PokerAnnounceDeckHoverMutation_meeting> = (
-  payload,
-  {store}
-) => {
+export const pokerAnnounceDeckHoverMeetingUpdater: SharedUpdater<
+  PokerAnnounceDeckHoverMutation_meeting
+> = (payload, {store}) => {
   const meetingId = payload.getValue('meetingId')
   const user = payload.getLinkedRecord('user')
   const userId = user.getValue('id')

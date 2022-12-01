@@ -17,20 +17,20 @@ interface Props {
 }
 
 const phaseLookup = {
-  checkin: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  checkin: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  updates: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
+  updates: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
   ),
-  firstcall: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
+  firstcall: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
   ),
-  agendaitems: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
+  agendaitems: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
   ),
-  lastcall: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
+  lastcall: lazyPreload(
+    () => import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
@@ -42,9 +42,8 @@ export interface ActionMeetingPhaseProps {
 const ActionMeeting = (props: Props) => {
   const {meeting} = props
   const {localPhase, showSidebar} = meeting
-  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} = useMeeting(
-    meeting
-  )
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} =
+    useMeeting(meeting)
   useEffect(() => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
@@ -66,7 +65,7 @@ const ActionMeeting = (props: Props) => {
           <Phase
             meeting={meeting}
             toggleSidebar={toggleSidebar}
-            avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
+            avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
           />
         </Suspense>
       </MeetingArea>

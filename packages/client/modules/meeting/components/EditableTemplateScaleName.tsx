@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 import EditableText from '../../../components/EditableText'
-import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
-import Legitity from '../../../validation/Legitity'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
+import Legitity from '../../../validation/Legitity'
+import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 
 interface Props {
   name: string
@@ -33,7 +33,7 @@ const EditableTemplateScaleName = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const handleSubmit = (rawName) => {
+  const handleSubmit = (rawName: string) => {
     if (submitting) return
     const {error, value: name} = validate(rawName)
     if (error) return
@@ -41,7 +41,7 @@ const EditableTemplateScaleName = (props: Props) => {
     RenamePokerTemplateScaleMutation(atmosphere, {scaleId, name}, {onError, onCompleted})
   }
 
-  const legitify = (value) => {
+  const legitify = (value: string) => {
     return new Legitity(value)
       .trim()
       .required('Please enter a scale name')

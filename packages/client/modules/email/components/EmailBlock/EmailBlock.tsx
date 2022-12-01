@@ -30,7 +30,6 @@ interface Props {
   hasBackgroundColor?: boolean
   innerMaxWidth: number
   children: ReactNode
-
 }
 
 const EmailBlock = (props: Props) => {

@@ -1,15 +1,14 @@
 import styled from '@emotion/styled'
+import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GitLabFieldDimensionDropdown_stage$key} from '../__generated__/GitLabFieldDimensionDropdown_stage.graphql'
 import GitLabFieldMenu from './GitLabFieldMenu'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
@@ -34,8 +33,9 @@ const CurrentValue = styled('div')({
   fontSize: 14
 })
 
-const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  fontSize: ICON_SIZE.MD18,
+const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}) => ({
+  height: 18,
+  width: 18,
   display: isFacilitator ? undefined : 'none'
 }))
 
@@ -71,13 +71,13 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const label = labelLookup[serviceFieldName]
+  const label = labelLookup[serviceFieldName as keyof typeof labelLookup]
 
   return (
     <>
       <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
         <CurrentValue>{label}</CurrentValue>
-        <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
+        <StyledIcon isFacilitator={isFacilitator} />
       </Wrapper>
       {menuPortal(
         <GitLabFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore} />

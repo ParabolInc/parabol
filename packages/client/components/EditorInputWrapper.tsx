@@ -7,13 +7,13 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {MutableRefObject, useRef} from 'react'
-import './TaskEditor/Draft.css'
-import {textTags} from '../utils/constants'
-import entitizeText from '../utils/draftjs/entitizeText'
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 import useMarkdown from '../hooks/useMarkdown'
-import blockStyleFn from './TaskEditor/blockStyleFn'
 import {SetEditorState} from '../types/draft'
+import {textTags} from '../utils/constants'
+import entitizeText from '../utils/draftjs/entitizeText'
+import blockStyleFn from './TaskEditor/blockStyleFn'
+import './TaskEditor/Draft.css'
 
 type Handlers = Pick<
   EditorProps,
@@ -35,29 +35,23 @@ interface EntityPasteOffset {
 }
 
 const EditorInputWrapper = (props: Props) => {
-  const {
-    ariaLabel,
-    setEditorState,
-    editorState,
-    editorRef,
-    handleReturn,
-    placeholder,
-    readOnly
-  } = props
+  const {ariaLabel, setEditorState, editorState, editorRef, handleReturn, placeholder, readOnly} =
+    props
   const entityPasteStartRef = useRef<EntityPasteOffset | undefined>(undefined)
   const ks = useKeyboardShortcuts(editorState, setEditorState, {
     handleKeyCommand: props.handleKeyCommand,
     keyBindingFn: props.keyBindingFn
   })
-  const {handleBeforeInput, handleKeyCommand, keyBindingFn, onChange: handleChange} = useMarkdown(
-    editorState,
-    setEditorState,
-    {
-      handleKeyCommand: ks.handleKeyCommand,
-      keyBindingFn: ks.keyBindingFn,
-      handleBeforeInput: props.handleBeforeInput
-    }
-  )
+  const {
+    handleBeforeInput,
+    handleKeyCommand,
+    keyBindingFn,
+    onChange: handleChange
+  } = useMarkdown(editorState, setEditorState, {
+    handleKeyCommand: ks.handleKeyCommand,
+    keyBindingFn: ks.keyBindingFn,
+    handleBeforeInput: props.handleBeforeInput
+  })
 
   const onChange = (editorState: EditorState) => {
     const {current: entityPasteStart} = entityPasteStartRef
@@ -80,7 +74,7 @@ const EditorInputWrapper = (props: Props) => {
     setEditorState(editorState)
   }
 
-  const onReturn = (e) => {
+  const onReturn = (e: React.KeyboardEvent) => {
     if (handleReturn) {
       return handleReturn(e, editorState)
     }
@@ -98,7 +92,7 @@ const EditorInputWrapper = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyBindingFn = (e) => {
+  const onKeyBindingFn = (e: React.KeyboardEvent) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -115,10 +109,10 @@ const EditorInputWrapper = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i]
+        const tag = textTags[i]!
         if (text.indexOf(tag) !== -1) {
           const selection = editorState.getSelection()
           entityPasteStartRef.current = {

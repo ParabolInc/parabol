@@ -1,21 +1,21 @@
 import styled from '@emotion/styled'
+import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '../../../components/Icon'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {TemplateSharing_template} from '../../../__generated__/TemplateSharing_template.graphql'
 
-const SelectSharingScopeDropdown = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'SelectSharingScopeDropdown' */
-    '../../../components/SelectSharingScopeDropdown'
-  )
+const SelectSharingScopeDropdown = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'SelectSharingScopeDropdown' */
+      '../../../components/SelectSharingScopeDropdown'
+    )
 )
 
 const HR = styled('hr')({
@@ -28,23 +28,29 @@ const HR = styled('hr')({
   padding: 0
 })
 
-const DropdownDecoratorIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18,
-  height: ICON_SIZE.MD24,
-  lineHeight: ICON_SIZE.MD24,
+const DropdownDecoratorIcon = styled('div')({
   margin: '8px 16px',
-  width: ICON_SIZE.MD24
+  color: PALETTE.SLATE_600,
+  cursor: 'pointer',
+  svg: {
+    fontSize: 18
+  },
+  height: 24,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: 24
 })
 
 const DropdownLabel = styled('div')({
   color: 'inherit'
 })
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled('div')({
   color: 'inherit',
-  padding: 8,
-  fontSize: ICON_SIZE.MD24
+  margin: 8,
+  height: 24,
+  width: 24
 })
 
 const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
@@ -83,9 +89,12 @@ const TemplateSharing = (props: Props) => {
       }
     }
   )
-  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.LOWER_CENTER, {
+  const {
+    openTooltip,
+    tooltipPortal,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER, {
     disabled: isLead
   })
   if (!isOwner) return null
@@ -93,8 +102,8 @@ const TemplateSharing = (props: Props) => {
     scope === 'TEAM'
       ? `Only visible to ${teamName}`
       : scope === 'ORGANIZATION'
-        ? `Sharing with ${orgName}`
-        : 'Sharing publicly'
+      ? `Sharing with ${orgName}`
+      : 'Sharing publicly'
   return (
     <>
       <HR />
@@ -106,9 +115,13 @@ const TemplateSharing = (props: Props) => {
         onMouseOver={openTooltip}
         onMouseLeave={closeTooltip}
       >
-        <DropdownDecoratorIcon>{'share'}</DropdownDecoratorIcon>
+        <DropdownDecoratorIcon>
+          <ShareIcon />
+        </DropdownDecoratorIcon>
         <DropdownLabel>{label}</DropdownLabel>
-        <DropdownIcon>{'expand_more'}</DropdownIcon>
+        <DropdownIcon>
+          <ExpandMoreIcon />
+        </DropdownIcon>
       </DropdownBlock>
       {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
       {tooltipPortal(<div>Must be Team Lead to change</div>)}

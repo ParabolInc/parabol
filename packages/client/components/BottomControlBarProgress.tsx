@@ -15,7 +15,12 @@ interface Props {
 const BottomControlBarProgress = (props: Props) => {
   const {isNext, progress} = props
   return (
-    <Progress radius={12} progress={progress} stroke={isNext ? PALETTE.ROSE_500 : PALETTE.JADE_400} thickness={2} />
+    <Progress
+      radius={12}
+      progress={progress}
+      stroke={isNext ? PALETTE.ROSE_500 : PALETTE.JADE_400}
+      thickness={2}
+    />
   )
 }
 

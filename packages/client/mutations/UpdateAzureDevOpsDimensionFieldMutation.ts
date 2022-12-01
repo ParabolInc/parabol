@@ -21,19 +21,6 @@ graphql`
         }
       }
     }
-    team {
-      integrations {
-        azureDevOps {
-          azureDevOpsDimensionFields {
-            instanceId
-            projectKey
-            dimensionName
-            fieldName
-            workItemType
-          }
-        }
-      }
-    }
   }
 `
 const mutation = graphql`
@@ -70,48 +57,10 @@ const UpdateAzureDevOpsDimensionFieldMutation: StandardMutation<
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, instanceId, dimensionName, fieldName, projectKey, workItemType} = variables
+      const {meetingId, instanceId, dimensionName, fieldName} = variables
       const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) {
         return
-      }
-      const teamId = meeting.getValue('teamId')
-      // handle team record
-      const azureDevOpsTeamIntegration = store.get(`azureDevOpsTeamIntegration:${teamId}`)
-      if (azureDevOpsTeamIntegration) {
-        const azureDevOpsDimensionFields =
-          azureDevOpsTeamIntegration.getLinkedRecords('azureDevOpsDimensionFields') || []
-
-        const existingField = azureDevOpsDimensionFields.find(
-          (dimensionField) =>
-            dimensionField.getValue('dimensionName') === dimensionName &&
-            dimensionField.getValue('instanceId') === instanceId &&
-            dimensionField.getValue('projectKey') === projectKey &&
-            dimensionField.getValue('workItemType') === workItemType
-        )
-        if (existingField) {
-          existingField.setValue(fieldName, 'fieldName')
-        } else {
-          const optimisticAzureDevOpsDimensionField = createProxyRecord(
-            store,
-            'AzureDevOpsDimensionField',
-            {
-              fieldName,
-              dimensionName,
-              instanceId,
-              projectKey,
-              workItemType
-            }
-          )
-          const nextAzureDevOpsDimensionFields = [
-            ...azureDevOpsDimensionFields,
-            optimisticAzureDevOpsDimensionField
-          ]
-          azureDevOpsTeamIntegration.setLinkedRecords(
-            nextAzureDevOpsDimensionFields,
-            'azureDevOpsDimensionFields'
-          )
-        }
       }
       // handle meeting records
       const phases = meeting.getLinkedRecords('phases')

@@ -14,6 +14,7 @@ graphql`
         id
         isViewerReactji
         count
+        ...ReactjiCount_reactji
       }
     }
   }
@@ -57,6 +58,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
     mutation,
     variables,
     optimisticUpdater: (store) => {
+      const viewer = store.get(atmosphere.viewerId)!
       const {reactableId, reactji, isRemove} = variables
       const id = `${reactableId}:${reactji}`
       const reactable = store.get<Reactable>(reactableId)
@@ -73,6 +75,13 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
         } else {
           reactji.setValue(count - 1, 'count')
           reactji.setValue(false, 'isViewerReactji')
+
+          const existingReactjiUsers = reactji.getLinkedRecords('users')
+          if (!existingReactjiUsers) return
+          const updatedReactjiUsers = existingReactjiUsers.filter(
+            (existingReactjiUser) => existingReactjiUser.getValue('id') !== atmosphere.viewerId
+          )
+          reactji.setLinkedRecords(updatedReactjiUsers, 'users')
         }
       } else {
         if (reactjiIdx === -1) {
@@ -82,7 +91,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
               id,
               count: 1,
               isViewerReactji: true
-            })
+            }).setLinkedRecords([viewer], 'users')
           const nextReactjis = [...reactjis, optimisticReactji]
           reactable.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
@@ -90,6 +99,11 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           const count = reactji.getValue('count')
           reactji.setValue(count + 1, 'count')
           reactji.setValue(true, 'isViewerReactji')
+
+          const existingReactjiUsers = reactji.getLinkedRecords('users')
+          if (!existingReactjiUsers) return
+          const updatedReactjiUsers = [...existingReactjiUsers, viewer]
+          reactji.setLinkedRecords(updatedReactjiUsers, 'users')
         }
       }
     },

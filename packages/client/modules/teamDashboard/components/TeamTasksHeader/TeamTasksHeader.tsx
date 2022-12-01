@@ -5,12 +5,13 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
+import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
-import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
+import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useRouter from '../../../../hooks/useRouter'
@@ -18,7 +19,6 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
-import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -70,11 +70,12 @@ const secondLink = {
   marginLeft: 8
 }
 
-const TeamDashTeamMemberMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TeamDashTeamMemberMenu' */
-    '../../../../components/TeamDashTeamMemberMenu'
-  )
+const TeamDashTeamMemberMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'TeamDashTeamMemberMenu' */
+      '../../../../components/TeamDashTeamMemberMenu'
+    )
 )
 
 const TeamHeaderAndAvatars = styled('div')({
@@ -155,14 +156,18 @@ const TeamTasksHeader = (props: Props) => {
       </TeamHeaderAndAvatars>
       <DashSectionControls>
         {/* Filter by Owner */}
-        <DashFilterToggle
-          label='Team Member'
-          onClick={togglePortal}
-          onMouseEnter={TeamDashTeamMemberMenu.preload}
-          ref={originRef}
-          value={teamMemberFilterName}
-        />
-        {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
+        <TeamMeta>
+          {teamMembers.length > 1 && (
+            <DashFilterToggle
+              label='Team Member'
+              onClick={togglePortal}
+              onMouseEnter={TeamDashTeamMemberMenu.preload}
+              ref={originRef}
+              value={teamMemberFilterName}
+            />
+          )}
+          {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
+        </TeamMeta>
         {/* Archive Link */}
         <DashNavControl
           icon='archive'

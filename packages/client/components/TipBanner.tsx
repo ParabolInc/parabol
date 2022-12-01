@@ -1,6 +1,6 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import {Info as InfoIcon} from '@mui/icons-material'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 
 const Banner = styled('div')({
@@ -13,7 +13,9 @@ const Banner = styled('div')({
   userSelect: 'none'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
+  height: 24,
+  width: 24,
   color: PALETTE.SLATE_600,
   marginRight: 16
 })
@@ -34,7 +36,7 @@ const TipBanner = (props: Props) => {
 
   return (
     <Banner className={className}>
-      <StyledIcon>{icon || 'info'}</StyledIcon>
+      <StyledIcon>{icon || <InfoIcon />}</StyledIcon>
       <Inner>{children}</Inner>
     </Banner>
   )

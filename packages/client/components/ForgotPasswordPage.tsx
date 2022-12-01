@@ -74,7 +74,7 @@ const linkStyle = {
   textDecoration: 'underline'
 }
 
-const validateEmail = (email) => {
+const validateEmail = (email: string) => {
   return new Legitity(email)
     .trim()
     .required('Please enter an email address')
@@ -104,7 +104,7 @@ const ForgotPasswordPage = (props: Props) => {
     }
   }
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (submitting) return
     setDirtyField()
@@ -136,7 +136,7 @@ const ForgotPasswordPage = (props: Props) => {
     [AuthenticationError.EXCEEDED_RESET_THRESHOLD]:
       'Too many reset password attempts. Please try again later.'
   }
-  const prettyError = error ? errorMessage[error.message] : undefined
+  const prettyError = error ? errorMessage[error.message as keyof typeof errorMessage] : undefined
   return (
     <AuthenticationDialog>
       <DialogTitle>{'Forgot your password?'}</DialogTitle>

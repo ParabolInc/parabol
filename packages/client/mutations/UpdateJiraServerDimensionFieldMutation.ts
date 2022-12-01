@@ -17,18 +17,6 @@ graphql`
         }
       }
     }
-    team {
-      integrations {
-        atlassian {
-          jiraDimensionFields {
-            cloudId
-            projectKey
-            dimensionName
-            fieldName
-          }
-        }
-      }
-    }
   }
 `
 

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
+import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import FlatButton from '../../../components/FlatButton'
-import Icon from '../../../components/Icon'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -34,7 +34,7 @@ const IconButton = styled(FlatButton)({
   }
 })
 
-const BackIcon = styled(Icon)({
+const BackIcon = styled(ArrowBack)({
   color: 'inherit'
 })
 
@@ -102,7 +102,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
     <ScaleValueEditor>
       <ScaleDetailHeader>
         <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
-          <BackIcon>arrow_back</BackIcon>
+          <BackIcon />
         </IconButton>
         <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
       </ScaleDetailHeader>
@@ -114,9 +114,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
             scales={scales}
             isOwner={isOwner}
           />
-          <ScaleValues>
-            {scaleValueString(values)}
-          </ScaleValues>
+          <ScaleValues>{scaleValueString(values)}</ScaleValues>
           <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
         </ScaleNameAndValues>
       </ScaleHeader>

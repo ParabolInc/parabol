@@ -9,10 +9,9 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
+import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {AzureDevOpsScopingSelectAllIssues_workItems} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
-import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
-
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -54,7 +53,11 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
 
   const serviceTaskIds = workItems.map((userStory) => {
     const url = new URL(userStory.node.url)
-    return AzureDevOpsIssueId.join(AzureDevOpsClientManager.getInstanceId(url), getProjectId(url), userStory.node.id)
+    return AzureDevOpsIssueId.join(
+      AzureDevOpsClientManager.getInstanceId(url),
+      getProjectId(url),
+      userStory.node.id
+    )
   })
 
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
@@ -87,7 +90,6 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   }
   if (workItems.length < 2) return null
   const title = getSelectAllTitle(workItems.length, usedServiceTaskIds.size, 'workItem')
-
 
   return (
     <>

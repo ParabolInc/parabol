@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.73.0",
+  "version": "6.83.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^16.14.0",
+    "node": "^16.16.0",
     "yarn": "^1.22.5"
   },
   "private": true,
@@ -24,7 +24,7 @@
     "start": "pm2-runtime start pm2.config.js",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node scripts/prod.js",
-    "clean": "rm -rf ./packages/client/__generated__ && rm ./queryMap.json && rm ./packages/server/graphql/public/schema.graphql && rm ./packages/server/graphql/private/schema.graphql && rm -rf ./dev && rm -rf ./dist && rm -rf ./build",
+    "clean": "rm -rf ./packages/client/__generated__ ./queryMap.json ./packages/server/graphql/public/schema.graphql ./packages/server/graphql/private/schema.graphql ./dev ./dist ./build",
     "codegen": "node scripts/codegenGraphQL.js",
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
@@ -37,13 +37,15 @@
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "postmigrate": "node scripts/postDeployMigrate.js",
     "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
-    "lint": "lerna run --parallel lint",
+    "lint": "nx run-many --target=lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "relay": "node scripts/compileRelay.js",
-    "typecheck": "lerna run --parallel --no-bail typecheck",
+    "typecheck": "nx run-many --target=typecheck",
+    "lintcheck": "nx run-many --target=lint:check",
+    "stylecheck": "nx run-many --target=prettier:check",
     "update-schema": "node scripts/runSchemaUpdater.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "precommit": "lerna run --stream precommit",
+    "precommit": "nx run-many --target=precommit --parallel=1",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
     "test:server": "yarn workspace parabol-server test"
@@ -86,8 +88,10 @@
     "graphql": "15.7.2",
     "husky": "^7.0.4",
     "jscodeshift": "^0.13.0",
-    "lerna": "^4.0.0",
+    "lerna": "^5.5.1",
     "minimist": "^1.2.5",
+    "node-loader": "^2.0.0",
+    "nx": "14.7.5",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
     "raw-loader": "^4.0.2",

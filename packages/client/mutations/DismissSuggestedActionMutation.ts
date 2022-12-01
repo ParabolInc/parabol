@@ -1,11 +1,7 @@
-import {
-  DismissSuggestedActionMutation as TDismissSuggestedActionMutation,
-  DismissSuggestedActionMutationVariables
-} from '../__generated__/DismissSuggestedActionMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import {LocalHandlers} from '../types/relayMutations'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
+import {DismissSuggestedActionMutation as TDismissSuggestedActionMutation} from '../__generated__/DismissSuggestedActionMutation.graphql'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 const mutation = graphql`
@@ -18,11 +14,11 @@ const mutation = graphql`
   }
 `
 
-const DismissSuggestedActionMutation = (
+const DismissSuggestedActionMutation: StandardMutation<TDismissSuggestedActionMutation> = (
   atmosphere,
-  variables: DismissSuggestedActionMutationVariables,
-  {onCompleted, onError}: LocalHandlers
-): Disposable => {
+  variables,
+  {onCompleted, onError}
+) => {
   const {suggestedActionId} = variables
   return commitMutation<TDismissSuggestedActionMutation>(atmosphere, {
     mutation,

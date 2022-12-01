@@ -1,17 +1,17 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Toggle from '../../../../components/Toggle/Toggle'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {
-  SlackNotificationRow_viewer,
-  SlackNotificationEventEnum
-} from '../../../../__generated__/SlackNotificationRow_viewer.graphql'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import StyledError from '../../../../components/StyledError'
+import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
-import StyledError from '../../../../components/StyledError'
 import {MeetingLabels} from '../../../../types/constEnums'
+import {
+  SlackNotificationEventEnum,
+  SlackNotificationRow_viewer
+} from '../../../../__generated__/SlackNotificationRow_viewer.graphql'
 
 interface Props {
   event: SlackNotificationEventEnum

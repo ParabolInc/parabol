@@ -329,9 +329,13 @@ const useDragAndDrop = (
       // clip quick drags so the cursor is guaranteed to be inside the card
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
-      drag.clone = cloneReflection(drag.ref, reflectionId)
       drag.id = clientTempId()
+      // There are some constraints here.
+      // We want to clone the reflection card after the properties were set correctly, especially isDragging, thus the mutation needs to run first.
+      // in some cases, e.g. moving a card out of a reflection group, the component tree is shuffled which will set the drag.ref to null.
+      const dragRef = drag.ref
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
+      drag.clone = cloneReflection(dragRef, reflectionId)
     }
     if (!drag.clone) return
     drag.clientY = clientY

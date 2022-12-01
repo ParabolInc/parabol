@@ -1,9 +1,9 @@
-import cheerio from 'cheerio'
 import base64url from 'base64url'
+import cheerio from 'cheerio'
 import crypto from 'crypto'
 import ms from 'ms'
-import getRedis from '../getRedis'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
+import getRedis from '../getRedis'
 
 export const NO_IMAGE_BUFFER = Buffer.from('X')
 export const IMAGE_TTL_MS = ms('2h')

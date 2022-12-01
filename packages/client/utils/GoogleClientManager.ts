@@ -42,7 +42,7 @@ class GoogleClientManager extends GoogleManager {
         window.removeEventListener('message', handler)
       }
     }, 100)
-    const handler = (event) => {
+    const handler = (event: MessageEvent) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
         return
       }
@@ -51,7 +51,7 @@ class GoogleClientManager extends GoogleManager {
       window.clearInterval(closeCheckerId)
       const segmentId = getAnonymousId()
       window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
-      const handleComplete = (...args) => {
+      const handleComplete: typeof onCompleted = (...args) => {
         popup && popup.close()
         onCompleted(...args)
       }

@@ -2,15 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import EditableText from '../../../components/EditableText'
-import Legitity from '../../../validation/Legitity'
-import {PALETTE} from '~/styles/paletteV3'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
-import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import {PALETTE} from '~/styles/paletteV3'
 import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
+import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
+import Legitity from '../../../validation/Legitity'
 
 const StyledEditableText = styled(EditableText)<{disabled: boolean | undefined}>(({disabled}) => ({
   fontFamily: PALETTE.SLATE_700,
@@ -33,7 +33,7 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const handleSubmit = (rawScaleLabel) => {
+  const handleSubmit = (rawScaleLabel: string) => {
     if (submitting) return
     const {error, value: newLabel} = validate(rawScaleLabel)
     if (error) return
@@ -56,10 +56,10 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
       .test((mVal) => {
         const isDupe = mVal
           ? scale.values.find(
-            (aScaleValue) =>
-              aScaleValue.id !== scaleValueId &&
-              aScaleValue.label.toLowerCase() === mVal.toLowerCase()
-          )
+              (aScaleValue) =>
+                aScaleValue.id !== scaleValueId &&
+                aScaleValue.label.toLowerCase() === mVal.toLowerCase()
+            )
           : undefined
         return isDupe ? 'That value already exists' : undefined
       })

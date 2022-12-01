@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
@@ -7,9 +8,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
 import {TemplateDimensionItem_dimensions} from '~/__generated__/TemplateDimensionItem_dimensions.graphql'
-import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import {TemplateDimensionItem_dimension} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
 import PokerTemplateScalePicker from './PokerTemplateScalePicker'
@@ -31,30 +30,31 @@ interface StyledProps {
 const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'center',
-    backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
+    backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
     lineHeight: '24px',
-    padding: '8px 16px',
+    padding: '8px 16px 8px 22px',
     width: '100%'
   })
 )
 
-const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
+const RemoveDimensionIcon = styled('div')<StyledProps>(({isHover, enabled}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  height: ICON_SIZE.MD24,
-  lineHeight: '24px',
+  svg: {
+    fontSize: 18
+  },
+  height: 24,
   marginLeft: 'auto',
   padding: 0,
   opacity: isHover ? 1 : 0,
-  textAlign: 'center',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   visibility: enabled ? 'visible' : 'hidden',
-  width: ICON_SIZE.MD24
+  width: 24
 }))
 
 const DimensionAndDescription = styled('div')({
@@ -100,7 +100,7 @@ const TemplateDimensionItem = (props: Props) => {
       onMouseOut={onMouseLeave}
     >
       <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove}>
-        cancel
+        <CancelIcon />
       </RemoveDimensionIcon>
       <DimensionAndDescription>
         <EditableTemplateDimension

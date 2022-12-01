@@ -1,15 +1,18 @@
-import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientManager'
+import styled from '@emotion/styled'
+import {Error as ErrorIcon, Lock as LockIcon} from '@mui/icons-material'
 import React, {useEffect, useState} from 'react'
 import CreditCardIcon from '../../../../components/CreditCardIcon'
-import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
-import Icon from '../../../../components/Icon'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {UseFormField} from '../../../../hooks/useForm'
+import {PALETTE} from '../../../../styles/paletteV3'
+import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientManager'
 
-const LineIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
-  lineHeight: '20px'
+const LineIcon = styled('div')({
+  svg: {
+    fontSize: 19
+  },
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
 })
 
 interface Props {
@@ -59,7 +62,7 @@ const CreditCardErrorLine = (props: Props) => {
   return (
     <Line>
       <Error isError={!!primaryError}>
-        <LineIcon>{primaryError ? 'error' : 'lock'}</LineIcon>
+        <LineIcon>{primaryError ? <ErrorIcon /> : <LockIcon />}</LineIcon>
         <Message>
           {primaryError || (
             <>

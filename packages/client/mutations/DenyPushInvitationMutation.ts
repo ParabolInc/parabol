@@ -1,11 +1,7 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
-import {
-  DenyPushInvitationMutation as TDenyPushInvitationMutation,
-  DenyPushInvitationMutationVariables
-} from '../__generated__/DenyPushInvitationMutation.graphql'
+import {commitMutation} from 'react-relay'
+import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
+import {DenyPushInvitationMutation as TDenyPushInvitationMutation} from '../__generated__/DenyPushInvitationMutation.graphql'
 import {DenyPushInvitationMutation_team} from '../__generated__/DenyPushInvitationMutation_team.graphql'
 
 graphql`
@@ -39,15 +35,13 @@ export const denyPushInvitationTeamOnNext: OnNextHandler<DenyPushInvitationMutat
   )
 }
 
-const DenyPushInvitationMutation = (
+const DenyPushInvitationMutation: SimpleMutation<TDenyPushInvitationMutation> = (
   atmosphere,
-  variables: DenyPushInvitationMutationVariables,
-  {onError}: LocalHandlers = {}
-): Disposable => {
+  variables
+) => {
   return commitMutation<TDenyPushInvitationMutation>(atmosphere, {
     mutation,
-    variables,
-    onError
+    variables
   })
 }
 

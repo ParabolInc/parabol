@@ -5,21 +5,22 @@ import {createFragmentContainer} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.png'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV3'
+import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {PokerTemplateDetails_settings} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
+import {PokerTemplateDetails_viewer} from '../../../__generated__/PokerTemplateDetails_viewer.graphql'
+import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
-import TemplateSharing from './TemplateSharing'
-import TemplateDimensionList from './TemplateDimensionList'
 import SelectTemplate from './SelectTemplate'
-import AddPokerTemplateDimension from './AddPokerTemplateDimension'
-import {Threshold} from '../../../types/constEnums'
-import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
+import TemplateDimensionList from './TemplateDimensionList'
+import TemplateSharing from './TemplateSharing'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -75,17 +76,20 @@ interface Props {
   gotoPublicTemplates: () => void
   closePortal: () => void
   settings: PokerTemplateDetails_settings
+  viewer: PokerTemplateDetails_viewer
 }
 
 const PokerTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {featureFlags} = viewer
+  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, dimensions} = activeTemplate
-  const {id: teamId, orgId} = team
+  const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate)
+  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -103,11 +107,12 @@ const PokerTemplateDetails = (props: Props) => {
   const defaultIllustrations = {
     estimatedEffortTemplate: estimatedEffortTemplate,
     wsjfTemplate: wsjfTemplate
-  }
-  const headerImg = defaultIllustrations[templateId]
-    ? defaultIllustrations[templateId]
+  } as const
+  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
+    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
+  const showClone = !isOwner && (templateLimitFlag ? tier !== 'personal' : true)
   return (
     <DimensionEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -130,7 +135,7 @@ const PokerTemplateDetails = (props: Props) => {
                 type='poker'
               />
             )}
-            {!isOwner && <CloneTemplate onClick={onClone} canClone={canClone} />}
+            {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
@@ -177,7 +182,16 @@ export default createFragmentContainer(PokerTemplateDetails, {
       team {
         id
         orgId
+        tier
       }
+    }
+  `,
+  viewer: graphql`
+    fragment PokerTemplateDetails_viewer on User {
+      featureFlags {
+        templateLimit
+      }
+      ...makeTemplateDescription_viewer
     }
   `
 })

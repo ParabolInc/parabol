@@ -1,7 +1,7 @@
-import Atmosphere from '../Atmosphere'
-import {useEffect} from 'react'
-import useAtmosphere from './useAtmosphere'
 import ms from 'ms'
+import {useEffect} from 'react'
+import Atmosphere from '../Atmosphere'
+import useAtmosphere from './useAtmosphere'
 
 const NAG_EVERY = ms('3m')
 const emitNag = (atmosphere: Atmosphere, overLimitCopy: string) => {

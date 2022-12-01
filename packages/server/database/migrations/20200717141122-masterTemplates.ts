@@ -316,7 +316,7 @@ const phaseItems = [
     updatedAt: createdAt
   }
 ]
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     // promote templateId to the root of the meeting document
     await r
@@ -330,14 +330,8 @@ export const up = async function(r: R) {
         )('promptTemplateId').default(null)
       }))
       .run()
-    await r
-      .table('NewMeeting')
-      .indexCreate('templateId')
-      .run()
-    await r
-      .table('NewMeeting')
-      .indexWait('templateId')
-      .run()
+    await r.table('NewMeeting').indexCreate('templateId').run()
+    await r.table('NewMeeting').indexWait('templateId').run()
   } catch (e) {
     console.log(e)
   }
@@ -346,13 +340,7 @@ export const up = async function(r: R) {
   try {
     await r
       .table('ReflectTemplate')
-      .filter((row) =>
-        r
-          .table('NewMeeting')
-          .getAll(row('id'), {index: 'templateId'})
-          .count()
-          .eq(0)
-      )
+      .filter((row) => r.table('NewMeeting').getAll(row('id'), {index: 'templateId'}).count().eq(0))
       .delete()
       .run()
   } catch (e) {
@@ -366,22 +354,13 @@ export const up = async function(r: R) {
       .update(
         (row) => ({
           scope: 'TEAM',
-          orgId: r
-            .table('Team')
-            .get(row('teamId'))('orgId')
-            .default(null)
+          orgId: r.table('Team').get(row('teamId'))('orgId').default(null)
         }),
         {nonAtomic: true}
       )
       .run()
-    await r
-      .table('ReflectTemplate')
-      .indexCreate('orgId')
-      .run()
-    await r
-      .table('ReflectTemplate')
-      .indexWait('orgId')
-      .run()
+    await r.table('ReflectTemplate').indexCreate('orgId').run()
+    await r.table('ReflectTemplate').indexWait('orgId').run()
   } catch (e) {
     console.log(e)
   }
@@ -389,42 +368,21 @@ export const up = async function(r: R) {
   // add initial public templates
   try {
     await Promise.all([
-      r
-        .table('User')
-        .insert(aGhostUser)
-        .run(),
-      r
-        .table('OrganizationUser')
-        .insert(aGhostOrgMember)
-        .run(),
-      r
-        .table('Organization')
-        .insert(aGhostOrg)
-        .run(),
-      r
-        .table('Team')
-        .insert(aGhostTeam)
-        .run(),
-      r
-        .table('ReflectTemplate')
-        .insert(templates)
-        .run(),
-      r
-        .table('CustomPhaseItem')
-        .insert(phaseItems)
-        .run()
+      r.table('User').insert(aGhostUser).run(),
+      r.table('OrganizationUser').insert(aGhostOrgMember).run(),
+      r.table('Organization').insert(aGhostOrg).run(),
+      r.table('Team').insert(aGhostTeam).run(),
+      r.table('ReflectTemplate').insert(templates).run(),
+      r.table('CustomPhaseItem').insert(phaseItems).run()
     ])
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
-    await r
-      .table('NewMeeting')
-      .indexDrop('templateId')
-      .run()
+    await r.table('NewMeeting').indexDrop('templateId').run()
     await r
       .table('NewMeeting')
       .replace((row) => row.without('templateId'))
@@ -434,10 +392,7 @@ export const down = async function(r: R) {
   }
 
   try {
-    await r
-      .table('ReflectTemplate')
-      .indexDrop('orgId')
-      .run()
+    await r.table('ReflectTemplate').indexDrop('orgId').run()
     await r
       .table('ReflectTemplate')
       .replace((row) => row.without('scope', 'orgId'))
@@ -449,36 +404,12 @@ export const down = async function(r: R) {
   const promptIds = phaseItems.map(({id}) => id)
   try {
     await Promise.all([
-      r
-        .table('User')
-        .get(aGhostUser.id)
-        .delete()
-        .run(),
-      r
-        .table('OrganizationUser')
-        .get(aGhostOrgMember.id)
-        .delete()
-        .run(),
-      r
-        .table('Organization')
-        .get(aGhostOrg.id)
-        .delete()
-        .run(),
-      r
-        .table('Team')
-        .get(aGhostTeam.id)
-        .delete()
-        .run(),
-      r
-        .table('ReflectTemplate')
-        .getAll(r.args(templateIds))
-        .delete()
-        .run(),
-      r
-        .table('CustomPhaseItem')
-        .getAll(r.args(promptIds))
-        .delete()
-        .run()
+      r.table('User').get(aGhostUser.id).delete().run(),
+      r.table('OrganizationUser').get(aGhostOrgMember.id).delete().run(),
+      r.table('Organization').get(aGhostOrg.id).delete().run(),
+      r.table('Team').get(aGhostTeam.id).delete().run(),
+      r.table('ReflectTemplate').getAll(r.args(templateIds)).delete().run(),
+      r.table('CustomPhaseItem').getAll(r.args(promptIds)).delete().run()
     ])
   } catch (e) {
     console.log(e)

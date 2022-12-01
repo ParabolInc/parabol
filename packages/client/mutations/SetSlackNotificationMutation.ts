@@ -1,12 +1,8 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  SetSlackNotificationMutation as TSetSlackNotificationMutation,
-  SetSlackNotificationMutationVariables
-} from '../__generated__/SetSlackNotificationMutation.graphql'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
+import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
 
 graphql`
   fragment SetSlackNotificationMutation_team on SetSlackNotificationPayload {
@@ -44,11 +40,11 @@ const mutation = graphql`
   }
 `
 
-const SetSlackNotificationMutation = (
+const SetSlackNotificationMutation: StandardMutation<TSetSlackNotificationMutation> = (
   atmosphere,
-  variables: SetSlackNotificationMutationVariables,
-  {onError, onCompleted}: LocalHandlers
-): Disposable => {
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TSetSlackNotificationMutation>(atmosphere, {
     mutation,
     variables,

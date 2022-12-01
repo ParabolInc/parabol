@@ -24,17 +24,8 @@ export default class ReflectionGroup {
   title: string | null
   smartTitle: string | null
   constructor(input: ReflectionGroupInput) {
-    const {
-      createdAt,
-      id,
-      meetingId,
-      promptId,
-      sortOrder,
-      updatedAt,
-      voterIds,
-      smartTitle,
-      title
-    } = input
+    const {createdAt, id, meetingId, promptId, sortOrder, updatedAt, voterIds, smartTitle, title} =
+      input
     const now = new Date()
     this.id = id || generateUID()
     this.createdAt = createdAt || now

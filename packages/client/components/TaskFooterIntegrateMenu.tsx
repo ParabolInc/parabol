@@ -64,6 +64,11 @@ const query = graphql`
       id
       assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
         preferredName
+        prevUsedRepoIntegrations(first: 1) {
+          items {
+            id
+          }
+        }
         ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
       }
       viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
@@ -92,18 +97,19 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
-  const {integrations: viewerIntegrations, repoIntegrations: viewerRepoIntegrations} =
-    viewerTeamMember
+  const {integrations: viewerIntegrations} = viewerTeamMember
   const {
     integrations: assigneeIntegrations,
-    repoIntegrations: assigneeRepoIntegrations,
-    preferredName: assigneeName
+    preferredName: assigneeName,
+    prevUsedRepoIntegrations
   } = assigneeTeamMember
   const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
   const isViewerIntegrated = isIntegrated(viewerIntegrations)
   const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
-
+  const showAssigneeIntegrations = !!(
+    isAssigneeIntegrated && prevUsedRepoIntegrations.items?.length
+  )
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Push with your credentials'
@@ -112,14 +118,13 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         menuProps={menuProps}
         mutationProps={mutationProps}
         placeholder={placeholder}
-        repoIntegrations={viewerRepoIntegrations}
         task={task}
         label={label}
       />
     )
   }
 
-  if (isAssigneeIntegrated) {
+  if (showAssigneeIntegrations) {
     const placeholder = makePlaceholder(isAssigneeIntegrated)
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
@@ -127,7 +132,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         menuProps={menuProps}
         mutationProps={mutationProps}
         placeholder={placeholder}
-        repoIntegrations={assigneeRepoIntegrations}
         task={task}
         label={label}
       />
@@ -179,13 +183,6 @@ graphql`
     }
   }
 `
-graphql`
-  fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
-    repoIntegrations(first: 50) {
-      ...TaskFooterIntegrateMenuList_repoIntegrations
-    }
-  }
-`
 
 graphql`
   fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {
@@ -207,7 +204,6 @@ graphql`
         ...TaskFooterIntegrateMenuViewerAzureDevOpsIntegration @relay(mask: false)
       }
     }
-    ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)
   }
 `
 

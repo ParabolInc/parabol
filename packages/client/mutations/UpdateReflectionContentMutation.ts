@@ -2,10 +2,10 @@
  * Updates a reflection's content for the retrospective meeting.
  *
  */
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateReflectionContentMutation as TUpdateReflectionContentMutation} from '../__generated__/UpdateReflectionContentMutation.graphql'
 
 graphql`
@@ -46,7 +46,7 @@ const UpdateReflectionContentMutation: StandardMutation<TUpdateReflectionContent
     onError,
     optimisticUpdater: (store) => {
       const {reflectionId, content} = variables
-      const reflectionProxy = store.get(reflectionId)
+      const reflectionProxy = store.get(reflectionId)!
       const nowISO = new Date().toJSON()
       const optimisticReflection = {
         content,

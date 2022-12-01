@@ -1,7 +1,7 @@
 import Mousetrap from 'mousetrap'
 import {useEffect} from 'react'
-import useEventCallback from '~/hooks/useEventCallback'
 import useDeepEqual from '~/hooks/useDeepEqual'
+import useEventCallback from '~/hooks/useEventCallback'
 
 type Binding = string | string[]
 const useHotkey = (

@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import EditTaskPayload from '../types/EditTaskPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import EditTaskPayload from '../types/EditTaskPayload'
 
 export default {
   type: EditTaskPayload,

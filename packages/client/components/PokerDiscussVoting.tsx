@@ -4,12 +4,10 @@ import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForceUpdate from '../hooks/useForceUpdate'
-import useModal from '../hooks/useModal'
 import {PokerCards} from '../types/constEnums'
 import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
-import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 import useSetTaskEstimate from './useSetTaskEstimate'
@@ -29,7 +27,6 @@ interface Props {
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {closePortal, openPortal, modalPortal} = useModal()
   const {setTaskEstimate, error, submitting, onCompleted, onError} = useSetTaskEstimate()
   const forceUpdate = useForceUpdate()
   const {viewerId} = atmosphere
@@ -44,7 +41,7 @@ const PokerDiscussVoting = (props: Props) => {
   const isLocallyValidatedRef = useRef(true)
   const [cardScore, setCardScore] = useState(finalScore)
 
-  const isStale = (score) => {
+  const isStale = (score: string) => {
     return score !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   }
 
@@ -98,26 +95,13 @@ const PokerDiscussVoting = (props: Props) => {
     const noScoreYet = score === '' && finalScore === ''
     if (noScoreYet) return
 
-    const onJiraFieldUpdateError = () => {
-      openPortal()
-      // in case of error this will set the old value after the useEffect related to final score
-      setImmediate(() => {
-        setCardScore(score)
-      })
-    }
-
     const onSuccess = () => {
       // set field A to 1, change fields to B, then submit again. it should not say update
       lastSubmittedFieldRef.current = serviceFieldName
       forceUpdate()
     }
 
-    setTaskEstimate(
-      {taskId, dimensionName, meetingId, value: score},
-      stageId,
-      onJiraFieldUpdateError,
-      onSuccess
-    )
+    setTaskEstimate({taskId, dimensionName, meetingId, value: score}, stageId, onSuccess)
   }
 
   return (
@@ -162,13 +146,6 @@ const PokerDiscussVoting = (props: Props) => {
             </React.Fragment>
           )
         })}
-        {modalPortal(
-          <AddMissingJiraFieldModal
-            stage={stage}
-            submitScore={submitScore}
-            closePortal={closePortal}
-          />
-        )}
       </GroupedVotes>
     </>
   )
@@ -177,7 +154,6 @@ const PokerDiscussVoting = (props: Props) => {
 export default createFragmentContainer(PokerDiscussVoting, {
   stage: graphql`
     fragment PokerDiscussVoting_stage on EstimateStage {
-      ...AddMissingJiraFieldModal_stage
       ...PokerDimensionValueControl_stage
       id
       finalScore

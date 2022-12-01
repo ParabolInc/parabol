@@ -1,8 +1,7 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '@mui/icons-material'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
-
 interface Props {
   active: boolean | null
   className?: string
@@ -10,9 +9,11 @@ interface Props {
   onClick?: (e: React.MouseEvent) => void
 }
 
-const StyledIcon = styled(Icon)<{disabled: boolean | undefined}>(({disabled}) => ({
+const StyledIcon = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   color: PALETTE.SLATE_600,
   cursor: disabled ? 'not-allowed' : 'pointer',
+  height: 24,
+  width: 24,
   display: 'block',
   opacity: disabled ? 0.38 : 1,
   userSelect: 'none'
@@ -20,10 +21,10 @@ const StyledIcon = styled(Icon)<{disabled: boolean | undefined}>(({disabled}) =>
 
 const Checkbox = (props: Props) => {
   const {active, className, disabled, onClick} = props
-  const icon = active ? 'check_box' : active === false ? 'check_box_outline_blank' : 'indeterminate_check_box'
+  const Icon = active ? CheckBox : active === false ? CheckBoxOutlineBlank : IndeterminateCheckBox
   return (
     <StyledIcon className={className} disabled={disabled} onClick={disabled ? undefined : onClick}>
-      {icon}
+      <Icon />
     </StyledIcon>
   )
 }

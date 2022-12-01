@@ -1,8 +1,9 @@
-import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
-import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {lazy} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {ValueOf} from '../types/generics'
+import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import DelayUnmount from './DelayUnmount'
 
 interface Props {
@@ -10,28 +11,34 @@ interface Props {
 }
 
 const lookup = {
-  SuggestedActionInviteYourTeam: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionInviteYourTeam' */ './SuggestedActionInviteYourTeam'
-    )
+  SuggestedActionInviteYourTeam: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionInviteYourTeam' */ './SuggestedActionInviteYourTeam'
+      )
   ),
-  SuggestedActionTryTheDemo: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ './SuggestedActionTryTheDemo')
+  SuggestedActionTryTheDemo: lazy(
+    () => import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ './SuggestedActionTryTheDemo')
   ),
-  SuggestedActionTryRetroMeeting: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ './SuggestedActionTryRetroMeeting'
-    )
+  SuggestedActionTryRetroMeeting: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ './SuggestedActionTryRetroMeeting'
+      )
   ),
-  SuggestedActionTryActionMeeting: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionTryActionMeeting' */ './SuggestedActionTryActionMeeting'
-    )
+  SuggestedActionTryActionMeeting: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionTryActionMeeting' */ './SuggestedActionTryActionMeeting'
+      )
   ),
-  SuggestedActionCreateNewTeam: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam')
+  SuggestedActionCreateNewTeam: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam'
+      )
   )
-}
+} as const
 
 const Wrapper = styled('div')({
   paddingBottom: 16
@@ -41,15 +48,15 @@ function TimelineSuggestedAction(props: Props) {
   const {viewer} = props
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions
-  let AsyncComponent
+  let AsyncComponent: ValueOf<typeof lookup> | undefined
   if (suggestedAction) {
     const {__typename} = suggestedAction
-    AsyncComponent = lookup[__typename]
+    AsyncComponent = lookup[__typename as keyof typeof lookup]
   }
   return (
     <Wrapper>
       <DelayUnmount unmountAfter={500}>
-        {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction} /> : null}
+        {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction!} /> : null}
       </DelayUnmount>
     </Wrapper>
   )

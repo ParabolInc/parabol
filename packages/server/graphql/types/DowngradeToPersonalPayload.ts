@@ -1,9 +1,9 @@
-import {GraphQLObjectType, GraphQLList} from 'graphql'
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveOrganization, resolveTeams} from '../resolvers'
 import Organization from './Organization'
-import Team from './Team'
 import StandardMutationError from './StandardMutationError'
-import {GQLContext} from '../graphql'
+import Team from './Team'
 
 const DowngradeToPersonalPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DowngradeToPersonalPayload',

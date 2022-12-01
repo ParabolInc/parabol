@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {Radius} from '../types/constEnums'
 import {modalShadow} from '../styles/elevation'
+import {Radius} from '../types/constEnums'
 
 const InviteDialog = styled('div')({
   background: 'white',

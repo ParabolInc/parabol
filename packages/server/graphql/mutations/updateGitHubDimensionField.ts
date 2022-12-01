@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import MeetingPoker from '../../database/types/MeetingPoker'
 import upsertGitHubDimensionFieldMap from '../../postgres/queries/upsertGitHubDimensionFieldMap'
 import {isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateGitHubDimensionFieldPayload from '../types/UpdateGitHubDimensionFieldPayload'
-import MeetingPoker from '../../database/types/MeetingPoker'
 
 interface Args {
   dimensionName: string

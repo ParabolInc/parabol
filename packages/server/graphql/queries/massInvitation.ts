@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import rateLimit from '../rateLimit'
-import MassInvitationPayload from '../types/MassInvitationPayload'
+import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import {GQLContext} from '../graphql'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import rateLimit from '../rateLimit'
+import MassInvitationPayload from '../types/MassInvitationPayload'
 
 export default {
   type: new GraphQLNonNull(MassInvitationPayload),
@@ -31,6 +31,7 @@ export default {
         // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
         return {errorType: InvitationTokenError.NOT_FOUND}
       }
+
       return {
         errorType: error,
         inviterName: teamMember.preferredName,

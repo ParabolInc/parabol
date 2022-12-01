@@ -1,12 +1,11 @@
 import styled from '@emotion/styled'
+import {Launch} from '@mui/icons-material'
 import React, {useState} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import {ICON_SIZE} from '../styles/typographyV2'
 import CardButton from './CardButton'
-import Icon from './Icon'
 import IconLabel from './IconLabel'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -53,9 +52,10 @@ const CardDescription = styled('div')<{isExpanded: boolean}>(({isExpanded}) => (
   transition: 'all 300ms'
 }))
 
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
-  paddingLeft: 4
+const StyledIcon = styled(Launch)({
+  height: 18,
+  width: 18,
+  marginLeft: 4
 })
 
 const StyledLink = styled('a')({
@@ -103,7 +103,7 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
         />
         <StyledLink href={url} rel='noopener noreferrer' target='_blank' title={linkTitle}>
           <StyledLabel>{linkText}</StyledLabel>
-          <StyledIcon>launch</StyledIcon>
+          <StyledIcon />
         </StyledLink>
       </HeaderCard>
     </HeaderCardWrapper>

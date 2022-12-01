@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
+import UpgradeCreditCardNumberFormField from '../../../../components/UpgradeCreditCardNumberFormField'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -10,6 +11,7 @@ import useScript from '../../../../hooks/useScript'
 import useSegmentTrack from '../../../../hooks/useSegmentTrack'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
 import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
+import {CompletedHandler} from '../../../../types/relayMutations'
 import StripeClientManager, {StripeError} from '../../../../utils/StripeClientManager'
 import CreditCardErrorLine from './CreditCardErrorLine'
 import {CreditCardModalActionType} from './CreditCardModal'
@@ -25,7 +27,7 @@ const Form = styled('form')({
   width: '100%'
 })
 
-const CreditCardNumber = styled(UpgradeCreditCardFormField)({
+const CreditCardNumber = styled(UpgradeCreditCardNumberFormField)({
   marginBottom: 8
 })
 
@@ -61,13 +63,13 @@ const paramToInputLookup = {
   exp_month: 'expiry',
   number: 'creditCardNumber',
   cvc: 'cvc'
-}
+} as const
 
 const CTALabel = {
   update: 'Update',
   upgrade: 'Upgrade',
   squeeze: 'Upgrade Now'
-}
+} as const
 
 interface Props {
   activeUserCount?: number
@@ -109,7 +111,7 @@ const CreditCardForm = (props: Props) => {
   }, [isStripeLoaded])
 
   const handleError = (param: string, fallback = 'Invalid details') => {
-    const inputField = paramToInputLookup[param]
+    const inputField = paramToInputLookup[param as keyof typeof paramToInputLookup]
     if (inputField) {
       // set submitting to false and clear general error
       onCompleted()
@@ -122,8 +124,8 @@ const CreditCardForm = (props: Props) => {
     const [expMonth, expYear] = fields.expiry.value.split('/')
     const {error, id: stripeToken} = await stripeClientManager.createToken({
       number: fields.creditCardNumber.value,
-      exp_month: expMonth,
-      exp_year: expYear,
+      exp_month: Number(expMonth),
+      exp_year: Number(expYear),
       cvc: fields.cvc.value
     })
     if (error) {
@@ -131,7 +133,7 @@ const CreditCardForm = (props: Props) => {
       return
     }
 
-    const handleCompleted = (data) => {
+    const handleCompleted: CompletedHandler = (data) => {
       const {error} = Object.values<any>(data)[0] ?? {}
       onCompleted()
       if (error) {
@@ -142,7 +144,11 @@ const CreditCardForm = (props: Props) => {
     }
 
     if (actionType === 'update') {
-      UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, handleCompleted)
+      UpdateCreditCardMutation(
+        atmosphere,
+        {orgId, stripeToken},
+        {onError, onCompleted: handleCompleted}
+      )
     } else {
       UpgradeToProMutation(
         atmosphere,
@@ -156,7 +162,7 @@ const CreditCardForm = (props: Props) => {
     // if any synchronous field errors, reset submitting & primary error & return
     if (
       Object.keys(fields)
-        .map((name) => fields[name].error)
+        .map((name) => fields[name as keyof typeof fields].error)
         .filter(Boolean).length !== 0
     ) {
       onCompleted()
@@ -186,14 +192,10 @@ const CreditCardForm = (props: Props) => {
       <Form onSubmit={handleSubmit}>
         <CreditCardNumber
           {...fields.creditCardNumber}
-          autoComplete='cc-number'
           autoFocus
-          iconName='credit_card'
-          maxLength={20}
           name={'creditCardNumber'}
           onBlur={() => setDirtyField('creditCardNumber')}
           onChange={onChange}
-          placeholder='Card number'
         />
         <CardDetails>
           <CardExpiry

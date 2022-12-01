@@ -8,8 +8,6 @@ import plexSansItalicWoff2 from './fonts/IBMPlexSans-Italic.woff2'
 import plexSansRegularWoff2 from './fonts/IBMPlexSans-Regular.woff2'
 import plexSansSemiBoldWoff2 from './fonts/IBMPlexSans-SemiBold.woff2'
 import plexSansSemiBoldItalicWoff2 from './fonts/IBMPlexSans-SemiBoldItalic.woff2'
-import materialIconsRegularWoff2 from './fonts/MaterialIcons-Regular.woff2'
-import materialIconsOutlinedWoff2 from './fonts/MaterialIconsOutlined-Regular.woff2'
 
 const fontStylesRegular = {
   fontWeight: 400,
@@ -51,29 +49,11 @@ const plexSansSemiBoldItalic = makeFont(
   fontStylesSemiBoldItalic
 )
 
-const materialIconsRegular = {
-  fontFamily: 'Material Icons',
-  fontStyle: 'normal',
-  fontWeight: '400',
-  src: `local('Material Icons'), local('MaterialIcons-Regular'), url(${materialIconsRegularWoff2}) format('woff2')`,
-  fontDisplay: 'block'
-}
-
-const materialIconsOutlined = {
-  fontFamily: 'Material Icons Outlined',
-  fontStyle: 'normal',
-  fontWeight: '400',
-  src: `local('Material Icons Outlined'), local('MaterialIconsOutlined-Regular'), url(${materialIconsOutlinedWoff2}) format('woff2')`,
-  fontDisplay: 'block'
-}
-
 export default [
   plexMonoRegular,
   plexMonoSemiBold,
   plexSansItalic,
   plexSansRegular,
   plexSansSemiBold,
-  plexSansSemiBoldItalic,
-  materialIconsRegular,
-  materialIconsOutlined
+  plexSansSemiBoldItalic
 ]

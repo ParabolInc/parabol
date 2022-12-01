@@ -1,14 +1,15 @@
 import styled from '@emotion/styled'
+import {MoreVert} from '@mui/icons-material'
 import React from 'react'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import lazyPreload from '~/utils/lazyPreload'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
-const CommentAuthorOptionsDropdown = lazyPreload(() =>
-  import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
+const CommentAuthorOptionsDropdown = lazyPreload(
+  () =>
+    import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
 )
 
 const StyledButton = styled(PlainButton)({
@@ -17,17 +18,22 @@ const StyledButton = styled(PlainButton)({
   }
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIconWrapper = styled('div')({
   borderRadius: 24,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   color: 'inherit',
-  display: 'block',
   flexShrink: 0,
-  fontSize: 18,
   height: 24,
   lineHeight: '24px',
   marginLeft: 'auto',
-  textAlign: 'center',
   width: 24
+})
+
+const StyledIcon = styled(MoreVert)({
+  height: 18,
+  width: 18
 })
 
 interface Props {
@@ -47,7 +53,9 @@ const CommentAuthorOptionsButton = (props: Props) => {
       ref={originRef}
       onClick={togglePortal}
     >
-      <StyledIcon>more_vert</StyledIcon>
+      <StyledIconWrapper>
+        <StyledIcon />
+      </StyledIconWrapper>
       {menuPortal(
         <CommentAuthorOptionsDropdown
           menuProps={menuProps}

@@ -1,13 +1,16 @@
 import styled from '@emotion/styled'
+import {ExpandMore as ExpandMoreIcon, KeyboardArrowRight} from '@mui/icons-material'
 import React, {forwardRef, ReactNode, Ref} from 'react'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import Icon from './Icon'
 
-const DropdownIcon = styled(Icon)<{opened: boolean | undefined}>(({opened}) => ({
+const DropdownIcon = styled('div')<{opened: boolean | undefined}>(({opened}) => ({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD36,
+  height: 36,
+  width: 36,
+  svg: {
+    fontSize: 36
+  },
   alignSelf: 'center',
   transform: opened ? 'rotateX(180deg)' : 'none',
   transition: 'transform 0.2s'
@@ -50,7 +53,11 @@ const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
       onClick={disabled ? undefined : onClick}
     >
       {children}
-      {!disabled && <DropdownIcon opened={opened}>{icon || 'expand_more'}</DropdownIcon>}
+      {!disabled && (
+        <DropdownIcon opened={opened}>
+          {icon ? <KeyboardArrowRight /> : <ExpandMoreIcon />}
+        </DropdownIcon>
+      )}
     </DropdownBlock>
   )
 })

@@ -1,11 +1,11 @@
-import {TeamColumnsContainer_viewer} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
-import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import getSafeRegex from '~/utils/getSafeRegex'
+import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
+import {TeamColumnsContainer_viewer} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 
 interface Props {
   viewer: TeamColumnsContainer_viewer

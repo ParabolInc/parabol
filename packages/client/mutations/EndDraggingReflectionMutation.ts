@@ -3,12 +3,11 @@ import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import {OnNextHandler, SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import getInProxy from '../utils/relay/getInProxy'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
@@ -74,14 +73,17 @@ const mutation = graphql`
 const handleRemoveReflectionFromGroup = (
   reflectionId: string,
   reflectionGroupId: string,
-  store
+  store: RecordSourceSelectorProxy
 ) => {
   const reflectionGroup = store.get(reflectionGroupId)
   if (!reflectionGroup) return
   safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections')
 }
 
-const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
+const handleAddReflectionGroupToGroups = (
+  store: RecordSourceSelectorProxy,
+  reflectionGroup: RecordProxy<{meetingId: string}>
+) => {
   if (!reflectionGroup) return
   const meetingId = reflectionGroup.getValue('meetingId')
   const meeting = store.get(meetingId)
@@ -91,7 +93,7 @@ const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
 
 export const moveReflectionLocation = (
   reflection: RecordProxy,
-  reflectionGroup: RecordProxy,
+  reflectionGroup: RecordProxy<{meetingId: string}>,
   oldReflectionGroupId: string,
   store: RecordSourceSelectorProxy
 ) => {
@@ -105,14 +107,13 @@ export const moveReflectionLocation = (
   handleAddReflectionGroupToGroups(store, reflectionGroup)
 }
 
-export const endDraggingReflectionMeetingUpdater: SharedUpdater<EndDraggingReflectionMutation_meeting> = (
-  payload,
-  {store}
-) => {
+export const endDraggingReflectionMeetingUpdater: SharedUpdater<
+  EndDraggingReflectionMutation_meeting
+> = (payload, {store}) => {
   const reflection = payload.getLinkedRecord('reflection')
   if (!reflection) return
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
-  const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+  const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
   const existingDrag = reflection.getLinkedRecord('remoteDrag')
   if (!existingDrag) {
     const remoteDrag = payload.getLinkedRecord('remoteDrag')
@@ -125,7 +126,9 @@ export const endDraggingReflectionMeetingUpdater: SharedUpdater<EndDraggingRefle
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
 }
 
-export const endDraggingReflectionMeetingOnNext = (payload, context) => {
+export const endDraggingReflectionMeetingOnNext: OnNextHandler<
+  EndDraggingReflectionMutation_meeting
+> = (payload, context) => {
   const {atmosphere} = context
   const {reflection} = payload
   if (!reflection) return
@@ -151,7 +154,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
-      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+      const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {
@@ -165,7 +168,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       }
 
       const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
-      let reflectionGroupProxy
+      let reflectionGroupProxy: RecordProxy<{meetingId: string}>
       const newReflectionGroupId = clientTempId()
       // move a reflection into its own group
       if (!reflectionGroupId) {
@@ -173,7 +176,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
         const reflectionGroup = {
           id: newReflectionGroupId,
           createdAt: nowISO,
-          meetingId: reflection.getValue('meetingId'),
+          meetingId: reflection.getValue('meetingId') as string,
           isActive: true,
           sortOrder: 0,
           updatedAt: nowISO,
@@ -182,10 +185,12 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
       } else {
-        reflectionGroupProxy = store.get(reflectionGroupId)
-        const reflections = reflectionGroupProxy.getLinkedRecords('reflections')
+        reflectionGroupProxy = store.get(reflectionGroupId)!
+        const reflections = reflectionGroupProxy.getLinkedRecords('reflections')!
         const maxSortOrder = Math.max(
-          ...reflections.map((reflection) => (reflection ? reflection.getValue('sortOrder') : -1))
+          ...reflections.map((reflection) =>
+            reflection ? (reflection.getValue('sortOrder') as number) : -1
+          )
         )
         // move a card into another group
         updateProxyRecord(reflection, {

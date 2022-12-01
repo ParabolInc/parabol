@@ -75,7 +75,11 @@ const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
   })
 )
 
-const getValidationError = (title: string | null, reflectionGroups, reflectionGroupId) => {
+const getValidationError = (
+  title: string | null,
+  reflectionGroups: readonly {id: string; title: string | null}[],
+  reflectionGroupId: string
+) => {
   if (!title || title.length < 1) {
     return 'Enter a title'
   }
@@ -106,11 +110,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
     })
     if (!dirtyRef.current) return
     const normalizedTitle = title.trim()
-    const validationError = getValidationError(
-      normalizedTitle,
-      reflectionGroups,
-      reflectionGroupId
-    )
+    const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId)
     if (!validationError) {
       if (error) {
         onCompleted()
@@ -171,22 +171,19 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ReflectionGroupTitleEditor,
-  {
-    reflectionGroup: graphql`
-      fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+export default createFragmentContainer(ReflectionGroupTitleEditor, {
+  reflectionGroup: graphql`
+    fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+      id
+      title
+    }
+  `,
+  meeting: graphql`
+    fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
+      reflectionGroups {
         id
         title
       }
-    `,
-    meeting: graphql`
-      fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
-        reflectionGroups {
-          id
-          title
-        }
-      }
-    `
-  }
-)
+    }
+  `
+})

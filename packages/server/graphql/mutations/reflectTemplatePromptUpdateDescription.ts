@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import ReflectTemplatePromptUpdateDescriptionPayload from '../types/ReflectTemplatePromptUpdateDescriptionPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
+import ReflectTemplatePromptUpdateDescriptionPayload from '../types/ReflectTemplatePromptUpdateDescriptionPayload'
 
 const reflectTemplatePromptUpdateDescription = {
   description: 'Update the description of a reflection prompt',
@@ -27,10 +27,7 @@ const reflectTemplatePromptUpdateDescription = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r
-      .table('ReflectPrompt')
-      .get(promptId)
-      .run()
+    const prompt = await r.table('ReflectPrompt').get(promptId).run()
     const viewerId = getUserId(authToken)
 
     // AUTH

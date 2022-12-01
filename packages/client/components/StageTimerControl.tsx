@@ -18,8 +18,8 @@ interface Props {
   status: TransitionStatus
 }
 
-const StageTimerModal = lazyPreload(async () =>
-  import(/* webpackChunkName: 'StageTimerModal' */ './StageTimerModal')
+const StageTimerModal = lazyPreload(
+  async () => import(/* webpackChunkName: 'StageTimerModal' */ './StageTimerModal')
 )
 
 const StageTimerControl = (props: Props) => {

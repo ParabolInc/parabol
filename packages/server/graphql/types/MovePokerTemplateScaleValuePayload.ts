@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import TemplateScale from './TemplateScale'
 import makeMutationPayload from './makeMutationPayload'
+import TemplateScale from './TemplateScale'
 
 export const MovePokerTemplateScaleValueSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'MovePokerTemplateScaleValueSuccess',

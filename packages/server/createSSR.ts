@@ -19,6 +19,7 @@ const getClientKeys = () => {
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
+    oauth2Redirect: process.env.OAUTH2_REDIRECT,
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
     AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
@@ -34,7 +35,10 @@ const getRaw = () => {
     const PROJECT_ROOT = path.join(__dirname, '../')
     const htmlPath = PROD ? './build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(PROJECT_ROOT, htmlPath), 'utf8')
-    const extraHead = `<script>${dehydrate('__ACTION__', clientIds)}</script>`
+    // Hide staging & PPMIs from search engines
+    const noindex =
+      process.env.HOST === 'action.parabol.co' ? '' : `<meta name="robots" content="noindex"/>`
+    const extraHead = `${noindex}<script>${dehydrate('__ACTION__', clientIds)}</script>`
     const devBody = PROD
       ? ''
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'

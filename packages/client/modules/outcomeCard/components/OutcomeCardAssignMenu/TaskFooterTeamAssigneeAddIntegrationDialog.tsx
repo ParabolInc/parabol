@@ -1,10 +1,10 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import DialogContainer from '~/components/DialogContainer'
-import DialogTitle from '~/components/DialogTitle'
-import SecondaryButton from '~/components/SecondaryButton'
-import PrimaryButton from '~/components/PrimaryButton'
 import DialogContent from '~/components/DialogContent'
+import DialogTitle from '~/components/DialogTitle'
+import PrimaryButton from '~/components/PrimaryButton'
+import SecondaryButton from '~/components/SecondaryButton'
 
 interface Props {
   onClose: () => void

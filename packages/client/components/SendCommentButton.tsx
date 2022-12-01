@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
+import {ArrowUpward} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
-import useTooltip from '../hooks/useTooltip'
 import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
+import PlainButton from './PlainButton/PlainButton'
 
 export type CommentSubmitState = 'idle' | 'typing'
 
@@ -29,13 +29,16 @@ const StyledPlainButton = styled(PlainButton)<{commentSubmitState: CommentSubmit
   })
 )
 
-const SendIcon = styled(Icon)<{commentSubmitState: CommentSubmitState}>(({commentSubmitState}) => ({
-  opacity: 1,
-  transition: 'color 0.1s ease',
-  color: commentSubmitState === 'idle' ? PALETTE.SLATE_500 : PALETTE.WHITE,
-  fontSize: 20,
-  padding: 4
-}))
+const SendIcon = styled(ArrowUpward)<{commentSubmitState: CommentSubmitState}>(
+  ({commentSubmitState}) => ({
+    opacity: 1,
+    transition: 'color 0.1s ease',
+    color: commentSubmitState === 'idle' ? PALETTE.SLATE_500 : PALETTE.WHITE,
+    height: 20,
+    width: 20,
+    margin: 4
+  })
+)
 
 interface Props {
   commentSubmitState: CommentSubmitState
@@ -45,9 +48,12 @@ interface Props {
 
 const SendCommentButton = (props: Props) => {
   const {commentSubmitState, onSubmit, dataCy} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<
-    HTMLButtonElement
-  >(MenuPosition.LOWER_CENTER)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tipRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
   const isDisabled = commentSubmitState === 'idle'
   return (
     <>
@@ -60,7 +66,7 @@ const SendCommentButton = (props: Props) => {
         disabled={isDisabled}
         ref={tipRef}
       >
-        <SendIcon commentSubmitState={commentSubmitState}>arrow_upward</SendIcon>
+        <SendIcon commentSubmitState={commentSubmitState} />
       </StyledPlainButton>
       {tooltipPortal(<div>{'Send comment'}</div>)}
     </>

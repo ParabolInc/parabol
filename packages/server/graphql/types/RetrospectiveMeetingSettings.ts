@@ -11,7 +11,6 @@ import db from '../../db'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
-import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import ReflectTemplate, {ReflectTemplateConnection} from './ReflectTemplate'
@@ -106,15 +105,14 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
           description: 'The cursor, which is the templateId'
         }
       },
-      resolve: async ({teamId}, {first, after}, {dataLoader}) => {
-        const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', 'retrospective' as MeetingTypeEnum),
-          dataLoader.get('teams').loadNonNull(teamId)
-        ])
-        const {orgId} = team
-        const unownedTemplates = publicTemplates.filter((template) => template.orgId !== orgId)
-        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates)
-        return connectionFromTemplateArray(scoredTemplates, first, after)
+      resolve: async (_src, {first, after}) => {
+        const publicTemplates = await db.read('publicTemplates', 'retrospective')
+        publicTemplates.sort((a, b) => {
+          if (a.isFree && !b.isFree) return -1
+          if (!a.isFree && b.isFree) return 1
+          return 0
+        })
+        return connectionFromTemplateArray(publicTemplates, first, after)
       }
     }
   })

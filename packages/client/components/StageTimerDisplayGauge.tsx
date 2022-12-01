@@ -11,7 +11,7 @@ interface Props {
   endTime: string
 }
 
-const Gauge = styled('div')<{isTimeUp: boolean; isDesktop}>(({isTimeUp, isDesktop}) => ({
+const Gauge = styled('div')<{isTimeUp: boolean; isDesktop: boolean}>(({isTimeUp, isDesktop}) => ({
   alignItems: 'flex-end',
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   color: isTimeUp ? PALETTE.SLATE_700 : '#FFFFFF',

@@ -1,9 +1,9 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import upgradeLaterSvg from '../../../static/images/illustrations/conversion_prompt-upgrade_later.svg'
+import DialogContainer from './DialogContainer'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
-import DialogContainer from './DialogContainer'
-import upgradeLaterSvg from '../../../static/images/illustrations/conversion_prompt-upgrade_later.svg'
 
 const Illustration = styled('img')({
   display: 'block ',

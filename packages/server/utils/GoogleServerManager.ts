@@ -1,9 +1,9 @@
-import GoogleManager from 'parabol-client/utils/GoogleManager'
-import {stringify} from 'querystring'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../appOrigin'
-import fetch from 'node-fetch'
 import {decode} from 'jsonwebtoken'
+import fetch from 'node-fetch'
+import GoogleManager from 'parabol-client/utils/GoogleManager'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {stringify} from 'querystring'
+import appOrigin from '../appOrigin'
 
 interface OAuth2Response {
   access_token: string

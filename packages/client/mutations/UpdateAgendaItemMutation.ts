@@ -1,13 +1,13 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
+import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
+import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
-import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
-import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
-import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
+import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
@@ -75,7 +75,7 @@ const UpdateAgendaItemMutation: StandardMutation<
   {meetingId: string | undefined}
 > = (atmosphere, variables, {meetingId}) => {
   const {updatedAgendaItem} = variables
-  const [teamId] = updatedAgendaItem.id.split('::')
+  const teamId = updatedAgendaItem.id.split('::')[0]!
   return commitMutation<TUpdateAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
@@ -85,7 +85,7 @@ const UpdateAgendaItemMutation: StandardMutation<
       updateAgendaItemUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
-      const proxyAgendaItem = store.get(updatedAgendaItem.id)
+      const proxyAgendaItem = store.get(updatedAgendaItem.id)!
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem)
       handleUpdateAgendaItems(store, teamId)
       handleUpdateAgendaPhase(store, meetingId)

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {OrganizationRow_organization} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton from '../../../../components/FlatButton'
-import Icon from '../../../../components/Icon'
 import Row from '../../../../components/Row/Row'
 import RowActions from '../../../../components/Row/RowActions'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -55,9 +55,13 @@ const StyledButton = styled(SecondaryButton)({
   width: 36
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: 18
+  height: 18,
+  width: 18,
+  svg: {
+    fontSize: 18
+  }
 })
 
 const StyledRowInfo = styled(RowInfo)({
@@ -140,7 +144,9 @@ const OrganizationRow = (props: Props) => {
             onMouseLeave={closeTooltip}
             ref={originRef}
           >
-            <StyledIcon>settings</StyledIcon>
+            <StyledIcon>
+              <SettingsIcon />
+            </StyledIcon>
           </StyledButton>
           {tooltipPortal('Settings')}
         </RowActions>

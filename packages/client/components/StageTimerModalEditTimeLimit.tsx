@@ -1,17 +1,17 @@
+import styled from '@emotion/styled'
+import {TimerOff} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {StageTimerModalEditTimeLimit_stage} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
-import styled from '@emotion/styled'
-import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
-import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
-import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import MenuItemHR from './MenuItemHR'
+import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
+import {StageTimerModalEditTimeLimit_stage} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
+import MenuItemHR from './MenuItemHR'
+import PlainButton from './PlainButton/PlainButton'
+import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
 
 interface Props {
   meetingId: string
@@ -43,7 +43,7 @@ const HR = styled(MenuItemHR)({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(TimerOff)({
   color: PALETTE.SLATE_600
 })
 
@@ -60,7 +60,7 @@ const StageTimerModalEditTimeLimit = (props: Props) => {
   return (
     <Modal>
       <EndTimer onClick={endTimer}>
-        <StyledIcon>timer_off</StyledIcon>
+        <StyledIcon />
         <Label>End {MeetingLabels.TIMER}</Label>
       </EndTimer>
       <HR />

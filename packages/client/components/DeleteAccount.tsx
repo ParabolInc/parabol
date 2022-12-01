@@ -6,8 +6,8 @@ import lazyPreload from '../utils/lazyPreload'
 import IconLabel from './IconLabel'
 import LinkButton from './LinkButton'
 
-const DeleteAccountModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
+const DeleteAccountModal = lazyPreload(
+  () => import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
 )
 
 const Hint = styled('div')({
@@ -26,7 +26,7 @@ const DeleteAccount = () => {
           palette='red'
           onClick={togglePortal}
         >
-          <IconLabel icon='remove_circle' label='Delete Account' />
+          <IconLabel iconLarge icon='remove_circle' label='Delete Account' />
         </LinkButton>
         <Hint>
           <b>Note</b>: {'This can’t be undone.'}

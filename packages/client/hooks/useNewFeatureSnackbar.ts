@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from './useAtmosphere'
-import useMutationProps from './useMutationProps'
 import DismissNewFeatureMutation from '../mutations/DismissNewFeatureMutation'
 import {useNewFeatureSnackbar_viewer$key} from '../__generated__/useNewFeatureSnackbar_viewer.graphql'
+import useAtmosphere from './useAtmosphere'
+import useMutationProps from './useMutationProps'
 
 const useNewFeatureSnackbar = (viewerRef: useNewFeatureSnackbar_viewer$key) => {
   const atmosphere = useAtmosphere()
@@ -26,18 +26,18 @@ const useNewFeatureSnackbar = (viewerRef: useNewFeatureSnackbar_viewer$key) => {
 
   useEffect(() => {
     if (!newFeature) return
-      const {actionButtonCopy, snackbarMessage, url} = newFeature
-      const snack = {
-        key: 'newFeature',
-        autoDismiss: 0,
-        message: snackbarMessage,
-        onDismiss: () => DismissNewFeatureMutation(atmosphere, {}, {onCompleted, onError}),
-        action: {
-          label: actionButtonCopy,
-          callback: () => window.open(url, '_blank', 'noopener')
-        }
+    const {actionButtonCopy, snackbarMessage, url} = newFeature
+    const snack = {
+      key: 'newFeature',
+      autoDismiss: 0,
+      message: snackbarMessage,
+      onDismiss: () => DismissNewFeatureMutation(atmosphere, {}, {onCompleted, onError}),
+      action: {
+        label: actionButtonCopy,
+        callback: () => window.open(url, '_blank', 'noopener')
       }
-      atmosphere.eventEmitter.emit('addSnackbar', snack)
+    }
+    atmosphere.eventEmitter.emit('addSnackbar', snack)
   }, [newFeature])
 }
 

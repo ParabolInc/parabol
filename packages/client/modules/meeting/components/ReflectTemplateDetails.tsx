@@ -3,34 +3,35 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
-import sailboatTemplate from '../../../../../static/images/illustrations/sailboatTemplate.png'
-import startStopContinueTemplate from '../../../../../static/images/illustrations/startStopContinueTemplate.png'
-import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.png'
-import whatWentWellTemplate from '../../../../../static/images/illustrations/whatWentWellTemplate.png'
 import dropAddKeepImproveDAKITemplate from '../../../../../static/images/illustrations/dakiTemplate.png'
-import leanCoffeeTemplate from '../../../../../static/images/illustrations/leanCoffeeTemplate.png'
-import starfishTemplate from '../../../../../static/images/illustrations/starfishTemplate.png'
+import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.png'
 import fourLsTemplate from '../../../../../static/images/illustrations/fourLsTemplate.png'
 import gladSadMadTemplate from '../../../../../static/images/illustrations/gladSadMadTemplate.png'
-import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.png'
-import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.png'
-import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.png'
+import leanCoffeeTemplate from '../../../../../static/images/illustrations/leanCoffeeTemplate.png'
 import mountainClimberTemplate from '../../../../../static/images/illustrations/mountainClimberTemplate.png'
+import sailboatTemplate from '../../../../../static/images/illustrations/sailboatTemplate.png'
+import starfishTemplate from '../../../../../static/images/illustrations/starfishTemplate.png'
+import startStopContinueTemplate from '../../../../../static/images/illustrations/startStopContinueTemplate.png'
+import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.png'
+import whatWentWellTemplate from '../../../../../static/images/illustrations/whatWentWellTemplate.png'
+import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.png'
+import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.png'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV3'
+import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
+import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
+import SelectTemplate from './SelectTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
-import SelectTemplate from './SelectTemplate'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
-import {Threshold} from '../../../types/constEnums'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -86,17 +87,20 @@ interface Props {
   gotoPublicTemplates: () => void
   closePortal: () => void
   settings: ReflectTemplateDetails_settings
+  viewer: ReflectTemplateDetails_viewer
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {featureFlags} = viewer
+  const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
   const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts} = activeTemplate
-  const {id: teamId, orgId} = team
+  const {id: teamId, orgId, tier} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
   const isOwner = activeTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, activeTemplate)
+  const description = makeTemplateDescription(lowestScope, activeTemplate, viewer, tier)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -125,11 +129,12 @@ const ReflectTemplateDetails = (props: Props) => {
     mountainClimberTemplate: mountainClimberTemplate,
     threeLittlePigsTemplate: threeLittlePigsTemplate,
     winningStreakTemplate: winningStreakTemplate
-  }
-  const headerImg = defaultIllustrations[templateId]
-    ? defaultIllustrations[templateId]
+  } as const
+  const headerImg = defaultIllustrations[templateId as keyof typeof defaultIllustrations]
+    ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
-  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
+  const isActiveTemplate = templateId === settings.selectedTemplate.id
+  const showClone = !isOwner && (templateLimitFlag ? tier !== 'personal' : true)
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>
@@ -152,7 +157,7 @@ const ReflectTemplateDetails = (props: Props) => {
                 type='retrospective'
               />
             )}
-            {!isOwner && <CloneTemplate onClick={onClone} canClone={canClone} />}
+            {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
@@ -161,7 +166,14 @@ const ReflectTemplateDetails = (props: Props) => {
         <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
       {!isActiveTemplate && (
-        <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />
+        <SelectTemplate
+          closePortal={closePortal}
+          template={activeTemplate}
+          teamId={teamId}
+          hasFeatureFlag={templateLimitFlag}
+          tier={tier}
+          orgId={orgId}
+        />
       )}
     </PromptEditor>
   )
@@ -199,7 +211,16 @@ export default createFragmentContainer(ReflectTemplateDetails, {
       team {
         id
         orgId
+        tier
       }
+    }
+  `,
+  viewer: graphql`
+    fragment ReflectTemplateDetails_viewer on User {
+      featureFlags {
+        templateLimit
+      }
+      ...makeTemplateDescription_viewer
     }
   `
 })

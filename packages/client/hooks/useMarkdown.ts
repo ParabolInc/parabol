@@ -10,10 +10,10 @@ import {
 import {List, Map, OrderedSet} from 'immutable'
 import {useRef} from 'react'
 import getAnchorLocation from '../components/TaskEditor/getAnchorLocation'
+import {SetEditorState} from '../types/draft'
 import addSpace from '../utils/draftjs/addSpace'
 import splitBlock from '../utils/draftjs/splitBlock'
 import linkify from '../utils/linkify'
-import {SetEditorState} from '../types/draft'
 
 const inlineMatchers = {
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},
@@ -37,10 +37,7 @@ const extractStyle = (
   extractedStyles: typeof styles
 ) => {
   const {regex, matchIdx} = inlineMatchers[style]
-  const blockText = editorState
-    .getCurrentContent()
-    .getBlockForKey(blockKey)
-    .getText()
+  const blockText = editorState.getCurrentContent().getBlockForKey(blockKey).getText()
   const result = regex.exec(blockText)
   if (result) {
     const es = extractedStyles.length === 0 ? getNextState() : editorState
@@ -93,7 +90,7 @@ const extractMarkdownStyles = (
   getNextState: () => EditorState,
   blockKey: string
 ) => {
-  const extractedStyles = []
+  const extractedStyles = [] as any[]
   let es = editorState
   styles.forEach((style) => {
     es = extractStyle(es, getNextState, style, blockKey, extractedStyles)

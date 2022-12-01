@@ -1,13 +1,13 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import ChangeTaskTeamPayload from './ChangeTaskTeamPayload'
+import CreateTaskIntegrationPayload from './CreateTaskIntegrationPayload'
 import CreateTaskPayload from './CreateTaskPayload'
 import DeleteTaskPayload from './DeleteTaskPayload'
 import EditTaskPayload from './EditTaskPayload'
-import UpdateTaskPayload from './UpdateTaskPayload'
-import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
+import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import UpdateTaskDueDatePayload from './UpdateTaskDueDatePayload'
-import CreateTaskIntegrationPayload from './CreateTaskIntegrationPayload'
+import UpdateTaskPayload from './UpdateTaskPayload'
 
 const types = [
   ChangeTaskTeamPayload,

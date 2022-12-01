@@ -22,10 +22,9 @@ const mutation = graphql`
   }
 `
 
-const ReflectTemplatePromptUpdateGroupColorMutation: SimpleMutation<TReflectTemplatePromptUpdateGroupColorMutation> = (
-  atmosphere,
-  variables
-) => {
+const ReflectTemplatePromptUpdateGroupColorMutation: SimpleMutation<
+  TReflectTemplatePromptUpdateGroupColorMutation
+> = (atmosphere, variables) => {
   return commitMutation<TReflectTemplatePromptUpdateGroupColorMutation>(atmosphere, {
     mutation,
     variables,

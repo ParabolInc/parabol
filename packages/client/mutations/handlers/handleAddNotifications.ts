@@ -1,9 +1,9 @@
+import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import filterNodesInConn from '../../utils/relay/filterNodesInConn'
 import getNotificationsConn from '../connections/getNotificationsConn'
 import pluralizeHandler from './pluralizeHandler'
-import filterNodesInConn from '../../utils/relay/filterNodesInConn'
-import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
 
-const handleAddNotification = (newNode: RecordProxy | null, store: RecordSourceProxy) => {
+const handleAddNotification = (newNode: RecordProxy | null, store: RecordSourceSelectorProxy) => {
   if (!newNode) return
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer) return

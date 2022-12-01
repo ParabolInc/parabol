@@ -1,10 +1,8 @@
-
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
-import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
-import React from 'react'
 
 const StyledCloseButton = styled(PlainButton)({
   height: 24,
@@ -12,10 +10,9 @@ const StyledCloseButton = styled(PlainButton)({
   right: 16
 })
 
-const CloseIcon = styled(Icon)({
+const CloseIcon = styled(Close)({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  fontSize: ICON_SIZE.MD24,
   '&:hover,:focus': {
     color: PALETTE.SLATE_800
   }
@@ -44,7 +41,7 @@ const SpotlightTopBar = (prop: Props) => {
     <TopRow>
       <Title>Find cards with similar reflections</Title>
       <StyledCloseButton onClick={closeSpotlight}>
-        <CloseIcon>close</CloseIcon>
+        <CloseIcon />
       </StyledCloseButton>
     </TopRow>
   )

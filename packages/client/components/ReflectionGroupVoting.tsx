@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Add as AddIcon, Remove as RemoveIcon, ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -7,14 +8,13 @@ import useMutationProps from '~/hooks/useMutationProps'
 import Atmosphere from '../Atmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
+import {CompletedHandler} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import FlatButton from './FlatButton'
-import Icon from './Icon'
 
 interface Props extends WithMutationProps {
   isExpanded: boolean
@@ -28,13 +28,18 @@ const UpvoteRow = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const ThumbUpIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
+const ThumbUpIcon = styled(ThumbUp)({
+  height: 18,
+  width: 18
+})
+
+const StyledIcon = styled('div')({
   height: 24,
-  lineHeight: '24px',
-  textAlign: 'center',
-  userSelect: 'none',
-  width: 24
+  width: 24,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  userSelect: 'none'
 })
 
 const UpvoteButton = styled(FlatButton)<{isExpanded: boolean; disabled: boolean}>(
@@ -75,17 +80,19 @@ const UpvoteColumn = styled('div')({
   width: 96
 })
 
-const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
-  onCompleted()
-  const error = getGraphQLError(res, errors)
-  if (error) {
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      key: 'voteError',
-      message: error.message || 'Error submitting vote',
-      autoDismiss: 5
-    })
+const makeHandleCompleted =
+  (onCompleted: () => void, atmosphere: Atmosphere): CompletedHandler =>
+  (res, errors) => {
+    onCompleted()
+    const error = getGraphQLError(res, errors)
+    if (error) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'voteError',
+        message: error.message || 'Error submitting vote',
+        autoDismiss: 5
+      })
+    }
   }
-}
 
 const ReflectionGroupVoting = (props: Props) => {
   const {isExpanded, meeting, reflectionGroup} = props
@@ -130,10 +137,12 @@ const ReflectionGroupVoting = (props: Props) => {
           color={isExpanded ? PALETTE.SKY_400 : PALETTE.SKY_500}
           onClick={downvote}
         >
-          <Icon>remove</Icon>
+          <RemoveIcon />
         </UpvoteButton>
         <Votes isExpanded={isExpanded} voteCount={viewerVoteCount}>
-          <ThumbUpIcon>{'thumb_up'}</ThumbUpIcon>
+          <StyledIcon>
+            <ThumbUpIcon />
+          </StyledIcon>
           <span data-cy={`completed-vote-count`}>{viewerVoteCount}</span>
         </Votes>
         <UpvoteButton
@@ -143,7 +152,7 @@ const ReflectionGroupVoting = (props: Props) => {
           color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.SLATE_600}
           onClick={vote}
         >
-          <Icon>add</Icon>
+          <AddIcon />
         </UpvoteButton>
       </UpvoteRow>
     </UpvoteColumn>

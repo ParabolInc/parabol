@@ -60,7 +60,8 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         info
       ) => {
         const {dataLoader, authToken} = context
-        const NULL_FIELD = {name: '', type: 'string'}
+        const viewerId = getUserId(authToken)
+        const NULL_FIELD = {name: SprintPokerDefaults.SERVICE_FIELD_NULL, type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
         const {integration} = task
@@ -77,25 +78,35 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         }
 
         if (service === 'jira') {
-          const {cloudId, issueKey} = integration
+          const {cloudId, issueKey, accessUserId} = integration
           const projectKey = JiraProjectKeyId.join(issueKey)
-          const [dimensionName, team] = await Promise.all([
+          const [dimensionName, jiraIssue] = await Promise.all([
             getDimensionName(meetingId),
-            dataLoader.get('teams').load(teamId)
+            dataLoader
+              .get('jiraIssue')
+              .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
           ])
-          const jiraDimensionFields = team?.jiraDimensionFields || []
-          const existingDimensionField = jiraDimensionFields.find(
-            (field) =>
-              field.dimensionName === dimensionName &&
-              field.cloudId === cloudId &&
-              field.projectKey === projectKey
-          )
+          if (!jiraIssue) return NULL_FIELD
+          const {issueType, possibleEstimationFieldNames} = jiraIssue
 
-          if (existingDimensionField)
+          const dimensionFields = await dataLoader
+            .get('jiraDimensionFieldMap')
+            .load({teamId, cloudId, projectKey, issueType, dimensionName})
+
+          const validFields = [
+            SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            SprintPokerDefaults.SERVICE_FIELD_NULL,
+            ...possibleEstimationFieldNames
+          ]
+          const dimensionField = dimensionFields.find(({fieldName}) =>
+            validFields.includes(fieldName)
+          )
+          if (dimensionField) {
             return {
-              name: existingDimensionField.fieldName,
-              type: existingDimensionField.fieldType
+              name: dimensionField.fieldName,
+              type: dimensionField.fieldType
             }
+          }
 
           return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
@@ -111,7 +122,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           const jiraServerIssue = await dataLoader
             .get('jiraServerIssue')
             .load({providerId, teamId, userId: accessUserId, issueId})
-          if (!jiraServerIssue) return null
+          if (!jiraServerIssue) return NULL_FIELD
           const {issueType} = jiraServerIssue
 
           const existingDimensionField = await dataLoader
@@ -135,7 +146,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             taskId,
             instanceId,
             projectId: projectKey,
-            viewerId: accessUserId,
+            viewerId,
             workItemId: issueKey
           })
 

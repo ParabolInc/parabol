@@ -1,11 +1,15 @@
 import {RecordProxy} from 'relay-runtime'
 import {getAscendingIdx, getDescendingIdx} from './addNodeToArray'
 
-export const insertEdgeBefore = (connection, newEdge, propName) => {
-  const edges = connection.getLinkedRecords('edges')
-  const newName = newEdge.getLinkedRecord('node').getValue(propName)
+export const insertEdgeBefore = (
+  connection: RecordProxy,
+  newEdge: RecordProxy,
+  propName: string
+) => {
+  const edges = connection.getLinkedRecords('edges')!
+  const newName = newEdge.getLinkedRecord('node')?.getValue(propName) as string
   const newEdgeIdx = edges.findIndex((edge) => {
-    const edgeName = edge ? edge.getLinkedRecord('node').getValue(propName) : ''
+    const edgeName = edge ? (edge.getLinkedRecord('node')?.getValue(propName) as string) : ''
     return edgeName > newName
   })
   const nextEdges =
@@ -15,10 +19,10 @@ export const insertEdgeBefore = (connection, newEdge, propName) => {
   connection.setLinkedRecords(nextEdges, 'edges')
 }
 
-export const insertNodeBefore = (nodes, newNode, propName) => {
-  const newName = newNode.getValue(propName)
+export const insertNodeBefore = (nodes: RecordProxy[], newNode: RecordProxy, propName: string) => {
+  const newName = newNode.getValue(propName) as string
   const newIdx = nodes.findIndex((node) => {
-    const nodeName = node ? node.getValue(propName) : ''
+    const nodeName = node ? (node.getValue(propName) as string) : ''
     return nodeName > newName ? 1 : -1
   })
   return newIdx === -1
@@ -40,8 +44,14 @@ export const insertEdgeAfter = (
   const edges = connection.getLinkedRecords('edges')!
   const nodes = edges.map((edge) => edge.getLinkedRecord('node'))
   const idxFinder = isAscending ? getAscendingIdx : getDescendingIdx
-  const newName = sortValue ? newEdge.getLinkedRecord('node')!.getValue(sortValue) as string | number : ''
-  const nextIdx = sortValue ? idxFinder(newName, nodes, sortValue) : isAscending ? edges.length - 1 : 0
+  const newName = sortValue
+    ? (newEdge.getLinkedRecord('node')!.getValue(sortValue) as string | number)
+    : ''
+  const nextIdx = sortValue
+    ? idxFinder(newName, nodes, sortValue)
+    : isAscending
+    ? edges.length - 1
+    : 0
   const nextEdges = [...edges.slice(0, nextIdx), newEdge, ...edges.slice(nextIdx)]
   connection.setLinkedRecords(nextEdges, 'edges')
 }

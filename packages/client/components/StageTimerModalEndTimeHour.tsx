@@ -1,10 +1,10 @@
-import React from 'react'
-import useMenu from '../hooks/useMenu'
-import {MenuPosition} from '../hooks/useCoords'
 import styled from '@emotion/styled'
-import DropdownMenuToggle from './DropdownMenuToggle'
+import React from 'react'
+import {MenuPosition} from '../hooks/useCoords'
+import useMenu from '../hooks/useMenu'
 import '../styles/daypicker.css'
 import formatTime from '../utils/date/formatTime'
+import DropdownMenuToggle from './DropdownMenuToggle'
 import StageTimerHourPicker from './StageTimerHourPicker'
 
 interface Props {

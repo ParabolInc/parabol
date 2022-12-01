@@ -90,10 +90,7 @@ const publishChangeNotifications = async (
 
   // update changes in the db
   if (notificationsToAdd.length) {
-    await r
-      .table('Notification')
-      .insert(notificationsToAdd)
-      .run()
+    await r.table('Notification').insert(notificationsToAdd).run()
   }
   return {notificationsToAdd}
 }

@@ -1,4 +1,6 @@
-const getBestFitSelection = (newContentState, oldKey, oldOffset) => {
+import {ContentState, EditorState} from 'draft-js'
+
+const getBestFitSelection = (newContentState: ContentState, oldKey: string, oldOffset: number) => {
   const contentBlock = newContentState.getBlockForKey(oldKey) || newContentState.getFirstBlock()
   const key = contentBlock.getKey()
   const blockLength = contentBlock.getText().length
@@ -6,7 +8,7 @@ const getBestFitSelection = (newContentState, oldKey, oldOffset) => {
   return {key, offset}
 }
 
-const getMergedSelection = (oldEditorState, newContentState) => {
+const getMergedSelection = (oldEditorState: EditorState, newContentState: ContentState) => {
   const oldSelection = oldEditorState.getSelection()
   const oldStartKey = oldSelection.getStartKey()
   const oldStartOffset = oldSelection.getStartOffset()
@@ -36,14 +38,14 @@ const getMergedSelection = (oldEditorState, newContentState) => {
   })
 }
 
-const mergeServerContent = (oldEditorState, newContentState) => {
+const mergeServerContent = (oldEditorState: EditorState, newContentState: ContentState) => {
   // unless it's being simultaneously edited, don't bother setting selection
   if (!oldEditorState.getSelection().getHasFocus()) {
     return newContentState
   }
   return newContentState.merge({
     selectionAfter: getMergedSelection(oldEditorState, newContentState)
-  })
+  }) as ContentState
 }
 
 export default mergeServerContent

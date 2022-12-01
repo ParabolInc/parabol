@@ -1,8 +1,8 @@
 import React from 'react'
-import Menu from './Menu'
 import {MenuProps} from '../hooks/useMenu'
-import MenuItem from './MenuItem'
 import plural from '../utils/plural'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props {
   minuteTimeLimit: number
@@ -10,7 +10,7 @@ interface Props {
   setMinuteTimeLimit: (n: number) => void
 }
 
-const options = [...Array(9).keys()].map((n) => n + 1)
+const options = [...Array(10).keys()].map((n) => n + 1)
 
 const StageTimerMinutePicker = (props: Props) => {
   const {menuProps, minuteTimeLimit, setMinuteTimeLimit} = props

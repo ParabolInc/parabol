@@ -7,7 +7,7 @@ import {BezierCurve} from '../types/constEnums'
 
 const EstimateMeta = styled('div')({
   fontWeight: 600,
-  paddingRight: 8,
+  paddingRight: 8
 })
 
 const EmptyProgressBar = styled('div')({
@@ -37,26 +37,22 @@ const PokerSidebarEstimateMeta = (props: Props) => {
   const {finalScores} = props
   const completedScoreCount = finalScores.filter(Boolean).length
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_CENTER, {disabled: completedScoreCount === 0})
+    MenuPosition.LOWER_CENTER,
+    {disabled: completedScoreCount === 0}
+  )
   if (finalScores.length === 1) {
     const [firstScore] = finalScores
     const label = firstScore || '–'
-    return (
-      <EstimateMeta>
-        {label}
-      </EstimateMeta>
-    )
+    return <EstimateMeta>{label}</EstimateMeta>
   }
 
-  const tooltipBody = finalScores.map((score) => score === null ? '?' : score).join(' / ')
+  const tooltipBody = finalScores.map((score) => (score === null ? '?' : score)).join(' / ')
   return (
-    <ProgressBar ref={originRef} onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}>
+    <ProgressBar ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
       <EmptyProgressBar />
       <FilledProgressBar percent={completedScoreCount / finalScores.length} />
       {tooltipPortal(<div>{tooltipBody}</div>)}
     </ProgressBar>
-
   )
 }
 

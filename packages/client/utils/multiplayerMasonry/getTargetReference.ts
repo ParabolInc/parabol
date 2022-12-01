@@ -1,5 +1,5 @@
-import {ElementWidth} from '../../types/constEnums'
 import {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCard'
+import {ElementWidth} from '../../types/constEnums'
 
 // The following improves accuracy by predicting where the cursor is headed, not where it is
 
@@ -45,8 +45,8 @@ import {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCa
 // increasing this increases the probability that the targetId is not the nearest
 const SWITCHING_COST = 50
 
-  // if it's clear they aren't near a card, don't try to force a relative position
-  const MAX_DIST = ElementWidth.REFLECTION_CARD
+// if it's clear they aren't near a card, don't try to force a relative position
+const MAX_DIST = ElementWidth.REFLECTION_CARD
 
 const getTargetReference = (
   cursorX: number,

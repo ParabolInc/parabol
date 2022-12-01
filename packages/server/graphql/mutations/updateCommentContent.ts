@@ -37,10 +37,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const comment = await r
-      .table('Comment')
-      .get(commentId)
-      .run()
+    const comment = await r.table('Comment').get(commentId).run()
     if (!comment || !comment.isActive) {
       return standardError(new Error('comment not found'), {userId: viewerId})
     }

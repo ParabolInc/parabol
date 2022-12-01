@@ -4,17 +4,17 @@ import {ContentState, convertToRaw} from 'draft-js'
 import React, {memo, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
+import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
-import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 
 const Wrapper = styled('div')({
   outline: 'none'
@@ -34,9 +34,18 @@ interface Props {
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy, isViewerMeetingSection, meetingId} = props
-  const {id: taskId, team, content} = task
-  const {id: teamId} = team
+  const {
+    contentState,
+    className,
+    isDraggingOver,
+    task,
+    area,
+    isAgenda,
+    dataCy,
+    isViewerMeetingSection,
+    meetingId
+  } = props
+  const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
@@ -63,7 +72,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value && !isFocused) {
-        DeleteTaskMutation(atmosphere, taskId, teamId)
+        DeleteTaskMutation(atmosphere, {taskId})
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
@@ -79,7 +88,7 @@ const OutcomeCardContainer = memo((props: Props) => {
     const nextContentState = editorState.getCurrentContent()
     const hasText = nextContentState.hasText()
     if (!hasText && !isFocused) {
-      DeleteTaskMutation(atmosphere, taskId, teamId)
+      DeleteTaskMutation(atmosphere, {taskId})
     } else {
       const content = JSON.stringify(convertToRaw(nextContentState))
       const initialContent = JSON.stringify(convertToRaw(contentState))
@@ -127,9 +136,6 @@ export default createFragmentContainer(OutcomeCardContainer, {
       }
       content
       id
-      team {
-        id
-      }
       ...OutcomeCard_task @arguments(meetingId: $meetingId)
     }
   `
