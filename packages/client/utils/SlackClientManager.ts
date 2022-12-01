@@ -2,6 +2,7 @@ import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddSlackAuthMutation from '../mutations/AddSlackAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import makeHref from './makeHref'
 import SlackManager from './SlackManager'
 class SlackClientManager extends SlackManager {
   fetch = window.fetch.bind(window)
@@ -11,7 +12,9 @@ class SlackClientManager extends SlackManager {
     const providerState = btoa(
       JSON.stringify({hash, origin: window.location.origin, service: 'slack'})
     )
-    const redirect = window.__ACTION__.oauth2Redirect
+    const redirect = makeHref('/auth/slack')
+    // use this when slack approves our app
+    // const redirect = window.__ACTION__.oauth2Redirect
     const uri = `https://slack.com/oauth/v2/authorize?client_id=${window.__ACTION__.slack}&scope=${SlackClientManager.SCOPE}&state=${providerState}&redirect_uri=${redirect}`
     const popup = window.open(
       uri,
