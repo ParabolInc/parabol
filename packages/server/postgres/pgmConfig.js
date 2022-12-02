@@ -6,11 +6,11 @@ const pgmConfig = {
   host: process.env.POSTGRES_HOST,
   port: process.env.POSTGRES_PORT,
   database: process.env.POSTGRES_DB,
-  ...(ssl ?? {}),
+  ssl: ssl ?? undefined,
   tsconfig: 'packages/server/tsconfig.json',
   'migrations-dir': 'packages/server/postgres/migrations',
   'migrations-table': 'PgMigrations',
-  'template-file-name':'packages/server/postgres/migrationTemplate.ts'
+  'template-file-name': 'packages/server/postgres/migrationTemplate.ts'
 }
 
 module.exports = pgmConfig
