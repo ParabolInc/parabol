@@ -6,7 +6,7 @@ import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToPro = async (orgId: string, source: string, email: string) => {
+const upgradeToTeamTier = async (orgId: string, source: string, email: string) => {
   const r = await getRethink()
   const now = new Date()
 
@@ -61,4 +61,4 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
-export default upgradeToPro
+export default upgradeToTeamTier

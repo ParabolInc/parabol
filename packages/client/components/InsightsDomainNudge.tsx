@@ -70,10 +70,10 @@ const InsightsDomainNudge = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {id: domainId, suggestedTier, tier, organizations} = domain
-  const personalOrganizations = organizations
+  const starterOrganizations = organizations
     .filter((org) => org.tier === 'starter')
     .sort((a, b) => (a.orgUserCount > b.orgUserCount ? -1 : 1))
-  const [biggestOrganization] = personalOrganizations
+  const [biggestOrganization] = starterOrganizations
   const organizationName = biggestOrganization?.name ?? ''
   const suggestTeam = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'

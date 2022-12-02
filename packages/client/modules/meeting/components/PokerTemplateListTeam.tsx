@@ -95,7 +95,7 @@ const PokerTemplateListTeam = (props: Props) => {
       }
       return (
         <Message>
-          <StyledLink onClick={goToBilling}>Upgrade to Team </StyledLink>
+          <StyledLink onClick={goToBilling}>Upgrade </StyledLink>
           <span>to create custom templates for your team</span>
         </Message>
       )

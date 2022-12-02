@@ -50,11 +50,11 @@ const OrgBillingDangerZone = (props: Props) => {
   const {organization} = props
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
-  const isPersonal = tier === 'starter'
+  const isStarter = tier === 'starter'
   return (
     <Panel label='Danger Zone'>
       <PanelRow>
-        {isPersonal ? (
+        {isStarter ? (
           <ArchiveOrganization organization={organization} />
         ) : (
           <Unsubscribe>

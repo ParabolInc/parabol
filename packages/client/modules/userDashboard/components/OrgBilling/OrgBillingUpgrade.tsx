@@ -61,7 +61,7 @@ const OrgBillingUpgrade = (props: Props) => {
       {tier === 'starter' && (
         <Panel>
           <Inner>
-            <Title>Upgrade to Team</Title>
+            <Title>Upgrade</Title>
             <Quotes />
             <UpgradeBenefits />
             <ButtonBlock>

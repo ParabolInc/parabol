@@ -7,7 +7,6 @@ import WaveWhiteSVG from 'static/images/waveWhite.svg'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
-import {TierLabel} from '~/types/constEnums'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {StandardHub_viewer, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
@@ -117,10 +116,7 @@ const StandardHub = (props: Props) => {
       {tier === 'starter' ? (
         <Upgrade onClick={handleUpgradeClick}>
           <VerifiedUserIcon />
-          <UpgradeCTA>
-            {'Upgrade to '}
-            <b>{TierLabel.TEAM}</b>
-          </UpgradeCTA>
+          <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
         </Upgrade>
       ) : (
         <Tier tier={tier as TierEnum} />

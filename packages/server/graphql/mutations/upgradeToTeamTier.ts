@@ -6,12 +6,12 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import UpgradeToProPayload from '../types/UpgradeToProPayload'
+import UpgradeToTeamTierPayload from '../types/UpgradeToTeamTierPayload'
 import hideConversionModal from './helpers/hideConversionModal'
-import upgradeToPro from './helpers/upgradeToPro'
+import upgradeToTeamTier from './helpers/upgradeToTeamTier'
 
 export default {
-  type: UpgradeToProPayload,
+  type: UpgradeToTeamTierPayload,
   description: 'Upgrade an account to the paid service',
   args: {
     orgId: {
@@ -43,7 +43,9 @@ export default {
     } = await r.table('Organization').get(orgId).run()
 
     if (startingSubId) {
-      return standardError(new Error('Already a pro organization'), {userId: viewerId})
+      return standardError(new Error('Already an organization on the team tier'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -51,7 +53,7 @@ export default {
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
     try {
-      await upgradeToPro(orgId, stripeToken, email)
+      await upgradeToTeamTier(orgId, stripeToken, email)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
@@ -79,13 +81,13 @@ export default {
       billingLeaderEmail: viewer!.email
     })
     const data = {orgId, teamIds, meetingIds}
-    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToProPayload', data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierPayload', data, subOptions)
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToProPayload', teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToTeamTierPayload', teamData, subOptions)
     })
     return data
   }

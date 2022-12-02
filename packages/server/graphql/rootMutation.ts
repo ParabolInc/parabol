@@ -130,7 +130,7 @@ import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
 import updateUserProfile from './mutations/updateUserProfile'
-import upgradeToPro from './mutations/upgradeToPro'
+import upgradeToTeamTier from './mutations/upgradeToTeamTier'
 import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
@@ -253,7 +253,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTeamName,
       updateTemplateScope,
       updateUserProfile,
-      upgradeToPro,
+      upgradeToTeamTier,
       uploadOrgImage,
       uploadUserImage,
       verifyEmail,

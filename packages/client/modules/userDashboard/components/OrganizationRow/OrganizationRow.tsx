@@ -20,7 +20,7 @@ import useRouter from '../../../../hooks/useRouter'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import {Breakpoint, TierLabel} from '../../../../types/constEnums'
+import {Breakpoint} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
 
 const RowInner = styled('div')({
@@ -104,12 +104,6 @@ const OrganizationRow = (props: Props) => {
   }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = tier === 'starter'
-  const upgradeCTALabel = (
-    <span>
-      {'Upgrade to '}
-      <b>{TierLabel.TEAM}</b>
-    </span>
-  )
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -135,7 +129,7 @@ const OrganizationRow = (props: Props) => {
         <RowActions>
           {showUpgradeCTA && (
             <StyledFlatButton onClick={onRowClick} palette={'blue'}>
-              {upgradeCTALabel}
+              {'Upgrade'}
             </StyledFlatButton>
           )}
           <StyledButton

@@ -6,7 +6,6 @@ import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {TierLabel} from '../types/constEnums'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -104,10 +103,7 @@ const StandardHubUserMenu = (props: Props) => {
               <UpgradeIcon>
                 <Star />
               </UpgradeIcon>
-              <UpgradeCTA>
-                {'Upgrade to '}
-                <b>{TierLabel.TEAM}</b>
-              </UpgradeCTA>
+              <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
             </MenuItemLink>
           }
         />

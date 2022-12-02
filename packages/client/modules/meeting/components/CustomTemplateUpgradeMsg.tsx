@@ -91,9 +91,7 @@ const CustomTempateUpgradeMsg = (props: Props) => {
       <TemplateImage src={customTemplate} />
       <Header>{'Create Custom Templates'}</Header>
       <Details>
-        {
-          'Upgrade to Team to create custom templates that you can share with your organization or team'
-        }
+        {'Upgrade to create custom templates that you can share with your organization or team'}
       </Details>
       <ButtonBlock>
         <Button onClick={handleClick} palette='pink'>

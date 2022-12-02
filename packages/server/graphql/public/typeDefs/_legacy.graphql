@@ -7023,7 +7023,7 @@ type Mutation {
     the org requesting the upgrade
     """
     orgId: ID!
-  ): downgradeToStarterPayload
+  ): DowngradeToStarterPayload
 
   """
   Changes the priority of the discussion topics
@@ -7870,7 +7870,7 @@ type Mutation {
   """
   Upgrade an account to the paid service
   """
-  upgradeToPro(
+  upgradeToTeamTier(
     """
     the org requesting the upgrade
     """
@@ -7880,7 +7880,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpgradeToProPayload
+  ): UpgradeToTeamTierPayload
 
   """
   Upload an image for an org avatar
@@ -10020,7 +10020,7 @@ input UpdateUserProfileInput {
   preferredName: String
 }
 
-type UpgradeToProPayload {
+type UpgradeToTeamTierPayload {
   error: StandardMutationError
 
   """
@@ -10865,7 +10865,7 @@ union OrganizationSubscriptionPayload =
   | SetOrgUserRoleRemovedPayload
   | UpdateCreditCardPayload
   | UpdateOrgPayload
-  | UpgradeToProPayload
+  | UpgradeToTeamTierPayload
   | UpdateTemplateScopeSuccess
 
 type SetOrgUserRoleAddedPayload implements SetOrgUserRolePayload {
@@ -10925,7 +10925,7 @@ union TeamSubscriptionPayload =
   | UpdateAgendaItemPayload
   | UpdateCreditCardPayload
   | UpdateTeamNamePayload
-  | UpgradeToProPayload
+  | UpgradeToTeamTierPayload
   | AddReflectTemplatePayload
   | AddPokerTemplatePayload
   | AddReflectTemplatePromptPayload

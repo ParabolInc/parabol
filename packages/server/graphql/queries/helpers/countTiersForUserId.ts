@@ -15,24 +15,24 @@ const countTiersForUserId = async (userId: string) => {
       tier: r.table('Organization').get(organizationUser('orgId'))('tier').default('starter')
     }))
     .run()) as OrganizationUser[]
-  const tierPersonalCount = organizationUsers.filter(
+  const tierStarterCount = organizationUsers.filter(
     (organizationUser) => organizationUser.tier === 'starter'
   ).length
-  const tierProCount = organizationUsers.filter(
+  const tierTeamCount = organizationUsers.filter(
     (organizationUser) => organizationUser.tier === 'team'
   ).length
   const tierEnterpriseCount = organizationUsers.filter(
     (organizationUser) => organizationUser.tier === 'enterprise'
   ).length
-  const tierProBillingLeaderCount = organizationUsers.filter(
+  const tierTeamBillingLeaderCount = organizationUsers.filter(
     (organizationUser) =>
       organizationUser.tier === 'team' && organizationUser.role === 'BILLING_LEADER'
   ).length
   return {
-    tierPersonalCount,
-    tierProCount,
+    tierStarterCount,
+    tierTeamCount,
     tierEnterpriseCount,
-    tierProBillingLeaderCount
+    tierTeamBillingLeaderCount
   }
 }
 
