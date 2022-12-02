@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {checkTeamsLimitMaybeFlagOrganization} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
@@ -131,6 +132,7 @@ export default {
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
+    checkTeamsLimitMaybeFlagOrganization(team.orgId, dataLoader)
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventRetroComplete({

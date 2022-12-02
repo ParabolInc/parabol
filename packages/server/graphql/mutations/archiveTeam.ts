@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {maybeRemoveLimitExceededFlags} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
@@ -86,6 +87,8 @@ export default {
       const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
+
+    await maybeRemoveLimitExceededFlags(team.orgId, dataLoader)
 
     return data
   }
