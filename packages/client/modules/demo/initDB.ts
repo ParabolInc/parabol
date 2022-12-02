@@ -1,6 +1,5 @@
 import {PALETTE} from '~/styles/paletteV3'
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
-import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
@@ -318,7 +317,7 @@ const initDemoTeam = (
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: 'team' as TierEnum,
+    tier: 'team',
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
