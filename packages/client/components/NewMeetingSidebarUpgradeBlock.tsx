@@ -59,7 +59,7 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
           <UpgradeButton
             onClick={() => {
               onClick && onClick()
-              history.push(`/organizations/${orgId}`)
+              history.push(`/me/organizations/${orgId}`)
             }}
             size='small'
           >
