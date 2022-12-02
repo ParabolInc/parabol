@@ -156,15 +156,20 @@ export const newMeetingFields = () => ({
     resolve: async (
       {endedAt, teamId}: {endedAt: Date; teamId: string},
       _args: any,
-      {dataLoader}: GQLContext
+      {authToken, dataLoader}: GQLContext
     ) => {
       const freeLimit = new Date()
       freeLimit.setDate(freeLimit.getDate() - 30)
       if (endedAt > freeLimit) {
         return false
       }
-      const team = await dataLoader.get('teams').loadNonNull(teamId)
-      return team.tier === 'personal'
+      const viewerId = getUserId(authToken)
+      const [team, viewer] = await Promise.all([
+        dataLoader.get('teams').loadNonNull(teamId),
+        dataLoader.get('users').loadNonNull(viewerId)
+      ])
+
+      return viewer.featureFlags.includes('meetingHistoryLimit') && team.tier === 'personal'
     }
   }
 })
