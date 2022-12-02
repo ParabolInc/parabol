@@ -1,4 +1,5 @@
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
+import {TierEnum} from '../../database/types/Invoice'
 import MeetingAction from '../../database/types/MeetingAction'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
@@ -12,7 +13,7 @@ import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import {MeetingTypeEnum} from '../queries/generated/insertTeamQuery'
 
-export {MeetingTypeEnum}
+export {MeetingTypeEnum, TierEnum}
 
 export type AnyMeeting = MeetingRetrospective | MeetingPoker | MeetingAction | MeetingTeamPrompt
 
