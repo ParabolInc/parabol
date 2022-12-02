@@ -8,7 +8,7 @@ const getSSL = () => {
     const ca = readFileSync(path.join(PG_CERT_DIR, 'root.crt'))
     const key = readFileSync(path.join(PG_CERT_DIR, 'postgresql.key'))
     const cert = readFileSync(path.join(PG_CERT_DIR, 'postgresql.crt'))
-    return {ca, key, cert, rejectUnauthorized: false}
+    return {ca, key, cert, rejectUnauthorized: env.PG_SSL_REJECT_UNAUTHORIZED ?? true}
   } catch (e) {
     return undefined
   }
