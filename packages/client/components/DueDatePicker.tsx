@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import DayPicker, {DayModifiers} from 'react-day-picker'
+import {DayModifiers, DayPicker} from 'react-day-picker'
+import 'react-day-picker/dist/style.css'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
 import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
-import '../styles/daypicker.css'
 import {PALETTE} from '../styles/paletteV3'
 import {DueDatePicker_task} from '../__generated__/DueDatePicker_task.graphql'
 import Menu from './Menu'
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const TallMenu = styled(Menu)({
-  maxHeight: 340
+  maxHeight: 360
 })
 
 const PickerTitle = styled('div')({
@@ -60,11 +60,11 @@ const DueDatePicker = (props: Props) => {
       <PickerTitle>{'Change Due Date'}</PickerTitle>
       {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
       <DayPicker
-        disabledDays={{before: now}}
+        disabled={{before: now}}
         fromMonth={now}
-        initialMonth={selectedDate || now}
+        defaultMonth={selectedDate || now}
         onDayClick={handleDayClick}
-        selectedDays={selectedDate}
+        selected={selectedDate}
         toMonth={nextYear}
       />
     </TallMenu>
