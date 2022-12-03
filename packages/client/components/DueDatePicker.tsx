@@ -25,6 +25,7 @@ const TallMenu = styled(Menu)({
 
 const PickerTitle = styled('div')({
   fontSize: 14,
+  paddingTop: 8,
   textAlign: 'center',
   userSelect: 'none',
   width: '100%'
