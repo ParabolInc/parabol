@@ -15,6 +15,7 @@ const getClientKeys = () => {
     datadogService: process.env.DD_SERVICE,
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    googleAnalytics: process.env.GA_TRACKING_ID,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
