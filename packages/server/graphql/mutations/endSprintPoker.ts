@@ -67,11 +67,11 @@ export default {
     const {stage} = currentStageRes
     const phase = getMeetingPhase(phases)
     stage.isComplete = true
+    stage.endAt = now
     const storyCount = new Set(
       estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
     ).size
     const discussionIds = estimateStages.map((stage) => stage.discussionId)
-    stage.endAt = now
 
     const completedMeeting = (await r
       .table('NewMeeting')
