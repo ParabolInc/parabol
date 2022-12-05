@@ -5,6 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.84.0 2022-November-30
+
+### Added
+
+- **Notifications**: Improved notifications email (#7447)
+- **AI summary**: Added AI summary feature flag (#7493)
+- **Template limits**: Updated selected template for free teams #7460
+- **Template limits**: Added additional template event tracking #7454
+- **Template limits**: Prevent cloning templates #7452
+- **Template limits**: Focus on newly created template #7442
+- **Template limits**: Added limit exceeded and locking flags #7441
+- **Template limits**: Implemented custom template upgrade feedback (#7427)
+- **Template limits**: Added teams limit feature flag #7440
+- **Template limits**: Implemented restriction on public templates #7405
+- **Template limits**: Updated team & org page with limit info (#7415)
+- **Metrics**: Removed HubSpot updates from the app #7382
+- Migrated OAuth2 redirect to Cloudflare #7446
+- Added "go to dashboard" and "sign in" button to "invitation link expired" screen #7153
+
+### Fixed
+
+- **DX** Run all yarn clean commands, even if one fails #7461
+
+### Changed
+
+- **Deps**: bump vm2 from 3.9.7 to 3.9.11 (#7233)
+- **Deps**: bump loader-utils from 1.4.0 to 1.4.2 (#7428)
+
 ## 6.83.1 2022-November-23
 
 ### Fixed
@@ -15,18 +43,18 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 
-- Update tier when leaving org (#7377) 
+- Update tier when leaving org (#7377)
 - Added CorsOptions to email images (#7393)
-- Typo in Earth 2.0 check-in question 
-- Send button is disabled in retro discussion on mobile (#7361) 
+- Typo in Earth 2.0 check-in question
+- Send button is disabled in retro discussion on mobile (#7361)
 - Snackbar messages are not centered during standups #7203
-- Add delete confirmation button and waiting effect (#7403) 
-- Snack on jira auth error (#7432) 
+- Add delete confirmation button and waiting effect (#7403)
+- Snack on jira auth error (#7432)
 
 ### Changed
 
-- Cleanup packages to support future bundled server build (#7400) 
- 
+- Cleanup packages to support future bundled server build (#7400)
+
 ## 6.82.0 2022-November-09
 
 ### Added

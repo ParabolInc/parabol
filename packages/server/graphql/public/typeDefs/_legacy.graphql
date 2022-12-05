@@ -2439,7 +2439,7 @@ type ReflectTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -4140,7 +4140,7 @@ type PokerTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -4207,7 +4207,7 @@ interface MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 }
 
@@ -7540,7 +7540,6 @@ type Mutation {
     disables anonymity of reflections
     """
     disableAnonymity: Boolean
-
   ): SetMeetingSettingsPayload!
 
   """

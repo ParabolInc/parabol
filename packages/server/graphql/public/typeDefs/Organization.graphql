@@ -73,6 +73,21 @@ type Organization {
   periodStart: DateTime
 
   """
+  Flag the organization as exceeding the tariff limits by setting a datetime
+  """
+  tierLimitExceededAt: DateTime
+
+  """
+  Schedule the organization to be locked at
+  """
+  scheduledLockAt: DateTime
+
+  """
+  Organization locked at
+  """
+  lockedAt: DateTime
+
+  """
   The total number of retroMeetings given to the team
   """
   retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
