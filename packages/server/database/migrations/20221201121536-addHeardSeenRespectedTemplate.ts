@@ -3,7 +3,7 @@ import {PALETTE} from '../../../client/styles/paletteV3'
 
 const createdAt = new Date()
 
-const nameToId = (name: string, type: 'template' | 'prompt') => {
+const makeId = (name: string, type: 'template' | 'prompt') => {
   const cleanedName = name
     .replace(/[^0-9a-z-A-Z ]/g, '') // remove emojis and apostrophes
     .split(' ')
@@ -18,7 +18,7 @@ const nameToId = (name: string, type: 'template' | 'prompt') => {
 
 const makeTemplate = (name: string) => ({
   createdAt,
-  id: nameToId(name, 'template'),
+  id: makeId(name, 'template'),
   isActive: true,
   name,
   orgId: 'aGhostOrg',
@@ -44,8 +44,7 @@ const makePrompt = (promptInfo: PromptInfo) => {
     createdAt,
     description,
     groupColor,
-    // FIXME this may create duplicated ids
-    id: nameToId(question, 'prompt'),
+    id: makeId(`${templateId}:${question}`, 'prompt'),
     isActive: true,
     question,
     sortOrder,
@@ -64,7 +63,7 @@ const promptsInfo = [
     description:
       'Think about times or forums in which you felt your voice was not heard. What happened? How did it feel?',
     groupColor: PALETTE.GRAPE_600,
-    templateId: nameToId(templateName, 'template'),
+    templateId: makeId(templateName, 'template'),
     sortOrder: 0
   },
   {
@@ -72,7 +71,7 @@ const promptsInfo = [
     description:
       'Think about times or forums in which you felt you were not seen or your efforts were not recognized. What happened? How did it feel?',
     groupColor: PALETTE.TOMATO_600,
-    templateId: nameToId(templateName, 'template'),
+    templateId: makeId(templateName, 'template'),
     sortOrder: 1
   },
   {
@@ -80,7 +79,7 @@ const promptsInfo = [
     description:
       'Think about times or forums in which you felt you, your boundaries, or your contributions were not respected. What happened? How did it feel?',
     groupColor: PALETTE.SKY_400,
-    templateId: nameToId(templateName, 'template'),
+    templateId: makeId(templateName, 'template'),
     sortOrder: 2
   }
 ] as const
