@@ -7,7 +7,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {APP_CORS_OPTIONS, EMAIL_CORS_OPTIONS} from '../../../../../types/cors'
-import {RetroTopic_meeting$key} from '../../../../../__generated__/RetroTopic_meeting.graphql'
 import {RetroTopic_stage$key} from '../../../../../__generated__/RetroTopic_stage.graphql'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
@@ -81,11 +80,10 @@ interface Props {
   isEmail: boolean
   stageRef: RetroTopic_stage$key
   to: string
-  meetingRef: RetroTopic_meeting$key
 }
 
 const RetroTopic = (props: Props) => {
-  const {isDemo, isEmail, to, stageRef, meetingRef} = props
+  const {isDemo, isEmail, to, stageRef} = props
   const stage = useFragment(
     graphql`
       fragment RetroTopic_stage on RetroDiscussStage {
@@ -96,6 +94,9 @@ const RetroTopic = (props: Props) => {
             ...EmailReflectionCard_reflection
           }
           summary
+          team {
+            tier
+          }
         }
         discussion {
           commentCount
@@ -104,23 +105,9 @@ const RetroTopic = (props: Props) => {
     `,
     stageRef
   )
-  const {viewerMeetingMember} = useFragment(
-    graphql`
-      fragment RetroTopic_meeting on RetrospectiveMeeting {
-        viewerMeetingMember {
-          user {
-            featureFlags {
-              aiSummary
-            }
-          }
-        }
-      }
-    `,
-    meetingRef
-  )
   const {reflectionGroup, discussion} = stage
   const {commentCount} = discussion
-  const {reflections, title, voteCount, summary} = reflectionGroup!
+  const {reflections, title, voteCount, summary, team} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -133,7 +120,6 @@ const RetroTopic = (props: Props) => {
       : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   const corsOptions = isEmail ? EMAIL_CORS_OPTIONS : APP_CORS_OPTIONS
-  const showSummary = viewerMeetingMember?.user.featureFlags.aiSummary && summary
   return (
     <>
       <tr>
@@ -143,17 +129,21 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {showSummary && (
+      {summary && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
             <tr>
               <td style={topicTitleStyle}>{'Topic Summary:'}</td>
             </tr>
-            <tr>
-              <td
-                style={subtitleStyle}
-              >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-            </tr>
+            {team?.tier === 'personal' && (
+              <>
+                <tr>
+                  <td
+                    style={subtitleStyle}
+                  >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+                </tr>
+              </>
+            )}
             <tr>
               <td style={textStyle}>{summary}</td>
             </tr>

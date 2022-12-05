@@ -9,7 +9,10 @@ class OpenAIServerManager {
       this.openAIApi = null
       return
     }
-    const configuration = new Configuration({apiKey: process.env.OPEN_AI_API_KEY})
+    const configuration = new Configuration({
+      apiKey: process.env.OPEN_AI_API_KEY,
+      organization: process.env.OPEN_AI_ORG_ID
+    })
     this.openAIApi = new OpenAIApi(configuration)
   }
 

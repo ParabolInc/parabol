@@ -15,19 +15,20 @@ const generateGroupSummaries = async (
   if (!facilitator.featureFlags.includes('aiSummary')) return
   const r = await getRethink()
   const manager = new OpenAIServerManager()
-  for (const group of reflectionGroups) {
-    const reflectionsByGroupId = reflections.filter(
-      ({reflectionGroupId}) => reflectionGroupId === group.id
-    )
-    if (reflectionsByGroupId.length <= 1) continue
-    const reflectionTextByGroupId = reflectionsByGroupId.map(
-      ({plaintextContent}) => plaintextContent
-    )
-    if (reflectionTextByGroupId.length === 0) continue
-    const summary = await manager.getSummary(reflectionTextByGroupId)
-    if (!summary) continue
-    r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
-  }
+  await Promise.all(
+    reflectionGroups.map(async (group) => {
+      const reflectionsByGroupId = reflections.filter(
+        ({reflectionGroupId}) => reflectionGroupId === group.id
+      )
+      if (reflectionsByGroupId.length <= 1) return
+      const reflectionTextByGroupId = reflectionsByGroupId.map(
+        ({plaintextContent}) => plaintextContent
+      )
+      const summary = await manager.getSummary(reflectionTextByGroupId)
+      if (!summary) return
+      return r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
+    })
+  )
 }
 
 export default generateGroupSummaries

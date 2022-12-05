@@ -74,6 +74,7 @@ const handleCompletedRetrospectiveStage = async (
         })
         .run()
       data.meeting = meeting
+      // dont await for the OpenAI API response
       generateGroupSummaries(meeting.id, dataLoader, facilitatorUserId)
     }
 

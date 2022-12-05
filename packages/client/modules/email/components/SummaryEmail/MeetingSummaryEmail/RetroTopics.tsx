@@ -82,7 +82,6 @@ const RetroTopics = (props: Props) => {
                 isEmail={isEmail}
                 stageRef={stage}
                 to={topicUrl}
-                meetingRef={meeting}
               />
             )
           })
@@ -122,7 +121,6 @@ const RetroTopics = (props: Props) => {
 export default createFragmentContainer(RetroTopics, {
   meeting: graphql`
     fragment RetroTopics_meeting on RetrospectiveMeeting {
-      ...RetroTopic_meeting
       id
       reflectionGroups(sortBy: voteCount) {
         id
