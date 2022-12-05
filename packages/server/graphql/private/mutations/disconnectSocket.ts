@@ -5,7 +5,6 @@ import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
-import segmentIo from '../../../utils/segmentIo'
 import {UserPresence} from '../../private/mutations/connectSocket'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -59,16 +58,6 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
     socketCount: userPresence.length,
     socketId,
     tms
-  })
-  segmentIo.identify({
-    userId,
-    traits: {
-      email: user.email,
-      isActive: false,
-      featureFlags: user.featureFlags,
-      highestTier: user.tier,
-      isPatient0: user.isPatient0
-    }
   })
   return {user}
 }
