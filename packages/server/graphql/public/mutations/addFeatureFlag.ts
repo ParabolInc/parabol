@@ -3,7 +3,6 @@ import getPg from '../../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
-import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import IUser from '../../../postgres/types/IUser'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -51,18 +50,21 @@ const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
   })
 
   if (isAddingFlagToViewer) {
-    const viewer = await getUserById(viewerId)
+    const viewer = await dataLoader.get('users').loadNonNull(viewerId)
     segmentIo.identify({
       userId: viewerId,
       traits: {
+        eamil: viewer.email,
         featureFlags: viewer!.featureFlags
       }
     })
   } else {
-    users.forEach(({id: userId, featureFlags}) => {
+    users.forEach(async ({id: userId, featureFlags}) => {
+      const user = await dataLoader.get('users').loadNonNull(userId)
       segmentIo.identify({
         userId,
         traits: {
+          email: user.email,
           featureFlags
         }
       })

@@ -49,6 +49,12 @@ export type MeetingSettings = {
   disableAnonymity?: boolean
 }
 
+export type WebSocketProperties = {
+  socketCount: number
+  socketId: string
+  tms: string[]
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -76,6 +82,11 @@ export type AnalyticsEvent =
   | 'Task Estimate Set'
   // user
   | 'Account Created'
+  | 'Account Paused'
+  | 'Account Unpaused'
+  | 'Account Name Changed'
+  | 'Connect WebSocket'
+  | 'Disconnect WebSocket'
   | 'Summary Email Setting Changed'
 
 /**
@@ -323,10 +334,7 @@ class Analytics {
     this.track(userId, 'Task Estimate Set', taskEstimateProperties)
   }
 
-  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
-    this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
-  }
-
+  // user
   accountCreated = (userId: string, isInvited: boolean, isPatient0: boolean) => {
     this.track(userId, 'Account Created', {
       isInvited,
@@ -334,6 +342,27 @@ class Analytics {
       category: 'All',
       label: isPatient0 ? 'isPatient0' : 'isNotPatient0'
     })
+  }
+
+  accountPaused = (userId: string) => this.track(userId, 'Account Paused')
+
+  accountUnpaused = (userId: string) => this.track(userId, 'Account Unpaused')
+
+  accountNameChanged = (userId: string, newName: string) =>
+    this.track(userId, 'Account Name Changed', {
+      newName
+    })
+
+  websocketConnected = (userId: string, websocketProperties: WebSocketProperties) => {
+    this.track(userId, 'Connect WebSocket', websocketProperties)
+  }
+
+  websocketDisconnected = (userId: string, websocketProperties: WebSocketProperties) => {
+    this.track(userId, 'Disconnect WebSocket', websocketProperties)
+  }
+
+  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
+    this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

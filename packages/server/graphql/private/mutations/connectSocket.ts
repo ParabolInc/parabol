@@ -2,6 +2,7 @@ import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEn
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import updateUser from '../../../postgres/queries/updateUser'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
@@ -72,18 +73,15 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     })
   }
 
-  segmentIo.track({
-    userId,
-    event: 'Connect WebSocket',
-    properties: {
-      socketCount,
-      socketId,
-      tms
-    }
+  analytics.websocketConnected(userId, {
+    socketCount,
+    socketId,
+    tms
   })
   segmentIo.identify({
     userId,
     traits: {
+      email: user.email,
       isActive: true,
       featureFlags: user.featureFlags,
       highestTier: user.tier,
