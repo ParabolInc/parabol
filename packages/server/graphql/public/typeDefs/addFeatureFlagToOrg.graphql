@@ -1,0 +1,47 @@
+"""
+A flag to give an individual user super powers
+"""
+enum OrganizationFlagEnum {
+  standups
+  azureDevOps
+  msTeams
+  insights
+  recurrence
+  templateLimit
+  teamsLimit
+}
+
+"""
+The types of flags that give an individual user super powers
+"""
+type OrganizationFeatureFlags {
+  teamsLimit: Boolean!
+}
+
+extend type Mutation {
+  """
+  Give some organizations advanced features in a flag
+  """
+  addFeatureFlagToOrg(
+    """
+    a list of organization ids
+    """
+    orgIds: [String!]!
+
+    """
+    the flag that you want to give to the organization
+    """
+    flag: OrganizationFlagEnum!
+  ): AddFeatureFlagToOrgPayload!
+}
+
+type AddFeatureFlagToOrgPayload {
+  error: StandardMutationError
+
+  """
+  the organizations given the super power
+  """
+  organizations: [Organization]
+}
+
+extend union NotificationSubscriptionPayload = AddFeatureFlagToOrgPayload
