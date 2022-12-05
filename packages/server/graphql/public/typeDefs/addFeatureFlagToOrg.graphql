@@ -1,18 +1,12 @@
 """
-A flag to give an individual user super powers
+A flag to give an individual organization super powers
 """
 enum OrganizationFlagEnum {
-  standups
-  azureDevOps
-  msTeams
-  insights
-  recurrence
-  templateLimit
   teamsLimit
 }
 
 """
-The types of flags that give an individual user super powers
+The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
   teamsLimit: Boolean!
