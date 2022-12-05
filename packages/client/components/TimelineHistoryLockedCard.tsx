@@ -9,11 +9,11 @@ import useRouter from '../hooks/useRouter'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {TimelineHistoryLockedCard_team$key} from '../__generated__/TimelineHistoryLockedCard_team.graphql'
+import {TimelineHistoryLockedCard_organization$key} from '../__generated__/TimelineHistoryLockedCard_organization.graphql'
 import PrimaryButton from './PrimaryButton'
 
 interface Props {
-  teamRef: TimelineHistoryLockedCard_team$key | null
+  organizationRef: TimelineHistoryLockedCard_organization$key | null
 }
 
 const Card = styled('div')({
@@ -63,18 +63,17 @@ const HeaderText = styled('div')({
 })
 
 const TimelineHistoryLockedCard = (props: Props) => {
-  const {teamRef} = props
-  const team = useFragment(
+  const {organizationRef} = props
+  const organization = useFragment(
     graphql`
-      fragment TimelineHistoryLockedCard_team on Team {
+      fragment TimelineHistoryLockedCard_organization on Organization {
         id
         name
-        orgId
       }
     `,
-    teamRef
+    organizationRef
   )
-  const {id: teamId, name: teamName, orgId} = team ?? {}
+  const {id: orgId, name: orgName} = organization ?? {}
 
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -86,7 +85,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
       SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
         source: 'Timeline History Locked Card',
         upgradeTier: 'pro',
-        teamId
+        orgId
       })
     }
   }, [visible])
@@ -95,7 +94,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade Intent', {
       source: 'Timeline History Locked Upgrade CTA',
       upgradeTier: 'pro',
-      teamId
+      orgId
     })
     history.push(`/me/organizations/${orgId}`)
   }
@@ -105,11 +104,10 @@ const TimelineHistoryLockedCard = (props: Props) => {
       <Icon />
       <HeaderText>Past Meetings Locked</HeaderText>
       <CardBody>
-        Your plan includes 30 days of meeting history. Unlock the meeting history of{' '}
-        <i>{teamName}</i> by upgrading.
+        Your plan includes 30 days of meeting history. Unlock the full meeting history of <i>{orgName}</i> by upgrading.
       </CardBody>
       <PrimaryButton size='medium' onClick={onClick}>
-        Unlock past meetings
+        Unlock Past Meetings
       </PrimaryButton>
     </Card>
   )

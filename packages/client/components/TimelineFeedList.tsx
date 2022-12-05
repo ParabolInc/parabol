@@ -36,8 +36,8 @@ const TimelineFeedList = (props: Props) => {
                 __typename
                 id
                 teamId
-                team {
-                  ...TimelineHistoryLockedCard_team
+                organization {
+                  ...TimelineHistoryLockedCard_organization
                 }
                 ... on TimelineEventCompletedActionMeeting {
                   meeting {
@@ -99,7 +99,7 @@ const TimelineFeedList = (props: Props) => {
       ))}
       {lockedHistory && (
         <>
-          <TimelineHistoryLockedCard teamRef={lockedHistory[0]!.node.team} />
+          <TimelineHistoryLockedCard organizationRef={lockedHistory[0]!.node.organization} />
           {lockedHistory.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
           ))}

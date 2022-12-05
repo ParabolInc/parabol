@@ -538,7 +538,7 @@ interface NewMeeting {
   viewerMeetingMember: MeetingMember
 
   """
-  Is this locked for personal plans?
+  Is this locked for starter plans?
   """
   locked: Boolean!
 }
