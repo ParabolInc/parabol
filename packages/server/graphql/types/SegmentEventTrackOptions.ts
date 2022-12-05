@@ -40,7 +40,9 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     upgradeCTALocation: {type: UpgradeCTALocationEnum},
     scope: {type: SharingScopeEnum},
     templateName: {type: GraphQLString},
-    isFree: {type: GraphQLBoolean}
+    isFree: {type: GraphQLBoolean},
+    source: {type: GraphQLString},
+    upgradeTier: {type: TierEnum}
   })
 })
 
