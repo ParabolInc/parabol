@@ -16,7 +16,9 @@ const generateDiscussionSummary = async (
   const manager = new OpenAIServerManager()
   const commentsContent = comments.map((comment) => comment.plaintextContent)
   const tasksContent = tasks.map((task) => task.plaintextContent)
-  const summary = await manager.getSummary([...commentsContent, ...tasksContent])
+  const contentToSummarize = [...commentsContent, ...tasksContent]
+  if (contentToSummarize.length <= 1) return
+  const summary = await manager.getSummary(contentToSummarize)
   await updateDiscussions({summary}, discussionId)
 }
 

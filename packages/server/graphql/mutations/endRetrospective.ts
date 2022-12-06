@@ -15,6 +15,7 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
@@ -93,6 +94,7 @@ export default {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
     const {stage} = currentStageRes
+    await handleCompletedStage(stage, meeting, dataLoader)
     const phase = getMeetingPhase(phases)
     stage.isComplete = true
     stage.endAt = now
