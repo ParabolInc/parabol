@@ -5,6 +5,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
+import EmailTaskCard from '../SummaryEmail/MeetingSummaryEmail/EmailTaskCard'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
 
 const involvementWord = {
@@ -41,6 +42,7 @@ const EmailTaskInvolves = (props: Props) => {
         }
         task {
           tags
+          ...EmailTaskCard_task
         }
       }
     `,
@@ -67,7 +69,13 @@ const EmailTaskInvolves = (props: Props) => {
       notificationRef={notification}
       linkLabel='See the task'
       linkUrl={linkUrl}
-    />
+    >
+      {task && (
+        <table style={{marginTop: '12px'}}>
+          <EmailTaskCard task={task} maxWidth={330} />
+        </table>
+      )}
+    </EmailNotificationTemplate>
   )
 }
 
