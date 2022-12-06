@@ -45,24 +45,24 @@ interface Props {
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
   const {onClick, orgId} = props
   const history = useHistory()
+
+  const handleClick = () => {
+    onClick && onClick()
+    history.push(`/me/organizations/${orgId}`)
+  }
+
   return (
     <RootBlock>
       <Container>
         <Heading>🎉 We’re glad you love Parabol!</Heading>
 
         <Description>
-          To make sure you don’t lose access, make sure to upgrade to the Team plan so you can have
-          as many teams as you need.
+          You've exceeded the two-team limit. To make sure you don't lose access, upgrade to the
+          Team plan so you can have as many teams as you need.
         </Description>
 
         <Action>
-          <UpgradeButton
-            onClick={() => {
-              onClick && onClick()
-              history.push(`/me/organizations/${orgId}`)
-            }}
-            size='small'
-          >
+          <UpgradeButton onClick={handleClick} size='small'>
             Upgrade
           </UpgradeButton>
         </Action>
