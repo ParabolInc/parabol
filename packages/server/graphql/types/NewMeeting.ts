@@ -107,43 +107,40 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: async ({
-      phases,
-      id: meetingId,
-      teamId,
-      facilitatorStageId,
-      endedAt
-    }: {
-      phases: any
-      id: string
-      teamId: string
-      facilitatorStageId: string
-      endedAt: Date
-    }, _args: unknown,
-      {authToken, dataLoader}: GQLContext) => {
+    resolve: async (
+      {
+        phases,
+        id: meetingId,
+        teamId,
+        endedAt
+      }: {
+        phases: any
+        id: string
+        teamId: string
+        endedAt: Date
+      },
+      _args: unknown,
+      {authToken, dataLoader}: GQLContext
+    ) => {
       const viewerId = getUserId(authToken)
       const locked = await isMeetingLocked(dataLoader, viewerId, teamId, endedAt)
 
-      const resolvedPhases = phases
-        .map((phase: any) => ({
-          ...phase,
-          meetingId,
-          teamId
-        }))
+      const resolvedPhases = phases.map((phase: any) => ({
+        ...phase,
+        meetingId,
+        teamId
+      }))
 
       if (locked) {
-        // only return current phase and make all stages non-navigable so even if the user removes the overlay they cannot see all meeting data
-        return resolvedPhases
-          .filter((phase: any) => phase.stages.find(({id}: any) => id === facilitatorStageId))
-          .map((phase: any) => ({
-            ...phase,
-            stages: phase.stages
-              .map((stage: any) => ({
-                ...stage,
-                isNavigable: false,
-                isNavigableByFacilitator: false
-              }))
+        // make all stages non-navigable so even if the user removes the overlay they cannot see all meeting data
+        return resolvedPhases.map((phase: any) => ({
+          ...phase,
+          stages: phase.stages.map((stage: any) => ({
+            ...stage,
+            isNavigable: false,
+            isNavigableByFacilitator: false
           }))
+        }))
       }
       return resolvedPhases
     }
