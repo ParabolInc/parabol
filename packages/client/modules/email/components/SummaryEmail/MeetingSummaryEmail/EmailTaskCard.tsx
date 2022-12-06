@@ -7,10 +7,11 @@ import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import {EmailTaskCard_task} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 
 interface Props {
-  task: EmailTaskCard_task
+  task: EmailTaskCard_task | null
   maxWidth?: number
 }
 
@@ -42,9 +43,19 @@ const statusStyle = (status: TaskStatusEnum) => ({
   width: 30
 })
 
+const deletedTask = {
+  content: convertToTaskContent('<<TASK DELETED>>'),
+  status: 'done',
+  tags: [] as string[],
+  user: {
+    picture: null,
+    preferredName: null
+  }
+} as const
+
 const EmailTaskCard = (props: Props) => {
   const {task, maxWidth} = props
-  const {content, status} = task
+  const {content, status} = task || deletedTask
   const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
   const editorStateRef = useRef<EditorState>()
   const getEditorState = () => {

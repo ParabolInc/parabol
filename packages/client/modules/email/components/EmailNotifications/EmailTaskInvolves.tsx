@@ -70,11 +70,9 @@ const EmailTaskInvolves = (props: Props) => {
       linkLabel='See the task'
       linkUrl={linkUrl}
     >
-      {task && (
-        <table style={{marginTop: '12px'}}>
-          <EmailTaskCard task={task} maxWidth={330} />
-        </table>
-      )}
+      <table style={{marginTop: '12px'}}>
+        <EmailTaskCard task={task} maxWidth={330} />
+      </table>
     </EmailNotificationTemplate>
   )
 }
