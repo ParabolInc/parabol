@@ -141,6 +141,11 @@ type Organization {
   Minimal details about all teams in the organization
   """
   teamStats: [TeamStat!]!
+
+  """
+  Any super power given to the organization via a super user
+  """
+  featureFlags: OrganizationFeatureFlags!
 }
 
 type MeetingStat {

@@ -82,6 +82,10 @@ export async function checkTeamsLimitMaybeFlagOrganization(
 ) {
   const organization = await dataLoader.get('organizations').load(orgId)
 
+  if (!organization.featureFlags?.includes('teamsLimit')) {
+    return
+  }
+
   if (hasFlags(organization) || organization.tier !== 'personal') {
     return
   }

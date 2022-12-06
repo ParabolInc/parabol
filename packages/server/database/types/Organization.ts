@@ -14,6 +14,7 @@ interface Input {
   updatedAt?: Date
   showConversionModal?: boolean
   payLaterClickCount?: number
+  featureFlags?: string[]
 }
 
 export default class Organization {
@@ -36,6 +37,7 @@ export default class Organization {
   scheduledLockAt?: Date | null
   lockedAt?: Date | null
   updatedAt: Date
+  featureFlags?: string[]
   constructor(input: Input) {
     const {
       id,
