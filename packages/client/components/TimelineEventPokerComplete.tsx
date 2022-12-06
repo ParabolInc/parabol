@@ -27,8 +27,10 @@ const Link = styled(StyledLink)({
 const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent} = props
   const {meeting, team} = timelineEvent
-  const {id: meetingId, name: meetingName, commentCount, storyCount, locked} = meeting
-  const {name: teamName, orgId} = team
+  const {id: meetingId, name: meetingName, commentCount, storyCount, locked, organization} = meeting
+  const {name: teamName} = team
+  const {id: orgId, viewerOrganizationUser} = organization
+  const canUpgrade = !!viewerOrganizationUser
 
   const atmosphere = useAtmosphere()
   const onUpgrade = () => {
@@ -41,8 +43,8 @@ const TimelineEventPokerComplete = (props: Props) => {
 
   return (
     <TimelineEventCard
-      IconSVG={locked ? undefined : <CardsSVG />}
-      iconName={locked ? 'lock' : undefined}
+      IconSVG={locked && canUpgrade ? undefined : <CardsSVG />}
+      iconName={locked && canUpgrade ? 'lock' : undefined}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
@@ -58,12 +60,14 @@ const TimelineEventPokerComplete = (props: Props) => {
         {'.'}
         <br />
         {locked ? (
-          <>
-            <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
-              Upgrade now
-            </Link>{' '}
-            to get access to the estimates and summary
-          </>
+          canUpgrade && (
+            <>
+              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+                Upgrade now
+              </Link>{' '}
+              to get access to the estimates and summary
+            </>
+          )
         ) : (
           <>
             <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
@@ -95,6 +99,12 @@ export default createFragmentContainer(TimelineEventPokerComplete, {
           }
         }
         locked
+        organization {
+          id
+          viewerOrganizationUser {
+            id
+          }
+        }
       }
       team {
         id

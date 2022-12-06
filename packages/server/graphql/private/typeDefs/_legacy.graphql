@@ -3616,6 +3616,12 @@ type Organization {
   The datetime the organization was last updated
   """
   updatedAt: DateTime
+
+  """
+  The OrganizationUser of the viewer
+  """
+  viewerOrganizationUser: OrganizationUser
+
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
 
   """

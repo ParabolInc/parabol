@@ -65,7 +65,7 @@ export default {
       }
     }
     if (orgId) {
-      if (!(await isUserInOrg(viewerId, orgId))) {
+      if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         standardError(new Error('Failed input validation'), {userId: viewerId})
         return false
       }

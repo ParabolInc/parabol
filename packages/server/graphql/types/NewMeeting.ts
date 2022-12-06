@@ -10,7 +10,7 @@ import {
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {MeetingTypeEnum as MeetingTypeEnumType} from '../../postgres/types/Meeting'
 import {getUserId} from '../../utils/authorization'
-import {GQLContext} from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import ActionMeeting from './ActionMeeting'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -23,6 +23,45 @@ import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import TeamPromptMeeting from './TeamPromptMeeting'
+
+const isMeetingLocked = async (
+  dataLoader: DataLoaderWorker,
+  viewerId: string,
+  teamId: string,
+  endedAt: Date
+) => {
+  const freeLimit = new Date()
+  freeLimit.setDate(freeLimit.getDate() - 30)
+  if (endedAt > freeLimit) {
+    return false
+  }
+  const [team, viewer] = await Promise.all([
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
+
+  const {featureFlags} = viewer
+  const {tier, isPaid, orgId} = team
+
+  if (!featureFlags.includes('meetingHistoryLimit')) {
+    return false
+  }
+
+  // because we never update archived teams, archived teams will remain accessible even after downgrading the org.
+  if (tier !== 'personal' && isPaid) {
+    return false
+  }
+
+  // Archived teams are not updated with the current tier, just check the organization
+  if (team.isArchived) {
+    const organization = await dataLoader.get('organizations').load(orgId)
+    const {tier} = organization
+    if (tier !== 'personal') {
+      return false
+    }
+  }
+  return true
+}
 
 export const newMeetingFields = () => ({
   id: {
@@ -158,18 +197,8 @@ export const newMeetingFields = () => ({
       _args: any,
       {authToken, dataLoader}: GQLContext
     ) => {
-      const freeLimit = new Date()
-      freeLimit.setDate(freeLimit.getDate() - 30)
-      if (endedAt > freeLimit) {
-        return false
-      }
       const viewerId = getUserId(authToken)
-      const [team, viewer] = await Promise.all([
-        dataLoader.get('teams').loadNonNull(teamId),
-        dataLoader.get('users').loadNonNull(viewerId)
-      ])
-
-      return viewer.featureFlags.includes('meetingHistoryLimit') && team.tier === 'personal'
+      return isMeetingLocked(dataLoader, viewerId, teamId, endedAt)
     }
   }
 })

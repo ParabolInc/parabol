@@ -37,11 +37,16 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
           taskCount
           commentCount
           locked
+          organization {
+            id
+            viewerOrganizationUser {
+              id
+            }
+          }
         }
         team {
           id
           name
-          orgId
         }
       }
     `,
@@ -53,8 +58,18 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     return null
   }
 
-  const {id: meetingId, name: meetingName, responseCount, commentCount, taskCount, locked} = meeting
-  const {name: teamName, orgId} = team
+  const {
+    id: meetingId,
+    name: meetingName,
+    responseCount,
+    commentCount,
+    taskCount,
+    locked,
+    organization
+  } = meeting
+  const {name: teamName} = team
+  const {id: orgId, viewerOrganizationUser} = organization
+  const canUpgrade = !!viewerOrganizationUser
 
   const atmosphere = useAtmosphere()
   const onUpgrade = () => {
@@ -67,7 +82,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
 
   return (
     <TimelineEventCard
-      iconName={locked ? 'lock' : 'group_work'}
+      iconName={locked && canUpgrade ? 'lock' : 'group_work'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName}`}</TimelineEventTitle>}
     >
@@ -89,12 +104,14 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         {'.'}
         <br />
         {locked ? (
-          <>
-            <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
-              Upgrade now
-            </Link>{' '}
-            to see responses and discussion or review a summary
-          </>
+          canUpgrade && (
+            <>
+              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+                Upgrade now
+              </Link>{' '}
+              to see responses and discussion or review a summary
+            </>
+          )
         ) : (
           <>
             <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>

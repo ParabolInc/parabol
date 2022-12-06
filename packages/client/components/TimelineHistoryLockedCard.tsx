@@ -32,9 +32,9 @@ const Card = styled('div')({
 
 const CardBody = styled('div')({
   fontSize: 14,
-  padding: '4px 32px 16px 32px',
   lineHeight: '20px',
-  textAlign: 'center'
+  textAlign: 'center',
+  padding: '4px 32px 16px 32px'
 })
 
 const Icon = styled(Lock)({
@@ -104,7 +104,8 @@ const TimelineHistoryLockedCard = (props: Props) => {
       <Icon />
       <HeaderText>Past Meetings Locked</HeaderText>
       <CardBody>
-        Your plan includes 30 days of meeting history. Unlock the full meeting history of <i>{orgName}</i> by upgrading.
+        Your plan includes 30 days of meeting history. Unlock the full meeting history of{' '}
+        <i>{orgName}</i> by upgrading.
       </CardBody>
       <PrimaryButton size='medium' onClick={onClick}>
         Unlock Past Meetings

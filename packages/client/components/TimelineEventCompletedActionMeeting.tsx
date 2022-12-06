@@ -35,9 +35,12 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
     agendaItemCount,
     commentCount,
     taskCount,
-    locked
+    locked,
+    organization
   } = meeting
-  const {name: teamName, orgId} = team
+  const {name: teamName} = team
+  const {id: orgId, viewerOrganizationUser} = organization
+  const canUpgrade = !!viewerOrganizationUser
 
   const atmosphere = useAtmosphere()
   const onUpgrade = () => {
@@ -56,7 +59,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
   })
   return (
     <TimelineEventCard
-      iconName={locked ? 'lock' : 'change_history'}
+      iconName={locked && canUpgrade ? 'lock' : 'change_history'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
@@ -69,12 +72,14 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
         <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
         <br />
         {locked ? (
-          <>
-            <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
-              Upgrade now
-            </Link>{' '}
-            to see the discussion in your meeting or review a summary
-          </>
+          canUpgrade && (
+            <>
+              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+                Upgrade now
+              </Link>{' '}
+              to see the discussion in your meeting or review a summary
+            </>
+          )
         ) : (
           <>
             <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
@@ -102,11 +107,16 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         name
         taskCount
         locked
+        organization {
+          id
+          viewerOrganizationUser {
+            id
+          }
+        }
       }
       team {
         id
         name
-        orgId
       }
     }
   `

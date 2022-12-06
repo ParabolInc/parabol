@@ -37,6 +37,10 @@ const TimelineFeedList = (props: Props) => {
                 id
                 teamId
                 organization {
+                  id
+                  viewerOrganizationUser {
+                    id
+                  }
                   ...TimelineHistoryLockedCard_organization
                 }
                 ... on TimelineEventCompletedActionMeeting {
@@ -77,9 +81,12 @@ const TimelineFeedList = (props: Props) => {
   const {timeline} = viewer
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 10)
 
+  // freeHistory also contains locked meetings which are not unlockable,
+  // i.e. it's not paid but the user is not in the org anymore
   const {freeHistory, lockedHistory} = useMemo(() => {
     const firstLocked = timeline.edges.findIndex(
-      ({node: timelineEvent}) => !!timelineEvent.meeting?.locked
+      ({node: timelineEvent}) =>
+        timelineEvent.meeting?.locked && timelineEvent.organization?.viewerOrganizationUser
     )
     if (firstLocked === -1) {
       return {
