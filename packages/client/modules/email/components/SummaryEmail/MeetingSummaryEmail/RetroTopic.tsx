@@ -130,12 +130,14 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {topicSummary && (
+      {(topicSummary || discussionSummary) && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            <tr>
-              <td style={topicTitleStyle}>{'Topic Summary:'}</td>
-            </tr>
+            {topicSummary && (
+              <tr>
+                <td style={topicTitleStyle}>{'Topic Summary:'}</td>
+              </tr>
+            )}
             {team?.tier === 'personal' && (
               <>
                 <tr>
