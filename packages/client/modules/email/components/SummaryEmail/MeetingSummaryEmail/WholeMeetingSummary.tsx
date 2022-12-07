@@ -28,23 +28,15 @@ interface Props {
 
 const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
-  const meeting = useFragment(
+  const {summary} = useFragment(
     graphql`
       fragment WholeMeetingSummary_meeting on RetrospectiveMeeting {
-        facilitator {
-          user {
-            featureFlags {
-              aiSummary
-            }
-          }
-        }
         summary
       }
     `,
     meetingRef
   )
-  const {summary, facilitator} = meeting
-  if (!summary || !facilitator.user.featureFlags.aiSummary) return null
+  if (!summary) return null
   return (
     <>
       <tr>
