@@ -15,12 +15,13 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
-  const {id: meetingId, phases} = meeting
+  const {id: meetingId, phases, facilitatorUserId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
@@ -32,28 +33,31 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
 
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        commentCount: r
-          .table('Comment')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .filter({isActive: true})
-          .count()
-          .default(0) as unknown as number,
-        taskCount: r
-          .table('Task')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .count()
-          .default(0) as unknown as number,
-        topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length
-      },
-      {nonAtomic: true}
-    )
-    .run()
+  await Promise.all([
+    generateWholeMeetingSummary(discussionIds, meetingId, facilitatorUserId, dataLoader),
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update(
+        {
+          commentCount: r
+            .table('Comment')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .filter({isActive: true})
+            .count()
+            .default(0) as unknown as number,
+          taskCount: r
+            .table('Task')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .count()
+            .default(0) as unknown as number,
+          topicCount: reflectionGroupIds.length,
+          reflectionCount: reflections.length
+        },
+        {nonAtomic: true}
+      )
+      .run()
+  ])
 }
 
 export default {
