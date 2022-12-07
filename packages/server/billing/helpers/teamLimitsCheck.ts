@@ -47,22 +47,7 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
     .run()
 }
 
-export const removeFlags = async (orgId: string) => {
-  return r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      tierLimitExceededAt: null,
-      scheduledLockAt: null,
-      lockedAt: null
-    })
-    .run()
-}
-
-export const maybeRemoveLimitExceededFlags = async (
-  orgId: string,
-  dataLoader: DataLoaderWorker
-) => {
+export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
   if (!organization.tierLimitExceededAt) {
@@ -70,7 +55,15 @@ export const maybeRemoveLimitExceededFlags = async (
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    await removeFlags(orgId)
+    await r
+      .table('Organization')
+      .get(orgId)
+      .update({
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null
+      })
+      .run()
   }
 }
 
