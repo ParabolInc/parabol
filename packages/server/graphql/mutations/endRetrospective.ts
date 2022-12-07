@@ -12,7 +12,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../graphql'
+import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
@@ -20,7 +20,12 @@ import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
-const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
+const finishRetroMeeting = async (
+  meeting: MeetingRetrospective,
+  teamId: string,
+  context: GQLContext
+) => {
+  const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
@@ -58,6 +63,10 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
       )
       .run()
   ])
+  // wait for whole meeting summary to be generated before sending summary email
+  sendNewMeetingSummary(meeting, context).catch(console.log)
+  // wait for meeting stats to be generated before sending Slack notification
+  IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
 }
 
 export default {
@@ -131,12 +140,10 @@ export default {
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').load(templateId)
     ])
-    // wait for removeEmptyTasks before finishRetroMeeting & wait for meeting stats
-    // to be generated in finishRetroMeeting before sending Slack notifications
-    await finishRetroMeeting(completedRetrospective, dataLoader)
-    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
+    // wait for removeEmptyTasks before finishRetroMeeting
+    // don't await for the OpenAI response or it'll hang for a while when ending the retro
+    finishRetroMeeting(completedRetrospective, teamId, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
-    sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventRetroComplete({

@@ -19,6 +19,7 @@ const generateDiscussionSummary = async (
   const contentToSummarize = [...commentsContent, ...tasksContent]
   if (contentToSummarize.length <= 1) return
   const summary = await manager.getSummary(contentToSummarize)
+  if (!summary) return
   await updateDiscussions({summary}, discussionId)
 }
 

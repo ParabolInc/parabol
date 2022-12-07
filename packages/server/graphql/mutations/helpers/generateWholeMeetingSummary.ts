@@ -29,6 +29,7 @@ const generateWholeMeetingSummary = async (
   const contentToSummarize = [...commentsContent, ...tasksContent, ...reflectionsContent]
   if (contentToSummarize.length <= 1) return
   const [r, summary] = await Promise.all([getRethink(), manager.getSummary(contentToSummarize)])
+  if (!summary) return
   await r.table('NewMeeting').get(meetingId).update({summary}).run()
 }
 
