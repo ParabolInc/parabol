@@ -22,7 +22,7 @@ export const HumanReadableRecurrenceRule = ({recurrenceRule}: Props) => {
 
   return (
     <HumanReadableRecurrenceRuleHeading>
-      Recurrs {humanReadableText}
+      Recurs {humanReadableText}
     </HumanReadableRecurrenceRuleHeading>
   )
 }
