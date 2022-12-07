@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.85.0 2022-December-07
+
+### Added
+
+- **lint**: add lintcheck and stylecheck (prettier) to github action (#7507)
+- **Sprint Poker**: Hitting up and down arrow keys cycles through poker cards (#7363)
+- **Retrospective**: add heard seen respected template (#7510)
+- **Metrics**: Enable Google Analytics client side page_view tracking (#7356)
+- **Notifications**: Remaining email notifications (#7527)
+- **Recurrence**: added human readable recurring meeting indicator (#7533)
+
+### Fixed
+
+- **Poker** number of stories in summary stats is one less than actual stories (#7241)
+- **Tasks**: There should be no scroll bar on tasks header (#7492)
+
 ## 6.84.0 2022-November-30
 
 ### Added
