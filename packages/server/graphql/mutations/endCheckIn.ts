@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {checkTeamsLimitMaybeFlagOrganization} from '../../billing/helpers/teamLimitsCheck'
+import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import AgendaItem from '../../database/types/AgendaItem'
@@ -226,7 +226,7 @@ export default {
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     analytics.checkInEnd(completedCheckIn, meetingMembers)
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
-    checkTeamsLimitMaybeFlagOrganization(team.orgId, dataLoader)
+    checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventCheckinComplete({

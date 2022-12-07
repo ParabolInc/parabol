@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {checkTeamsLimitMaybeFlagOrganization} from '../../../billing/helpers/teamLimitsCheck'
+import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
@@ -70,7 +70,7 @@ const safeEndTeamPrompt = async ({
   // :TODO: (jmtaber129): Refactor the prompt response editor such that we're able to render
   // TipTap-formatted responses on the server-side.
   // sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
-  checkTeamsLimitMaybeFlagOrganization(team.orgId, dataLoader)
+  checkTeamsLimit(team.orgId, dataLoader)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
   dataLoader.get('newMeetings').clear(meetingId)
 
