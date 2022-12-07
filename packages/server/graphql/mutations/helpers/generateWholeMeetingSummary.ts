@@ -1,3 +1,4 @@
+import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -25,12 +26,10 @@ const generateWholeMeetingSummary = async (
   const tasksContent = tasksByDiscussions
     .filter(isValid)
     .flatMap((tasksByDiscussion) => tasksByDiscussion.map(({plaintextContent}) => plaintextContent))
-  console.log('🚀 ~ commentsContent', commentsContent)
   const contentToSummarize = [...commentsContent, ...tasksContent, ...reflectionsContent]
-  console.log('🚀 ~ contentToSummarize', contentToSummarize)
   if (contentToSummarize.length <= 1) return
-  const summary = await manager.getSummary(contentToSummarize)
-  console.log('🚀 ~ summary', summary)
+  const [r, summary] = await Promise.all([getRethink(), manager.getSummary(contentToSummarize)])
+  await r.table('NewMeeting').get(meetingId).update({summary}).run()
 }
 
 export default generateWholeMeetingSummary

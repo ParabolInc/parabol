@@ -13,7 +13,6 @@ interface Input {
   totalVotes: number
   maxVotesPerGroup: number
   disableAnonymity: boolean
-  summary?: string
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -34,7 +33,6 @@ export default class MeetingRetrospective extends Meeting {
   templateId: string
   topicCount?: number
   reflectionCount?: number
-  summary?: string
 
   constructor(input: Input) {
     const {
@@ -48,8 +46,7 @@ export default class MeetingRetrospective extends Meeting {
       templateId,
       totalVotes,
       maxVotesPerGroup,
-      disableAnonymity,
-      summary
+      disableAnonymity
     } = input
     super({
       id,
@@ -65,6 +62,5 @@ export default class MeetingRetrospective extends Meeting {
     this.showConversionModal = showConversionModal
     this.templateId = templateId
     this.disableAnonymity = disableAnonymity
-    this.summary = summary
   }
 }

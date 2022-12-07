@@ -6,8 +6,7 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
+  GraphQLObjectType
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import ReflectionGroupType from '../../database/types/ReflectionGroup'
@@ -141,10 +140,6 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'})
       }
-    },
-    summary: {
-      type: GraphQLString,
-      description: `The GPT-3 generated summary of all the comments, tasks, and reflections in the retro meeting. Undefined if the user doesnt have access to the feature`
     },
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
