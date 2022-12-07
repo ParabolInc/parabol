@@ -3,6 +3,8 @@
 // capitalized J in just now
 // set my own defaults
 
+import plural from '../plural'
+
 const SECOND = 1000
 const MIN = SECOND * 60
 const HOUR = MIN * 60
@@ -17,6 +19,45 @@ interface Opts {
   suffix?: boolean
   now?: string | Date | null
   smallDiff?: string
+}
+
+/**
+ * Creates a human-readable string representing the time till the given date,
+ * for example: 2 days left; 13 hours left; 2 days left, etc or null if the date is in the past
+ * @param date
+ */
+export const humanReadableCountdown = (date: string | Date) => {
+  const now = new Date()
+  const abs = new Date(date).getTime() - now.getTime()
+  if (abs < 0) return null
+  const periods = {
+    d: (abs % MONTH) / DAY,
+    h: (abs % DAY) / HOUR,
+    m: (abs % HOUR) / MIN,
+    s: (abs % MIN) / SECOND
+  } as const
+
+  const days = Math.floor(periods['d'])
+  if (days > 0) {
+    return `${days} ${plural(days, 'day', 'days')} left`
+  }
+
+  const hours = Math.floor(periods['h'])
+  if (hours > 0) {
+    return `${hours} ${plural(hours, 'hour', 'hours')} left`
+  }
+
+  const minutes = Math.floor(periods['m'])
+  if (minutes > 0) {
+    return `${minutes} ${plural(minutes, 'minute', 'minutes')} left`
+  }
+
+  const seconds = Math.floor(periods['s'])
+  if (seconds > 0) {
+    return `${seconds} ${plural(seconds, 'second', 'seconds')} left`
+  }
+
+  return null
 }
 
 export const countdown = (date: string | Date) => {
