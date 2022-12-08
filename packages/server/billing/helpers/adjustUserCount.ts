@@ -107,6 +107,7 @@ const addUser = async (orgIds: string[], user: IUser) => {
 
 const deleteUser = async (orgIds: string[], user: IUser) => {
   const r = await getRethink()
+  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user.id, orgId))
   return r
     .table('OrganizationUser')
     .getAll(user.id, {index: 'userId'})

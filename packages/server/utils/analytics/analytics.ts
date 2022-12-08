@@ -85,6 +85,7 @@ export type AnalyticsEvent =
   | 'Account Paused'
   | 'Account Unpaused'
   | 'Account Name Changed'
+  | 'User Removed From Org'
   | 'Connect WebSocket'
   | 'Disconnect WebSocket'
   | 'Summary Email Setting Changed'
@@ -352,6 +353,9 @@ class Analytics {
     this.track(userId, 'Account Name Changed', {
       newName
     })
+
+  userRemovedFromOrg = (userId: string, orgId: string) =>
+    this.track(userId, 'User Removed From Org', {userId, orgId})
 
   websocketConnected = (userId: string, websocketProperties: WebSocketProperties) => {
     this.track(userId, 'Connect WebSocket', websocketProperties)
