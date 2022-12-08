@@ -2,7 +2,7 @@ type AddedNotification {
   """
   A notification
   """
-  addedNotification: Notification
+  addedNotification: Notification!
 }
 
 extend union NotificationSubscriptionPayload = AddedNotification
