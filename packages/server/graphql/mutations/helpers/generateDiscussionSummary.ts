@@ -1,3 +1,4 @@
+import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import updateDiscussions from '../../../postgres/queries/updateDiscussions'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -14,8 +15,10 @@ const generateDiscussionSummary = async (
   ])
   if (!facilitator.featureFlags.includes('aiSummary')) return
   const manager = new OpenAIServerManager()
-  const commentsContent = comments.map((comment) => comment.plaintextContent)
-  const tasksContent = tasks.map((task) => task.plaintextContent)
+  const commentsContent = comments
+    .filter(({createdBy}) => createdBy !== PARABOL_AI_USER_ID)
+    .map(({plaintextContent}) => plaintextContent)
+  const tasksContent = tasks.map(({plaintextContent}) => plaintextContent)
   const contentToSummarize = [...commentsContent, ...tasksContent]
   if (contentToSummarize.length <= 1) return
   const summary = await manager.getSummary(contentToSummarize)

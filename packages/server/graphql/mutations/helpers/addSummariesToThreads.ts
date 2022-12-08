@@ -29,7 +29,6 @@ const addSummariesToThreads = async (
       discussionId: stage.discussionId,
       content: summaryBlock,
       threadSortOrder: 0,
-      isAI: true,
       createdBy: PARABOL_AI_USER_ID
     }
     const dbComment = new Comment(commentInput)
