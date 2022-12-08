@@ -25,7 +25,6 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
-import {upsertTeamPromptResponseNotificationUpdater} from '../mutations/UpsertTeamPromptResponseMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
@@ -81,7 +80,6 @@ const subscription = graphql`
       ...InvalidateSessionsMutation_notification @relay(mask: false)
       ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
       ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
-      ...UpsertTeamPromptResponseMutation_notification @relay(mask: false)
 
       ... on AddedNotification {
         addedNotification {
@@ -292,9 +290,6 @@ const NotificationSubscription = (
           break
         case 'ArchiveTimelineEventSuccess':
           archiveTimelineEventNotificationUpdater(payload, context)
-          break
-        case 'UpsertTeamPromptResponseSuccess':
-          upsertTeamPromptResponseNotificationUpdater(payload, context)
           break
         case 'AddedNotification':
           const notification = payload.getLinkedRecord('addedNotification' as any)
