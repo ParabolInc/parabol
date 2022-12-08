@@ -133,6 +133,10 @@ const TeamPromptMeeting = (props: Props) => {
   const {isRightDrawerOpen, id: meetingId} = meeting
   useEffect(() => {
     const params = new URLSearchParams(history.location.search)
+    if (!params.get('responseId')) {
+      return
+    }
+
     const stage = stages.find((stage) => stage.response?.id === params.get('responseId'))
     if (!stage) {
       return
