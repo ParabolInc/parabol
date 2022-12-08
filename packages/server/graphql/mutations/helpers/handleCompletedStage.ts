@@ -95,7 +95,6 @@ const handleCompletedRetrospectiveStage = async (
       discussionTopicType: 'reflectionGroup' as const,
       discussionTopicId: stage.reflectionGroupId
     }))
-    await insertDiscussions(discussions)
     await Promise.all([
       insertDiscussions(discussions),
       addSummariesToThreads(discussPhaseStages, meetingId, dataLoader)

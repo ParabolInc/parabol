@@ -27,7 +27,7 @@ const addSummariesToThreads = async (
       createdBy: PARABOL_AI_USER_ID
     }
     const dbComment = new Comment(commentInput)
-    return r.table('Comment').insert(dbComment, {conflict: 'replace'}).run()
+    return r.table('Comment').insert(dbComment).run()
   })
   await Promise.all(commentPromises)
 }
