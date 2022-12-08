@@ -97,7 +97,7 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await Promise.all([
       insertDiscussions(discussions),
-      addSummariesToThreads(discussPhaseStages, meetingId, dataLoader)
+      addSummariesToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
     ])
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
