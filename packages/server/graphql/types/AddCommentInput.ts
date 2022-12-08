@@ -14,10 +14,6 @@ const AddCommentInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
     },
-    isAI: {
-      type: GraphQLBoolean,
-      description: `true if the comment was created by Parabol's AI`
-    },
     isAnonymous: {
       type: GraphQLBoolean,
       description: 'true if the comment should be anonymous'

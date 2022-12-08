@@ -20,7 +20,6 @@ type AddCommentMutationVariables = {
     discussionId: string
     content: string
     threadSortOrder: number
-    isAI?: boolean
   }
 }
 
@@ -44,7 +43,7 @@ const addComment = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const {discussionId, isAI} = comment
+    const {discussionId} = comment
     const discussion = await dataLoader.get('discussions').load(discussionId)
     if (!discussion) {
       return {error: {message: 'Invalid discussion thread'}}
@@ -66,9 +65,7 @@ const addComment = {
     // VALIDATION
     const content = normalizeRawDraftJS(comment.content)
 
-    const createdBy = isAI ? 'parabolAIUser' : viewerId
-    const dbComment = new Comment({...comment, content, createdBy})
-    console.log('🚀 ~ dbComment', dbComment)
+    const dbComment = new Comment({...comment, content, createdBy: viewerId})
     const {id: commentId, isAnonymous, threadParentId} = dbComment
     await r.table('Comment').insert(dbComment).run()
 
