@@ -128,10 +128,10 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
     analytics.recurrenceStarted(viewerId, meetingSeries)
   } else {
     const newMeetingSeries = await startNewMeetingSeries(viewerId, teamId, meetingId)
-    dataLoader.get('newMeetings').clear(meetingId)
-
     analytics.recurrenceStarted(viewerId, newMeetingSeries)
   }
+
+  dataLoader.get('newMeetings').clear(meetingId)
 
   // RESOLUTION
   const data = {meetingId}

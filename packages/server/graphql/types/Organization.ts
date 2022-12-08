@@ -85,6 +85,18 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'The datetime the current billing cycle starts',
       resolve: resolveForBillingLeaders('periodStart')
     },
+    tierLimitExceededAt: {
+      type: GraphQLISO8601Type,
+      description: 'Flag the organization as exceeding the tariff limits by setting a datetime'
+    },
+    scheduledLockAt: {
+      type: GraphQLISO8601Type,
+      description: 'Schedule the organization to be locked at'
+    },
+    lockedAt: {
+      type: GraphQLISO8601Type,
+      description: 'Organization locked at'
+    },
     retroMeetingsOffered: {
       deprecationReason: 'Unlimited retros for all!',
       type: new GraphQLNonNull(GraphQLInt),

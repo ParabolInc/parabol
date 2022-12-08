@@ -30,10 +30,12 @@ interface Window {
     datadogService: string | undefined
     github: string
     google: string
+    googleAnalytics: string
     segment: string
     sentry: string
     slack: string
     stripe: string
+    oauth2Redirect: string
     prblIn: string
     AUTH_INTERNAL_ENABLED: boolean
     AUTH_GOOGLE_ENABLED: boolean

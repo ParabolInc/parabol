@@ -31,4 +31,3 @@ extend type Mutation {
     meetingId: ID!
   ): UpdateDimensionFieldPayload!
 }
-
