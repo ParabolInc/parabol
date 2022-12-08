@@ -32,6 +32,9 @@ export default class Organization {
   stripeSubscriptionId?: string | null
   upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
+  tierLimitExceededAt?: Date
+  scheduledLockAt?: Date
+  lockedAt?: Date
   updatedAt: Date
   constructor(input: Input) {
     const {

@@ -2,8 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useHistory} from 'react-router'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateListOrgQuery} from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -12,6 +15,15 @@ const TemplateList = styled('ul')({
   listStyle: 'none',
   paddingLeft: 0,
   marginTop: 0
+})
+
+const StyledLink = styled('span')({
+  color: PALETTE.SKY_500,
+  cursor: 'pointer',
+  outline: 0,
+  ':hover, :focus, :active': {
+    color: PALETTE.SKY_600
+  }
 })
 
 const Message = styled('div')({
@@ -36,8 +48,13 @@ const query = graphql`
   query ReflectTemplateListOrgQuery($teamId: ID!) {
     viewer {
       id
+      featureFlags {
+        templateLimit
+      }
       team(teamId: $teamId) {
         id
+        orgId
+        tier
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
             templateSearchQuery
@@ -66,9 +83,12 @@ const ReflectTemplateListOrg = (props: Props) => {
   const data = usePreloadedQuery<ReflectTemplateListOrgQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
+  const atmosphere = useAtmosphere()
+  const history = useHistory()
   const {viewer} = data
   const team = viewer.team!
-  const {id: teamId, meetingSettings} = team
+  const featureFlags = viewer.featureFlags
+  const {id: teamId, meetingSettings, orgId, tier} = team
   const {templateSearchQuery, organizationTemplates, activeTemplate} = meetingSettings
   const searchQuery = templateSearchQuery ?? ''
   const activeTemplateId = activeTemplate?.id ?? '-tmp'
@@ -77,6 +97,21 @@ const ReflectTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
+    if (tier === 'personal' && featureFlags.templateLimit) {
+      const goToBilling = () => {
+        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+          upgradeCTALocation: 'orgTemplate',
+          meetingType: 'retrospective'
+        })
+        history.push(`/me/organizations/${orgId}`)
+      }
+      return (
+        <Message>
+          <StyledLink onClick={goToBilling}>Upgrade to Pro </StyledLink>
+          <span>to create custom templates for your organization</span>
+        </Message>
+      )
+    }
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>
   }
   if (filteredEdges.length === 0) {

@@ -8,6 +8,8 @@ enum UserFlagEnum {
   insights
   recurrence
   templateLimit
+  teamsLimit
+  aiSummary
 }
 
 """
@@ -20,6 +22,8 @@ type UserFeatureFlags {
   insights: Boolean!
   recurrence: Boolean!
   templateLimit: Boolean!
+  teamsLimit: Boolean!
+  aiSummary: Boolean!
 }
 
 extend type Mutation {

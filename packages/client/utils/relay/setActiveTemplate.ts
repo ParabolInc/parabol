@@ -6,14 +6,14 @@ import Atmosphere from '../../Atmosphere'
 const setActiveTemplateInRelayStore = (
   store: RecordSourceProxy,
   teamId: string,
-  templateId: string | null,
+  templateId: string,
   meetingType: MeetingTypeEnum
 ) => {
   const team = store.get(teamId)
   if (!team) return
   const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: meetingType})
   if (!meetingSettings) return
-  const activeTemplate = templateId ? store.get(templateId)! : null
+  const activeTemplate = store.get(templateId)
   if (activeTemplate) {
     meetingSettings.setLinkedRecord(activeTemplate, 'activeTemplate')
   } else {
@@ -24,7 +24,7 @@ const setActiveTemplateInRelayStore = (
 const setActiveTemplate = (
   atmosphere: Atmosphere,
   teamId: string,
-  templateId: string | null,
+  templateId: string,
   meetingType: MeetingTypeEnum
 ) => {
   commitLocalUpdate(atmosphere, (store) => {

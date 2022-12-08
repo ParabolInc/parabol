@@ -37,7 +37,6 @@ module.exports = ({isDeploy}) => ({
   },
   output: {
     filename: '[name].js',
-    publicPath,
     path: path.join(PROJECT_ROOT, 'dist')
   },
   resolve: {
@@ -46,7 +45,7 @@ module.exports = ({isDeploy}) => ({
       'parabol-client': CLIENT_ROOT,
       'parabol-server': SERVER_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
+    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
@@ -61,7 +60,7 @@ module.exports = ({isDeploy}) => ({
   ],
   plugins: [
     new webpack.DefinePlugin({
-      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[fullhash].js.map',
@@ -88,7 +87,22 @@ module.exports = ({isDeploy}) => ({
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader'
+            loader: 'file-loader',
+            options: {
+              publicPath
+            }
+          }
+        ]
+      },
+      {
+        include: [/node_modules/],
+        test: /\.node$/,
+        use: [
+          {
+            loader: 'node-loader',
+            options: {
+              name: '[name].[ext]'
+            }
           }
         ]
       }
