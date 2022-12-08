@@ -4,6 +4,7 @@ import {RDatum} from '../../database/stricterR'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
+import {DataLoaderWorker} from '../../graphql/graphql'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
@@ -142,15 +143,13 @@ export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
   type: InvoiceItemType,
+  dataLoader: DataLoaderWorker,
   options: Options = {}
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
 
-  const user = await getUserById(userId)
-  if (!user) {
-    throw new Error(`User does not exist: ${userId}`)
-  }
+  const user = await dataLoader.get('users').loadNonNull(userId)
   const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, user)
 

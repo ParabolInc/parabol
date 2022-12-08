@@ -45,7 +45,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, inactive: true})('orgId')
       .run()
-    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
+    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(console.log)
     // TODO: re-identify
   }
   const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
