@@ -29,13 +29,11 @@ extend type Mutation {
   ): AddFeatureFlagToOrgPayload!
 }
 
-type AddFeatureFlagToOrgPayload {
-  error: StandardMutationError
+union AddFeatureFlagToOrgPayload = ErrorPayload | AddFeatureFlagToOrgSuccess
 
+type AddFeatureFlagToOrgSuccess {
   """
   the organizations given the super power
   """
   organizations: [Organization]
 }
-
-extend union NotificationSubscriptionPayload = AddFeatureFlagToOrgPayload

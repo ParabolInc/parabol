@@ -1,9 +1,9 @@
 import isValid from '../../isValid'
-import {AddFeatureFlagToOrgPayloadResolvers} from '../resolverTypes'
+import {AddFeatureFlagToOrgSuccessResolvers} from '../resolverTypes'
 
-export type AddFeatureFlagToOrgPayloadSource = {orgIds: string[]} | {error: {message: string}}
+export type AddFeatureFlagToOrgSuccessSource = {orgIds: string[]} | {error: {message: string}}
 
-const AddFeatureFlagToOrgPayload: AddFeatureFlagToOrgPayloadResolvers = {
+const AddFeatureFlagToOrgSuccess: AddFeatureFlagToOrgSuccessResolvers = {
   organizations: async (source, _args, {dataLoader}) => {
     if ('error' in source) return []
     const {orgIds} = source
@@ -12,4 +12,4 @@ const AddFeatureFlagToOrgPayload: AddFeatureFlagToOrgPayloadResolvers = {
   }
 }
 
-export default AddFeatureFlagToOrgPayload
+export default AddFeatureFlagToOrgSuccess

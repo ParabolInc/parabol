@@ -36,7 +36,7 @@
         "mappers": {
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
           "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
-          "AddFeatureFlagToOrgPayload": "./types/AddFeatureFlagToOrgPayload#AddFeatureFlagToOrgPayloadSource",
+          "AddFeatureFlagToOrgSuccess": "./types/AddFeatureFlagToOrgSuccess#AddFeatureFlagToOrgSuccessSource",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
