@@ -17,15 +17,26 @@ export const TeamPromptMeetingStatus = (props: Props) => {
         id
         scheduledEndTime
         endedAt
+        meetingSeries {
+          id
+          activeMeetings {
+            id
+            createdAt
+            scheduledEndTime
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {endedAt, scheduledEndTime} = meeting
+  const {endedAt, scheduledEndTime, meetingSeries} = meeting
   const isMeetingEnded = !!endedAt
+  const isRecurring = !!meetingSeries
+  const hasActiveMeetings = isRecurring && meetingSeries.activeMeetings?.length > 0
+  const closestActiveMeeting = hasActiveMeetings ? meetingSeries.activeMeetings[0] : null
 
   if (isMeetingEnded) {
-    return <TeamPromptEndedBadge />
+    return <TeamPromptEndedBadge closestActiveMeetingId={closestActiveMeeting?.id} />
   }
 
   if (scheduledEndTime) {

@@ -1,13 +1,14 @@
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
-import getRethink from '../../../database/rethinkDriver'
+import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
@@ -17,9 +18,12 @@ import {MutationResolvers} from '../resolverTypes'
 const startRecurringTeamPrompt = async (
   meetingSeries: MeetingSeries,
   startTime: Date,
-  dataLoader,
-  r,
-  subOptions
+  dataLoader: DataLoaderWorker,
+  r: ParabolR,
+  subOptions: {
+    mutatorId: string | undefined
+    operationId: string
+  }
 ) => {
   const {teamId, facilitatorId} = meetingSeries
 
@@ -53,14 +57,12 @@ const startRecurringTeamPrompt = async (
 const processRecurrence: MutationResolvers['processRecurrence'] = async (
   _source,
   {},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
   const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  // VALIDATION
 
   // RESOLUTION
   // Find any meetings with a scheduledEndTime before now, and close them
