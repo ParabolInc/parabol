@@ -22,16 +22,17 @@ const linkStyle = {
 interface Props {
   appOrigin: string
   corsOptions: CorsOptions
+  align?: 'left' | 'center' | 'right'
 }
 
 const Header = (props: Props) => {
-  const {appOrigin, corsOptions} = props
+  const {appOrigin, corsOptions, align} = props
   const dashURL = makeAppURL(appOrigin, 'me')
   return (
     <table style={emailTableBase} width='100%'>
       <tbody>
         <tr>
-          <td align='left' style={cellStyle}>
+          <td align={align ?? 'left'} style={cellStyle}>
             <a style={linkStyle} href={dashURL}>
               <img
                 alt='Parabol, Inc. Logo'

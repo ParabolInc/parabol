@@ -18,7 +18,7 @@ export default class JiraDimensionField {
   fieldName: string
   fieldType: FieldType
   constructor(input: Input) {
-    const {cloudId, projectKey, issueType, dimensionName, fieldId, fieldName, fieldType } = input
+    const {cloudId, projectKey, issueType, dimensionName, fieldId, fieldName, fieldType} = input
     this.cloudId = cloudId
     this.projectKey = projectKey
     this.issueType = issueType

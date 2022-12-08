@@ -17,11 +17,11 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
-import {TeamPromptEndedBadge} from './TeamPrompt/TeamPromptEndedBadge'
 import {
   GRID_PADDING_LEFT_RIGHT_PERCENT,
   ResponsesGridBreakpoints
 } from './TeamPrompt/TeamPromptGridDimensions'
+import {TeamPromptMeetingStatus} from './TeamPrompt/TeamPromptMeetingStatus'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -47,7 +47,8 @@ const ResponsesGrid = styled('div')({
 const BadgeContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  marginTop: 16
 })
 
 interface Props {
@@ -69,7 +70,7 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
-        endedAt
+        ...TeamPromptMeetingStatus_meeting
         isRightDrawerOpen
         phases {
           ... on TeamPromptResponsesPhase {
@@ -125,8 +126,7 @@ const TeamPromptMeeting = (props: Props) => {
   }, [phase])
   const transitioningStages = useTransition(stages)
   const {safeRoute, isDesktop} = useMeeting(meeting)
-  const {isRightDrawerOpen, endedAt} = meeting
-  const isMeetingEnded = !!endedAt
+  const {isRightDrawerOpen} = meeting
   if (!safeRoute) return null
 
   return (
@@ -139,10 +139,8 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
-              {!isDesktop && isMeetingEnded && (
-                <BadgeContainer>
-                  <TeamPromptEndedBadge />
-                </BadgeContainer>
+              {!isDesktop && (
+                <BadgeContainer>{<TeamPromptMeetingStatus meetingRef={meeting} />}</BadgeContainer>
               )}
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
