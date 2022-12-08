@@ -16,7 +16,7 @@ const addSummariesToThreads = async (
   ])
   const commentPromises = stages.map(async (stage) => {
     const group = groups.find((group) => group.id === stage.reflectionGroupId)
-    if (!group || !group.summary) return
+    if (!group?.summary) return
     const html = `<html><body><i>AI-generated summaries are a premium feature. We'll share these with you in your first few retros so you can see what they're like.</i><br><p><b>Topic Summary:</b></p><p>${group.summary}</p></body></html>`
     const summaryBlock = convertHtmlToTaskContent(html)
     const commentInput = {
