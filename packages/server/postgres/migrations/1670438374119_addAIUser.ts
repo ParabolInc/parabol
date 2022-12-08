@@ -18,6 +18,8 @@ export async function up() {
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`` /* Do undo magic */)
+  await client.query(`
+    DELETE FROM "User" WHERE "id" = 'parabolAIUser';
+  `)
   await client.end()
 }
