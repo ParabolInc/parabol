@@ -23,7 +23,7 @@ interface Opts {
 
 /**
  * Creates a human-readable string representing the time till the given date,
- * for example: 2 days left; 13 hours left; 2 days left, etc or null if the date is in the past
+ * for example: 2 days; 13 hours; 2 days, etc or null if the date is in the past
  * @param date
  */
 export const humanReadableCountdown = (date: string | Date) => {
@@ -39,22 +39,22 @@ export const humanReadableCountdown = (date: string | Date) => {
 
   const days = Math.floor(periods['d'])
   if (days > 0) {
-    return `${days} ${plural(days, 'day', 'days')} left`
+    return `${days} ${plural(days, 'day', 'days')}`
   }
 
   const hours = Math.floor(periods['h'])
   if (hours > 0) {
-    return `${hours} ${plural(hours, 'hour', 'hours')} left`
+    return `${hours} ${plural(hours, 'hour', 'hours')}`
   }
 
   const minutes = Math.floor(periods['m'])
   if (minutes > 0) {
-    return `${minutes} ${plural(minutes, 'minute', 'minutes')} left`
+    return `${minutes} ${plural(minutes, 'minute', 'minutes')}`
   }
 
   const seconds = Math.floor(periods['s'])
   if (seconds > 0) {
-    return `${seconds} ${plural(seconds, 'second', 'seconds')} left`
+    return `${seconds} ${plural(seconds, 'second', 'seconds')}`
   }
 
   return null
