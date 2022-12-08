@@ -18,7 +18,7 @@ export const TeamPromptEndedBadge = ({closestActiveMeetingId}: Props) => {
         ✅ This activity has ended.{' '}
         {closestActiveMeetingId && (
           <StyledLink to={`/meet/${closestActiveMeetingId}`}>
-            Go to the currenct activity.
+            Go to the current activity.
           </StyledLink>
         )}
       </div>
