@@ -9,6 +9,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
+import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 
 /*
@@ -63,7 +64,7 @@ const handleCompletedRetrospectiveStage = async (
 
       data.reflectionGroups = sortedReflectionGroups
     } else if (stage.phaseType === GROUP) {
-      const {phases} = meeting
+      const {facilitatorUserId, phases} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await r
         .table('NewMeeting')
@@ -73,6 +74,8 @@ const handleCompletedRetrospectiveStage = async (
         })
         .run()
       data.meeting = meeting
+      // dont await for the OpenAI API response
+      generateGroupSummaries(meeting.id, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}
