@@ -7,7 +7,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import TOrganizationUser from '../../database/types/OrganizationUser'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -150,10 +149,8 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       type: new GraphQLNonNull(OrganizationUserConnection),
       resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-        organizationUsers.sort((a: TOrganizationUser, b: TOrganizationUser) =>
-          a.orgId > b.orgId ? 1 : -1
-        )
-        const edges = organizationUsers.map((node: TOrganizationUser) => ({
+        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
+        const edges = organizationUsers.map((node) => ({
           cursor: node.id,
           node
         }))
@@ -173,9 +170,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       description: 'The count of active & inactive users',
       resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-        const inactiveUserCount = organizationUsers.filter(
-          ({inactive}: TOrganizationUser) => inactive
-        ).length
+        const inactiveUserCount = organizationUsers.filter(({inactive}) => inactive).length
         return {
           inactiveUserCount,
           activeUserCount: organizationUsers.length - inactiveUserCount
@@ -188,9 +183,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const billingLeaderUserIds = organizationUsers
-          .filter(
-            (organizationUser: TOrganizationUser) => organizationUser.role === 'BILLING_LEADER'
-          )
+          .filter((organizationUser) => organizationUser.role === 'BILLING_LEADER')
           .map(({userId}: {userId: string}) => userId)
         return dataLoader.get('users').loadMany(billingLeaderUserIds)
       }
