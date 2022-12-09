@@ -123,7 +123,7 @@ export const newMeetingFields = () => ({
       {authToken, dataLoader}: GQLContext
     ) => {
       const viewerId = getUserId(authToken)
-      const locked = await isMeetingLocked(dataLoader, viewerId, teamId, endedAt)
+      const locked = await isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
 
       const resolvedPhases = phases.map((phase: any) => ({
         ...phase,
