@@ -113,6 +113,7 @@ const MeetingLockedOverlay = (props: Props) => {
 
   useEffect(() => {
     if (locked) {
+      // lock scrolling of the background, not super critical but looks nicer without scroll bar
       const prevOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
       return () => {
