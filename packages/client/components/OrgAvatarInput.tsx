@@ -4,6 +4,7 @@ import React from 'react'
 import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {PALETTE} from '../styles/paletteV3'
 import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
@@ -32,6 +33,10 @@ const ModalBoundary = styled('div')({
 
 const StyledDialogTitle = styled(DialogTitle)({
   textAlign: 'center'
+})
+
+const AvatarWithShadow = styled(Avatar)({
+  boxShadow: `0px 4px 5px 0px ${PALETTE.SLATE_400}`
 })
 
 interface Props {
@@ -72,7 +77,7 @@ const OrgAvatarInput = (props: Props) => {
     <ModalBoundary>
       <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
       <AvatarBlock>
-        <Avatar picture={picture} size={96} hasBorder />
+        <AvatarWithShadow picture={picture} size={96} />
       </AvatarBlock>
       <AvatarInput error={error?.message} onSubmit={onSubmit} />
     </ModalBoundary>

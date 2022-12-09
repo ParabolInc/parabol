@@ -3,18 +3,14 @@ import React, {forwardRef} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import AvatarBadge from '../AvatarBadge/AvatarBadge'
 
-type ImageBlockProps = Pick<
-  Props,
-  'sansRadius' | 'sansShadow' | 'hasBorder' | 'picture' | 'size' | 'onClick'
->
+type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
 
 const ImageBlock = styled('div')<ImageBlockProps>(
-  ({sansRadius, sansShadow, hasBorder, picture, size, onClick}) => ({
-    backgroundImage: `url(${picture || defaultUserAvatar})`,
+  ({sansRadius, sansShadow, picture, size, onClick}) => ({
+    backgroundImage: `url(${picture ?? defaultUserAvatar})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    border: hasBorder ? '4px solid #B6AEC6' : undefined,
     borderRadius: sansRadius ? 0 : '100%',
     boxShadow: sansShadow ? 'none' : undefined,
     cursor: onClick ? 'pointer' : 'default',
@@ -50,7 +46,6 @@ interface Props {
   picture: string
   sansRadius?: boolean
   sansShadow?: boolean
-  hasBorder?: boolean
   size: number
 }
 
@@ -65,7 +60,6 @@ const Avatar = forwardRef((props: Props, ref: any) => {
     picture,
     sansRadius,
     sansShadow,
-    hasBorder,
     size
   } = props
 
@@ -78,7 +72,6 @@ const Avatar = forwardRef((props: Props, ref: any) => {
       onMouseEnter={onMouseEnter}
       sansRadius={sansRadius}
       sansShadow={sansShadow}
-      hasBorder={hasBorder}
       picture={picture}
       size={size}
     >
