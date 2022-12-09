@@ -1,7 +1,6 @@
 import ms from 'ms'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
-import Organization from '../../database/types/Organization'
 import {DataLoaderWorker} from '../../graphql/graphql'
 
 const STICKY_TEAM_MIN_MEETING_ATTENDEES = 2
@@ -9,11 +8,7 @@ const STICKY_TEAM_MIN_MEETINGS = 3
 const PERSONAL_TIER_MAX_TEAMS = 2
 const PERSONAL_TIER_LOCK_AFTER_DAYS = 30
 
-function hasFlags(organization: Organization) {
-  return organization.tierLimitExceededAt || organization.scheduledLockAt || organization.lockedAt
-}
-
-async function isLimitExceeded(orgId: string, dataLoader: DataLoaderWorker) {
+const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
 
@@ -52,41 +47,34 @@ async function isLimitExceeded(orgId: string, dataLoader: DataLoaderWorker) {
     .run()
 }
 
-export async function removeFlags(orgId: string) {
-  return r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      tierLimitExceededAt: null,
-      scheduledLockAt: null,
-      lockedAt: null
-    })
-    .run()
-}
-
-export async function maybeRemoveLimitExceededFlags(orgId: string, dataLoader: DataLoaderWorker) {
+export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
-  if (!hasFlags(organization)) {
+  if (!organization.tierLimitExceededAt) {
     return
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    await removeFlags(orgId)
+    await r
+      .table('Organization')
+      .get(orgId)
+      .update({
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null
+      })
+      .run()
   }
 }
 
-export async function checkTeamsLimitMaybeFlagOrganization(
-  orgId: string,
-  dataLoader: DataLoaderWorker
-) {
+export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
   if (!organization.featureFlags?.includes('teamsLimit')) {
     return
   }
 
-  if (hasFlags(organization) || organization.tier !== 'personal') {
+  if (organization.tierLimitExceededAt || organization.tier !== 'personal') {
     return
   }
 
