@@ -45,7 +45,11 @@ export const timelineEventInterfaceFields = (): GraphQLFieldConfigMap<
   organization: {
     type: Organization,
     description: 'The organization this event is associated with',
-    resolve: ({orgId}: {orgId: string}, _args: any, {dataLoader}: GQLContext) => {
+    resolve: ({orgId}: {orgId?: string}, _args: any, {dataLoader}: GQLContext) => {
+      // joinedParabol event has no orgId
+      if (orgId === undefined) {
+        return null
+      }
       return dataLoader.get('organizations').load(orgId)
     }
   },

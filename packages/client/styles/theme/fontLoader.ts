@@ -55,5 +55,5 @@ export default [
   plexSansItalic,
   plexSansRegular,
   plexSansSemiBold,
-  plexSansSemiBoldItalic,
+  plexSansSemiBoldItalic
 ]

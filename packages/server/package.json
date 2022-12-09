@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.82.0",
+  "version": "6.85.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -18,6 +18,7 @@
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
     "lint": "eslint --fix . --ext .ts,.tsx",
+    "lint:check": "eslint . --ext .ts,.tsx",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose --runInBand",
@@ -127,8 +128,9 @@
     "node-pg-migrate": "^5.9.0",
     "nodemailer": "^6.4.6",
     "oauth-1.0a": "^2.2.6",
+    "openai": "^3.1.0",
     "oy-vey": "^0.11.0",
-    "parabol-client": "^6.82.0",
+    "parabol-client": "^6.85.0",
     "pg": "^8.5.1",
     "pm2": "^5.2.0",
     "react": "^17.0.2",

@@ -35,6 +35,7 @@ interface Window {
     segment: string
     sentry: string
     slack: string
+    oauth2Redirect: string
     stripe: string
     prblIn: string
   }

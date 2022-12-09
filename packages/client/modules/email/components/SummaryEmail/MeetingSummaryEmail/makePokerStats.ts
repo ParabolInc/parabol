@@ -20,7 +20,7 @@ const makePokerStats = (meetingRef: makePokerStats_meeting$key) => {
   const meetingMembersCount = meetingMembers.length
   return [
     {value: '', label: ''},
-    {value: storyCount, label: plural(storyCount, 'Story', 'Stories')},
+    {value: storyCount, label: plural(storyCount, 'Completed Story', 'Completed Stories')},
     {value: meetingMembersCount, label: 'Participants'},
     {value: '', label: ''}
   ]
