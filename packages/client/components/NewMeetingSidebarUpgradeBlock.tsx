@@ -3,6 +3,7 @@ import React from 'react'
 import {useHistory} from 'react-router'
 import {PALETTE} from '../styles/paletteV3'
 import FlatPrimaryButton from './FlatPrimaryButton'
+import IconButton from './IconButton'
 
 const RootBlock = styled('div')({
   padding: '16px 8px'
@@ -12,7 +13,8 @@ const Container = styled('div')({
   background: PALETTE.SLATE_200,
   border: `2px solid ${PALETTE.GRAPE_500}`,
   padding: 12,
-  borderRadius: 4
+  borderRadius: 4,
+  position: 'relative'
 })
 
 const Heading = styled('div')({
@@ -33,6 +35,23 @@ const Action = styled('div')({
   marginTop: 8
 })
 
+const MEDIA_QUERY_SMALL_HEIGHT = `@media screen and (min-height: 650px)`
+
+const CloseButtonWrapper = styled('div')({
+  marginBottom: '6px',
+  [MEDIA_QUERY_SMALL_HEIGHT]: {
+    display: 'none'
+  }
+})
+
+const CloseButton = styled(IconButton)({
+  opacity: 0.75,
+  padding: 0,
+  position: 'absolute',
+  right: 2,
+  top: 2
+})
+
 const UpgradeButton = styled(FlatPrimaryButton)({
   width: '100%'
 })
@@ -45,24 +64,35 @@ interface Props {
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
   const {onClick, orgId} = props
   const history = useHistory()
+  const [closed, setClosed] = React.useState(false)
 
-  const handleClick = () => {
-    onClick && onClick()
+  const handleUpgradeClick = () => {
+    onClick?.()
     history.push(`/me/organizations/${orgId}`)
+  }
+
+  const handleClose = () => {
+    setClosed(true)
+  }
+
+  if (closed) {
+    return null
   }
 
   return (
     <RootBlock>
       <Container>
+        <CloseButtonWrapper>
+          <CloseButton icon='close' palette='midGray' onClick={handleClose} />
+        </CloseButtonWrapper>
         <Heading>🎉 We’re glad you love Parabol!</Heading>
-
         <Description>
           You've exceeded the two-team limit. To make sure you don't lose access, upgrade to the
           Team plan so you can have as many teams as you need.
         </Description>
 
         <Action>
-          <UpgradeButton onClick={handleClick} size='small'>
+          <UpgradeButton onClick={handleUpgradeClick} size='small'>
             Upgrade
           </UpgradeButton>
         </Action>
