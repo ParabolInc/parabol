@@ -20,15 +20,18 @@ const addFeatureFlagToOrg: MutationResolvers['addFeatureFlagToOrg'] = async (
   }
 
   // RESOLUTION
-  await r
+  const updatedOrgIds = (await r
     .table('Organization')
     .getAll(r.args(orgIds))
-    .update({
-      featureFlags: r.row('featureFlags').default([]).setInsert(flag)
-    })
-    .run()
+    .update(
+      {
+        featureFlags: r.row('featureFlags').default([]).setInsert(flag)
+      },
+      {returnChanges: true}
+    )('changes')('new_val')('id')
+    .run()) as string[]
 
-  return {orgIds}
+  return {updatedOrgIds}
 }
 
 export default addFeatureFlagToOrg

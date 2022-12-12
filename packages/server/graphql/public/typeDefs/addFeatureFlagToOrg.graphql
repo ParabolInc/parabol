@@ -35,5 +35,5 @@ type AddFeatureFlagToOrgSuccess {
   """
   the organizations given the super power
   """
-  organizations: [Organization]
+  updatedOrganizations: [Organization]
 }

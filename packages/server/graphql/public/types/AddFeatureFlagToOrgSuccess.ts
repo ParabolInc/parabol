@@ -1,13 +1,15 @@
 import isValid from '../../isValid'
 import {AddFeatureFlagToOrgSuccessResolvers} from '../resolverTypes'
 
-export type AddFeatureFlagToOrgSuccessSource = {orgIds: string[]} | {error: {message: string}}
+export type AddFeatureFlagToOrgSuccessSource =
+  | {updatedOrgIds: string[]}
+  | {error: {message: string}}
 
 const AddFeatureFlagToOrgSuccess: AddFeatureFlagToOrgSuccessResolvers = {
-  organizations: async (source, _args, {dataLoader}) => {
+  updatedOrganizations: async (source, _args, {dataLoader}) => {
     if ('error' in source) return []
-    const {orgIds} = source
-    const organizations = await dataLoader.get('organizations').loadMany(orgIds)
+    const {updatedOrgIds} = source
+    const organizations = await dataLoader.get('organizations').loadMany(updatedOrgIds)
     return organizations.filter(isValid)
   }
 }
