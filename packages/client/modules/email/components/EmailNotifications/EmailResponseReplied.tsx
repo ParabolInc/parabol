@@ -41,6 +41,9 @@ const EmailResponseReplied = (props: Props) => {
           rasterPicture
           preferredName
         }
+        response {
+          id
+        }
         meeting {
           id
           name
@@ -52,13 +55,18 @@ const EmailResponseReplied = (props: Props) => {
     `,
     notificationRef
   )
-  const {meeting, author, comment} = notification
+  const {meeting, author, comment, response} = notification
   const {rasterPicture: authorPicture, preferredName: authorName} = author
 
   const {id: meetingId, name: meetingName} = meeting
 
-  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}`, {
-    searchParams: notificationSummaryUrlParams
+  // :TRICKY: If the URL we navigate to isn't the full URL w/ phase name (e.g. just
+  // '/meet/<meetingId>'), the URL will be overwritten and the 'responseId' will be lost.
+  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}/responses`, {
+    searchParams: {
+      ...notificationSummaryUrlParams,
+      responseId: response.id
+    }
   })
 
   const contentState = useMemo(() => convertFromRaw(JSON.parse(comment.content)), [comment.content])

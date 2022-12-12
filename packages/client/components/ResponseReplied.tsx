@@ -34,6 +34,9 @@ const ResponseReplied = (props: Props) => {
           picture
           preferredName
         }
+        response {
+          id
+        }
         meeting {
           id
           name
@@ -46,13 +49,12 @@ const ResponseReplied = (props: Props) => {
     notificationRef
   )
   const {history} = useRouter()
-  const {meeting, author, comment} = notification
+  const {meeting, author, comment, response} = notification
   const {picture: authorPicture, preferredName: authorName} = author
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
-    // :TODO: (jmtaber129): Link directly to card once we support that.
-    history.push(`/meet/${meetingId}`)
+    history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
   const [editorState] = useEditorState(comment.content)
