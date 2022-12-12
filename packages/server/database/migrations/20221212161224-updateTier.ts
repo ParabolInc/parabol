@@ -52,7 +52,7 @@ export const up = async function (r: R) {
         }))
         .run(),
       r
-        .table('User')
+        .table('Team')
         .skip(skip)
         .limit(BATCH_SIZE)
         .update((row) => ({
@@ -64,7 +64,7 @@ export const up = async function (r: R) {
         }))
         .run(),
       r
-        .table('Team')
+        .table('User')
         .skip(skip)
         .limit(BATCH_SIZE)
         .update((row) => ({
@@ -141,7 +141,7 @@ export const down = async function (r: R) {
         }))
         .run(),
       r
-        .table('User')
+        .table('Team')
         .skip(skip)
         .limit(BATCH_SIZE)
         .update((row) => ({
@@ -153,7 +153,7 @@ export const down = async function (r: R) {
         }))
         .run(),
       r
-        .table('Team')
+        .table('User')
         .skip(skip)
         .limit(BATCH_SIZE)
         .update((row) => ({
