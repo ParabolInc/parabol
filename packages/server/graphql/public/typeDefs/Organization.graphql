@@ -123,6 +123,11 @@ type Organization {
   updatedAt: DateTime
 
   """
+  The OrganizationUser of the viewer
+  """
+  viewerOrganizationUser: OrganizationUser
+
+  """
   The users that are apart of the organization
   """
   organizationUsers(after: String, first: Int): OrganizationUserConnection!

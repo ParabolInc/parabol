@@ -14,6 +14,7 @@ import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import ActionMeeting from './ActionMeeting'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import isMeetingLocked from './helpers/isMeetingLocked'
 import MeetingMember from './MeetingMember'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhase from './NewMeetingPhase'
@@ -148,6 +149,18 @@ export const newMeetingFields = () => ({
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
       return meetingMember || null
+    }
+  },
+  locked: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description: 'Is this locked for personal plans?',
+    resolve: async (
+      {endedAt, teamId}: {endedAt: Date; teamId: string},
+      _args: any,
+      {authToken, dataLoader}: GQLContext
+    ) => {
+      const viewerId = getUserId(authToken)
+      return isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
     }
   }
 })

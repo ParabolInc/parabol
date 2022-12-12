@@ -536,6 +536,11 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  Is this locked for starter plans?
+  """
+  locked: Boolean!
 }
 
 """

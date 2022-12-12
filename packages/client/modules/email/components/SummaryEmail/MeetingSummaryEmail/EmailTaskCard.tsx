@@ -7,31 +7,35 @@ import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import {EmailTaskCard_task} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 
 interface Props {
-  task: EmailTaskCard_task
+  task: EmailTaskCard_task | null
+  maxWidth?: number
 }
 
-const contentStyle = {
-  backgroundColor: '#FFFFFF',
-  borderColor: PALETTE.SLATE_400,
-  borderRadius: '4px',
-  borderStyle: 'solid',
-  borderWidth: '1px',
-  boxSizing: 'content-box',
-  color: PALETTE.SLATE_700,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: '14px',
-  minHeight: '88px',
-  lineHeight: '20px',
-  padding: '4px 12px 12px',
-  textAlign: 'left',
-  verticalAlign: 'top',
-  width: 188,
-  minWidth: 188,
-  maxWidth: 188
-} as React.CSSProperties
+const contentStyle = (maxWidth?: number): React.CSSProperties => {
+  return {
+    backgroundColor: '#FFFFFF',
+    borderColor: PALETTE.SLATE_400,
+    borderRadius: '4px',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    boxSizing: 'content-box',
+    color: PALETTE.SLATE_700,
+    fontFamily: FONT_FAMILY.SANS_SERIF,
+    fontSize: '14px',
+    minHeight: '88px',
+    lineHeight: '20px',
+    padding: '4px 12px 12px',
+    textAlign: 'left',
+    verticalAlign: 'top',
+    width: maxWidth ? undefined : 188,
+    minWidth: 188,
+    maxWidth: maxWidth ? maxWidth : 188
+  }
+}
 
 const statusStyle = (status: TaskStatusEnum) => ({
   backgroundColor: taskStatusColors[status],
@@ -39,9 +43,19 @@ const statusStyle = (status: TaskStatusEnum) => ({
   width: 30
 })
 
+const deletedTask = {
+  content: convertToTaskContent('<<TASK DELETED>>'),
+  status: 'done',
+  tags: [] as string[],
+  user: {
+    picture: null,
+    preferredName: null
+  }
+} as const
+
 const EmailTaskCard = (props: Props) => {
-  const {task} = props
-  const {content, status} = task
+  const {task, maxWidth} = props
+  const {content, status} = task || deletedTask
   const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
   const editorStateRef = useRef<EditorState>()
   const getEditorState = () => {
@@ -54,7 +68,7 @@ const EmailTaskCard = (props: Props) => {
   return (
     <tr>
       <td>
-        <table align='center' width='188' style={contentStyle}>
+        <table align='center' width={maxWidth ? undefined : '188'} style={contentStyle(maxWidth)}>
           <tbody>
             <tr>
               <td>

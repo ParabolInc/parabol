@@ -11,7 +11,8 @@ import {meetingAvatarMediaQueries, meetingTopBarMediaQuery} from '../../styles/m
 import EditableText from '../EditableText'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
-import {TeamPromptEndedBadge} from './TeamPromptEndedBadge'
+import {HumanReadableRecurrenceRule} from './Recurrence/HumanReadableRecurrenceRule'
+import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
 const TeamPromptLogoBlock = styled(LogoBlock)({
@@ -101,42 +102,52 @@ const TeamPromptTopBar = (props: Props) => {
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         id
         name
-        endedAt
         facilitatorUserId
+        meetingSeries {
+          id
+          cancelledAt
+          recurrenceRule
+        }
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
+        ...TeamPromptMeetingStatus_meeting
       }
     `,
     meetingRef
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, name: meetingName, facilitatorUserId, endedAt} = meeting
+  const {id: meetingId, name: meetingName, facilitatorUserId, meetingSeries} = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
-  const isMeetingEnded = !!endedAt
+  const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
   return (
     <MeetingTopBarStyles>
       <MeetingTitleSection>
         <TeamPromptLogoBlock />
-        {isFacilitator ? (
-          <EditableTeamPromptHeaderTitle
-            error={error?.message}
-            handleSubmit={handleSubmit}
-            initialValue={meetingName}
-            isWrap
-            maxLength={50}
-            validate={validate}
-            placeholder={'Best Meeting Ever!'}
-          />
-        ) : (
-          <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
-        )}
+        <div>
+          {isFacilitator ? (
+            <EditableTeamPromptHeaderTitle
+              error={error?.message}
+              handleSubmit={handleSubmit}
+              initialValue={meetingName}
+              isWrap
+              maxLength={50}
+              validate={validate}
+              placeholder={'Best Meeting Ever!'}
+            />
+          ) : (
+            <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+          )}
+          {isRecurrenceEnabled && (
+            <HumanReadableRecurrenceRule recurrenceRule={meetingSeries.recurrenceRule} />
+          )}
+        </div>
       </MeetingTitleSection>
-      {isDesktop && isMeetingEnded && (
+      {isDesktop && (
         <MiddleSection>
-          <TeamPromptEndedBadge />
+          <TeamPromptMeetingStatus meetingRef={meeting} />
         </MiddleSection>
       )}
       <RightSection>

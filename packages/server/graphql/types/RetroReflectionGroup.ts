@@ -87,6 +87,10 @@ const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLCo
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order of the reflection group'
     },
+    summary: {
+      type: GraphQLString,
+      description: `The GPT-3 generated summary of this reflection group`
+    },
     team: {
       type: Team,
       description: 'The team that is running the retro',
