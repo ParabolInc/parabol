@@ -6,7 +6,7 @@ import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
-import publish from '../../../utils/publish'
+import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
@@ -20,10 +20,7 @@ const startRecurringTeamPrompt = async (
   startTime: Date,
   dataLoader: DataLoaderWorker,
   r: ParabolR,
-  subOptions: {
-    mutatorId: string | undefined
-    operationId: string
-  }
+  subOptions: SubOptions
 ) => {
   const {teamId, facilitatorId} = meetingSeries
 

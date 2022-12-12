@@ -140,6 +140,7 @@ const TeamSubscription = (
       }
     },
     onNext: (result) => {
+      console.log('TeamSubscription onNext', result)
       if (!result) return
       const {teamSubscription} = result
       const {__typename: type} = teamSubscription

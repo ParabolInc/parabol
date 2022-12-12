@@ -1,8 +1,31 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {Link} from 'react-router-dom'
+import useRefreshInterval from '../../hooks/useRefreshInterval'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
 import {TeamPromptBadge} from './TeamPromptBadge'
+
+interface NextMeetingLinkProps {
+  closestActiveMeetingId: string
+}
+
+export const NextMeetingLink = (props: NextMeetingLinkProps) => {
+  const {closestActiveMeetingId} = props
+  return <StyledLink to={`/meet/${closestActiveMeetingId}`}>Go to the next activity.</StyledLink>
+}
+
+interface NextMeetingCountdownProps {
+  nextMeetingDate: Date
+}
+
+export const NextMeetingCountdown = (props: NextMeetingCountdownProps) => {
+  const {nextMeetingDate} = props
+  useRefreshInterval(1000)
+  const fromNow = humanReadableCountdown(nextMeetingDate)
+  if (!fromNow) return null
+
+  return <span>Next one starts in {humanReadableCountdown(nextMeetingDate)}.</span>
+}
 
 const StyledLink = styled(Link)({
   textDecoration: 'underline',
@@ -19,15 +42,11 @@ type Props = {closestActiveMeetingId: string} | {nextMeetingDate: Date} | Record
 export const TeamPromptEndedBadge = (props: Props) => {
   const renderAdditionalInfo = () => {
     if ('closestActiveMeetingId' in props) {
-      return (
-        <StyledLink to={`/meet/${props.closestActiveMeetingId}`}>
-          Go to the next activity.
-        </StyledLink>
-      )
+      return <NextMeetingLink closestActiveMeetingId={props.closestActiveMeetingId} />
     }
 
     if ('nextMeetingDate' in props) {
-      return <span>Next one starts in {humanReadableCountdown(props.nextMeetingDate)}.</span>
+      return <NextMeetingCountdown nextMeetingDate={props.nextMeetingDate} />
     }
 
     return null
