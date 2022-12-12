@@ -5,7 +5,12 @@ import {humanReadableCountdown} from '../../utils/date/relativeDate'
 import {TeamPromptBadge} from './TeamPromptBadge'
 
 const StyledLink = styled(Link)({
-  textDecoration: 'underline'
+  textDecoration: 'underline',
+  fontWeight: 400
+})
+
+const EmojiContainer = styled('span')({
+  paddingRight: 4
 })
 
 // here we just want one of the props to be present, never both
@@ -30,7 +35,9 @@ export const TeamPromptEndedBadge = (props: Props) => {
 
   return (
     <TeamPromptBadge>
-      <div>✅ This activity has ended. {renderAdditionalInfo()}</div>
+      <div>
+        <EmojiContainer>✅</EmojiContainer> This activity has ended. {renderAdditionalInfo()}
+      </div>
     </TeamPromptBadge>
   )
 }
