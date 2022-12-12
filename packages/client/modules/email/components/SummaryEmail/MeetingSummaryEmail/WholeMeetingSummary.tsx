@@ -15,6 +15,14 @@ const topicTitleStyle = {
   padding: '8px 48px'
 }
 
+const explainerStyle = {
+  color: PALETTE.SLATE_700,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontStyle: 'italic',
+  padding: '8px 48px',
+  fontSize: 14
+}
+
 const textStyle = {
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
@@ -28,22 +36,35 @@ interface Props {
 
 const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
-  const {summary} = useFragment(
+  const meeting = useFragment(
     graphql`
       fragment WholeMeetingSummary_meeting on RetrospectiveMeeting {
         summary
+        team {
+          tier
+        }
       }
     `,
     meetingRef
   )
+  const {summary, team} = meeting
   if (!summary) return null
   return (
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
           <tr>
-            <td style={topicTitleStyle}>{'Meeting Summary'}</td>
+            <td align='center' style={topicTitleStyle}>
+              {'Meeting Summary'}
+            </td>
           </tr>
+          {team?.tier === 'personal' && (
+            <tr>
+              <td
+                style={explainerStyle}
+              >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+            </tr>
+          )}
           <tr>
             <td style={textStyle}>{summary}</td>
           </tr>
