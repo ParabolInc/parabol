@@ -73,7 +73,10 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
 
   return useMemo(() => {
     const currentTChildren = [] as TransitionChild<T>[]
-    const {current: prevTChildren} = previousTransitionChildrenRef
+    const {current: prevTChildrenTemp} = previousTransitionChildrenRef
+    const prevTChildren = prevTChildrenTemp.filter(
+      (prevTChild) => prevTChild.status !== TransitionStatus.EXITING
+    )
 
     let touched = false
     // add mounted nodes + update new orderings
