@@ -18,6 +18,7 @@ const EmailResponseMentioned = (props: Props) => {
       fragment EmailResponseMentioned_notification on NotifyResponseMentioned {
         ...EmailNotificationTemplate_notification
         response {
+          id
           user {
             rasterPicture
             preferredName
@@ -36,8 +37,13 @@ const EmailResponseMentioned = (props: Props) => {
 
   const {id: meetingId, name: meetingName} = meeting
 
-  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}`, {
-    searchParams: notificationSummaryUrlParams
+  // :TRICKY: If the URL we navigate to isn't the full URL w/ phase name (e.g. just
+  // '/meet/<meetingId>'), the URL will be overwritten and the 'responseId' will be lost.
+  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}/responses`, {
+    searchParams: {
+      ...notificationSummaryUrlParams,
+      responseId: response.id
+    }
   })
 
   // :TODO: (jmtaber129): Show mention preview.
