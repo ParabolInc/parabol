@@ -27,7 +27,7 @@ In other words, migration 3 should have a guarantee that migration 2 has already
 
 ### SSL
 
-1. Pick a directory on the local filesystem to store the keys. Store the absolute path in the env var `PG_CERT_DIR`
+1. Pick a directory on the local filesystem to store the keys. Store the absolute path in the env var `POSTGRES_SSL_DIR`
 2. Add `root.crt` (CA), `postgresql.key`, and `postgresql.crt` to that directory.
 
 ### Gotchas
