@@ -8,6 +8,7 @@ export type NotificationEnumType =
   | 'TEAM_ARCHIVED'
   | 'TEAM_INVITATION'
   | 'MEETING_STAGE_TIME_LIMIT_END'
+  | 'TEAMS_LIMIT_EXCEEDED'
 
 const NotificationEnum = new GraphQLEnumType({
   name: 'NotificationEnum',
@@ -19,7 +20,8 @@ const NotificationEnum = new GraphQLEnumType({
     TEAM_INVITATION: {},
     TEAM_ARCHIVED: {},
     TASK_INVOLVES: {},
-    MEETING_STAGE_TIME_LIMIT_END: {}
+    MEETING_STAGE_TIME_LIMIT_END: {},
+    TEAMS_LIMIT_EXCEEDED: {}
   }
 })
 

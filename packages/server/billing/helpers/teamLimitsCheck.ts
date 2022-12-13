@@ -1,12 +1,59 @@
 import ms from 'ms'
 import {r} from 'rethinkdb-ts'
+import {SubscriptionChannel} from '~/types/constEnums'
 import {RDatum, RValue} from '../../database/stricterR'
+import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import {DataLoaderWorker} from '../../graphql/graphql'
+import {OrganizationUser} from '../../graphql/public/resolverTypes'
+import getPg from '../../postgres/getPg'
+import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import publish from '../../utils/publish'
 
 const STICKY_TEAM_MIN_MEETING_ATTENDEES = 2
 const STICKY_TEAM_MIN_MEETINGS = 3
 const PERSONAL_TIER_MAX_TEAMS = 2
 const PERSONAL_TIER_LOCK_AFTER_DAYS = 30
+
+const enableUsageStatsAndNotify = async (orgId: string, dataLoader: DataLoaderWorker) => {
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+
+  const organizationBillingLeaders = (await r
+    .table('OrganizationUser')
+    .getAll(orgId, {index: 'orgId'})
+    .filter({removedAt: null, role: 'BILLING_LEADER'})
+    .update(
+      {suggestedTier: 'pro'},
+      {returnChanges: 'always'}
+    )('changes')('new_val')
+    .run()) as OrganizationUser[]
+
+  const billingLeadersUserIds = organizationBillingLeaders.map(
+    (ou: OrganizationUser) => ou.userId
+  ) as string[]
+
+  await appendUserFeatureFlagsQuery.run({ids: billingLeadersUserIds, flag: 'insights'}, getPg())
+
+  const notificationsToInsert = organizationBillingLeaders.map((billingLeader) => {
+    return new NotificationTeamsLimitExceeded({
+      userId: billingLeader.userId,
+      orgId
+    })
+  })
+
+  await r.table('Notification').insert(notificationsToInsert).run()
+
+  notificationsToInsert.forEach((notification) => {
+    const {userId} = notification
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      userId,
+      'AddNotificationPayload',
+      {notification},
+      subOptions
+    )
+  })
+}
 
 const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
@@ -88,6 +135,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   const now = new Date()
 
+  // Schedule lock
   await r
     .table('Organization')
     .get(orgId)
@@ -97,4 +145,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
       updatedAt: now
     })
     .run()
+
+  // Enable usage stats
+  await enableUsageStatsAndNotify(orgId, dataLoader)
 }

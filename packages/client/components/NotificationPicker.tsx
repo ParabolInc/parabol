@@ -17,6 +17,12 @@ const typePicker = {
   PROMOTE_TO_BILLING_LEADER: lazyPreload(
     () => import(/* webpackChunkName: 'PromoteToBillingLeader' */ './PromoteToBillingLeader')
   ),
+  TEAMS_LIMIT_EXCEEDED: lazyPreload(
+    () =>
+      import(
+        /* webpackChunkName: 'TeamsLimitExceededNotification' */ './TeamsLimitExceededNotification'
+      )
+  ),
   TEAM_ARCHIVED: lazyPreload(() => import(/* webpackChunkName: 'TeamArchived' */ './TeamArchived')),
   TEAM_INVITATION: lazyPreload(
     () => import(/* webpackChunkName: 'TeamInvitation' */ './TeamInvitationNotification')
@@ -56,6 +62,7 @@ export default createFragmentContainer(NotificationPicker, {
       ...TeamInvitationNotification_notification
       ...MeetingStageTimeLimitEnd_notification
       ...ResponseMentioned_notification
+      ...TeamsLimitExceededNotification_notification
     }
   `
 })
