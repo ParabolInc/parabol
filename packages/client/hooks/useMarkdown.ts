@@ -90,7 +90,7 @@ const extractMarkdownStyles = (
   getNextState: () => EditorState,
   blockKey: string
 ) => {
-  const extractedStyles = []
+  const extractedStyles = [] as any[]
   let es = editorState
   styles.forEach((style) => {
     es = extractStyle(es, getNextState, style, blockKey, extractedStyles)

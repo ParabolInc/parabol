@@ -9,6 +9,7 @@ import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
+import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import PokerMeetingSidebar from './PokerMeetingSidebar'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
@@ -57,7 +58,7 @@ const PokerMeeting = (props: Props) => {
           gotoStageId={gotoStageId}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
-          avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
+          avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
         />
       </Suspense>
       <MeetingControlBar
@@ -65,6 +66,7 @@ const PokerMeeting = (props: Props) => {
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
       />
+      <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )
 }
@@ -79,6 +81,7 @@ export default createFragmentContainer(PokerMeeting, {
       ...MeetingControlBar_meeting
       ...ScopePhase_meeting
       ...PokerEstimatePhase_meeting
+      ...MeetingLockedOverlay_meeting
       id
       # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
       init: id @__clientField(handle: "localPoker")

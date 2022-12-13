@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {
   azureDevOpsEffortWorkItems,
@@ -15,7 +15,6 @@ import {
 } from '../utils/AzureDevOpsWorkItemFields'
 import {AzureDevOpsFieldDimensionDropdown_stage$key} from '../__generated__/AzureDevOpsFieldDimensionDropdown_stage.graphql'
 import AzureDevOpsFieldMenu from './AzureDevOpsFieldMenu'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
@@ -40,8 +39,9 @@ const CurrentValue = styled('div')({
   fontSize: 14
 })
 
-const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  fontSize: ICON_SIZE.MD18,
+const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}) => ({
+  height: 18,
+  width: 18,
   display: isFacilitator ? undefined : 'none'
 }))
 
@@ -117,7 +117,7 @@ const AzureDevOpsFieldDimensionDropdown = (props: Props) => {
   return (
     <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
       <CurrentValue>{label}</CurrentValue>
-      <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
+      <StyledIcon isFacilitator={isFacilitator} />
       {menuPortal(
         <AzureDevOpsFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore} />
       )}

@@ -9,6 +9,7 @@ import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.gr
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingControlBar from './MeetingControlBar'
+import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 
@@ -65,7 +66,7 @@ const ActionMeeting = (props: Props) => {
           <Phase
             meeting={meeting}
             toggleSidebar={toggleSidebar}
-            avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
+            avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
           />
         </Suspense>
       </MeetingArea>
@@ -74,6 +75,7 @@ const ActionMeeting = (props: Props) => {
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
       />
+      <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )
 }
@@ -90,6 +92,7 @@ export default createFragmentContainer(ActionMeeting, {
       ...ActionMeetingLastCall_meeting
       ...NewMeetingAvatarGroup_meeting
       ...MeetingControlBar_meeting
+      ...MeetingLockedOverlay_meeting
       localPhase {
         id
         phaseType

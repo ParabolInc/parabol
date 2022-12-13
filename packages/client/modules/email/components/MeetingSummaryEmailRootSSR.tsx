@@ -3,6 +3,7 @@ import {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/Meet
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import {Environment} from 'relay-runtime'
+import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import makeAppURL from '../../../utils/makeAppURL'
 import MeetingSummaryEmail from './SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
@@ -62,6 +63,7 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
             referrerUrl={referrerUrl}
             emailCSVUrl={emailCSVUrl}
             appOrigin={appOrigin}
+            corsOptions={EMAIL_CORS_OPTIONS}
           />
         )
       }}

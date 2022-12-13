@@ -1,7 +1,12 @@
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import pluralizeHandler from './pluralizeHandler'
 
-const handleRemoveReflectionGroup = (reflectionGroupId, meetingId, store) => {
+const handleRemoveReflectionGroup = (
+  reflectionGroupId: string,
+  meetingId: string,
+  store: RecordSourceSelectorProxy
+) => {
   const reflectionGroup = store.get(reflectionGroupId)
   if (!reflectionGroup) return
   const meeting = store.get(meetingId)

@@ -8,6 +8,8 @@ import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraS
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import updateJiraDimensionFieldMap from '../../postgres/queries/updateJiraDimensionFieldMap'
+import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
 import {analytics} from '../../utils/analytics/analytics'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -102,9 +104,11 @@ const setTaskEstimate = {
       case 'jira': {
         const {accessUserId, cloudId, issueKey} = integration!
         const projectKey = JiraProjectKeyId.join(issueKey)
-        const [auth, team] = await Promise.all([
+        const [auth, jiraIssue] = await Promise.all([
           dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
-          dataLoader.get('teams').load(teamId)
+          dataLoader
+            .get('jiraIssue')
+            .load({teamId, cloudId, viewerId, userId: accessUserId, issueKey})
         ])
         if (!auth) {
           errorMessage = 'User no longer has access to Atlassian'
@@ -112,14 +116,73 @@ const setTaskEstimate = {
         }
         const {accessToken} = auth
         const manager = new AtlassianServerManager(accessToken)
-        const jiraDimensionFields = team?.jiraDimensionFields || []
-        const dimensionField = jiraDimensionFields.find(
-          (dimensionField) =>
-            dimensionField.dimensionName === dimensionName &&
-            dimensionField.cloudId === cloudId &&
-            dimensionField.projectKey === projectKey
+
+        if (!jiraIssue) {
+          errorMessage = 'Issue not found'
+          break
+        }
+        const {issueType} = jiraIssue
+
+        const dimensionFields = await dataLoader
+          .get('jiraDimensionFieldMap')
+          .load({teamId, cloudId, projectKey, issueType, dimensionName})
+
+        // Find the best match
+        const {possibleEstimationFieldNames} = jiraIssue
+        const validFields = [
+          SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+          SprintPokerDefaults.SERVICE_FIELD_NULL,
+          ...possibleEstimationFieldNames
+        ]
+        const dimensionField = dimensionFields.find(({fieldName}) =>
+          validFields.includes(fieldName)
         )
-        const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+
+        // If we're using a field stored for a different issueType, update the DB to store the new match
+        if (dimensionField && dimensionField.issueType !== issueType) {
+          // Legacy unknown field type, replace it with an actual issueType
+          if (dimensionField.issueType === '') {
+            dimensionField.issueType = issueType
+            await updateJiraDimensionFieldMap(dimensionField)
+          }
+          // Add the type in addition
+          else {
+            const {fieldId, fieldName, fieldType} = dimensionField
+            const newField = {
+              teamId,
+              cloudId,
+              projectKey,
+              issueType,
+              dimensionName,
+              fieldId,
+              fieldName,
+              fieldType
+            }
+            await upsertJiraDimensionFieldMap(newField)
+          }
+          dataLoader
+            .get('jiraDimensionFieldMap')
+            .clear({teamId, cloudId, projectKey, issueType, dimensionName})
+        }
+        // Store the default if we don't have a field yet
+        if (!dimensionField) {
+          const newField = {
+            teamId,
+            cloudId,
+            projectKey,
+            issueType,
+            dimensionName,
+            fieldId: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            fieldName: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            fieldType: 'string'
+          }
+          await upsertJiraDimensionFieldMap(newField)
+          dataLoader
+            .get('jiraDimensionFieldMap')
+            .clear({teamId, cloudId, projectKey, issueType, dimensionName})
+        }
+
+        const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
         if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
           const res = await manager.addComment(
             cloudId,

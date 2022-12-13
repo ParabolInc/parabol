@@ -1,11 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {Disposable} from 'relay-runtime'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  DismissNewFeatureMutation as TDismissNewFeatureMutation,
-  DismissNewFeatureMutationVariables
-} from '../__generated__/DismissNewFeatureMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {DismissNewFeatureMutation as TDismissNewFeatureMutation} from '../__generated__/DismissNewFeatureMutation.graphql'
 
 const mutation = graphql`
   mutation DismissNewFeatureMutation {
@@ -17,11 +13,11 @@ const mutation = graphql`
   }
 `
 
-const DismissNewFeatureMutation = (
+const DismissNewFeatureMutation: StandardMutation<TDismissNewFeatureMutation> = (
   atmosphere,
-  variables: DismissNewFeatureMutationVariables,
-  {onCompleted, onError}: LocalHandlers
-): Disposable => {
+  variables,
+  {onCompleted, onError}
+) => {
   return commitMutation<TDismissNewFeatureMutation>(atmosphere, {
     mutation,
     variables,

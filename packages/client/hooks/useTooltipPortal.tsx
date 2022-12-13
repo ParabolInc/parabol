@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {ReactElement, ReactPortal, RefObject, useEffect} from 'react'
+import React, {ReactElement, ReactNode, ReactPortal, RefObject, useEffect} from 'react'
 import {ZIndex} from '../types/constEnums'
 import TooltipBackground from './TooltipBackground'
 import {UseCoordsValue} from './useCoords'
@@ -31,7 +31,7 @@ const useTooltipPortal = (
       isMounted = false
     }
   }, [portalStatus, setPortalStatus])
-  return (reactEl) => {
+  return (reactEl: ReactNode) => {
     return portal(
       <TooltipBlock ref={targetRef as any} style={{...coords}}>
         <TooltipBackground portalStatus={portalStatus}>{reactEl}</TooltipBackground>

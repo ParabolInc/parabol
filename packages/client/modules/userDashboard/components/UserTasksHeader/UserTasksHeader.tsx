@@ -11,7 +11,10 @@ import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import {UserTasksHeader_viewer$key} from '~/__generated__/UserTasksHeader_viewer.graphql'
+import {
+  UserTasksHeader_viewer,
+  UserTasksHeader_viewer$key
+} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
@@ -69,7 +72,8 @@ const StyledCheckbox = styled(Checkbox)({
 const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
   justifyContent: 'flex-start',
   flexWrap: 'wrap',
-  width: '100%'
+  width: '100%',
+  overflow: 'initial'
 })
 
 interface Props {
@@ -118,7 +122,7 @@ const UserTasksHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const oldTeamsRef = useRef<any>([])
+  const oldTeamsRef = useRef<UserTasksHeader_viewer['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams

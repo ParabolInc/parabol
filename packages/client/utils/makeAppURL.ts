@@ -3,6 +3,8 @@ interface Options {
     utm_source: string
     utm_medium: string
     utm_campaign: string
+    openNotifs?: string
+    responseId?: string
   }
 }
 

@@ -38,7 +38,10 @@ const getMeetingPathParams = (): MeetingPathResults => {
     return {
       meetingId: RetroDemo.MEETING_ID,
       phaseSlug,
-      phaseType: findKeyByValue(phaseTypeToSlug, phaseSlug) as NewMeetingPhaseTypeEnum,
+      phaseType: findKeyByValue(
+        phaseTypeToSlug,
+        phaseSlug as NewMeetingPhaseTypeEnum
+      ) as NewMeetingPhaseTypeEnum,
       stageIdx: stageIdxSlug ? Number(stageIdxSlug) - 1 : undefined,
       stageIdxSlug
     }
@@ -49,7 +52,10 @@ const getMeetingPathParams = (): MeetingPathResults => {
   return {
     meetingId,
     phaseSlug: phaseSlug,
-    phaseType: findKeyByValue(phaseTypeToSlug, phaseSlug) as NewMeetingPhaseTypeEnum,
+    phaseType: findKeyByValue(
+      phaseTypeToSlug,
+      phaseSlug as NewMeetingPhaseTypeEnum
+    ) as NewMeetingPhaseTypeEnum,
     stageIdx: stageIdxSlug ? Number(stageIdxSlug) - 1 : undefined,
     stageIdxSlug
   }

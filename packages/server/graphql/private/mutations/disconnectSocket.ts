@@ -1,9 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import PROD from '../../../PROD'
+import {analytics} from '../../../utils/analytics/analytics'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
-import segmentIo from '../../../utils/segmentIo'
 import {UserPresence} from '../../private/mutations/connectSocket'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -52,14 +52,10 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
       )
     })
   }
-  segmentIo.track({
-    userId,
-    event: 'Disconnect WebSocket',
-    properties: {
-      socketCount: userPresence.length,
-      socketId,
-      tms
-    }
+  analytics.websocketDisconnected(userId, {
+    socketCount: userPresence.length,
+    socketId,
+    tms
   })
   return {user}
 }

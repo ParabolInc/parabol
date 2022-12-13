@@ -92,6 +92,7 @@ class DemoJiraRemoteProject {
   key: string
   name: string
   avatar: string
+  service: 'jira'
   avatarUrls = {
     x16: '',
     x24: '',
@@ -110,6 +111,7 @@ class DemoJiraRemoteProject {
     this.key = projectKey
     this.name = name
     this.avatar = avatar
+    this.service = 'jira'
   }
 }
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
@@ -257,16 +259,16 @@ const initDemoTeamMember = (
       slack: initSlackAuth(userId)
     },
     repoIntegrations: {
-      hasMore: true,
+      hasMore: false,
       items: [
         new DemoJiraRemoteProject(JiraDemoProjectId),
         makeRepoIntegrationGitHub(GitHubDemoKey)
       ]
     },
-    allAvailableRepoIntegrations: [
-      new DemoJiraRemoteProject(JiraDemoProjectId),
-      new DemoJiraRemoteProject(JiraSecretProjectId)
-    ],
+    prevUsedRepoIntegrations: {
+      hasMore: false,
+      items: []
+    },
     teamId: demoTeamId,
     userId
   }

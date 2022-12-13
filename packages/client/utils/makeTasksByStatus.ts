@@ -3,7 +3,7 @@ import {columnArray} from './constants'
 
 // sorts post-split to be a little more efficient
 interface Task {
-  status: string
+  status: TaskStatusEnum
   sortOrder: number
 }
 

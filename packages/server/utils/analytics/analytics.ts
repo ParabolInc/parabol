@@ -5,6 +5,7 @@ import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
+import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
@@ -48,6 +49,12 @@ export type MeetingSettings = {
   disableAnonymity?: boolean
 }
 
+export type WebSocketProperties = {
+  socketCount: number
+  socketId: string
+  tms: string[]
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -64,13 +71,24 @@ export type AnalyticsEvent =
   | 'Integration Removed'
   | 'Invite Email Sent'
   | 'Invite Accepted'
+  | 'Sent Invite Accepted'
   // org
+  | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
   | 'Organization Downgraded'
   // task
   | 'Task Created'
   | 'Task Published'
   | 'Task Estimate Set'
+  // user
+  | 'Account Created'
+  | 'Account Paused'
+  | 'Account Unpaused'
+  | 'Account Name Changed'
+  | 'User Removed From Org'
+  | 'Connect WebSocket'
+  | 'Disconnect WebSocket'
+  | 'Summary Email Setting Changed'
 
 /**
  * Provides a unified inteface for sending all the analytics events
@@ -272,9 +290,20 @@ class Analytics {
       isNewUser,
       acceptAt
     })
+
+    this.track(inviterId, 'Sent Invite Accepted', {
+      teamId,
+      inviteeId: userId,
+      isNewUser,
+      acceptAt
+    })
   }
 
   //org
+  clickedUpgradeCTA = (userId: string, upgradeCTALocation: UpgradeCTALocationEnumType) => {
+    this.track(userId, 'Upgrade CTA Clicked', {upgradeCTALocation})
+  }
+
   organizationUpgraded = (userId: string, upgradeEventProperties: OrgTierChangeEventProperties) => {
     this.track(userId, 'Organization Upgraded', upgradeEventProperties)
   }
@@ -306,7 +335,41 @@ class Analytics {
     this.track(userId, 'Task Estimate Set', taskEstimateProperties)
   }
 
-  private track = (userId: string, event: AnalyticsEvent, properties?: any) =>
+  // user
+  accountCreated = (userId: string, isInvited: boolean, isPatient0: boolean) => {
+    this.track(userId, 'Account Created', {
+      isInvited,
+      // properties below needed for Google Analytics goal setting
+      category: 'All',
+      label: isPatient0 ? 'isPatient0' : 'isNotPatient0'
+    })
+  }
+
+  accountPaused = (userId: string) => this.track(userId, 'Account Paused')
+
+  accountUnpaused = (userId: string) => this.track(userId, 'Account Unpaused')
+
+  accountNameChanged = (userId: string, newName: string) =>
+    this.track(userId, 'Account Name Changed', {
+      newName
+    })
+
+  userRemovedFromOrg = (userId: string, orgId: string) =>
+    this.track(userId, 'User Removed From Org', {userId, orgId})
+
+  websocketConnected = (userId: string, websocketProperties: WebSocketProperties) => {
+    this.track(userId, 'Connect WebSocket', websocketProperties)
+  }
+
+  websocketDisconnected = (userId: string, websocketProperties: WebSocketProperties) => {
+    this.track(userId, 'Disconnect WebSocket', websocketProperties)
+  }
+
+  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
+    this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
+  }
+
+  private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>
     this.segmentAnalytics.track(userId, event, properties)
 }
 

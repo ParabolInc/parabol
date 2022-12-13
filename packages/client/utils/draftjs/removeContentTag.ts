@@ -10,7 +10,7 @@ const removeContentTag = (
   content: string,
   area: AreaEnum
 ) => {
-  const eqFn = (data) => data.value === tagValue
+  const eqFn = (data: {value: any}) => data.value === tagValue
   const nextContent = removeRangesForEntity(content, 'TAG', eqFn)
   if (!nextContent) return
   const updatedTask = {

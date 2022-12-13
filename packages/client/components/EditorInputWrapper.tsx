@@ -74,7 +74,7 @@ const EditorInputWrapper = (props: Props) => {
     setEditorState(editorState)
   }
 
-  const onReturn = (e) => {
+  const onReturn = (e: React.KeyboardEvent) => {
     if (handleReturn) {
       return handleReturn(e, editorState)
     }
@@ -92,7 +92,7 @@ const EditorInputWrapper = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyBindingFn = (e) => {
+  const onKeyBindingFn = (e: React.KeyboardEvent) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -109,10 +109,10 @@ const EditorInputWrapper = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i]
+        const tag = textTags[i]!
         if (text.indexOf(tag) !== -1) {
           const selection = editorState.getSelection()
           entityPasteStartRef.current = {

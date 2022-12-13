@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {ArrowForward, Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -17,7 +18,6 @@ import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomControlBarReadyButton from './BottomControlBarReadyButton'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import Icon from './Icon'
 
 interface Props {
   isNext: boolean
@@ -31,17 +31,21 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady: boolean}>(
+const StyledIcon = styled('div')<{progress: number; isNext: boolean; isViewerReady: boolean}>(
   ({isViewerReady, progress, isNext}) => ({
-    color: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
-    fontSize: 24,
-    fontWeight: 600,
     height: 24,
+    width: 24,
     opacity: isNext ? 1 : isViewerReady ? 1 : 0.5,
     transformOrigin: '0 0',
     // 20px to 16 = 0.75
     transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
-    transition: `transform 100ms ${BezierCurve.DECELERATE}`
+    transition: `transform 100ms ${BezierCurve.DECELERATE}`,
+    svg: {
+      // without fill property the stroke property will be ignored
+      fill: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+      stroke: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+      strokeWidth: 1
+    }
   })
 )
 
@@ -127,7 +131,6 @@ const BottomControlBarReady = (props: Props) => {
         gotoNext()
       })
     : undefined
-  const icon = isNext ? 'arrow_forward' : 'check'
   const label = isNext ? 'Next' : 'Ready'
   const getDisabled = () => {
     if (!isNext) return false
@@ -136,6 +139,7 @@ const BottomControlBarReady = (props: Props) => {
     }
     return false
   }
+
   const disabled = getDisabled()
   return (
     <>
@@ -152,13 +156,13 @@ const BottomControlBarReady = (props: Props) => {
         <BottomControlBarReadyButton meetingRef={meeting} progress={progress}>
           <BottomControlBarProgress isNext={isNext} progress={progress} />
           <BottomNavIconLabel label={label} ref={originRef}>
-            <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
-              {icon}
-            </CheckIcon>
+            <StyledIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
+              {isNext ? <ArrowForward /> : <Check />}
+            </StyledIcon>
           </BottomNavIconLabel>
         </BottomControlBarReadyButton>
       </BottomNavControl>
-      {tooltipPortal(`Tap 'Next' again to Confirm`)}
+      {tooltipPortal(`Tap 'Next' again if everyone is ready`)}
     </>
   )
 }

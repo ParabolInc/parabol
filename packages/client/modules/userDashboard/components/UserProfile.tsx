@@ -3,10 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DeleteAccount from '../../../components/DeleteAccount'
+import EmailNotifications from '../../../components/EmailNotifications'
 import Panel from '../../../components/Panel/Panel'
+import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import {PALETTE} from '../../../styles/paletteV3'
-import {Layout} from '../../../types/constEnums'
+import {AuthIdentityTypeEnum, Layout} from '../../../types/constEnums'
 import {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
@@ -29,8 +31,13 @@ interface Props {
 const query = graphql`
   query UserProfileQuery {
     viewer {
+      ...PasswordResetLink_viewer
+      ...EmailNotifications_viewer
       preferredName
       picture
+      identities {
+        type
+      }
     }
   }
 `
@@ -40,14 +47,28 @@ const UserProfile = ({queryRef}: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
+  const {identities} = viewer
+  const isLocal = identities?.find((identity) => identity?.type === AuthIdentityTypeEnum.LOCAL)
   useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
     <UserSettingsWrapper>
       <SettingsBlock>
-        <Panel label='My Information'>
+        <Panel label='Profile' casing={'capitalize'}>
           <UserSettingsForm viewer={viewer} />
         </Panel>
-        <Panel label='Danger Zone'>
+        {isLocal && (
+          <Panel label='Authentication' casing={'capitalize'}>
+            <PanelRow>
+              <PasswordResetLink viewerRef={viewer} />
+            </PanelRow>
+          </Panel>
+        )}
+        <Panel label='Email Notifications' casing={'capitalize'}>
+          <PanelRow>
+            <EmailNotifications viewerRef={viewer} />
+          </PanelRow>
+        </Panel>
+        <Panel label='Danger Zone' casing={'capitalize'}>
           <PanelRow>
             <DeleteAccount />
           </PanelRow>

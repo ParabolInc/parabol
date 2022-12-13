@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
@@ -10,11 +11,9 @@ import {RetroSidebarDiscussSection_meeting} from '~/__generated__/RetroSidebarDi
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {NavSidebar} from '../types/constEnums'
 import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
-import Icon from './Icon'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
 
@@ -39,11 +38,10 @@ const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
   })
 )
 
-const VoteIcon = styled(Icon)({
+const VoteIcon = styled(ThumbUp)({
   color: 'inherit',
-  fontSize: ICON_SIZE.MD18,
-  height: lineHeight,
-  lineHeight,
+  height: 18,
+  width: 18,
   marginRight: 2
 })
 
@@ -104,7 +102,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
     DragDiscussionTopicMutation(atmosphere, variables)
   }
 
-  const handleClick = (id) => {
+  const handleClick = (id: string) => {
     gotoStageId(id).catch()
     handleMenuClick()
   }
@@ -123,7 +121,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const voteMeta = (
                     <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
-                      <VoteIcon>{'thumb_up'}</VoteIcon>
+                      <VoteIcon />
                       {voteCount || 0}
                     </VoteTally>
                   )

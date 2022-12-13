@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import getInProxy from '../utils/relay/getInProxy'
 import {RemoveReflectTemplateMutation as TRemoveReflectTemplateMutation} from '../__generated__/RemoveReflectTemplateMutation.graphql'
 import {RemoveReflectTemplateMutation_team} from '../__generated__/RemoveReflectTemplateMutation_team.graphql'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
@@ -35,8 +34,8 @@ export const removeReflectTemplateTeamUpdater: SharedUpdater<RemoveReflectTempla
   payload,
   {store}
 ) => {
-  const templateId = getInProxy(payload, 'reflectTemplate', 'id')
-  const teamId = getInProxy(payload, 'reflectTemplate', 'teamId')
+  const templateId = payload.getLinkedRecord('reflectTemplate').getValue('id')
+  const teamId = payload.getLinkedRecord('reflectTemplate').getValue('teamId')
   handleRemoveReflectTemplate(templateId, teamId, store)
 }
 

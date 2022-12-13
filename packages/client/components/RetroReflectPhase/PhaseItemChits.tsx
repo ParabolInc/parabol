@@ -28,7 +28,7 @@ const PROGRESS_MARGIN = 2
 // we need 4 things to fake a circle:
 // pos at 0%, % when pos is at progress width, % when pos is back at 0, and pos at 100%
 // doing this gives the illusion that there is a single progress bar & each chit is just a mask
-const shiftColor = (idx) => keyframes`
+const shiftColor = (idx: number) => keyframes`
   0% {
     background-position: ${idx * OFFSET}px;
   }

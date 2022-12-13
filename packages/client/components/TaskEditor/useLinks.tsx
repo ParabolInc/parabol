@@ -114,7 +114,7 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     }
   }
 
-  const getMaybeLinkifiedState = (getNextState, editorState) => {
+  const getMaybeLinkifiedState = (getNextState: () => EditorState, editorState: EditorState) => {
     undoLinkRef.current = false
     const {block, anchorOffset} = getAnchorLocation(editorState)
     const blockText = block.getText()

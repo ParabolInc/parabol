@@ -70,6 +70,7 @@ const safeEndTeamPrompt = async ({
   // TipTap-formatted responses on the server-side.
   // sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
+  dataLoader.get('newMeetings').clear(meetingId)
 
   const data = {
     meetingId,

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Archive} from '@mui/icons-material'
 import React from 'react'
 import Menu from '~/components/Menu'
 import MenuItem from '~/components/MenuItem'
@@ -6,8 +7,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
 import ArchiveTimelineEventMutation from '~/mutations/ArchiveTimelineEventMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import Icon from './Icon'
 import {MenuItemLabelStyle} from './MenuItemLabel'
 
 interface Props {
@@ -15,9 +14,8 @@ interface Props {
   timelineEventId: string
 }
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Archive)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
   marginRight: 8
 })
 
@@ -35,7 +33,7 @@ const TimelineEventHeaderMenu = (props: Props) => {
         key='archive'
         label={
           <TimelineEventMenuItemLabel>
-            <StyledIcon>archive</StyledIcon>
+            <StyledIcon />
             <span>{'Archive meeting'}</span>
           </TimelineEventMenuItemLabel>
         }

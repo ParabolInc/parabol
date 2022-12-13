@@ -2,12 +2,12 @@ import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEn
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import updateUser from '../../../postgres/queries/updateUser'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
-import isPatientZero from '../../mutations/helpers/isPatientZero'
 import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
@@ -44,7 +44,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, inactive: true})('orgId')
       .run()
-    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
+    adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER, dataLoader).catch(console.log)
     // TODO: re-identify
   }
   const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
@@ -72,22 +72,19 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     })
   }
 
-  segmentIo.track({
-    userId,
-    event: 'Connect WebSocket',
-    properties: {
-      socketCount,
-      socketId,
-      tms
-    }
+  analytics.websocketConnected(userId, {
+    socketCount,
+    socketId,
+    tms
   })
   segmentIo.identify({
     userId,
     traits: {
+      email: user.email,
       isActive: true,
       featureFlags: user.featureFlags,
       highestTier: user.tier,
-      isPatient0: await isPatientZero(userId, user.domain)
+      isPatient0: user.isPatient0
     }
   })
   return user

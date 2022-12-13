@@ -32,7 +32,7 @@ const EditableTemplateDimension = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const handleSubmit = (rawDimensionName) => {
+  const handleSubmit = (rawDimensionName: string) => {
     if (submitting) return
     const {error, value: name} = validate(rawDimensionName)
     if (error) return

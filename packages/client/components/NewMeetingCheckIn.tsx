@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {RecordVoiceOver} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -8,10 +9,8 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import Icon from './Icon'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
@@ -30,11 +29,10 @@ const Hint = styled('div')({
   marginTop: 16
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(RecordVoiceOver)({
   color: PALETTE.SLATE_600,
   display: 'block',
-  margin: '0 auto 4px',
-  width: ICON_SIZE.MD24
+  margin: '0 auto 4px'
 })
 
 interface Props {
@@ -71,7 +69,7 @@ const NewMeetingCheckIn = (props: Props) => {
           <CheckIn>
             {isViewerMeetingSection && (
               <Hint>
-                <StyledIcon>record_voice_over</StyledIcon>
+                <StyledIcon />
                 <MeetingFacilitationHint>
                   {'Verbally share your response with the team'}
                 </MeetingFacilitationHint>

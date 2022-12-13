@@ -41,4 +41,9 @@ type MeetingSeries {
   When the meeting series was cancelled
   """
   cancelledAt: DateTime
+
+  """
+  The meetings that belong to the meeting series
+  """
+  activeMeetings: [NewMeeting!]!
 }

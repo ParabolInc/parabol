@@ -198,7 +198,7 @@ const EditorHelpModal = (props: Props) => {
         <ModalHeaderIcon>
           <IconLabel icon='keyboard' iconLarge />
         </ModalHeaderIcon>
-        <ModalHeaderTitle>{'Task Card Formatting'}</ModalHeaderTitle>
+        <ModalHeaderTitle>{'Formatting Text'}</ModalHeaderTitle>
         <CloseButton icon='close' iconLarge onClick={handleCloseModal} palette='midGray' />
       </ModalHeader>
       <HeaderLabelBlock>

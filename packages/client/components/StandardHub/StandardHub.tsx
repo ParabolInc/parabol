@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
+import {VerifiedUser as VerifiedUserIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
-import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
 import {TierLabel} from '~/types/constEnums'
-import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {StandardHub_viewer, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
@@ -22,7 +21,7 @@ const StandardHubRoot = styled('div')({
   backgroundImage: `url('${WaveWhiteSVG}'), linear-gradient(90deg, ${PALETTE.GRAPE_700} 0%, ${PALETTE.SLATE_700} 100%)`,
   display: 'flex',
   flexDirection: 'column',
-  minHeight: APP_BAR_HEIGHT,
+  minHeight: 56,
   padding: 16,
   width: '100%'
 })
@@ -117,7 +116,7 @@ const StandardHub = (props: Props) => {
       </User>
       {tier === 'personal' ? (
         <Upgrade onClick={handleUpgradeClick}>
-          <Icon>verified_user</Icon>
+          <VerifiedUserIcon />
           <UpgradeCTA>
             {'Upgrade to '}
             <b>{TierLabel.PRO}</b>

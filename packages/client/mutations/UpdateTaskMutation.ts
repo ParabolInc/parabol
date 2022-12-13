@@ -10,7 +10,6 @@ import {
 } from '../types/relayMutations'
 import extractTextFromDraftString from '../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
-import getInProxy from '../utils/relay/getInProxy'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
@@ -72,7 +71,7 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const viewerId = viewer && viewer.getDataID()
   const privatizedTaskId = payload.getValue('privatizedTaskId')
-  const taskUserId = getInProxy(task, 'userId')
+  const taskUserId = task.getValue('userId')
   if (taskUserId !== viewerId && privatizedTaskId) {
     handleRemoveTasks(privatizedTaskId, store)
   }

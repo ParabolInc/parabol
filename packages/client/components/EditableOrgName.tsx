@@ -20,7 +20,7 @@ const EditableOrgText = styled(EditableText)({
 
 const EditableOrgName = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const handleSubmit = (rawName) => {
+  const handleSubmit = (rawName: string) => {
     const {onError, onCompleted, setDirty, submitMutation, submitting, organization} = props
     if (submitting) return
     setDirty()

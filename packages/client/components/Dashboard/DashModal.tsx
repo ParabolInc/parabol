@@ -50,7 +50,7 @@ interface Props {
 
 const DashModal = (props: Props) => {
   const {children, onBackdropClick} = props
-  const onClick = (e) => {
+  const onClick = (e: React.MouseEvent) => {
     if (onBackdropClick && e.target === e.currentTarget) {
       onBackdropClick()
     }

@@ -12,7 +12,7 @@ const iconLookup = {
   JiraServerIssue: JiraServerSVG,
   _xGitLabIssue: GitLabSVG,
   AzureDevOpsWorkItem: AzureDevOpsSVG
-}
+} as const
 
 const WatermarkBlock = styled('div')({
   bottom: 0,
@@ -26,7 +26,7 @@ const WatermarkBlock = styled('div')({
   verticalAlign: 'middle',
   opacity: 0.2,
   zIndex: 1,
-  '& svg': {
+  svg: {
     height: 120,
     width: 120,
     position: 'absolute',
@@ -41,7 +41,7 @@ interface Props {
 const TaskWatermark = (props: Props) => {
   const {type} = props
   if (!type) return null
-  const SVG = iconLookup[type]
+  const SVG = iconLookup[type as keyof typeof iconLookup]
   if (!SVG) return null
   return (
     <WatermarkBlock>

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Fragment} from 'react'
+import React, {Fragment, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import isDemoRoute from '~/utils/isDemoRoute'
@@ -39,7 +39,8 @@ const RetroMeetingSidebar = (props: Props) => {
     localPhase,
     localStage,
     phases,
-    settings
+    settings,
+    meetingMembers
   } = meeting
   const {phaseTypes} = settings
   const localPhaseType = localPhase ? localPhase.phaseType : ''
@@ -48,6 +49,7 @@ const RetroMeetingSidebar = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
+  const [confirmingPhase, setConfirmingPhase] = useState<NewMeetingPhaseTypeEnum | null>(null)
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -55,24 +57,45 @@ const RetroMeetingSidebar = (props: Props) => {
       meeting={meeting}
     >
       <MeetingNavList>
-        {phaseTypes.map((phaseType) => {
+        {phaseTypes.map((phaseType, index) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
           const {
             id: itemStageId = '',
             isNavigable = false,
-            isNavigableByFacilitator = false
-          } = itemStage || {}
+            isNavigableByFacilitator = false,
+            isComplete = false
+          } = itemStage ?? {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
-            gotoStageId(itemStageId).catch()
-            handleMenuClick()
+            const prevPhaseType = phaseTypes[index - 1]
+            const prevItemStage = prevPhaseType
+              ? getSidebarItemStage(prevPhaseType, phases, facilitatorStageId)
+              : null
+
+            const {isComplete: isPrevItemStageComplete = true, readyCount = 0} = prevItemStage ?? {}
+
+            const activeCount = meetingMembers.length
+            const isConfirmRequired = readyCount < activeCount - 1 && activeCount > 1
+
+            if (
+              isComplete ||
+              isPrevItemStageComplete ||
+              !isConfirmRequired ||
+              confirmingPhase === phaseType
+            ) {
+              setConfirmingPhase(null)
+              gotoStageId(itemStageId).catch()
+              handleMenuClick()
+            } else {
+              setConfirmingPhase(phaseType)
+            }
           }
           const discussPhase = phases.find((phase) => {
             return phase.phaseType === 'discuss'
           })!
           const showDiscussSection = isPhaseComplete('vote', phases)
           const phaseCount =
-            phaseType === 'discuss' && showDiscussSection ? discussPhase.stages.length : undefined
+            phaseType === 'discuss' && showDiscussSection ? discussPhase?.stages.length : undefined
           return (
             <Fragment key={phaseType}>
               <NewMeetingSidebarPhaseListItem
@@ -87,6 +110,7 @@ const RetroMeetingSidebar = (props: Props) => {
                 key={phaseType}
                 phaseCount={phaseCount}
                 phaseType={phaseType}
+                isConfirming={confirmingPhase === phaseType}
               />
               <RetroSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}
@@ -137,6 +161,9 @@ export default createFragmentContainer(RetroMeetingSidebar, {
       localStage {
         id
       }
+      meetingMembers {
+        id
+      }
       phases {
         phaseType
         stages {
@@ -144,6 +171,7 @@ export default createFragmentContainer(RetroMeetingSidebar, {
           isComplete
           isNavigable
           isNavigableByFacilitator
+          readyCount
         }
       }
     }

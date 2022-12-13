@@ -24,7 +24,7 @@ export default class ServerHealthChecker {
   async ping() {
     const socketServers = await this.publisher.smembers('socketServers')
     this.pendingPongs = new Set(...socketServers.filter((id) => id !== SERVER_ID))
-    this.publisher.publish('socketServerPing', SERVER_ID)
+    await this.publisher.publish('socketServerPing', SERVER_ID)
     await sleep(500)
     // if a server hasn't replied in 500ms, assume it is offline
     const deadServerIds = [...this.pendingPongs]
@@ -36,18 +36,18 @@ export default class ServerHealthChecker {
     if (deadServerIds.length === 0) return
     const authToken = new ServerAuthToken()
     // remove the dead servers from the set of socket servers in redis
-    const writes = deadServerIds.map((id) => ['srem', 'socketServers', id])
-    await this.publisher.multi(writes).exec()
+    await this.publisher.srem('socketServers', deadServerIds)
     // find all connected users and prune the dead servers from their list of connections
     const userPresenceStream = this.publisher.scanStream({match: 'presence:*'})
     userPresenceStream.on('data', async (keys) => {
       if (!keys?.length) return
       const reads = keys.map((key: string) => {
         return ['lrange', key, '0', '-1']
-      })
+      }) as string[][]
       userPresenceStream.pause()
 
       const presenceBatch = (await this.publisher.multi(reads).exec()) as [null, string[]][]
+      const disconnectPromises = [] as Promise<any>[]
       presenceBatch.map((record, idx) => {
         const key = keys[idx]!
         const userId = key.slice(0, key.indexOf(':'))
@@ -57,10 +57,16 @@ export default class ServerHealthChecker {
           const {socketServerId, socketId} = presence
           if (!deadServerIds.includes(socketServerId)) return
           // let GQL handle the disconnect logic so it can do special handling like notify team memers
-          publishInternalGQL({authToken, query: disconnectQuery, socketId, variables: {userId}})
+          const promise = publishInternalGQL({
+            authToken,
+            query: disconnectQuery,
+            socketId,
+            variables: {userId}
+          })
+          disconnectPromises.push(promise)
         })
       })
-
+      await Promise.all(disconnectPromises)
       userPresenceStream.resume()
     })
     await new Promise((resolve, reject) => {

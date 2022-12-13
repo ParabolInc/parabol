@@ -1,32 +1,45 @@
 import styled from '@emotion/styled'
+import {
+  Comment,
+  Edit,
+  Group,
+  GroupWork,
+  PlaylistAdd,
+  Receipt,
+  ThumbsUpDown,
+  Update
+} from '@mui/icons-material'
 import React from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
 import {PALETTE} from '../styles/paletteV3'
-import {NavSidebar} from '../types/constEnums'
+import {NavSidebar, Times} from '../types/constEnums'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
-import Icon from './Icon'
-
-const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
-  {
-    color: PALETTE.SLATE_600,
-    margin: '0 16px'
-  },
-  ({isUnsyncedFacilitatorPhase}) => ({
-    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
-  })
-)
 
 const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
   ({isUnsyncedFacilitatorPhase}) => ({
     height: 24,
     margin: '0 16px',
     width: 24,
-    '& svg': {
-      '& path': {
+    svg: {
+      path: {
         fill: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : PALETTE.SLATE_600
       }
     }
+  })
+)
+
+const NavItemIcon = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
+  {
+    color: PALETTE.SLATE_600,
+    height: 24,
+    width: 24,
+    margin: '0 16px'
+  },
+  ({isUnsyncedFacilitatorPhase}) => ({
+    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
   })
 )
 
@@ -125,6 +138,7 @@ interface Props {
   isUnsyncedFacilitatorStage?: boolean
   phaseCount?: number | null
   phaseType: NewMeetingPhaseTypeEnum
+  isConfirming?: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
@@ -136,12 +150,28 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     isUnsyncedFacilitatorPhase,
     isUnsyncedFacilitatorStage,
     phaseCount,
-    phaseType
+    phaseType,
+    isConfirming
   } = props
-  const label = phaseLabelLookup[phaseType]
-  const icon = phaseIconLookup[phaseType]
-  const Image = phaseImageLookup[phaseType]
+  const label = phaseLabelLookup[phaseType] as string | undefined
+  const icon = phaseIconLookup[phaseType] as string | undefined
+  const Image = phaseImageLookup[phaseType as keyof typeof phaseImageLookup]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
+
+  const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      disabled: !isConfirming,
+      delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
+    }
+  )
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      openTooltip()
+    }
+  }, [isConfirming])
+
   return (
     <NavListItemLink
       isActive={isActive}
@@ -151,9 +181,23 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={handleClick}
       title={label}
+      ref={originRef}
     >
       {icon && (
-        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+          {
+            {
+              group: <Group />,
+              edit: <Edit />,
+              thumbs_up_down: <ThumbsUpDown />,
+              comment: <Comment />,
+              group_work: <GroupWork />,
+              playlist_add: <PlaylistAdd />,
+              update: <Update />,
+              receipt: <Receipt />
+            }[icon]
+          }
+        </NavItemIcon>
       )}
       {Image && (
         <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
@@ -166,6 +210,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
           <StyledBadge>{phaseCount}</StyledBadge>
         </PhaseCountBlock>
       )}
+      {tooltipPortal(`Tap '${label}' again if everyone is ready`)}
     </NavListItemLink>
   )
 }

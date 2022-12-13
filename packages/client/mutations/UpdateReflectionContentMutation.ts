@@ -46,7 +46,7 @@ const UpdateReflectionContentMutation: StandardMutation<TUpdateReflectionContent
     onError,
     optimisticUpdater: (store) => {
       const {reflectionId, content} = variables
-      const reflectionProxy = store.get(reflectionId)
+      const reflectionProxy = store.get(reflectionId)!
       const nowISO = new Date().toJSON()
       const optimisticReflection = {
         content,

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Close as CloseIcon, PersonAdd as PersonAddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -7,11 +8,15 @@ import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {MenuProps} from '../hooks/useMenu'
+import EndCheckInMutation from '../mutations/EndCheckInMutation'
+import EndRetrospectiveMutation from '../mutations/EndRetrospectiveMutation'
+import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
+import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import Icon from './Icon'
+import {MeetingTypeEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuItemLabelStyle} from './MenuItemLabel'
@@ -22,9 +27,13 @@ interface Props {
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
 }
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
+  height: 24,
+  width: 24,
+  svg: {
+    fontSize: 24
+  },
   marginRight: 8
 })
 
@@ -33,14 +42,22 @@ const OptionMenuItem = styled('div')({
   width: '200px'
 })
 
-const EndMeetingMutationLookup = {
-  teamPrompt: EndTeamPromptMutation
+const EndMeetingMutationLookup: Record<
+  MeetingTypeEnum,
+  StandardMutation<any, HistoryMaybeLocalHandler>
+> = {
+  teamPrompt: EndTeamPromptMutation,
+  action: EndCheckInMutation,
+  retrospective: EndRetrospectiveMutation,
+  poker: EndSprintPokerMutation
 }
 
 const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
+      id
       team(teamId: $teamId) {
+        id
         massInvitation(meetingId: $meetingId) {
           id
         }
@@ -48,6 +65,7 @@ const query = graphql`
       meeting(meetingId: $meetingId) {
         id
         meetingType
+        facilitatorUserId
       }
     }
   }
@@ -59,11 +77,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  const {team, meeting} = viewer
+  const {id: viewerId, team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const {id: meetingId, meetingType} = meeting!
-  const canEndMeeting = meetingType === 'teamPrompt'
+  const {id: meetingId, meetingType, facilitatorUserId} = meeting!
+  const isViewerFacilitator = facilitatorUserId === viewerId
+  const canEndMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
@@ -75,7 +94,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
         key='copy'
         label={
           <OptionMenuItem>
-            <StyledIcon>person_add</StyledIcon>
+            <StyledIcon>
+              <PersonAddIcon />
+            </StyledIcon>
             <span>{'Copy invite link'}</span>
           </OptionMenuItem>
         }
@@ -84,6 +105,11 @@ const MeetingCardOptionsMenu = (props: Props) => {
           closePortal()
           const copyUrl = getMassInvitationUrl(token)
           await navigator.clipboard.writeText(copyUrl)
+
+          SendClientSegmentEventMutation(atmosphere, 'Copied Invite Link', {
+            teamId: team?.id,
+            meetingId: meetingId
+          })
         }}
       />
       {canEndMeeting && (
@@ -91,7 +117,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
           key='close'
           label={
             <OptionMenuItem>
-              <StyledIcon>close</StyledIcon>
+              <StyledIcon>
+                <CloseIcon />
+              </StyledIcon>
               <span>{'End the meeting'}</span>
             </OptionMenuItem>
           }

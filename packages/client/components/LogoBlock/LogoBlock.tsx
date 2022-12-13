@@ -24,13 +24,14 @@ const Image = styled('img')({
 })
 
 interface Props {
-  onClick: () => void
+  onClick?: () => void
+  className?: string
 }
 
 const LogoBlock = (props: Props) => {
-  const {onClick} = props
+  const {onClick, className} = props
   return (
-    <RootBlock>
+    <RootBlock className={className}>
       <Anchor title='My Dashboard' to='/meetings' onClick={onClick}>
         <Image crossOrigin='' alt='Parabol' src={logoMarkPurple} />
       </Anchor>

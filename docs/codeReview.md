@@ -5,13 +5,24 @@ Review progress is tracked in the [Sprint Board](https://github.com/orgs/Parabol
 If there is no issue belonging to the PR, then the PR itself should be added to the board.
 A PR advances from self-review to reviewer-review and finally maintainer review before it can get merged.
 
-## General rules
+## Submitting a PR
 
 - Once you're assigned to a task, it's your responsibility to split it the way you can submit reasonably sized PRs. It’s ok to have multiple PRs for a single issue.
 - Use draft PRs to ask for early feedback.
-- It should be a reviewer’s goal to do the code review within 1 business day. If you’re unable to do it, leave a comment.
-- If you’re busy it’s ok to assign someone else as a reviewer.
 - When submitting a PR, provide context. What's the task? What's changed? Why? If you can, record a Loom to share why things are done that way. It'll be easier for a reviewer to understand what decision you've made and why.
+
+## Requesting Code Reviews
+
+- Self-assess which domains are involved in the changes made by your PR, find a reviewer from among the folks who fill the [Code Reviewer (L2–3)](https://www.notion.so/Code-Reviewer-L2-3-a47bb0759a0b41b5b0469ff14a8cdaae) role, paying specific attention to who GitHub suggests, who has indicated expertise within a domain (e.g. backend, front-end, etc.), and who has capacity to review within 24 hours.
+- If the PR has not been reviewed within 24 hours, ping the reviewer on Slack and ask when they'll be able to review. If they don't have capacity for review, reassign to a different reviewer. If you're still blocked at the next check-in meeting, add an agenda item.
+- If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. Use the label for PRs of any size and complexity if you are confident enough, and it feels safe. One exception: we should be extremely careful with DB migrations as they might break the application in the way that is hard to restore.
+
+## Performing Code Reviews
+
+- Performing code reviews and unblocking others is also important part of your job. It is totally fine that sometimes you may do more PR reviews than coding.
+- Prioritize unblocking others by performing [code reviews](https://github.com/pulls/review-requested) on daily basis
+- Try to complete PR reviews within 1 working day
+- If not possible to complete PR review within 1 working day, follow the above “Requesting Code Reviews” guide to reassign the PR
 - When reviewing a PR and requesting changes, be mindful that the PR author won't always have the right background to understand what are you requesting. Make your comments meaningful, and record a Loom if needed.
 - [The right balance](https://docs.gitlab.com/ee/development/code_review.html#the-right-balance)
 
@@ -57,14 +68,4 @@ A PR advances from self-review to reviewer-review and finally maintainer review 
     - resolve if you followed the suggestion
     - reply if you didn't
 - If you need to clarify parts of the code, check if it can be done by adding comments or improve naming of variables/functions/classes
-- When you replied or resolved all comments, move issue back to reviewer- or maintainer-review
-
-## One Review Required
-
-If the developer creating the PR feels that maintainer review isn't necessary, they should add a label: “One Review Required”. If the Reviewer thinks it's not safe to have just one review, it's their responsiblity to add a comment saying that Maintainer review is required to merge the PR.
-
-Examples of PRs that could be safe to merge that way
-
-- Minor changes, e.g. [remove octokit](https://github.com/ParabolInc/parabol/pull/6479)
-- Small, non-architectural changes that happen behind a feature flag, e.g. [show GitLab issues in the Estimate phase](https://github.com/ParabolInc/parabol/pull/6355). It's the PR author's responsibility to keep track of the scenarios that need testing before removing the feature flag.
-- Work that is related to new features which are hidden after a feature flag and do not touch existing functionality (any work related to the architecture of the new feature is an exception and should go through the full review process) e.g [added end team prompt mutation](https://github.com/ParabolInc/parabol/pull/6250)
+- When you replied or resolved all comments, move the PR back to review
