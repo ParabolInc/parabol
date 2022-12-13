@@ -7,6 +7,7 @@ import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema
 import getRethink from '../../../database/rethinkDriver'
 import TeamMember from '../../../database/types/TeamMember'
 import updateUser from '../../../postgres/queries/updateUser'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
@@ -79,17 +80,13 @@ const updateUserProfile = async (
   //   .catch(console.warn.bind(console));
   // }
   //
+  const user = await dataLoader.get('users').loadNonNull(userId)
   if (validUpdatedUser.preferredName) {
-    segmentIo.track({
-      userId,
-      event: 'Changed name',
-      properties: {
-        name: validUpdatedUser.preferredName
-      }
-    })
+    analytics.accountNameChanged(userId, validUpdatedUser.preferredName)
     segmentIo.identify({
       userId,
       traits: {
+        email: user.email,
         name: validUpdatedUser.preferredName
       }
     })

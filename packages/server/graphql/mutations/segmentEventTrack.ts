@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
-import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
+import {getUserId, isTeamMember, isUserInOrg} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -57,7 +57,6 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const {teamId, orgId} = options || {teamId: undefined, orgId: undefined}
-    // const {teamId, orgId} = options || {}
     if (teamId) {
       // fail silently. they're being sneaky
       if (!isTeamMember(authToken, teamId)) {
@@ -66,7 +65,7 @@ export default {
       }
     }
     if (orgId) {
-      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         standardError(new Error('Failed input validation'), {userId: viewerId})
         return false
       }
