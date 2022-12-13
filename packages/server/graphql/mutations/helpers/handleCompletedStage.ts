@@ -10,10 +10,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
-<<<<<<< HEAD
 import generateDiscussionSummary from './generateDiscussionSummary'
-=======
->>>>>>> master
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 
