@@ -67,6 +67,12 @@ const finishRetroMeeting = async (
   sendNewMeetingSummary(meeting, context).catch(console.log)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
+  const data = {meetingId}
+  const operationId = dataLoader.share()
+  // viewer's client has already received the mutation response. If the mutatorId is the socketId,
+  // the viewer won't see an update. Make the mutatorId an empty string so the viewer receives the subscription: https://github.com/ParabolInc/parabol/blob/88a801d80d0c51c38b6c9722dfa80fbca8f7bebd/packages/server/graphql/ResponseStream.ts#L26
+  const subOptions = {mutatorId: '', operationId}
+  publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
 }
 
 export default {
