@@ -48,6 +48,7 @@ export default createFragmentContainer(NotificationPicker, {
   notification: graphql`
     fragment NotificationPicker_notification on Notification {
       type
+      id
       ...KickedOut_notification
       ...PaymentRejected_notification
       ...TaskInvolves_notification
