@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {AddedNotificationResolvers, ResolversTypes} from '../resolverTypes'
+import {AddedNotificationResolvers} from '../resolverTypes'
 
 export type AddedNotificationSource = {addedNotificationId: string}
 
@@ -13,7 +13,7 @@ const AddedNotification: AddedNotificationResolvers = {
       )
     }
 
-    return notification as ResolversTypes['Notification']
+    return notification
   }
 }
 
