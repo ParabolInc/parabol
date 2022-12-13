@@ -107,12 +107,42 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: ({phases, id: meetingId, teamId}: {phases: any; id: string; teamId: string}) => {
-      return phases.map((phase: any) => ({
+    resolve: async (
+      {
+        phases,
+        id: meetingId,
+        teamId,
+        endedAt
+      }: {
+        phases: any
+        id: string
+        teamId: string
+        endedAt: Date
+      },
+      _args: unknown,
+      {authToken, dataLoader}: GQLContext
+    ) => {
+      const viewerId = getUserId(authToken)
+      const locked = await isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
+
+      const resolvedPhases = phases.map((phase: any) => ({
         ...phase,
         meetingId,
         teamId
       }))
+
+      if (locked) {
+        // make all stages non-navigable so even if the user removes the overlay they cannot see all meeting data
+        return resolvedPhases.map((phase: any) => ({
+          ...phase,
+          stages: phase.stages.map((stage: any) => ({
+            ...stage,
+            isNavigable: false,
+            isNavigableByFacilitator: false
+          }))
+        }))
+      }
+      return resolvedPhases
     }
   },
   showConversionModal: {

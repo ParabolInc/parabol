@@ -12,6 +12,7 @@ import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGr
 import {RetroDemo} from '../types/constEnums'
 import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
+import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
@@ -55,6 +56,7 @@ const RetroMeeting = (props: Props) => {
         ...RetroVotePhase_meeting
         ...RetroDiscussPhase_meeting
         ...NewMeetingAvatarGroup_meeting
+        ...MeetingLockedOverlay_meeting
         id
         showSidebar
         localPhase {
@@ -106,6 +108,7 @@ const RetroMeeting = (props: Props) => {
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
       />
+      <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )
 }
