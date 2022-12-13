@@ -7,17 +7,7 @@ graphql`
   fragment StartTeamPromptMutation_team on StartTeamPromptSuccess {
     meeting {
       id
-      meetingSeries {
-        id
-        recurrenceRule
-        duration
-        cancelledAt
-        activeMeetings {
-          id
-          createdAt
-          scheduledEndTime
-        }
-      }
+      ...TeamPromptMeetingStatus_meeting
     }
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)

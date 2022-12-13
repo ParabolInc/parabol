@@ -18,17 +18,7 @@ graphql`
     meeting {
       id
       endedAt
-      meetingSeries {
-        id
-        recurrenceRule
-        duration
-        cancelledAt
-        activeMeetings {
-          id
-          createdAt
-          scheduledEndTime
-        }
-      }
+      ...TeamPromptMeetingStatus_meeting
       ...TeamPromptMeeting_meeting
     }
     team {
