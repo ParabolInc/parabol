@@ -10,6 +10,7 @@ enum UserFlagEnum {
   templateLimit
   teamsLimit
   aiSummary
+  meetingHistoryLimit
 }
 
 """
@@ -24,6 +25,7 @@ type UserFeatureFlags {
   templateLimit: Boolean!
   teamsLimit: Boolean!
   aiSummary: Boolean!
+  meetingHistoryLimit: Boolean!
 }
 
 extend type Mutation {
