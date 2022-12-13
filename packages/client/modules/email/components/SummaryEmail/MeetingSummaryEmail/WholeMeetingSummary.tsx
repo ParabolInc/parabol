@@ -4,6 +4,7 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import Ellipsis from '../../../../../components/Ellipsis/Ellipsis'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const topicTitleStyle = {
@@ -40,6 +41,9 @@ const WholeMeetingSummary = (props: Props) => {
     graphql`
       fragment WholeMeetingSummary_meeting on RetrospectiveMeeting {
         summary
+        reflectionGroups(sortBy: voteCount) {
+          summary
+        }
         team {
           tier
         }
@@ -47,8 +51,35 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  const {summary, team} = meeting
-  if (!summary) return null
+  const {summary, team, reflectionGroups} = meeting
+  const hasOpenAISummary = reflectionGroups.some((group) => !!group.summary)
+  if (!hasOpenAISummary) return null
+  if (hasOpenAISummary && !summary) {
+    return (
+      <tr
+        style={{
+          borderBottom: `1px solid ${PALETTE.SLATE_400}`
+        }}
+      >
+        <td
+          align='center'
+          style={{
+            padding: '20px 0px',
+            borderBottom: `1px solid ${PALETTE.SLATE_400}`
+          }}
+        >
+          {team?.tier !== 'personal' && (
+            <tr>
+              <td style={explainerStyle}>
+                {'Hold tight! We’re generating your meeting summary'}
+                <Ellipsis />
+              </td>
+            </tr>
+          )}
+        </td>
+      </tr>
+    )
+  }
   return (
     <>
       <tr>
