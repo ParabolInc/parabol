@@ -3,12 +3,14 @@ import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhas
 import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
+import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
+import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 
@@ -94,6 +96,11 @@ const handleCompletedRetrospectiveStage = async (
     }))
     await insertDiscussions(discussions)
     return {[VOTE]: data}
+  } else if (stage.phaseType === 'discuss') {
+    const {discussionId} = stage as DiscussStage
+    const {facilitatorUserId} = meeting
+    // dont await for the OpenAI API response
+    generateDiscussionSummary(discussionId, facilitatorUserId, dataLoader)
   }
   return {}
 }
