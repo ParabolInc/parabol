@@ -139,13 +139,11 @@ const RetroTopic = (props: Props) => {
               </tr>
             )}
             {team?.tier === 'personal' && (
-              <>
-                <tr>
-                  <td
-                    style={subtitleStyle}
-                  >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-                </tr>
-              </>
+              <tr>
+                <td
+                  style={subtitleStyle}
+                >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+              </tr>
             )}
             <tr>
               <td style={textStyle}>{topicSummary}</td>

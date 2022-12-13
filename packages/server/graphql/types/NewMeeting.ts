@@ -150,6 +150,10 @@ export const newMeetingFields = () => ({
     description: 'true if should show the org the conversion modal, else false',
     resolve: ({showConversionModal}: {showConversionModal: boolean}) => !!showConversionModal
   },
+  summary: {
+    type: GraphQLString,
+    description: `The GPT-3 generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
+  },
   summarySentAt: {
     type: GraphQLISO8601Type,
     description: 'The time the meeting summary was emailed to the team'
