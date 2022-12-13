@@ -4,7 +4,10 @@ import {
   updateTeamByTeamIdQuery
 } from './generated/updateTeamByTeamIdQuery'
 
-const updateTeamByTeamId = async (teamUpdates: Partial<Omit<IUpdateTeamByTeamIdQueryParams, 'jiraDimensionFields'>> , teamIds: string | string[]) => {
+const updateTeamByTeamId = async (
+  teamUpdates: Partial<Omit<IUpdateTeamByTeamIdQueryParams, 'jiraDimensionFields'>>,
+  teamIds: string | string[]
+) => {
   teamIds = typeof teamIds === 'string' ? [teamIds] : teamIds
   return updateTeamByTeamIdQuery.run(
     {

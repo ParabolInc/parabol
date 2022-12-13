@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -13,7 +14,6 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
-import {OpenInNew} from '@mui/icons-material'
 
 interface Props {
   menuProps: MenuProps
@@ -30,7 +30,7 @@ const ExternalIcon = styled(OpenInNew)({
   color: PALETTE.SLATE_500,
   paddingLeft: 12,
   width: 30,
-  height: 18,
+  height: 18
 })
 
 const JiraFieldMenu = (props: Props) => {
@@ -128,7 +128,8 @@ const JiraFieldMenu = (props: Props) => {
         <MenuItem
           label={
             <HintLabel>
-              Where's my field?<ExternalIcon/>
+              Where's my field?
+              <ExternalIcon />
             </HintLabel>
           }
           onClick={handleClickMissingField}

@@ -14,6 +14,7 @@ import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import ActionMeeting from './ActionMeeting'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import isMeetingLocked from './helpers/isMeetingLocked'
 import MeetingMember from './MeetingMember'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhase from './NewMeetingPhase'
@@ -106,12 +107,42 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: ({phases, id: meetingId, teamId}: {phases: any; id: string; teamId: string}) => {
-      return phases.map((phase: any) => ({
+    resolve: async (
+      {
+        phases,
+        id: meetingId,
+        teamId,
+        endedAt
+      }: {
+        phases: any
+        id: string
+        teamId: string
+        endedAt: Date
+      },
+      _args: unknown,
+      {authToken, dataLoader}: GQLContext
+    ) => {
+      const viewerId = getUserId(authToken)
+      const locked = await isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
+
+      const resolvedPhases = phases.map((phase: any) => ({
         ...phase,
         meetingId,
         teamId
       }))
+
+      if (locked) {
+        // make all stages non-navigable so even if the user removes the overlay they cannot see all meeting data
+        return resolvedPhases.map((phase: any) => ({
+          ...phase,
+          stages: phase.stages.map((stage: any) => ({
+            ...stage,
+            isNavigable: false,
+            isNavigableByFacilitator: false
+          }))
+        }))
+      }
+      return resolvedPhases
     }
   },
   showConversionModal: {
@@ -152,6 +183,18 @@ export const newMeetingFields = () => ({
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
       return meetingMember || null
+    }
+  },
+  locked: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description: 'Is this locked for personal plans?',
+    resolve: async (
+      {endedAt, teamId}: {endedAt: Date; teamId: string},
+      _args: any,
+      {authToken, dataLoader}: GQLContext
+    ) => {
+      const viewerId = getUserId(authToken)
+      return isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
     }
   }
 })
