@@ -1,5 +1,6 @@
 import {css, Global} from '@emotion/core'
 import React, {lazy, memo, Suspense} from 'react'
+import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'

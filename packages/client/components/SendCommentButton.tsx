@@ -9,37 +9,37 @@ import PlainButton from './PlainButton/PlainButton'
 
 export type CommentSubmitState = 'idle' | 'typing'
 
-const StyledPlainButton = styled(PlainButton)<{commentSubmitState: CommentSubmitState}>(
-  ({commentSubmitState}) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: commentSubmitState === 'idle' ? PALETTE.SLATE_200 : PALETTE.SKY_500,
-    transition: 'background-color 0.1s ease',
-    borderRadius: '100%',
-    height: 32,
-    width: 32,
-    margin: 8,
-    ':hover, :focus, :active': {
-      backgroundColor: commentSubmitState === 'idle' ? PALETTE.SLATE_200 : PALETTE.SKY_600
-    },
-    opacity: 1,
-    ':hover,:focus': {
-      opacity: 1
-    }
-  })
-)
+const StyledPlainButton = styled(PlainButton, {
+  shouldForwardProp: (prop) => !['commentSubmitState'].includes(prop)
+})<{commentSubmitState: CommentSubmitState}>(({commentSubmitState}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: commentSubmitState === 'idle' ? PALETTE.SLATE_200 : PALETTE.SKY_500,
+  transition: 'background-color 0.1s ease',
+  borderRadius: '100%',
+  height: 32,
+  width: 32,
+  margin: 8,
+  ':hover, :focus, :active': {
+    backgroundColor: commentSubmitState === 'idle' ? PALETTE.SLATE_200 : PALETTE.SKY_600
+  },
+  opacity: 1,
+  ':hover,:focus': {
+    opacity: 1
+  }
+}))
 
-const SendIcon = styled(ArrowUpward)<{commentSubmitState: CommentSubmitState}>(
-  ({commentSubmitState}) => ({
-    opacity: 1,
-    transition: 'color 0.1s ease',
-    color: commentSubmitState === 'idle' ? PALETTE.SLATE_500 : PALETTE.WHITE,
-    height: 20,
-    width: 20,
-    margin: 4
-  })
-)
+const SendIcon = styled(ArrowUpward, {
+  shouldForwardProp: (prop) => !['commentSubmitState'].includes(prop)
+})<{commentSubmitState: CommentSubmitState}>(({commentSubmitState}) => ({
+  opacity: 1,
+  transition: 'color 0.1s ease',
+  color: commentSubmitState === 'idle' ? PALETTE.SLATE_500 : PALETTE.WHITE,
+  height: 20,
+  width: 20,
+  margin: 4
+}))
 
 interface Props {
   commentSubmitState: CommentSubmitState
