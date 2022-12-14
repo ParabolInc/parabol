@@ -7,7 +7,7 @@ export async function up() {
   const picture = 'https://action-files.parabol.co/static/favicon.ico'
 
   const id = 'parabolAIUser'
-  const email = 'they-took@our.jerbs'
+  const email = 'ai-user@parabol.co'
   const preferredName = 'Parabol AI'
   await client.query(`
     INSERT INTO "User" ("id", "email", "preferredName", "picture") VALUES ('${id}', '${email}', '${preferredName}', '${picture}');

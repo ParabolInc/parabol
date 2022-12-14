@@ -32,14 +32,8 @@ type UpsertTeamPromptResponseSuccess {
   the updated meeting
   """
   meeting: NewMeeting
-
-  """
-  A notification that the viewing user was mentioned in the response
-  """
-  addedNotification: NotifyResponseMentioned
 }
 
 union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload
 
 extend union MeetingSubscriptionPayload = UpsertTeamPromptResponseSuccess
-extend union NotificationSubscriptionPayload = UpsertTeamPromptResponseSuccess
