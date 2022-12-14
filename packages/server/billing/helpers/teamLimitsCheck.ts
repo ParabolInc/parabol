@@ -4,7 +4,7 @@ import {SubscriptionChannel} from '~/types/constEnums'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import {DataLoaderWorker} from '../../graphql/graphql'
-import {OrganizationUser} from '../../graphql/public/resolverTypes'
+import isValid from '../../graphql/isValid'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import publish from '../../utils/publish'
@@ -14,29 +14,38 @@ const STICKY_TEAM_MIN_MEETINGS = 3
 const PERSONAL_TIER_MAX_TEAMS = 2
 const PERSONAL_TIER_LOCK_AFTER_DAYS = 30
 
-const enableUsageStatsAndNotify = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
-
-  const organizationBillingLeaders = (await r
+async function getBillingLeaders(orgId: string, dataLoader: DataLoaderWorker) {
+  const billingLeaderIds = (await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null, role: 'BILLING_LEADER'})
-    .update(
-      {suggestedTier: 'pro'},
-      {returnChanges: 'always'}
-    )('changes')('new_val')
-    .run()) as OrganizationUser[]
+    .coerceTo('array')('userId')
+    .run()) as unknown as string[]
 
-  const billingLeadersUserIds = organizationBillingLeaders.map(
-    (ou: OrganizationUser) => ou.userId
-  ) as string[]
+  return (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
+}
 
-  await appendUserFeatureFlagsQuery.run({ids: billingLeadersUserIds, flag: 'insights'}, getPg())
+const enableUsageStats = async (userIds: string[]) => {
+  console.log('enableUsageStats', userIds)
+  await r
+    .table('OrganizationUser')
+    .getAll(r.args(userIds), {index: 'userId'})
+    .update({suggestedTier: 'pro'})
+    .run()
 
-  const notificationsToInsert = organizationBillingLeaders.map((billingLeader) => {
+  await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
+}
+
+const sendWebsiteNotifications = async (
+  orgId: string,
+  userIds: string[],
+  dataLoader: DataLoaderWorker
+) => {
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+  const notificationsToInsert = userIds.map((userId) => {
     return new NotificationTeamsLimitExceeded({
-      userId: billingLeader.userId,
+      userId,
       orgId
     })
   })
@@ -146,6 +155,14 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
     })
     .run()
 
+  const billingLeaders = await getBillingLeaders(orgId, dataLoader)
+  const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
+
   // Enable usage stats
-  await enableUsageStatsAndNotify(orgId, dataLoader)
+  if (organization.activeDomain) {
+    await enableUsageStats(billingLeadersIds)
+
+    // Send push notification
+    await sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader)
+  }
 }
