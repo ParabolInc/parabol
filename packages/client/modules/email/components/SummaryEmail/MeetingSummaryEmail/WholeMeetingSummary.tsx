@@ -71,14 +71,12 @@ const WholeMeetingSummary = (props: Props) => {
             borderBottom: `1px solid ${PALETTE.SLATE_400}`
           }}
         >
-          {team?.tier !== 'personal' && (
-            <tr>
-              <td style={explainerStyle}>
-                {'Hold tight! Our AI 🤖 is generating your meeting summary'}
-                <Ellipsis />
-              </td>
-            </tr>
-          )}
+          <tr>
+            <td style={explainerStyle}>
+              {'Hold tight! Our AI 🤖 is generating your meeting summary'}
+              <Ellipsis />
+            </td>
+          </tr>
         </td>
       </tr>
     )

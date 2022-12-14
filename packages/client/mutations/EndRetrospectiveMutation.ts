@@ -56,6 +56,15 @@ graphql`
 graphql`
   fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
     meeting {
+      phases {
+        ... on DiscussPhase {
+          stages {
+            discussion {
+              summary
+            }
+          }
+        }
+      }
       summary
     }
   }
@@ -126,8 +135,6 @@ export const endRetrospectiveMeetingUpdater: SharedUpdater<EndRetrospectiveMutat
   const summary = meeting.getValue('summary')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const viewerMeeting = viewer?.getLinkedRecord('meeting', {meetingId})
-  const testSummary = viewerMeeting?.getValue('summary')
-  console.log('🚀 ~ viewerMeeting', {viewerMeeting, testSummary})
   viewerMeeting?.setValue(summary, 'summary')
 }
 

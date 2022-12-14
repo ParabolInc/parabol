@@ -1,13 +1,17 @@
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import updateDiscussions from '../../../postgres/queries/updateDiscussions'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 
 const generateDiscussionSummary = async (
   discussionId: string,
-  facilitatorUserId: string,
+  meeting: MeetingRetrospective,
   dataLoader: DataLoaderWorker
 ) => {
+  const {id: meetingId, endedAt, facilitatorUserId} = meeting
   const [facilitator, comments, tasks] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('commentsByDiscussionId').load(discussionId),
@@ -24,6 +28,16 @@ const generateDiscussionSummary = async (
   const summary = await manager.getSummary(contentToSummarize)
   if (!summary) return
   await updateDiscussions({summary}, discussionId)
+  // when we end the meeting, we don't wait for the OpenAI response as we want to see the meeting summary immediately
+  // so, if the meeting has ended, publish to the subscription so that the client can update the summary
+  if (endedAt) {
+    // viewer's client has already received the mutation response. If the mutatorId is the socketId,
+    // the viewer won't see an update. Make the mutatorId an empty string so the viewer receives the subscription: https://github.com/ParabolInc/parabol/blob/88a801d80d0c51c38b6c9722dfa80fbca8f7bebd/packages/server/graphql/ResponseStream.ts#L26
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId: '', operationId}
+    const data = {meetingId}
+    publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
+  }
 }
 
 export default generateDiscussionSummary
