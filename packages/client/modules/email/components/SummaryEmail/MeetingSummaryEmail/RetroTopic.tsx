@@ -55,14 +55,6 @@ const topicTitleStyle = {
   padding: '8px 48px'
 }
 
-const explainationStyle = {
-  color: PALETTE.SLATE_700,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontStyle: 'italic',
-  padding: '8px 48px',
-  fontSize: 14
-}
-
 const textStyle = {
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
@@ -94,9 +86,6 @@ const RetroTopic = (props: Props) => {
             ...EmailReflectionCard_reflection
           }
           topicSummary: summary
-          team {
-            tier
-          }
         }
         discussion {
           commentCount
@@ -108,7 +97,7 @@ const RetroTopic = (props: Props) => {
   )
   const {reflectionGroup, discussion} = stage
   const {commentCount, discussionSummary} = discussion
-  const {reflections, title, voteCount, topicSummary, team} = reflectionGroup!
+  const {reflections, title, voteCount, topicSummary} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -133,13 +122,6 @@ const RetroTopic = (props: Props) => {
       {(topicSummary || discussionSummary) && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            {team?.tier === 'personal' && (
-              <tr>
-                <td
-                  style={explainationStyle}
-                >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-              </tr>
-            )}
             {topicSummary && (
               <>
                 <tr>
