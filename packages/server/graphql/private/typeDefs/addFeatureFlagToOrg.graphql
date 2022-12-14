@@ -5,13 +5,6 @@ enum OrganizationFeatureFlagsEnum {
   teamsLimit
 }
 
-"""
-The types of flags that give an individual organization super powers
-"""
-type OrganizationFeatureFlags {
-  teamsLimit: Boolean!
-}
-
 extend type Mutation {
   """
   Give some organizations advanced features in a flag
