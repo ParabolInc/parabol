@@ -56,6 +56,7 @@ graphql`
 graphql`
   fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
     meeting {
+      summary
       phases {
         ... on DiscussPhase {
           stages {
@@ -65,7 +66,6 @@ graphql`
           }
         }
       }
-      summary
     }
   }
 `
@@ -126,18 +126,6 @@ export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation
   handleAddTimelineEvent(meeting, timelineEvent, store)
 }
 
-export const endRetrospectiveMeetingUpdater: SharedUpdater<EndRetrospectiveMutation_team> = (
-  payload,
-  {store}
-) => {
-  const meeting = payload.getLinkedRecord('meeting') as RecordProxy
-  const meetingId = meeting.getValue('id')
-  const summary = meeting.getValue('summary')
-  const viewer = store.getRoot().getLinkedRecord('viewer')
-  const viewerMeeting = viewer?.getLinkedRecord('meeting', {meetingId})
-  viewerMeeting?.setValue(summary, 'summary')
-}
-
 const EndRetrospectiveMutation: StandardMutation<
   TEndRetrospectiveMutation,
   HistoryMaybeLocalHandler
@@ -151,7 +139,6 @@ const EndRetrospectiveMutation: StandardMutation<
       const context = {atmosphere, store: store as any}
       endRetrospectiveNotificationUpdater(payload as any, context)
       endRetrospectiveTeamUpdater(payload as any, context)
-      endRetrospectiveMeetingUpdater(payload as any, context)
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {
