@@ -18,6 +18,7 @@ import RetroTopics from './RetroTopics'
 import SummaryHeader from './SummaryHeader'
 import SummaryPokerStories from './SummaryPokerStories'
 import SummarySheetCTA from './SummarySheetCTA'
+import WholeMeetingSummary from './WholeMeetingSummary'
 
 interface Props {
   emailCSVUrl: string
@@ -68,6 +69,7 @@ const SummarySheet = (props: Props) => {
           <TeamPromptResponseSummary meetingRef={meeting} />
         ) : (
           <>
+            <WholeMeetingSummary meetingRef={meeting} />
             <MeetingMembersWithTasks meeting={meeting} />
             <MeetingMembersWithoutTasks meeting={meeting} />
             <RetroTopics
@@ -99,6 +101,7 @@ export default createFragmentContainer(SummarySheet, {
   meeting: graphql`
     fragment SummarySheet_meeting on NewMeeting {
       id
+      ...WholeMeetingSummary_meeting
       ...SummaryHeader_meeting
       ...QuickStats_meeting
       ...MeetingMembersWithTasks_meeting

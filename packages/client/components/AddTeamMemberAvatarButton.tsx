@@ -52,7 +52,9 @@ const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
     }
 )
 
-const StyledIcon = styled(PersonAdd)<{isMeeting: boolean}>(
+const StyledIcon = styled(PersonAdd, {
+  shouldForwardProp: (prop) => !['isMeeting'].includes(prop)
+})<{isMeeting: boolean}>(
   {
     height: 18,
     width: 18,

@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DayModifiers, DayPicker} from 'react-day-picker'
-import 'react-day-picker/dist/style.css'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -58,16 +57,18 @@ const DueDatePicker = (props: Props) => {
   const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1))
   return (
     <TallMenu ariaLabel='Pick a due date' {...menuProps}>
-      <PickerTitle>{'Change Due Date'}</PickerTitle>
-      {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
-      <DayPicker
-        disabled={{before: now}}
-        fromMonth={now}
-        defaultMonth={selectedDate || now}
-        onDayClick={handleDayClick}
-        selected={selectedDate}
-        toMonth={nextYear}
-      />
+      <>
+        <PickerTitle>{'Change Due Date'}</PickerTitle>
+        {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
+        <DayPicker
+          disabled={{before: now}}
+          fromMonth={now}
+          defaultMonth={selectedDate || now}
+          onDayClick={handleDayClick}
+          selected={selectedDate}
+          toMonth={nextYear}
+        />
+      </>
     </TallMenu>
   )
 }

@@ -30,6 +30,7 @@ interface Window {
     datadogService: string | undefined
     github: string
     google: string
+    googleAnalytics: string
     segment: string
     sentry: string
     slack: string

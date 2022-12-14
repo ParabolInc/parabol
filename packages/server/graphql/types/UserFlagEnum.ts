@@ -11,7 +11,8 @@ const UserFlagEnum = new GraphQLEnumType({
     recurrence: {},
     templateLimit: {},
     teamsLimit: {},
-    aiSummary: {}
+    aiSummary: {},
+    meetingHistoryLimit: {}
   }
 })
 

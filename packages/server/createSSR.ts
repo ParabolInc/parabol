@@ -15,6 +15,7 @@ const getClientKeys = () => {
     datadogService: process.env.DD_SERVICE,
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    googleAnalytics: process.env.GA_TRACKING_ID,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
@@ -68,6 +69,13 @@ const createSSR = (res: HttpResponse, req: HttpRequest) => {
   if (req.getMethod() !== 'get') {
     res.end()
     return
+  }
+  const url = req.getUrl()
+
+  const demoMatch = url.match(/\/retrospective-demo\/(reflect|vote|group)/)
+
+  if (demoMatch) {
+    res.writeHeader('Link', '<https://action.parabol.co/retrospective-demo>; rel="canonical"')
   }
   res.writeHeader('content-type', 'text/html; charset=utf-8')
   // no need for eTag since file is < 1 MTU
