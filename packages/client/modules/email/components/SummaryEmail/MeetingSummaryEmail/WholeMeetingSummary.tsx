@@ -45,6 +45,16 @@ const WholeMeetingSummary = (props: Props) => {
         reflectionGroups(sortBy: voteCount) {
           summary
         }
+        phases {
+          phaseType
+          ... on DiscussPhase {
+            stages {
+              discussion {
+                summary
+              }
+            }
+          }
+        }
         team {
           tier
         }
@@ -52,10 +62,14 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  const {summary: wholeMeetingSummary, team, reflectionGroups} = meeting
+  const {summary: wholeMeetingSummary, team, reflectionGroups, phases} = meeting
+  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
+  const {stages} = discussPhase ?? {}
   const explainerText =
     team?.tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
-  const hasOpenAISummary = reflectionGroups.some((group) => !!group.summary)
+  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+  const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
+  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
   if (!hasOpenAISummary) return null
   if (hasOpenAISummary && !wholeMeetingSummary) {
     return (
