@@ -57,9 +57,13 @@ const WholeMeetingSummary = (props: Props) => {
     team?.tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   const hasOpenAISummary = reflectionGroups.some((group) => !!group.summary)
   if (!hasOpenAISummary) return null
-  if (hasOpenAISummary && wholeMeetingSummary) {
+  if (hasOpenAISummary && !wholeMeetingSummary) {
     return (
-      <tr>
+      <tr
+        style={{
+          borderBottom: `1px solid ${PALETTE.SLATE_400}`
+        }}
+      >
         <td
           align='center'
           style={{
