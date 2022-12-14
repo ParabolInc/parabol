@@ -143,7 +143,7 @@ const RetroTopic = (props: Props) => {
             {topicSummary && (
               <>
                 <tr>
-                  <td style={topicTitleStyle}>{'🤖 Topic Summary:'}</td>
+                  <td style={topicTitleStyle}>{'🤖 Topic Summary'}</td>
                 </tr>
                 <tr>
                   <td style={textStyle}>{topicSummary}</td>
@@ -153,7 +153,7 @@ const RetroTopic = (props: Props) => {
             {discussionSummary && (
               <>
                 <tr>
-                  <td style={topicTitleStyle}>{'🤖 Discussion Summary:'}</td>
+                  <td style={topicTitleStyle}>{'🤖 Discussion Summary'}</td>
                 </tr>
                 <tr>
                   <td style={textStyle}>{discussionSummary}</td>

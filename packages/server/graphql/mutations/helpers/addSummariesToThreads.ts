@@ -24,7 +24,6 @@ const addSummariesToThreads = async (
       tier === 'personal'
         ? `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`
         : `Our friendly AI 🤖 is here to save you time by summarizing your reflections`
-
     const html = `<html><body><i>${explainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
     const summaryBlock = convertHtmlToTaskContent(html)
     const commentInput = {
