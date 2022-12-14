@@ -25,11 +25,11 @@ async function getBillingLeaders(orgId: string, dataLoader: DataLoaderWorker) {
   return (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
 }
 
-const enableUsageStats = async (userIds: string[]) => {
-  console.log('enableUsageStats', userIds)
+const enableUsageStats = async (userIds: string[], orgId: string) => {
   await r
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
+    .filter({orgId})
     .update({suggestedTier: 'pro'})
     .run()
 
@@ -160,7 +160,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   // Enable usage stats
   if (organization.activeDomain) {
-    await enableUsageStats(billingLeadersIds)
+    await enableUsageStats(billingLeadersIds, orgId)
 
     // Send push notification
     await sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader)
