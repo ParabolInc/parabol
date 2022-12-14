@@ -28,7 +28,6 @@ graphql`
       reflectionCount
       taskCount
       topicCount
-      summary
     }
     team {
       id

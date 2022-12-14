@@ -52,18 +52,14 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  const {summary, team, reflectionGroups} = meeting
+  const {summary: wholeMeetingSummary, team, reflectionGroups} = meeting
   const explainerText =
     team?.tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   const hasOpenAISummary = reflectionGroups.some((group) => !!group.summary)
   if (!hasOpenAISummary) return null
-  if (hasOpenAISummary && !summary) {
+  if (hasOpenAISummary && wholeMeetingSummary) {
     return (
-      <tr
-        style={{
-          borderBottom: `1px solid ${PALETTE.SLATE_400}`
-        }}
-      >
+      <tr>
         <td
           align='center'
           style={{
@@ -94,7 +90,7 @@ const WholeMeetingSummary = (props: Props) => {
             </td>
           </tr>
           <tr>
-            <td style={textStyle}>{summary}</td>
+            <td style={textStyle}>{wholeMeetingSummary}</td>
           </tr>
         </td>
       </tr>
