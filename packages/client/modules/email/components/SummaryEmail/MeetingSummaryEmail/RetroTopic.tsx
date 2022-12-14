@@ -55,7 +55,7 @@ const topicTitleStyle = {
   padding: '8px 48px'
 }
 
-const subtitleStyle = {
+const explainationStyle = {
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontStyle: 'italic',
@@ -133,21 +133,23 @@ const RetroTopic = (props: Props) => {
       {(topicSummary || discussionSummary) && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            {topicSummary && (
-              <tr>
-                <td style={topicTitleStyle}>{'Topic Summary:'}</td>
-              </tr>
-            )}
             {team?.tier === 'personal' && (
               <tr>
                 <td
-                  style={subtitleStyle}
+                  style={explainationStyle}
                 >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
               </tr>
             )}
-            <tr>
-              <td style={textStyle}>{topicSummary}</td>
-            </tr>
+            {topicSummary && (
+              <>
+                <tr>
+                  <td style={topicTitleStyle}>{'Topic Summary:'}</td>
+                </tr>
+                <tr>
+                  <td style={textStyle}>{topicSummary}</td>
+                </tr>
+              </>
+            )}
             {discussionSummary && (
               <>
                 <tr>

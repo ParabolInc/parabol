@@ -53,11 +53,6 @@ const WholeMeetingSummary = (props: Props) => {
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          <tr>
-            <td align='center' style={topicTitleStyle}>
-              {'Meeting Summary'}
-            </td>
-          </tr>
           {team?.tier === 'personal' && (
             <tr>
               <td
@@ -65,6 +60,11 @@ const WholeMeetingSummary = (props: Props) => {
               >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
             </tr>
           )}
+          <tr>
+            <td align='center' style={topicTitleStyle}>
+              {'Meeting Summary'}
+            </td>
+          </tr>
           <tr>
             <td style={textStyle}>{summary}</td>
           </tr>

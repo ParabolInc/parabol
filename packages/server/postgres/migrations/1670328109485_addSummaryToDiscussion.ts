@@ -16,11 +16,7 @@ export async function down() {
   await client.connect()
   await client.query(`
   ALTER TABLE "Discussion"
-<<<<<<< HEAD
-  DROP COLUMN "summary";
-=======
   DROP COLUMN IF EXISTS "summary";
->>>>>>> master
 `)
   await client.end()
 }

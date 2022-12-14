@@ -1,3 +1,4 @@
+import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -21,7 +22,9 @@ const generateWholeMeetingSummary = async (
   const commentsContent = commentsByDiscussions
     .filter(isValid)
     .flatMap((commentsByDiscussion) =>
-      commentsByDiscussion.map(({plaintextContent}) => plaintextContent)
+      commentsByDiscussion
+        .filter(({createdBy}) => createdBy !== PARABOL_AI_USER_ID)
+        .map(({plaintextContent}) => plaintextContent)
     )
   const tasksContent = tasksByDiscussions
     .filter(isValid)
