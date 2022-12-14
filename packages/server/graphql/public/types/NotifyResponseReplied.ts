@@ -1,11 +1,12 @@
+import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {NotifyResponseRepliedResolvers, ResolversTypes} from '../resolverTypes'
+import {NotifyResponseRepliedResolvers} from '../resolverTypes'
 
 const NotifyResponseReplied: NotifyResponseRepliedResolvers = {
   __isTypeOf: ({type}) => type === 'RESPONSE_REPLIED',
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    return meeting as ResolversTypes['TeamPromptMeeting']
+    return meeting as MeetingTeamPrompt
   },
   response: async ({userId, meetingId}, _args: unknown, {dataLoader}) => {
     // TODO: implement getTeamPromptResponsesByMeetingIdAndUserId
