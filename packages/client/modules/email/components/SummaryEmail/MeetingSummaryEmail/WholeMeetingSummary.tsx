@@ -5,6 +5,7 @@ import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/Whol
 import React from 'react'
 import {useFragment} from 'react-relay'
 import Ellipsis from '../../../../../components/Ellipsis/Ellipsis'
+import {AIExplainer} from '../../../../../types/constEnums'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const topicTitleStyle = {
@@ -52,6 +53,8 @@ const WholeMeetingSummary = (props: Props) => {
     meetingRef
   )
   const {summary, team, reflectionGroups} = meeting
+  const explainerText =
+    team?.tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   const hasOpenAISummary = reflectionGroups.some((group) => !!group.summary)
   if (!hasOpenAISummary) return null
   if (hasOpenAISummary && !summary) {
@@ -71,7 +74,7 @@ const WholeMeetingSummary = (props: Props) => {
           {team?.tier !== 'personal' && (
             <tr>
               <td style={explainerStyle}>
-                {'Hold tight! We’re generating your meeting summary'}
+                {'Hold tight! Our AI 🤖 is generating your meeting summary'}
                 <Ellipsis />
               </td>
             </tr>
@@ -84,16 +87,12 @@ const WholeMeetingSummary = (props: Props) => {
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          {team?.tier === 'personal' && (
-            <tr>
-              <td
-                style={explainerStyle}
-              >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-            </tr>
-          )}
+          <tr>
+            <td style={explainerStyle}>{explainerText}</td>
+          </tr>
           <tr>
             <td align='center' style={topicTitleStyle}>
-              {'Meeting Summary'}
+              {'🤖 Meeting Summary'}
             </td>
           </tr>
           <tr>

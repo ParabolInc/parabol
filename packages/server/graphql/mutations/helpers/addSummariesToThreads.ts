@@ -1,3 +1,4 @@
+import {AIExplainer} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import Comment from '../../../database/types/Comment'
@@ -20,10 +21,9 @@ const addSummariesToThreads = async (
   const commentPromises = stages.map(async (stage) => {
     const group = groups.find((group) => group.id === stage.reflectionGroupId)
     if (!group?.summary) return
-    const html =
-      tier === 'personal'
-        ? `<html><body><i>AI-generated summaries are a premium feature. We'll share these with you in your first few retros so you can see what they're like.</i><br><p><b>Topic Summary:</b></p><p>${group.summary}</p></body></html>`
-        : `<html><body><p><b>Topic Summary:</b></p><p>${group.summary}</p></body></html>`
+    const explainerText =
+      tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
+    const html = `<html><body><i>${explainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
     const summaryBlock = convertHtmlToTaskContent(html)
     const commentInput = {
       discussionId: stage.discussionId,
