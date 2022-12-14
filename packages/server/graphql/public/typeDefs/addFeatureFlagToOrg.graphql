@@ -1,7 +1,7 @@
 """
 A flag to give an individual organization super powers
 """
-enum OrganizationFlagEnum {
+enum OrganizationFeatureFlagsEnum {
   teamsLimit
 }
 
@@ -25,7 +25,7 @@ extend type Mutation {
     """
     the flag that you want to give to the organization
     """
-    flag: OrganizationFlagEnum!
+    flag: OrganizationFeatureFlagsEnum!
   ): AddFeatureFlagToOrgPayload!
 }
 
