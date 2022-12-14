@@ -49,20 +49,20 @@ const WholeMeetingSummary = (props: Props) => {
   )
   const {summary, team} = meeting
   if (!summary) return null
+  const explainerText =
+    team?.tier === 'personal'
+      ? `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`
+      : `Our friendly AI 🤖 is here to save you time by summarizing your meeting`
   return (
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          {team?.tier === 'personal' && (
-            <tr>
-              <td
-                style={explainerStyle}
-              >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-            </tr>
-          )}
+          <tr>
+            <td style={explainerStyle}>{explainerText}</td>
+          </tr>
           <tr>
             <td align='center' style={topicTitleStyle}>
-              {'Meeting Summary'}
+              {'🤖 Meeting Summary'}
             </td>
           </tr>
           <tr>
