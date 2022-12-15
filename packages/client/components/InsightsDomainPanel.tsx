@@ -6,11 +6,13 @@ import {useFragment} from 'react-relay'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
+import {fadeIn} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {Breakpoint} from '../types/constEnums'
+import {BezierCurve, Breakpoint} from '../types/constEnums'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
+import FloatingActionButton from './FloatingActionButton'
 import InsightsDomainNudge from './InsightsDomainNudge'
 import Panel from './Panel/Panel'
 
@@ -31,11 +33,45 @@ const DomainName = styled('div')({
   padding: 16
 })
 
+const ExceededLimit = styled('div')({
+  fontSize: 32,
+  fontWeight: 600,
+  lineHeight: '48px',
+  padding: 16,
+  borderTop: `1px solid ${PALETTE.SLATE_400}`
+})
+
+const WarningMsg = styled('div')({
+  background: PALETTE.GOLD_100,
+  padding: '0px 8px',
+  fontSize: 16,
+  borderRadius: 2
+})
+
 const StatBlocks = styled('div')({
   display: 'flex',
   borderTop: `1px solid ${PALETTE.SLATE_400}`,
   width: '100%',
   flexWrap: 'wrap'
+})
+
+const ButtonBlock = styled('div')({
+  animation: `${fadeIn} 200ms ${BezierCurve.DECELERATE}`,
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'flex-start',
+  pointerEvents: 'none',
+  width: '100%',
+  zIndex: 1,
+  height: '100%',
+  marginTop: 16
+})
+
+const Button = styled(FloatingActionButton)({
+  border: 0,
+  fontSize: 16,
+  padding: '10px 32px',
+  pointerEvents: 'all'
 })
 
 const StatBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -206,6 +242,14 @@ const InsightsDomainPanel = (props: Props) => {
           </StatBlock>
         </StatBlocks>
         <InsightsDomainNudge domainRef={domain} />
+        <ExceededLimit>
+          <WarningMsg>Test</WarningMsg>
+          <ButtonBlock>
+            <Button onClick={() => {}} palette='pink'>
+              {'Upgrade'}
+            </Button>
+          </ButtonBlock>
+        </ExceededLimit>
       </StatsPanel>
     </Wrapper>
   )
