@@ -3,13 +3,14 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
+import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
-import NotificationResponseReplied from '../../database/types/NotificationResponseReplied'
+import NotificationDiscussionMentioned from '../../database/types/NotificationDiscussionMentioned'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -17,6 +18,7 @@ import {GQLContext} from '../graphql'
 import publishNotification from '../public/mutations/helpers/publishNotification'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
+import getUsersToIgnore from './helpers/getUsersToIgnore'
 
 type AddCommentMutationVariables = {
   comment: {
@@ -76,17 +78,50 @@ const addComment = {
       const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
 
       if (responseUserId !== viewerId) {
-        const notification = new NotificationResponseReplied({
+        const notification = new NotificationDiscussionMentioned({
           userId: responseUserId,
           meetingId: meetingId,
           authorId: viewerId,
-          commentId
+          commentId,
+          discussionId
         })
 
         await r.table('Notification').insert(notification).run()
 
         publishNotification(notification, subOptions)
       }
+    }
+
+    const usersIdsToIgnore = await getUsersToIgnore(viewerId, meeting.teamId)
+    const {entityMap} = JSON.parse(content)
+    const notificationsToAdd = getTypeFromEntityMap('MENTION', entityMap)
+      .filter((mentionedUserId) => {
+        if (discussion.discussionTopicType === 'teamPromptResponse') {
+          const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
+          if (responseUserId === mentionedUserId) {
+            // The mentioned user will already receive a 'RESPONSE_REPLIED' notification for this
+            // comment
+            return false
+          }
+        }
+        return mentionedUserId !== viewerId && !usersIdsToIgnore.includes(mentionedUserId)
+      })
+      .map(
+        (mentioneeUserId) =>
+          new NotificationDiscussionMentioned({
+            userId: mentioneeUserId,
+            meetingId: meetingId,
+            authorId: viewerId,
+            commentId,
+            discussionId
+          })
+      )
+
+    if (notificationsToAdd.length) {
+      await r.table('Notification').insert(notificationsToAdd).run()
+      notificationsToAdd.forEach((notification) => {
+        publishNotification(notification, subOptions)
+      })
     }
 
     const data = {commentId, meetingId}

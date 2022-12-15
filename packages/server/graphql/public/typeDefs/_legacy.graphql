@@ -3544,6 +3544,7 @@ enum NotificationStatusEnum {
 The kind of notification
 """
 enum NotificationEnum {
+  DISCUSSION_MENTIONED
   KICKED_OUT
   PAYMENT_REJECTED
   PROMOTE_TO_BILLING_LEADER
