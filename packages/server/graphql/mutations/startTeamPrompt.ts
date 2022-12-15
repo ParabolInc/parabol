@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RRule} from 'rrule'
 import getRethink from '../../database/rethinkDriver'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {analytics} from '../../utils/analytics/analytics'
@@ -8,6 +9,8 @@ import publish from '../../utils/publish'
 import RedisLockQueue from '../../utils/RedisLockQueue'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import {startNewMeetingSeries} from '../public/mutations/startRecurrence'
+import {RRuleScalarType} from '../types/GraphQLRRuleType'
 import StartTeamPromptPayload from '../types/StartTeamPromptPayload'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
@@ -22,11 +25,15 @@ const startTeamPrompt = {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Id of the team starting the meeting'
+    },
+    recurrenceRule: {
+      type: RRuleScalarType,
+      description: 'The recurrence rule for the meeting series'
     }
   },
   resolve: async (
     _source: unknown,
-    {teamId}: {teamId: string},
+    {teamId, recurrenceRule}: {teamId: string; recurrenceRule?: RRule},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -61,6 +68,16 @@ const startTeamPrompt = {
         teamId
       )
     ])
+
+    if (recurrenceRule) {
+      const meetingSeries = await startNewMeetingSeries(
+        viewerId,
+        teamId,
+        meeting.id,
+        recurrenceRule
+      )
+      analytics.recurrenceStarted(viewerId, meetingSeries)
+    }
 
     IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
     analytics.meetingStarted(viewerId, meeting)

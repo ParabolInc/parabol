@@ -18,8 +18,7 @@ interface Props {
 const settingsLookup = {
   action: NewMeetingSettingsAction,
   retrospective: NewMeetingSettingsRetrospective,
-  poker: NewMeetingSettingsPoker,
-  teamPrompt: NewMeetingSettingsTeamPrompt
+  poker: NewMeetingSettingsPoker
 }
 
 const NewMeetingSettings = (props: Props) => {
@@ -45,6 +44,10 @@ const NewMeetingSettings = (props: Props) => {
     `,
     selectedTeamRef
   )
+
+  if (meetingType === 'teamPrompt') {
+    return <NewMeetingSettingsTeamPrompt teamRef={selectedTeam} />
+  }
 
   const Settings = settingsLookup[meetingType]
   return <Settings teamRef={selectedTeam} viewerRef={viewer} />
