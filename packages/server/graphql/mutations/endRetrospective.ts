@@ -13,14 +13,21 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../graphql'
+import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
+import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
-const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
-  const {id: meetingId, phases} = meeting
+const finishRetroMeeting = async (
+  meeting: MeetingRetrospective,
+  teamId: string,
+  context: GQLContext
+) => {
+  const {dataLoader} = context
+  const {id: meetingId, phases, facilitatorUserId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
@@ -32,28 +39,35 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
 
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        commentCount: r
-          .table('Comment')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .filter({isActive: true})
-          .count()
-          .default(0) as unknown as number,
-        taskCount: r
-          .table('Task')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .count()
-          .default(0) as unknown as number,
-        topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length
-      },
-      {nonAtomic: true}
-    )
-    .run()
+  await Promise.all([
+    generateWholeMeetingSummary(discussionIds, meetingId, facilitatorUserId, dataLoader),
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update(
+        {
+          commentCount: r
+            .table('Comment')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .filter({isActive: true})
+            .count()
+            .default(0) as unknown as number,
+          taskCount: r
+            .table('Task')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .count()
+            .default(0) as unknown as number,
+          topicCount: reflectionGroupIds.length,
+          reflectionCount: reflections.length
+        },
+        {nonAtomic: true}
+      )
+      .run()
+  ])
+  // wait for whole meeting summary to be generated before sending summary email
+  sendNewMeetingSummary(meeting, context).catch(console.log)
+  // wait for meeting stats to be generated before sending Slack notification
+  IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
 }
 
 export default {
@@ -94,6 +108,7 @@ export default {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
     const {stage} = currentStageRes
+    await handleCompletedStage(stage, meeting, dataLoader)
     const phase = getMeetingPhase(phases)
     stage.isComplete = true
     stage.endAt = now
@@ -126,12 +141,10 @@ export default {
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').load(templateId)
     ])
-    // wait for removeEmptyTasks before finishRetroMeeting & wait for meeting stats
-    // to be generated in finishRetroMeeting before sending Slack notifications
-    await finishRetroMeeting(completedRetrospective, dataLoader)
-    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
+    // wait for removeEmptyTasks before finishRetroMeeting
+    // don't await for the OpenAI response or it'll hang for a while when ending the retro
+    finishRetroMeeting(completedRetrospective, teamId, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
-    sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
       (teamMember) =>

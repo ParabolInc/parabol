@@ -10,6 +10,7 @@ export interface ReflectionGroupInput {
   voterIds?: string[]
   title?: string
   smartTitle?: string
+  summary?: string
 }
 
 export default class ReflectionGroup {
@@ -21,11 +22,22 @@ export default class ReflectionGroup {
   sortOrder: number
   updatedAt: Date
   voterIds: string[]
-  title: string | null
   smartTitle: string | null
+  summary: string | null
+  title: string | null
   constructor(input: ReflectionGroupInput) {
-    const {createdAt, id, meetingId, promptId, sortOrder, updatedAt, voterIds, smartTitle, title} =
-      input
+    const {
+      createdAt,
+      id,
+      meetingId,
+      promptId,
+      sortOrder,
+      updatedAt,
+      voterIds,
+      smartTitle,
+      summary,
+      title
+    } = input
     const now = new Date()
     this.id = id || generateUID()
     this.createdAt = createdAt || now
@@ -36,6 +48,7 @@ export default class ReflectionGroup {
     this.updatedAt = updatedAt || now
     this.voterIds = voterIds || []
     this.smartTitle = smartTitle || null
+    this.summary = summary || null
     this.title = title || null
   }
 }

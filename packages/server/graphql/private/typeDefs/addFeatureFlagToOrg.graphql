@@ -1,15 +1,8 @@
 """
 A flag to give an individual organization super powers
 """
-enum OrganizationFlagEnum {
+enum OrganizationFeatureFlagsEnum {
   teamsLimit
-}
-
-"""
-The types of flags that give an individual organization super powers
-"""
-type OrganizationFeatureFlags {
-  teamsLimit: Boolean!
 }
 
 extend type Mutation {
@@ -25,17 +18,15 @@ extend type Mutation {
     """
     the flag that you want to give to the organization
     """
-    flag: OrganizationFlagEnum!
+    flag: OrganizationFeatureFlagsEnum!
   ): AddFeatureFlagToOrgPayload!
 }
 
-type AddFeatureFlagToOrgPayload {
-  error: StandardMutationError
+union AddFeatureFlagToOrgPayload = ErrorPayload | AddFeatureFlagToOrgSuccess
 
+type AddFeatureFlagToOrgSuccess {
   """
   the organizations given the super power
   """
-  organizations: [Organization]
+  updatedOrganizations: [Organization]
 }
-
-extend union NotificationSubscriptionPayload = AddFeatureFlagToOrgPayload

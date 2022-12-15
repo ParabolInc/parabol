@@ -5,23 +5,24 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailKickedOut from './EmailKickedOut'
 import EmailMeetingStageTimeLimitEnd from './EmailMeetingStageTimeLimitEnd'
+import EmailPaymentRejected from './EmailPaymentRejected'
+import EmailPromoteToBillingLeader from './EmailPromoteToBillingLeader'
 import EmailResponseMentioned from './EmailResponseMentioned'
+import EmailResponseReplied from './EmailResponseReplied'
+import EmailTaskInvolves from './EmailTaskInvolves'
 import EmailTeamArchived from './EmailTeamArchived'
 import EmailTeamInvitation from './EmailTeamInvitation'
 
 export const NOTIFICATION_TEMPLATE_TYPE = {
   KICKED_OUT: EmailKickedOut,
-  // :TODO: (jmtaber129): Implement these.
-  // PAYMENT_REJECTED: EmailPaymentRejected,
-  // TASK_INVOLVES: EmailTaskInvolves,
-  // PROMOTE_TO_BILLING_LEADER: EmailPromoteToBillingLeader,
-  PAYMENT_REJECTED: null,
-  TASK_INVOLVES: null,
-  PROMOTE_TO_BILLING_LEADER: null,
+  PAYMENT_REJECTED: EmailPaymentRejected,
+  TASK_INVOLVES: EmailTaskInvolves,
+  PROMOTE_TO_BILLING_LEADER: EmailPromoteToBillingLeader,
   TEAM_ARCHIVED: EmailTeamArchived,
   TEAM_INVITATION: EmailTeamInvitation,
   MEETING_STAGE_TIME_LIMIT_END: EmailMeetingStageTimeLimitEnd,
-  RESPONSE_MENTIONED: EmailResponseMentioned
+  RESPONSE_MENTIONED: EmailResponseMentioned,
+  RESPONSE_REPLIED: EmailResponseReplied
 }
 
 interface Props {
@@ -37,13 +38,14 @@ const EmailNotificationPicker = (props: Props) => {
         type
         id
         ...EmailKickedOut_notification
-        # ...EmailPaymentRejected_notification
-        # ...EmailTaskInvolves_notification
-        # ...EmailPromoteToBillingLeader_notification
+        ...EmailPaymentRejected_notification
+        ...EmailTaskInvolves_notification
+        ...EmailPromoteToBillingLeader_notification
         ...EmailTeamArchived_notification
         ...EmailTeamInvitation_notification
         ...EmailMeetingStageTimeLimitEnd_notification
         ...EmailResponseMentioned_notification
+        ...EmailResponseReplied_notification
       }
     `,
     notificationRef

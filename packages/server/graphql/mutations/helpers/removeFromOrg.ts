@@ -90,7 +90,7 @@ const removeFromOrg = async (
     }
   }
   try {
-    await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, {prorationDate})
+    await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, dataLoader, {prorationDate})
   } catch (e) {
     console.log(e)
   }

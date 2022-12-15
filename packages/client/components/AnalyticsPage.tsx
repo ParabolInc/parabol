@@ -96,7 +96,11 @@ const AnalyticsPage = () => {
       if (!res) return
       const {viewer} = res
       const {id, segmentId} = viewer
-      ReactGA.initialize(gaMeasurementId)
+      ReactGA.initialize(gaMeasurementId, {
+        gtagOptions: {
+          send_page_view: true
+        }
+      })
       ReactGA.set({
         userId: id,
         clientId: segmentId ?? getAnonymousId()

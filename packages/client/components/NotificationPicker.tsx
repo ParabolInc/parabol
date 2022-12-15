@@ -26,6 +26,9 @@ const typePicker = {
   ),
   RESPONSE_MENTIONED: lazyPreload(
     () => import(/* webpackChunkName: 'ResponseMentioned' */ './ResponseMentioned')
+  ),
+  RESPONSE_REPLIED: lazyPreload(
+    () => import(/* webpackChunkName: 'ResponseReplied' */ './ResponseReplied')
   )
 } as Record<NotificationEnum, LazyExoticPreload<any>>
 
@@ -48,6 +51,7 @@ export default createFragmentContainer(NotificationPicker, {
   notification: graphql`
     fragment NotificationPicker_notification on Notification {
       type
+      id
       ...KickedOut_notification
       ...PaymentRejected_notification
       ...TaskInvolves_notification
@@ -56,6 +60,7 @@ export default createFragmentContainer(NotificationPicker, {
       ...TeamInvitationNotification_notification
       ...MeetingStageTimeLimitEnd_notification
       ...ResponseMentioned_notification
+      ...ResponseReplied_notification
     }
   `
 })
