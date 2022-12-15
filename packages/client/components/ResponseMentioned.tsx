@@ -37,7 +37,6 @@ const ResponseMentioned = (props: Props) => {
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
-    // :TODO: (jmtaber129): Link directly to card once we support that.
     history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
