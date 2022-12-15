@@ -527,6 +527,7 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
             .table('NewMeeting')
             .getAll(key, {index: 'meetingSeriesId'})
             .filter({endedAt: null}, {default: true})
+            .orderBy(r.asc('createdAt'))
             .run()
         })
       )
