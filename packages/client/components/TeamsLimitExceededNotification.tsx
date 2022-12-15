@@ -23,7 +23,7 @@ const TeamsLimitExceededNotification = (props: Props) => {
   return (
     <NotificationTemplate
       avatar={orgPicture || defaultOrgAvatar}
-      message={`Your account is on a roll! Check out "${orgName}" usage`}
+      message={`Your account is on a roll! Check out "${orgName}"'s usage`}
       action={<NotificationAction label={'See Usage'} onClick={onActionClick} />}
       notification={notification}
     />
