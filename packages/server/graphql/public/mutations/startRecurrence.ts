@@ -20,20 +20,20 @@ const createNextMeetingStartDate = () => {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9))
 }
 
-const startNewMeetingSeries = async (viewerId: string, teamId: string, meetingId: string) => {
+export const startNewMeetingSeries = async (
+  viewerId: string,
+  teamId: string,
+  meetingId: string,
+  recurrenceRule: RRule
+) => {
   const now = new Date()
   const r = await getRethink()
-  const nextMeetingStartDate = createNextMeetingStartDate()
-  const recurrenceRule = new RRule({
-    freq: RRule.WEEKLY,
-    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR],
-    dtstart: nextMeetingStartDate
-  })
 
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
     title: 'Async Standup',
     recurrenceRule: recurrenceRule.toString(),
+    // TODO: calculate this from the recurrence rule
     duration: MEETING_DURATION_IN_MINUTES,
     teamId,
     facilitatorId: viewerId
@@ -45,6 +45,7 @@ const startNewMeetingSeries = async (viewerId: string, teamId: string, meetingId
     .get(meetingId)
     .update({
       meetingSeriesId: newMeetingSeriesId,
+      //TODO: calculate this from the recurrence rule
       scheduledEndTime: new Date(now.getTime() + ms('24h')) // 24 hours from now
     })
     .run()
@@ -127,7 +128,18 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
 
     analytics.recurrenceStarted(viewerId, meetingSeries)
   } else {
-    const newMeetingSeries = await startNewMeetingSeries(viewerId, teamId, meetingId)
+    const nextMeetingStartDate = createNextMeetingStartDate()
+    const recurrenceRule = new RRule({
+      freq: RRule.WEEKLY,
+      byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR],
+      dtstart: nextMeetingStartDate
+    })
+    const newMeetingSeries = await startNewMeetingSeries(
+      viewerId,
+      teamId,
+      meetingId,
+      recurrenceRule
+    )
     analytics.recurrenceStarted(viewerId, newMeetingSeries)
   }
 
