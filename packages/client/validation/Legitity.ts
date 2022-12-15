@@ -38,7 +38,6 @@ class Legitity {
   max(len: number, msg?: string) {
     // this.value.length gives us the count of UTF-16 units, so 🔥 has a length of 2
     // Spreading the string into an array gives us the correct string length in codepoints (characters): https://stackoverflow.com/a/54369605
-
     const value = [...this.value]
     if (!this.error && value.length > len) {
       this.error = msg || 'max'
