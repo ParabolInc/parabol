@@ -28,7 +28,7 @@ class OpenAIServerManager {
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return response.data.choices[0]?.text ?? null
+      return (response.data.choices[0]?.text as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)

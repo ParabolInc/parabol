@@ -41,8 +41,9 @@ const ActionMeetingLastCall = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
   const {endedAt, facilitator, facilitatorUserId, id: meetingId, phases, showSidebar} = meeting
-  const agendaItemPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
-  const {stages} = agendaItemPhase
+  const agendaItemPhase = phases.find((phase) => phase.phaseType === 'agendaitems')
+  const {stages} = agendaItemPhase ?? {}
+  if (!stages) return null
   const agendaItemsCompleted = stages.filter((stage) => stage.isComplete).length
   const {preferredName} = facilitator
   const isFacilitating = facilitatorUserId === viewerId && !endedAt

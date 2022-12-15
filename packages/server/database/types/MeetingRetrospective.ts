@@ -33,6 +33,7 @@ export default class MeetingRetrospective extends Meeting {
   templateId: string
   topicCount?: number
   reflectionCount?: number
+
   constructor(input: Input) {
     const {
       id,

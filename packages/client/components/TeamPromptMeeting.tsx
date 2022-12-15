@@ -15,6 +15,7 @@ import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
@@ -72,8 +73,10 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
         ...TeamPromptMeetingStatus_meeting
+        ...MeetingLockedOverlay_meeting
         id
         isRightDrawerOpen
+        endedAt
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -190,6 +193,7 @@ const TeamPromptMeeting = (props: Props) => {
           </MeetingContent>
         </Suspense>
       </MeetingArea>
+      <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )
 }

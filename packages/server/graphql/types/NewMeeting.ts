@@ -107,18 +107,52 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: ({phases, id: meetingId, teamId}: {phases: any; id: string; teamId: string}) => {
-      return phases.map((phase: any) => ({
+    resolve: async (
+      {
+        phases,
+        id: meetingId,
+        teamId,
+        endedAt
+      }: {
+        phases: any
+        id: string
+        teamId: string
+        endedAt: Date
+      },
+      _args: unknown,
+      {authToken, dataLoader}: GQLContext
+    ) => {
+      const viewerId = getUserId(authToken)
+      const locked = await isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
+
+      const resolvedPhases = phases.map((phase: any) => ({
         ...phase,
         meetingId,
         teamId
       }))
+
+      if (locked) {
+        // make all stages non-navigable so even if the user removes the overlay they cannot see all meeting data
+        return resolvedPhases.map((phase: any) => ({
+          ...phase,
+          stages: phase.stages.map((stage: any) => ({
+            ...stage,
+            isNavigable: false,
+            isNavigableByFacilitator: false
+          }))
+        }))
+      }
+      return resolvedPhases
     }
   },
   showConversionModal: {
     type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if should show the org the conversion modal, else false',
     resolve: ({showConversionModal}: {showConversionModal: boolean}) => !!showConversionModal
+  },
+  summary: {
+    type: GraphQLString,
+    description: `The GPT-3 generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
   },
   summarySentAt: {
     type: GraphQLISO8601Type,
