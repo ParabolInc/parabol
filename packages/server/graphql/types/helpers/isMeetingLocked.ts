@@ -3,12 +3,12 @@ import {DataLoaderWorker} from '../../graphql'
 const isMeetingLocked = async (
   viewerId: string,
   teamId: string,
-  endedAt: Date,
+  endedAt: Date | undefined | null,
   dataLoader: DataLoaderWorker
 ) => {
   const freeLimit = new Date()
   freeLimit.setDate(freeLimit.getDate() - 30)
-  if (endedAt > freeLimit) {
+  if (!endedAt || endedAt > freeLimit) {
     return false
   }
   const [team, viewer] = await Promise.all([
