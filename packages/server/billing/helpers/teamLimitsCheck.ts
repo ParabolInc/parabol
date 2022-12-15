@@ -1,13 +1,12 @@
 import ms from 'ms'
 import {r} from 'rethinkdb-ts'
-import {SubscriptionChannel} from '~/types/constEnums'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
+import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
-import publish from '../../utils/publish'
 
 const STICKY_TEAM_MIN_MEETING_ATTENDEES = 2
 const STICKY_TEAM_MIN_MEETINGS = 3
@@ -53,14 +52,7 @@ const sendWebsiteNotifications = async (
   await r.table('Notification').insert(notificationsToInsert).run()
 
   notificationsToInsert.forEach((notification) => {
-    const {userId} = notification
-    publish(
-      SubscriptionChannel.NOTIFICATION,
-      userId,
-      'AddNotificationPayload',
-      {notification},
-      subOptions
-    )
+    publishNotification(notification, subOptions)
   })
 }
 
@@ -130,17 +122,17 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
-  if (!organization.featureFlags?.includes('teamsLimit')) {
-    return
-  }
-
-  if (organization.tierLimitExceededAt || organization.tier !== 'personal') {
-    return
-  }
-
-  if (!(await isLimitExceeded(orgId, dataLoader))) {
-    return
-  }
+  // if (!organization.featureFlags?.includes('teamsLimit')) {
+  //   return
+  // }
+  //
+  // if (organization.tierLimitExceededAt || organization.tier !== 'personal') {
+  //   return
+  // }
+  //
+  // if (!(await isLimitExceeded(orgId, dataLoader))) {
+  //   return
+  // }
 
   const now = new Date()
 

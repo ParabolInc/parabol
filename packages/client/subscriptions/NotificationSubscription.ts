@@ -62,19 +62,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment NotificationSubscription_newNotification on AddNotificationPayload {
-    notification {
-      id
-      ... on NotifyTeamsLimitExceeded {
-        organization {
-          id
-        }
-      }
-    }
-  }
-`
-
 const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
@@ -107,9 +94,6 @@ const subscription = graphql`
       # ScheduledJob Result
       ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
       ...NotificationSubscription_paymentRejected @relay(mask: false)
-
-      # Generic notifications
-      ...NotificationSubscription_newNotification @relay(mask: false)
 
       # ConnectSocket
       ... on User {
@@ -201,11 +185,6 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
       }
     }
   })
-}
-
-const addNotificationUpdater: SharedUpdater<any> = (payload, {store}) => {
-  const notification = payload.getLinkedRecord('notification')
-  handleAddNotifications(notification, store)
 }
 
 const meetingStageTimeLimitUpdater: SharedUpdater<any> = (payload, {store}) => {
@@ -316,9 +295,6 @@ const NotificationSubscription = (
           const notification = payload.getLinkedRecord('addedNotification' as any)
           if (!notification) break
           handleAddNotifications(notification, context.store)
-          break
-        case 'AddNotificationPayload':
-          addNotificationUpdater(payload, context)
           break
         default:
           console.error('NotificationSubscription case fail', type)
