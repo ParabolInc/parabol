@@ -536,6 +536,11 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  Is this locked for starter plans?
+  """
+  locked: Boolean!
 }
 
 """
@@ -3557,6 +3562,7 @@ enum NotificationEnum {
   TASK_INVOLVES
   MEETING_STAGE_TIME_LIMIT_END
   RESPONSE_MENTIONED
+  RESPONSE_REPLIED
   TEAMS_LIMIT_EXCEEDED
 }
 

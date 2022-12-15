@@ -9,14 +9,12 @@ const mutation = graphql`
   }
 `
 
-type Options = {
-  eventId?: number
-} & SegmentEventTrackOptions
+export type SendClientSegmentEventOptions = SegmentEventTrackOptions
 
 const SendClientSegmentEventMutation = (
   atmosphere: Atmosphere,
   event: string,
-  options?: Options
+  options?: SendClientSegmentEventOptions
 ) => {
   atmosphere.handleFetchPromise(getRequest(mutation).params, {event, options})
 }

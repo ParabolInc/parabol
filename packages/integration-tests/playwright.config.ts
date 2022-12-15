@@ -73,12 +73,13 @@ const config: PlaywrightTestConfig = {
     //     ...devices['Pixel 5']
     //   }
     // },
-    {
-      name: 'Mobile Safari',
-      use: {
-        ...devices['iPhone 12']
-      }
-    }
+    // MOBILE SAFARI TESTS HAVE BEEN FLAKY, REMOVING FOR NOW...
+    // {
+    //   name: 'Mobile Safari',
+    //   use: {
+    //     ...devices['iPhone 12']
+    //   }
+    // }
 
     /* Test against branded browsers. */
     // {

@@ -9,6 +9,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
+import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
@@ -91,13 +92,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
   }
 
   notifications.forEach((notification) => {
-    publish(
-      SubscriptionChannel.NOTIFICATION,
-      notification.userId,
-      'UpsertTeamPromptResponseSuccess',
-      data,
-      subOptions
-    )
+    publishNotification(notification, subOptions)
   })
 
   analytics.responseAdded(viewerId, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
