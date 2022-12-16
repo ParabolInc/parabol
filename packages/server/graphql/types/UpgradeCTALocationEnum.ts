@@ -6,6 +6,7 @@ export type UpgradeCTALocationEnumType =
   | 'orgTemplate'
   | 'createNewTemplate'
   | 'createTeam'
+  | 'usageStats'
 
 const UpgradeCTALocationEnum = new GraphQLEnumType({
   name: 'UpgradeCTALocationEnum',
@@ -15,7 +16,8 @@ const UpgradeCTALocationEnum = new GraphQLEnumType({
     teamTemplate: {},
     orgTemplate: {},
     createNewTemplate: {},
-    createTeam: {}
+    createTeam: {},
+    usageStats: {}
   }
 })
 
