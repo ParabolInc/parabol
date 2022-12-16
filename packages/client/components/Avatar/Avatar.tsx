@@ -7,7 +7,7 @@ type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'si
 
 const ImageBlock = styled('div')<ImageBlockProps>(
   ({sansRadius, sansShadow, picture, size, onClick}) => ({
-    backgroundImage: `url(${picture}), url(${defaultUserAvatar})`,
+    backgroundImage: `url(${picture ?? defaultUserAvatar})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',

@@ -34,6 +34,10 @@ const StyledDialogTitle = styled(DialogTitle)({
   textAlign: 'center'
 })
 
+const AvatarWithShadow = styled(Avatar)({
+  boxShadow: `0px 4px 5px 0px #DADADA`
+})
+
 interface Props {
   picture: string
   orgId: string
@@ -72,7 +76,7 @@ const OrgAvatarInput = (props: Props) => {
     <ModalBoundary>
       <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
       <AvatarBlock>
-        <Avatar picture={picture} size={96} />
+        <AvatarWithShadow picture={picture} size={96} />
       </AvatarBlock>
       <AvatarInput error={error?.message} onSubmit={onSubmit} />
     </ModalBoundary>
