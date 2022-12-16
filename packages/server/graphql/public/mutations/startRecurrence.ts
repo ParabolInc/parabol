@@ -1,4 +1,3 @@
-import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRule} from 'rrule'
 import getRethink from '../../../database/rethinkDriver'
@@ -33,20 +32,21 @@ export const startNewMeetingSeries = async (
     meetingType: 'teamPrompt',
     title: 'Async Standup',
     recurrenceRule: recurrenceRule.toString(),
-    // TODO: calculate this from the recurrence rule
+    // TODO: do we even need duration?
+    // imagine a recurring meeting that is set tu recur every Thursday and Friday, what the duration would be?
     duration: MEETING_DURATION_IN_MINUTES,
     teamId,
     facilitatorId: viewerId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
+  const nextMeetingStartDate = recurrenceRule.after(now)
 
   await r
     .table('NewMeeting')
     .get(meetingId)
     .update({
       meetingSeriesId: newMeetingSeriesId,
-      //TODO: calculate this from the recurrence rule
-      scheduledEndTime: new Date(now.getTime() + ms('24h')) // 24 hours from now
+      scheduledEndTime: nextMeetingStartDate
     })
     .run()
 
@@ -66,9 +66,7 @@ const restartExistingMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const now = new Date()
   // to keep things simple, restart the meeting series at the same time a new series would start
   const currentRRule = RRule.fromString(recurrenceRule)
-  const nextMeetingStartDate = currentRRule.after(
-    new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0))
-  )
+  const nextMeetingStartDate = currentRRule.after(now)
   const newRecurrenceRule = currentRRule.clone()
   newRecurrenceRule.options.dtstart = nextMeetingStartDate
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})

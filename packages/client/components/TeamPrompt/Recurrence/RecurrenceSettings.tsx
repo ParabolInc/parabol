@@ -164,8 +164,12 @@ interface RecurrenceSettingsProps {
 
 export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
   const {onRecurrenceRuleUpdated, recurrenceRule} = props
-  const [recurrenceInterval, setRecurrenceInterval] = React.useState(1)
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState(RRule.WEEKLY)
+  const [recurrenceInterval, setRecurrenceInterval] = React.useState(
+    recurrenceRule ? recurrenceRule.options.interval : 1
+  )
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState(
+    recurrenceRule ? recurrenceRule.options.freq : RRule.WEEKLY
+  )
   const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>([])
   //TODO: get this from the UI select
   const [startTime] = React.useState<Date>(new Date())
@@ -204,6 +208,7 @@ export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
             dtstart: convertToUTC(startTime),
+            //TODO: this causes rrule to provide 'Invalid Date' for the next occurrences - see https://github.com/jakubroztocil/rrule/pull/547
             tzid: Intl.DateTimeFormat().resolvedOptions().timeZone
           })
         : null
