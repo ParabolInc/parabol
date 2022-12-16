@@ -1,0 +1,30 @@
+version: '3'
+services:
+  redis:
+    image: redis:$_REDIS_VERSION
+    network_mode: cloudbuild
+    container_name: redis
+    expose:
+      - 6379
+  rethinkdb:
+    image: rethinkdb:$_RETHINKDB_VERSION
+    network_mode: cloudbuild
+    container_name: rethinkdb
+    expose:
+      - 8080
+      - 29015
+      - 28015
+  postgres:
+    image: postgres:$_POSTGRES_VERSION
+    network_mode: cloudbuild
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=tempuser
+      - POSTGRES_PASSWORD=temppassword
+      - POSTGRES_DB=tempdb
+    expose:
+      - 5432
+networks:
+  default:
+    external:
+      name: cloudbuild
