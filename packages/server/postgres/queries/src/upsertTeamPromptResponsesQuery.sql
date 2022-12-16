@@ -7,5 +7,7 @@ VALUES :responses
 ON CONFLICT ("meetingId", "userId") DO UPDATE SET
   "content" = EXCLUDED."content",
   "plaintextContent" = EXCLUDED."plaintextContent",
-  "isDraft" = "TeamPromptResponse"."isDraft" AND EXCLUDED."isDraft"
+  "isDraft" = "TeamPromptResponse"."isDraft" AND EXCLUDED."isDraft",
+  "createdAt" = CASE WHEN NOT EXCLUDED."isDraft" AND "TeamPromptResponse"."isDraft" THEN CURRENT_TIMESTAMP ELSE "TeamPromptResponse"."createdAt" END,
+  "updatedAt" = CASE WHEN NOT EXCLUDED."isDraft" AND "TeamPromptResponse"."isDraft" THEN CURRENT_TIMESTAMP ELSE "TeamPromptResponse"."updatedAt" END
 RETURNING id;

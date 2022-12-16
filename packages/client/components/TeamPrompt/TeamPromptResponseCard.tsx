@@ -106,6 +106,12 @@ const ReplyButton = styled(PlainButton)({
   }
 })
 
+const DraftNote = styled('div')({
+  color: PALETTE.SLATE_600,
+  fontWeight: 600,
+  fontSize: 12
+})
+
 interface Props {
   stageRef: TeamPromptResponseCard_stage$key
   status: TransitionStatus
@@ -241,12 +247,13 @@ const TeamPromptResponseCard = (props: Props) => {
         <Avatar picture={picture} size={48} />
         <TeamMemberName>
           {preferredName}
-          {response && (
+          {response && !response.isDraft && (
             <TeamPromptLastUpdatedTime
               updatedAt={response.updatedAt}
               createdAt={response.createdAt}
             />
           )}
+          {response && response.isDraft && <DraftNote>Draft</DraftNote>}
         </TeamMemberName>
       </ResponseHeader>
       <ResponseCard
