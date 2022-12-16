@@ -30,8 +30,11 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
     responses: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamPromptResponse))),
       description: 'The responses created in the meeting',
-      resolve: ({id: meetingId}: {id: string}, _args: unknown, {}) => {
-        return getTeamPromptResponsesByMeetingId(meetingId)
+      resolve: async ({id: meetingId}: {id: string}, _args: unknown, {authToken}) => {
+        const viewerId = getUserId(authToken)
+        return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
+          (response) => response.userId === viewerId || !response.isDraft
+        )
       }
     },
     viewerMeetingMember: {
@@ -49,7 +52,7 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'The number of responses generated in the meeting',
       resolve: async ({id: meetingId}) => {
         return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
-          (response) => !!response.plaintextContent
+          (response) => !!response.plaintextContent && !response.isDraft
         ).length
       }
     },

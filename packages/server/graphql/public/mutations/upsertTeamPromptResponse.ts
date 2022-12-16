@@ -14,7 +14,7 @@ import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMen
 
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
-  {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content},
+  {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content, isDraft},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
@@ -31,12 +31,17 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     if (!oldTeamPromptResponse) {
       return standardError(new Error('TeamPromptResponse not found'), {userId: viewerId})
     }
-    const {userId, meetingId: responseMeetingId} = oldTeamPromptResponse
+    const {userId, meetingId: responseMeetingId, isDraft: responseIsDraft} = oldTeamPromptResponse
     if (userId !== viewerId) {
       return standardError(new Error("Can't edit other's response"), {userId: viewerId})
     }
     if (responseMeetingId !== meetingId) {
       return standardError(new Error("Can't edit response in another meeting"), {userId: viewerId})
+    }
+    if (!responseIsDraft && isDraft) {
+      return standardError(new Error("Can't upsert a draft response into a non-draft response"), {
+        userId: viewerId
+      })
     }
   }
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
@@ -70,7 +75,8 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
       userId: viewerId,
       sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
       content,
-      plaintextContent
+      plaintextContent,
+      isDraft
     })
   )
 
@@ -80,29 +86,31 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     .get('teamPromptResponses')
     .loadNonNull(teamPromptResponseId)
 
-  const notifications = await createTeamPromptMentionNotifications(
-    oldTeamPromptResponse,
-    newTeamPromptResponse
-  )
-
   const data = {
     meetingId,
-    teamPromptResponseId,
-    addedNotificationIds: notifications.map((notification) => notification.id)
+    teamPromptResponseId
   }
 
-  notifications.forEach((notification) => {
-    publishNotification(notification, subOptions)
-  })
-
   analytics.responseAdded(viewerId, meetingId, teamPromptResponseId, !!inputTeamPromptResponseId)
-  publish(
-    SubscriptionChannel.MEETING,
-    meetingId,
-    'UpsertTeamPromptResponseSuccess',
-    data,
-    subOptions
-  )
+
+  if (!isDraft) {
+    const notifications = await createTeamPromptMentionNotifications(
+      oldTeamPromptResponse,
+      newTeamPromptResponse
+    )
+
+    notifications.forEach((notification) => {
+      publishNotification(notification, subOptions)
+    })
+
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'UpsertTeamPromptResponseSuccess',
+      data,
+      subOptions
+    )
+  }
 
   return data
 }

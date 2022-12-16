@@ -2,6 +2,7 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {getTeamPromptResponsesByMeetingId} from '../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveTeamMember} from '../resolvers'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
@@ -28,12 +29,16 @@ const TeamPromptResponseStage = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {meetingId, teamMemberId}: {meetingId: string; teamMemberId: string},
         _args: unknown,
-        {}
+        {authToken}
       ) => {
+        const viewerId = getUserId(authToken)
         // TODO: implement getTeamPromptResponsesByMeetingIdAndUserId
         const responses = await getTeamPromptResponsesByMeetingId(meetingId)
         const userId = TeamMemberId.split(teamMemberId).userId
-        return responses.find(({userId: responseUserId}) => responseUserId === userId)
+        return responses.find(
+          ({userId: responseUserId, isDraft}) =>
+            responseUserId === userId && (!isDraft || responseUserId === viewerId)
+        )
       }
     }
   })

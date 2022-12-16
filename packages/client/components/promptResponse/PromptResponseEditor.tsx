@@ -58,11 +58,11 @@ const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   fontWeight: 400
 }))
 
-const CancelButton = styled(SubmitButton)({
+const SecondaryButton = styled(SubmitButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: PALETTE.SLATE_200,
   marginRight: 12,
-  color: PALETTE.SLATE_700
-})
+  color: disabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700
+}))
 
 const StyledEditor = styled('div')`
   .ProseMirror {
@@ -112,13 +112,22 @@ interface Props {
   autoFocus?: boolean
   teamId?: string
   content: JSONContent | null
-  handleSubmit?: (editor: EditorState) => void
+  handleSubmit?: (editor: EditorState, isDraft: boolean) => void
   readOnly: boolean
+  isDraft?: boolean
   placeholder?: string
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder, teamId} = props
+  const {
+    autoFocus: autoFocusProp,
+    content,
+    handleSubmit,
+    readOnly,
+    placeholder,
+    teamId,
+    isDraft
+  } = props
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -162,16 +171,16 @@ const PromptResponseEditor = (props: Props) => {
   }, [setEditing])
 
   const onSubmit = useCallback(
-    (newEditorState: EditorState) => {
+    (newEditorState: EditorState, newIsDraft: boolean) => {
       setEditing(false)
       const newContent = newEditorState.getJSON()
 
       // to avoid creating an empty post on first blur
       if (!content && newEditorState.isEmpty) return
 
-      if (areEqual(content, newContent)) return
+      if (areEqual(content, newContent) && !(!newIsDraft && isDraft)) return
 
-      handleSubmit?.(newEditorState)
+      handleSubmit?.(newEditorState, newIsDraft)
     },
     [setEditing, content, handleSubmit]
   )
@@ -275,17 +284,35 @@ const PromptResponseEditor = (props: Props) => {
         // about it.
         <SubmissionButtonWrapper>
           {!!content && isEditing && (
-            <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
+            <SecondaryButton onClick={() => editor && onCancel(editor)} size='medium'>
               Cancel
-            </CancelButton>
+            </SecondaryButton>
           )}
-          {(!content || isEditing) && (
-            <SubmitButton
-              onClick={() => editor && onSubmit(editor)}
+          {isEditing && (isDraft || !content) && (
+            <SecondaryButton
+              onClick={() => editor && onSubmit(editor, true)}
               size='medium'
               disabled={!editor || editor.isEmpty}
             >
-              {!content ? 'Submit' : 'Update'}
+              Save Draft
+            </SecondaryButton>
+          )}
+          {(!content || isEditing) && (
+            <SubmitButton
+              onClick={() => editor && onSubmit(editor, false)}
+              size='medium'
+              disabled={!editor || editor.isEmpty}
+            >
+              {isDraft || !content ? 'Submit' : 'Update'}
+            </SubmitButton>
+          )}
+          {!isEditing && isDraft && (
+            <SubmitButton
+              onClick={() => editor && onSubmit(editor, false)}
+              size='medium'
+              disabled={!editor || editor.isEmpty}
+            >
+              {'Submit Draft'}
             </SubmitButton>
           )}
         </SubmissionButtonWrapper>

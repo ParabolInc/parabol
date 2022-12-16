@@ -1,5 +1,12 @@
 import {JSONContent} from '@tiptap/core'
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Reactable, {reactableFields} from './Reactable'
@@ -56,6 +63,10 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
       resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
+    },
+    isDraft: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'Whether this response is a draft'
     }
   })
 })

@@ -145,6 +145,7 @@ const TeamPromptResponseCard = (props: Props) => {
           userId
           content
           plaintextContent
+          isDraft
           updatedAt
           createdAt
           reactjis {
@@ -199,7 +200,7 @@ const TeamPromptResponseCard = (props: Props) => {
   const nonViewerEmptyResponsePlaceholder = isMeetingEnded ? 'No response' : 'No response yet...'
 
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const handleSubmit = useEventCallback((editorState: EditorState) => {
+  const handleSubmit = useEventCallback((editorState: EditorState, isDraft: boolean) => {
     if (submitting) return
     submitMutation()
 
@@ -208,7 +209,7 @@ const TeamPromptResponseCard = (props: Props) => {
 
     UpsertTeamPromptResponseMutation(
       atmosphere,
-      {teamPromptResponseId: response?.id, meetingId, content},
+      {teamPromptResponseId: response?.id, meetingId, content, isDraft},
       {plaintextContent, onError, onCompleted}
     )
   })
@@ -261,6 +262,7 @@ const TeamPromptResponseCard = (props: Props) => {
               autoFocus={isViewerResponse}
               handleSubmit={handleSubmit}
               content={contentJSON}
+              isDraft={response?.isDraft || false}
               readOnly={!isViewerResponse || isMeetingEnded}
               placeholder={viewerEmptyResponsePlaceholder}
             />

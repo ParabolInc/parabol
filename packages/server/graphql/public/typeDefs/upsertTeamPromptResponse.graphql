@@ -17,6 +17,11 @@ extend type Mutation {
     The stringified content of the team prompt response
     """
     content: String!
+
+    """
+    Whether this response should be saved as a draft
+    """
+    isDraft: Boolean!
   ): UpsertTeamPromptResponsePayload!
 }
 

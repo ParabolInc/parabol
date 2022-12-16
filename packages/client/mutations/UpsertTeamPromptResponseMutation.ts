@@ -13,6 +13,7 @@ graphql`
       userId
       content
       plaintextContent
+      isDraft
       updatedAt
       createdAt
     }
@@ -24,11 +25,13 @@ const mutation = graphql`
     $teamPromptResponseId: ID
     $meetingId: ID!
     $content: String!
+    $isDraft: Boolean!
   ) @raw_response_type {
     upsertTeamPromptResponse(
       teamPromptResponseId: $teamPromptResponseId
       meetingId: $meetingId
       content: $content
+      isDraft: $isDraft
     ) {
       ... on ErrorPayload {
         error {
