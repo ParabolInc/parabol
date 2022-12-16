@@ -72,6 +72,7 @@ const NewTeamForm = (props: Props) => {
   const {isInitiallyNewOrg, organizations} = props
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
+  const isSelectedOrgLocked = organizations.some((org) => org.id === orgId && org.lockedAt)
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
@@ -111,6 +112,7 @@ const NewTeamForm = (props: Props) => {
   const updateOrgId = (orgId: string) => {
     setOrgId(orgId)
   }
+  console.log('🚀 ~ orgId', orgId)
 
   const handleIsNewOrgChange = (e: ChangeEvent<HTMLInputElement>) => {
     const isNewOrg = e.target.value === 'true'
@@ -182,7 +184,11 @@ const NewTeamForm = (props: Props) => {
             teamName={fields.teamName.value}
           />
 
-          <StyledButton size='large' waiting={submitting}>
+          <StyledButton
+            disabled={isSelectedOrgLocked && !isNewOrg}
+            size='large'
+            waiting={submitting}
+          >
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
           </StyledButton>
           {error && <StyledError>{error.message}</StyledError>}
@@ -197,6 +203,7 @@ export default createFragmentContainer(NewTeamForm, {
     fragment NewTeamForm_organizations on Organization @relay(plural: true) {
       ...NewTeamOrgPicker_organizations
       id
+      lockedAt
       teams {
         name
       }
