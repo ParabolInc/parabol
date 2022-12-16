@@ -3,13 +3,16 @@ import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
+import useRouter from '../hooks/useRouter'
 import useTooltip from '../hooks/useTooltip'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {fadeIn} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint} from '../types/constEnums'
+import {BezierCurve, Breakpoint, TeamsLimit} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
@@ -77,7 +80,7 @@ const ButtonBlock = styled('div')({
 const Button = styled(FloatingActionButton)({
   border: 0,
   fontSize: 16,
-  padding: '10px 32px',
+  padding: '10px 40px',
   pointerEvents: 'all'
 })
 
@@ -158,6 +161,7 @@ const InsightsDomainPanel = (props: Props) => {
         suggestedTier
         tier
         organizations {
+          id
           name
           scheduledLockAt
         }
@@ -200,8 +204,20 @@ const InsightsDomainPanel = (props: Props) => {
   console.log('🚀 ~ organizations', organizations)
   const toBeLockedOrg = organizations.find((org) => org.scheduledLockAt)
   console.log('🚀 ~ toBeLockedOrg', toBeLockedOrg)
-
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
+
+  const handleClick = () => {
+    if (!toBeLockedOrg) return
+    const {id: orgId} = toBeLockedOrg
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'usageStats',
+      orgId
+    })
+    history.push(`/me/organizations/${orgId}/billing`)
+  }
+
   return (
     <Wrapper>
       <StatsPanel>
@@ -261,11 +277,13 @@ const InsightsDomainPanel = (props: Props) => {
           <ExceededLimit>
             <WarningMsg>
               <BoldText>{toBeLockedOrg.name}</BoldText>
-              {` is over the limit of X free teams. Your free access will end in `}
+              {` is over the limit of `}
+              <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams. `}</BoldText>
+              {`Your free access will end in `}
               <BoldText>{`${relativeDate(toBeLockedOrg.scheduledLockAt)}.`}</BoldText>
             </WarningMsg>
             <ButtonBlock>
-              <Button onClick={() => {}} palette='pink'>
+              <Button onClick={handleClick} palette='pink'>
                 {'Upgrade'}
               </Button>
             </ButtonBlock>

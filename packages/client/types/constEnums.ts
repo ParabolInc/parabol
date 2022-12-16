@@ -486,3 +486,10 @@ export const enum PollsAriaLabels {
   POLL_START = 'Start a poll',
   POLL_ADD_OPTION = 'Add a poll option'
 }
+
+export const enum TeamsLimit {
+  STICKY_TEAM_MIN_MEETING_ATTENDEES = 2,
+  STICKY_TEAM_MIN_MEETINGS = 3,
+  PERSONAL_TIER_MAX_TEAMS = 2,
+  PERSONAL_TIER_LOCK_AFTER_DAYS = 30
+}
