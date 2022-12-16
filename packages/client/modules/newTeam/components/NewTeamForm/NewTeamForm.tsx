@@ -16,7 +16,7 @@ import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {TeamsLimit} from '../../../../types/constEnums'
+import {Threshold} from '../../../../types/constEnums'
 import linkify from '../../../../utils/linkify'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
@@ -239,7 +239,7 @@ const NewTeamForm = (props: Props) => {
             <WarningMsg>
               <BoldText>{lockedSelectedOrg.name}</BoldText>
               {` has reached the limit of `}
-              <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams.`} </BoldText>
+              <BoldText>{`${Threshold.MAX_PERSONAL_TIER_TEAMS} free teams.`} </BoldText>
               <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
               {' to create more teams.'}
             </WarningMsg>

@@ -2,7 +2,6 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
-import {TierEnum} from '../../database/types/Invoice'
 import generateUID from '../../generateUID'
 import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -46,7 +45,10 @@ export default {
       }
 
       // VALIDATION
-      const orgTeams = await getTeamsByOrgIds([orgId], {isArchived: false})
+      const [orgTeams, organization] = await Promise.all([
+        getTeamsByOrgIds([orgId], {isArchived: false}),
+        dataLoader.get('organizations').load(orgId)
+      ])
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {newTeam},
@@ -62,9 +64,11 @@ export default {
         }
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
-      if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
-        const organization = await dataLoader.get('organizations').load(orgId)
-        const {tier}: {tier: TierEnum} = organization
+      const {tier, featureFlags} = organization
+      const maxTeams = featureFlags?.includes('teamsLimit')
+        ? Threshold.MAX_PERSONAL_TIER_TEAMS
+        : Threshold.MAX_FREE_TEAMS
+      if (orgTeams.length >= maxTeams) {
         if (tier === 'personal') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }

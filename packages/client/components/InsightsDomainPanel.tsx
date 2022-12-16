@@ -12,7 +12,7 @@ import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventM
 import {fadeIn} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, TeamsLimit} from '../types/constEnums'
+import {BezierCurve, Breakpoint, Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
@@ -277,7 +277,7 @@ const InsightsDomainPanel = (props: Props) => {
             <WarningMsg>
               <BoldText>{toBeLockedOrg.name}</BoldText>
               {` is over the limit of `}
-              <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams. `}</BoldText>
+              <BoldText>{`${Threshold.MAX_PERSONAL_TIER_TEAMS} free teams. `}</BoldText>
               {`Your free access will end in `}
               <BoldText>{`${relativeDate(toBeLockedOrg.scheduledLockAt)}.`}</BoldText>
             </WarningMsg>
