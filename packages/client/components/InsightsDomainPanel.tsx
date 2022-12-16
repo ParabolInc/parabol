@@ -10,6 +10,7 @@ import {fadeIn} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint} from '../types/constEnums'
+import relativeDate from '../utils/date/relativeDate'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
 import FloatingActionButton from './FloatingActionButton'
@@ -43,9 +44,15 @@ const ExceededLimit = styled('div')({
 
 const WarningMsg = styled('div')({
   background: PALETTE.GOLD_100,
-  padding: '0px 8px',
+  padding: '16px',
   fontSize: 16,
-  borderRadius: 2
+  borderRadius: 2,
+  lineHeight: '26px',
+  fontWeight: 500
+})
+
+const BoldText = styled('span')({
+  fontWeight: 600
 })
 
 const StatBlocks = styled('div')({
@@ -150,6 +157,10 @@ const InsightsDomainPanel = (props: Props) => {
         meetingCount
         suggestedTier
         tier
+        organizations {
+          name
+          scheduledLockAt
+        }
       }
     `,
     domainRef
@@ -183,8 +194,12 @@ const InsightsDomainPanel = (props: Props) => {
     activeOrganizationCount,
     activeTeamCount,
     activeUserCount,
-    meetingCount
+    meetingCount,
+    organizations
   } = domain
+  console.log('🚀 ~ organizations', organizations)
+  const toBeLockedOrg = organizations.find((org) => org.scheduledLockAt)
+  console.log('🚀 ~ toBeLockedOrg', toBeLockedOrg)
 
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   return (
@@ -242,14 +257,20 @@ const InsightsDomainPanel = (props: Props) => {
           </StatBlock>
         </StatBlocks>
         <InsightsDomainNudge domainRef={domain} />
-        <ExceededLimit>
-          <WarningMsg>Test</WarningMsg>
-          <ButtonBlock>
-            <Button onClick={() => {}} palette='pink'>
-              {'Upgrade'}
-            </Button>
-          </ButtonBlock>
-        </ExceededLimit>
+        {toBeLockedOrg?.scheduledLockAt && (
+          <ExceededLimit>
+            <WarningMsg>
+              <BoldText>{toBeLockedOrg.name}</BoldText>
+              {` is over the limit of X free teams. Your free access will end in `}
+              <BoldText>{`${relativeDate(toBeLockedOrg.scheduledLockAt)}.`}</BoldText>
+            </WarningMsg>
+            <ButtonBlock>
+              <Button onClick={() => {}} palette='pink'>
+                {'Upgrade'}
+              </Button>
+            </ButtonBlock>
+          </ExceededLimit>
+        )}
       </StatsPanel>
     </Wrapper>
   )
