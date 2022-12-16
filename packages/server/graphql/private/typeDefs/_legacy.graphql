@@ -1042,6 +1042,11 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  Is this locked for starter plans?
+  """
+  locked: Boolean!
 }
 
 """
@@ -3611,6 +3616,12 @@ type Organization {
   The datetime the organization was last updated
   """
   updatedAt: DateTime
+
+  """
+  The OrganizationUser of the viewer
+  """
+  viewerOrganizationUser: OrganizationUser
+
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
 
   """

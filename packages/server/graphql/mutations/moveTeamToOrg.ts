@@ -106,7 +106,7 @@ const moveToOrg = async (
 
   await Promise.all(
     newToOrgUserIds.map((newUserId) => {
-      return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER)
+      return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER, dataLoader)
     })
   )
 
@@ -114,7 +114,7 @@ const moveToOrg = async (
 
   const inactiveUserIds = newUsers.filter((user) => user.inactive).map((user) => user!.id)
   inactiveUserIds.map((newInactiveUserId) => {
-    return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
+    return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER, dataLoader)
   })
 
   const inactiveAdded = inactiveUserIds.length

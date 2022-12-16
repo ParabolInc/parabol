@@ -18,6 +18,7 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
 
   // Sticky team is the team that completed 3 meetings with more than 1 attendee
   // and have had at least 1 meeting in the last 30 days
+  // Warning: the query is very expensive
   return r
     .table('NewMeeting')
     .getAll(r.args(teamIds), {index: 'teamId'})
@@ -47,6 +48,7 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
     .run()
 }
 
+// Warning: the function might be expensive
 export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
@@ -61,12 +63,14 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
       .update({
         tierLimitExceededAt: null,
         scheduledLockAt: null,
-        lockedAt: null
+        lockedAt: null,
+        updatedAt: new Date()
       })
       .run()
   }
 }
 
+// Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
@@ -89,7 +93,8 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
     .get(orgId)
     .update({
       tierLimitExceededAt: now,
-      scheduledLockAt: new Date(now.getTime() + ms(`${PERSONAL_TIER_LOCK_AFTER_DAYS}d`))
+      scheduledLockAt: new Date(now.getTime() + ms(`${PERSONAL_TIER_LOCK_AFTER_DAYS}d`)),
+      updatedAt: now
     })
     .run()
 }

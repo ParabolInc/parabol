@@ -67,6 +67,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
       segmentIo.identify({
         userId: user.id,
         traits: {
+          email: user.email,
           highestTier: user.tier
         }
       })

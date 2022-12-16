@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import relativeDate from '../utils/date/relativeDate'
 import plural from '../utils/plural'
 import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
@@ -32,9 +34,23 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
     endedAt,
     agendaItemCount,
     commentCount,
-    taskCount
+    taskCount,
+    locked,
+    organization
   } = meeting
   const {name: teamName} = team
+  const {id: orgId, viewerOrganizationUser} = organization
+  const canUpgrade = !!viewerOrganizationUser
+
+  const atmosphere = useAtmosphere()
+  const onUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade Intent', {
+      source: 'Timeline History Locked Meeting Upgrade CTA',
+      upgradeTier: 'pro',
+      meetingId
+    })
+  }
+
   const meetingDuration = relativeDate(createdAt, {
     now: endedAt,
     max: 2,
@@ -43,7 +59,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
   })
   return (
     <TimelineEventCard
-      iconName='change_history'
+      iconName={locked && canUpgrade ? 'lock' : 'change_history'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
@@ -55,9 +71,22 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
         {' and '}
         <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
         <br />
-        <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
-        {' in your meeting or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        {locked ? (
+          canUpgrade && (
+            <>
+              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+                Upgrade now
+              </Link>{' '}
+              to see the discussion in your meeting or review a summary
+            </>
+          )
+        ) : (
+          <>
+            <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
+            {' in your meeting or '}
+            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+          </>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )
@@ -77,6 +106,13 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         endedAt
         name
         taskCount
+        locked
+        organization {
+          id
+          viewerOrganizationUser {
+            id
+          }
+        }
       }
       team {
         id
