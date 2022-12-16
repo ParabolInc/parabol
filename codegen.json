@@ -10,6 +10,7 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
+          "AddFeatureFlagToOrgSuccess": "./types/AddFeatureFlagToOrgSuccess#AddFeatureFlagToOrgSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
