@@ -13,7 +13,7 @@ const STICKY_TEAM_MIN_MEETINGS = 3
 const PERSONAL_TIER_MAX_TEAMS = 2
 const PERSONAL_TIER_LOCK_AFTER_DAYS = 30
 
-async function getBillingLeaders(orgId: string, dataLoader: DataLoaderWorker) {
+const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const billingLeaderIds = (await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
@@ -122,17 +122,17 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
 
-  // if (!organization.featureFlags?.includes('teamsLimit')) {
-  //   return
-  // }
-  //
-  // if (organization.tierLimitExceededAt || organization.tier !== 'personal') {
-  //   return
-  // }
-  //
-  // if (!(await isLimitExceeded(orgId, dataLoader))) {
-  //   return
-  // }
+  if (!organization.featureFlags?.includes('teamsLimit')) {
+    return
+  }
+
+  if (organization.tierLimitExceededAt || organization.tier !== 'personal') {
+    return
+  }
+
+  if (!(await isLimitExceeded(orgId, dataLoader))) {
+    return
+  }
 
   const now = new Date()
 
