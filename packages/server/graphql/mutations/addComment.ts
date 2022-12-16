@@ -10,7 +10,10 @@ import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
-import NotificationDiscussionMentioned from '../../database/types/NotificationDiscussionMentioned'
+import {
+  default as NotificationDiscussionMentioned,
+  default as NotificationResponseReplied
+} from '../../database/types/NotificationDiscussionMentioned'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -18,7 +21,6 @@ import {GQLContext} from '../graphql'
 import publishNotification from '../public/mutations/helpers/publishNotification'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
-import getUsersToIgnore from './helpers/getUsersToIgnore'
 
 type AddCommentMutationVariables = {
   comment: {
@@ -78,7 +80,7 @@ const addComment = {
       const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
 
       if (responseUserId !== viewerId) {
-        const notification = new NotificationDiscussionMentioned({
+        const notification = new NotificationResponseReplied({
           userId: responseUserId,
           meetingId: meetingId,
           authorId: viewerId,
@@ -92,10 +94,13 @@ const addComment = {
       }
     }
 
-    const usersIdsToIgnore = await getUsersToIgnore(viewerId, meeting.teamId)
     const {entityMap} = JSON.parse(content)
     const notificationsToAdd = getTypeFromEntityMap('MENTION', entityMap)
       .filter((mentionedUserId) => {
+        if (mentionedUserId === viewerId) {
+          return false
+        }
+
         if (discussion.discussionTopicType === 'teamPromptResponse') {
           const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
           if (responseUserId === mentionedUserId) {
@@ -104,7 +109,10 @@ const addComment = {
             return false
           }
         }
-        return mentionedUserId !== viewerId && !usersIdsToIgnore.includes(mentionedUserId)
+
+        // :TODO: (jmtaber129): Consider limiting these to when the mentionee is *not* on the
+        // relevant page.
+        return true
       })
       .map(
         (mentioneeUserId) =>
