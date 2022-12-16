@@ -4,7 +4,6 @@ import React from 'react'
 import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {PALETTE} from '../styles/paletteV3'
 import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
@@ -36,7 +35,7 @@ const StyledDialogTitle = styled(DialogTitle)({
 })
 
 const AvatarWithShadow = styled(Avatar)({
-  boxShadow: `0px 4px 5px 0px ${PALETTE.SLATE_400}`
+  boxShadow: `0px 4px 5px 0px #DADADA`
 })
 
 interface Props {
