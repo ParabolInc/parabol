@@ -42,8 +42,8 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const onUpgrade = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade Intent', {
-      source: 'Timeline History Locked Meeting Upgrade CTA',
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'timelineHistoryLock',
       upgradeTier: 'pro',
       meetingId
     })
