@@ -10,14 +10,15 @@ import {AGENDA_ITEMS, DISCUSS} from 'parabol-client/utils/constants'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import EstimatePhase from '../../database/types/EstimatePhase'
-import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import TeamPromptResponsesPhase from '../../database/types/TeamPromptResponsesPhase'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
+import {augmentDBStage} from '../resolvers'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import NewMeetingStage from './NewMeetingStage'
 import {ThreadableConnection} from './Threadable'
 import User from './User'
 
@@ -48,56 +49,49 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       description:
         'The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue'
     },
-    stageId: {
-      type: GraphQLID,
-      description: 'The ID of the stage that the discussion is located',
+    stage: {
+      type: NewMeetingStage,
+      description: 'The stage that the discussion is located',
       resolve: async (
-        {meetingId, discussionTopicId, discussionTopicType},
+        {discussionTopicId, discussionTopicType, meetingId},
         _args: unknown,
         {dataLoader}
       ) => {
-        let stage: GenericMeetingStage | null | undefined = null
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const {phases, teamId} = meeting
         switch (discussionTopicType) {
           case 'agendaItem': {
-            const meeting = await dataLoader.get('newMeetings').load(meetingId)
-            const {phases} = meeting
             const phase = phases.find(
               (phase) => phase.phaseType === AGENDA_ITEMS
             )! as AgendaItemsPhase
             const {stages} = phase
-            stage = stages.find((stage) => stage.agendaItemId === discussionTopicId)
-            break
+            const dbStage = stages.find((stage) => stage.agendaItemId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, AGENDA_ITEMS, teamId) : null
           }
           case 'teamPromptResponse': {
-            const meeting = await dataLoader.get('newMeetings').load(meetingId)
-            const {phases} = meeting
             const phase = phases.find(
               (phase) => phase.phaseType === 'RESPONSES'
             )! as TeamPromptResponsesPhase
             const {stages} = phase
-            stage = stages.find((stage) => stage.teamMemberId === discussionTopicId)
-            break
+            const dbStage = stages.find((stage) => stage.teamMemberId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, 'RESPONSES', teamId) : null
           }
           case 'reflectionGroup': {
-            const meeting = await dataLoader.get('newMeetings').load(meetingId)
-            const {phases} = meeting
             const phase = phases.find((phase) => phase.phaseType === DISCUSS)! as DiscussPhase
             const {stages} = phase
-            stage = stages.find((stage) => stage.reflectionGroupId === discussionTopicId)
-            break
+            const dbStage = stages.find((stage) => stage.reflectionGroupId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, DISCUSS, teamId) : null
           }
           case 'task': {
-            const meeting = await dataLoader.get('newMeetings').load(meetingId)
-            const {phases} = meeting
             const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
             const {stages} = phase
-            stage = stages.find((stage) => stage.taskId === discussionTopicId)
-            break
-          }
-        }
+            const dbStage = stages.find((stage) => stage.taskId === discussionTopicId)
 
-        if (stage) {
-          return stage.id
+            return dbStage ? augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId) : null
+          }
         }
 
         return null

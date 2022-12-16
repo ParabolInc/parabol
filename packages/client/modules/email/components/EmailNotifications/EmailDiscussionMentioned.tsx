@@ -8,6 +8,7 @@ import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import makeAppURL from '../../../../utils/makeAppURL'
+import fromStageIdToUrl from '../../../../utils/meetings/fromStageIdToUrl'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
 
@@ -44,21 +45,41 @@ const EmailDiscussionMentioned = (props: Props) => {
         meeting {
           id
           name
+          facilitatorStageId
+          ...fromStageIdToUrl_meeting
         }
         comment {
           content
+        }
+        discussion {
+          stage {
+            id
+            ... on TeamPromptResponseStage {
+              response {
+                id
+              }
+            }
+          }
         }
       }
     `,
     notificationRef
   )
-  const {meeting, author, comment} = notification
+  const {meeting, author, comment, discussion} = notification
   const {rasterPicture: authorPicture, preferredName: authorName} = author
+  const {stage} = discussion
+  const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
+  const {id: stageId, response} = stage ?? {}
 
-  const {id: meetingId, name: meetingName} = meeting
+  const directUrl = stageId
+    ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
+    : `/meet/${meetingId}`
 
-  const linkUrl = makeAppURL(appOrigin, `/meet/${meetingId}`, {
-    searchParams: notificationSummaryUrlParams
+  const linkUrl = makeAppURL(appOrigin, directUrl, {
+    searchParams: {
+      ...notificationSummaryUrlParams,
+      responseId: response?.id
+    }
   })
 
   const contentState = useMemo(() => convertFromRaw(JSON.parse(comment.content)), [comment.content])

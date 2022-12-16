@@ -3418,9 +3418,9 @@ type Discussion {
   ): ThreadableConnection!
 
   """
-  The id of the stage where the discussion is
+  The stage where the discussion is
   """
-  stageId: ID
+  stage: NewMeetingStage
 }
 
 """

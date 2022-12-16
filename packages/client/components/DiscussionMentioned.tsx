@@ -45,7 +45,15 @@ const DiscussionMentioned = (props: Props) => {
           content
         }
         discussion {
-          stageId
+          stage {
+            __typename
+            id
+            ... on TeamPromptResponseStage {
+              response {
+                id
+              }
+            }
+          }
         }
       }
     `,
@@ -54,7 +62,8 @@ const DiscussionMentioned = (props: Props) => {
   const {history} = useRouter()
   const {meeting, author, comment, discussion} = notification
   const {picture: authorPicture, preferredName: authorName} = author
-  const {stageId} = discussion
+  const {stage} = discussion
+  const {id: stageId, response} = stage ?? {}
   const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
 
   const directUrl = stageId
@@ -62,7 +71,9 @@ const DiscussionMentioned = (props: Props) => {
     : `/meet/${meetingId}`
 
   const goThere = () => {
-    history.push(directUrl)
+    history.push(
+      response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl
+    )
   }
 
   const [editorState] = useEditorState(comment.content)
