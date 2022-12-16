@@ -36,6 +36,8 @@ const useAnimatedCard = (displayIdx: number, status: TransitionStatus) => {
       // if exiting, keep it where it is, but don't let it take up space
       el.style.position = 'absolute'
       el.style.transform = `translate(${offsetLeft - 8}px,${offsetTop - 8}px)`
+    } else {
+      el.style.position = 'static'
     }
     lastIdxRef.current = displayIdx
     lastRectRef.current = {top: offsetTop, left: offsetLeft}

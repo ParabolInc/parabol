@@ -23,7 +23,7 @@ export const TimeLeftBadge = (props: Props) => {
   return (
     <>
       <TeamPromptBadge onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-        {fromNow}
+        {fromNow} left
       </TeamPromptBadge>
       {tooltipPortal(`Ends at ${meetingEndTimeDate.toLocaleString()}`)}
     </>

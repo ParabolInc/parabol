@@ -3981,10 +3981,10 @@
   dependencies:
     tslib "~2.2.0"
 
-"@mattkrick/sanitize-svg@0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.3.1.tgz#c21da0a835857ffa2014d9fe76ff80bda704cb9f"
-  integrity sha512-wbIv43EBkzMlYcfv2+SrLVfgpzEp8axjOFD1TGOwHuS1I60GQplzx8fduWWHGNpgt/1QlrI95vNXFRSZM2oWtA==
+"@mattkrick/sanitize-svg@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.4.0.tgz#388c29614cf72aa0dd9803c77c9c9d070bd3cd2d"
+  integrity sha512-TnPI97WVAxo8SQcPy8aV3OF9/2WjXB5/+pRNVudIWR7Bhi5ZjtR/ur162So08GkvsvB914AXCW2sxFh1x6KhHA==
 
 "@mattkrick/trebuchet-client@^3.0.1":
   version "3.0.1"
