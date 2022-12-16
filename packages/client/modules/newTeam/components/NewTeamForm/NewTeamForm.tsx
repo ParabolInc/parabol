@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, FormEvent, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import Panel from '../../../../components/Panel/Panel'
@@ -20,7 +20,7 @@ import {TeamsLimit} from '../../../../types/constEnums'
 import linkify from '../../../../utils/linkify'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
-import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
+import {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
 import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
@@ -93,11 +93,25 @@ const controlSize = 'medium'
 
 interface Props {
   isInitiallyNewOrg: boolean
-  organizations: NewTeamForm_organizations
+  organizationsRef: NewTeamForm_organizations$key
 }
 
 const NewTeamForm = (props: Props) => {
-  const {isInitiallyNewOrg, organizations} = props
+  const {isInitiallyNewOrg, organizationsRef} = props
+  const organizations = useFragment(
+    graphql`
+      fragment NewTeamForm_organizations on Organization @relay(plural: true) {
+        ...NewTeamOrgPicker_organizations
+        id
+        lockedAt
+        name
+        teams {
+          name
+        }
+      }
+    `,
+    organizationsRef
+  )
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
   const lockedSelectedOrg = organizations.find((org) => org.id === orgId && org.lockedAt)
@@ -240,16 +254,4 @@ const NewTeamForm = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewTeamForm, {
-  organizations: graphql`
-    fragment NewTeamForm_organizations on Organization @relay(plural: true) {
-      ...NewTeamOrgPicker_organizations
-      id
-      lockedAt
-      name
-      teams {
-        name
-      }
-    }
-  `
-})
+export default NewTeamForm
