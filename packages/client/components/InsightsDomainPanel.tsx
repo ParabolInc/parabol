@@ -201,9 +201,7 @@ const InsightsDomainPanel = (props: Props) => {
     meetingCount,
     organizations
   } = domain
-  console.log('🚀 ~ organizations', organizations)
   const toBeLockedOrg = organizations.find((org) => org.scheduledLockAt)
-  console.log('🚀 ~ toBeLockedOrg', toBeLockedOrg)
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
