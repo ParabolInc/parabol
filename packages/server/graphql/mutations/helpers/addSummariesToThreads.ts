@@ -18,12 +18,15 @@ const addSummariesToThreads = async (
     dataLoader.get('teams').loadNonNull(teamId)
   ])
   const {tier} = team
-  const commentPromises = stages.map(async (stage) => {
+  const commentPromises = stages.map(async (stage, idx) => {
     const group = groups.find((group) => group.id === stage.reflectionGroupId)
     if (!group?.summary) return
     const explainerText =
       tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
-    const html = `<html><body><i>${explainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
+    const html =
+      idx === 0
+        ? `<html><body><i>${explainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
+        : `<html><body><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
     const summaryBlock = convertHtmlToTaskContent(html)
     const commentInput = {
       discussionId: stage.discussionId,
