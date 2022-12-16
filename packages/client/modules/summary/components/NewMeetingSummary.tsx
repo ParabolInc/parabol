@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -22,6 +23,7 @@ const query = graphql`
     viewer {
       newMeeting(meetingId: $meetingId) {
         ...MeetingSummaryEmail_meeting
+        ...MeetingLockedOverlay_meeting
         id
         team {
           id
@@ -72,6 +74,7 @@ const NewMeetingSummary = (props: Props) => {
         emailCSVUrl={emailCSVUrl}
         corsOptions={APP_CORS_OPTIONS}
       />
+      <MeetingLockedOverlay meetingRef={newMeeting} />
     </div>
   )
 }

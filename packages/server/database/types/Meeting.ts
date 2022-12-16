@@ -14,6 +14,7 @@ interface Input {
   showConversionModal?: boolean
   meetingSeriesId?: number
   scheduledEndTime?: Date
+  summary?: string
 }
 
 const namePrefix = {
@@ -39,6 +40,7 @@ export default abstract class Meeting {
   showConversionModal?: boolean
   meetingSeriesId?: number
   scheduledEndTime?: Date | null
+  summary?: string
 
   constructor(input: Input) {
     const {
@@ -51,7 +53,8 @@ export default abstract class Meeting {
       phases,
       showConversionModal,
       meetingSeriesId,
-      scheduledEndTime
+      scheduledEndTime,
+      summary
     } = input
     this.id = id ?? generateUID()
     this.createdBy = facilitatorUserId
@@ -66,5 +69,6 @@ export default abstract class Meeting {
     this.showConversionModal = showConversionModal
     this.meetingSeriesId = meetingSeriesId
     this.scheduledEndTime = scheduledEndTime
+    this.summary = summary
   }
 }

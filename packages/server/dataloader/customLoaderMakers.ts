@@ -371,6 +371,7 @@ export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
       return Promise.all(
         keys.map((key) => {
           const {userId, orgId} = key
+          if (!userId || !orgId) return null
           return r
             .table('OrganizationUser')
             .getAll(userId, {index: 'userId'})
