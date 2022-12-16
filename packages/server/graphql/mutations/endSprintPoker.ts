@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -110,6 +111,7 @@ export default {
     const isKill = phase && phase.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
+      checkTeamsLimit(team.orgId, dataLoader)
     }
     const events = teamMembers.map(
       (teamMember) =>

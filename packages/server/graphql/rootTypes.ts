@@ -15,6 +15,7 @@ import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
+import NotifyTeamsLimitExceeded from './types/NotifyTeamsLimitExceeded'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
 import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
@@ -56,6 +57,7 @@ const rootTypes = [
   EstimatePhase,
   NotificationTeamInvitation,
   NotifyPromoteToOrgLeader,
+  NotifyTeamsLimitExceeded,
   ActionMeeting,
   ActionMeetingMember,
   PokerMeetingSettings,
