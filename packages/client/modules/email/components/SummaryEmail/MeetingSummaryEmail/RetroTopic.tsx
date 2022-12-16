@@ -55,7 +55,7 @@ const topicTitleStyle = {
   padding: '8px 48px'
 }
 
-const subtitleStyle = {
+const explainationStyle = {
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontStyle: 'italic',
@@ -93,21 +93,22 @@ const RetroTopic = (props: Props) => {
           reflections {
             ...EmailReflectionCard_reflection
           }
-          summary
+          topicSummary: summary
           team {
             tier
           }
         }
         discussion {
           commentCount
+          discussionSummary: summary
         }
       }
     `,
     stageRef
   )
   const {reflectionGroup, discussion} = stage
-  const {commentCount} = discussion
-  const {reflections, title, voteCount, summary, team} = reflectionGroup!
+  const {commentCount, discussionSummary} = discussion
+  const {reflections, title, voteCount, topicSummary, team} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -129,24 +130,36 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {summary && (
+      {(topicSummary || discussionSummary) && (
         <tr>
           <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            <tr>
-              <td style={topicTitleStyle}>{'Topic Summary:'}</td>
-            </tr>
             {team?.tier === 'personal' && (
+              <tr>
+                <td
+                  style={explainationStyle}
+                >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+              </tr>
+            )}
+            {topicSummary && (
               <>
                 <tr>
-                  <td
-                    style={subtitleStyle}
-                  >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
+                  <td style={topicTitleStyle}>{'Topic Summary:'}</td>
+                </tr>
+                <tr>
+                  <td style={textStyle}>{topicSummary}</td>
                 </tr>
               </>
             )}
-            <tr>
-              <td style={textStyle}>{summary}</td>
-            </tr>
+            {discussionSummary && (
+              <>
+                <tr>
+                  <td style={topicTitleStyle}>{'Discussion Summary:'}</td>
+                </tr>
+                <tr>
+                  <td style={textStyle}>{discussionSummary}</td>
+                </tr>
+              </>
+            )}
           </td>
         </tr>
       )}

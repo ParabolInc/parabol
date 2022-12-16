@@ -6,7 +6,9 @@ const getDiscussionThreadConn = (
 ) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer) return null
-  const discussion = viewer.getLinkedRecord('discussion', {id: discussionId})
+  const discussion =
+    viewer.getLinkedRecord('discussion', {id: discussionId}) ??
+    (discussionId && store.get(discussionId))
   if (!discussion) return null
   return ConnectionHandler.getConnection(discussion, 'DiscussionThread_thread')
 }
