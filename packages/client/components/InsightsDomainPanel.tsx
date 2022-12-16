@@ -211,7 +211,8 @@ const InsightsDomainPanel = (props: Props) => {
     const {id: orgId} = toBeLockedOrg
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'usageStats',
-      orgId
+      orgId,
+      upgradeTier: 'pro'
     })
     history.push(`/me/organizations/${orgId}/billing`)
   }
