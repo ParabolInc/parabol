@@ -83,6 +83,7 @@ const StyledLink = styled('span')({
   color: PALETTE.SKY_500,
   cursor: 'pointer',
   outline: 0,
+  fontWeight: 600,
   ':hover, :focus, :active': {
     color: PALETTE.SKY_600
   }
@@ -222,7 +223,8 @@ const NewTeamForm = (props: Props) => {
           />
           {disableFields && (
             <WarningMsg>
-              {`${lockedSelectedOrg.name} has reached the limit of `}
+              <BoldText>{lockedSelectedOrg.name}</BoldText>
+              {` has reached the limit of `}
               <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams.`} </BoldText>
               <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
               {' to create more teams.'}
