@@ -16,6 +16,7 @@ import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {TeamsLimit} from '../../../../types/constEnums'
 import linkify from '../../../../utils/linkify'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
@@ -52,6 +53,10 @@ const FormHeading = styled(DashHeaderTitle)({
 
 const FormInner = styled('div')({
   padding: '2rem'
+})
+
+const BoldText = styled('span')({
+  fontWeight: 600
 })
 
 export const NewTeamFieldBlock = styled('div')({
@@ -135,7 +140,6 @@ const NewTeamForm = (props: Props) => {
   const updateOrgId = (orgId: string) => {
     setOrgId(orgId)
   }
-  console.log('🚀 ~ orgId', orgId)
 
   const handleIsNewOrgChange = (e: ChangeEvent<HTMLInputElement>) => {
     const isNewOrg = e.target.value === 'true'
@@ -218,7 +222,8 @@ const NewTeamForm = (props: Props) => {
           />
           {disableFields && (
             <WarningMsg>
-              {`${lockedSelectedOrg.name} has reached the limit of X teams. `}
+              {`${lockedSelectedOrg.name} has reached the limit of `}
+              <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams.`} </BoldText>
               <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
               {' to create more teams.'}
             </WarningMsg>
