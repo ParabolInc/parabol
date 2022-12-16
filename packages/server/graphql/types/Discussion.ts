@@ -6,6 +6,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {AGENDA_ITEMS, DISCUSS} from 'parabol-client/utils/constants'
+import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
+import DiscussPhase from '../../database/types/DiscussPhase'
+import EstimatePhase from '../../database/types/EstimatePhase'
+import GenericMeetingStage from '../../database/types/GenericMeetingStage'
+import TeamPromptResponsesPhase from '../../database/types/TeamPromptResponsesPhase'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
@@ -41,6 +47,61 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(DiscussionTopicTypeEnum),
       description:
         'The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue'
+    },
+    stageId: {
+      type: GraphQLID,
+      description: 'The ID of the stage that the discussion is located',
+      resolve: async (
+        {meetingId, discussionTopicId, discussionTopicType},
+        _args: unknown,
+        {dataLoader}
+      ) => {
+        let stage: GenericMeetingStage | null | undefined = null
+        switch (discussionTopicType) {
+          case 'agendaItem': {
+            const meeting = await dataLoader.get('newMeetings').load(meetingId)
+            const {phases} = meeting
+            const phase = phases.find(
+              (phase) => phase.phaseType === AGENDA_ITEMS
+            )! as AgendaItemsPhase
+            const {stages} = phase
+            stage = stages.find((stage) => stage.agendaItemId === discussionTopicId)
+            break
+          }
+          case 'teamPromptResponse': {
+            const meeting = await dataLoader.get('newMeetings').load(meetingId)
+            const {phases} = meeting
+            const phase = phases.find(
+              (phase) => phase.phaseType === 'RESPONSES'
+            )! as TeamPromptResponsesPhase
+            const {stages} = phase
+            stage = stages.find((stage) => stage.teamMemberId === discussionTopicId)
+            break
+          }
+          case 'reflectionGroup': {
+            const meeting = await dataLoader.get('newMeetings').load(meetingId)
+            const {phases} = meeting
+            const phase = phases.find((phase) => phase.phaseType === DISCUSS)! as DiscussPhase
+            const {stages} = phase
+            stage = stages.find((stage) => stage.reflectionGroupId === discussionTopicId)
+            break
+          }
+          case 'task': {
+            const meeting = await dataLoader.get('newMeetings').load(meetingId)
+            const {phases} = meeting
+            const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+            const {stages} = phase
+            stage = stages.find((stage) => stage.taskId === discussionTopicId)
+            break
+          }
+        }
+
+        if (stage) {
+          return stage.id
+        }
+
+        return null
+      }
     },
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),

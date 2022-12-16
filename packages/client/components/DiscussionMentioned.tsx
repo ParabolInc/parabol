@@ -7,6 +7,7 @@ import NotificationAction from '~/components/NotificationAction'
 import useEditorState from '../hooks/useEditorState'
 import useRouter from '../hooks/useRouter'
 import {cardShadow} from '../styles/elevation'
+import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -37,21 +38,31 @@ const DiscussionMentioned = (props: Props) => {
         meeting {
           id
           name
+          facilitatorStageId
+          ...fromStageIdToUrl_meeting
         }
         comment {
           content
+        }
+        discussion {
+          stageId
         }
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
-  const {meeting, author, comment} = notification
+  const {meeting, author, comment, discussion} = notification
   const {picture: authorPicture, preferredName: authorName} = author
+  const {stageId} = discussion
+  const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
 
-  const {id: meetingId, name: meetingName} = meeting
+  const directUrl = stageId
+    ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
+    : `/meet/${meetingId}`
+
   const goThere = () => {
-    history.push(`/meet/${meetingId}`)
+    history.push(directUrl)
   }
 
   const [editorState] = useEditorState(comment.content)

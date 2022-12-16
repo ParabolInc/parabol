@@ -32,6 +32,7 @@ const fromStageIdToUrl = (
   const meeting = readInlineData(
     graphql`
       fragment fromStageIdToUrl_meeting on NewMeeting @inline {
+        id
         phases {
           phaseType
           stages {
@@ -42,17 +43,16 @@ const fromStageIdToUrl = (
     `,
     meetingRef
   )
-  const {phases} = meeting
+  const {phases, id: meetingId} = meeting
   const stageRes = findStageById(phases, stageId) || findStageById(phases, fallbackStageId)
   if (!stageRes) return '/'
   const {phase, stageIdx} = stageRes
   const {phaseType} = phase
   const phaseSlug = phaseTypeToSlug[phaseType]
-  const {meetingId} = getMeetingPathParams()
-  if (!meetingId) return '/'
+  const {meetingId: maybeDemoMeetingId} = getMeetingPathParams()
   const isPhaseMultiStage = phaseIsMultiStage[phaseType]
   const maybeStage = isPhaseMultiStage ? `/${stageIdx + 1}` : ''
-  if (meetingId === RetroDemo.MEETING_ID) {
+  if (maybeDemoMeetingId === RetroDemo.MEETING_ID) {
     return `/retrospective-demo/${phaseSlug}${maybeStage}`
   }
   return `/meet/${meetingId}/${phaseSlug}${maybeStage}`

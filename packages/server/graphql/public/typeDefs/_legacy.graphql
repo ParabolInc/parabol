@@ -3416,6 +3416,11 @@ type Discussion {
     """
     after: String
   ): ThreadableConnection!
+
+  """
+  The id of the stage where the discussion is
+  """
+  stageId: ID
 }
 
 """
