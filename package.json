@@ -97,6 +97,7 @@
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
     "nx": "14.7.5",
+    "postcss-loader": "^7.0.2",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
     "raw-loader": "^4.0.2",

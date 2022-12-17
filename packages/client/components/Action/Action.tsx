@@ -43,6 +43,7 @@ const Action = memo(() => {
     <>
       <Global styles={GlobalCSS} />
       <ErrorBoundary>
+        <div className='text-xl font-bold underline'>Hello world!</div>
         <Snackbar />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <AnalyticsPage />
