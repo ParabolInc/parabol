@@ -19,8 +19,8 @@ const resolveSelectedTemplate =
       dataLoader.get('meetingTemplates').load(selectedTemplateId)
     ])
     const {tier} = team
-    const hasFeatureFlag = viewer.featureFlags.includes('templateLimit')
     const {isFree, scope} = template
+    const hasFeatureFlag = viewer.featureFlags.includes('templateLimit')
     if (template && (hasFeatureFlag ? isFree || scope !== 'PUBLIC' || tier !== 'personal' : true)) {
       return template
     }
