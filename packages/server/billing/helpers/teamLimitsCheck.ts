@@ -146,11 +146,8 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   const billingLeaders = await getBillingLeaders(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
-  // Enable usage stats
   if (organization.activeDomain) {
     await enableUsageStats(billingLeadersIds, orgId)
-
-    // Send push notification
     await sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader)
   }
 }
