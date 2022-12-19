@@ -41,7 +41,7 @@ export default {
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
-      if (!(await isUserInOrg(viewerId, orgId))) {
+      if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 

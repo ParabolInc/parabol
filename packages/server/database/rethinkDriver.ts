@@ -20,6 +20,7 @@ import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationPaymentRejected from './types/NotificationPaymentRejected'
 import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
+import NotificationResponseMentioned from './types/NotificationResponseMentioned'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
@@ -111,6 +112,7 @@ export type RethinkSchema = {
       | NotificationKickedOut
       | NotificationPromoteToBillingLeader
       | NotificationTeamInvitation
+      | NotificationResponseMentioned
     index: 'userId'
   }
   Organization: {

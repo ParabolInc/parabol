@@ -53,6 +53,16 @@ const draftStyles = `
   }
 `
 
+const daypickerStyles = `
+.rdp {
+  --rdp-cell-size: 36px;
+  --rdp-accent-color: ${PALETTE.GRAPE_500};
+  --rdp-background-color: ${PALETTE.GRAPE_500_30};
+  --rdp-accent-color-dark: ${PALETTE.GRAPE_500};
+  --rdp-background-color-dark: ${PALETTE.GRAPE_500_30};
+  margin: 8px;
+}
+`
 export default `
   * {
     box-sizing: border-box;
@@ -155,4 +165,6 @@ export default `
   ${placeholderStyles}
 
   ${fontFaceDefinitions}
+
+  ${daypickerStyles}
 `

@@ -1,5 +1,6 @@
 import getRethink from './rethinkDriver'
 import rMapIf from './rMapIf'
+import {NewMeetingPhaseTypeEnum} from './types/GenericMeetingPhase'
 
 // this is a uesful function for updating a stage inside a meeting object
 // it is superior to mutating the `phases` object in JS and then pushing the whole object
@@ -8,7 +9,7 @@ import rMapIf from './rMapIf'
 const updateStage = async (
   meetingId: string,
   stageId: string,
-  phaseType: string,
+  phaseType: NewMeetingPhaseTypeEnum,
   updater: (stage: any) => any
 ) => {
   const r = await getRethink()

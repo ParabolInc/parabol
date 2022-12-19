@@ -123,6 +123,11 @@ type Organization {
   updatedAt: DateTime
 
   """
+  The OrganizationUser of the viewer
+  """
+  viewerOrganizationUser: OrganizationUser
+
+  """
   The users that are apart of the organization
   """
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
@@ -141,6 +146,11 @@ type Organization {
   Minimal details about all teams in the organization
   """
   teamStats: [TeamStat!]!
+
+  """
+  Any super power given to the organization via a super user
+  """
+  featureFlags: OrganizationFeatureFlags!
 }
 
 type MeetingStat {
@@ -152,4 +162,11 @@ type MeetingStat {
 type TeamStat {
   id: ID!
   createdAt: DateTime!
+}
+
+"""
+The types of flags that give an individual organization super powers
+"""
+type OrganizationFeatureFlags {
+  teamsLimit: Boolean!
 }
