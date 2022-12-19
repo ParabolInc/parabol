@@ -104,7 +104,7 @@ const MeetingLockedOverlay = (props: Props) => {
   useEffect(() => {
     if (locked) {
       SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
-        source: 'Direct Meeting Link',
+        upgradeCTALocation: 'directMeetingLinkLock',
         upgradeTier: 'pro',
         meetingId
       })
@@ -124,8 +124,8 @@ const MeetingLockedOverlay = (props: Props) => {
   }, [locked])
 
   const onClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade Intent', {
-      source: 'Direct Meeting Link Upgrade CTA',
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'directMeetingLinkLock',
       upgradeTier: 'pro',
       meetingId
     })
