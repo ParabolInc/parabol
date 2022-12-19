@@ -32,9 +32,10 @@ reviewers:
 files:
   '**/migrations/**':
     - data
+  '**/analytics/**':
+    - data
 options:
   ignore_draft: true
   ignored_keywords:
     - WIP
   number_of_reviewers: 1
-
