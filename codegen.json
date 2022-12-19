@@ -10,6 +10,7 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
+          "AddFeatureFlagToOrgSuccess": "./types/AddFeatureFlagToOrgSuccess#AddFeatureFlagToOrgSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
@@ -37,6 +38,7 @@
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
+          "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
@@ -51,6 +53,7 @@
           "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
           "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyResponseMentioned": "../../database/types/NotificationResponseMentioned#default as NotificationResponseMentionedDB",
+          "NotifyResponseReplied": "../../database/types/NotifyResponseReplied#default as NotifyResponseRepliedDB",
           "Organization": "../../database/types/Organization#default as Organization",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",

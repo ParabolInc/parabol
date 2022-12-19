@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
@@ -150,6 +151,7 @@ export default {
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
     finishRetroMeeting(completedRetrospective, teamId, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
+    checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventRetroComplete({

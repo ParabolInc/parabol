@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.86.0 2022-December-14
+
+### Fixed
+
+- **DayPicker**: Bumped daypicker to v8, fixing broken icons (#7521)
+- **DraftJS**: PRevent virtual keyboard hiding after submitting comment (#7423)
+- **Demo**: Canonical link (#7516)
+- **Standups**: Update discussion preview when discussion isn't open (#7558)
+- **Archive Team**: Deleting team prevents reuse of deleted team's name (#7397)
+
+### Added
+
+- **AI-Summary**: Add topic summary to discussion thread (#7545)
+- **Notifications**: Make notification publishing generic (#7540)
+- **Jira**: Add logging for some error cases (#7561)
+- **AI-Summary**: Whole meeting Summary (#7543)
+- **AI-Summary**: Discussion summary in meeting summary (#7534)
+- **AI-Summary**: Topic summary in meeting summary (#7494)
+- **PG**: Added SSL Support (#7175)
+- **Metrics**: Enable send_page_view on ReactGA initialization (#7551)
+- **Standups**: Auto-open response discussion based on query param (#7546)
+- **Metrics**: Always include email in traits for identify calls (#7523)
+- **Recurrence**: Added standups time left indicator (#7538)
+
+### Changed
+
+- **Chore**: Limit direct access to locked meetings (#7532)
+- **Chore**: Limit meeting history on timeline (#7511)
+
 ## 6.85.0 2022-December-07
 
 ### Added

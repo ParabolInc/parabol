@@ -1,0 +1,11 @@
+{
+  "name": "ip-to-server_id",
+  "version": "1.0.0",
+  "description": "Getting the last 10 bits of a given IP and return the decimal number",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Parabol",
+  "license": "ISC"
+}
