@@ -8,7 +8,7 @@ interface Input {
   discussionId: string
 }
 
-export default class NotificationResponseReplied extends Notification {
+export default class NotificationDiscussionMentioned extends Notification {
   meetingId: string
   authorId: string
   commentId: string

@@ -10,10 +10,8 @@ import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
-import {
-  default as NotificationDiscussionMentioned,
-  default as NotificationResponseReplied
-} from '../../database/types/NotificationDiscussionMentioned'
+import NotificationDiscussionMentioned from '../../database/types/NotificationDiscussionMentioned'
+import NotificationResponseReplied from '../../database/types/NotificationResponseReplied'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -84,8 +82,7 @@ const addComment = {
           userId: responseUserId,
           meetingId: meetingId,
           authorId: viewerId,
-          commentId,
-          discussionId
+          commentId
         })
 
         await r.table('Notification').insert(notification).run()
