@@ -28,13 +28,10 @@ const generateDiscussionSummary = async (
   const summary = await manager.getSummary(contentToSummarize)
   if (!summary) return
   await updateDiscussions({summary}, discussionId)
-  // when we end the meeting, we don't wait for the OpenAI response as we want to see the meeting summary immediately
-  // so, if the meeting has ended, publish to the subscription so that the client can update the summary
+  // when we end the meeting, we don't wait for the OpenAI response as we want to see the meeting summary immediately, so publish the subscription
   if (endedAt) {
-    // viewer's client has already received the mutation response. If the mutatorId is the socketId,
-    // the viewer won't see an update. Make the mutatorId an empty string so the viewer receives the subscription: https://github.com/ParabolInc/parabol/blob/88a801d80d0c51c38b6c9722dfa80fbca8f7bebd/packages/server/graphql/ResponseStream.ts#L26
     const operationId = dataLoader.share()
-    const subOptions = {mutatorId: '', operationId}
+    const subOptions = {mutatorId: null, operationId}
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
   }

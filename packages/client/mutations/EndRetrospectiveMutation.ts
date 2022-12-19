@@ -55,16 +55,7 @@ graphql`
 graphql`
   fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
     meeting {
-      summary
-      phases {
-        ... on DiscussPhase {
-          stages {
-            discussion {
-              summary
-            }
-          }
-        }
-      }
+      ...WholeMeetingSummary_meeting
     }
   }
 `
