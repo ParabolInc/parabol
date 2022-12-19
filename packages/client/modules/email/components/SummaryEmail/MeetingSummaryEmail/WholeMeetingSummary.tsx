@@ -50,8 +50,7 @@ const WholeMeetingSummary = (props: Props) => {
   )
   const {summary, team} = meeting
   if (!summary) return null
-  const explainerText =
-    team?.tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   return (
     <>
       <tr>
