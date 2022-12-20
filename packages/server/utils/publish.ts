@@ -1,7 +1,7 @@
 import getPubSub from './getPubSub'
 
 export interface SubOptions {
-  mutatorId?: string
+  mutatorId?: string // passing the socket id of the mutator will omit sending a message to that user
   operationId?: string | null
 }
 

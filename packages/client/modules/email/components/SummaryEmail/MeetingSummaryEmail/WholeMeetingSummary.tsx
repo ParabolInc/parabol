@@ -4,6 +4,7 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import Ellipsis from '../../../../../components/Ellipsis/Ellipsis'
 import {AIExplainer} from '../../../../../types/constEnums'
 import EmailBorderBottom from './EmailBorderBottom'
 
@@ -41,6 +42,19 @@ const WholeMeetingSummary = (props: Props) => {
     graphql`
       fragment WholeMeetingSummary_meeting on RetrospectiveMeeting {
         summary
+        reflectionGroups(sortBy: voteCount) {
+          summary
+        }
+        phases {
+          phaseType
+          ... on DiscussPhase {
+            stages {
+              discussion {
+                summary
+              }
+            }
+          }
+        }
         team {
           tier
         }
@@ -48,9 +62,38 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  const {summary, team} = meeting
-  if (!summary) return null
+  const {summary: wholeMeetingSummary, team, reflectionGroups, phases} = meeting
+  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
+  const {stages} = discussPhase ?? {}
   const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+  const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
+  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+  if (!hasOpenAISummary) return null
+  if (hasOpenAISummary && !wholeMeetingSummary) {
+    return (
+      <tr
+        style={{
+          borderBottom: `1px solid ${PALETTE.SLATE_400}`
+        }}
+      >
+        <td
+          align='center'
+          style={{
+            padding: '20px 0px',
+            borderBottom: `1px solid ${PALETTE.SLATE_400}`
+          }}
+        >
+          <tr>
+            <td style={explainerStyle}>
+              {'Hold tight! Our AI 🤖 is generating your meeting summary'}
+              <Ellipsis />
+            </td>
+          </tr>
+        </td>
+      </tr>
+    )
+  }
   return (
     <>
       <tr>
@@ -64,7 +107,7 @@ const WholeMeetingSummary = (props: Props) => {
             </td>
           </tr>
           <tr>
-            <td style={textStyle}>{summary}</td>
+            <td style={textStyle}>{wholeMeetingSummary}</td>
           </tr>
         </td>
       </tr>

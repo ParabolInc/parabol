@@ -8745,7 +8745,7 @@ type DowngradeToStarterPayload {
   error: StandardMutationError
 
   """
-  The new Personal Org
+  The new Starter Org
   """
   organization: Organization
 
