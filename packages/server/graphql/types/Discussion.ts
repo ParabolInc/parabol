@@ -61,32 +61,48 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
         const {phases, teamId} = meeting
         switch (discussionTopicType) {
           case 'agendaItem': {
-            const phase = phases.find(
-              (phase) => phase.phaseType === AGENDA_ITEMS
-            )! as AgendaItemsPhase
+            const phase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS) as
+              | AgendaItemsPhase
+              | undefined
+            if (!phase) {
+              return null
+            }
             const {stages} = phase
             const dbStage = stages.find((stage) => stage.agendaItemId === discussionTopicId)
 
             return dbStage ? augmentDBStage(dbStage, meetingId, AGENDA_ITEMS, teamId) : null
           }
           case 'teamPromptResponse': {
-            const phase = phases.find(
-              (phase) => phase.phaseType === 'RESPONSES'
-            )! as TeamPromptResponsesPhase
+            const phase = phases.find((phase) => phase.phaseType === 'RESPONSES') as
+              | TeamPromptResponsesPhase
+              | undefined
+            if (!phase) {
+              return null
+            }
             const {stages} = phase
             const dbStage = stages.find((stage) => stage.teamMemberId === discussionTopicId)
 
             return dbStage ? augmentDBStage(dbStage, meetingId, 'RESPONSES', teamId) : null
           }
           case 'reflectionGroup': {
-            const phase = phases.find((phase) => phase.phaseType === DISCUSS)! as DiscussPhase
+            const phase = phases.find((phase) => phase.phaseType === DISCUSS) as
+              | DiscussPhase
+              | undefined
+            if (!phase) {
+              return null
+            }
             const {stages} = phase
             const dbStage = stages.find((stage) => stage.reflectionGroupId === discussionTopicId)
 
             return dbStage ? augmentDBStage(dbStage, meetingId, DISCUSS, teamId) : null
           }
           case 'task': {
-            const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+            const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as
+              | EstimatePhase
+              | undefined
+            if (!phase) {
+              return null
+            }
             const {stages} = phase
             const dbStage = stages.find((stage) => stage.taskId === discussionTopicId)
 
