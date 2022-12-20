@@ -31,7 +31,7 @@ const generateDiscussionSummary = async (
   // when we end the meeting, we don't wait for the OpenAI response as we want to see the meeting summary immediately, so publish the subscription
   if (endedAt) {
     const operationId = dataLoader.share()
-    const subOptions = {mutatorId: null, operationId}
+    const subOptions = {operationId}
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
   }
