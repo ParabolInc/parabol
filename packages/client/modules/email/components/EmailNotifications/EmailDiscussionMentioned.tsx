@@ -75,11 +75,15 @@ const EmailDiscussionMentioned = (props: Props) => {
     ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
     : `/meet/${meetingId}`
 
+  const searchParams = response?.id
+    ? {
+        ...notificationSummaryUrlParams,
+        responseId: response?.id
+      }
+    : notificationSummaryUrlParams
+
   const linkUrl = makeAppURL(appOrigin, directUrl, {
-    searchParams: {
-      ...notificationSummaryUrlParams,
-      responseId: response?.id
-    }
+    searchParams
   })
 
   const contentState = useMemo(() => convertFromRaw(JSON.parse(comment.content)), [comment.content])
