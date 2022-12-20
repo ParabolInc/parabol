@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useMemo} from 'react'
-import {useFragment} from 'react-relay'
+import React, {Suspense, useEffect, useMemo} from 'react'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition from '~/hooks/useTransition'
@@ -14,6 +15,7 @@ import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
@@ -71,7 +73,10 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
         ...TeamPromptMeetingStatus_meeting
+        ...MeetingLockedOverlay_meeting
+        id
         isRightDrawerOpen
+        endedAt
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -81,6 +86,7 @@ const TeamPromptMeeting = (props: Props) => {
                 userId
               }
               response {
+                id
                 plaintextContent
                 createdAt
               }
@@ -126,7 +132,26 @@ const TeamPromptMeeting = (props: Props) => {
   }, [phase])
   const transitioningStages = useTransition(stages)
   const {safeRoute, isDesktop} = useMeeting(meeting)
-  const {isRightDrawerOpen} = meeting
+  const history = useHistory()
+  const {isRightDrawerOpen, id: meetingId} = meeting
+  useEffect(() => {
+    const params = new URLSearchParams(history.location.search)
+    if (!params.get('responseId')) {
+      return
+    }
+
+    const stage = stages.find((stage) => stage.response?.id === params.get('responseId'))
+    if (!stage) {
+      return
+    }
+
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(stage.id, 'localStageId')
+      meetingProxy.setValue(true, 'isRightDrawerOpen')
+    })
+  }, [])
   if (!safeRoute) return null
 
   return (
@@ -168,6 +193,7 @@ const TeamPromptMeeting = (props: Props) => {
           </MeetingContent>
         </Suspense>
       </MeetingArea>
+      <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )
 }

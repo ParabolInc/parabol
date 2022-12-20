@@ -6,6 +6,7 @@ import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDim
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import sendToSentry from '../../../utils/sendToSentry'
 import {MutationResolvers} from '../resolverTypes'
 
 const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
@@ -23,7 +24,24 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
   const manager = new AtlassianServerManager(accessToken)
   const fields = await manager.getFields(cloudId)
   if (fields instanceof Error || fields instanceof RateLimitError) return null
-  const selectedField = fields.find((field) => field.name === fieldName)
+  const matchingFields = fields.filter((field) => field.name === fieldName)
+  if (matchingFields.length > 1) {
+    const {userId, teamId} = auth
+    sendToSentry(
+      new Error(
+        'Jira updateJiraDimensionField found multiple matching field ids for the given dimension field name'
+      ),
+      {
+        tags: {
+          userId,
+          teamId,
+          fieldName,
+          fieldIds: JSON.stringify(matchingFields.map(({id}) => id))
+        }
+      }
+    )
+  }
+  const selectedField = matchingFields[0]
   if (!selectedField) return null
   const {id: fieldId, schema} = selectedField
   return {fieldId, type: schema.type as 'string' | 'number'}

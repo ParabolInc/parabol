@@ -6,8 +6,8 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   insights: ({insights}) => !!insights,
   recurrence: ({recurrence}) => !!recurrence,
   templateLimit: ({templateLimit}) => !!templateLimit,
-  teamsLimit: ({teamsLimit}) => !!teamsLimit,
-  aiSummary: ({aiSummary}) => !!aiSummary
+  aiSummary: ({aiSummary}) => !!aiSummary,
+  meetingHistoryLimit: ({meetingHistoryLimit}) => !!meetingHistoryLimit
 }
 
 export default UserFeatureFlags

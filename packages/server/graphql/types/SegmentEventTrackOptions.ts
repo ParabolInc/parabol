@@ -8,6 +8,7 @@ import {
 } from 'graphql'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import NotificationEnum from './NotificationEnum'
 import SharingScopeEnum from './SharingScopeEnum'
 import TaskServiceEnum from './TaskServiceEnum'
 import TierEnum from './TierEnum'
@@ -40,7 +41,10 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     upgradeCTALocation: {type: UpgradeCTALocationEnum},
     scope: {type: SharingScopeEnum},
     templateName: {type: GraphQLString},
-    isFree: {type: GraphQLBoolean}
+    isFree: {type: GraphQLBoolean},
+    source: {type: GraphQLString},
+    upgradeTier: {type: TierEnum},
+    notificationType: {type: NotificationEnum}
   })
 })
 

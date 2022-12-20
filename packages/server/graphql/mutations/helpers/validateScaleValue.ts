@@ -7,7 +7,10 @@ const validateColorValue = (color: string) => {
 }
 
 const validateScaleLabel = (label: string) => {
-  return 0 < label.length && label.length <= 2
+  // label.length gives us the count of UTF-16 units, so 🔥 has a length of 2
+  // Spreading the string into an array gives us the desired length in codepoints (characters): https://stackoverflow.com/a/54369605
+  const labelArr = [...label]
+  return 0 < labelArr.length && labelArr.length <= 2
 }
 
 const validateScaleLabelValueUniqueness = (scaleValues: TemplateScaleValue[]) => {

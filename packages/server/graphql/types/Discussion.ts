@@ -80,6 +80,10 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       ) => {
         return resolveThreadableConnection(discussionId, {dataLoader})
       }
+    },
+    summary: {
+      type: GraphQLString,
+      description: `The GPT-3 generated summary of the discussion. Undefined if the user doesnt have access to the feature or the stage isn't completed`
     }
   })
 })

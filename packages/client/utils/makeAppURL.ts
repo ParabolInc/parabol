@@ -4,6 +4,7 @@ interface Options {
     utm_medium: string
     utm_campaign: string
     openNotifs?: string
+    responseId?: string
   }
 }
 
