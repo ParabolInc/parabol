@@ -25,8 +25,11 @@ const mapResponseMentionedToToast = (
   if (!notification) return null
   const {meeting, response} = notification
   const {preferredName: authorName} = response.user
-
   const {id: meetingId, name: meetingName} = meeting
+
+  // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
+  // thread, and do nothing if we are.
+
   return {
     key: `responseMentioned:${response.id}`,
     autoDismiss: 10,

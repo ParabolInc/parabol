@@ -28,6 +28,9 @@ const mapResponseRepliedToToast = (
   const {preferredName: authorName} = author
   const {id: meetingId, name: meetingName} = meeting
 
+  // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
+  // thread, and do nothing if we are.
+
   return {
     key: `responseReplied:${response.id}:${author.id}`,
     autoDismiss: 10,
