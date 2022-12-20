@@ -7791,19 +7791,19 @@ A count of the number of account tiers a user belongs to.
 """
 type UserTiersCount {
   """
-  The number of personal orgs the user is active upon
+  The number of starter orgs the user is active upon
   """
-  tierPersonalCount: Int
+  tierStarterCount: Int
 
   """
-  The number of pro orgs the user is active upon
+  The number of team orgs the user is active upon
   """
-  tierProCount: Int
+  tierTeamCount: Int
 
   """
   The number of pro orgs the user holds the role of Billing Leader
   """
-  tierProBillingLeaderCount: Int
+  tierTeamBillingLeaderCount: Int
   user: User
 }
 
