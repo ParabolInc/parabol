@@ -48,13 +48,13 @@ const EmojiMenuTipTap = (props: Props) => {
         },
         onKeyDown: (e) => {
           // Disables EmojiMenu's `keepParentFocus` once user navigates into menu items.
-          if((e.event.key === 'ArrowDown' || e.event.key === 'ArrowUp') && menuRef.current){
+          if ((e.event.key === 'ArrowDown' || e.event.key === 'ArrowUp') && menuRef.current) {
             setMenuIsFocused(true)
             menuRef.current.handleMenuFocus?.()
             menuRef.current.handleKeyDown(e.event as any)
           }
           return false
-        },
+        }
       })
     }) as any
 

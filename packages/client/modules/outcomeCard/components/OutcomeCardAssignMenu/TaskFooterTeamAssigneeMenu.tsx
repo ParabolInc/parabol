@@ -170,7 +170,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     onQueryChange
   } = useSearchFilter(assignableTeams, (team) => team.name)
 
-  const showSearch =assignableTeams.length > 5
+  const showSearch = assignableTeams.length > 5
 
   return (
     <Menu
