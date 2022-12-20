@@ -10030,7 +10030,7 @@ type UpgradeToTeamTierPayload {
   error: StandardMutationError
 
   """
-  The new Pro Org
+  The new Team Org
   """
   organization: Organization
 

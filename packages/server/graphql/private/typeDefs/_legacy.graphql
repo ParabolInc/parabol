@@ -86,7 +86,7 @@ type Query {
     """
     which tier of org shall we count?
     """
-    tier: TierEnum = pro
+    tier: TierEnum = team
   ): Int
 
   """

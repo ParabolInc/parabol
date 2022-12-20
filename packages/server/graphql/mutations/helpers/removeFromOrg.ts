@@ -61,7 +61,7 @@ const removeFromOrg = async (
   if (role === 'BILLING_LEADER') {
     const organization = await r.table('Organization').get(orgId).run()
     // if no other billing leader, promote the oldest
-    // if pro tier & no other member, downgrade to personal
+    // if team tier & no other member, downgrade to starter
     const otherBillingLeaders = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
