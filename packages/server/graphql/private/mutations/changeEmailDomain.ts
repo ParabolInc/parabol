@@ -12,11 +12,11 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   const normalizedNewDomain = newDomain.toLowerCase().trim()
   const normalizedOldDomain = oldDomain.toLowerCase().trim()
   if (normalizedOldDomain === normalizedNewDomain) {
-    throw new Error('New domain is the same as the old one')
+    return {error: {message: 'New domain is the same as the old one'}}
   }
 
   if (normalizedOldDomain.includes('@') || normalizedNewDomain.includes('@')) {
-    throw new Error('Domains should include everything after the @')
+    return {error: {message: 'Domains should include everything after the @'}}
   }
 
   const [oldDomainUsers, newDomainUsers] = await Promise.all([
@@ -25,7 +25,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   ])
 
   if (!oldDomainUsers.length) {
-    throw new Error(`No users found with oldDomain: ${oldDomain}`)
+    return {error: {message: `No users found with oldDomain: ${oldDomain}`}}
   }
 
   const newDomainUserEmails = newDomainUsers.map(({email}) => email)

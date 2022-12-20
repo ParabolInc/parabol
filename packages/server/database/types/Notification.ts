@@ -7,9 +7,11 @@ export type NotificationEnum =
   | 'PAYMENT_REJECTED'
   | 'PROMOTE_TO_BILLING_LEADER'
   | 'RESPONSE_MENTIONED'
+  | 'RESPONSE_REPLIED'
   | 'TASK_INVOLVES'
   | 'TEAM_ARCHIVED'
   | 'TEAM_INVITATION'
+  | 'TEAMS_LIMIT_EXCEEDED'
 export interface NotificationInput {
   type: NotificationEnum
   userId: string

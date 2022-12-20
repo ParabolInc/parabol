@@ -157,3 +157,4 @@ export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
 
 export const REACT_ELEMENT = Symbol.for('react.element')
+export const PARABOL_AI_USER_ID = 'parabolAIUser'

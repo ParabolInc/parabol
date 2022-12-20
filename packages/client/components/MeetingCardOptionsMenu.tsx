@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Close as CloseIcon, PersonAdd as PersonAddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -12,12 +13,10 @@ import EndRetrospectiveMutation from '../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import {MeetingTypeEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuItemLabelStyle} from './MenuItemLabel'
@@ -28,9 +27,13 @@ interface Props {
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
 }
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
+  height: 24,
+  width: 24,
+  svg: {
+    fontSize: 24
+  },
   marginRight: 8
 })
 
@@ -91,7 +94,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
         key='copy'
         label={
           <OptionMenuItem>
-            <StyledIcon>person_add</StyledIcon>
+            <StyledIcon>
+              <PersonAddIcon />
+            </StyledIcon>
             <span>{'Copy invite link'}</span>
           </OptionMenuItem>
         }
@@ -112,7 +117,9 @@ const MeetingCardOptionsMenu = (props: Props) => {
           key='close'
           label={
             <OptionMenuItem>
-              <StyledIcon>close</StyledIcon>
+              <StyledIcon>
+                <CloseIcon />
+              </StyledIcon>
               <span>{'End the meeting'}</span>
             </OptionMenuItem>
           }

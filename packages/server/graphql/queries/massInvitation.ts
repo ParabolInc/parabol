@@ -31,6 +31,7 @@ export default {
         // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
         return {errorType: InvitationTokenError.NOT_FOUND}
       }
+
       return {
         errorType: error,
         inviterName: teamMember.preferredName,

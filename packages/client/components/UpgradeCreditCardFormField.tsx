@@ -1,6 +1,7 @@
+import {CreditCard, DateRange, Lock} from '@mui/icons-material'
 import React from 'react'
-import UpgradeCreditCardFormFieldIcon from "./UpgradeCreditCardFormFieldIcon";
-import UpgradeCreditCardFormFieldBlock from "./UpgradeCreditCardFormFieldBlock";
+import UpgradeCreditCardFormFieldBlock from './UpgradeCreditCardFormFieldBlock'
+import UpgradeCreditCardFormFieldIcon from './UpgradeCreditCardFormFieldIcon'
 
 interface Props {
   autoComplete: string
@@ -8,6 +9,7 @@ interface Props {
   className?: string
   error: string | undefined
   dirty: boolean
+  //FIXME 6062: change to React.ComponentType
   iconName: string
   maxLength: number
   onBlur?: (e: React.FocusEvent) => void
@@ -42,7 +44,15 @@ const UpgradeCreditCardFormField = (props: Props) => {
   const hasError = dirty && !!error
   return (
     <UpgradeCreditCardFormFieldBlock className={className} hasError={hasError}>
-      <UpgradeCreditCardFormFieldIcon hasError={hasError}>{iconName}</UpgradeCreditCardFormFieldIcon>
+      <UpgradeCreditCardFormFieldIcon hasError={hasError}>
+        {
+          {
+            credit_card: <CreditCard />,
+            date_range: <DateRange />,
+            lock: <Lock />
+          }[iconName]
+        }
+      </UpgradeCreditCardFormFieldIcon>
       <input
         autoComplete={autoComplete}
         autoFocus={autoFocus}

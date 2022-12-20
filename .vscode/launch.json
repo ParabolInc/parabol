@@ -38,10 +38,7 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Executor",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["debug:executor"],
-      "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
+      "program": "scripts/runExecutor.js",
     },
     {
       "type": "node",

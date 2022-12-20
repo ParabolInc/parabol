@@ -1042,6 +1042,11 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  Is this locked for starter plans?
+  """
+  locked: Boolean!
 }
 
 """
@@ -3248,7 +3253,7 @@ type ReflectTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -3611,6 +3616,12 @@ type Organization {
   The datetime the organization was last updated
   """
   updatedAt: DateTime
+
+  """
+  The OrganizationUser of the viewer
+  """
+  viewerOrganizationUser: OrganizationUser
+
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
 
   """
@@ -4562,6 +4573,7 @@ enum NotificationEnum {
   TEAM_ARCHIVED
   TASK_INVOLVES
   MEETING_STAGE_TIME_LIMIT_END
+  TEAMS_LIMIT_EXCEEDED
 }
 
 """
@@ -5145,7 +5157,7 @@ type PokerTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -5212,7 +5224,7 @@ interface MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 }
 

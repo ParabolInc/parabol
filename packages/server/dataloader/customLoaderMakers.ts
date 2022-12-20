@@ -371,6 +371,7 @@ export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
       return Promise.all(
         keys.map((key) => {
           const {userId, orgId} = key
+          if (!userId || !orgId) return null
           return r
             .table('OrganizationUser')
             .getAll(userId, {index: 'userId'})
@@ -526,6 +527,7 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
             .table('NewMeeting')
             .getAll(key, {index: 'meetingSeriesId'})
             .filter({endedAt: null}, {default: true})
+            .orderBy(r.asc('createdAt'))
             .run()
         })
       )

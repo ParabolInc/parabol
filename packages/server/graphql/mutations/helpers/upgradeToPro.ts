@@ -46,6 +46,9 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
           creditCard: await getCCFromCustomer(customer),
           tier: 'pro',
           stripeId: customer.id,
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
           updatedAt: now
         })
     }).run(),

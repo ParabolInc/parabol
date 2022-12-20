@@ -3,6 +3,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import util from 'util'
+import {EMAIL_CORS_OPTIONS} from '../../../client/types/cors'
 import {isNotNull} from '../../../client/utils/predicates'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
@@ -155,7 +156,8 @@ export default {
             inviterName: inviter.preferredName,
             inviterEmail: inviter.email,
             teamName,
-            meeting: bestMeeting
+            meeting: bestMeeting,
+            corsOptions: EMAIL_CORS_OPTIONS
           })
           return getMailManager().sendEmail({
             to: invitation.email,

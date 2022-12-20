@@ -80,7 +80,7 @@ const RetroTopics = (props: Props) => {
                 key={stage.id}
                 isDemo={isDemo}
                 isEmail={isEmail}
-                stage={stage}
+                stageRef={stage}
                 to={topicUrl}
               />
             )

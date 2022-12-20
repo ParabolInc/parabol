@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {AccessTime} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React from 'react'
@@ -8,12 +9,10 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {DueDateToggle_task} from '../__generated__/DueDateToggle_task.graphql'
 import CardButton from './CardButton'
-import Icon from './Icon'
 
 interface StyleProps {
   cardIsActive: boolean
@@ -87,8 +86,12 @@ const Toggle = styled(CardButton)<StyleProps>(
     }
 )
 
-const DueDateIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
+const DueDateIcon = styled('div')({
+  svg: {
+    fontSize: 18
+  },
+  height: 18,
+  width: 18
 })
 
 const DateString = styled('span')({
@@ -160,7 +163,7 @@ const DueDateToggle = (props: Props) => {
             onMouseLeave={closeTooltip}
             ref={tipRef}
           >
-            access_time
+            <AccessTime />
           </DueDateIcon>
           {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
         </Toggle>

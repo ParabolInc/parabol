@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
+import {VerifiedUser as VerifiedUserIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
-import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
@@ -116,7 +116,7 @@ const StandardHub = (props: Props) => {
       </User>
       {tier === 'personal' ? (
         <Upgrade onClick={handleUpgradeClick}>
-          <Icon>verified_user</Icon>
+          <VerifiedUserIcon />
           <UpgradeCTA>
             {'Upgrade to '}
             <b>{TierLabel.PRO}</b>

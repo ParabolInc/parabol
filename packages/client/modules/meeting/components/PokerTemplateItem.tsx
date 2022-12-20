@@ -1,15 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import React, {useEffect, useRef} from 'react'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {PokerTemplateItem_template} from '../../../__generated__/PokerTemplateItem_template.graphql'
+import {PokerTemplateItem_template$key} from '../../../__generated__/PokerTemplateItem_template.graphql'
+import {PokerTemplateItem_viewer$key} from '../../../__generated__/PokerTemplateItem_viewer.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
@@ -52,14 +54,38 @@ const TemplateItemAction = styled('div')({})
 interface Props {
   isActive: boolean
   teamId: string
-  template: PokerTemplateItem_template
+  templateRef: PokerTemplateItem_template$key
+  viewerRef?: PokerTemplateItem_viewer$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
 }
 
 const PokerTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, template} = props
-  const {id: templateId, name: templateName} = template
-  const description = makeTemplateDescription(lowestScope, template)
+  const {lowestScope, isActive, teamId, templateRef, viewerRef} = props
+  const template = useFragment(
+    graphql`
+      fragment PokerTemplateItem_template on PokerTemplate {
+        #get the details here so we can show them in the details view
+        ...PokerTemplateDetailsTemplate
+        ...makeTemplateDescription_template
+        id
+        name
+        lastUsedAt
+        scope
+        isFree
+      }
+    `,
+    templateRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment PokerTemplateItem_viewer on User {
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef ?? null
+  )
+  const {id: templateId, name: templateName, scope, isFree} = template
+  const description = makeTemplateDescription(lowestScope, template, viewer ?? undefined)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)
@@ -70,6 +96,15 @@ const PokerTemplateItem = (props: Props) => {
       store.get(teamId)?.setValue(null, 'editingScaleId')
     })
   }
+  useEffect(() => {
+    if (!isActive) return
+    SendClientSegmentEventMutation(atmosphere, 'Viewed Template', {
+      meetingType: 'poker',
+      scope,
+      templateName,
+      isFree
+    })
+  }, [isActive])
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>
       <TemplateItemDetails>
@@ -81,16 +116,4 @@ const PokerTemplateItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerTemplateItem, {
-  template: graphql`
-    fragment PokerTemplateItem_template on PokerTemplate {
-      #get the details here so we can show them in the details view
-      ...PokerTemplateDetailsTemplate
-      ...makeTemplateDescription_template
-      id
-      name
-      lastUsedAt
-      scope
-    }
-  `
-})
+export default PokerTemplateItem

@@ -25,6 +25,11 @@ In other words, migration 3 should have a guarantee that migration 2 has already
 
 - [Queries](./queries/README.md)
 
+### SSL
+
+1. Pick a directory on the local filesystem to store the keys. Store the absolute path in the env var `POSTGRES_SSL_DIR`
+2. Add `root.crt` (CA), `postgresql.key`, and `postgresql.crt` to that directory.
+
 ### Gotchas
 
 #### pgm vs. node-pg inside a migration
@@ -40,5 +45,5 @@ Moving forward, we will only use `pg.Client`
 
 Parameters are capped at 16-bit, so if you're doing a bulk insert, you'll need to break it up.
 In other words, if `# rows * columns per row > 65,535` you need to do it in batches.
-`pg-protocol` shows this here: https://github.com/brianc/node-postgres/blob/master/packages/pg-protocol/src/serializer.ts#L155
-Issue here: https://github.com/brianc/node-postgres/issues/581
+`pg-protocol` shows this here: <https://github.com/brianc/node-postgres/blob/master/packages/pg-protocol/src/serializer.ts#L155>
+Issue here: <https://github.com/brianc/node-postgres/issues/581>

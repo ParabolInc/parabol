@@ -1,4 +1,5 @@
 require('../../../scripts/webpack/utils/dotenv')
+const ssl = require('./getPgSSL')()
 
 const emitTemplateTarget = 'packages/server/postgres/queries/generated/{{name}}.ts'
 
@@ -23,8 +24,7 @@ const pgtypedConfig = {
     password: process.env.POSTGRES_PASSWORD,
     host: process.env.POSTGRES_HOST,
     port: Number(process.env.POSTGRES_PORT),
-    ssl: process.env.PGSSLMODE === 'require' ? true : false
+    ssl: ssl ?? undefined
   }
 }
-
 module.exports = pgtypedConfig

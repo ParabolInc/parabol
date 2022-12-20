@@ -8,6 +8,7 @@ import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.gr
 import React, {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
+import {CorsOptions} from '../../../../types/cors'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
@@ -17,6 +18,7 @@ interface Props extends WithMutationProps {
   urlAction?: 'csv' | undefined
   emailCSVUrl: string
   referrer: MeetingSummaryReferrer
+  corsOptions: CorsOptions
 }
 
 const query = graphql`
@@ -348,17 +350,17 @@ const ExportToCSV = (props: Props) => {
     document.body.removeChild(link)
   }
 
-  const {emailCSVUrl, referrer} = props
+  const {emailCSVUrl, referrer, corsOptions} = props
   return (
     <>
       <tr>
         <td align='center' style={iconLinkLabel} width='100%'>
           <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
             <img
-              crossOrigin=''
               alt={label}
               src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
               style={imageStyle}
+              {...corsOptions}
             />
             <span style={labelStyle}>{label}</span>
           </AnchorIfEmail>

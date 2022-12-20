@@ -536,6 +536,11 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  Is this locked for starter plans?
+  """
+  locked: Boolean!
 }
 
 """
@@ -2439,7 +2444,7 @@ type ReflectTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -3557,6 +3562,8 @@ enum NotificationEnum {
   TASK_INVOLVES
   MEETING_STAGE_TIME_LIMIT_END
   RESPONSE_MENTIONED
+  RESPONSE_REPLIED
+  TEAMS_LIMIT_EXCEEDED
 }
 
 """
@@ -4140,7 +4147,7 @@ type PokerTemplate implements MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 
   """
@@ -4207,7 +4214,7 @@ interface MeetingTemplate {
   """
   The type of the template
   """
-  type: String!
+  type: MeetingTypeEnum!
   updatedAt: DateTime!
 }
 
@@ -7540,7 +7547,6 @@ type Mutation {
     disables anonymity of reflections
     """
     disableAnonymity: Boolean
-
   ): SetMeetingSettingsPayload!
 
   """
