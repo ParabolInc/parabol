@@ -70,7 +70,7 @@ const finishRetroMeeting = async (
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
   const operationId = dataLoader.share()
-  const subOptions = {mutatorId: null, operationId}
+  const subOptions = {operationId}
   publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
 }
 

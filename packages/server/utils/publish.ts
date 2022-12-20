@@ -1,7 +1,7 @@
 import getPubSub from './getPubSub'
 
 export interface SubOptions {
-  mutatorId: string | null // if the viewer's client has received a mutation response from the server, but a subsequent update happens in the mutation, update the client by publishing a subscription. To do this, set mutatorId to null/undefined: https://github.com/ParabolInc/parabol/blob/88a801d80d0c51c38b6c9722dfa80fbca8f7bebd/packages/server/graphql/ResponseStream.ts#L26
+  mutatorId?: string // passing the socket id of the mutator will omit sending a message to that user
   operationId?: string | null
 }
 
@@ -12,7 +12,7 @@ const publish = <T>(
   channel: string,
   type: string,
   payload: {[key: string]: any},
-  subOptions: SubOptions = {mutatorId: null}
+  subOptions: SubOptions = {}
 ) => {
   const subName = `${topic}Subscription`
   const data = {...payload, type}

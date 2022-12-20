@@ -9,13 +9,7 @@ const blacklistJWT = async (userId: string, iat: number, mutatorId?: string) => 
   const redis = getRedis()
   const expiresIn = iat - toEpochSeconds(new Date()) + Math.floor(Threshold.JWT_LIFESPAN / 1000)
   await redis.set(key, iat, 'EX', expiresIn)
-  publish(
-    SubscriptionChannel.NOTIFICATION,
-    userId,
-    'InvalidateSessionsPayload',
-    {},
-    {mutatorId: mutatorId ?? null}
-  )
+  publish(SubscriptionChannel.NOTIFICATION, userId, 'InvalidateSessionsPayload', {}, {mutatorId})
 }
 
 export default blacklistJWT
