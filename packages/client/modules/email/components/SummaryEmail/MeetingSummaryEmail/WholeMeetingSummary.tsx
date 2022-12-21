@@ -40,28 +40,32 @@ const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment WholeMeetingSummary_meeting on RetrospectiveMeeting {
-        summary
-        reflectionGroups(sortBy: voteCount) {
+      fragment WholeMeetingSummary_meeting on NewMeeting {
+        ... on RetrospectiveMeeting {
+          __typename
           summary
-        }
-        phases {
-          phaseType
-          ... on DiscussPhase {
-            stages {
-              discussion {
-                summary
+          reflectionGroups(sortBy: voteCount) {
+            summary
+          }
+          phases {
+            phaseType
+            ... on DiscussPhase {
+              stages {
+                discussion {
+                  summary
+                }
               }
             }
           }
-        }
-        team {
-          tier
+          team {
+            tier
+          }
         }
       }
     `,
     meetingRef
   )
+  if (meeting.__typename !== 'RetrospectiveMeeting') return null
   const {summary: wholeMeetingSummary, team, reflectionGroups, phases} = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
   const {stages} = discussPhase ?? {}
