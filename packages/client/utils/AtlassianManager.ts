@@ -756,8 +756,6 @@ export default abstract class AtlassianManager {
       if (project instanceof RateLimitError || project instanceof Error) {
         throw project
       }
-      // TODO Logging for #7560
-      console.log('Jira updateStoryPoints Error', res.message)
 
       if (project.simplified) {
         if (timeTrackingFieldName) {
