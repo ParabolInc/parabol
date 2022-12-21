@@ -63,7 +63,7 @@ const BillingLeaderActionMenu = (props: Props) => {
         {viewerId !== userId && (
           <MenuItem
             label={
-              tier === 'pro' && new Date(newUserUntil) > new Date()
+              tier === 'team' && new Date(newUserUntil) > new Date()
                 ? 'Refund and Remove'
                 : 'Remove from Organization'
             }

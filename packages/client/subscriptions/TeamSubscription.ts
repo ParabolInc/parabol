@@ -83,7 +83,7 @@ const subscription = graphql`
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpdateUserProfileMutation_team @relay(mask: false)
-      ...UpgradeToProMutation_team @relay(mask: false)
+      ...UpgradeToTeamTierMutation_team @relay(mask: false)
       ...UpdateIntegrationProviderMutation_team @relay(mask: false)
       ...AddIntegrationProviderMutation_team @relay(mask: false)
     }

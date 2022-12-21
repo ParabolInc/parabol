@@ -6,7 +6,6 @@ import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {TierLabel} from '../types/constEnums'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -57,7 +56,7 @@ const StandardHubUserMenu = (props: Props) => {
   )
   const {email, featureFlags, organizations} = viewer
   const {insights} = featureFlags
-  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'personal')
+  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'starter')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 
@@ -104,10 +103,7 @@ const StandardHubUserMenu = (props: Props) => {
               <UpgradeIcon>
                 <Star />
               </UpgradeIcon>
-              <UpgradeCTA>
-                {'Upgrade to '}
-                <b>{TierLabel.PRO}</b>
-              </UpgradeCTA>
+              <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
             </MenuItemLink>
           }
         />

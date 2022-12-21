@@ -12,27 +12,27 @@ const countTiersForUserId = async (userId: string) => {
     .getAll(userId, {index: 'userId'})
     .filter({inactive: false, removedAt: null})
     .merge((organizationUser: RValue) => ({
-      tier: r.table('Organization').get(organizationUser('orgId'))('tier').default('personal')
+      tier: r.table('Organization').get(organizationUser('orgId'))('tier').default('starter')
     }))
     .run()) as OrganizationUser[]
-  const tierPersonalCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === 'personal'
+  const tierStarterCount = organizationUsers.filter(
+    (organizationUser) => organizationUser.tier === 'starter'
   ).length
-  const tierProCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === 'pro'
+  const tierTeamCount = organizationUsers.filter(
+    (organizationUser) => organizationUser.tier === 'team'
   ).length
   const tierEnterpriseCount = organizationUsers.filter(
     (organizationUser) => organizationUser.tier === 'enterprise'
   ).length
-  const tierProBillingLeaderCount = organizationUsers.filter(
+  const tierTeamBillingLeaderCount = organizationUsers.filter(
     (organizationUser) =>
-      organizationUser.tier === 'pro' && organizationUser.role === 'BILLING_LEADER'
+      organizationUser.tier === 'team' && organizationUser.role === 'BILLING_LEADER'
   ).length
   return {
-    tierPersonalCount,
-    tierProCount,
+    tierStarterCount,
+    tierTeamCount,
     tierEnterpriseCount,
-    tierProBillingLeaderCount
+    tierTeamBillingLeaderCount
   }
 }
 

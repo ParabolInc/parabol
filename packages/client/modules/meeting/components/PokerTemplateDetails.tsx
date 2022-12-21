@@ -112,7 +112,7 @@ const PokerTemplateDetails = (props: Props) => {
     ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
-  const showClone = !isOwner && (templateLimitFlag ? tier !== 'personal' : true)
+  const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
   return (
     <DimensionEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>

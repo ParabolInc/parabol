@@ -97,7 +97,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
-    if (tier === 'personal' && featureFlags.templateLimit) {
+    if (tier === 'starter' && featureFlags.templateLimit) {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'orgTemplate',
@@ -107,7 +107,7 @@ const ReflectTemplateListOrg = (props: Props) => {
       }
       return (
         <Message>
-          <StyledLink onClick={goToBilling}>Upgrade to Pro </StyledLink>
+          <StyledLink onClick={goToBilling}>Upgrade </StyledLink>
           <span>to create custom templates for your organization</span>
         </Message>
       )

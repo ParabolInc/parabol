@@ -70,7 +70,7 @@ const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] 
 
   const organizations = (await r
     .table('Organization')
-    .getAll('pro', {index: 'tier'})
+    .getAll('team', {index: 'tier'})
     .filter((organization) =>
       r.and(
         organization('periodEnd').le(periodEndThresh).default(false),

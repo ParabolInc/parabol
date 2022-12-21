@@ -33,7 +33,7 @@ const NewTeamOrgDropdown = (props: Props) => {
             label={
               <DropdownMenuItemLabel>
                 <span>{name}</span>
-                {tier !== 'personal' && <TierTag tier={tier} />}
+                {tier !== 'starter' && <TierTag tier={tier} />}
               </DropdownMenuItemLabel>
             }
             onClick={() => {

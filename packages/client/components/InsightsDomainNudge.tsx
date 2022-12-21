@@ -84,30 +84,30 @@ const InsightsDomainNudge = (props: Props) => {
   const atmosphere = useAtmosphere()
   const history = useHistory()
   const {id: domainId, suggestedTier, tier, viewerOrganizations} = domain
-  const personalOrganizations = viewerOrganizations
-    .filter((org) => org.tier === 'personal')
+  const starterOrganizations = viewerOrganizations
+    .filter((org) => org.tier === 'starter')
     .sort((a, b) => (a.orgUserCount > b.orgUserCount ? -1 : 1))
-  const [biggestOrganization] = personalOrganizations
+  const [biggestOrganization] = starterOrganizations
   const organizationName = biggestOrganization?.name ?? ''
-  const suggestPro = suggestedTier === 'pro' && tier === 'personal'
+  const suggestTeam = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
   const toBeLockedOrg = viewerOrganizations.find(({scheduledLockAt}) => scheduledLockAt)
-  const showNudge = suggestPro || suggestEnterprise || toBeLockedOrg
-  const CTACopy = suggestPro || toBeLockedOrg ? `Upgrade ${organizationName}` : 'Contact Us'
-  const CTAType = suggestPro ? 'pro' : 'enterprise'
+  const showNudge = suggestTeam || suggestEnterprise || toBeLockedOrg
+  const CTACopy = suggestTeam || toBeLockedOrg ? `Upgrade ${organizationName}` : 'Contact Us'
+  const CTAType = suggestTeam ? 'team' : 'enterprise'
   const onClickCTA = () => {
     const event = toBeLockedOrg ? 'Upgrade CTA Clicked' : 'Clicked Domain Stats CTA'
     const variables = toBeLockedOrg
       ? ({
           upgradeCTALocation: 'usageStats',
           orgId: biggestOrganization?.id,
-          upgradeTier: 'pro'
+          upgradeTier: 'team'
         } as const)
       : ({CTAType, domainId} as const)
     SendClientSegmentEventMutation(atmosphere, event, variables)
     if (toBeLockedOrg) {
       history.push(`/me/organizations/${biggestOrganization?.id}/billing`)
-    } else if (suggestPro) {
+    } else if (suggestTeam) {
       togglePortal()
     } else if (suggestEnterprise) {
       window.open('mailto:love@parabol.co?subject=Increase Usage Limits')
