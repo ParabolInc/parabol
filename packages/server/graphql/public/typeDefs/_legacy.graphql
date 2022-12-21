@@ -7023,7 +7023,7 @@ type Mutation {
   ): DismissSuggestedActionPayload!
 
   """
-  Downgrade a paid account to the personal service
+  Downgrade a paid account to the starter plan service
   """
   downgradeToStarter(
     """
