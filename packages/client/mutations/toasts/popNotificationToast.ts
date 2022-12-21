@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
-import {ValueOf} from '../../types/generics'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {
   NotificationEnum,
@@ -10,21 +9,12 @@ import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 
-const typePicker = {
-  KICKED_OUT: null,
-  PAYMENT_REJECTED: null,
-  TASK_INVOLVES: null,
-  PROMOTE_TO_BILLING_LEADER: null,
-  TEAMS_LIMIT_EXCEEDED: null,
-  TEAM_ARCHIVED: null,
-  TEAM_INVITATION: null,
-  MEETING_STAGE_TIME_LIMIT_END: null,
+const typePicker: Partial<
+  Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
+> = {
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast
-} as Record<
-  NotificationEnum,
-  ((notification: any, context: OnNextHistoryContext) => Snack | null) | null
->
+}
 
 graphql`
   fragment popNotificationToast_notification on AddedNotification {
@@ -43,7 +33,7 @@ export const popNotificationToastOnNext: OnNextHandler<
 > = (payload, {atmosphere, history}) => {
   const {addedNotification} = payload
   const {type} = addedNotification
-  const specificNotificationToastMapper = typePicker[type] as ValueOf<typeof typePicker>
+  const specificNotificationToastMapper = typePicker[type]
   if (!specificNotificationToastMapper) {
     return
   }
