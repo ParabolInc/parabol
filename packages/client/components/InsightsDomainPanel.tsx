@@ -3,20 +3,14 @@ import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
-import useRouter from '../hooks/useRouter'
 import useTooltip from '../hooks/useTooltip'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
-import {fadeIn} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, TeamsLimit} from '../types/constEnums'
-import relativeDate from '../utils/date/relativeDate'
+import {Breakpoint} from '../types/constEnums'
 import plural from '../utils/plural'
 import {InsightsDomainPanel_domain$key} from '../__generated__/InsightsDomainPanel_domain.graphql'
-import FloatingActionButton from './FloatingActionButton'
 import InsightsDomainNudge from './InsightsDomainNudge'
 import Panel from './Panel/Panel'
 
@@ -37,51 +31,11 @@ const DomainName = styled('div')({
   padding: 16
 })
 
-const ExceededLimit = styled('div')({
-  fontSize: 32,
-  fontWeight: 600,
-  lineHeight: '48px',
-  padding: 16,
-  borderTop: `1px solid ${PALETTE.SLATE_400}`
-})
-
-const WarningMsg = styled('div')({
-  background: PALETTE.GOLD_100,
-  padding: '16px',
-  fontSize: 16,
-  borderRadius: 2,
-  lineHeight: '26px',
-  fontWeight: 500
-})
-
-const BoldText = styled('span')({
-  fontWeight: 600
-})
-
 const StatBlocks = styled('div')({
   display: 'flex',
   borderTop: `1px solid ${PALETTE.SLATE_400}`,
   width: '100%',
   flexWrap: 'wrap'
-})
-
-const ButtonBlock = styled('div')({
-  animation: `${fadeIn} 200ms ${BezierCurve.DECELERATE}`,
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-start',
-  pointerEvents: 'none',
-  width: '100%',
-  zIndex: 1,
-  height: '100%',
-  marginTop: 16
-})
-
-const Button = styled(FloatingActionButton)({
-  border: 0,
-  fontSize: 16,
-  padding: '10px 40px',
-  pointerEvents: 'all'
 })
 
 const StatBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -160,11 +114,6 @@ const InsightsDomainPanel = (props: Props) => {
         meetingCount
         suggestedTier
         tier
-        organizations {
-          id
-          name
-          scheduledLockAt
-        }
       }
     `,
     domainRef
@@ -198,23 +147,9 @@ const InsightsDomainPanel = (props: Props) => {
     activeOrganizationCount,
     activeTeamCount,
     activeUserCount,
-    meetingCount,
-    organizations
+    meetingCount
   } = domain
-  const toBeLockedOrg = organizations.find((org) => org.scheduledLockAt)
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
-  const atmosphere = useAtmosphere()
-  const {history} = useRouter()
-
-  const handleClick = () => {
-    if (!toBeLockedOrg) return
-    const {id: orgId} = toBeLockedOrg
-    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'usageStats',
-      orgId
-    })
-    history.push(`/me/organizations/${orgId}/billing`)
-  }
 
   return (
     <Wrapper>
@@ -271,22 +206,6 @@ const InsightsDomainPanel = (props: Props) => {
           </StatBlock>
         </StatBlocks>
         <InsightsDomainNudge domainRef={domain} />
-        {toBeLockedOrg?.scheduledLockAt && (
-          <ExceededLimit>
-            <WarningMsg>
-              <BoldText>{toBeLockedOrg.name}</BoldText>
-              {` is over the limit of `}
-              <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams. `}</BoldText>
-              {`Your free access will end in `}
-              <BoldText>{`${relativeDate(toBeLockedOrg.scheduledLockAt)}.`}</BoldText>
-            </WarningMsg>
-            <ButtonBlock>
-              <Button onClick={handleClick} palette='pink'>
-                {'Upgrade'}
-              </Button>
-            </ButtonBlock>
-          </ExceededLimit>
-        )}
       </StatsPanel>
     </Wrapper>
   )
