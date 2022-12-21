@@ -14,6 +14,9 @@ const Organization: OrganizationResolvers = {
   company: async ({activeDomain}, _args, {authToken}) => {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
+  },
+  featureFlags: ({featureFlags}) => {
+    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   }
 }
 

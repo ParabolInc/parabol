@@ -22,14 +22,12 @@ import OrganizationUserType from '../../database/types/OrganizationUser'
 import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
-import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
 import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
-import isPatientZero from '../mutations/helpers/isPatientZero'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
@@ -57,6 +55,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by us'
+    },
+    segmentId: {
+      type: GraphQLString,
+      description: 'The optional segmentId for the user'
     },
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
@@ -100,13 +102,15 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         return connectedSocketsCount > 0
       }
     },
+    isPatient0: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the user is the first to sign up from their domain, else false'
+    },
     isPatientZero: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is the first to sign up from their domain, else false',
-      resolve: async ({id: userId, email}: {id: string; email: string}) => {
-        const domain = getDomainFromEmail(email)
-        return isPatientZero(userId, domain)
-      }
+      deprecationReason: 'Use isPatient0 instead',
+      resolve: ({isPatient0}) => isPatient0
     },
     reasonRemoved: {
       type: GraphQLString,
@@ -406,7 +410,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       ) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
-          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'personal'
+          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'starter'
         )
         if (isAnyMemberOfPaidOrg) return null
         return overLimitCopy

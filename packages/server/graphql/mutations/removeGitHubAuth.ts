@@ -6,6 +6,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import RemoveGitHubAuthPayload from '../types/RemoveGitHubAuthPayload'
 export default {
   name: 'RemoveGitHubAuth',
@@ -33,6 +34,7 @@ export default {
 
     // RESOLUTION
     await removeGitHubAuthDB(viewerId, teamId)
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
 
     analytics.integrationRemoved(viewerId, teamId, 'github')
     const data = {teamId, userId: viewerId}

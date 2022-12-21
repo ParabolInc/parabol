@@ -98,6 +98,7 @@ export const createEditorExtensions = (
     openOnClick: isReadOnly
   }),
   Placeholder.configure({
+    showOnlyWhenEditable: false,
     placeholder
   }),
   Mention.extend({

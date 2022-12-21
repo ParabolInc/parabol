@@ -20,7 +20,7 @@ const getUsersToIgnore = async (viewerId: string, teamId: string) => {
   const commands = activeTeamMemberIds.map((id) => ['lrange', `presence:${id}`, '0', '-1'])
   await redis.multi(commands).exec((execErr, results) => {
     if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
-    results.forEach((result, index) => {
+    results?.forEach((result, index) => {
       const teamMemberUserPresence = result[1] as string[]
       const teamMemberLastSeenAtURLs = teamMemberUserPresence.map(
         (socket) => JSON.parse(socket).lastSeenAtURL

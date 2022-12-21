@@ -1,8 +1,8 @@
+import {Add as AddIcon, Close as CloseIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
-import Icon from '../../../../components/Icon'
 import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
@@ -64,7 +64,7 @@ const MattermostProviderRow = (props: Props) => {
         providerDescription={Providers.MATTERMOST_DESC}
         providerLogo={<MattermostProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
-        connectButtonIcon={!isConnectClicked ? <Icon>add</Icon> : <Icon>close</Icon>}
+        connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
       >
         {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

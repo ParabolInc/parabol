@@ -14,10 +14,10 @@ interface SubscribeOptions {
 }
 
 export default class GraphQLRedisPubSub {
-  publisher: Redis.Redis
-  subscriber: Redis.Redis
+  publisher: Redis
+  subscriber: Redis
   listenersByChannel: ListenersByChannel = {}
-  constructor(publisher: Redis.Redis, subscriber: Redis.Redis) {
+  constructor(publisher: Redis, subscriber: Redis) {
     this.publisher = publisher
     this.subscriber = subscriber
     this.subscriber.on('message', this.onMessage)

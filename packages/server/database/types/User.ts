@@ -91,6 +91,6 @@ export default class User {
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     this.segmentId = segmentId ?? undefined
     this.sendSummaryEmail = sendSummaryEmail ?? true
-    this.tier = tier ?? 'personal'
+    this.tier = tier ?? 'starter'
   }
 }

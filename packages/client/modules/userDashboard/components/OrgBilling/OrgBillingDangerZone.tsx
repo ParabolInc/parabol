@@ -1,17 +1,20 @@
 import styled from '@emotion/styled'
+import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 import {OrgBillingDangerZone_organization} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
-import Icon from '../../../../components/Icon'
 import Panel from '../../../../components/Panel/Panel'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Layout} from '../../../../types/constEnums'
 
-const EnvelopeIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
+const EnvelopeIcon = styled('div')({
+  height: 18,
+  width: 18,
+  svg: {
+    fontSize: 18
+  },
   marginLeft: 4
 })
 
@@ -47,21 +50,23 @@ const OrgBillingDangerZone = (props: Props) => {
   const {organization} = props
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
-  const isPersonal = tier === 'personal'
+  const isStarter = tier === 'starter'
   return (
     <Panel label='Danger Zone'>
       <PanelRow>
-        {isPersonal ? (
+        {isStarter ? (
           <ArchiveOrganization organization={organization} />
         ) : (
           <Unsubscribe>
             <span>{'Need to cancel? It’s painless. '}</span>
             <a
-              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
-              title='Instant Unsubscribe from Pro'
+              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Team Plan'
+              title='Instant Unsubscribe from Team Plan'
             >
               <u>{'Contact us'}</u>
-              <EnvelopeIcon>email</EnvelopeIcon>
+              <EnvelopeIcon>
+                <EmailIcon />
+              </EnvelopeIcon>
             </a>
           </Unsubscribe>
         )}

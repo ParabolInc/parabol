@@ -1,16 +1,21 @@
 import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import {IntegrationProviderServiceEnum} from 'parabol-client/__generated__/CreateTaskIntegrationMutation.graphql'
 
 type GitHubRepoIntegration = {
   nameWithOwner: string
   service: 'github'
 }
 
-type JiraRepoIntegration = {
+export type JiraRepoIntegration = {
   cloudId: string
-  projectKey: string
+  projectKey?: string
+  key?: string
   service: 'jira'
+}
+
+type GitLabRepoIntegration = {
+  service: 'gitlab'
+  fullPath: string
 }
 
 type AzureDevOpsRepoIntegration = {
@@ -21,38 +26,32 @@ type AzureDevOpsRepoIntegration = {
 
 type JiraServerRepoIntegration = {
   id: string
-  providerId: string
+  providerId: number
   key: string
   service: 'jiraServer'
 }
 
-export type RepoIntegration = {
-  id: string
-  providerId: string
-  service: Exclude<IntegrationProviderServiceEnum, 'jira' | 'jiraServer' | 'github' | 'azureDevOps'>
-}
+export type RepoIntegration =
+  | GitHubRepoIntegration
+  | JiraRepoIntegration
+  | JiraServerRepoIntegration
+  | AzureDevOpsRepoIntegration
+  | GitLabRepoIntegration
 
 const IntegrationRepoId = {
-  join: (
-    integration:
-      | GitHubRepoIntegration
-      | JiraRepoIntegration
-      | RepoIntegration
-      | JiraServerRepoIntegration
-      | AzureDevOpsRepoIntegration
-  ) => {
+  join: (integration: RepoIntegration) => {
     const {service} = integration
     switch (service) {
       case 'github':
         return integration.nameWithOwner
       case 'jira':
-        return JiraProjectId.join(integration.cloudId, integration.projectKey)
+        return JiraProjectId.join(integration.cloudId, integration.projectKey ?? integration.key!)
       case 'jiraServer':
         return `${integration.service}:${integration.providerId}:${integration.id}:${integration.key}`
       case 'azureDevOps':
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
-      default:
-        return `${integration.service}:${integration.providerId}:${integration.id}`
+      case 'gitlab':
+        return integration.fullPath
     }
   },
   split: (id: string) => {

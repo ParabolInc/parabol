@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import * as DOMPurify from 'dompurify'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import getSafeRegex from '~/utils/getSafeRegex'
@@ -17,11 +18,16 @@ const Span = styled('span')({
 
 const TypeAheadLabel = (props: Props) => {
   const {query, label, highlight} = props
-  const html = highlight ? `<mark style="background: ${PALETTE.SKY_300}">$&</mark>` : `<b>$&</b>`
+  const queryHtml = highlight
+    ? `<mark style="background: ${PALETTE.SKY_300}">$&</mark>`
+    : `<b>$&</b>`
+  const cleanInnerHtml = DOMPurify.sanitize(
+    query ? label.replace(getSafeRegex(query, 'gi'), queryHtml) : label
+  )
   return (
     <Span
       dangerouslySetInnerHTML={{
-        __html: query ? label.replace(getSafeRegex(query, 'gi'), html) : label
+        __html: cleanInnerHtml
       }}
     />
   )

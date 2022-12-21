@@ -1,8 +1,8 @@
+import {Add as AddIcon, Close as CloseIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {MSTeamsProviderRow_viewer$key} from '~/__generated__/MSTeamsProviderRow_viewer.graphql'
-import Icon from '../../../../components/Icon'
 import MSTeamsProviderLogo from '../../../../components/MSTeamsProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
@@ -63,7 +63,7 @@ const MSTeamsProviderRow = (props: Props) => {
         providerDescription={Providers.MSTEAMS_DESC}
         providerLogo={<MSTeamsProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
-        connectButtonIcon={!isConnectClicked ? <Icon>add</Icon> : <Icon>close</Icon>}
+        connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
       >
         {(auth || isConnectClicked) && <MSTeamsPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

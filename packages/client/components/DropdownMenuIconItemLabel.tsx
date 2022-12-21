@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {Business, Group, Public} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import Icon from './Icon'
 
 const Label = styled('span')({
   alignItems: 'center',
@@ -13,12 +13,15 @@ const Label = styled('span')({
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  paddingRight: 12
+  height: 24,
+  width: 24,
+  marginRight: 12
 })
 
 interface Props {
+  //FIXME 6062: change to React.ComponentType
   icon: string
   label: string
 }
@@ -27,7 +30,15 @@ const DropdownMenuIconItemLabel = (props: Props) => {
   const {icon, label} = props
   return (
     <Label>
-      <StyledIcon>{icon}</StyledIcon>
+      <StyledIcon>
+        {
+          {
+            group: <Group />,
+            business: <Business />,
+            public: <Public />
+          }[icon]
+        }
+      </StyledIcon>
       {label}
     </Label>
   )

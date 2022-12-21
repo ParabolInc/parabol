@@ -1,15 +1,18 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import {Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {useHistory} from 'react-router'
 import FloatingActionButton from '../../../components/FloatingActionButton'
-import Icon from '../../../components/Icon'
 import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
+import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {BezierCurve} from '../../../types/constEnums'
+import {TierEnum} from '../../../__generated__/ReflectTemplateListPublicQuery.graphql'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
 
 const fadein = keyframes`
@@ -38,7 +41,11 @@ const Button = styled(FloatingActionButton)({
   pointerEvents: 'all'
 })
 
-const StyledIcon = styled(Icon)({
+const UpgradeButton = styled(Button)({
+  padding: '10px 24px'
+})
+
+const StyledIcon = styled(Check)({
   marginRight: 4
 })
 
@@ -46,22 +53,43 @@ interface Props {
   closePortal: () => void
   template: SelectTemplate_template
   teamId: string
+  hasFeatureFlag?: boolean
+  tier?: TierEnum
+  orgId?: string
 }
 
 const SelectTemplate = (props: Props) => {
-  const {template, closePortal, teamId} = props
-  const {id: templateId} = template
+  const {template, closePortal, teamId, hasFeatureFlag, tier, orgId} = props
+  const {id: templateId, isFree, type, scope} = template
   const atmosphere = useAtmosphere()
+  const history = useHistory()
   const {submitting, error} = useMutationProps()
   const selectTemplate = () => {
     SelectTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
     closePortal()
   }
+  const goToBilling = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'publicTemplate',
+      meetingType: type
+    })
+    history.push(`/me/organizations/${orgId}`)
+  }
+  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'starter' && scope === 'PUBLIC'
+  if (showUpgradeCTA) {
+    return (
+      <ButtonBlock>
+        <UpgradeButton onClick={goToBilling} palette='pink' waiting={submitting}>
+          {'Upgrade Now'}
+        </UpgradeButton>
+      </ButtonBlock>
+    )
+  }
   return (
     <ButtonBlock>
       {error && <StyledError>{error.message}</StyledError>}
       <Button onClick={selectTemplate} palette='blue' waiting={submitting}>
-        <StyledIcon>check</StyledIcon>
+        <StyledIcon />
         {'Use Template'}
       </Button>
     </ButtonBlock>
@@ -73,6 +101,9 @@ export default createFragmentContainer(SelectTemplate, {
     fragment SelectTemplate_template on MeetingTemplate {
       id
       teamId
+      scope
+      isFree
+      type
     }
   `
 })

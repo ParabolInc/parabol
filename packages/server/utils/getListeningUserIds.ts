@@ -18,7 +18,7 @@ const getListeningUserIds = async (command: RedisCommand, tms: string[], userId:
     }
   })
   const membersOfAllTeams = [] as string[]
-  responses.forEach((res, index) => {
+  responses?.forEach((res, index) => {
     // responses include both add/remove userId command and smembers command
     // we only want to read smembers so check if index is odd
     if (index % 2 !== 0) {

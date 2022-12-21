@@ -41,7 +41,7 @@ export default {
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
-      if (!(await isUserInOrg(viewerId, orgId))) {
+      if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 
@@ -65,7 +65,7 @@ export default {
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
         const {tier}: {tier: TierEnum} = organization
-        if (tier === 'personal') {
+        if (tier === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }

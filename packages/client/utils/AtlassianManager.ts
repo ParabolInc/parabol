@@ -1,4 +1,3 @@
-import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../types/constEnums'
@@ -757,6 +756,8 @@ export default abstract class AtlassianManager {
       if (project instanceof RateLimitError || project instanceof Error) {
         throw project
       }
+      // TODO Logging for #7560
+      console.log('Jira updateStoryPoints Error', res.message)
 
       if (project.simplified) {
         if (timeTrackingFieldName) {

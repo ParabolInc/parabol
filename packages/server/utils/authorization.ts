@@ -57,15 +57,10 @@ export const isUserBillingLeader = async (
   return organizationUser ? organizationUser.role === 'BILLING_LEADER' : false
 }
 
-export const isUserInOrg = async (userId: string, orgId: string) => {
-  const r = await getRethink()
-  const organizationUser = await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .filter({orgId})
-    .filter({removedAt: null})
-    .nth(0)
-    .run()
+export const isUserInOrg = async (userId: string, orgId: string, dataLoader: DataLoaderWorker) => {
+  const organizationUser = await dataLoader
+    .get('organizationUsersByUserIdOrgId')
+    .load({userId, orgId})
   return !!organizationUser
 }
 

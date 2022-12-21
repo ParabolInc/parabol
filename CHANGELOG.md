@@ -5,6 +5,185 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.86.1 2022-December-19
+
+### Fixed
+
+- New meetings were locked with the history limit (#7599)
+- **Metrics**: change upgrade CTA events to standard definitions
+
+## 6.86.0 2022-December-14
+
+### Fixed
+
+- **DayPicker**: Bumped daypicker to v8, fixing broken icons (#7521)
+- **DraftJS**: PRevent virtual keyboard hiding after submitting comment (#7423)
+- **Demo**: Canonical link (#7516)
+- **Standups**: Update discussion preview when discussion isn't open (#7558)
+- **Archive Team**: Deleting team prevents reuse of deleted team's name (#7397)
+
+### Added
+
+- **AI-Summary**: Add topic summary to discussion thread (#7545)
+- **Notifications**: Make notification publishing generic (#7540)
+- **Jira**: Add logging for some error cases (#7561)
+- **AI-Summary**: Whole meeting Summary (#7543)
+- **AI-Summary**: Discussion summary in meeting summary (#7534)
+- **AI-Summary**: Topic summary in meeting summary (#7494)
+- **PG**: Added SSL Support (#7175)
+- **Metrics**: Enable send_page_view on ReactGA initialization (#7551)
+- **Standups**: Auto-open response discussion based on query param (#7546)
+- **Metrics**: Always include email in traits for identify calls (#7523)
+- **Recurrence**: Added standups time left indicator (#7538)
+
+### Changed
+
+- **Chore**: Limit direct access to locked meetings (#7532)
+- **Chore**: Limit meeting history on timeline (#7511)
+
+## 6.85.0 2022-December-07
+
+### Added
+
+- **lint**: add lintcheck and stylecheck (prettier) to github action (#7507)
+- **Sprint Poker**: Hitting up and down arrow keys cycles through poker cards (#7363)
+- **Retrospective**: add heard seen respected template (#7510)
+- **Metrics**: Enable Google Analytics client side page_view tracking (#7356)
+- **Notifications**: Remaining email notifications (#7527)
+- **Recurrence**: added human readable recurring meeting indicator (#7533)
+
+### Fixed
+
+- **Poker** number of stories in summary stats is one less than actual stories (#7241)
+- **Tasks**: There should be no scroll bar on tasks header (#7492)
+
+## 6.84.0 2022-November-30
+
+### Added
+
+- **Notifications**: Improved notifications email (#7447)
+- **AI summary**: Added AI summary feature flag (#7493)
+- **Template limits**: Updated selected template for free teams #7460
+- **Template limits**: Added additional template event tracking #7454
+- **Template limits**: Prevent cloning templates #7452
+- **Template limits**: Focus on newly created template #7442
+- **Template limits**: Added limit exceeded and locking flags #7441
+- **Template limits**: Implemented custom template upgrade feedback (#7427)
+- **Template limits**: Added teams limit feature flag #7440
+- **Template limits**: Implemented restriction on public templates #7405
+- **Template limits**: Updated team & org page with limit info (#7415)
+- **Metrics**: Removed HubSpot updates from the app #7382
+- Migrated OAuth2 redirect to Cloudflare #7446
+- Added "go to dashboard" and "sign in" button to "invitation link expired" screen #7153
+
+### Fixed
+
+- **DX** Run all yarn clean commands, even if one fails #7461
+
+### Changed
+
+- **Deps**: bump vm2 from 3.9.7 to 3.9.11 (#7233)
+- **Deps**: bump loader-utils from 1.4.0 to 1.4.2 (#7428)
+
+## 6.83.1 2022-November-23
+
+### Fixed
+
+- XSS vulnerability in meeting templates (#7491)
+
+## 6.83.0 2022-November-17
+
+### Fixed
+
+- Update tier when leaving org (#7377)
+- Added CorsOptions to email images (#7393)
+- Typo in Earth 2.0 check-in question
+- Send button is disabled in retro discussion on mobile (#7361)
+- Snackbar messages are not centered during standups #7203
+- Add delete confirmation button and waiting effect (#7403)
+- Snack on jira auth error (#7432)
+
+### Changed
+
+- Cleanup packages to support future bundled server build (#7400)
+
+## 6.82.0 2022-November-09
+
+### Added
+
+- **metrics**: disable Company properties update to HubSpot (#7366)
+- Implement setIsFreeMeetingTemplate mutation (#7346)
+- Add invoice explanation to comment (#7399)
+- Add template limit feature flag (#7391)
+
+### Fixed
+
+- Use MaterialUI SvgIcons instead of Font (#7154)
+- Header name should be more general (#7394)
+
+### Changed
+
+- CircleCI: split backup from deployment (#7389)
+
+## 6.81.0 2022-November-02
+
+### Added
+
+- **standups**: Added ended meeting view (#7327)
+- **timer picker**: add 10 minutes option (#7357)
+
+### Fixed
+
+- **Azure DevOps**: fix adding issues to Sprint Poker (#7365)
+- **Team**: leave team does not work until refresh (#7368)
+- use fallback values for PokerCardDeck (#7315)
+
+### Changed
+
+- add isFree to meeting template (#7345)
+- put isPatient0 on User row (#7325)
+- Remove @types/ioredis package (#7367)
+
+## 6.80.2 2022-November-01
+
+### Fixed
+
+- Release version mismatch
+
+## 6.80.1 2022-November-01
+
+### Fixed
+
+- **Jira**: issues sometimes are not loading in poker meeting
+
+## 6.80.0 2022-October-26
+
+### Added
+
+- End meeting from meetings view (#7313)
+
+### Fixed
+
+- **Metrics:** set disableAnonymity default to false in Meeting related events (#7320)
+- Removed the last-release-sha & unused yaml file (#7294)
+- Revert the release-please-config
+- Add noindex for ppmis (#7324)
+- Fix whitespace in links (#7326)
+- Add credit card formatting (#7303)
+- Filtering is still able to be done when only one state is available (#7295)
+- Avoid overriding custom group name with a single card (#7312)
+
+### Changed
+
+- Rename christmas template (#7323)
+- Speed up repo integrations query (#7234)
+
+## 6.79.1 2022-October-25
+
+### Fixed
+
+- EstimateStage was broken for Jira if the issue could not be fetched (#7337)
+
 ## 6.79.0 2022-October-21
 
 ### Added
@@ -34,23 +213,21 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Bug Fixes
 
-* add release PR for staging branch (if bugfix) ([47a7794](https://github.com/ParabolInc/parabol/commit/47a7794c014a5c0eff5d13fd96d290e6870e82fa))
-* update the release please name & trigger branch ([2c1587b](https://github.com/ParabolInc/parabol/commit/2c1587bf809f3c0e8be9c7c594a3b77e9d2e92a1))
+- add release PR for staging branch (if bugfix) ([47a7794](https://github.com/ParabolInc/parabol/commit/47a7794c014a5c0eff5d13fd96d290e6870e82fa))
+- update the release please name & trigger branch ([2c1587b](https://github.com/ParabolInc/parabol/commit/2c1587bf809f3c0e8be9c7c594a3b77e9d2e92a1))
 
 ## [6.78.0](https://github.com/ParabolInc/parabol/compare/v6.77.0...v6.78.0) (2022-10-12)
 
-
 ### Features
 
-* **metrics:** Send isPatient0 property to Google Analytics ([#7261](https://github.com/ParabolInc/parabol/issues/7261)) ([a046fe7](https://github.com/ParabolInc/parabol/commit/a046fe7d03581e3400f0f12790ceea848a2f0e73))
-
+- **metrics:** Send isPatient0 property to Google Analytics ([#7261](https://github.com/ParabolInc/parabol/issues/7261)) ([a046fe7](https://github.com/ParabolInc/parabol/commit/a046fe7d03581e3400f0f12790ceea848a2f0e73))
 
 ### Bug Fixes
 
-* **noImplicitAny:** Fixup 200 ts rules (Part 2 of 2) ([#7193](https://github.com/ParabolInc/parabol/issues/7193)) ([c5b7306](https://github.com/ParabolInc/parabol/commit/c5b73062d4935b14af6b0d332e4e74e864a83620))
-* other tabs break when accepting a team invitation via a link ([#7200](https://github.com/ParabolInc/parabol/issues/7200)) ([d51ca5a](https://github.com/ParabolInc/parabol/commit/d51ca5a1836756c284530e79f3ba17615e8cbf68))
-* participants follow facilitator ([#7269](https://github.com/ParabolInc/parabol/issues/7269)) ([1800d0f](https://github.com/ParabolInc/parabol/commit/1800d0f062d21cdc1d98dc59cda4ea190c2b4667))
-* unsubscribe analytics bug ([#7255](https://github.com/ParabolInc/parabol/issues/7255)) ([39e9d38](https://github.com/ParabolInc/parabol/commit/39e9d3805fdde52e608c8c82bead2016b07872ac))
+- **noImplicitAny:** Fixup 200 ts rules (Part 2 of 2) ([#7193](https://github.com/ParabolInc/parabol/issues/7193)) ([c5b7306](https://github.com/ParabolInc/parabol/commit/c5b73062d4935b14af6b0d332e4e74e864a83620))
+- other tabs break when accepting a team invitation via a link ([#7200](https://github.com/ParabolInc/parabol/issues/7200)) ([d51ca5a](https://github.com/ParabolInc/parabol/commit/d51ca5a1836756c284530e79f3ba17615e8cbf68))
+- participants follow facilitator ([#7269](https://github.com/ParabolInc/parabol/issues/7269)) ([1800d0f](https://github.com/ParabolInc/parabol/commit/1800d0f062d21cdc1d98dc59cda4ea190c2b4667))
+- unsubscribe analytics bug ([#7255](https://github.com/ParabolInc/parabol/issues/7255)) ([39e9d38](https://github.com/ParabolInc/parabol/commit/39e9d3805fdde52e608c8c82bead2016b07872ac))
 
 ## 6.77.0 2022-October-5
 

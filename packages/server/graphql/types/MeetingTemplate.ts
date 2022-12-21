@@ -7,6 +7,7 @@ import {
 } from 'graphql'
 import {GQLContext} from './../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import MeetingTypeEnum from './MeetingTypeEnum'
 import SharingScopeEnum from './SharingScopeEnum'
 import Team from './Team'
 
@@ -21,6 +22,12 @@ export const meetingTemplateFields = () => ({
   isActive: {
     type: new GraphQLNonNull(GraphQLBoolean),
     description: 'True if template can be used, else false'
+  },
+  isFree: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description:
+      'True if template is available to all teams including non-paying teams, else false',
+    resolve: ({isFree}: {isFree?: boolean}) => !!isFree
   },
   lastUsedAt: {
     type: GraphQLISO8601Type,
@@ -51,7 +58,7 @@ export const meetingTemplateFields = () => ({
     }
   },
   type: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(MeetingTypeEnum),
     description: 'The type of the template'
   },
   updatedAt: {

@@ -4,6 +4,7 @@ import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
+import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
@@ -149,6 +150,8 @@ export default {
         sendToSentry(addCommentResponse)
       }
     }
+
+    updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
 
     await r
       .table('Task')

@@ -29,7 +29,7 @@ const useActiveTopTemplate = (
         })
       }
     }, 300)
-  }, [isActive, selectedTemplateId])
+  }, [isActive, selectedTemplateId, edges])
 }
 
 export default useActiveTopTemplate

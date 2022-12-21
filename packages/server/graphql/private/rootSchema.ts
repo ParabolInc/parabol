@@ -9,9 +9,10 @@ const importAllStrings = (context: __WebpackModuleApi.RequireContext) => {
   return context.keys().map((id) => context(id).default)
 }
 const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql$/))
+const publicTypeDefs = importAllStrings(require.context('../public/typeDefs', false, /.graphql$/))
 
 const shieldedSchema = makeExecutableSchema({
-  typeDefs,
+  typeDefs: typeDefs.concat(publicTypeDefs),
   resolvers: composeResolvers(resolvers, permissions)
 })
 const privateSchema = resolveTypesForMutationPayloads(shieldedSchema)

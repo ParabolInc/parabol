@@ -28,6 +28,8 @@ const selectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
+    const user = await dataLoader.get('users').loadNonNull(viewerId)
+    const {featureFlags} = user
 
     // AUTH
     const template = (await dataLoader
@@ -39,17 +41,21 @@ const selectTemplate = {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
-    const {scope} = template
+    const {scope, isFree} = template
+    const viewerTeam = await dataLoader.get('teams').loadNonNull(teamId)
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, template.teamId))
         return standardError(new Error('Template is scoped to team'), {userId: viewerId})
     } else if (scope === 'ORGANIZATION') {
-      const [viewerTeam, templateTeam] = await Promise.all([
-        dataLoader.get('teams').loadNonNull(teamId),
-        dataLoader.get('teams').loadNonNull(template.teamId)
-      ])
+      const templateTeam = await dataLoader.get('teams').loadNonNull(template.teamId)
       if (viewerTeam.orgId !== templateTeam.orgId) {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
+      }
+    } else if (scope === 'PUBLIC') {
+      if (featureFlags.includes('templateLimit') && !isFree && viewerTeam.tier === 'starter') {
+        return standardError(new Error('User does not have access to this premium template'), {
+          userId: viewerId
+        })
       }
     }
 

@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
+import {Chat} from '@mui/icons-material'
 import React from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
-import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
@@ -16,9 +15,8 @@ const Label = styled('div')({
   textAlign: 'center'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Chat)({
   color: PALETTE.SKY_500,
-  fontSize: ICON_SIZE.MD24,
   alignSelf: 'center'
 })
 
@@ -60,7 +58,7 @@ const AgendaToggle = (props: Props) => {
   return (
     <Wrapper onClick={toggleHide}>
       <IconWrapper>
-        <StyledIcon>chat</StyledIcon>
+        <StyledIcon />
       </IconWrapper>
       <Label>Agenda</Label>
     </Wrapper>

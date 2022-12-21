@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {AccountBalance, AccountBox, BarChart, ExitToApp, Star} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {TierLabel} from '../types/constEnums'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -56,7 +56,7 @@ const StandardHubUserMenu = (props: Props) => {
   )
   const {email, featureFlags, organizations} = viewer
   const {insights} = featureFlags
-  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'personal')
+  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'starter')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 
@@ -66,7 +66,9 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLink to={'/me/profile'}>
-            <MenuItemIcon>account_box</MenuItemIcon>
+            <MenuItemIcon>
+              <AccountBox />
+            </MenuItemIcon>
             {'My Settings'}
           </MenuItemLink>
         }
@@ -74,7 +76,9 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLink to={'/me/organizations'}>
-            <MenuItemIcon>account_balance</MenuItemIcon>
+            <MenuItemIcon>
+              <AccountBalance />
+            </MenuItemIcon>
             {'Organizations'}
           </MenuItemLink>
         }
@@ -83,7 +87,9 @@ const StandardHubUserMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemLink to={'/usage'}>
-              <MenuItemIcon>bar_chart</MenuItemIcon>
+              <MenuItemIcon>
+                <BarChart />
+              </MenuItemIcon>
               {'Usage'}
             </MenuItemLink>
           }
@@ -94,11 +100,10 @@ const StandardHubUserMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemLink to={`/me/organizations${routeSuffix}`}>
-              <UpgradeIcon>star</UpgradeIcon>
-              <UpgradeCTA>
-                {'Upgrade to '}
-                <b>{TierLabel.PRO}</b>
-              </UpgradeCTA>
+              <UpgradeIcon>
+                <Star />
+              </UpgradeIcon>
+              <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
             </MenuItemLink>
           }
         />
@@ -107,7 +112,9 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLink to={`/${SIGNOUT_SLUG}`}>
-            <MenuItemIcon>exit_to_app</MenuItemIcon>
+            <MenuItemIcon>
+              <ExitToApp />
+            </MenuItemIcon>
             {SIGNOUT_LABEL}
           </MenuItemLink>
         }

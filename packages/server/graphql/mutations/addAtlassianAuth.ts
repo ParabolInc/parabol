@@ -8,6 +8,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLMutation} from '../graphql'
+import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
 
 export default {
@@ -38,13 +39,13 @@ export default {
     // RESOLUTION
     const oauthResponse = await AtlassianServerManager.init(code)
     if (oauthResponse instanceof Error) {
-      return standardError(oauthResponse, {userId: viewerId})
+      return standardError(new Error(`Jira: ${oauthResponse}`), {userId: viewerId})
     }
     const {accessToken, refreshToken} = oauthResponse
     const manager = new AtlassianServerManager(accessToken)
     const sites = await manager.getAccessibleResources()
     if (!Array.isArray(sites)) {
-      return standardError(new Error(sites.message), {userId: viewerId})
+      return standardError(new Error(`Jira: ${sites.message}`), {userId: viewerId})
     }
     const cloudIds = sites.map((cloud) => cloud.id)
     const cloudId = cloudIds[0]
@@ -53,7 +54,7 @@ export default {
     }
     const self = await manager.getMyself(cloudId)
     if (!('accountId' in self)) {
-      return standardError(new Error(self.message), {userId: viewerId})
+      return standardError(new Error(`Jira: ${self.message}`), {userId: viewerId})
     }
 
     // if there are the same Jira integrations existing we need to update them with new credentials as well
@@ -80,6 +81,7 @@ export default {
       },
       ...atlassianAuthsToUpdate
     ])
+    updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
     analytics.integrationAdded(viewerId, teamId, 'jira')
     const data = {teamId, userId: viewerId}

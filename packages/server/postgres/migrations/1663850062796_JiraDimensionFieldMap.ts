@@ -18,6 +18,7 @@ export async function up() {
     "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY ("teamId", "cloudId", "projectKey", "issueType", "dimensionName")
   );
+  DROP TRIGGER IF EXISTS "update_JiraDimensionFieldMap_updatedAt" ON "JiraDimensionFieldMap";
   CREATE TRIGGER "update_JiraDimensionFieldMap_updatedAt" BEFORE UPDATE ON "JiraDimensionFieldMap" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
 
   INSERT INTO "JiraDimensionFieldMap" ("teamId", "cloudId", "projectKey", "issueType", "dimensionName", "fieldId", "fieldName", "fieldType")

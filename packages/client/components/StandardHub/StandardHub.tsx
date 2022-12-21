@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
+import {VerifiedUser as VerifiedUserIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
-import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
-import {TierLabel} from '~/types/constEnums'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {StandardHub_viewer, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
@@ -89,7 +88,7 @@ const DEFAULT_VIEWER = {
   picture: '',
   preferredName: '',
   email: '',
-  tier: 'personal'
+  tier: 'starter'
 } as const
 
 const StandardHub = (props: Props) => {
@@ -114,13 +113,10 @@ const StandardHub = (props: Props) => {
           <Email>{email}</Email>
         </NameAndEmail>
       </User>
-      {tier === 'personal' ? (
+      {tier === 'starter' ? (
         <Upgrade onClick={handleUpgradeClick}>
-          <Icon>verified_user</Icon>
-          <UpgradeCTA>
-            {'Upgrade to '}
-            <b>{TierLabel.PRO}</b>
-          </UpgradeCTA>
+          <VerifiedUserIcon />
+          <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
         </Upgrade>
       ) : (
         <Tier tier={tier as TierEnum} />

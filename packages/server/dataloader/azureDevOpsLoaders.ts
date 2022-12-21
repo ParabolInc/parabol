@@ -117,6 +117,8 @@ export interface AzureUserInfo {
 export interface AzureAccountProject extends TeamProjectReference {
   userId: string
   teamId: string
+  instanceId: string
+  projectId: string
   service: 'azureDevOps'
 }
 
@@ -342,12 +344,17 @@ export const allAzureDevOpsProjects = (
             return []
           }
           if (projects !== null) resultReferences.push(...projects)
-          return resultReferences.map((project) => ({
-            ...project,
-            userId,
-            teamId,
-            service: 'azureDevOps' as const
-          }))
+          return resultReferences.map((project) => {
+            const instanceId = getInstanceId(project.url)
+            return {
+              ...project,
+              instanceId,
+              userId,
+              projectId: project.id,
+              teamId,
+              service: 'azureDevOps' as const
+            }
+          })
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))

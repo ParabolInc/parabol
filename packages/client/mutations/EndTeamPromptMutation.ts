@@ -18,7 +18,8 @@ graphql`
     meeting {
       id
       endedAt
-      teamId
+      ...TeamPromptMeetingStatus_meeting
+      ...TeamPromptMeeting_meeting
     }
     team {
       id
