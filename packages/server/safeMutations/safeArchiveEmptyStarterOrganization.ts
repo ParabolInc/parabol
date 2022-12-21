@@ -2,9 +2,9 @@ import getRethink from '../database/rethinkDriver'
 import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 // Only does something if the organization is empty & not paid
-// safeArchiveTeam & downgradeToPersonal should be called before calling this
+// safeArchiveTeam & downgradeToStarter should be called before calling this
 
-const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
+const safeArchiveEmptyStarterOrganization = async (orgId: string) => {
   const r = await getRethink()
   const now = new Date()
   const orgTeams = await getTeamsByOrgIds([orgId])
@@ -12,7 +12,7 @@ const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
 
   if (teamCountRemainingOnOldOrg > 0) return
   const org = await r.table('Organization').get(orgId).run()
-  if (org.tier !== 'personal') return
+  if (org.tier !== 'starter') return
 
   await r
     .table('OrganizationUser')
@@ -22,4 +22,4 @@ const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
     .run()
 }
 
-export default safeArchiveEmptyPersonalOrganization
+export default safeArchiveEmptyStarterOrganization

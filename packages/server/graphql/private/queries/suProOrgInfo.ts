@@ -6,7 +6,7 @@ const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeIna
   const r = await getRethink()
   return r
     .table('Organization')
-    .getAll('pro', {index: 'tier'})
+    .getAll('team', {index: 'tier'})
     .merge((organization: RValue) => ({
       users: r
         .table('OrganizationUser')

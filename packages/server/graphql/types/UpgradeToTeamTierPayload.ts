@@ -6,15 +6,15 @@ import Organization from './Organization'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 
-const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'UpgradeToProPayload',
+const UpgradeToTeamTierPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'UpgradeToTeamTierPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
     },
     organization: {
       type: Organization,
-      description: 'The new Pro Org',
+      description: 'The new Org on the Team tier',
       resolve: resolveOrganization
     },
     teams: {
@@ -36,4 +36,4 @@ const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default UpgradeToProPayload
+export default UpgradeToTeamTierPayload

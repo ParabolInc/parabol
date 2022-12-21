@@ -50,18 +50,18 @@ const OrgBillingDangerZone = (props: Props) => {
   const {organization} = props
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
-  const isPersonal = tier === 'personal'
+  const isStarter = tier === 'starter'
   return (
     <Panel label='Danger Zone'>
       <PanelRow>
-        {isPersonal ? (
+        {isStarter ? (
           <ArchiveOrganization organization={organization} />
         ) : (
           <Unsubscribe>
             <span>{'Need to cancel? It’s painless. '}</span>
             <a
-              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
-              title='Instant Unsubscribe from Pro'
+              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Team Plan'
+              title='Instant Unsubscribe from Team Plan'
             >
               <u>{'Contact us'}</u>
               <EnvelopeIcon>
