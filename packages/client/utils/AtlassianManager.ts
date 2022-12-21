@@ -225,6 +225,7 @@ interface JiraSearchResponse<T = {summary: string; description: string; issuetyp
   }[]
 }
 
+/*
 interface JiraField {
   issuetype: {
     id: string
@@ -244,6 +245,7 @@ interface JiraField {
   searchable: boolean
   untranslatedName: string
 }
+*/
 
 export interface JiraScreen {
   id: string
@@ -649,9 +651,12 @@ export default abstract class AtlassianManager {
     ) as any
   }
 
+  // This function returns fields from all projects and issue types which is not useful in most cases
+  /*
   async getFields(cloudId: string) {
     return this.get<JiraField[]>(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`)
   }
+  */
 
   async getFieldScreens(cloudId: string, fieldId: string) {
     return this.get(
@@ -669,6 +674,7 @@ export default abstract class AtlassianManager {
     )
   }
 
+  /*
   async getFirstValidJiraField(
     cloudId: string,
     possibleFieldNames: string[],
@@ -698,6 +704,7 @@ export default abstract class AtlassianManager {
     if (firstValidUpdateIdx === -1) return null
     return possibleFields[firstValidUpdateIdx]
   }
+  */
 
   async updateStoryPoints(
     cloudId: string,

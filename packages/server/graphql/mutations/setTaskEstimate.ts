@@ -128,11 +128,11 @@ const setTaskEstimate = {
           .load({teamId, cloudId, projectKey, issueType, dimensionName})
 
         // Find the best match
-        const {possibleEstimationFieldNames} = jiraIssue
+        const {possibleEstimationFields} = jiraIssue
         const validFields = [
           SprintPokerDefaults.SERVICE_FIELD_COMMENT,
           SprintPokerDefaults.SERVICE_FIELD_NULL,
-          ...possibleEstimationFieldNames
+          ...possibleEstimationFields.map(({fieldName}) => fieldName)
         ]
         const dimensionField = dimensionFields.find(({fieldName}) =>
           validFields.includes(fieldName)
