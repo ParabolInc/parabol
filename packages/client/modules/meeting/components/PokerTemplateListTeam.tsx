@@ -85,7 +85,7 @@ const PokerTemplateListTeam = (props: Props) => {
   const atmosphere = useAtmosphere()
   const history = useHistory()
   if (teamTemplates.length === 0) {
-    if (tier === 'personal' && featureFlags.templateLimit) {
+    if (tier === 'starter' && featureFlags.templateLimit) {
       const goToBilling = () => {
         SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
           upgradeCTALocation: 'teamTemplate',
@@ -95,7 +95,7 @@ const PokerTemplateListTeam = (props: Props) => {
       }
       return (
         <Message>
-          <StyledLink onClick={goToBilling}>Upgrade to Pro </StyledLink>
+          <StyledLink onClick={goToBilling}>Upgrade </StyledLink>
           <span>to create custom templates for your team</span>
         </Message>
       )

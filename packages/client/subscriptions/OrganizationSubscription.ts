@@ -32,7 +32,7 @@ const subscription = graphql`
       ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
       ...UpdateCreditCardMutation_organization @relay(mask: false)
       ...UpdateOrgMutation_organization @relay(mask: false)
-      ...UpgradeToProMutation_organization @relay(mask: false)
+      ...UpgradeToTeamTierMutation_organization @relay(mask: false)
       ...RemoveOrgUserMutation_organization @relay(mask: false)
       ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
     }

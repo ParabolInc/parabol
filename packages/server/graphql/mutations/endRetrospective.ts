@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
@@ -67,6 +68,10 @@ const finishRetroMeeting = async (
   sendNewMeetingSummary(meeting, context).catch(console.log)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
+  const data = {meetingId}
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+  publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
 }
 
 export default {
@@ -144,6 +149,7 @@ export default {
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
     finishRetroMeeting(completedRetrospective, teamId, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
+    checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventRetroComplete({

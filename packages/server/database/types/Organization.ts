@@ -14,6 +14,7 @@ interface Input {
   updatedAt?: Date
   showConversionModal?: boolean
   payLaterClickCount?: number
+  featureFlags?: string[]
 }
 
 export default class Organization {
@@ -32,10 +33,11 @@ export default class Organization {
   stripeSubscriptionId?: string | null
   upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
-  tierLimitExceededAt?: Date
-  scheduledLockAt?: Date
-  lockedAt?: Date
+  tierLimitExceededAt?: Date | null
+  scheduledLockAt?: Date | null
+  lockedAt?: Date | null
   updatedAt: Date
+  featureFlags?: string[]
   constructor(input: Input) {
     const {
       id,

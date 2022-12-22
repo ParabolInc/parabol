@@ -107,15 +107,6 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
-const createLinkSectionContent = (
-  meetingId: string,
-  meetingUrl: string,
-  meetingShortLink?: string
-) => {
-  const shortLink = meetingShortLink || `https:/prbl.in/${meetingId}`
-  return `*Link:*\n<${meetingUrl}|${shortLink}>`
-}
-
 const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
 
 const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
@@ -129,7 +120,6 @@ const makeTeamPromptStartMeetingNotification = (
   const blocks = [
     makeSection(title),
     makeSection(createTeamSectionContent(team)), // TODO: add end date once we have it implemented
-    makeSection(createLinkSectionContent(meeting.id, meetingUrl)),
     makeButtons([{text: 'Submit Response', url: meetingUrl, type: 'primary'}])
   ]
 
@@ -145,7 +135,6 @@ const makeGenericStartMeetingNotification = (
   const blocks = [
     makeSection(title),
     makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
-    makeSection(createLinkSectionContent(meeting.id, meetingUrl)),
     makeButtons([{text: 'Join meeting', url: meetingUrl, type: 'primary'}])
   ]
 
@@ -198,7 +187,6 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const {phases, facilitatorStageId} = meeting
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
-    const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meeting.id}`)
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const {phaseType} = stage
     const phaseLabel = phaseLabelLookup[phaseType as keyof typeof phaseLabelLookup]
@@ -216,7 +204,6 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       makeSection(title),
       makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
       makeSection(constraint),
-      makeSection(createLinkSectionContent(meeting.id, meetingUrl, maybeMeetingShortLink)),
       makeButtons([button])
     ]
     return notifySlack(

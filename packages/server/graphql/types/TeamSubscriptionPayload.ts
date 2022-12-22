@@ -14,7 +14,7 @@ import AddSlackAuthPayload from './AddSlackAuthPayload'
 import AddTeamPayload from './AddTeamPayload'
 import ArchiveTeamPayload from './ArchiveTeamPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
-import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
+import DowngradeToStarterPayload from './DowngradeToStarterPayload'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
@@ -67,7 +67,7 @@ import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimen
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
-import UpgradeToProPayload from './UpgradeToProPayload'
+import UpgradeToTeamTierPayload from './UpgradeToTeamTierPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -79,7 +79,7 @@ const types = [
   AddTeamPayload,
   ArchiveTeamPayload,
   DenyPushInvitationPayload,
-  DowngradeToPersonalPayload,
+  DowngradeToStarterPayload,
   EndNewMeetingPayload,
   EndCheckInSuccess,
   EndRetrospectiveSuccess,
@@ -101,7 +101,7 @@ const types = [
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,
   UpdateTeamNamePayload,
-  UpgradeToProPayload,
+  UpgradeToTeamTierPayload,
   AddReflectTemplatePayload,
   AddPokerTemplatePayload,
   AddReflectTemplatePromptPayload,

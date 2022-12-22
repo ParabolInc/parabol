@@ -67,8 +67,8 @@ export const TEAM_DASH = 'teamDash'
 export const USER_DASH = 'userDash'
 
 /* Accounts */
-export const PERSONAL_LABEL = 'Personal'
-export const PRO_LABEL = 'Pro'
+export const STARTER_LABEL = 'Starter'
+export const TEAM_LABEL = 'Team'
 
 /* DEPRECATED. Use NotificationEnum */
 // sent to someone just kicked out of a team
@@ -155,3 +155,5 @@ export const MAX_REDUCTION_PERCENTAGE = 1
 export const MAX_RESULT_GROUP_SIZE = 10
 export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
+
+export const PARABOL_AI_USER_ID = 'parabolAIUser'

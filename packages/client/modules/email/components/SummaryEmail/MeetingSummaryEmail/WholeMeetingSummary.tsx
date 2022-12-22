@@ -4,6 +4,8 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import Ellipsis from '../../../../../components/Ellipsis/Ellipsis'
+import {AIExplainer} from '../../../../../types/constEnums'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const topicTitleStyle = {
@@ -38,35 +40,78 @@ const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment WholeMeetingSummary_meeting on RetrospectiveMeeting {
-        summary
-        team {
-          tier
+      fragment WholeMeetingSummary_meeting on NewMeeting {
+        ... on RetrospectiveMeeting {
+          __typename
+          summary
+          reflectionGroups(sortBy: voteCount) {
+            summary
+          }
+          phases {
+            phaseType
+            ... on DiscussPhase {
+              stages {
+                discussion {
+                  summary
+                }
+              }
+            }
+          }
+          team {
+            tier
+          }
         }
       }
     `,
     meetingRef
   )
-  const {summary, team} = meeting
-  if (!summary) return null
+  if (meeting.__typename !== 'RetrospectiveMeeting') return null
+  const {summary: wholeMeetingSummary, team, reflectionGroups, phases} = meeting
+  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
+  const {stages} = discussPhase ?? {}
+  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+  const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
+  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+  if (!hasOpenAISummary) return null
+  if (hasOpenAISummary && !wholeMeetingSummary) {
+    return (
+      <tr
+        style={{
+          borderBottom: `1px solid ${PALETTE.SLATE_400}`
+        }}
+      >
+        <td
+          align='center'
+          style={{
+            padding: '20px 0px',
+            borderBottom: `1px solid ${PALETTE.SLATE_400}`
+          }}
+        >
+          <tr>
+            <td style={explainerStyle}>
+              {'Hold tight! Our AI 🤖 is generating your meeting summary'}
+              <Ellipsis />
+            </td>
+          </tr>
+        </td>
+      </tr>
+    )
+  }
   return (
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
           <tr>
+            <td style={explainerStyle}>{explainerText}</td>
+          </tr>
+          <tr>
             <td align='center' style={topicTitleStyle}>
-              {'Meeting Summary'}
+              {'🤖 Meeting Summary'}
             </td>
           </tr>
-          {team?.tier === 'personal' && (
-            <tr>
-              <td
-                style={explainerStyle}
-              >{`AI generated summaries are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`}</td>
-            </tr>
-          )}
           <tr>
-            <td style={textStyle}>{summary}</td>
+            <td style={textStyle}>{wholeMeetingSummary}</td>
           </tr>
         </td>
       </tr>

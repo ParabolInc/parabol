@@ -2699,8 +2699,8 @@ type TemplateScaleValue {
 The pay tier of the team
 """
 enum TierEnum {
-  personal
-  pro
+  starter
+  team
   enterprise
 }
 
@@ -3562,6 +3562,8 @@ enum NotificationEnum {
   TASK_INVOLVES
   MEETING_STAGE_TIME_LIMIT_END
   RESPONSE_MENTIONED
+  RESPONSE_REPLIED
+  TEAMS_LIMIT_EXCEEDED
 }
 
 """
@@ -7021,14 +7023,14 @@ type Mutation {
   ): DismissSuggestedActionPayload!
 
   """
-  Downgrade a paid account to the personal service
+  Downgrade a paid account to the starter plan service
   """
-  downgradeToPersonal(
+  downgradeToStarter(
     """
     the org requesting the upgrade
     """
     orgId: ID!
-  ): DowngradeToPersonalPayload
+  ): DowngradeToStarterPayload
 
   """
   Changes the priority of the discussion topics
@@ -7875,7 +7877,7 @@ type Mutation {
   """
   Upgrade an account to the paid service
   """
-  upgradeToPro(
+  upgradeToTeamTier(
     """
     the org requesting the upgrade
     """
@@ -7885,7 +7887,7 @@ type Mutation {
     The token that came back from stripe
     """
     stripeToken: ID!
-  ): UpgradeToProPayload
+  ): UpgradeToTeamTierPayload
 
   """
   Upload an image for an org avatar
@@ -8739,11 +8741,11 @@ type DismissSuggestedActionPayload {
   removedSuggestedActionId: ID
 }
 
-type DowngradeToPersonalPayload {
+type DowngradeToStarterPayload {
   error: StandardMutationError
 
   """
-  The new Personal Org
+  The new Starter Org
   """
   organization: Organization
 
@@ -10025,11 +10027,11 @@ input UpdateUserProfileInput {
   preferredName: String
 }
 
-type UpgradeToProPayload {
+type UpgradeToTeamTierPayload {
   error: StandardMutationError
 
   """
-  The new Pro Org
+  The new Team Org
   """
   organization: Organization
 
@@ -10863,14 +10865,14 @@ type AuthTokenPayload {
 union OrganizationSubscriptionPayload =
     AddOrgPayload
   | ArchiveOrganizationPayload
-  | DowngradeToPersonalPayload
+  | DowngradeToStarterPayload
   | PayLaterPayload
   | RemoveOrgUserPayload
   | SetOrgUserRoleAddedPayload
   | SetOrgUserRoleRemovedPayload
   | UpdateCreditCardPayload
   | UpdateOrgPayload
-  | UpgradeToProPayload
+  | UpgradeToTeamTierPayload
   | UpdateTemplateScopeSuccess
 
 type SetOrgUserRoleAddedPayload implements SetOrgUserRolePayload {
@@ -10910,7 +10912,7 @@ union TeamSubscriptionPayload =
   | AddTeamPayload
   | ArchiveTeamPayload
   | DenyPushInvitationPayload
-  | DowngradeToPersonalPayload
+  | DowngradeToStarterPayload
   | EndCheckInSuccess
   | EndNewMeetingPayload
   | EndRetrospectiveSuccess
@@ -10930,7 +10932,7 @@ union TeamSubscriptionPayload =
   | UpdateAgendaItemPayload
   | UpdateCreditCardPayload
   | UpdateTeamNamePayload
-  | UpgradeToProPayload
+  | UpgradeToTeamTierPayload
   | AddReflectTemplatePayload
   | AddPokerTemplatePayload
   | AddReflectTemplatePromptPayload

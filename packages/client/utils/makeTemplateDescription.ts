@@ -38,7 +38,7 @@ const makeTemplateDescription = (
   const {lastUsedAt, team, isFree} = template
   const {name: teamName} = team
   if (lowestScope === 'PUBLIC' && showTemplateLimit) {
-    return isFree ? 'Free template' : `Premium template ${tier === 'personal' ? '🔒' : '✨'}`
+    return isFree ? 'Free template' : `Premium template ${tier === 'starter' ? '🔒' : '✨'}`
   }
   if (lowestScope === 'TEAM')
     return lastUsedAt

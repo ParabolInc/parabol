@@ -362,8 +362,8 @@ export const enum TaskStatusLabel {
 }
 
 export const enum TierLabel {
-  PERSONAL = 'Personal',
-  PRO = 'Pro',
+  STARTER = 'Starter',
+  TEAM = 'Team',
   ENTERPRISE = 'Enterprise'
 }
 
@@ -485,4 +485,10 @@ export const enum PollsAriaLabels {
   POLL_SUBMIT_VOTE = 'Submit poll vote',
   POLL_START = 'Start a poll',
   POLL_ADD_OPTION = 'Add a poll option'
+}
+
+export const enum AIExplainer {
+  STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`,
+  PREMIUM_MEETING = `Our friendly AI 🤖 is here to save you time by summarizing your meeting`,
+  PREMIUM_REFLECTIONS = `Our friendly AI 🤖 is here to save you time by summarizing your reflections`
 }
