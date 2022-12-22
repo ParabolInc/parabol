@@ -73,11 +73,11 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     return {error: {message: 'Org is already enterprise'}}
   }
   // TODO handle upgrade from PRO to ENTERPRISE
-  if (tier !== 'personal') {
-    return {error: {message: 'Upgrading from PRO not supported. requires PR'}}
+  if (tier !== 'starter') {
+    return {error: {message: 'Upgrading from Team not supported. requires PR'}}
   }
   if (stripeSubscriptionId) {
-    return {error: {message: 'Tier not PRO but subscription ID found. Big Error.'}}
+    return {error: {message: 'Tier not Team but subscription ID found. Big Error.'}}
   }
 
   // RESOLUTION
@@ -136,7 +136,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     orgId,
     domain: org.activeDomain,
     orgName: org.name,
-    oldTier: 'personal',
+    oldTier: 'starter',
     newTier: 'enterprise',
     billingLeaderEmail: user.email
   })

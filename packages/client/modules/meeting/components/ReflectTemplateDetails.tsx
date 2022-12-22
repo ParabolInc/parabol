@@ -134,7 +134,7 @@ const ReflectTemplateDetails = (props: Props) => {
     ? defaultIllustrations[templateId as keyof typeof defaultIllustrations]
     : customTemplate
   const isActiveTemplate = templateId === settings.selectedTemplate.id
-  const showClone = !isOwner && (templateLimitFlag ? tier !== 'personal' : true)
+  const showClone = !isOwner && (templateLimitFlag ? tier !== 'starter' : true)
   return (
     <PromptEditor>
       <Scrollable isActiveTemplate={isActiveTemplate}>

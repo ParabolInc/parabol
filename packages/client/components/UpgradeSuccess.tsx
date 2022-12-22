@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React, {useEffect, useState} from 'react'
 import paymentSuccessSvg from '../../../static/images/illustrations/conversion_prompt-payment_success.svg'
-import {PRO_LABEL} from '../utils/constants'
+import {TEAM_LABEL} from '../utils/constants'
 import Confetti from './Confetti'
 import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
@@ -48,7 +48,7 @@ const UpgradeSuccess = (props: Props) => {
       <InvitationDialogCopy>{'Your organization is'}</InvitationDialogCopy>
       <InvitationDialogCopy>
         {'now on the '}
-        <b>{PRO_LABEL}</b>
+        <b>{TEAM_LABEL}</b>
         {' tier'}
       </InvitationDialogCopy>
       <ButtonBlock>
