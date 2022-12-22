@@ -1,17 +1,11 @@
 import {ContentState, convertToRaw} from 'draft-js'
 import entitizeText from './entitizeText'
-import isAndroid from './isAndroid'
 
-export const removeSpaces = (str: string) => {
-  if (isAndroid) {
-    return str.replace(/ +(?= )/g, '').trim()
-  } else {
-    return str
-      .split(/\s/)
-      .filter((s) => s.length)
-      .join(' ')
-  }
-}
+export const removeSpaces = (str: string) =>
+  str
+    .split(/\s/)
+    .filter((s) => s.length)
+    .join(' ')
 
 export function convertStateToRaw(contentState: ContentState) {
   const selectionState = contentState.getSelectionAfter().merge({
