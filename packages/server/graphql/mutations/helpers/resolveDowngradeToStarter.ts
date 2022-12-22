@@ -7,7 +7,7 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 
-const resolveDowngradeToPersonal = async (
+const resolveDowngradeToStarter = async (
   orgId: string,
   stripeSubscriptionId: string,
   userId: string
@@ -26,7 +26,7 @@ const resolveDowngradeToPersonal = async (
     r.table('User').get(userId).run() as unknown as User,
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
-        tier: 'personal',
+        tier: 'starter',
         periodEnd: now,
         stripeSubscriptionId: null,
         updatedAt: now
@@ -34,7 +34,7 @@ const resolveDowngradeToPersonal = async (
     }).run(),
     updateTeamByOrgId(
       {
-        tier: 'personal',
+        tier: 'starter',
         isPaid: true
       },
       orgId
@@ -46,10 +46,10 @@ const resolveDowngradeToPersonal = async (
     orgId,
     domain: org.activeDomain,
     orgName: org.name,
-    oldTier: 'pro',
-    newTier: 'personal',
+    oldTier: 'team',
+    newTier: 'starter',
     billingLeaderEmail: user.email
   })
 }
 
-export default resolveDowngradeToPersonal
+export default resolveDowngradeToStarter

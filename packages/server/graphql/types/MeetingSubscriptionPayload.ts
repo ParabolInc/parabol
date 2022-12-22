@@ -11,6 +11,7 @@ import {DragEstimatingTaskSuccess} from './DragEstimatingTaskPayload'
 import {EditCommentingSuccess} from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
+import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
 import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
@@ -49,6 +50,7 @@ const types = [
   EditCommentingSuccess,
   EditReflectionPayload,
   EndDraggingReflectionPayload,
+  EndRetrospectiveSuccess,
   FlagReadyToAdvanceSuccess,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,

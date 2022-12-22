@@ -75,7 +75,7 @@ const SelectTemplate = (props: Props) => {
     })
     history.push(`/me/organizations/${orgId}`)
   }
-  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'personal' && scope === 'PUBLIC'
+  const showUpgradeCTA = hasFeatureFlag && !isFree && tier === 'starter' && scope === 'PUBLIC'
   if (showUpgradeCTA) {
     return (
       <ButtonBlock>

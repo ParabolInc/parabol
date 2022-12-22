@@ -67,8 +67,8 @@ export const TEAM_DASH = 'teamDash'
 export const USER_DASH = 'userDash'
 
 /* Accounts */
-export const PERSONAL_LABEL = 'Personal'
-export const PRO_LABEL = 'Pro'
+export const STARTER_LABEL = 'Starter'
+export const TEAM_LABEL = 'Team'
 
 /* DEPRECATED. Use NotificationEnum */
 // sent to someone just kicked out of a team

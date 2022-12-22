@@ -21,8 +21,7 @@ const addSummariesToThreads = async (
   const commentPromises = stages.map(async (stage, idx) => {
     const group = groups.find((group) => group.id === stage.reflectionGroupId)
     if (!group?.summary) return
-    const explainerText =
-      tier === 'personal' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
+    const explainerText = tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_REFLECTIONS
     const html =
       idx === 0
         ? `<html><body><i>${explainerText}</i><br><p><b>🤖 Topic Summary</b></p><p>${group.summary}</p></body></html>`
