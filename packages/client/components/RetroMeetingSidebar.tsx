@@ -9,6 +9,8 @@ import {
 } from '~/__generated__/RetroMeetingSidebar_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
+import useMutationProps from '../hooks/useMutationProps'
+import UpdateMaxPhaseIndexMutation from '../mutations/UpdateMaxPhaseIndexMutation'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
@@ -40,7 +42,8 @@ const RetroMeetingSidebar = (props: Props) => {
     localStage,
     phases,
     settings,
-    meetingMembers
+    meetingMembers,
+    maxPhaseIndex
   } = meeting
   const {phaseTypes} = settings
   const localPhaseType = localPhase ? localPhase.phaseType : ''
@@ -50,6 +53,7 @@ const RetroMeetingSidebar = (props: Props) => {
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   const [confirmingPhase, setConfirmingPhase] = useState<NewMeetingPhaseTypeEnum | null>(null)
+  const {onError, onCompleted} = useMutationProps()
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -86,6 +90,16 @@ const RetroMeetingSidebar = (props: Props) => {
               setConfirmingPhase(null)
               gotoStageId(itemStageId).catch()
               handleMenuClick()
+              console.log('index: ', index)
+              console.log('maxPhaseIndex: ', maxPhaseIndex)
+              if (index === maxPhaseIndex! + 1) {
+                const currentPhaseIndex = index
+                UpdateMaxPhaseIndexMutation(
+                  atmosphere,
+                  {meetingId, currentPhaseIndex},
+                  {onError, onCompleted}
+                )
+              }
             } else {
               setConfirmingPhase(phaseType)
             }
@@ -174,6 +188,8 @@ export default createFragmentContainer(RetroMeetingSidebar, {
           readyCount
         }
       }
+      maxPhaseIndex
+      currentPhaseIndex
     }
   `
 })

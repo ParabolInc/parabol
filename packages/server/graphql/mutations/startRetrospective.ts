@@ -81,7 +81,8 @@ export default {
       totalVotes,
       maxVotesPerGroup,
       disableAnonymity,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId,
+      maxPhaseIndex: 0
     })
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)

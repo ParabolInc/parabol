@@ -193,6 +193,16 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember || null
       }
+    },
+    maxPhaseIndex: {
+      type: GraphQLInt,
+      description: 'Meeting maximum phase index',
+      resolve: ({maxPhaseIndex}) => maxPhaseIndex || 0
+    },
+    currentPhaseIndex: {
+      type: GraphQLInt,
+      description: 'Current phase index',
+      resolve: ({currentPhaseIndex}) => currentPhaseIndex || 0
     }
   })
 })

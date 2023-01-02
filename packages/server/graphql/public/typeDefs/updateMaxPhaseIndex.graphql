@@ -1,0 +1,49 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  updateMaxPhaseIndex(
+    """
+    Current phase index
+    """
+    maxPhaseIndex: Int
+    """
+    Meeting ID
+    """
+    meetingId: String!
+    """
+    Current Phase Index
+    """
+    currentPhaseIndex: Int
+  ): UpdateMaxPhaseIndexPayload!
+}
+
+"""
+Return value for updateMaxPhaseIndex, which could be an error
+"""
+union UpdateMaxPhaseIndexPayload = ErrorPayload | UpdateMaxPhaseIndexSuccess
+
+type UpdateMaxPhaseIndexSuccess {
+  """
+  Meeting with updated maxPhaseIndex
+  """
+  meetingId: String!
+
+  """
+  Current Phase Index
+  """
+  currentPhaseIndex: Int
+  """
+  Meeting Maximum phase Index
+  """
+  maxPhaseIndex: Int
+}
+
+extend union MeetingSubscriptionPayload = UpdateMaxPhaseIndexSuccess
+
+extend type RetrospectiveMeeting {
+  """
+  Meeting maximum phase index
+  """
+  maxPhaseIndex: Int
+}
