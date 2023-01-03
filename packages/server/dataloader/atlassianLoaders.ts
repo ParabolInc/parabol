@@ -257,7 +257,6 @@ export const jiraIssue = (
                 }
               }
             )
-            console.log('GEORG possibleEstimationFields', possibleEstimationFields)
             possibleEstimationFields.sort((a, b) => a.fieldName.localeCompare(b.fieldName))
 
             const simplified = !!issueRes.fields.project?.simplified
