@@ -3,10 +3,10 @@
 
 yarn postcheckout
 
-CURRENT_BRANCH=$(git branch --show-current)
 DELETED_POSTGRES_MIGRATIONS=$(git diff $1 $2 --name-only --diff-filter=D -- packages/server/postgres/migrations/)
 DELETED_RETHINK_MIGRATIONS=$(git diff $1 $2 --name-only --diff-filter=D -- packages/server/database/migrations/)
 if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" -o ! -z "$DELETED_RETHINK_MIGRATIONS" ]; then
+    CURRENT_BRANCH=$(git branch --show-current)
     NUM_POSTGRES_MIGRATIONS=$(echo $DELETED_POSTGRES_MIGRATIONS | wc -w)
     echo "WARNING: You're leaving behind the following migrations not present on the current branch:"
     echo
