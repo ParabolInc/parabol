@@ -23,7 +23,7 @@ const isMeetingLocked = async (
     return false
   }
 
-  if (tier !== 'personal' && isPaid) {
+  if (tier !== 'starter' && isPaid) {
     return false
   }
 
@@ -31,7 +31,7 @@ const isMeetingLocked = async (
   if (isArchived) {
     const organization = await dataLoader.get('organizations').load(orgId)
     const {tier} = organization
-    if (tier !== 'personal') {
+    if (tier !== 'starter') {
       return false
     }
   }

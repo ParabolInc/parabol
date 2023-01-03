@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.86.1 2022-December-19
+
+### Fixed
+
+- New meetings were locked with the history limit (#7599)
+- **Metrics**: change upgrade CTA events to standard definitions
+
 ## 6.86.0 2022-December-14
 
 ### Fixed

@@ -122,7 +122,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
     return
   }
 
-  if (organization.tierLimitExceededAt || organization.tier !== 'personal') {
+  if (organization.tierLimitExceededAt || organization.tier !== 'starter') {
     return
   }
 

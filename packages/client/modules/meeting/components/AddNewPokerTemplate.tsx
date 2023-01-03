@@ -76,7 +76,7 @@ const AddNewPokerTemplate = (props: Props) => {
   }, [])
   const addNewTemplate = () => {
     if (submitting) return
-    if (featureFlags.templateLimit && tier === 'personal') {
+    if (featureFlags.templateLimit && tier === 'starter') {
       displayUpgradeDetails()
       return
     }
@@ -110,7 +110,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {featureFlags.templateLimit && tier === 'personal' && '🔒'}
+        Create New Template {featureFlags.templateLimit && tier === 'starter' && '🔒'}
       </AddPokerTemplateLink>
     </div>
   )

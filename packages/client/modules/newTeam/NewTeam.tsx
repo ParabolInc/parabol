@@ -100,7 +100,7 @@ const NewTeam = (props: Props) => {
                 for your personal use. Once created, you can
                 create teams and invite others, even if they
                 don't share your email domain. New Organizations
-                start out on the Free Personal Plan.`}
+                start out on the Free Starter Plan.`}
               </HelpCopy>
               <LearnMoreLink
                 palette='blue'

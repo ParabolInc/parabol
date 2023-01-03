@@ -189,7 +189,7 @@ const NewTeamForm = (props: Props) => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'createTeam',
       orgId,
-      upgradeTier: 'pro'
+      upgradeTier: 'team'
     })
     history.push(`/me/organizations/${orgId}`)
   }

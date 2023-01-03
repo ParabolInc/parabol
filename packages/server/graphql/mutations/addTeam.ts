@@ -64,14 +64,15 @@ export default {
         }
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
-      const {tier, featureFlags} = organization
-      const maxTeams = featureFlags?.includes('teamsLimit')
-        ? Threshold.MAX_PERSONAL_TIER_TEAMS
-        : Threshold.MAX_FREE_TEAMS
-      if (orgTeams.length >= maxTeams) {
-        if (tier === 'personal') {
+      if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
+        const organization = await dataLoader.get('organizations').load(orgId)
+        const {tier} = organization
+        if (tier === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
+      }
+      if (organization.lockedAt) {
+        return standardError(new Error('Organization is locked'), {userId: viewerId})
       }
 
       // RESOLUTION
