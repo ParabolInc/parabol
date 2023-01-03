@@ -7,6 +7,9 @@ const BRAND_PRIMARY = '#493272' // Grape 700
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  corePlugins: {
+    preflight: false
+  },
   content: ['./packages/client/**/*.{ts,tsx,js,jsx,html}'],
   theme: {
     fontFamily: {

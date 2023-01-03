@@ -82,7 +82,7 @@
   }
 
   body {
-    @apply m-0 p-0 text-[16px] font-normal leading-normal text-slate-700 antialiased;
+    @apply m-0 p-0 font-sans text-[16px] font-normal leading-normal text-slate-700 antialiased;
   }
 
   a {
