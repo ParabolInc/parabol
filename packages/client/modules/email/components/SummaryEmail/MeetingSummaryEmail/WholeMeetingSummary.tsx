@@ -2,9 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import Ellipsis from '../../../../../components/Ellipsis/Ellipsis'
+import useAtmosphere from '../../../../../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
 import {AIExplainer} from '../../../../../types/constEnums'
 import EmailBorderBottom from './EmailBorderBottom'
 
@@ -43,6 +45,7 @@ const WholeMeetingSummary = (props: Props) => {
       fragment WholeMeetingSummary_meeting on NewMeeting {
         ... on RetrospectiveMeeting {
           __typename
+          id
           summary
           reflectionGroups(sortBy: voteCount) {
             summary
@@ -65,6 +68,17 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
+  const atmosphere = useAtmosphere()
+
+  useEffect(() => {
+    if (hasOpenAISummary && meeting.__typename === 'RetrospectiveMeeting') {
+      SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
+        source: 'Meeting Summary',
+        tier: meeting.team.tier,
+        meetingId: meeting.id
+      })
+    }
+  }, [])
   if (meeting.__typename !== 'RetrospectiveMeeting') return null
   const {summary: wholeMeetingSummary, team, reflectionGroups, phases} = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
