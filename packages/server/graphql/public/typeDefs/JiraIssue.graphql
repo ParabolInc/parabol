@@ -4,6 +4,21 @@ enum JiraIssueMissingEstimationFieldHintEnum {
 }
 
 """
+Possible voting field
+"""
+type JiraIssueField {
+  """
+  ID of the field in Jira
+  """
+  fieldId: ID!
+
+  """
+  Name of the field
+  """
+  fieldName: String!
+}
+
+"""
 The Jira Issue that comes direct from Jira
 """
 type JiraIssue implements TaskIntegration {
@@ -65,7 +80,7 @@ type JiraIssue implements TaskIntegration {
   """
   Field names that exists on the issue and can be used as estimation fields
   """
-  possibleEstimationFieldNames: [String!]!
+  possibleEstimationFields: [JiraIssueField!]!
 
   """
   Missing estimation field
