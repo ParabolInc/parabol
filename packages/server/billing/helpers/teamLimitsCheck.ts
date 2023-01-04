@@ -1,5 +1,5 @@
 import ms from 'ms'
-import {TeamsLimit} from 'parabol-client/types/constEnums'
+import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
@@ -56,7 +56,7 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
 
-  if (teamIds.length <= TeamsLimit.PERSONAL_TIER_MAX_TEAMS) {
+  if (teamIds.length <= Threshold.MAX_PERSONAL_TIER_TEAMS) {
     return false
   }
 
@@ -82,12 +82,12 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
           meetingId: row('group')(1),
           meetingMembers: row('reduction')
         }))
-        .filter((row) => row('meetingMembers').ge(TeamsLimit.STICKY_TEAM_MIN_MEETING_ATTENDEES))
+        .filter((row) => row('meetingMembers').ge(Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES))
         .group('teamId')
         .ungroup()
-        .filter((row) => row('reduction').count().ge(TeamsLimit.STICKY_TEAM_MIN_MEETINGS))
+        .filter((row) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
         .count()
-        .gt(TeamsLimit.PERSONAL_TIER_MAX_TEAMS)
+        .gt(Threshold.MAX_PERSONAL_TIER_TEAMS)
     })
     .run()
 }
@@ -138,7 +138,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
     .get(orgId)
     .update({
       tierLimitExceededAt: now,
-      scheduledLockAt: new Date(now.getTime() + ms(`${TeamsLimit.PERSONAL_TIER_LOCK_AFTER_DAYS}d`)),
+      scheduledLockAt: new Date(now.getTime() + ms(`${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS}d`)),
       updatedAt: now
     })
     .run()

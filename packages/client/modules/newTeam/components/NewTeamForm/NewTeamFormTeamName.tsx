@@ -15,19 +15,24 @@ const FormBlockInline = styled(NewTeamFormBlock)({
 
 interface Props {
   error: string | undefined
-
   onChange(e: ChangeEvent<HTMLInputElement>): void
-
   teamName: string
+  disabled?: boolean
 }
 
 const NewTeamFormTeamName = (props: Props) => {
-  const {error, onChange, teamName} = props
+  const {error, onChange, teamName, disabled} = props
   return (
     <FormBlockInline>
       <FieldLabel fieldSize='medium' htmlFor='teamName' indent inline label='Team Name' />
       <NewTeamFieldBlock>
-        <BasicInput error={error} name='teamName' onChange={onChange} value={teamName} />
+        <BasicInput
+          disabled={disabled}
+          error={error}
+          name='teamName'
+          onChange={onChange}
+          value={teamName}
+        />
       </NewTeamFieldBlock>
     </FormBlockInline>
   )
