@@ -46,9 +46,9 @@ const InvoiceFooter = () => {
       <FinePrint>
         {'Parabol, Inc.'}
         <br />
-        {'2900 W Shorb St'}
+        {'8605 Santa Monica Blvd'}
         <br />
-        {'Alhambra, CA, 91803'}
+        {'West Hollywood, CA 90069-4109'}
         <br />
         {'United States'}
         <br />

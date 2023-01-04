@@ -491,13 +491,6 @@ export const enum PollsAriaLabels {
   POLL_ADD_OPTION = 'Add a poll option'
 }
 
-export const enum TeamsLimit {
-  STICKY_TEAM_MIN_MEETING_ATTENDEES = 2,
-  STICKY_TEAM_MIN_MEETINGS = 3,
-  PERSONAL_TIER_MAX_TEAMS = 2,
-  PERSONAL_TIER_LOCK_AFTER_DAYS = 30
-}
-
 export const enum AIExplainer {
   STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`,
   PREMIUM_MEETING = `Our friendly AI 🤖 is here to save you time by summarizing your meeting`,

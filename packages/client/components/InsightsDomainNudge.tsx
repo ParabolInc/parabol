@@ -8,7 +8,7 @@ import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMu
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
-import {TeamsLimit} from '../types/constEnums'
+import {Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
 import {InsightsDomainNudge_domain$key} from '../__generated__/InsightsDomainNudge_domain.graphql'
 import PrimaryButton from './PrimaryButton'
@@ -131,7 +131,7 @@ const InsightsDomainNudge = (props: Props) => {
             <WarningMsg>
               <BoldText>{domainId}</BoldText>
               {` is over the limit of `}
-              <BoldText>{`${TeamsLimit.PERSONAL_TIER_MAX_TEAMS} free teams`}</BoldText>
+              <BoldText>{`${Threshold.MAX_PERSONAL_TIER_TEAMS} free teams`}</BoldText>
               {toBeLockedOrg?.scheduledLockAt && (
                 <>
                   {`. Your free access will end in `}
