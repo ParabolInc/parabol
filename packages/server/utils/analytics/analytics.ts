@@ -226,14 +226,18 @@ class Analytics {
     meetingType: MeetingTypeEnum,
     reactableId: string,
     reactableType: ReactableEnum,
-    isRemove: boolean
+    reactji: string,
+    isRemove: boolean,
+    isAIComment: boolean
   ) => {
     this.track(userId, 'Reactji Interacted', {
       meetingId,
       meetingType,
       reactableId,
       reactableType,
-      isRemove
+      reactji,
+      isRemove,
+      isAIComment
     })
   }
 

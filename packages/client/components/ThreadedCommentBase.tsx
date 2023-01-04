@@ -63,7 +63,7 @@ const ThreadedCommentBase = (props: Props) => {
     viewer
   } = props
   const isReply = !!props.isReply
-  const {id: discussionId, meetingId, replyingToCommentId, teamId} = discussion
+  const {id: discussionId, meetingId, replyingToCommentId, teamId, discussionTopicId} = discussion
   const {
     id: commentId,
     content,
@@ -92,11 +92,14 @@ const ThreadedCommentBase = (props: Props) => {
 
   useEffect(() => {
     if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
+      const contentState = editorState.getCurrentContent()
+      const summary = contentState.getPlainText()
       SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
         source: 'Discussion',
         tier: viewer.tier,
         meetingId,
-        commentId
+        discussionTopicId,
+        summary
       })
     }
   }, [])
@@ -236,6 +239,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
       meetingId
       replyingToCommentId
       teamId
+      discussionTopicId
     }
   `,
   comment: graphql`
