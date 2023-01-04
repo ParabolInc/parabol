@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState} from 'draft-js'
-import React, {ReactNode, useRef, useState} from 'react'
+import React, {ReactNode, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'
@@ -14,8 +14,10 @@ import isTempId from '~/utils/relay/isTempId'
 import {ThreadedCommentBase_comment} from '~/__generated__/ThreadedCommentBase_comment.graphql'
 import {ThreadedCommentBase_discussion} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
 import {ThreadedCommentBase_viewer} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
+import {PARABOL_AI_USER_ID} from '../utils/constants'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
@@ -87,6 +89,17 @@ const ThreadedCommentBase = (props: Props) => {
       editorRef.current?.focus()
     })
   }
+
+  useEffect(() => {
+    if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
+      SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
+        source: 'Discussion',
+        tier: viewer.tier,
+        meetingId,
+        commentId
+      })
+    }
+  }, [])
 
   const onToggleReactji = (emojiId: string) => {
     if (submitting) return
@@ -212,6 +225,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
   viewer: graphql`
     fragment ThreadedCommentBase_viewer on User {
       ...ThreadedItemReply_viewer
+      tier
     }
   `,
   discussion: graphql`
