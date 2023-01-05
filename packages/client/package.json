@@ -21,6 +21,7 @@
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
+    "test": "jest --verbose --runInBand",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
@@ -28,6 +29,7 @@
     "@types/cleave.js": "^1.4.7",
     "@types/dompurify": "^2.4.0",
     "@types/draft-js": "^0.10.24",
+    "@types/jest": "^27.0.1",
     "@types/json2csv": "^4.4.0",
     "@types/jwt-decode": "^2.1.0",
     "@types/linkify-it": "^3.0.2",
@@ -53,6 +55,7 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "html-webpack-plugin": "5.0.0-beta.1",
+    "jest": "^27.0.6",
     "lint-staged": "^10.1.7",
     "prettier": "^2.6.1",
     "react-refresh": "^0.9.0",
@@ -129,11 +132,5 @@
     "tlds": "^1.192.0",
     "tslib": "^2.4.0",
     "unicode-substring": "^1.0.0"
-  },
-  "jest": {
-    "modulePaths": [
-      "<rootDir>/packages/"
-    ],
-    "testRegex": "/__tests__/.*.test\\.jsx?$"
   }
 }
