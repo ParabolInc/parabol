@@ -33,8 +33,8 @@ const customRedisQueries = {
         const templateType = type === 'poker' ? 'poker' : 'retrospective'
         return r
           .table('MeetingTemplate')
-          .filter({scope: 'PUBLIC', isActive: true, type: templateType})
-          .limit(1000)
+          .getAll('aGhostTeam', {index: 'teamId'})
+          .filter({isActive: true, type: templateType})
           .run()
       })
     )

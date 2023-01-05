@@ -362,8 +362,8 @@ export const enum TaskStatusLabel {
 }
 
 export const enum TierLabel {
-  PERSONAL = 'Personal',
-  PRO = 'Pro',
+  STARTER = 'Starter',
+  TEAM = 'Team',
   ENTERPRISE = 'Enterprise'
 }
 
@@ -388,8 +388,12 @@ export const enum Threshold {
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_POKER_DIMENSION_NAME = 50,
   MAX_REACTJIS = 12,
+  MAX_PERSONAL_TIER_TEAMS = 2,
   MAX_POKER_STORIES = 50,
   MAX_INTEGRATION_FETCH_TIME = 10000,
+  MIN_STICKY_TEAM_MEETING_ATTENDEES = 2,
+  MIN_STICKY_TEAM_MEETINGS = 3,
+  PERSONAL_TIER_LOCK_AFTER_DAYS = 30,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
   VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days
@@ -485,4 +489,10 @@ export const enum PollsAriaLabels {
   POLL_SUBMIT_VOTE = 'Submit poll vote',
   POLL_START = 'Start a poll',
   POLL_ADD_OPTION = 'Add a poll option'
+}
+
+export const enum AIExplainer {
+  STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`,
+  PREMIUM_MEETING = `Our friendly AI 🤖 is here to save you time by summarizing your meeting`,
+  PREMIUM_REFLECTIONS = `Our friendly AI 🤖 is here to save you time by summarizing your reflections`
 }

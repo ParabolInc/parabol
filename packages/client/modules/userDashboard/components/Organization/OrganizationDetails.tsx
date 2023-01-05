@@ -28,7 +28,7 @@ const OrganizationDetails = (props: Props) => {
     <OrgDetails>
       {'Created '}
       {makeDateString(createdAt)}
-      {tier !== 'personal' && (
+      {tier !== 'starter' && (
         <StyledTagBlock>
           <TierTag tier={tier} />
         </StyledTagBlock>

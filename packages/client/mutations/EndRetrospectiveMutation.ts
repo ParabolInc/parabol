@@ -52,6 +52,14 @@ graphql`
   }
 `
 
+graphql`
+  fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
+    meeting {
+      ...WholeMeetingSummary_meeting
+    }
+  }
+`
+
 const mutation = graphql`
   mutation EndRetrospectiveMutation($meetingId: ID!) {
     endRetrospective(meetingId: $meetingId) {
@@ -62,6 +70,7 @@ const mutation = graphql`
       }
       ...EndRetrospectiveMutation_notification @relay(mask: false)
       ...EndRetrospectiveMutation_team @relay(mask: false)
+      ...EndRetrospectiveMutation_meeting @relay(mask: false)
     }
   }
 `

@@ -95,7 +95,7 @@ const RetroMeetingSidebar = (props: Props) => {
           })!
           const showDiscussSection = isPhaseComplete('vote', phases)
           const phaseCount =
-            phaseType === 'discuss' && showDiscussSection ? discussPhase.stages.length : undefined
+            phaseType === 'discuss' && showDiscussSection ? discussPhase?.stages.length : undefined
           return (
             <Fragment key={phaseType}>
               <NewMeetingSidebarPhaseListItem

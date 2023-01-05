@@ -2,7 +2,6 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
-import {TierEnum} from '../../database/types/Invoice'
 import generateUID from '../../generateUID'
 import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -41,12 +40,15 @@ export default {
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
-      if (!(await isUserInOrg(viewerId, orgId))) {
+      if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 
       // VALIDATION
-      const orgTeams = await getTeamsByOrgIds([orgId], {isArchived: false})
+      const [orgTeams, organization] = await Promise.all([
+        getTeamsByOrgIds([orgId], {isArchived: false}),
+        dataLoader.get('organizations').load(orgId)
+      ])
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {newTeam},
@@ -64,10 +66,13 @@ export default {
       }
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
-        const {tier}: {tier: TierEnum} = organization
-        if (tier === 'personal') {
+        const {tier} = organization
+        if (tier === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
+      }
+      if (organization.lockedAt) {
+        return standardError(new Error('Organization is locked'), {userId: viewerId})
       }
 
       // RESOLUTION

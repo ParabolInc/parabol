@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ChangeEvent, FormEvent, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import Panel from '../../../../components/Panel/Panel'
@@ -14,10 +14,13 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {Threshold} from '../../../../types/constEnums'
 import linkify from '../../../../utils/linkify'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
-import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
+import {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
 import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
@@ -52,26 +55,67 @@ const FormInner = styled('div')({
   padding: '2rem'
 })
 
+const BoldText = styled('span')({
+  fontWeight: 600
+})
+
 export const NewTeamFieldBlock = styled('div')({
   width: '16rem'
 })
 
 const StyledButton = styled(PrimaryButton)({
   margin: '0 auto',
+  marginTop: 24,
   width: '16rem'
+})
+
+const WarningMsg = styled('div')({
+  background: PALETTE.GOLD_100,
+  padding: '16px 24px',
+  fontSize: 16,
+  borderRadius: 2,
+  lineHeight: '26px',
+  fontWeight: 500,
+  marginTop: 24
+})
+
+const StyledLink = styled('span')({
+  color: PALETTE.SKY_500,
+  cursor: 'pointer',
+  outline: 0,
+  fontWeight: 600,
+  ':hover, :focus, :active': {
+    color: PALETTE.SKY_600
+  }
 })
 
 const controlSize = 'medium'
 
 interface Props {
   isInitiallyNewOrg: boolean
-  organizations: NewTeamForm_organizations
+  organizationsRef: NewTeamForm_organizations$key
 }
 
 const NewTeamForm = (props: Props) => {
-  const {isInitiallyNewOrg, organizations} = props
+  const {isInitiallyNewOrg, organizationsRef} = props
+  const organizations = useFragment(
+    graphql`
+      fragment NewTeamForm_organizations on Organization @relay(plural: true) {
+        ...NewTeamOrgPicker_organizations
+        id
+        lockedAt
+        name
+        teams {
+          name
+        }
+      }
+    `,
+    organizationsRef
+  )
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
+  const lockedSelectedOrg = organizations.find((org) => org.id === orgId && org.lockedAt)
+  const disableFields = !!lockedSelectedOrg && !isNewOrg
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
@@ -141,6 +185,15 @@ const NewTeamForm = (props: Props) => {
     }
   }
 
+  const goToBilling = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'createTeam',
+      orgId,
+      upgradeTier: 'team'
+    })
+    history.push(`/me/organizations/${orgId}`)
+  }
+
   return (
     <StyledForm onSubmit={onSubmit}>
       <Header>
@@ -178,11 +231,20 @@ const NewTeamForm = (props: Props) => {
           />
           <NewTeamFormTeamName
             error={fields.teamName.error}
+            disabled={disableFields}
             onChange={onChange}
             teamName={fields.teamName.value}
           />
-
-          <StyledButton size='large' waiting={submitting}>
+          {disableFields && (
+            <WarningMsg>
+              <BoldText>{lockedSelectedOrg.name}</BoldText>
+              {` has reached the limit of `}
+              <BoldText>{`${Threshold.MAX_PERSONAL_TIER_TEAMS} free teams.`} </BoldText>
+              <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
+              {' to create more teams.'}
+            </WarningMsg>
+          )}
+          <StyledButton disabled={disableFields} size='large' waiting={submitting}>
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
           </StyledButton>
           {error && <StyledError>{error.message}</StyledError>}
@@ -192,14 +254,4 @@ const NewTeamForm = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewTeamForm, {
-  organizations: graphql`
-    fragment NewTeamForm_organizations on Organization @relay(plural: true) {
-      ...NewTeamOrgPicker_organizations
-      id
-      teams {
-        name
-      }
-    }
-  `
-})
+export default NewTeamForm

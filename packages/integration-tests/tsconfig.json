@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "commonjs",
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "sourceMap": true
   },
   "include": ["playwright.config.ts", "tests/**/*.ts"]

@@ -17,6 +17,7 @@ const ResponseMentioned = (props: Props) => {
       fragment ResponseMentioned_notification on NotifyResponseMentioned {
         ...NotificationTemplate_notification
         response {
+          id
           user {
             picture
             preferredName
@@ -36,8 +37,7 @@ const ResponseMentioned = (props: Props) => {
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
-    // :TODO: (jmtaber129): Link directly to card once we support that.
-    history.push(`/meet/${meetingId}`)
+    history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
   // :TODO: (jmtaber129): Show mention preview.

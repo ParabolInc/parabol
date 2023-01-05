@@ -4,26 +4,19 @@ extend type Mutation {
   """
   updateJiraDimensionField(
     """
-    The cloudId the field lives on
+    Id of the parabol task on which the dimension was updated
     """
-    cloudId: ID!
+    taskId: ID!
 
     """
-    The project the field lives on
+    Dimension name from the template used
     """
-    projectKey: ID!
-
-    """
-    The Jira issue type for which to update the field
-    """
-    issueType: ID!
-
     dimensionName: String!
 
     """
-    The jira field name that we should push estimates to
+    The jira field id that we should push estimates to
     """
-    fieldName: String!
+    fieldId: ID!
 
     """
     The meeting the update happend in. Returns a meeting object with updated serviceField
@@ -31,4 +24,3 @@ extend type Mutation {
     meetingId: ID!
   ): UpdateDimensionFieldPayload!
 }
-

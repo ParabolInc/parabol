@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {AccountCircle, ChangeHistory, GroupAdd, GroupWork, History} from '@mui/icons-material'
+import {AccountCircle, ChangeHistory, GroupAdd, GroupWork, History, Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -61,6 +61,10 @@ const HeaderText = styled('div')({
   paddingTop: 2
 })
 
+const GrapeLock = styled(Lock)({
+  color: PALETTE.GRAPE_500
+})
+
 const TimelineEventCard = (props: Props) => {
   const {children, iconName, IconSVG, title, timelineEvent} = props
   const {id: timelineEventId, createdAt, type} = timelineEvent
@@ -76,7 +80,8 @@ const TimelineEventCard = (props: Props) => {
                   history: <History />,
                   account_circle: <AccountCircle />,
                   group_add: <GroupAdd />,
-                  group_work: <GroupWork />
+                  group_work: <GroupWork />,
+                  lock: <GrapeLock />
                 }[iconName]
               }
             </EventIcon>

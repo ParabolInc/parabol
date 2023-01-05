@@ -4,8 +4,8 @@ const TierEnum = new GraphQLEnumType({
   name: 'TierEnum',
   description: 'The pay tier of the team',
   values: {
-    personal: {},
-    pro: {},
+    starter: {},
+    team: {},
     enterprise: {}
   }
 })

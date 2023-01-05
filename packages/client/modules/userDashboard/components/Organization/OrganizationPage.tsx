@@ -23,7 +23,7 @@ const OrgMembers = lazy(
 const OrganizationPage = (props: Props) => {
   const {match, organization} = props
   const {isBillingLeader, tier} = organization
-  const onlyShowMembers = !isBillingLeader && tier !== 'personal'
+  const onlyShowMembers = !isBillingLeader && tier !== 'starter'
   const {
     params: {orgId}
   } = match

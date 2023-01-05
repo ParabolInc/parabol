@@ -6,7 +6,7 @@ import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
-import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
+import resolveDowngradeToStarter from './resolveDowngradeToStarter'
 
 const removeFromOrg = async (
   userId: string,
@@ -61,7 +61,7 @@ const removeFromOrg = async (
   if (role === 'BILLING_LEADER') {
     const organization = await r.table('Organization').get(orgId).run()
     // if no other billing leader, promote the oldest
-    // if pro tier & no other member, downgrade to personal
+    // if team tier & no other member, downgrade to starter
     const otherBillingLeaders = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
@@ -84,13 +84,13 @@ const removeFromOrg = async (
             role: 'BILLING_LEADER'
           })
           .run()
-      } else if (organization.tier !== 'personal') {
-        await resolveDowngradeToPersonal(orgId, organization.stripeSubscriptionId!, userId)
+      } else if (organization.tier !== 'starter') {
+        await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, userId)
       }
     }
   }
   try {
-    await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, {prorationDate})
+    await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, dataLoader, {prorationDate})
   } catch (e) {
     console.log(e)
   }

@@ -4,10 +4,13 @@ import {RDatum} from '../../database/stricterR'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
+import {DataLoaderWorker} from '../../graphql/graphql'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
+import IUser from '../../postgres/types/IUser'
+import {analytics} from '../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../utils/epochTime'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
@@ -40,15 +43,14 @@ const maybeUpdateOrganizationActiveDomain = async (orgId: string, newUserEmail: 
     .run()
 }
 
-const changePause = (inactive: boolean) => async (_orgIds: string[], userId: string) => {
+const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
   const r = await getRethink()
-  segmentIo.track({
-    userId,
-    event: inactive ? 'Account Paused' : 'Account Unpaused'
-  })
+  const {id: userId, email} = user
+  inactive ? analytics.accountPaused(userId) : analytics.accountUnpaused(userId)
   segmentIo.identify({
     userId,
     traits: {
+      email,
       isActive: !inactive
     }
   })
@@ -68,7 +70,8 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], userId: str
   ])
 }
 
-const addUser = async (orgIds: string[], userId: string) => {
+const addUser = async (orgIds: string[], user: IUser) => {
+  const {id: userId} = user
   const r = await getRethink()
   const {organizations, organizationUsers} = await r({
     organizationUsers: r
@@ -95,13 +98,7 @@ const addUser = async (orgIds: string[], userId: string) => {
     return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
 
-  const [user] = await Promise.all([
-    getUserById(userId),
-    r.table('OrganizationUser').insert(docs).run()
-  ])
-  if (!user) {
-    throw new Error(`User does not exist: ${userId}`)
-  }
+  await r.table('OrganizationUser').insert(docs).run()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, user.email)
@@ -109,11 +106,12 @@ const addUser = async (orgIds: string[], userId: string) => {
   )
 }
 
-const deleteUser = async (orgIds: string[], userId: string) => {
+const deleteUser = async (orgIds: string[], user: IUser) => {
   const r = await getRethink()
+  orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user.id, orgId))
   return r
     .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
+    .getAll(user.id, {index: 'userId'})
     .filter((row: RDatum) => r.expr(orgIds).contains(row('orgId')))
     .update({
       removedAt: new Date()
@@ -145,13 +143,15 @@ export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
   type: InvoiceItemType,
+  dataLoader: DataLoaderWorker,
   options: Options = {}
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
 
+  const user = await dataLoader.get('users').loadNonNull(userId)
   const dbAction = dbActionTypeLookup[type]
-  await dbAction(orgIds, userId)
+  await dbAction(orgIds, user)
 
   const auditEventType = auditEventTypeLookup[type]
   await insertOrgUserAudit(orgIds, userId, auditEventType)
@@ -162,9 +162,9 @@ export default async function adjustUserCount(
     .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
-  const proOrgs = paidOrgs.filter((org) => org.tier === 'pro')
+  const proOrgs = paidOrgs.filter((org) => org.tier === 'team')
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
-  // personal & enterprise tiers do not follow the per-seat model
+  // starter & enterprise tiers do not follow the per-seat model
   if (proOrgs.length === 0) return
   if (type === InvoiceItemType.REMOVE_USER) {
     // if the user is paused, they've already been removed from stripe

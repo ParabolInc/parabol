@@ -20,7 +20,7 @@ const FacilitatorMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const facilitatorCandidateIds = meetingMembers
-    .filter(({user}) => user.id !== facilitatorUserId && user.isConnected)
+    .filter(({user}) => user.isConnected)
     .map(({user}) => user.id)
   const promoteViewerToFacilitator = () => {
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
