@@ -1,3 +1,0 @@
-extend type Mutation {
-  processScheduledLocks: Boolean!
-}
