@@ -128,7 +128,7 @@ const NewCheckInQuestion = (props: Props) => {
         readOnly={!isFacilitating}
         placeholder='e.g. How are you?'
         editorRef={editorRef}
-        updateAndroidQuestion={updateQuestionAndroidFallback}
+        setEditorStateFallback={updateQuestionAndroidFallback}
       />
       {isFacilitating && (
         <>

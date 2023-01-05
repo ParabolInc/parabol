@@ -31,7 +31,7 @@ interface Props extends Handlers {
   setEditorState: SetEditorState
   readOnly: boolean
   placeholder: string
-  updateAndroidQuestion?: () => void
+  setEditorStateFallback?: () => void
 }
 
 interface EntityPasteOffset {
@@ -58,7 +58,7 @@ const EditorInputWrapper = (props: Props) => {
     handleReturn,
     placeholder,
     readOnly,
-    updateAndroidQuestion
+    setEditorStateFallback
   } = props
   const entityPasteStartRef = useRef<EntityPasteOffset | undefined>(undefined)
   const ks = useKeyboardShortcuts(editorState, setEditorState, {
@@ -155,8 +155,8 @@ const EditorInputWrapper = (props: Props) => {
 
   // Update question on blur of the editor field.
   const handleBlur = () => {
-    if (isAndroid && updateAndroidQuestion) {
-      updateAndroidQuestion()
+    if (isAndroid && setEditorStateFallback) {
+      setEditorStateFallback()
     }
   }
 
