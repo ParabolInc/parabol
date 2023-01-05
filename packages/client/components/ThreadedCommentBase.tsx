@@ -92,14 +92,11 @@ const ThreadedCommentBase = (props: Props) => {
 
   useEffect(() => {
     if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
-      const contentState = editorState.getCurrentContent()
-      const summary = contentState.getPlainText()
       SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
         source: 'Discussion',
         tier: viewer.tier,
         meetingId,
-        discussionTopicId,
-        summary
+        discussionTopicId
       })
     }
   }, [])

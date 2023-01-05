@@ -46,9 +46,7 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     upgradeTier: {type: TierEnum},
     notificationType: {type: NotificationEnum},
     tier: {type: TierEnum},
-    discussionTopicId: {type: GraphQLID},
-    summary: {type: GraphQLString},
-    discussionSummaries: {type: GraphQLList(GraphQLString)}
+    discussionTopicId: {type: GraphQLID}
   })
 })
 

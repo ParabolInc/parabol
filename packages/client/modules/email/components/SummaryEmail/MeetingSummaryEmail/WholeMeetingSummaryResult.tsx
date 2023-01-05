@@ -7,7 +7,6 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../../../../../mutations/SendClientSegmentEventMutation'
 import {AIExplainer} from '../../../../../types/constEnums'
-import {isNotNull} from '../../../../../utils/predicates'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const topicTitleStyle = {
@@ -46,16 +45,6 @@ const WholeMeetingSummaryResult = (props: Props) => {
         __typename
         id
         summary
-        phases {
-          phaseType
-          ... on DiscussPhase {
-            stages {
-              discussion {
-                summary
-              }
-            }
-          }
-        }
         team {
           tier
         }
@@ -64,18 +53,13 @@ const WholeMeetingSummaryResult = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const {summary: wholeMeetingSummary, team, phases} = meeting
-  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
-  const {stages} = discussPhase ?? {}
+  const {summary: wholeMeetingSummary, team} = meeting
   const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   useEffect(() => {
-    const discussionSummaries = stages?.map((stage) => stage.discussion?.summary).filter(isNotNull)
     SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
       source: 'Meeting Summary',
       tier: meeting.team.tier,
-      meetingId: meeting.id,
-      discussionSummaries,
-      summary: wholeMeetingSummary
+      meetingId: meeting.id
     })
   }, [])
   return (
