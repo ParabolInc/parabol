@@ -21,7 +21,7 @@
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
-    "test": "jest --verbose --runInBand",
+    "test": "jest --verbose",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
