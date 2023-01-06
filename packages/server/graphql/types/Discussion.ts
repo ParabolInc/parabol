@@ -7,13 +7,15 @@ import {
   GraphQLString
 } from 'graphql'
 import {AGENDA_ITEMS, DISCUSS} from 'parabol-client/utils/constants'
-import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
-import DiscussPhase from '../../database/types/DiscussPhase'
-import EstimatePhase from '../../database/types/EstimatePhase'
-import TeamPromptResponsesPhase from '../../database/types/TeamPromptResponsesPhase'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
+import {
+  isAgendaItemsPhase,
+  isDiscussPhase,
+  isEstimatePhase,
+  isTeamPromptResponsesPhase
+} from '../meetingTypePredicates'
 import {augmentDBStage} from '../resolvers'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
@@ -61,9 +63,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
         const {phases, teamId} = meeting
         switch (discussionTopicType) {
           case 'agendaItem': {
-            const phase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS) as
-              | AgendaItemsPhase
-              | undefined
+            const phase = phases.find(isAgendaItemsPhase)
             if (!phase) {
               return null
             }
@@ -73,9 +73,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
             return dbStage ? augmentDBStage(dbStage, meetingId, AGENDA_ITEMS, teamId) : null
           }
           case 'teamPromptResponse': {
-            const phase = phases.find((phase) => phase.phaseType === 'RESPONSES') as
-              | TeamPromptResponsesPhase
-              | undefined
+            const phase = phases.find(isTeamPromptResponsesPhase)
             if (!phase) {
               return null
             }
@@ -85,9 +83,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
             return dbStage ? augmentDBStage(dbStage, meetingId, 'RESPONSES', teamId) : null
           }
           case 'reflectionGroup': {
-            const phase = phases.find((phase) => phase.phaseType === DISCUSS) as
-              | DiscussPhase
-              | undefined
+            const phase = phases.find(isDiscussPhase)
             if (!phase) {
               return null
             }
@@ -97,9 +93,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
             return dbStage ? augmentDBStage(dbStage, meetingId, DISCUSS, teamId) : null
           }
           case 'task': {
-            const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as
-              | EstimatePhase
-              | undefined
+            const phase = phases.find(isEstimatePhase)
             if (!phase) {
               return null
             }

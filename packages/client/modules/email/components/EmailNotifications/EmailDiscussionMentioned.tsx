@@ -12,7 +12,7 @@ import fromStageIdToUrl from '../../../../utils/meetings/fromStageIdToUrl'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
 
-const editorStyles = {
+const editorStyles: React.CSSProperties = {
   backgroundColor: '#FFFFFF',
   borderColor: PALETTE.SLATE_400,
   borderRadius: '4px',
