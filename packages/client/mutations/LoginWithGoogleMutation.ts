@@ -5,6 +5,7 @@ import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
 import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import ReactGA from 'react-ga4'
 
 const mutation = graphql`
   mutation LoginWithGoogleMutation(
