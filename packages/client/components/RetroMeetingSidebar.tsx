@@ -90,8 +90,6 @@ const RetroMeetingSidebar = (props: Props) => {
               setConfirmingPhase(null)
               gotoStageId(itemStageId).catch()
               handleMenuClick()
-              console.log('index: ', index)
-              console.log('maxPhaseIndex: ', maxPhaseIndex)
               if (index === maxPhaseIndex! + 1) {
                 const currentPhaseIndex = index
                 UpdateMaxPhaseIndexMutation(
@@ -189,7 +187,6 @@ export default createFragmentContainer(RetroMeetingSidebar, {
         }
       }
       maxPhaseIndex
-      currentPhaseIndex
     }
   `
 })

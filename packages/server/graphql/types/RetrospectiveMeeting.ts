@@ -196,13 +196,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     },
     maxPhaseIndex: {
       type: GraphQLInt,
-      description: 'Meeting maximum phase index',
-      resolve: ({maxPhaseIndex}) => maxPhaseIndex || 0
-    },
-    currentPhaseIndex: {
-      type: GraphQLInt,
-      description: 'Current phase index',
-      resolve: ({currentPhaseIndex}) => currentPhaseIndex || 0
+      description: 'Meeting maximum phase index'
     }
   })
 })

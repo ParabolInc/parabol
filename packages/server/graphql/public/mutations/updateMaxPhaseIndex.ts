@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {DeepPartial} from '../../../../client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
@@ -11,7 +12,6 @@ const updateMaxPhaseIndex: MutationResolvers['updateMaxPhaseIndex'] = async (
   const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
   // VALIDATION
 
   // RESOLUTION
@@ -20,7 +20,7 @@ const updateMaxPhaseIndex: MutationResolvers['updateMaxPhaseIndex'] = async (
     .table('NewMeeting')
     .get(meetingId)
     .update({
-      maxPhaseIndex: currentPhaseIndex
+      maxPhaseIndex: currentPhaseIndex as DeepPartial<number> | undefined
     })
     .run()
   dataLoader.get('newMeetings').clear(meetingId)

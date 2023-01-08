@@ -28,13 +28,13 @@ export default class MeetingRetrospective extends Meeting {
   totalVotes: number
   maxVotesPerGroup: number
   disableAnonymity: boolean
+  maxPhaseIndex: number
   // end meeting stats
   commentCount?: number
   taskCount?: number
   templateId: string
   topicCount?: number
   reflectionCount?: number
-  maxPhaseIndex: number
 
   constructor(input: Input) {
     const {
@@ -65,6 +65,6 @@ export default class MeetingRetrospective extends Meeting {
     this.showConversionModal = showConversionModal
     this.templateId = templateId
     this.disableAnonymity = disableAnonymity
-    this.maxPhaseIndex = maxPhaseIndex
+    this.maxPhaseIndex = maxPhaseIndex || 0
   }
 }

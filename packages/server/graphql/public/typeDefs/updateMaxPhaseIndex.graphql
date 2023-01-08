@@ -4,10 +4,6 @@ extend type Mutation {
   """
   updateMaxPhaseIndex(
     """
-    Current phase index
-    """
-    maxPhaseIndex: Int
-    """
     Meeting ID
     """
     meetingId: String!
@@ -25,18 +21,9 @@ union UpdateMaxPhaseIndexPayload = ErrorPayload | UpdateMaxPhaseIndexSuccess
 
 type UpdateMaxPhaseIndexSuccess {
   """
-  Meeting with updated maxPhaseIndex
+  Updated meeting
   """
-  meetingId: String!
-
-  """
-  Current Phase Index
-  """
-  currentPhaseIndex: Int
-  """
-  Meeting Maximum phase Index
-  """
-  maxPhaseIndex: Int
+  meeting: RetrospectiveMeeting
 }
 
 extend union MeetingSubscriptionPayload = UpdateMaxPhaseIndexSuccess

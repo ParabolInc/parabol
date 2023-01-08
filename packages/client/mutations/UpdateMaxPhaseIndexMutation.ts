@@ -5,9 +5,9 @@ import {UpdateMaxPhaseIndexMutation as TUpdateMaxPhaseIndexMutation} from '../__
 
 graphql`
   fragment UpdateMaxPhaseIndexMutation_meeting on UpdateMaxPhaseIndexSuccess {
-    meetingId
-    currentPhaseIndex
-    maxPhaseIndex
+    meeting {
+      maxPhaseIndex
+    }
   }
 `
 
