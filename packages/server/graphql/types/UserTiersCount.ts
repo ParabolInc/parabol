@@ -7,17 +7,17 @@ const UserTiersCount = new GraphQLObjectType<any, GQLContext>({
   name: 'UserTiersCount',
   description: 'A count of the number of account tiers a user belongs to.',
   fields: () => ({
-    tierPersonalCount: {
+    tierStarterCount: {
       type: GraphQLInt,
-      description: 'The number of personal orgs the user is active upon'
+      description: 'The number of starter orgs the user is active upon'
     },
-    tierProCount: {
+    tierTeamCount: {
       type: GraphQLInt,
-      description: 'The number of pro orgs the user is active upon'
+      description: 'The number of orgs on the team tier the user is active upon'
     },
-    tierProBillingLeaderCount: {
+    tierTeamBillingLeaderCount: {
       type: GraphQLInt,
-      description: 'The number of pro orgs the user holds the role of Billing Leader'
+      description: 'The number of orgs on the team tier the user holds the role of Billing Leader'
     },
     user: {
       type: User,

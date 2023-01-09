@@ -10,7 +10,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import useScript from '../../../../hooks/useScript'
 import useSegmentTrack from '../../../../hooks/useSegmentTrack'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
-import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
+import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
 import {CompletedHandler} from '../../../../types/relayMutations'
 import StripeClientManager, {StripeError} from '../../../../utils/StripeClientManager'
 import CreditCardErrorLine from './CreditCardErrorLine'
@@ -150,7 +150,7 @@ const CreditCardForm = (props: Props) => {
         {onError, onCompleted: handleCompleted}
       )
     } else {
-      UpgradeToProMutation(
+      UpgradeToTeamTierMutation(
         atmosphere,
         {orgId, stripeToken},
         {onError, onCompleted: handleCompleted}

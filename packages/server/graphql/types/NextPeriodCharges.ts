@@ -26,7 +26,7 @@ const NextPeriodCharges = new GraphQLObjectType<any, GQLContext>({
     },
     interval: {
       type: GraphQLString,
-      description: '"year" if enterprise, else "month" for pro'
+      description: '"year" if enterprise, else "month" for team'
     }
   })
 })

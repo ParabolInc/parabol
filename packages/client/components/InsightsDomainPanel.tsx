@@ -149,8 +149,8 @@ const InsightsDomainPanel = (props: Props) => {
     activeUserCount,
     meetingCount
   } = domain
-
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
+
   return (
     <Wrapper>
       <StatsPanel>

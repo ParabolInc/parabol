@@ -187,7 +187,7 @@ export const newMeetingFields = () => ({
   },
   locked: {
     type: new GraphQLNonNull(GraphQLBoolean),
-    description: 'Is this locked for personal plans?',
+    description: 'Is this locked for starter plans?',
     resolve: async (
       {endedAt, teamId}: {endedAt?: Date | null; teamId: string},
       _args: any,

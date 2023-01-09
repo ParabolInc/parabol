@@ -68,6 +68,10 @@ const finishRetroMeeting = async (
   sendNewMeetingSummary(meeting, context).catch(console.log)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
+  const data = {meetingId}
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+  publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
 }
 
 export default {

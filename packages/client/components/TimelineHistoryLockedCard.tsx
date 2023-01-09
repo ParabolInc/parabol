@@ -84,7 +84,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
     if (visible) {
       SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'timelineHistoryLock',
-        upgradeTier: 'pro',
+        upgradeTier: 'team',
         orgId
       })
     }
@@ -93,7 +93,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
   const onClick = () => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'timelineHistoryLock',
-      upgradeTier: 'pro',
+      upgradeTier: 'team',
       orgId
     })
     history.push(`/me/organizations/${orgId}`)
