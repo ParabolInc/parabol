@@ -1,7 +1,9 @@
+//@ts-ignore
 import faker from 'faker'
 import fetch from 'node-fetch'
 import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+//@ts-ignore
 import persistFunction from '../graphql/persistFunction'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
@@ -76,7 +78,7 @@ export async function sendPublic(req: {
   return body.payload
 }
 
-const SIGNUP_WITH_PASSWORD_MUTATION = `
+export const SIGNUP_WITH_PASSWORD_MUTATION = `
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!

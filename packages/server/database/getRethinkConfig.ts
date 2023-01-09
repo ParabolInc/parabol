@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+//@ts-ignore
 import flag from 'node-env-flag'
 import path from 'path'
 import {parse} from 'url'
