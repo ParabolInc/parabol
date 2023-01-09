@@ -1,7 +1,7 @@
 import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
 import getMailManager from '../../../email/getMailManager'
-import resetPasswordEmailCreator from '../../../email/resetPasswordEmailCreator'
+import limitsEmailCreator from '../../../email/limitsEmailCreator'
 import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 
@@ -51,10 +51,6 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
       .run()
   ])
 
-  // const billingLeaderUserIdsToBeLocked = orgUsersToBeLocked.filter(isValid).map((orgUsers) => {
-  //   return orgUsers.filter((orgUser) => orgUser.role === 'BILLING_LEADER').map(({userId}) => userId)
-  // })
-
   const billingLeaderOrgUsersToBeLocked = orgUsersToBeLocked
     .filter(isValid)
     .flatMap((orgUsers) => orgUsers.filter((orgUser) => orgUser.role === 'BILLING_LEADER'))
@@ -79,7 +75,7 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
     dataLoader.get('users').loadMany(billingLeaderOrgUserIdsToBeWarned)
   ])
 
-  await Promise.all(
+  await Promise.all([
     orgIdsToBeLocked.flatMap((orgId) => {
       // TODO: need to make sure these users are unique
       const billingLeaderOrgUserIds = billingLeaderOrgUsersToBeLocked
@@ -92,7 +88,28 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
 
       return billingLeaderUsers.map((user) => {
         const {preferredName, email} = user
-        const {subject, body, html} = resetPasswordEmailCreator({orgId, preferredName})
+        const {subject, body, html} = limitsEmailCreator({orgId, preferredName})
+        return getMailManager().sendEmail({
+          to: email,
+          subject,
+          body,
+          html
+        })
+      })
+    }),
+    orgIdsToBeWarned.flatMap((orgId) => {
+      // TODO: need to make sure these users are unique
+      const billingLeaderOrgUserIds = billingLeaderOrgUsersToBeWarned
+        .filter((orgUser) => orgUser.orgId === orgId)
+        .map(({userId}) => userId)
+
+      const billingLeaderUsers = billingLeadersToBeWarned
+        .filter(isValid)
+        .filter((user) => billingLeaderOrgUserIds.includes(user.id))
+
+      return billingLeaderUsers.map((user) => {
+        const {preferredName, email} = user
+        const {subject, body, html} = limitsEmailCreator({orgId, preferredName})
         return getMailManager().sendEmail({
           to: email,
           subject,
@@ -101,13 +118,15 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         })
       })
     })
-  )
+  ])
 
   // TODO: add to be warned
 
   console.log('🚀 ~ billingLeaderUserIdsToBeLocked', {
     billingLeadersToBeLocked,
-    billingLeadersToBeWarned
+    billingLeadersToBeWarned,
+    orgIdsToBeWarned,
+    orgIdsToBeLocked
   })
 
   return true

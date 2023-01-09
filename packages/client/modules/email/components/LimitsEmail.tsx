@@ -41,43 +41,40 @@ export default function LimitsEmail(props: NotificationSummaryProps) {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header align='center' appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
-        <p
-          style={{...copyStyle, textAlign: 'center', marginBottom: '0px'}}
-        >{`Hi ${preferredName} 👋`}</p>
-        <p style={{...copyStyle, textAlign: 'center'}}>
-          {'You have '}
+        <Header align='left' appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
+        <p style={{...copyStyle, marginBottom: '0px'}}>{`Hi ${preferredName} 👋`}</p>
+        <EmptySpace height={16} />
+        <p style={{...copyStyle}}>
+          {'This is a follow-up notification to remind you that '}
           <span style={{fontWeight: 600}}>
-            {/* {`${notificationCount} new ${plural(notificationCount, 'notification')}`} */}
+            {`TEST's Parabol account is at the risk of deactivation`}
           </span>
-          {' from Parabol.'}
+          {' because you’ve exceeded the two team limit on your '}
+          <a style={linkStyle} href={ExternalLinks.PRICING_LINK}>
+            {'Starter Plan'}
+          </a>
+          {
+            '. Once your account is deactivated, you will lose access to your teams and won’t be able to run retrospective, Sprint Poker or standup meetings with Parabol.'
+          }
         </p>
-        {/* {notificationRefs.map((notificationRef, i) => {
-          return (
-            <EmailNotificationPicker
-              key={i}
-              appOrigin={appOrigin}
-              notificationRef={notificationRef}
-            />
-          )
-        })} */}
-        <Button url={tasksURL}>{'See all notifications'}</Button>
+        <EmptySpace height={16} />
+        <p style={{...copyStyle}}>
+          {`You'll need to `}
+          <span style={{fontWeight: 600, textDecoration: 'underline'}}>
+            {`upgrade your account within the next 7 days`}
+          </span>
+          {` to avoid losing access to your agile meetings.`}
+        </p>
+        <Button url={tasksURL}>{'Keep Access'}</Button>
         <EmptySpace height={24} />
         <p style={copyStyle}>
-          {'If you need anything from us, don’t hesitate to reach out at '}
+          {`If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, feel free to `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
-            {ContactInfo.EMAIL_LOVE}
+            {'contact us'}
           </a>
-          {'.'}
+          {` - we're happy to help make this process as smooth as possible.`}
         </p>
-        <p style={copyStyle}>
-          {'Have fun & do great work,'}
-          <br />
-          {'- '}
-          <a style={linkStyle} href={ExternalLinks.TEAM}>
-            {'Parabol Team'}
-          </a>
-        </p>
+        <p style={copyStyle}>{'Parabol Team'}</p>
         <EmptySpace height={16} />
       </EmailBlock>
       <EmailBlock hasBackgroundColor innerMaxWidth={innerMaxWidth}>
