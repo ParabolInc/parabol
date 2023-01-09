@@ -8,6 +8,7 @@ import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const billingLeaderIds = (await r
@@ -25,7 +26,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({orgId})
-    .update({suggestedTier: 'pro'})
+    .update({suggestedTier: 'team'})
     .run()
 
   await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
@@ -117,18 +118,13 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
+  const {tierLimitExceededAt, tier, featureFlags, name: orgName} = organization
 
-  if (!organization.featureFlags?.includes('teamsLimit')) {
-    return
-  }
+  if (!featureFlags?.includes('teamsLimit')) return
 
-  if (organization.tierLimitExceededAt || organization.tier !== 'starter') {
-    return
-  }
+  if (tierLimitExceededAt || tier !== 'starter') return
 
-  if (!(await isLimitExceeded(orgId, dataLoader))) {
-    return
-  }
+  if (!(await isLimitExceeded(orgId, dataLoader))) return
 
   const now = new Date()
 
@@ -147,7 +143,12 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
   if (organization.activeDomain) {
-    await enableUsageStats(billingLeadersIds, orgId)
-    await sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader)
+    await Promise.all([
+      enableUsageStats(billingLeadersIds, orgId),
+      sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
+      billingLeaders.map((billingLeader) =>
+        sendTeamsLimitEmail({user: billingLeader, orgId, orgName, emailType: 'thirtyDayWarning'})
+      )
+    ])
   }
 }

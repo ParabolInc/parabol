@@ -3,17 +3,16 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import SevenDayWarningEmail from '../../client/modules/email/components/LimitsEmails/SevenDayWarningEmail'
+import {TeamLimitsEmailType} from '../billing/helpers/sendTeamsLimitEmail'
 import {analytics} from '../utils/analytics/analytics'
 import emailTemplate from './emailTemplate'
 
-export type TeamLimitsEmailType = 'locked' | 'sevenDayWarning' | 'thirtyDayWarning'
-
 interface Props {
-  orgId: string
-  preferredName: string
-  emailType: TeamLimitsEmailType
-  orgName: string
   userId: string
+  preferredName: string
+  orgId: string
+  orgName: string
+  emailType: TeamLimitsEmailType
 }
 
 const limitsEmailCreator = (props: Props) => {

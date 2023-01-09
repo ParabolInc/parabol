@@ -1,7 +1,6 @@
 import ms from 'ms'
+import sendTeamsLimitEmail from '../../../billing/helpers/sendTeamsLimitEmail'
 import getRethink from '../../../database/rethinkDriver'
-import getMailManager from '../../../email/getMailManager'
-import limitsEmailCreator from '../../../email/limitsEmailCreator'
 import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 
@@ -79,26 +78,13 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         .filter((orgUser) => orgUser.orgId === orgId)
         .map(({userId}) => userId)
 
-      const billingLeaderUsers = billingLeadersToBeLocked
+      const orgBillingLeaders = billingLeadersToBeLocked
         .filter(isValid)
         .filter((user) => billingLeaderOrgUserIds.includes(user.id))
 
-      return billingLeaderUsers.map((user) => {
-        const {id: userId, preferredName, email} = user
-        const {subject, body, html} = limitsEmailCreator({
-          userId,
-          orgId,
-          preferredName,
-          orgName,
-          emailType: 'locked'
-        })
-        return getMailManager().sendEmail({
-          to: email,
-          subject,
-          body,
-          html
-        })
-      })
+      return orgBillingLeaders.map((user) =>
+        sendTeamsLimitEmail({user, orgId, orgName, emailType: 'locked'})
+      )
     }),
     orgsToBeWarned.flatMap(({id: orgId, name: orgName}) => {
       // TODO: need to make sure these users are unique
@@ -106,30 +92,15 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         .filter((orgUser) => orgUser.orgId === orgId)
         .map(({userId}) => userId)
 
-      const billingLeaderUsers = billingLeadersToBeWarned
+      const orgBillingLeaders = billingLeadersToBeWarned
         .filter(isValid)
         .filter((user) => billingLeaderOrgUserIds.includes(user.id))
 
-      return billingLeaderUsers.map((user) => {
-        const {id: userId, preferredName, email} = user
-        const {subject, body, html} = limitsEmailCreator({
-          userId,
-          orgId,
-          preferredName,
-          orgName,
-          emailType: 'sevenDayWarning'
-        })
-        return getMailManager().sendEmail({
-          to: email,
-          subject,
-          body,
-          html
-        })
-      })
+      return orgBillingLeaders.map((user) =>
+        sendTeamsLimitEmail({user, orgId, orgName, emailType: 'sevenDayWarning'})
+      )
     })
   ])
-
-  // TODO: add to be warned
 
   console.log('🚀 ~ billingLeaderUserIdsToBeLocked', {
     billingLeadersToBeLocked,
