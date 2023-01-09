@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import ReactGA from 'react-ga4'
 import {commitMutation} from 'react-relay'
 import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
 import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
-import ReactGA from 'react-ga4'
 
 const mutation = graphql`
   mutation LoginWithGoogleMutation(
@@ -19,6 +19,7 @@ const mutation = graphql`
         message
       }
       authToken
+      isNewUser
       user {
         tms
         ...UserAnalyticsFrag @relay(mask: false)
@@ -43,7 +44,10 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError} = loginWithGoogle
+      const {error: uiError, isNewUser} = loginWithGoogle
+      if (isNewUser) {
+        ReactGA.event('sign_up')
+      }
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithGoogle)

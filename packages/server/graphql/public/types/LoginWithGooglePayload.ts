@@ -4,6 +4,7 @@ export type LoginWithGooglePayloadSource =
   | {
       userId: string
       authToken: string
+      isNewUser: boolean
     }
   | {error: {message: string}}
 
