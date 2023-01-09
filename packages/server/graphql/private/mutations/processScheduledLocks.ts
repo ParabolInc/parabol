@@ -35,17 +35,20 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
   })
   const orgIdsToBeWarned = orgsToBeWarned.map(({id}) => id)
 
-  const [orgUsersToBeLocked, orgUsersToBeWarned] = await Promise.all([
-    dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsToBeLocked),
-    dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsToBeWarned),
-    r
-      .table('Organization')
-      .getAll(r.args(orgIdsToBeLocked))
-      // .update({
-      //   lockedAt: new Date()
-      // })
-      .run()
-  ])
+  const [orgUsersToBeLocked, teamsToBeLocked, orgUsersToBeWarned, teamsToBeWarned] =
+    await Promise.all([
+      dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsToBeLocked),
+      dataLoader.get('teamsByOrgIds').loadMany(orgIdsToBeLocked),
+      dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsToBeWarned),
+      dataLoader.get('teamsByOrgIds').loadMany(orgIdsToBeWarned),
+      r
+        .table('Organization')
+        .getAll(r.args(orgIdsToBeLocked))
+        // .update({
+        //   lockedAt: new Date()
+        // })
+        .run()
+    ])
 
   const billingLeaderOrgUsersToBeLocked = orgUsersToBeLocked
     .filter(isValid)

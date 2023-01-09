@@ -30,7 +30,7 @@ export interface LimitsEmailProps {
 
 export default function LockedEmail(props: LimitsEmailProps) {
   const {preferredName, orgId, orgName} = props
-  const tasksURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
+  const billingURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
       utm_medium: 'email',
@@ -60,7 +60,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
           </a>
           {'.'}
         </p>
-        <Button url={tasksURL}>{'Reactivate Teams'}</Button>
+        <Button url={billingURL}>{'Reactivate Teams'}</Button>
         <EmptySpace height={16} />
         <p style={copyStyle}>
           {`If you have any questions feel free to contact us - `}

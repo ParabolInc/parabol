@@ -8,18 +8,20 @@ type Props = {
   user: IUser
   orgId: string
   orgName: string
+  stickyTeamCount?: number
   emailType: TeamLimitsEmailType
 }
 
 const sendTeamsLimitEmail = (props: Props) => {
-  const {user, orgId, orgName, emailType} = props
+  const {user, orgName, orgId, emailType, stickyTeamCount} = props
   const {id: userId, preferredName, email} = user
   const {subject, body, html} = limitsEmailCreator({
     userId,
     orgId,
     preferredName,
     orgName,
-    emailType
+    emailType,
+    stickyTeamCount
   })
   return getMailManager().sendEmail({
     to: email,

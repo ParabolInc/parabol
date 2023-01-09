@@ -4,12 +4,12 @@ import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {emailCopyStyle, emailLinkStyle} from '../../styles'
-import Button from './../Button'
-import EmailBlock from './../EmailBlock/EmailBlock'
-import EmailFooter from './../EmailFooter/EmailFooter'
-import EmptySpace from './../EmptySpace/EmptySpace'
-import Header from './../Header/Header'
-import Layout from './../Layout/Layout'
+import Button from '../Button'
+import EmailBlock from '../EmailBlock/EmailBlock'
+import EmailFooter from '../EmailFooter/EmailFooter'
+import EmptySpace from '../EmptySpace/EmptySpace'
+import Header from '../Header/Header'
+import Layout from '../Layout/Layout'
 import {LimitsEmailProps} from './LockedEmail'
 
 const innerMaxWidth = 480
@@ -23,13 +23,17 @@ const linkStyle = {
   ...emailLinkStyle
 }
 
-export default function SevenDayWarningEmail(props: LimitsEmailProps) {
-  const {preferredName, orgId, orgName} = props
+type Props = LimitsEmailProps & {
+  stickyTeamCount: number
+}
+
+export default function ThirtyDayWarningEmail(props: Props) {
+  const {preferredName, orgId, orgName, stickyTeamCount} = props
   const billingURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
       utm_medium: 'email',
-      utm_campaign: 'seven-day-warning-email'
+      utm_campaign: 'thirty-day-warning-email'
     }
   })
   return (
@@ -39,34 +43,40 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
         <p style={{...copyStyle, marginBottom: '0px'}}>{`Hi ${preferredName} 👋`}</p>
         <EmptySpace height={16} />
         <p style={{...copyStyle, marginBottom: '0px'}}>
-          {'This is a follow-up notification to remind you that '}
+          {'This is a friendly note to let you know that '}
           <span style={{fontWeight: 600}}>
-            {`${orgName}'s Parabol account is at risk of deactivation`}
+            {`${orgName} has officially reached ${stickyTeamCount} active teams on Parabol`}
           </span>
-          {' because you’ve exceeded the two team limit on your '}
-          <a style={linkStyle} href={ExternalLinks.PRICING_LINK}>
-            {'Starter Plan'}
-          </a>
           {
-            '. Once your account is deactivated, you will lose access to your teams and won’t be able to run Retrospective, Sprint Poker or Standup meetings with Parabol.'
+            ' - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.'
           }
         </p>
         <EmptySpace height={16} />
         <p style={{...copyStyle}}>
-          {`You'll need to `}
-          <span style={{fontWeight: 600, textDecoration: 'underline'}}>
-            {`upgrade your account within the next 7 days`}
-          </span>
-          {` to avoid losing access to your agile meetings.`}
+          {`As a reminder: `}
+          <span style={{fontWeight: 600}}>{`Parabol's `}</span>
+          <a style={linkStyle} href={ExternalLinks.PRICING_LINK}>
+            {'Starter Plan'}
+          </a>
+          <span style={{fontWeight: 600}}>{` has a limit of two teams`}</span>
+          {`. Please `}
+          <a style={linkStyle} href={billingURL}>
+            {'upgrade your account'}
+          </a>
+          {` to continue using Parabol with all of your teams.`}
         </p>
-        <Button url={billingURL}>{'Keep Access'}</Button>
+        <Button url={billingURL}>{'Upgrade'}</Button>
         <EmptySpace height={16} />
         <p style={copyStyle}>
-          {`If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, feel free to `}
+          {`If you aren’t ready to upgrade, then `}
+          <span
+            style={{fontWeight: 600}}
+          >{`in 30 days your account will revert to the two teams `}</span>
+          {`allowed on the Starter plan. Feel free to `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {'contact us'}
           </a>
-          {` - we're happy to help make this process as smooth as possible.`}
+          {` with any questions - we’re here to help!`}
         </p>
         <p style={copyStyle}>{'Parabol Team'}</p>
         <EmptySpace height={16} />
