@@ -1,43 +1,38 @@
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import appOrigin from 'parabol-server/appOrigin'
 import React from 'react'
-import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
-import makeAppURL from '../../../utils/makeAppURL'
-import {emailCopyStyle, emailLinkStyle} from '../styles'
-import Button from './Button'
-import EmailBlock from './EmailBlock/EmailBlock'
-import EmailFooter from './EmailFooter/EmailFooter'
-import EmptySpace from './EmptySpace/EmptySpace'
-import Header from './Header/Header'
-import Layout from './Layout/Layout'
+import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
+import makeAppURL from '../../../../utils/makeAppURL'
+import {emailCopyStyle, emailLinkStyle} from '../../styles'
+import Button from './../Button'
+import EmailBlock from './../EmailBlock/EmailBlock'
+import EmailFooter from './../EmailFooter/EmailFooter'
+import EmptySpace from './../EmptySpace/EmptySpace'
+import Header from './../Header/Header'
+import Layout from './../Layout/Layout'
+import {LimitsEmailProps} from './LockedEmail'
 
 const innerMaxWidth = 480
 
 const copyStyle = {
-  ...emailCopyStyle
+  ...emailCopyStyle,
+  marginBottom: '0px'
 }
 
-export const linkStyle = {
+const linkStyle = {
   ...emailCopyStyle,
   ...emailLinkStyle
 }
 
-export const notificationSummaryUrlParams = {
-  utm_source: 'notification email',
-  utm_medium: 'email',
-  utm_campaign: 'notifications',
-  openNotifs: '1'
-}
-
-export interface NotificationSummaryProps {
-  orgId: string
-  preferredName: string
-}
-
-// export default function LimitsEmail(props: NotificationSummaryProps) {
-export default function LimitsEmail(props: NotificationSummaryProps) {
+export default function SevenDayWarningEmail(props: LimitsEmailProps) {
   const {preferredName, orgId} = props
-  const tasksURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {})
+  const tasksURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
+    searchParams: {
+      utm_source: 'notification email',
+      utm_medium: 'email',
+      utm_campaign: 'seven-day-warning-email'
+    }
+  })
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
@@ -66,7 +61,7 @@ export default function LimitsEmail(props: NotificationSummaryProps) {
           {` to avoid losing access to your agile meetings.`}
         </p>
         <Button url={tasksURL}>{'Keep Access'}</Button>
-        <EmptySpace height={24} />
+        <EmptySpace height={16} />
         <p style={copyStyle}>
           {`If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, feel free to `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>

@@ -1,21 +1,26 @@
+import LockedEmail from 'parabol-client/modules/email/components/LimitsEmails/LockedEmail'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-import LimitsEmail from '../../client/modules/email/components/LimitsEmail'
+import SevenDayWarningEmail from '../../client/modules/email/components/LimitsEmails/SevenDayWarningEmail'
 import emailTemplate from './emailTemplate'
 
 interface Props {
   orgId: string
   preferredName: string
+  emailType: 'locked' | 'sevenDayWarning' | 'thirtyDayWarning'
 }
 
 const limitsEmailCreator = (props: Props) => {
-  const {preferredName, orgId} = props
+  const {preferredName, orgId, emailType} = props
+  const Email = emailType === 'locked' ? LockedEmail : SevenDayWarningEmail
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
-    <LimitsEmail preferredName={preferredName} orgId={orgId} />
+    <Email preferredName={preferredName} orgId={orgId} />
   )
 
-  const subject = `Parabol Account - team limit reached`
+  const subject =
+    emailType === 'locked' ? `Parabol Account Deactivated` : `Parabol Account - Action Required`
+
   const html = emailTemplate({
     bodyContent,
     title: subject,

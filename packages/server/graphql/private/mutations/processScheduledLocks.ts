@@ -88,7 +88,11 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
 
       return billingLeaderUsers.map((user) => {
         const {preferredName, email} = user
-        const {subject, body, html} = limitsEmailCreator({orgId, preferredName})
+        const {subject, body, html} = limitsEmailCreator({
+          orgId,
+          preferredName,
+          emailType: 'locked'
+        })
         return getMailManager().sendEmail({
           to: email,
           subject,
@@ -109,7 +113,11 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
 
       return billingLeaderUsers.map((user) => {
         const {preferredName, email} = user
-        const {subject, body, html} = limitsEmailCreator({orgId, preferredName})
+        const {subject, body, html} = limitsEmailCreator({
+          orgId,
+          preferredName,
+          emailType: 'sevenDayWarning'
+        })
         return getMailManager().sendEmail({
           to: email,
           subject,
