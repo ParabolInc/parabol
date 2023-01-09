@@ -9,13 +9,14 @@ interface Props {
   orgId: string
   preferredName: string
   emailType: 'locked' | 'sevenDayWarning' | 'thirtyDayWarning'
+  orgName: string
 }
 
 const limitsEmailCreator = (props: Props) => {
-  const {preferredName, orgId, emailType} = props
+  const {preferredName, orgId, emailType, orgName} = props
   const Email = emailType === 'locked' ? LockedEmail : SevenDayWarningEmail
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
-    <Email preferredName={preferredName} orgId={orgId} />
+    <Email preferredName={preferredName} orgId={orgId} orgName={orgName} />
   )
 
   const subject =

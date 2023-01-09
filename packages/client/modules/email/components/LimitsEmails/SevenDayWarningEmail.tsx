@@ -15,8 +15,7 @@ import {LimitsEmailProps} from './LockedEmail'
 const innerMaxWidth = 480
 
 const copyStyle = {
-  ...emailCopyStyle,
-  marginBottom: '0px'
+  ...emailCopyStyle
 }
 
 const linkStyle = {
@@ -25,7 +24,7 @@ const linkStyle = {
 }
 
 export default function SevenDayWarningEmail(props: LimitsEmailProps) {
-  const {preferredName, orgId} = props
+  const {preferredName, orgId, orgName} = props
   const tasksURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
@@ -39,10 +38,10 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
         <Header align='left' appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
         <p style={{...copyStyle, marginBottom: '0px'}}>{`Hi ${preferredName} 👋`}</p>
         <EmptySpace height={16} />
-        <p style={{...copyStyle}}>
+        <p style={{...copyStyle, marginBottom: '0px'}}>
           {'This is a follow-up notification to remind you that '}
           <span style={{fontWeight: 600}}>
-            {`TEST's Parabol account is at the risk of deactivation`}
+            {`${orgName}'s Parabol account is at risk of deactivation`}
           </span>
           {' because you’ve exceeded the two team limit on your '}
           <a style={linkStyle} href={ExternalLinks.PRICING_LINK}>

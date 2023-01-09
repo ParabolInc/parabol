@@ -14,8 +14,7 @@ import Layout from './../Layout/Layout'
 const innerMaxWidth = 480
 
 const copyStyle = {
-  ...emailCopyStyle,
-  marginBottom: '16px'
+  ...emailCopyStyle
 }
 
 const linkStyle = {
@@ -26,10 +25,11 @@ const linkStyle = {
 export interface LimitsEmailProps {
   orgId: string
   preferredName: string
+  orgName: string
 }
 
 export default function LockedEmail(props: LimitsEmailProps) {
-  const {preferredName, orgId} = props
+  const {preferredName, orgId, orgName} = props
   const tasksURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
@@ -41,12 +41,12 @@ export default function LockedEmail(props: LimitsEmailProps) {
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header align='left' appOrigin={appOrigin} corsOptions={EMAIL_CORS_OPTIONS} />
-        <p style={{...copyStyle}}>{`Hi ${preferredName} 👋`}</p>
+        <p style={{...copyStyle, marginBottom: '0px'}}>{`Hi ${preferredName} 👋`}</p>
         <EmptySpace height={16} />
-        <p style={{...copyStyle}}>
+        <p style={{...copyStyle, marginBottom: '0px'}}>
           {'Unfortunately, '}
           <span style={{fontWeight: 600}}>
-            {`[Company Name] has exceeded the two-team limit on the Starter Plan for more than 30 days, and your account has been deactivated.`}
+            {`${orgName} has exceeded the two-team limit on the Starter Plan for more than 30 days, and your account has been deactivated.`}
           </span>
           {
             ' Your teams will not be able to run meetings with Parabol, add new teams to your account, or access previous teams. '

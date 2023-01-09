@@ -25,19 +25,16 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
     .run()
   console.log('🚀 ~ orgsScheduledForLockWithinWeek', orgsScheduledForLockWithinWeek)
 
-  const orgIdsToBeLocked = orgsScheduledForLockWithinWeek
-    .filter((org) => {
-      const scheduledLockAt = org.scheduledLockAt!.getTime()
-      return scheduledLockAt < now
-    })
-    .map(({id}) => id)
+  const orgsToBeLocked = orgsScheduledForLockWithinWeek.filter(
+    (org) => org.scheduledLockAt!.getTime() < now
+  )
+  const orgIdsToBeLocked = orgsToBeLocked.map(({id}) => id)
 
-  const orgIdsToBeWarned = orgsScheduledForLockWithinWeek
-    .filter((org) => {
-      const scheduledLockAt = org.scheduledLockAt!.getTime()
-      return inSixDays <= scheduledLockAt && scheduledLockAt < inOneWeek
-    })
-    .map(({id}) => id)
+  const orgsToBeWarned = orgsScheduledForLockWithinWeek.filter((org) => {
+    const scheduledLockAt = org.scheduledLockAt!.getTime()
+    return inSixDays <= scheduledLockAt && scheduledLockAt < inOneWeek
+  })
+  const orgIdsToBeWarned = orgsToBeWarned.map(({id}) => id)
 
   const [orgUsersToBeLocked, orgUsersToBeWarned] = await Promise.all([
     dataLoader.get('organizationUsersByOrgId').loadMany(orgIdsToBeLocked),
@@ -76,7 +73,7 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
   ])
 
   await Promise.all([
-    orgIdsToBeLocked.flatMap((orgId) => {
+    orgsToBeLocked.flatMap(({id: orgId, name: orgName}) => {
       // TODO: need to make sure these users are unique
       const billingLeaderOrgUserIds = billingLeaderOrgUsersToBeLocked
         .filter((orgUser) => orgUser.orgId === orgId)
@@ -91,6 +88,7 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         const {subject, body, html} = limitsEmailCreator({
           orgId,
           preferredName,
+          orgName,
           emailType: 'locked'
         })
         return getMailManager().sendEmail({
@@ -101,7 +99,7 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         })
       })
     }),
-    orgIdsToBeWarned.flatMap((orgId) => {
+    orgsToBeWarned.flatMap(({id: orgId, name: orgName}) => {
       // TODO: need to make sure these users are unique
       const billingLeaderOrgUserIds = billingLeaderOrgUsersToBeWarned
         .filter((orgUser) => orgUser.orgId === orgId)
@@ -116,6 +114,7 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         const {subject, body, html} = limitsEmailCreator({
           orgId,
           preferredName,
+          orgName,
           emailType: 'sevenDayWarning'
         })
         return getMailManager().sendEmail({
