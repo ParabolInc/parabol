@@ -4,6 +4,7 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {ReactableEnum} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
+import {TeamLimitsEmailType} from '../../email/limitsEmailCreator'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
@@ -72,6 +73,7 @@ export type AnalyticsEvent =
   | 'Invite Email Sent'
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
+  | 'Teams Limit Email Sent'
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
@@ -367,6 +369,10 @@ class Analytics {
 
   toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
     this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
+  }
+
+  teamsLimitEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
+    this.track(userId, 'Teams Limit Email Sent', {type, orgId})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

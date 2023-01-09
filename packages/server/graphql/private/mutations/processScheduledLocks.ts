@@ -84,8 +84,9 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         .filter((user) => billingLeaderOrgUserIds.includes(user.id))
 
       return billingLeaderUsers.map((user) => {
-        const {preferredName, email} = user
+        const {id: userId, preferredName, email} = user
         const {subject, body, html} = limitsEmailCreator({
+          userId,
           orgId,
           preferredName,
           orgName,
@@ -110,8 +111,9 @@ const processScheduledLocks = async (_source, _args, {dataLoader}: GQLContext) =
         .filter((user) => billingLeaderOrgUserIds.includes(user.id))
 
       return billingLeaderUsers.map((user) => {
-        const {preferredName, email} = user
+        const {id: userId, preferredName, email} = user
         const {subject, body, html} = limitsEmailCreator({
+          userId,
           orgId,
           preferredName,
           orgName,

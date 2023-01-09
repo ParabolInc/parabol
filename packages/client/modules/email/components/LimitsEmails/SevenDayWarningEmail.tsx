@@ -48,7 +48,7 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
             {'Starter Plan'}
           </a>
           {
-            '. Once your account is deactivated, you will lose access to your teams and won’t be able to run retrospective, Sprint Poker or standup meetings with Parabol.'
+            '. Once your account is deactivated, you will lose access to your teams and won’t be able to run Retrospective, Sprint Poker or Standup meetings with Parabol.'
           }
         </p>
         <EmptySpace height={16} />
