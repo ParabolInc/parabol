@@ -33,7 +33,7 @@ const TeamsLimitExceededSnackbar = (props: Props) => {
   useEffect(() => {
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 0,
-      key: `newNotification:${notification.id}`,
+      key: `newNotification:${notificationId}`,
       message: `Your account is on a roll! Check out "${orgName}"'s usage`,
       onDismiss: () => {
         SetNotificationStatusMutation(atmosphere, {notificationId, status: 'CLICKED'}, {})

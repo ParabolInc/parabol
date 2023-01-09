@@ -12,6 +12,11 @@ const STICKY_TEAM_MIN_MEETING_ATTENDEES = 2
 const STICKY_TEAM_MIN_MEETINGS = 3
 const PERSONAL_TIER_MAX_TEAMS = 2
 const PERSONAL_TIER_LOCK_AFTER_DAYS = 30
+// Uncomment for easier testing:
+// const STICKY_TEAM_MIN_MEETING_ATTENDEES = 1
+// const STICKY_TEAM_MIN_MEETINGS = 1
+// const PERSONAL_TIER_MAX_TEAMS = 0
+// const PERSONAL_TIER_LOCK_AFTER_DAYS = 1
 
 const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const billingLeaderIds = (await r
