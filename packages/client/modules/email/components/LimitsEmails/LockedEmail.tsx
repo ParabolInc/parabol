@@ -48,7 +48,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
           <span style={{fontWeight: 600}}>
             {`${orgName} has exceeded the two-team limit on the Starter Plan for more than 30 days, and your account has been deactivated.`}
           </span>
-          {` Your will not be able to use your ${orgName} account until you either delete teams so that you have two or fewer teams, or upgrade your account.`}
+          {` You will not be able to use your ${orgName} account until you either delete teams so that you have two or fewer teams, or upgrade your account.`}
         </p>
         <EmptySpace height={16} />
         <p style={{...copyStyle}}>

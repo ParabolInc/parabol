@@ -20,6 +20,7 @@
           "Organization": "../../database/types/Organization#default as Organization",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "ProcessRecurrenceSuccess": "./types/ProcessRecurrenceSuccess#ProcessRecurrenceSuccessSource",
+          "ProcessScheduledLocksSuccess": "./types/ProcessScheduledLocksSuccess#ProcessScheduledLocksSuccessSource",
           "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",

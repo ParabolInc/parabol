@@ -14,10 +14,10 @@ type ProcessScheduledLocksSuccess {
   """
   The orgs that were locked
   """
-  lockedOrgs: [Organization!]
+  lockedOrgs: [Organization!]!
 
   """
   The orgs that were given a seven day warning email
   """
-  warnedOrgs: [Organization!]
+  warnedOrgs: [Organization!]!
 }
