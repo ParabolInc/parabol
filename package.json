@@ -48,6 +48,7 @@
     "precommit": "nx run-many --target=precommit --parallel=1",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
+    "test:client": "yarn workspace parabol-client test",
     "test:server": "yarn workspace parabol-server test"
   },
   "resolutions": {
