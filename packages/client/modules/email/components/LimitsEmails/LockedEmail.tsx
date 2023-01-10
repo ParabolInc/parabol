@@ -55,7 +55,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
         <EmptySpace height={16} />
         <p style={{...copyStyle}}>
           {`You can re-activate your teams by `}
-          <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
+          <a style={linkStyle} href={billingURL}>
             {`upgrading your account`}
           </a>
           {'.'}
