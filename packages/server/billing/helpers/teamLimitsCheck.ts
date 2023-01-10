@@ -15,7 +15,7 @@ import ScheduledJobOrganizationLock from "../../database/types/ScheduledJobOrgan
 //   MAX_PERSONAL_TIER_TEAMS = 0,
 //   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
 //   MIN_STICKY_TEAM_MEETINGS = 1,
-//   PERSONAL_TIER_LOCK_AFTER_DAYS = 1
+//   PERSONAL_TIER_LOCK_AFTER_DAYS = 0
 // }
 
 const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
