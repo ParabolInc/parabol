@@ -1,5 +1,4 @@
 import {ContactInfo} from 'parabol-client/types/constEnums'
-import appOrigin from 'parabol-server/appOrigin'
 import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -23,13 +22,14 @@ const linkStyle = {
 }
 
 export interface LimitsEmailProps {
+  appOrigin: string
   orgId: string
   preferredName: string
   orgName: string
 }
 
 export default function LockedEmail(props: LimitsEmailProps) {
-  const {preferredName, orgId, orgName} = props
+  const {appOrigin, preferredName, orgId, orgName} = props
   const billingURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',

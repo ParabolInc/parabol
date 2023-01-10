@@ -83,6 +83,7 @@ const teamLimitsEmailCreator = (props: Props) => {
       orgId={orgId}
       orgName={orgName}
       stickyTeamCount={stickyTeamCount ?? 0}
+      appOrigin={appOrigin}
     />
   )
 

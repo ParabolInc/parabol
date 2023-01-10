@@ -1,5 +1,4 @@
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
-import appOrigin from 'parabol-server/appOrigin'
 import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -24,7 +23,7 @@ const linkStyle = {
 }
 
 export default function SevenDayWarningEmail(props: LimitsEmailProps) {
-  const {preferredName, orgId, orgName} = props
+  const {appOrigin, preferredName, orgId, orgName} = props
   const billingURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
