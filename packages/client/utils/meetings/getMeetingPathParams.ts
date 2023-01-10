@@ -23,11 +23,6 @@ interface MeetingParams {
 }
 
 const getMeetingPathParams = (): MeetingPathResults => {
-  if (typeof window === 'undefined') {
-    // This might get called by SSR code.
-    return {}
-  }
-
   const {location} = window
   const {pathname} = location
   const matchRes = matchPath<MeetingParams>(pathname, {

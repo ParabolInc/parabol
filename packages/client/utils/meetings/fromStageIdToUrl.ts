@@ -6,7 +6,6 @@ import {
 } from '~/__generated__/fromStageIdToUrl_meeting.graphql'
 import {RetroDemo} from '../../types/constEnums'
 import findStageById from './findStageById'
-import getMeetingPathParams from './getMeetingPathParams'
 import {phaseTypeToSlug} from './lookups'
 
 const phaseIsMultiStage = {
@@ -49,10 +48,9 @@ const fromStageIdToUrl = (
   const {phase, stageIdx} = stageRes
   const {phaseType} = phase
   const phaseSlug = phaseTypeToSlug[phaseType]
-  const {meetingId: maybeDemoMeetingId} = getMeetingPathParams()
   const isPhaseMultiStage = phaseIsMultiStage[phaseType]
   const maybeStage = isPhaseMultiStage ? `/${stageIdx + 1}` : ''
-  if (maybeDemoMeetingId === RetroDemo.MEETING_ID) {
+  if (meetingId === RetroDemo.MEETING_ID) {
     return `/retrospective-demo/${phaseSlug}${maybeStage}`
   }
   return `/meet/${meetingId}/${phaseSlug}${maybeStage}`
