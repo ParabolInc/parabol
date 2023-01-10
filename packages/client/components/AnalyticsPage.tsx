@@ -89,13 +89,15 @@ const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
-  if (gaMeasurementId) {
-    ReactGA.initialize(gaMeasurementId, {
-      gtagOptions: {
-        send_page_view: true
-      }
-    })
-  }
+  useEffect(() => {
+    if (gaMeasurementId) {
+      ReactGA.initialize(gaMeasurementId, {
+        gtagOptions: {
+          send_page_view: true
+        }
+      })
+    }
+  }, [ReactGA.isInitialized, gaMeasurementId])
 
   useEffect(() => {
     const configGA = async () => {
