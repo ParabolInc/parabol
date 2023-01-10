@@ -3,12 +3,12 @@ import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
+import ScheduledJobOrganizationLock from '../../database/types/ScheduledJobOrganizationLock'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
-import ScheduledJobOrganizationLock from "../../database/types/ScheduledJobOrganizationLock";
 
 // Uncomment for easier testing
 // const enum Threshold {
@@ -43,9 +43,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
 const scheduleJobs = async (scheduledLockAt: Date, orgId: string) => {
   const scheduledLock = r
     .table('ScheduledJob')
-    .insert(
-      new ScheduledJobOrganizationLock(scheduledLockAt, orgId)
-    )
+    .insert(new ScheduledJobOrganizationLock(scheduledLockAt, orgId))
     .run()
 
   // TODO:
@@ -156,7 +154,9 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   const now = new Date()
 
-  const scheduledLockAt = new Date(now.getTime() + ms(`${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS}d`))
+  const scheduledLockAt = new Date(
+    now.getTime() + ms(`${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS}d`)
+  )
 
   await r
     .table('Organization')
@@ -177,4 +177,32 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   }
 
   await scheduleJobs(scheduledLockAt, orgId)
+}
+
+export const processLockOrganizationJob = async (
+  job: ScheduledJobOrganizationLock,
+  {dataLoader}: {dataLoader: DataLoaderWorker}
+) => {
+  const {orgId, runAt} = job
+
+  const organization = await dataLoader.get('organizations').load(orgId)
+
+  // Skip the job if unlocked or already locked or scheduled lock date changed
+  if (
+    !organization.scheduledLockAt ||
+    organization.lockedAt ||
+    organization.scheduledLockAt !== runAt
+  ) {
+    return
+  }
+
+  const now = new Date()
+
+  return r
+    .table('Organization')
+    .get(orgId)
+    .update({
+      lockedAt: now
+    })
+    .run()
 }

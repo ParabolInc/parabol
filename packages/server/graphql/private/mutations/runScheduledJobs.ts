@@ -1,14 +1,13 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ValueOf} from '../../../../client/types/generics'
+import {processLockOrganizationJob} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
+import ScheduledJobOrganizationLock from '../../../database/types/ScheduledJobOrganizationLock'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
-import {r} from 'rethinkdb-ts'
-import ScheduledJobOrganizationLock from "../../../database/types/ScheduledJobOrganizationLock";
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
@@ -37,42 +36,21 @@ const processMeetingStageTimeLimits = async (
   })
 }
 
-// TODO: move to a separate file
-const processLockOrganization = async (job: ScheduledJobOrganizationLock, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
-  const {orgId, runAt} = job
-
-  const organization = await dataLoader.get('organizations').load(orgId)
-
-  // Skip the job if unlocked or already locked or scheduled lock date changed
-  if (!organization.scheduledLockAt || organization.lockedAt || organization.scheduledLockAt !== runAt) {
-    return
-  }
-
-  const now = new Date()
-
-  await r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      lockedAt: now
-    })
-    .run()
-}
-
-const jobProcessors = {
-  MEETING_STAGE_TIME_LIMIT_END: processMeetingStageTimeLimits,
-  LOCK_ORGANIZATION: processLockOrganization
-}
-
-export type ScheduledJobUnion = Parameters<ValueOf<typeof jobProcessors>>[0]
+export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledJobOrganizationLock
 
 const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
   const r = await getRethink()
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
-  const processor = jobProcessors[job.type]
-  processor(job, {dataLoader}).catch(console.log)
+
+  if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
+    processMeetingStageTimeLimits(job as ScheduledJobMeetingStageTimeLimit, {dataLoader}).catch(
+      console.log
+    )
+  } else if (job.type === 'LOCK_ORGANIZATION') {
+    processLockOrganizationJob(job as ScheduledJobOrganizationLock, {dataLoader}).catch(console.log)
+  }
 }
 
 const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
