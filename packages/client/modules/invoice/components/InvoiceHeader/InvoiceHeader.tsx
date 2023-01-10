@@ -73,7 +73,7 @@ const InvoiceHeader = (props: Props) => {
       </LogoPanel>
       <Info>
         <OrgName>{orgName}</OrgName>
-        {tier !== 'personal' && <StyledTierTag tier={tier} />}
+        {tier !== 'starter' && <StyledTierTag tier={tier} />}
         {billingLeaderEmails.map((email) => (
           <Email key={`email${email}`}>{email}</Email>
         ))}

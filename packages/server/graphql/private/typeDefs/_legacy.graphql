@@ -74,7 +74,7 @@ type Query {
     """
     which tier of org shall we count?
     """
-    tier: TierEnum = pro
+    tier: TierEnum = team
   ): Int
 
   suOrgCount(
@@ -86,7 +86,7 @@ type Query {
     """
     which tier of org shall we count?
     """
-    tier: TierEnum = pro
+    tier: TierEnum = team
   ): Int
 
   """
@@ -2030,16 +2030,6 @@ type AtlassianIntegration {
   projects: [JiraRemoteProject!]!
 
   """
-  The list of field names that can be used as a
-  """
-  jiraFields(
-    """
-    Filter the fields to single cloudId
-    """
-    cloudId: ID!
-  ): [String!]!
-
-  """
   the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
   """
   jiraSearchQueries: [JiraSearchQuery!]!
@@ -2074,81 +2064,6 @@ type JiraIssueEdge {
   """
   node: JiraIssue!
   cursor: DateTime
-}
-
-"""
-The Jira Issue that comes direct from Jira
-"""
-type JiraIssue implements TaskIntegration {
-  """
-  GUID cloudId:issueKey
-  """
-  id: ID!
-
-  """
-  The parabol teamId this issue was fetched for
-  """
-  teamId: ID!
-
-  """
-  The parabol userId this issue was fetched for
-  """
-  userId: ID!
-
-  """
-  The ID of the jira cloud where the issue lives
-  """
-  cloudId: ID!
-
-  """
-  The name of the jira cloud where the issue lives
-  """
-  cloudName: ID!
-
-  """
-  The url to access the issue
-  """
-  url: URL!
-
-  """
-  The key of the issue as found in Jira
-  """
-  issueKey: ID!
-
-  """
-  Type id of the issue
-  """
-  issueType: ID!
-
-  """
-  The key of the project, which is the prefix to the issueKey
-  """
-  projectKey: ID!
-
-  """
-  The project fetched from jira
-  """
-  project: JiraRemoteProject
-
-  """
-  The plaintext summary of the jira issue
-  """
-  summary: String!
-
-  """
-  Field names that exists on the issue and can be used as estimation fields
-  """
-  possibleEstimationFieldNames: [String!]!
-
-  """
-  The stringified ADF of the jira issue description
-  """
-  description: String!
-
-  """
-  The description converted into raw HTML
-  """
-  descriptionHTML: String!
 }
 
 interface TaskIntegration {
@@ -3508,131 +3423,9 @@ type TemplateScaleValue {
 The pay tier of the team
 """
 enum TierEnum {
-  personal
-  pro
+  starter
+  team
   enterprise
-}
-
-"""
-An organization
-"""
-type Organization {
-  """
-  The unique organization ID
-  """
-  id: ID!
-
-  """
-  The top level domain this organization is linked to, null if only generic emails used
-  """
-  activeDomain: String
-
-  """
-  false if the activeDomain is null or was set automatically via a heuristic, true if set manually
-  """
-  isActiveDomainTouched: Boolean!
-
-  """
-  The datetime the organization was created
-  """
-  createdAt: DateTime!
-
-  """
-  The safe credit card details
-  """
-  creditCard: CreditCard
-
-  """
-  The assumed company this organizaiton belongs to
-  """
-  company: Company
-
-  """
-  true if the viewer is the billing leader for the org
-  """
-  isBillingLeader: Boolean!
-
-  """
-  The name of the organization
-  """
-  name: String!
-
-  """
-  The org avatar
-  """
-  picture: URL
-
-  """
-  all the teams the viewer is on in the organization
-  """
-  teams: [Team!]!
-
-  """
-  The level of access to features on the parabol site
-  """
-  tier: TierEnum!
-
-  """
-  THe datetime the current billing cycle ends
-  """
-  periodEnd: DateTime
-
-  """
-  The datetime the current billing cycle starts
-  """
-  periodStart: DateTime
-
-  """
-  The total number of retroMeetings given to the team
-  """
-  retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
-
-  """
-  Number of retro meetings that can be run (if not pro)
-  """
-  retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
-
-  """
-  true if should show the org the conversion modal, else false
-  """
-  showConversionModal: Boolean!
-
-  """
-  The customerId from stripe
-  """
-  stripeId: ID
-
-  """
-  The subscriptionId from stripe
-  """
-  stripeSubscriptionId: ID
-
-  """
-  The last upcoming invoice email that was sent, null if never sent
-  """
-  upcomingInvoiceEmailSentAt: DateTime
-
-  """
-  The datetime the organization was last updated
-  """
-  updatedAt: DateTime
-
-  """
-  The OrganizationUser of the viewer
-  """
-  viewerOrganizationUser: OrganizationUser
-
-  organizationUsers(after: String, first: Int): OrganizationUserConnection!
-
-  """
-  The count of active & inactive users
-  """
-  orgUserCount: OrgUserCount!
-
-  """
-  The leaders of the org
-  """
-  billingLeaders: [User!]!
 }
 
 """
@@ -7792,19 +7585,19 @@ A count of the number of account tiers a user belongs to.
 """
 type UserTiersCount {
   """
-  The number of personal orgs the user is active upon
+  The number of starter orgs the user is active upon
   """
-  tierPersonalCount: Int
+  tierStarterCount: Int
 
   """
-  The number of pro orgs the user is active upon
+  The number of team orgs the user is active upon
   """
-  tierProCount: Int
+  tierTeamCount: Int
 
   """
   The number of pro orgs the user holds the role of Billing Leader
   """
-  tierProBillingLeaderCount: Int
+  tierTeamBillingLeaderCount: Int
   user: User
 }
 

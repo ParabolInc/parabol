@@ -1,7 +1,7 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import AddOrgPayload from './AddOrgPayload'
 import ArchiveOrganizationPayload from './ArchiveOrganizationPayload'
-import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
+import DowngradeToStarterPayload from './DowngradeToStarterPayload'
 import PayLaterPayload from './PayLaterPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import SetOrgUserRoleAddedPayload from './SetOrgUserRoleAddedPayload'
@@ -9,19 +9,19 @@ import SetOrgUserRoleRemovedPayload from './SetOrgUserRoleRemovedPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import UpdateOrgPayload from './UpdateOrgPayload'
 import {UpdateTemplateScopeSuccess} from './UpdateTemplateScopePayload'
-import UpgradeToProPayload from './UpgradeToProPayload'
+import UpgradeToTeamTierPayload from './UpgradeToTeamTierPayload'
 
 const types = [
   AddOrgPayload,
   ArchiveOrganizationPayload,
-  DowngradeToPersonalPayload,
+  DowngradeToStarterPayload,
   PayLaterPayload,
   RemoveOrgUserPayload,
   SetOrgUserRoleAddedPayload,
   SetOrgUserRoleRemovedPayload,
   UpdateCreditCardPayload,
   UpdateOrgPayload,
-  UpgradeToProPayload,
+  UpgradeToTeamTierPayload,
   UpdateTemplateScopeSuccess
 ]
 

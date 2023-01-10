@@ -5,6 +5,8 @@ export type UpgradeCTALocationEnumType =
   | 'teamTemplate'
   | 'orgTemplate'
   | 'createNewTemplate'
+  | 'createTeam'
+  | 'usageStats'
   | 'directMeetingLinkLock'
   | 'timelineHistoryLock'
 
@@ -16,6 +18,8 @@ const UpgradeCTALocationEnum = new GraphQLEnumType({
     teamTemplate: {},
     orgTemplate: {},
     createNewTemplate: {},
+    createTeam: {},
+    usageStats: {},
     directMeetingLinkLock: {},
     timelineHistoryLock: {}
   }
