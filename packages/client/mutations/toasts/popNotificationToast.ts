@@ -6,12 +6,14 @@ import {
   popNotificationToast_notification
 } from '../../__generated__/popNotificationToast_notification.graphql'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
+import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
 > = {
+  DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast
 }
@@ -21,6 +23,7 @@ graphql`
     addedNotification {
       type
       id
+      ...mapDiscussionMentionedToToast_notification @relay(mask: false)
       ...mapResponseMentionedToToast_notification @relay(mask: false)
       ...mapResponseRepliedToToast_notification @relay(mask: false)
     }
