@@ -45,11 +45,13 @@ const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: Dat
   if (res.deleted !== 1) return
 
   if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
-    processMeetingStageTimeLimits(job as ScheduledJobMeetingStageTimeLimit, {dataLoader}).catch(
+    return processMeetingStageTimeLimits(job as ScheduledJobMeetingStageTimeLimit, {
+      dataLoader
+    }).catch(console.log)
+  } else if (job.type === 'LOCK_ORGANIZATION') {
+    return processLockOrganizationJob(job as ScheduledJobOrganizationLock, {dataLoader}).catch(
       console.log
     )
-  } else if (job.type === 'LOCK_ORGANIZATION') {
-    processLockOrganizationJob(job as ScheduledJobOrganizationLock, {dataLoader}).catch(console.log)
   }
 }
 

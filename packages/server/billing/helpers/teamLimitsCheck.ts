@@ -46,7 +46,7 @@ const scheduleJobs = async (scheduledLockAt: Date, orgId: string) => {
     .insert(new ScheduledJobOrganizationLock(scheduledLockAt, orgId))
     .run()
 
-  // TODO:
+  // TODO: implement additional reminders
   // const scheduleFirstReminder
   // const scheduleSecondReminder
 
@@ -191,7 +191,7 @@ export const processLockOrganizationJob = async (
   if (
     !organization.scheduledLockAt ||
     organization.lockedAt ||
-    organization.scheduledLockAt !== runAt
+    organization.scheduledLockAt.getTime() !== runAt.getTime()
   ) {
     return
   }
