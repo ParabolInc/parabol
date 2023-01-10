@@ -64,7 +64,7 @@ const CancelButton = styled(SubmitButton)({
   color: PALETTE.SLATE_700
 })
 
-const StyledEditor = styled('div')`
+export const StyledEditor = styled('div')`
   .ProseMirror {
     min-height: 40px;
     line-height: 20px;
