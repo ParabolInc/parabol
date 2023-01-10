@@ -98,7 +98,10 @@ const processScheduledLocks: MutationResolvers['processScheduledLocks'] = async 
     })
   ])
 
-  return true
+  return {
+    lockedOrgIds: orgIdsToBeLocked,
+    warnedOrgIds: orgIdsToBeWarned
+  }
 }
 
 export default processScheduledLocks

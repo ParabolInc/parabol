@@ -387,8 +387,6 @@ type Mutation {
     seconds: Int!
   ): Int
 
-  processScheduledLocks: Boolean!
-
   """
   Send summary emails of unread notifications to all users who have not been seen within the last 24 hours
   """
