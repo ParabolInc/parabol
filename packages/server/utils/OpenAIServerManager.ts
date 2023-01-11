@@ -21,7 +21,7 @@ class OpenAIServerManager {
     try {
       const response = await this.openAIApi.createCompletion({
         model: 'text-davinci-003',
-        prompt: `Below is a comma separated list of text. Summarise the text for a second-grade student in one or two sentences.
+        prompt: `Below is a comma-separated list of text. Summarize the text for a second-grade student in one or two sentences.
 
         Text: """
         ${text}
