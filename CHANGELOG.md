@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.88.0 2023-January-12
+
+### Fixed
+
+- emails landing in spam (#7618)
+- select dropdown can't be scrolled with keyboard (#7426)
+- server error undefined template (#7633)
+
+### Added
+
+- **standups/notifications**: Generalized notification toasts + new toasts (#7603)
+- **notifications**: Discussion Mention notifications (#7596)
+- slack uses oatuh2 redirect (#7628)
+- removed recurrence feature flag (#7636)
+
+### Changed
+
+- **teams-limit**: usage stats warning (#7587)
+- **teams-limit**: prevent new team creation (#7591)
+- **DX**: Show a warning on switching branch with migrations (#7616)
+- **deps**: bump fast-json-patch from 3.1.0 to 3.1.1 (#7614)
+- **deps**: bump jsonwebtoken from 8.5.1 to 9.0.0 (#7613)
+- Add reviewer for PRs and assignee for issues on mention (#7620)
+- Add client unit tests to CircleCi (#7626)
+- **ai-summary**: improve prompt (#7646)
+
 ## 6.87.1 2023-January-05
 
 ### Fixed
