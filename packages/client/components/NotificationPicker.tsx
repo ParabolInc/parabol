@@ -8,6 +8,9 @@ import {
 } from '~/__generated__/NotificationPicker_notification.graphql'
 
 const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
+  DISCUSSION_MENTIONED: lazyPreload(
+    () => import(/* webpackChunkName: 'DiscussionMentioned' */ './DiscussionMentioned')
+  ),
   KICKED_OUT: lazyPreload(() => import(/* webpackChunkName: 'KickedOut' */ './KickedOut')),
   PAYMENT_REJECTED: lazyPreload(
     () => import(/* webpackChunkName: 'PaymentRejected' */ './PaymentRejected')
@@ -57,6 +60,7 @@ export default createFragmentContainer(NotificationPicker, {
     fragment NotificationPicker_notification on Notification {
       type
       id
+      ...DiscussionMentioned_notification
       ...KickedOut_notification
       ...PaymentRejected_notification
       ...TaskInvolves_notification
