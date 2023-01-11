@@ -18,7 +18,6 @@ class OpenAIServerManager {
 
   async getSummary(text: string | string[]) {
     if (!this.openAIApi) return null
-
     try {
       const response = await this.openAIApi.createCompletion({
         model: 'text-davinci-003',
