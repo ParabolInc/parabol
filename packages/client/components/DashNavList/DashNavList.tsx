@@ -77,7 +77,7 @@ const DashNavList = (props: Props) => {
               className={className}
               onClick={onClick}
               key={team.id}
-              icon={team.isPaid ? 'group' : 'warning'}
+              icon={team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'}
               href={`/team/${team.id}`}
               label={team.name}
             />
@@ -93,7 +93,7 @@ const DashNavList = (props: Props) => {
                     className={className}
                     onClick={onClick}
                     key={team.id}
-                    icon={team.isPaid ? 'group' : 'warning'}
+                    icon={team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'}
                     href={`/team/${team.id}`}
                     label={team.name}
                   />
@@ -114,6 +114,7 @@ graphql`
     organization {
       id
       name
+      lockedAt
     }
   }
 `
