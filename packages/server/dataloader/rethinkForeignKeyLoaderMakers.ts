@@ -1,5 +1,6 @@
 import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
+import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
@@ -54,6 +55,7 @@ export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
       r
         .table('Comment')
         .getAll(r.args(discussionIds), {index: 'discussionId'})
+        .filter((row: RDatum) => row('createdBy').ne(PARABOL_AI_USER_ID))
         // include deleted comments so we can replace them with tombstones
         // .filter({isActive: true})
         .run()
