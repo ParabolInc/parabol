@@ -51,6 +51,10 @@ const StartButton = styled(FlatPrimaryButton)({
   height: 50
 })
 
+const ErrorBlock = styled(StyledError)({
+  paddingBottom: 24
+})
+
 interface Props {
   error?: {message: string}
   teamRef: NewMeetingActions_team$key
@@ -72,9 +76,9 @@ const NewMeetingActions = (props: Props) => {
 
   return (
     <ActionRow>
+      {error && <ErrorBlock>{error.message}</ErrorBlock>}
       <ActiveMeetingsBlock>
         <NewMeetingActionsCurrentMeetings team={team} />
-        {error && <StyledError>{error.message}</StyledError>}
       </ActiveMeetingsBlock>
       <ButtonBlock>
         <StartButton onClick={onStartMeetingClick} waiting={submitting}>
