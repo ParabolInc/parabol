@@ -3,7 +3,6 @@ import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptRespons
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ValueOf} from 'parabol-client/types/generics'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import Comment from '../../database/types/Comment'
@@ -165,16 +164,14 @@ const addReactjiToReactable = {
 
     const data = {reactableId, reactableType}
     const {meetingType} = await dataLoader.get('newMeetings').load(meetingId)
-    const isAIComment = reactable instanceof Comment && reactable.createdBy === PARABOL_AI_USER_ID
     analytics.reactjiInteracted(
       viewerId,
       meetingId,
       meetingType,
-      reactableId,
+      reactable,
       reactableType,
       reactji,
-      !!isRemove,
-      isAIComment
+      !!isRemove
     )
     if (meetingId) {
       publish(
