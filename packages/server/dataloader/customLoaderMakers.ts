@@ -82,7 +82,6 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         r
           .table('Comment')
           .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-
           .filter((row: RDatum) =>
             row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
           )
