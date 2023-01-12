@@ -25,7 +25,7 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
-import {upsertTeamPromptResponseNotificationUpdater} from '../mutations/UpsertTeamPromptResponseMutation'
+import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
@@ -81,7 +81,13 @@ const subscription = graphql`
       ...InvalidateSessionsMutation_notification @relay(mask: false)
       ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
       ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
-      ...UpsertTeamPromptResponseMutation_notification @relay(mask: false)
+
+      ... on AddedNotification {
+        addedNotification {
+          ...NotificationPicker_notification @relay(mask: false)
+        }
+      }
+      ...popNotificationToast_notification @relay(mask: false)
 
       ... on AuthTokenPayload {
         id
@@ -228,7 +234,8 @@ const onNextHandlers = {
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
-  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext
+  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext,
+  AddedNotification: popNotificationToastOnNext
 } as const
 
 const NotificationSubscription = (
@@ -287,8 +294,10 @@ const NotificationSubscription = (
         case 'ArchiveTimelineEventSuccess':
           archiveTimelineEventNotificationUpdater(payload, context)
           break
-        case 'UpsertTeamPromptResponseSuccess':
-          upsertTeamPromptResponseNotificationUpdater(payload, context)
+        case 'AddedNotification':
+          const notification = payload.getLinkedRecord('addedNotification' as any)
+          if (!notification) break
+          handleAddNotifications(notification, context.store)
           break
         default:
           console.error('NotificationSubscription case fail', type)

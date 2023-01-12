@@ -1,17 +1,8 @@
-import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import ms from 'ms'
-import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -74,39 +65,6 @@ const AtlassianIntegration = new GraphQLObjectType<AtlassianAuth, GQLContext>({
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         return dataLoader.get('allJiraProjects').load({teamId, userId})
-      }
-    },
-    jiraFields: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-      description: 'The list of field names that can be used as a ',
-      args: {
-        cloudId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'Filter the fields to single cloudId'
-        }
-      },
-      resolve: async ({accessToken}, {cloudId}) => {
-        const manager = new AtlassianServerManager(accessToken)
-        const fields = await manager.getFields(cloudId)
-        if (fields instanceof Error || fields instanceof RateLimitError) return []
-        const VALID_TYPES = ['string', 'number']
-        const INVALID_WORDS = ['color', 'name', 'description', 'environment']
-        const uniqueFieldNames = Array.from(
-          new Set(
-            fields
-              .filter((field) => {
-                if (!VALID_TYPES.includes(field.schema?.type)) return false
-                const fieldName = field.name.toLowerCase()
-                for (let i = 0; i < INVALID_WORDS.length; i++) {
-                  if (fieldName.includes(INVALID_WORDS[i]!)) return false
-                }
-                return true
-              })
-              .map((field) => field.name)
-              .sort()
-          )
-        )
-        return uniqueFieldNames
       }
     },
     jiraSearchQueries: {

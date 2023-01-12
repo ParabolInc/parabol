@@ -5,6 +5,84 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.87.1 2023-January-05
+
+### Fixed
+
+- **Check-in**: could not move, pin or unpin agenda items (#7622)
+
+## 6.87.0 2023-January-03
+
+### Fixed
+
+- Task highlight sticks when adding a due date (#7395)
+- Add graphql-tools/executor dev dependency
+- Broken summary pages (#7604)
+- Emoji length check (#7578)
+- Access custom template (#7600)
+- Organization Image is on top of default (#7429)
+- New meetings were locked with the history limit (#7581)
+- Bump sanitize-svg version (#7584)
+- **Jira**: fix Sprint Poker voting for projects with duplicate fields (#7607)
+- **notifications**: Remove bad shortlinks + dead code (#7574)
+
+### Added
+
+- Change tier to starter & team (#7505)
+- Add current facilitator to facilitator candidates (#7548)
+- **ai-summary**: auto update meeting summary (#7572)
+- **ai-summary**: ai explainer (#7571)
+- **teams-limit**: enable usage stats when teams limit exceeded (#7563)
+- **teams-limit**: add upgrade CTA to the meeting sidebar if teams limit is exceeded (#7520)
+- **teams-limit**: flag an organization when it has exceeded teams limit (#7517)
+- **teams-limit**: add addFeatureFlagToOrg mutation and support teams limit feature flag (#7526)
+- **parabl-ubi**: add parabol-ubi and host-st to public repo (#7588)
+- **recurrence**: Added current meeting link to ended meeting badge in standups (#7542)
+- **standups**: Standup response replied-to notification (#7547)
+
+### Changed
+
+- Add data team as reviewers for analytics changes (#7595)
+- Add comments to rootSchema (#7576)
+- Fix missing public types on private schema (#7580)
+- **metrics**: change upgrade CTA events to standard definitions (#7594)
+
+## 6.86.1 2022-December-19
+
+### Fixed
+
+- New meetings were locked with the history limit (#7599)
+- **Metrics**: change upgrade CTA events to standard definitions
+
+## 6.86.0 2022-December-14
+
+### Fixed
+
+- **DayPicker**: Bumped daypicker to v8, fixing broken icons (#7521)
+- **DraftJS**: PRevent virtual keyboard hiding after submitting comment (#7423)
+- **Demo**: Canonical link (#7516)
+- **Standups**: Update discussion preview when discussion isn't open (#7558)
+- **Archive Team**: Deleting team prevents reuse of deleted team's name (#7397)
+
+### Added
+
+- **AI-Summary**: Add topic summary to discussion thread (#7545)
+- **Notifications**: Make notification publishing generic (#7540)
+- **Jira**: Add logging for some error cases (#7561)
+- **AI-Summary**: Whole meeting Summary (#7543)
+- **AI-Summary**: Discussion summary in meeting summary (#7534)
+- **AI-Summary**: Topic summary in meeting summary (#7494)
+- **PG**: Added SSL Support (#7175)
+- **Metrics**: Enable send_page_view on ReactGA initialization (#7551)
+- **Standups**: Auto-open response discussion based on query param (#7546)
+- **Metrics**: Always include email in traits for identify calls (#7523)
+- **Recurrence**: Added standups time left indicator (#7538)
+
+### Changed
+
+- **Chore**: Limit direct access to locked meetings (#7532)
+- **Chore**: Limit meeting history on timeline (#7511)
+
 ## 6.85.0 2022-December-07
 
 ### Added

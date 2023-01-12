@@ -220,10 +220,6 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     const {name: teamName} = team
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
-    const maybeMeetingShortLink = makeAppURL(
-      process.env.INVITATION_SHORTLINK || appOrigin,
-      `${meeting.id}`
-    )
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const {phaseType} = stage
     const phaseLabel = phaseLabelLookup[phaseType as keyof typeof phaseLabelLookup]
@@ -252,11 +248,6 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
           {
             short: false,
             value: constraint
-          },
-          {
-            short: false,
-            title: 'Link',
-            value: `[${maybeMeetingShortLink}](${meetingUrl})`
           },
           {
             short: false,

@@ -33,7 +33,7 @@ import deleteUser from './mutations/deleteUser'
 import denyPushInvitation from './mutations/denyPushInvitation'
 import dismissNewFeature from './mutations/dismissNewFeature'
 import dismissSuggestedAction from './mutations/dismissSuggestedAction'
-import downgradeToPersonal from './mutations/downgradeToPersonal'
+import downgradeToStarter from './mutations/downgradeToStarter'
 import dragDiscussionTopic from './mutations/dragDiscussionTopic'
 import dragEstimatingTask from './mutations/dragEstimatingTask'
 import editCommenting from './mutations/editCommenting'
@@ -130,7 +130,7 @@ import updateTaskDueDate from './mutations/updateTaskDueDate'
 import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
 import updateUserProfile from './mutations/updateUserProfile'
-import upgradeToPro from './mutations/upgradeToPro'
+import upgradeToTeamTier from './mutations/upgradeToTeamTier'
 import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
@@ -172,7 +172,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       denyPushInvitation,
       dismissNewFeature,
       dismissSuggestedAction,
-      downgradeToPersonal,
+      downgradeToStarter,
       dragDiscussionTopic,
       dragEstimatingTask,
       emailPasswordReset,
@@ -253,7 +253,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTeamName,
       updateTemplateScope,
       updateUserProfile,
-      upgradeToPro,
+      upgradeToTeamTier,
       uploadOrgImage,
       uploadUserImage,
       verifyEmail,

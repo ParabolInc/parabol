@@ -76,7 +76,7 @@ const AddNewReflectTemplate = (props: Props) => {
   }, [])
   const addNewTemplate = () => {
     if (submitting) return
-    if (featureFlags.templateLimit && tier === 'personal') {
+    if (featureFlags.templateLimit && tier === 'starter') {
       displayUpgradeDetails()
       return
     }
@@ -107,7 +107,7 @@ const AddNewReflectTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddRetroTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        Create New Template {featureFlags.templateLimit && tier === 'personal' && '🔒'}
+        Create New Template {featureFlags.templateLimit && tier === 'starter' && '🔒'}
       </AddRetroTemplateLink>
     </div>
   )

@@ -12,6 +12,7 @@ import isDemoRoute from '../utils/isDemoRoute'
 import EditableText from './EditableText'
 import Facilitator from './Facilitator'
 import LogoBlock from './LogoBlock/LogoBlock'
+import NewMeetingSidebarUpgradeBlock from './NewMeetingSidebarUpgradeBlock'
 import SidebarToggle from './SidebarToggle'
 import InactiveTag from './Tag/InactiveTag'
 
@@ -78,7 +79,8 @@ interface Props {
 const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, toggleSidebar, meeting} = props
   const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
-  const {id: teamId, name: teamName} = team
+  const {id: teamId, name: teamName, organization} = team
+  const {id: orgId, tierLimitExceededAt} = organization
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   const {handleSubmit, validate, error} = useRenameMeeting(meetingId)
   const atmosphere = useAtmosphere()
@@ -112,6 +114,9 @@ const NewMeetingSidebar = (props: Props) => {
       </SidebarHeader>
       <Facilitator meetingRef={meeting} />
       {children}
+      {tierLimitExceededAt && (
+        <NewMeetingSidebarUpgradeBlock onClick={handleMenuClick} orgId={orgId} />
+      )}
       <LogoBlock onClick={handleMenuClick} />
     </SidebarParent>
   )
@@ -128,6 +133,10 @@ export default createFragmentContainer(NewMeetingSidebar, {
       team {
         id
         name
+        organization {
+          id
+          tierLimitExceededAt
+        }
       }
     }
   `

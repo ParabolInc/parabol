@@ -117,7 +117,7 @@ export const newMeetingFields = () => ({
         phases: any
         id: string
         teamId: string
-        endedAt: Date
+        endedAt?: Date | null
       },
       _args: unknown,
       {authToken, dataLoader}: GQLContext
@@ -187,9 +187,9 @@ export const newMeetingFields = () => ({
   },
   locked: {
     type: new GraphQLNonNull(GraphQLBoolean),
-    description: 'Is this locked for personal plans?',
+    description: 'Is this locked for starter plans?',
     resolve: async (
-      {endedAt, teamId}: {endedAt: Date; teamId: string},
+      {endedAt, teamId}: {endedAt?: Date | null; teamId: string},
       _args: any,
       {authToken, dataLoader}: GQLContext
     ) => {

@@ -10,6 +10,7 @@ import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
+import addSummariesToThreads from './addSummariesToThreads'
 import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -94,13 +95,15 @@ const handleCompletedRetrospectiveStage = async (
       discussionTopicType: 'reflectionGroup' as const,
       discussionTopicId: stage.reflectionGroupId
     }))
-    await insertDiscussions(discussions)
+    await Promise.all([
+      insertDiscussions(discussions),
+      addSummariesToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+    ])
     return {[VOTE]: data}
   } else if (stage.phaseType === 'discuss') {
     const {discussionId} = stage as DiscussStage
-    const {facilitatorUserId} = meeting
     // dont await for the OpenAI API response
-    generateDiscussionSummary(discussionId, facilitatorUserId, dataLoader)
+    generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}
 }

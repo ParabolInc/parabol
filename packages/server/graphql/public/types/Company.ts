@@ -263,6 +263,22 @@ const Company: CompanyResolvers = {
     const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
     return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
   },
+
+  viewerOrganizations: async ({id: domain}, _args, {authToken, dataLoader}) => {
+    const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+    const orgIds = organizations.map(({id}) => id)
+    const viewerId = getUserId(authToken)
+    const allOrganizationUsers = (
+      await Promise.all(
+        orgIds.map((orgId) => {
+          return dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId: viewerId})
+        })
+      )
+    ).filter(isValid)
+    const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
+    return organizations.filter((organization) => allowedOrgIds.includes(organization.id))
+  },
+
   suggestedTier: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const orgIds = organizations.map(({id}) => id)
@@ -274,16 +290,16 @@ const Company: CompanyResolvers = {
       ...new Set(organizationUsers.map(({suggestedTier}) => suggestedTier).filter(isValid))
     ]
     if (tiers.includes('enterprise')) return 'enterprise'
-    if (tiers.includes('pro')) return 'pro'
-    return 'personal'
+    if (tiers.includes('team')) return 'team'
+    return 'starter'
   },
 
   tier: async ({id: domain}, _args, {dataLoader}) => {
     const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
     const tiers = organizations.map(({tier}) => tier)
     if (tiers.includes('enterprise')) return 'enterprise'
-    if (tiers.includes('pro')) return 'pro'
-    return 'personal'
+    if (tiers.includes('team')) return 'team'
+    return 'starter'
   },
 
   userCount: async ({id: domain}, _args, {dataLoader}) => {

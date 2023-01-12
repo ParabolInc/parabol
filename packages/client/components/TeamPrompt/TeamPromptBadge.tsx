@@ -7,9 +7,9 @@ export const TeamPromptBadge = styled('div')({
   alignItems: 'center',
   fontSize: 14,
   fontWeight: 600,
-  padding: '4px 16px 4px 16px',
+  padding: '6px 16px 6px 16px',
   backgroundColor: PALETTE.WHITE,
   color: PALETTE.SLATE_700,
-  borderRadius: 26,
-  height: 32
+  borderRadius: '100vmax',
+  minHeight: 34
 })
