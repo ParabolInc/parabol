@@ -13402,7 +13402,7 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-"nconf@github:indexzero/nconf#ce212b2f1dbf96cee001b5f621979c564638f0e7":
+nconf@indexzero/nconf#ce212b2f1dbf96cee001b5f621979c564638f0e7:
   version "1.0.0-beta.0"
   resolved "https://codeload.github.com/indexzero/nconf/tar.gz/ce212b2f1dbf96cee001b5f621979c564638f0e7"
   dependencies:

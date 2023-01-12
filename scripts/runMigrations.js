@@ -33,9 +33,9 @@ const migrateDBs = async () => {
 
 const runMigrations = async () => {
   await Promise.all([clearRedis(), migrateDBs()])
-  // setInterval(() => {
-  //   /* keep process from exiting to keep PM2 quiet */
-  // }, 1 << 30)
+  setInterval(() => {
+    /* keep process from exiting to keep PM2 quiet */
+  }, 1 << 30)
 }
 
 runMigrations()
