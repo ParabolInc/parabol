@@ -181,7 +181,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
 export const processLockOrganizationJob = async (
   job: ScheduledJobOrganizationLock,
-  {dataLoader}: {dataLoader: DataLoaderWorker}
+  dataLoader: DataLoaderWorker
 ) => {
   const {orgId, runAt} = job
 
