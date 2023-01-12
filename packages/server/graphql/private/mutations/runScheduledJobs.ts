@@ -11,7 +11,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
-  {dataLoader}: {dataLoader: DataLoaderWorker}
+  dataLoader: DataLoaderWorker
 ) => {
   // get the meeting
   // get the facilitator
@@ -38,7 +38,7 @@ const processMeetingStageTimeLimits = async (
 
 export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
 
-const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
+const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
@@ -46,9 +46,7 @@ const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: Dat
   if ('orgId' in job) {
     return processTeamsLimitsJob(job, dataLoader).catch(console.log)
   } else {
-    return processMeetingStageTimeLimits(job, {
-      dataLoader
-    }).catch(console.log)
+    return processMeetingStageTimeLimits(job, dataLoader).catch(console.log)
   }
 }
 
@@ -71,7 +69,7 @@ const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
     const {runAt} = job
     const timeout = Math.max(0, runAt.getTime() - now.getTime())
     setTimeout(() => {
-      processJob(job, {dataLoader}).catch(console.log)
+      processJob(job, dataLoader).catch(console.log)
     }, timeout)
   })
 
