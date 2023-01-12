@@ -1,9 +1,11 @@
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {ReactableEnum} from '../../database/types/Reactable'
+import {Reactable} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
+import {ReactableEnum} from '../../graphql/private/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
@@ -224,16 +226,21 @@ class Analytics {
     userId: string,
     meetingId: string,
     meetingType: MeetingTypeEnum,
-    reactableId: string,
+    reactable: Reactable,
     reactableType: ReactableEnum,
+    reactji: string,
     isRemove: boolean
   ) => {
+    const isAIComment = 'createdBy' in reactable && reactable.createdBy === PARABOL_AI_USER_ID
+    const {id: reactableId} = reactable
     this.track(userId, 'Reactji Interacted', {
       meetingId,
       meetingType,
       reactableId,
       reactableType,
-      isRemove
+      reactji,
+      isRemove,
+      isAIComment
     })
   }
 
