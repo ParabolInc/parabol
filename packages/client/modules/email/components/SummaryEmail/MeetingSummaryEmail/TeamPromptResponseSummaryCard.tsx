@@ -109,7 +109,7 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
 
   return (
     <div style={responseSummaryCardStyles}>
-      <div style={{display: 'flex', alignItems: 'center', padding: '0 8px', marginBottom: 12}}>
+      <div style={{display: 'flex', padding: '0 8px', marginBottom: 12}}>
         <img height='48' src={rasterPicture} style={avatarStyles} width='48' />
         <h3 style={{padding: '0 8px', margin: 'auto auto auto 0'}}>{preferredName}</h3>
       </div>
