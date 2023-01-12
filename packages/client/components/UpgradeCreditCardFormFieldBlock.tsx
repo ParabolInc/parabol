@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { PALETTE } from "../styles/paletteV3";
+import {PALETTE} from '../styles/paletteV3'
 
 interface StyleProps {
   hasError: boolean

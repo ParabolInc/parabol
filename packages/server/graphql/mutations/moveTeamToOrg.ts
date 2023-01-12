@@ -6,7 +6,7 @@ import {RDatum} from '../../database/stricterR'
 import Notification from '../../database/types/Notification'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
+import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -102,11 +102,11 @@ const moveToOrg = async (
   const {newToOrgUserIds} = rethinkResult
 
   // if no teams remain on the org, remove it
-  await safeArchiveEmptyPersonalOrganization(currentOrgId)
+  await safeArchiveEmptyStarterOrganization(currentOrgId)
 
   await Promise.all(
     newToOrgUserIds.map((newUserId) => {
-      return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER)
+      return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER, dataLoader)
     })
   )
 
@@ -114,7 +114,7 @@ const moveToOrg = async (
 
   const inactiveUserIds = newUsers.filter((user) => user.inactive).map((user) => user!.id)
   inactiveUserIds.map((newInactiveUserId) => {
-    return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
+    return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER, dataLoader)
   })
 
   const inactiveAdded = inactiveUserIds.length

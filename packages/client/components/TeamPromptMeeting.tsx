@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useMemo} from 'react'
-import {useFragment} from 'react-relay'
+import React, {Suspense, useEffect, useMemo} from 'react'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition from '~/hooks/useTransition'
@@ -14,14 +15,15 @@ import ErrorBoundary from './ErrorBoundary'
 import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDiscussionDrawer from './TeamPrompt/TeamPromptDiscussionDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
-import {TeamPromptEndedBadge} from './TeamPrompt/TeamPromptEndedBadge'
 import {
   GRID_PADDING_LEFT_RIGHT_PERCENT,
   ResponsesGridBreakpoints
 } from './TeamPrompt/TeamPromptGridDimensions'
+import {TeamPromptMeetingStatus} from './TeamPrompt/TeamPromptMeetingStatus'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 
@@ -47,7 +49,8 @@ const ResponsesGrid = styled('div')({
 const BadgeContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  marginTop: 16
 })
 
 interface Props {
@@ -69,8 +72,11 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptTopBar_meeting
         ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptEditablePrompt_meeting
-        endedAt
+        ...TeamPromptMeetingStatus_meeting
+        ...MeetingLockedOverlay_meeting
+        id
         isRightDrawerOpen
+        endedAt
         phases {
           ... on TeamPromptResponsesPhase {
             __typename
@@ -80,6 +86,7 @@ const TeamPromptMeeting = (props: Props) => {
                 userId
               }
               response {
+                id
                 plaintextContent
                 createdAt
               }
@@ -125,8 +132,27 @@ const TeamPromptMeeting = (props: Props) => {
   }, [phase])
   const transitioningStages = useTransition(stages)
   const {safeRoute, isDesktop} = useMeeting(meeting)
-  const {isRightDrawerOpen, endedAt} = meeting
-  const isMeetingEnded = !!endedAt
+  const history = useHistory()
+  const {isRightDrawerOpen, id: meetingId} = meeting
+  const params = new URLSearchParams(history.location.search)
+  const responseId = params.get('responseId')
+  useEffect(() => {
+    if (!responseId) {
+      return
+    }
+
+    const stage = stages.find((stage) => stage.response?.id === params.get('responseId'))
+    if (!stage) {
+      return
+    }
+
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      meetingProxy.setValue(stage.id, 'localStageId')
+      meetingProxy.setValue(true, 'isRightDrawerOpen')
+    })
+  }, [responseId])
   if (!safeRoute) return null
 
   return (
@@ -139,10 +165,8 @@ const TeamPromptMeeting = (props: Props) => {
               hideBottomBar={true}
             >
               <TeamPromptTopBar meetingRef={meeting} isDesktop={isDesktop} />
-              {!isDesktop && isMeetingEnded && (
-                <BadgeContainer>
-                  <TeamPromptEndedBadge />
-                </BadgeContainer>
+              {!isDesktop && (
+                <BadgeContainer>{<TeamPromptMeetingStatus meetingRef={meeting} />}</BadgeContainer>
               )}
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
@@ -170,6 +194,7 @@ const TeamPromptMeeting = (props: Props) => {
           </MeetingContent>
         </Suspense>
       </MeetingArea>
+      <MeetingLockedOverlay meetingRef={meeting} />
     </MeetingStyles>
   )
 }

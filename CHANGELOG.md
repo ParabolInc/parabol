@@ -5,18 +5,183 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.87.1 2023-January-05
+
+### Fixed
+
+- **Check-in**: could not move, pin or unpin agenda items (#7622)
+
+## 6.87.0 2023-January-03
+
+### Fixed
+
+- Task highlight sticks when adding a due date (#7395)
+- Add graphql-tools/executor dev dependency
+- Broken summary pages (#7604)
+- Emoji length check (#7578)
+- Access custom template (#7600)
+- Organization Image is on top of default (#7429)
+- New meetings were locked with the history limit (#7581)
+- Bump sanitize-svg version (#7584)
+- **Jira**: fix Sprint Poker voting for projects with duplicate fields (#7607)
+- **notifications**: Remove bad shortlinks + dead code (#7574)
+
+### Added
+
+- Change tier to starter & team (#7505)
+- Add current facilitator to facilitator candidates (#7548)
+- **ai-summary**: auto update meeting summary (#7572)
+- **ai-summary**: ai explainer (#7571)
+- **teams-limit**: enable usage stats when teams limit exceeded (#7563)
+- **teams-limit**: add upgrade CTA to the meeting sidebar if teams limit is exceeded (#7520)
+- **teams-limit**: flag an organization when it has exceeded teams limit (#7517)
+- **teams-limit**: add addFeatureFlagToOrg mutation and support teams limit feature flag (#7526)
+- **parabl-ubi**: add parabol-ubi and host-st to public repo (#7588)
+- **recurrence**: Added current meeting link to ended meeting badge in standups (#7542)
+- **standups**: Standup response replied-to notification (#7547)
+
+### Changed
+
+- Add data team as reviewers for analytics changes (#7595)
+- Add comments to rootSchema (#7576)
+- Fix missing public types on private schema (#7580)
+- **metrics**: change upgrade CTA events to standard definitions (#7594)
+
+## 6.86.1 2022-December-19
+
+### Fixed
+
+- New meetings were locked with the history limit (#7599)
+- **Metrics**: change upgrade CTA events to standard definitions
+
+## 6.86.0 2022-December-14
+
+### Fixed
+
+- **DayPicker**: Bumped daypicker to v8, fixing broken icons (#7521)
+- **DraftJS**: PRevent virtual keyboard hiding after submitting comment (#7423)
+- **Demo**: Canonical link (#7516)
+- **Standups**: Update discussion preview when discussion isn't open (#7558)
+- **Archive Team**: Deleting team prevents reuse of deleted team's name (#7397)
+
+### Added
+
+- **AI-Summary**: Add topic summary to discussion thread (#7545)
+- **Notifications**: Make notification publishing generic (#7540)
+- **Jira**: Add logging for some error cases (#7561)
+- **AI-Summary**: Whole meeting Summary (#7543)
+- **AI-Summary**: Discussion summary in meeting summary (#7534)
+- **AI-Summary**: Topic summary in meeting summary (#7494)
+- **PG**: Added SSL Support (#7175)
+- **Metrics**: Enable send_page_view on ReactGA initialization (#7551)
+- **Standups**: Auto-open response discussion based on query param (#7546)
+- **Metrics**: Always include email in traits for identify calls (#7523)
+- **Recurrence**: Added standups time left indicator (#7538)
+
+### Changed
+
+- **Chore**: Limit direct access to locked meetings (#7532)
+- **Chore**: Limit meeting history on timeline (#7511)
+
+## 6.85.0 2022-December-07
+
+### Added
+
+- **lint**: add lintcheck and stylecheck (prettier) to github action (#7507)
+- **Sprint Poker**: Hitting up and down arrow keys cycles through poker cards (#7363)
+- **Retrospective**: add heard seen respected template (#7510)
+- **Metrics**: Enable Google Analytics client side page_view tracking (#7356)
+- **Notifications**: Remaining email notifications (#7527)
+- **Recurrence**: added human readable recurring meeting indicator (#7533)
+
+### Fixed
+
+- **Poker** number of stories in summary stats is one less than actual stories (#7241)
+- **Tasks**: There should be no scroll bar on tasks header (#7492)
+
+## 6.84.0 2022-November-30
+
+### Added
+
+- **Notifications**: Improved notifications email (#7447)
+- **AI summary**: Added AI summary feature flag (#7493)
+- **Template limits**: Updated selected template for free teams #7460
+- **Template limits**: Added additional template event tracking #7454
+- **Template limits**: Prevent cloning templates #7452
+- **Template limits**: Focus on newly created template #7442
+- **Template limits**: Added limit exceeded and locking flags #7441
+- **Template limits**: Implemented custom template upgrade feedback (#7427)
+- **Template limits**: Added teams limit feature flag #7440
+- **Template limits**: Implemented restriction on public templates #7405
+- **Template limits**: Updated team & org page with limit info (#7415)
+- **Metrics**: Removed HubSpot updates from the app #7382
+- Migrated OAuth2 redirect to Cloudflare #7446
+- Added "go to dashboard" and "sign in" button to "invitation link expired" screen #7153
+
+### Fixed
+
+- **DX** Run all yarn clean commands, even if one fails #7461
+
+### Changed
+
+- **Deps**: bump vm2 from 3.9.7 to 3.9.11 (#7233)
+- **Deps**: bump loader-utils from 1.4.0 to 1.4.2 (#7428)
+
+## 6.83.1 2022-November-23
+
+### Fixed
+
+- XSS vulnerability in meeting templates (#7491)
+
+## 6.83.0 2022-November-17
+
+### Fixed
+
+- Update tier when leaving org (#7377)
+- Added CorsOptions to email images (#7393)
+- Typo in Earth 2.0 check-in question
+- Send button is disabled in retro discussion on mobile (#7361)
+- Snackbar messages are not centered during standups #7203
+- Add delete confirmation button and waiting effect (#7403)
+- Snack on jira auth error (#7432)
+
+### Changed
+
+- Cleanup packages to support future bundled server build (#7400)
+
+## 6.82.0 2022-November-09
+
+### Added
+
+- **metrics**: disable Company properties update to HubSpot (#7366)
+- Implement setIsFreeMeetingTemplate mutation (#7346)
+- Add invoice explanation to comment (#7399)
+- Add template limit feature flag (#7391)
+
+### Fixed
+
+- Use MaterialUI SvgIcons instead of Font (#7154)
+- Header name should be more general (#7394)
+
+### Changed
+
+- CircleCI: split backup from deployment (#7389)
+
 ## 6.81.0 2022-November-02
 
 ### Added
+
 - **standups**: Added ended meeting view (#7327)
 - **timer picker**: add 10 minutes option (#7357)
 
 ### Fixed
+
 - **Azure DevOps**: fix adding issues to Sprint Poker (#7365)
 - **Team**: leave team does not work until refresh (#7368)
 - use fallback values for PokerCardDeck (#7315)
 
 ### Changed
+
 - add isFree to meeting template (#7345)
 - put isPatient0 on User row (#7325)
 - Remove @types/ioredis package (#7367)
@@ -24,11 +189,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 6.80.2 2022-November-01
 
 ### Fixed
+
 - Release version mismatch
 
 ## 6.80.1 2022-November-01
 
 ### Fixed
+
 - **Jira**: issues sometimes are not loading in poker meeting
 
 ## 6.80.0 2022-October-26

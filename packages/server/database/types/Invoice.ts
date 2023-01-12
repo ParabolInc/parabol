@@ -4,7 +4,7 @@ import InvoiceLineItem from './InvoiceLineItem'
 import NextPeriodCharges from './NextPeriodCharges'
 
 export type InvoiceStatusEnum = 'FAILED' | 'PAID' | 'PENDING' | 'UPCOMING'
-export type TierEnum = 'enterprise' | 'personal' | 'pro'
+export type TierEnum = 'enterprise' | 'starter' | 'team'
 
 interface Input {
   id: string

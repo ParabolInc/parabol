@@ -10,12 +10,12 @@ interface Props {
   tier: TierEnum | null
 }
 
-const PersonalTag = styled(BaseTag)({
+const StarterTag = styled(BaseTag)({
   backgroundColor: PALETTE.SLATE_200,
   color: PALETTE.SLATE_700
 })
 
-const ProTag = styled(BaseTag)({
+const TeamTag = styled(BaseTag)({
   backgroundColor: PALETTE.GOLD_300,
   color: PALETTE.GRAPE_700
 })
@@ -27,9 +27,8 @@ const EnterpriseTag = styled(BaseTag)({
 
 const TierTag = (props: Props) => {
   const {className, tier} = props
-  if (tier === 'personal')
-    return <PersonalTag className={className}>{TierLabel.PERSONAL}</PersonalTag>
-  if (tier === 'pro') return <ProTag className={className}>{TierLabel.PRO}</ProTag>
+  if (tier === 'starter') return <StarterTag className={className}>{TierLabel.STARTER}</StarterTag>
+  if (tier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
   if (tier === 'enterprise')
     return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
   return null

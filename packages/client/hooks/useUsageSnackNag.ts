@@ -19,7 +19,7 @@ const getIsNaggingPath = (history: RouterProps['history']) => {
 
 const shouldNag = (tier: TierEnum, suggestedTier: TierEnum | null) => {
   if (!suggestedTier) return false
-  const suggestPro = suggestedTier === 'pro' && tier === 'personal'
+  const suggestPro = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
   return suggestPro || suggestEnterprise
 }

@@ -45,6 +45,7 @@ const subscription = graphql`
       ...EditCommentingMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)
+      ...EndRetrospectiveMutation_meeting @relay(mask: false)
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)

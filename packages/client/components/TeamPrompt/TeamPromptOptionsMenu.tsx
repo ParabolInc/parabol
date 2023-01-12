@@ -51,20 +51,12 @@ const TeamPromptOptionsMenu = (props: Props) => {
           }
         }
         endedAt
-        viewerMeetingMember {
-          user {
-            featureFlags {
-              recurrence
-            }
-          }
-        }
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, viewerMeetingMember} = meeting
-  const recurrence = viewerMeetingMember?.user.featureFlags.recurrence
+  const {id: meetingId, meetingSeries, endedAt} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
@@ -79,31 +71,29 @@ const TeamPromptOptionsMenu = (props: Props) => {
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
-      {recurrence && (
-        <MenuItem
-          key='copy'
-          isDisabled={!canToggleRecurrence}
-          label={
-            <OptionMenuItem>
-              <ReplayIcon />
-              {hasRecurrenceEnabled ? <span>{'Stop repeating'}</span> : <span>{'Repeat M-F'}</span>}
-            </OptionMenuItem>
-          }
-          onClick={() => {
-            menuProps.closePortal()
+      <MenuItem
+        key='copy'
+        isDisabled={!canToggleRecurrence}
+        label={
+          <OptionMenuItem>
+            <ReplayIcon />
+            {hasRecurrenceEnabled ? <span>{'Stop repeating'}</span> : <span>{'Repeat M-F'}</span>}
+          </OptionMenuItem>
+        }
+        onClick={() => {
+          menuProps.closePortal()
 
-            if (hasRecurrenceEnabled) {
-              StopRecurrenceMutation(
-                atmosphere,
-                {meetingSeriesId: meetingSeries.id},
-                {onCompleted, onError}
-              )
-            } else {
-              StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
-            }
-          }}
-        />
-      )}
+          if (hasRecurrenceEnabled) {
+            StopRecurrenceMutation(
+              atmosphere,
+              {meetingSeriesId: meetingSeries.id},
+              {onCompleted, onError}
+            )
+          } else {
+            StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+          }
+        }}
+      />
       <MenuItem
         key='end'
         isDisabled={isEnded}

@@ -2,14 +2,17 @@ import ms from 'ms'
 import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
+import AuthToken from '../../../database/types/AuthToken'
 import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
-import getPg from '../../../postgres/getPg'
+import ServerEnvironment from '../../../email/ServerEnvironment'
+import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
 
 const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmails'] = async (
   _source,
-  _args
+  _args,
+  {dataLoader}
 ) => {
   // RESOLUTION
   // Note - this may be a lot of data one day. userNotifications is an array
@@ -42,24 +45,24 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
   const userNotificationMap = new Map(
     userNotificationCount.map((value) => [value.userId, value.notificationCount])
   )
-  const pg = getPg()
-  const users = await pg.query<{id: string; email: string; preferredName: string}>(
-    `SELECT id, email, "preferredName" FROM "User"
-    WHERE "id" = ANY($1::text[])
-    AND NOT inactive`,
-    [[...userNotificationMap.keys()]]
+  const users = (await dataLoader.get('users').loadMany([...userNotificationMap.keys()])).filter(
+    isValid
   )
 
   // :TODO: (jmtaber129): Filter out users whose only notification is a team invitation
 
   await Promise.all(
-    users.rows.map((user) => {
-      const {email, preferredName} = user
+    users.map(async (user) => {
+      const {email, tms, preferredName} = user
       const notificationCount = userNotificationMap.get(user.id)!
-      const {subject, html, body} = notificationSummaryCreator({
+
+      const authToken = new AuthToken({sub: user.id, tms, rol: 'impersonate'})
+      const environment = new ServerEnvironment(authToken, dataLoader.share())
+      const {subject, html, body} = await notificationSummaryCreator({
         preferredName,
         notificationCount,
-        appOrigin
+        appOrigin,
+        environment
       })
       return getMailManager().sendEmail({
         to: email,
@@ -70,7 +73,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
       })
     })
   )
-  return users.rows.map(({email}) => email)
+  return users.map(({email}) => email)
 }
 
 export default sendBatchNotificationEmails

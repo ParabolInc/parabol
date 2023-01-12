@@ -1,15 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ArchiveTeam_team} from '~/__generated__/ArchiveTeam_team.graphql'
+import {useFragment} from 'react-relay'
+import {ArchiveTeam_team$key} from '~/__generated__/ArchiveTeam_team.graphql'
 import IconLabel from '../../../../components/IconLabel'
 import LinkButton from '../../../../components/LinkButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import ArchiveTeamForm from './ArchiveTeamForm'
 
 interface Props {
-  team: ArchiveTeam_team
+  team: ArchiveTeam_team$key
 }
 
 const Hint = styled('div')({
@@ -19,12 +19,20 @@ const Hint = styled('div')({
 })
 
 const ArchiveTeam = (props: Props) => {
-  const {team} = props
+  const {team: teamRef} = props
+  const team = useFragment(
+    graphql`
+      fragment ArchiveTeam_team on Team {
+        ...ArchiveTeamForm_team
+      }
+    `,
+    teamRef
+  )
   const [showConfirmationField, setShowConfirmationField] = useState(false)
   const handleClick = () => {
     setShowConfirmationField(true)
   }
-  const handleFormBlur = () => {
+  const handleCancel = () => {
     setShowConfirmationField(false)
   }
   return (
@@ -43,16 +51,10 @@ const ArchiveTeam = (props: Props) => {
           </Hint>
         </div>
       ) : (
-        <ArchiveTeamForm handleFormBlur={handleFormBlur} team={team} />
+        <ArchiveTeamForm handleCancel={handleCancel} team={team} />
       )}
     </div>
   )
 }
 
-export default createFragmentContainer(ArchiveTeam, {
-  team: graphql`
-    fragment ArchiveTeam_team on Team {
-      ...ArchiveTeamForm_team
-    }
-  `
-})
+export default ArchiveTeam

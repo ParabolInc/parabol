@@ -2,10 +2,9 @@ import styled from '@emotion/styled'
 import {Event} from '@mui/icons-material'
 import ms from 'ms'
 import React from 'react'
-import DayPicker, {DayModifiers} from 'react-day-picker'
+import {DayModifiers, DayPicker} from 'react-day-picker'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import '../styles/daypicker.css'
 import {PALETTE} from '../styles/paletteV3'
 import {shortDays, shortMonths} from '../utils/makeDateString'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
@@ -70,11 +69,11 @@ const StageTimerModalEndTimeDate = (props: Props) => {
       <Toggle defaultText={dayStr} onClick={togglePortal} ref={originRef} flat size='small' />
       {menuPortal(
         <DayPicker
-          disabledDays={{before: now}}
+          disabled={{before: now}}
           fromMonth={now}
-          initialMonth={endTime}
+          defaultMonth={endTime}
           onDayClick={handleDayClick}
-          selectedDays={endTime}
+          selected={endTime}
           toMonth={NEXT_YEAR}
         />
       )}

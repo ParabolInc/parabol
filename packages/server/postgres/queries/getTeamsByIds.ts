@@ -3,8 +3,7 @@ import getPg from '../getPg'
 import {getTeamsByIdsQuery, IGetTeamsByIdsQueryResult} from './generated/getTeamsByIdsQuery'
 import {IGetTeamsByOrgIdsQueryResult} from './generated/getTeamsByOrgIdsQuery'
 
-export interface Team extends Omit<IGetTeamsByIdsQueryResult, 'jiraDimensionFields'> {
-}
+export interface Team extends Omit<IGetTeamsByIdsQueryResult, 'jiraDimensionFields'> {}
 
 export const mapToTeam = (result: IGetTeamsByIdsQueryResult[] | IGetTeamsByOrgIdsQueryResult[]) => {
   return result.map((team) => {

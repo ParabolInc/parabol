@@ -7,6 +7,7 @@ graphql`
   fragment StartTeamPromptMutation_team on StartTeamPromptSuccess {
     meeting {
       id
+      ...TeamPromptMeetingStatus_meeting
     }
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
