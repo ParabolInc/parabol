@@ -3,13 +3,16 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
+import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
+import NotificationDiscussionMentioned from '../../database/types/NotificationDiscussionMentioned'
 import NotificationResponseReplied from '../../database/types/NotificationResponseReplied'
+import {IGetDiscussionsByIdsQueryResult} from '../../postgres/queries/generated/getDiscussionsByIdsQuery'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -24,6 +27,53 @@ type AddCommentMutationVariables = {
     content: string
     threadSortOrder: number
   }
+}
+
+const getMentionNotifications = (
+  content: string,
+  viewerId: string,
+  discussion: IGetDiscussionsByIdsQueryResult,
+  commentId: string,
+  meetingId: string
+) => {
+  let parsedContent: any
+  try {
+    parsedContent = JSON.parse(content)
+  } catch {
+    // If we can't parse the content, assume no new notifications.
+    return []
+  }
+
+  const {entityMap} = parsedContent
+  return getTypeFromEntityMap('MENTION', entityMap)
+    .filter((mentionedUserId) => {
+      if (mentionedUserId === viewerId) {
+        return false
+      }
+
+      if (discussion.discussionTopicType === 'teamPromptResponse') {
+        const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
+        if (responseUserId === mentionedUserId) {
+          // The mentioned user will already receive a 'RESPONSE_REPLIED' notification for this
+          // comment
+          return false
+        }
+      }
+
+      // :TODO: (jmtaber129): Consider limiting these to when the mentionee is *not* on the
+      // relevant page.
+      return true
+    })
+    .map(
+      (mentioneeUserId) =>
+        new NotificationDiscussionMentioned({
+          userId: mentioneeUserId,
+          meetingId: meetingId,
+          authorId: viewerId,
+          commentId,
+          discussionId: discussion.id
+        })
+    )
 }
 
 const addComment = {
@@ -87,6 +137,21 @@ const addComment = {
 
         publishNotification(notification, subOptions)
       }
+    }
+
+    const notificationsToAdd = getMentionNotifications(
+      content,
+      viewerId,
+      discussion,
+      commentId,
+      meetingId
+    )
+
+    if (notificationsToAdd.length) {
+      await r.table('Notification').insert(notificationsToAdd).run()
+      notificationsToAdd.forEach((notification) => {
+        publishNotification(notification, subOptions)
+      })
     }
 
     const data = {commentId, meetingId}

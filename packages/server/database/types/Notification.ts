@@ -2,6 +2,7 @@ import generateUID from '../../generateUID'
 import {NotificationStatusEnumType} from '../../graphql/types/NotificationStatusEnum'
 
 export type NotificationEnum =
+  | 'DISCUSSION_MENTIONED'
   | 'KICKED_OUT'
   | 'MEETING_STAGE_TIME_LIMIT_END'
   | 'PAYMENT_REJECTED'
