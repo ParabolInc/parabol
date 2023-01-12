@@ -101,7 +101,7 @@ const teamLimitsEmailCreator = (props: Props) => {
     bgColor: PALETTE.SLATE_200
   })
 
-  analytics.teamsLimitEmailSent(userId, orgId, emailType)
+  analytics.notificationEmailSent(userId, orgId, emailType)
 
   return {
     subject,

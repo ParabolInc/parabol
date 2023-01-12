@@ -73,7 +73,7 @@ export type AnalyticsEvent =
   | 'Invite Email Sent'
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
-  | 'Teams Limit Email Sent'
+  | 'Notification Email Sent'
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
@@ -371,8 +371,8 @@ class Analytics {
     this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
   }
 
-  teamsLimitEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
-    this.track(userId, 'Teams Limit Email Sent', {type, orgId})
+  notificationEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
+    this.track(userId, 'Notification Email Sent', {type, orgId})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>
