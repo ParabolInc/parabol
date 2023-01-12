@@ -28,8 +28,8 @@ const RetroReflectPhase = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {localPhase, endedAt, showSidebar, settings} = meeting
-  if (!localPhase || !localPhase.reflectPrompts) return null
   const {disableAnonymity} = settings
+  if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
   const focusedPromptId = localPhase!.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
