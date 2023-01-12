@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, Threshold} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import StyledError from './StyledError'
@@ -69,19 +69,37 @@ const NewMeetingActions = (props: Props) => {
       fragment NewMeetingActions_team on Team {
         ...NewMeetingActionsCurrentMeetings_team
         id
+        organization {
+          name
+          lockedAt
+        }
       }
     `,
     teamRef
   )
 
+  const {organization} = team
+
+  const {lockedAt, name: organizationName} = organization
+
+  const isLocked = !!lockedAt
+
   return (
     <ActionRow>
       {error && <ErrorBlock>{error.message}</ErrorBlock>}
+      {isLocked && (
+        <ErrorBlock>
+          Unfortunately, {organizationName} has exceeded the {Threshold.MAX_PERSONAL_TIER_TEAMS}{' '}
+          teams limit on the Starter Plan for more than {Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS}{' '}
+          days, and your account has been locked. You can re-activate your teams by upgrading your
+          account.
+        </ErrorBlock>
+      )}
       <ActiveMeetingsBlock>
         <NewMeetingActionsCurrentMeetings team={team} />
       </ActiveMeetingsBlock>
       <ButtonBlock>
-        <StartButton onClick={onStartMeetingClick} waiting={submitting}>
+        <StartButton onClick={onStartMeetingClick} waiting={submitting} disabled={isLocked}>
           Start Meeting
         </StartButton>
       </ButtonBlock>
