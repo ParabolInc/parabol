@@ -1,9 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {processLockOrganizationJob} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
+import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
-import ScheduledJobOrganizationLock from '../../../database/types/ScheduledJobOrganizationLock'
+import ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -36,22 +36,19 @@ const processMeetingStageTimeLimits = async (
   })
 }
 
-export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledJobOrganizationLock
+export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
 
 const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
   const r = await getRethink()
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
-
-  if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
-    return processMeetingStageTimeLimits(job as ScheduledJobMeetingStageTimeLimit, {
+  if ('orgId' in job) {
+    return processTeamsLimitsJob(job, dataLoader).catch(console.log)
+  } else {
+    return processMeetingStageTimeLimits(job, {
       dataLoader
     }).catch(console.log)
-  } else if (job.type === 'LOCK_ORGANIZATION') {
-    return processLockOrganizationJob(job as ScheduledJobOrganizationLock, {dataLoader}).catch(
-      console.log
-    )
   }
 }
 

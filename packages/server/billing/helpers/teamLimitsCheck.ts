@@ -3,7 +3,7 @@ import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
-import ScheduledJobOrganizationLock from '../../database/types/ScheduledJobOrganizationLock'
+import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
@@ -39,19 +39,6 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .run()
 
   await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
-}
-
-const scheduleJobs = async (scheduledLockAt: Date, orgId: string) => {
-  const scheduledLock = r
-    .table('ScheduledJob')
-    .insert(new ScheduledJobOrganizationLock(scheduledLockAt, orgId))
-    .run()
-
-  // TODO: implement additional reminders
-  // const scheduleFirstReminder
-  // const scheduleSecondReminder
-
-  await Promise.all([scheduledLock])
 }
 
 const sendWebsiteNotifications = async (
@@ -190,36 +177,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
           emailType: 'thirtyDayWarning'
         })
       )
-    ])
+    ]),
+      scheduleTeamLimitsJobs(scheduledLockAt, orgId)
   }
-
-  await scheduleJobs(scheduledLockAt, orgId)
-}
-
-export const processLockOrganizationJob = async (
-  job: ScheduledJobOrganizationLock,
-  {dataLoader}: {dataLoader: DataLoaderWorker}
-) => {
-  const {orgId, runAt} = job
-
-  const organization = await dataLoader.get('organizations').load(orgId)
-
-  // Skip the job if unlocked or already locked or scheduled lock date changed
-  if (
-    !organization.scheduledLockAt ||
-    organization.lockedAt ||
-    organization.scheduledLockAt.getTime() !== runAt.getTime()
-  ) {
-    return
-  }
-
-  const now = new Date()
-
-  return r
-    .table('Organization')
-    .get(orgId)
-    .update({
-      lockedAt: now
-    })
-    .run()
 }
