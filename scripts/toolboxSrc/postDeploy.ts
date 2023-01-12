@@ -31,7 +31,7 @@ const postDeploy = async () => {
   try {
     const r = await getRethink()
     await storePersistedQueries()
-    await r.getPoolMaster() ? z.drain()
+    await r.getPoolMaster()?.drain()
     await primeIntegrations()
   } catch (e) {
     console.log('Post deploy error', e)
