@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import parseEmailAddressList from '../parseEmailAddressList'
 
-const getAddressStr = (res) => res && res.map((val) => val.address).join(', ')
+const getAddressStr = (res) => res && res.parsedInvitees.map((val) => val.address).join(', ')
 
 describe('parseEmailAddressList', () => {
   it('validates a simple single email', () => {

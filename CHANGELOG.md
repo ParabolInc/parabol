@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.87.1 2023-January-05
+
+### Fixed
+
+- **Check-in**: could not move, pin or unpin agenda items (#7622)
+
 ## 6.87.0 2023-January-03
 
 ### Fixed
