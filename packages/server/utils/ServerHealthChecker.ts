@@ -15,12 +15,22 @@ export default class ServerHealthChecker {
   subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
   pendingPongs = new Set<string>()
   constructor() {
-    this.subscriber.on('message', (_channel, message) => {
-      this.pendingPongs.delete(message)
+    this.subscriber.on('message', (channel, remoteServerId) => {
+      // console.log('message received', SERVER_ID, channel, remoteServerId)
+      if (channel === 'socketServerPing') {
+        if (remoteServerId === SERVER_ID) return
+        this.publisher.publish(`socketServerPong:${remoteServerId}`, SERVER_ID)
+      } else if (channel === `socketServerPong:${SERVER_ID}`) {
+        this.pendingPongs.delete(remoteServerId)
+      }
     })
-    this.subscriber.subscribe(`socketServerPong:${SERVER_ID}`)
+    this.subscriber.subscribe('socketServerPing', `socketServerPong:${SERVER_ID}`)
     this.publisher.sadd('socketServers', SERVER_ID)
   }
+
+  // get a list of servers who should be alive
+  // ping all servers
+  // if there are servers who say they're alive but they have responded, flag them as dead
   async ping() {
     const socketServers = await this.publisher.smembers('socketServers')
     this.pendingPongs = new Set(...socketServers.filter((id) => id !== SERVER_ID))
@@ -29,9 +39,9 @@ export default class ServerHealthChecker {
     // if a server hasn't replied in 500ms, assume it is offline
     const deadServerIds = [...this.pendingPongs]
     await this.reportDeadServers(deadServerIds)
-    return deadServerIds
   }
 
+  // Uses a callback because sigint will not await promises
   async reportDeadServers(deadServerIds: string[]) {
     if (deadServerIds.length === 0) return
     const authToken = new ServerAuthToken()
@@ -50,7 +60,7 @@ export default class ServerHealthChecker {
       const disconnectPromises = [] as Promise<any>[]
       presenceBatch.map((record, idx) => {
         const key = keys[idx]!
-        const userId = key.slice(0, key.indexOf(':'))
+        const userId = key.slice(key.indexOf(':') + 1)
         const connections = record[1]
         connections.forEach((connection) => {
           const presence = JSON.parse(connection) as UserPresence
