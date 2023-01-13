@@ -493,7 +493,7 @@ export const enum PollsAriaLabels {
 }
 
 export const enum AIExplainer {
-  STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`,
+  STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you for a few retros so you can see what they're like.`,
   PREMIUM_MEETING = `Our friendly AI 🤖 is here to save you time by summarizing your meeting`,
   PREMIUM_REFLECTIONS = `Our friendly AI 🤖 is here to save you time by summarizing your reflections`
 }
