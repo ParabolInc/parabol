@@ -1,7 +1,7 @@
-import {Threshold} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateGroupSummaries = async (
   meetingId: string,
@@ -15,8 +15,7 @@ const generateGroupSummaries = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').load(teamId)
   ])
-  if (!facilitator.featureFlags.includes('aiSummary') || !team) return
-  if (team.qualAIMeetingsCount > Threshold.MAX_QUAL_AI_MEETINGS) return
+  if (!canAccessAISummary(team, facilitator.featureFlags)) return
   const r = await getRethink()
   const manager = new OpenAIServerManager()
   await Promise.all(

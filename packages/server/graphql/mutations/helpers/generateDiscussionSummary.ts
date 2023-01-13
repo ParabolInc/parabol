@@ -1,10 +1,11 @@
-import {SubscriptionChannel, Threshold} from '../../../../client/types/constEnums'
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import updateDiscussions from '../../../postgres/queries/updateDiscussions'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateDiscussionSummary = async (
   discussionId: string,
@@ -18,8 +19,7 @@ const generateDiscussionSummary = async (
     dataLoader.get('tasksByDiscussionId').load(discussionId),
     dataLoader.get('teams').load(teamId)
   ])
-  if (!facilitator.featureFlags.includes('aiSummary') || !team) return
-  if (team.qualAIMeetingsCount > Threshold.MAX_QUAL_AI_MEETINGS) return
+  if (!canAccessAISummary(team, facilitator.featureFlags)) return
   const manager = new OpenAIServerManager()
   const commentsContent = comments
     .filter(({createdBy}) => createdBy !== PARABOL_AI_USER_ID)

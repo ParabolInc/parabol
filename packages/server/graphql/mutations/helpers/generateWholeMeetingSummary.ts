@@ -1,9 +1,9 @@
 import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
-import {Threshold} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateWholeMeetingSummary = async (
   discussionIds: string[],
@@ -20,8 +20,7 @@ const generateWholeMeetingSummary = async (
       dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId)
     ])
-  if (!facilitator.featureFlags.includes('aiSummary') || !team) return
-  if (team.qualAIMeetingsCount > Threshold.MAX_QUAL_AI_MEETINGS) return
+  if (!canAccessAISummary(team, facilitator.featureFlags)) return
   const manager = new OpenAIServerManager()
   const reflectionsContent = reflections.map((reflection) => reflection.plaintextContent)
   const commentsContent = commentsByDiscussions
