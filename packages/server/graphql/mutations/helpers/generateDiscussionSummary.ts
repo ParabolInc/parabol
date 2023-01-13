@@ -1,4 +1,4 @@
-import {SubscriptionChannel} from '../../../../client/types/constEnums'
+import {SubscriptionChannel, Threshold} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import updateDiscussions from '../../../postgres/queries/updateDiscussions'
@@ -11,13 +11,15 @@ const generateDiscussionSummary = async (
   meeting: MeetingRetrospective,
   dataLoader: DataLoaderWorker
 ) => {
-  const {id: meetingId, endedAt, facilitatorUserId} = meeting
-  const [facilitator, comments, tasks] = await Promise.all([
+  const {id: meetingId, endedAt, facilitatorUserId, teamId} = meeting
+  const [facilitator, comments, tasks, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('commentsByDiscussionId').load(discussionId),
-    dataLoader.get('tasksByDiscussionId').load(discussionId)
+    dataLoader.get('tasksByDiscussionId').load(discussionId),
+    dataLoader.get('teams').load(teamId)
   ])
-  if (!facilitator.featureFlags.includes('aiSummary')) return
+  if (!facilitator.featureFlags.includes('aiSummary') || !team) return
+  if (team.qualAIMeetingsCount > Threshold.MAX_QUAL_AI_MEETINGS) return
   const manager = new OpenAIServerManager()
   const commentsContent = comments
     .filter(({createdBy}) => createdBy !== PARABOL_AI_USER_ID)

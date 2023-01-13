@@ -1,4 +1,5 @@
 import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
+import {Threshold} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -7,16 +8,20 @@ import isValid from '../../isValid'
 const generateWholeMeetingSummary = async (
   discussionIds: string[],
   meetingId: string,
+  teamId: string,
   facilitatorUserId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [facilitator, commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([
-    dataLoader.get('users').loadNonNull(facilitatorUserId),
-    dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
-    dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-  ])
-  if (!facilitator.featureFlags.includes('aiSummary')) return
+  const [facilitator, commentsByDiscussions, tasksByDiscussions, reflections, team] =
+    await Promise.all([
+      dataLoader.get('users').loadNonNull(facilitatorUserId),
+      dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
+      dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
+      dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+      dataLoader.get('teams').load(teamId)
+    ])
+  if (!facilitator.featureFlags.includes('aiSummary') || !team) return
+  if (team.qualAIMeetingsCount > Threshold.MAX_QUAL_AI_MEETINGS) return
   const manager = new OpenAIServerManager()
   const reflectionsContent = reflections.map((reflection) => reflection.plaintextContent)
   const commentsContent = commentsByDiscussions

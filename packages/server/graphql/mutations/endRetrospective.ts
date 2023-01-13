@@ -23,13 +23,9 @@ import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
-const finishRetroMeeting = async (
-  meeting: MeetingRetrospective,
-  teamId: string,
-  context: GQLContext
-) => {
+const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
   const {dataLoader} = context
-  const {id: meetingId, phases, facilitatorUserId} = meeting
+  const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
@@ -42,7 +38,7 @@ const finishRetroMeeting = async (
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
 
   await Promise.all([
-    generateWholeMeetingSummary(discussionIds, meetingId, facilitatorUserId, dataLoader),
+    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     r
       .table('NewMeeting')
       .get(meetingId)
@@ -152,7 +148,7 @@ export default {
     ])
     // wait for removeEmptyTasks before finishRetroMeeting
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
-    finishRetroMeeting(completedRetrospective, teamId, context)
+    finishRetroMeeting(completedRetrospective, context)
     analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template)
     checkTeamsLimit(team.orgId, dataLoader)
     const events = teamMembers.map(
