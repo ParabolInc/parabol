@@ -13,9 +13,9 @@ const updateQualAIMeetingsCount = async (
     dataLoader.get('newMeetings').load(meetingId)
   ])
   if (meetingMembers.length < 3 || !team || !meeting.summary || reflections.length < 5) return
-  const {qualAIMeetings} = team
+  const {qualAIMeetingsCount} = team
   const updates = {
-    qualAIMeetings: qualAIMeetings + 1
+    qualAIMeetingsCount: qualAIMeetingsCount + 1
   }
   await updateTeamByTeamId(updates, teamId)
 }
