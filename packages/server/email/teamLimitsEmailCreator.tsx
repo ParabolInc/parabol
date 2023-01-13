@@ -4,6 +4,7 @@ import ThirtyDayWarningEmail from 'parabol-client/modules/email/components/Limit
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
+import {Threshold} from '../../client/types/constEnums'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import {TeamLimitsEmailType} from '../billing/helpers/sendTeamsLimitEmail'
@@ -11,7 +12,7 @@ import {analytics} from '../utils/analytics/analytics'
 import emailTemplate from './emailTemplate'
 
 const textOnlySummary = (props: Props) => {
-  const {preferredName, orgId, emailType, orgName, stickyTeamCount} = props
+  const {preferredName, orgId, emailType, orgName} = props
   const billingURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
@@ -23,7 +24,7 @@ const textOnlySummary = (props: Props) => {
   const emailTextLookup = {
     thirtyDayWarning: `Hi ${preferredName} 👋
 
-    This is a friendly note to let you know that ${orgName} has officially reached ${stickyTeamCount} active teams on Parabol - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.
+    This is a friendly note to let you know that ${orgName} has officially reached ${Threshold.MAX_PERSONAL_TIER_TEAMS} active teams on Parabol - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.
 
     As a reminder: Parabol's Starter Plan has a limit of two teams. Please upgrade your account to continue using Parabol with all of your teams: ${billingURL}
 
@@ -65,12 +66,11 @@ interface Props {
   preferredName: string
   orgId: string
   orgName: string
-  stickyTeamCount?: number
   emailType: TeamLimitsEmailType
 }
 
 const teamLimitsEmailCreator = (props: Props) => {
-  const {userId, preferredName, orgId, emailType, orgName, stickyTeamCount} = props
+  const {userId, preferredName, orgId, emailType, orgName} = props
   const Email =
     emailType === 'locked'
       ? LockedEmail
@@ -78,13 +78,7 @@ const teamLimitsEmailCreator = (props: Props) => {
       ? SevenDayWarningEmail
       : ThirtyDayWarningEmail
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
-    <Email
-      preferredName={preferredName}
-      orgId={orgId}
-      orgName={orgName}
-      stickyTeamCount={stickyTeamCount ?? 0}
-      appOrigin={appOrigin}
-    />
+    <Email preferredName={preferredName} orgId={orgId} orgName={orgName} appOrigin={appOrigin} />
   )
 
   const subject =

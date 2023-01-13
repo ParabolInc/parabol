@@ -1,4 +1,4 @@
-import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
+import {ContactInfo, ExternalLinks, Threshold} from 'parabol-client/types/constEnums'
 import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -22,12 +22,8 @@ const linkStyle = {
   ...emailLinkStyle
 }
 
-type Props = LimitsEmailProps & {
-  stickyTeamCount: number
-}
-
-export default function ThirtyDayWarningEmail(props: Props) {
-  const {appOrigin, preferredName, orgId, orgName, stickyTeamCount} = props
+export default function ThirtyDayWarningEmail(props: LimitsEmailProps) {
+  const {appOrigin, preferredName, orgId, orgName} = props
   const billingURL = makeAppURL(appOrigin, `/me/organizations/${orgId}/billing`, {
     searchParams: {
       utm_source: 'notification email',
@@ -44,7 +40,7 @@ export default function ThirtyDayWarningEmail(props: Props) {
         <p style={{...copyStyle, marginBottom: '0px'}}>
           {'This is a friendly note to let you know that '}
           <span style={{fontWeight: 600}}>
-            {`${orgName} has officially reached ${stickyTeamCount} active teams on Parabol`}
+            {`${orgName} has officially reached ${Threshold.MAX_PERSONAL_TIER_TEAMS} active teams on Parabol`}
           </span>
           {
             ' - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.'

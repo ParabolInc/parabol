@@ -1,4 +1,4 @@
-import {ContactInfo} from 'parabol-client/types/constEnums'
+import {ContactInfo, Threshold} from 'parabol-client/types/constEnums'
 import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -46,7 +46,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
         <p style={{...copyStyle, marginBottom: '0px'}}>
           {'Unfortunately, '}
           <span style={{fontWeight: 600}}>
-            {`${orgName} has exceeded the two-team limit on the Starter Plan for more than 30 days, and your account has been deactivated.`}
+            {`${orgName} has exceeded the two-team limit on the Starter Plan for more than ${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS} days, and your account has been deactivated.`}
           </span>
           {` You will not be able to use your ${orgName} account until you either delete teams so that you have two or fewer teams, or upgrade your account.`}
         </p>

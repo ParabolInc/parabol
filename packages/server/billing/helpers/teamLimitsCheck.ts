@@ -62,10 +62,18 @@ const sendWebsiteNotifications = async (
   })
 }
 
-// Sticky team is the team that completed 3 meetings with more than 1 attendee
-// and have had at least 1 meeting in the last 30 days
-// Warning: the query is very expensive
-export const getStickyTeamCount = async (teamIds: string[]): Promise<number> => {
+// Warning: the function might be expensive
+const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
+  const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
+  const teamIds = teams.map(({id}) => id)
+
+  if (teamIds.length <= Threshold.MAX_PERSONAL_TIER_TEAMS) {
+    return false
+  }
+
+  // Sticky team is the team that completed 3 meetings with more than 1 attendee
+  // and have had at least 1 meeting in the last 30 days
+  // Warning: the query is very expensive
   return r
     .table('NewMeeting')
     .getAll(r.args(teamIds), {index: 'teamId'})
@@ -85,24 +93,16 @@ export const getStickyTeamCount = async (teamIds: string[]): Promise<number> => 
           meetingId: row('group')(1),
           meetingMembers: row('reduction')
         }))
-        .filter((row) => row('meetingMembers').ge(Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES))
+        .filter((row: RDatum) =>
+          row('meetingMembers').ge(Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES)
+        )
         .group('teamId')
         .ungroup()
         .filter((row) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
         .count()
+        .gt(Threshold.MAX_PERSONAL_TIER_TEAMS)
     })
     .run()
-}
-
-// Warning: the function might be expensive
-const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
-  const teamIds = teams.map(({id}) => id)
-
-  if (teamIds.length <= Threshold.MAX_PERSONAL_TIER_TEAMS) return false
-
-  const stickyTeamCount = await getStickyTeamCount(teamIds)
-  return stickyTeamCount > Threshold.MAX_PERSONAL_TIER_TEAMS
 }
 
 // Warning: the function might be expensive
@@ -142,11 +142,9 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   if (teamIds.length <= Threshold.MAX_PERSONAL_TIER_TEAMS) return
 
-  const stickyTeamCount = await getStickyTeamCount(teamIds)
-  if (stickyTeamCount <= Threshold.MAX_PERSONAL_TIER_TEAMS) return
+  if (!(await isLimitExceeded(orgId, dataLoader))) return
 
   const now = new Date()
-
   const scheduledLockAt = new Date(
     now.getTime() + ms(`${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS}d`)
   )
@@ -171,7 +169,6 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
       billingLeaders.map((billingLeader) =>
         sendTeamsLimitEmail({
           user: billingLeader,
-          stickyTeamCount,
           orgId,
           orgName,
           emailType: 'thirtyDayWarning'

@@ -1,3 +1,4 @@
+import ms from 'ms'
 import {r} from 'rethinkdb-ts'
 import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
 import {DataLoaderWorker} from '../../graphql/graphql'
@@ -12,8 +13,12 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
   ])
   const {name: orgName, scheduledLockAt, lockedAt} = organization
 
-  // Skip the job if it's already been locked or the scheduled lock date changed
-  if (!scheduledLockAt || lockedAt || scheduledLockAt.getTime() !== runAt.getTime()) return
+  if (!scheduledLockAt || lockedAt) return
+
+  const expectedRunAt =
+    type === 'LOCK_ORGANIZATION' ? scheduledLockAt.getTime() : scheduledLockAt.getTime() - ms('7d')
+
+  if (expectedRunAt !== runAt.getTime()) return
 
   const billingLeadersIds = orgUsers
     .filter(({role}) => role === 'BILLING_LEADER')
