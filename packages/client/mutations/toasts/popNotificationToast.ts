@@ -9,13 +9,15 @@ import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
+import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
 > = {
   DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
-  RESPONSE_REPLIED: mapResponseRepliedToToast
+  RESPONSE_REPLIED: mapResponseRepliedToToast,
+  TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast
 }
 
 graphql`
@@ -26,6 +28,7 @@ graphql`
       ...mapDiscussionMentionedToToast_notification @relay(mask: false)
       ...mapResponseMentionedToToast_notification @relay(mask: false)
       ...mapResponseRepliedToToast_notification @relay(mask: false)
+      ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
     }
   }
 `
@@ -48,6 +51,23 @@ export const popNotificationToastOnNext: OnNextHandler<
 
   if (!notificationSnack) {
     return
+  }
+
+  if (notificationSnack.autoDismiss === 0) {
+    const callback = notificationSnack.onDismiss
+    notificationSnack.onDismiss = () => {
+      const {id: notificationId} = addedNotification
+      SetNotificationStatusMutation(
+        atmosphere,
+        {
+          notificationId,
+          status: 'CLICKED'
+        },
+        {}
+      )
+
+      callback?.()
+    }
   }
 
   if (notificationSnack.action) {

@@ -10,6 +10,7 @@ import {AppBar, Breakpoint, Layout, NavSidebar} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
+import PinnedSnackbarNotifications from './PinnedSnackbarNotifications'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarAvatar from './TopBarAvatar'
 import TopBarHelp from './TopBarHelp'
@@ -94,6 +95,7 @@ const DashTopBar = (props: Props) => {
     graphql`
       fragment DashTopBar_query on Query {
         ...TopBarNotifications_query
+        ...PinnedSnackbarNotifications_query
         viewer {
           ...TopBarAvatar_viewer
           ...TopBarSearch_viewer
@@ -122,6 +124,7 @@ const DashTopBar = (props: Props) => {
         <TopBarIcons>
           <TopBarHelp />
           <TopBarNotifications queryRef={data || null} />
+          <PinnedSnackbarNotifications queryRef={data || null} />
           <TopBarAvatar viewer={data.viewer || null} />
         </TopBarIcons>
       </TopBarMain>
