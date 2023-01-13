@@ -16,7 +16,6 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   const oldPicture = 'https://action-files.parabol.co/static/favicon.ico'
-
   await client.query(`
     UPDATE "User" SET "picture" = '${oldPicture}' WHERE "id" = 'parabolAIUser';
   `)
