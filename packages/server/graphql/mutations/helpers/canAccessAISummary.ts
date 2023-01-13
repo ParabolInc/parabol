@@ -1,5 +1,5 @@
 import {Threshold} from 'parabol-client/types/constEnums'
-import Team from '../../../database/types/Team'
+import {Team} from '../../../postgres/queries/getTeamsByIds'
 
 const canAccessAISummary = (team: Team | undefined, featureFlags: string[]) => {
   if (!featureFlags.includes('aiSummary') || !team) return false
