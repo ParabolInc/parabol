@@ -37,7 +37,12 @@ const generateWholeMeetingSummary = async (
   if (contentToSummarize.length <= 1) return
   const [r, summary] = await Promise.all([getRethink(), manager.getSummary(contentToSummarize)])
   if (!summary) return
-  await r.table('NewMeeting').get(meetingId).update({summary}).run()
+  const [meeting] = await Promise.all([
+    dataLoader.get('newMeetings').load(meetingId),
+    r.table('NewMeeting').get(meetingId).update({summary}).run()
+  ])
+  // mutate the cache
+  meeting.summary = summary
 }
 
 export default generateWholeMeetingSummary
