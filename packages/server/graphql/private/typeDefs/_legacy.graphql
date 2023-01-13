@@ -7656,6 +7656,11 @@ type LoginSAMLPayload {
   The new JWT
   """
   authToken: ID
+
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
 }
 
 type ErrorPayload {
