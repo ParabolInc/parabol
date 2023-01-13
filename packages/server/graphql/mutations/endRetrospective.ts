@@ -21,6 +21,7 @@ import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
 const finishRetroMeeting = async (
   meeting: MeetingRetrospective,
@@ -67,8 +68,9 @@ const finishRetroMeeting = async (
       )
       .run()
   ])
-  // wait for whole meeting summary to be generated before sending summary email
+  // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(console.log)
+  updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
