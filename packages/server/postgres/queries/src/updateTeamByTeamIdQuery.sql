@@ -10,6 +10,6 @@ UPDATE "Team" SET
   "tier" = COALESCE(:tier, "tier"),
   "orgId" = COALESCE(:orgId, "orgId"),
   "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML"),
-  "qualAIMeetingsCount" = COALESCE(:qualAIMeetingsCount, "qualAIMeetingsCount"),
+  "qualAIMeetingsCount" = COALESCE(:qualAIMeetingsCount, "qualAIMeetingsCount")
 WHERE id IN :ids
 RETURNING *;
