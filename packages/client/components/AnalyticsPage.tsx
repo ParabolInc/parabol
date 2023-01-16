@@ -3,7 +3,7 @@
 import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef} from 'react'
 import ReactGA from 'react-ga4'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
@@ -89,39 +89,41 @@ const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
-  const [isGAInitialized, setIsGAInitialized] = useState(false)
   useEffect(() => {
-    const initializeGA = async () => {
-      const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-      if (!res) return
-      const {viewer} = res
-      const {id, segmentId} = viewer
+    if (gaMeasurementId) {
       ReactGA.initialize(gaMeasurementId, {
         gtagOptions: {
           send_page_view: true
         }
       })
-      ReactGA.set({
-        userId: id,
-        clientId: segmentId ?? getAnonymousId()
-      })
     }
-    if (atmosphere.viewerId && !isGAInitialized && gaMeasurementId) {
-      initializeGA()
-        .catch()
-        .then(() => {
-          setIsGAInitialized(true)
+  }, [ReactGA.isInitialized, gaMeasurementId])
+
+  useEffect(() => {
+    const configGA = async () => {
+      if (!ReactGA.isInitialized || !isSegmentLoaded) {
+        return
+      }
+
+      const {viewerId} = atmosphere
+      if (viewerId) {
+        const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+        if (!res) return
+        const {viewer} = res
+        const {id, segmentId} = viewer
+        ReactGA.set({
+          userId: id,
+          clientId: segmentId ?? getAnonymousId()
         })
+      } else {
+        ReactGA.set({
+          userId: null,
+          clientId: getAnonymousId()
+        })
+      }
     }
-    if (!atmosphere.viewerId && isGAInitialized) {
-      ReactGA.reset()
-      ReactGA.set({
-        userId: null,
-        clientId: null
-      })
-      setIsGAInitialized(false)
-    }
-  }, [isGAInitialized, atmosphere.viewerId])
+    configGA()
+  }, [ReactGA.isInitialized, atmosphere.viewerId])
 
   /* eslint-disable */
   const {href, pathname} = location
