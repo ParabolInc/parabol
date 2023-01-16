@@ -21,7 +21,11 @@ class OpenAIServerManager {
     try {
       const response = await this.openAIApi.createCompletion({
         model: 'text-davinci-003',
-        prompt: `Summarize this for a second-grade student in one or two sentences: ${text}`,
+        prompt: `Below is a comma-separated list of text. Summarize the text for a second-grade student in one or two sentences.
+
+        Text: """
+        ${text}
+        """`,
         temperature: 0.7,
         max_tokens: 256,
         top_p: 1,

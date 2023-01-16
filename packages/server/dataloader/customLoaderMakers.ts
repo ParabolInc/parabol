@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
@@ -81,7 +82,9 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         r
           .table('Comment')
           .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-          .filter({isActive: true})
+          .filter((row: RDatum) =>
+            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
+          )
           .group('discussionId') as any
       )
         .count()
