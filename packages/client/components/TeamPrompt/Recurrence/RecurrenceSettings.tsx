@@ -1,27 +1,15 @@
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
-import ms from 'ms'
 import React, {useEffect, useState} from 'react'
-import {Frequency, RRule, Weekday} from 'rrule'
+import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu, {MenuProps} from '../../../hooks/useMenu'
+import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
-import Menu from '../../Menu'
-import MenuItem from '../../MenuItem'
+import {Day, RecurrenceDayCheckBox} from './RecurrenceDayCheckBox'
+import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 
-type DayFullName =
-  | 'Monday'
-  | 'Tuesday'
-  | 'Wednesday'
-  | 'Thursday'
-  | 'Friday'
-  | 'Saturday'
-  | 'Sunday'
-type DayShortName = 'M' | 'T' | 'W' | 'F' | 'S'
-type Day = {name: DayFullName; short: DayShortName; rruleVal: Weekday}
-
-const ALL_DAYS: Day[] = [
+export const ALL_DAYS: Day[] = [
   {name: 'Monday', short: 'M', rruleVal: RRule.MO},
   {name: 'Tuesday', short: 'T', rruleVal: RRule.TU},
   {name: 'Wednesday', short: 'W', rruleVal: RRule.WE},
@@ -31,96 +19,6 @@ const ALL_DAYS: Day[] = [
   {name: 'Sunday', short: 'S', rruleVal: RRule.SU}
 ]
 
-const CheckBoxRoot = styled('div')({
-  position: 'relative',
-  width: 42,
-  height: 42
-})
-
-const StyledCheckbox = styled('input')({
-  appearance: 'none',
-  margin: 0,
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  border: `2px solid ${PALETTE.SLATE_200}`,
-  borderRadius: 8,
-  '&:checked': {
-    border: `2px solid ${PALETTE.SKY_500}`,
-    backgroundColor: PALETTE.SKY_500
-  }
-})
-
-const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChecked}) => ({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  fontSize: 20,
-  lineHeight: '26px',
-  fontWeight: 600,
-  display: 'flex',
-  color: isChecked ? PALETTE.WHITE : PALETTE.SLATE_800,
-  justifyContent: 'center',
-  alignItems: 'center',
-  cursor: 'pointer'
-}))
-
-interface RecurrenceDayCheckBox {
-  day: Day
-  onToggle: (day: Day) => void
-}
-
-const RecurrenceDayCheckBox = (props: RecurrenceDayCheckBox) => {
-  const {day, onToggle} = props
-  const [checked, setChecked] = React.useState(false)
-
-  return (
-    <CheckBoxRoot>
-      <StyledCheckbox
-        type='checkbox'
-        id={day.name}
-        name={day.short}
-        onChange={(e) => {
-          setChecked(e.target.checked)
-          onToggle(day)
-        }}
-      />
-      <StyledCheckboxLabel htmlFor={day.name} isChecked={checked}>
-        {day.short}
-      </StyledCheckboxLabel>
-    </CheckBoxRoot>
-  )
-}
-
-interface Props {
-  menuProps: MenuProps
-  onClick: (n: Date) => void
-}
-
-const options = [...Array(96).keys()].map((n) => n * ms('15m'))
-
-const RecurrenceTimePicker = (props: Props) => {
-  const {menuProps, onClick} = props
-  const startOfToday = new Date().setHours(0, 0, 0, 0)
-  return (
-    <Menu {...menuProps} ariaLabel={'6:00 AM'}>
-      {options.map((n) => {
-        const proposedTime = dayjs(startOfToday + n).add(1, 'day')
-        return (
-          <MenuItem
-            key={n}
-            label={proposedTime.format('h:mm A')}
-            onClick={() => onClick(proposedTime.toDate())}
-          />
-        )
-      })}
-    </Menu>
-  )
-}
 const RecurrenceFrequencyPickerRoot = styled('div')({
   display: 'flex',
   justifyContent: 'start',
@@ -198,12 +96,12 @@ const convertToUTC = (localStartTime: Date) => {
   )
 }
 
-interface RecurrenceSettingsProps {
+interface Props {
   onRecurrenceRuleUpdated: (rrule: RRule | null) => void
   recurrenceRule: RRule | null
 }
 
-export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
+export const RecurrenceSettings = (props: Props) => {
   const {onRecurrenceRuleUpdated, recurrenceRule} = props
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
@@ -299,7 +197,7 @@ export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
       <HumanReadableRecurrenceRule>
         Your meeting{' '}
         <strong>
-          {recurrenceRule ? `will repeat ${recurrenceRule.toText()}` : 'will not repeat'}
+          {recurrenceRule ? `will restart ${recurrenceRule.toText()}` : 'will not restart'}
         </strong>
       </HumanReadableRecurrenceRule>
       <>

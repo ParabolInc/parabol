@@ -10,6 +10,10 @@
     "lib": ["esnext", "dom"],
     "types": ["node"]
   },
-  "files": ["client.tsx"],
+  "files": [
+    "client.tsx",
+    "./components/TeamPrompt/Recurrence/RecurrenceTimePicker.tsx",
+    "./components/TeamPrompt/Recurrence/RecurrenceDayCheckBox.tsx"
+  ],
   "exclude": ["serviceWorker", "**/node_modules"]
 }
