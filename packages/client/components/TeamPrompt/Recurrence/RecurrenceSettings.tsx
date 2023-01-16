@@ -35,7 +35,7 @@ const RecurrenceIntervalInput = styled('input')({
   borderWidth: 1,
   borderRadius: 4,
   borderColor: PALETTE.SLATE_500,
-  '&:hover,:focus': {
+  '&:hover,:focus,:active': {
     borderColor: PALETTE.SLATE_600
   }
 })
@@ -50,13 +50,14 @@ const RecurrenceFrequencySelect = styled('select')({
   borderWidth: 1,
   borderRadius: 4,
   borderColor: PALETTE.SLATE_500,
-  '&:hover,:focus': {
+  '&:hover,:focus,:active': {
     borderColor: PALETTE.SLATE_600
   }
 })
 
 const RecurrenceSettingsRoot = styled('div')({
-  padding: 16
+  padding: 16,
+  fontSize: 14
 })
 
 const RecurrenceSettingsTitle = styled('div')({
@@ -79,9 +80,13 @@ const RecurrenceDayPickerRoot = styled('div')({
   marginBottom: 8
 })
 
-const Toggle = styled(DropdownMenuToggle)({
+const StartTimeDropdownToggle = styled(DropdownMenuToggle)({
   fontSize: 14,
   width: '100%',
+  marginTop: 8
+})
+
+const StartTimeSection = styled('div')({
   marginTop: 16
 })
 
@@ -200,15 +205,16 @@ export const RecurrenceSettings = (props: Props) => {
           {recurrenceRule ? `will restart ${recurrenceRule.toText()}` : 'will not restart'}
         </strong>
       </HumanReadableRecurrenceRule>
-      <>
-        <Toggle
+      <StartTimeSection>
+        <div>Each instance starts at</div>
+        <StartTimeDropdownToggle
           defaultText={`${dayjs(startTime).format('h:mm A')} (${timeZone})`}
           onClick={togglePortal}
           ref={originRef}
           size='small'
         />
         {menuPortal(<RecurrenceTimePicker menuProps={menuProps} onClick={setStartTime} />)}
-      </>
+      </StartTimeSection>
     </RecurrenceSettingsRoot>
   )
 }
