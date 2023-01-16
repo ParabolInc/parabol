@@ -32,6 +32,7 @@ export type PortalId =
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
   | 'newMeetingRoot'
+  | 'RecurrenceStartTimePicker'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void

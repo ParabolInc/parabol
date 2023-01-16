@@ -1,7 +1,14 @@
 import styled from '@emotion/styled'
+import dayjs from 'dayjs'
+import ms from 'ms'
 import React, {useEffect, useState} from 'react'
 import {Frequency, RRule, Weekday} from 'rrule'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useMenu, {MenuProps} from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
+import DropdownMenuToggle from '../../DropdownMenuToggle'
+import Menu from '../../Menu'
+import MenuItem from '../../MenuItem'
 
 type DayFullName =
   | 'Monday'
@@ -89,6 +96,31 @@ const RecurrenceDayCheckBox = (props: RecurrenceDayCheckBox) => {
   )
 }
 
+interface Props {
+  menuProps: MenuProps
+  onClick: (n: Date) => void
+}
+
+const options = [...Array(96).keys()].map((n) => n * ms('15m'))
+
+const RecurrenceTimePicker = (props: Props) => {
+  const {menuProps, onClick} = props
+  const startOfToday = new Date().setHours(0, 0, 0, 0)
+  return (
+    <Menu {...menuProps} ariaLabel={'6:00 AM'}>
+      {options.map((n) => {
+        const proposedTime = dayjs(startOfToday + n).add(1, 'day')
+        return (
+          <MenuItem
+            key={n}
+            label={proposedTime.format('h:mm A')}
+            onClick={() => onClick(proposedTime.toDate())}
+          />
+        )
+      })}
+    </Menu>
+  )
+}
 const RecurrenceFrequencyPickerRoot = styled('div')({
   display: 'flex',
   justifyContent: 'start',
@@ -98,6 +130,7 @@ const RecurrenceFrequencyPickerRoot = styled('div')({
 })
 
 const RecurrenceIntervalInput = styled('input')({
+  height: 36,
   flex: 1,
   padding: 8,
   border: 'solid',
@@ -110,10 +143,12 @@ const RecurrenceIntervalInput = styled('input')({
 })
 
 const RecurrenceFrequencySelect = styled('select')({
+  height: 36,
   appearance: 'none',
   flex: 1,
   padding: 8,
   border: 'solid',
+  cursor: 'pointer',
   borderWidth: 1,
   borderRadius: 4,
   borderColor: PALETTE.SLATE_500,
@@ -146,6 +181,12 @@ const RecurrenceDayPickerRoot = styled('div')({
   marginBottom: 8
 })
 
+const Toggle = styled(DropdownMenuToggle)({
+  fontSize: 14,
+  width: '100%',
+  marginTop: 16
+})
+
 const convertToUTC = (localStartTime: Date) => {
   return new Date(
     Date.UTC(
@@ -171,8 +212,24 @@ export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
     recurrenceRule ? recurrenceRule.options.freq : RRule.WEEKLY
   )
   const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>([])
-  //TODO: get this from the UI select
-  const [startTime] = React.useState<Date>(new Date())
+  const [startTime, setStartTime] = React.useState<Date>(
+    dayjs()
+      .add(1, 'day')
+      .set('hour', 6)
+      .set('minute', 0)
+      .set('second', 0)
+      .set('millisecond', 0)
+      .toDate() // suggest 6:00 AM tomorrow
+  )
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
+  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
+    MenuPosition.LOWER_LEFT,
+    {
+      id: 'RecurrenceStartTimePicker',
+      parentId: 'newMeetingRoot',
+      isDropdown: true
+    }
+  )
 
   const handleIntervalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -209,7 +266,7 @@ export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
             byweekday: recurrenceDays.map((day) => day.rruleVal),
             dtstart: convertToUTC(startTime),
             //TODO: this causes rrule to provide 'Invalid Date' for the next occurrences - see https://github.com/jakubroztocil/rrule/pull/547
-            tzid: Intl.DateTimeFormat().resolvedOptions().timeZone
+            tzid: timeZone
           })
         : null
 
@@ -245,6 +302,15 @@ export const RecurrenceSettings = (props: RecurrenceSettingsProps) => {
           {recurrenceRule ? `will repeat ${recurrenceRule.toText()}` : 'will not repeat'}
         </strong>
       </HumanReadableRecurrenceRule>
+      <>
+        <Toggle
+          defaultText={`${dayjs(startTime).format('h:mm A')} (${timeZone})`}
+          onClick={togglePortal}
+          ref={originRef}
+          size='small'
+        />
+        {menuPortal(<RecurrenceTimePicker menuProps={menuProps} onClick={setStartTime} />)}
+      </>
     </RecurrenceSettingsRoot>
   )
 }
