@@ -9,6 +9,8 @@ export type UpgradeCTALocationEnumType =
   | 'usageStats'
   | 'directMeetingLinkLock'
   | 'timelineHistoryLock'
+  | 'unpaidTeamModal'
+  | 'organizationLockedModal'
 
 const UpgradeCTALocationEnum = new GraphQLEnumType({
   name: 'UpgradeCTALocationEnum',
@@ -21,7 +23,9 @@ const UpgradeCTALocationEnum = new GraphQLEnumType({
     createTeam: {},
     usageStats: {},
     directMeetingLinkLock: {},
-    timelineHistoryLock: {}
+    timelineHistoryLock: {},
+    unpaidTeamModal: {},
+    organizationLockedModal: {}
   }
 })
 

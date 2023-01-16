@@ -9,8 +9,10 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
+import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
 const StyledButton = styled(PrimaryButton)({
@@ -75,7 +77,13 @@ const UnpaidTeamModal = (props: Props) => {
   const billingLeaderName = firstBillingLeader?.preferredName ?? 'Unknown'
   const email = firstBillingLeader?.email ?? 'Unknown'
   const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
-  const handleClick = () => history.push(`/me/organizations/${orgId}`)
+
+  const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnum) => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation
+    })
+    history.push(`/me/organizations/${orgId}`)
+  }
 
   if (organization.lockedAt) {
     return (
@@ -96,7 +104,7 @@ const UnpaidTeamModal = (props: Props) => {
           </ContactUsLink>{' '}
           to let us know which teams you’d like to delete to fit within the two-team limit.
           {isALeader && (
-            <StyledButton size='medium' onClick={handleClick}>
+            <StyledButton size='medium' onClick={() => goToBilling('organizationLockedModal')}>
               <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
             </StyledButton>
           )}
@@ -125,7 +133,7 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <StyledButton size='medium' onClick={handleClick}>
+          <StyledButton size='medium' onClick={() => goToBilling('unpaidTeamModal')}>
             <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
           </StyledButton>
         )}
