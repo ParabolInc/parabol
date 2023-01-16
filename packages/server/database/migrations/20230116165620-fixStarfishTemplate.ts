@@ -28,6 +28,7 @@ export const up = async function (r: R) {
     title: 'More Of ➕',
     updatedAt: now
   }
+
   await r.table('ReflectPrompt').insert([missingLessOfPrompt, missingMoreOfPrompt]).run()
 }
 
