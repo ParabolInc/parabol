@@ -19,13 +19,12 @@ const typePicker: Partial<
   TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast
 }
 
-// TODO: we must filter exact types on backend side
 const PinnedSnackbarNotifications = ({queryRef}: Props) => {
   const data = useFragment(
     graphql`
       fragment PinnedSnackbarNotifications_query on Query {
         viewer {
-          pinnedNotifications: notifications(first: 10) {
+          pinnedNotifications: notifications(first: 10, types: [TEAMS_LIMIT_EXCEEDED]) {
             edges {
               node {
                 id
