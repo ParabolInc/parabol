@@ -90,7 +90,7 @@ const UnpaidTeamModal = (props: Props) => {
           You can re-activate your teams by upgrading your account.
           <br />
           <br />
-          If you’d like to keep using Parabol with Starter Plan, please{' '}
+          If you’d like to keep using Parabol on the Starter Plan, please{' '}
           <ContactUsLink href={ExternalLinks.CONTACT} target='_blank' rel='noopener noreferrer'>
             contact us
           </ContactUsLink>{' '}

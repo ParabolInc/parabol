@@ -52,7 +52,9 @@ const StartButton = styled(FlatPrimaryButton)({
 })
 
 const ErrorBlock = styled(StyledError)({
-  paddingBottom: 24
+  paddingBottom: 24,
+  width: '100%',
+  textAlign: 'center'
 })
 
 interface Props {
