@@ -16,6 +16,7 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
   const {togglePortal, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
+      id: 'newMeetingRecurrenceSettings',
       parentId: 'newMeetingRoot',
       isDropdown: true
     }

@@ -129,7 +129,7 @@ export const RecurrenceSettings = (props: Props) => {
     MenuPosition.LOWER_LEFT,
     {
       id: 'RecurrenceStartTimePicker',
-      parentId: 'newMeetingRoot',
+      parentId: 'newMeetingRecurrenceSettings',
       isDropdown: true
     }
   )

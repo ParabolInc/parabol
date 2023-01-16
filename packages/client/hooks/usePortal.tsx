@@ -32,6 +32,7 @@ export type PortalId =
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
   | 'newMeetingRoot'
+  | 'newMeetingRecurrenceSettings'
   | 'RecurrenceStartTimePicker'
 
 export interface UsePortalOptions {
