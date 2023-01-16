@@ -125,7 +125,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
   },
 
   async endMeeting(meeting, team) {
-    const {facilitatorUserId} = meeting
+    const {facilitatorUserId, summary} = meeting
     const {webhookUrl} = notificationChannel
     const searchParams = {
       utm_source: 'MS Teams meeting start',
@@ -161,6 +161,21 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingEndedDiscussionColumn.width = 'auto'
     const meetingEndedReviewColumn = new AdaptiveCards.Column()
     meetingEndedReviewColumn.width = 'auto'
+
+    if (summary) {
+      const aiSummaryColumnSet = new AdaptiveCards.ColumnSet()
+      const aiSummaryColumn = new AdaptiveCards.Column()
+      aiSummaryColumn.width = 'stretch'
+      const aiSummaryTitle = new AdaptiveCards.TextBlock('AI Summary 🤖')
+      aiSummaryTitle.weight = AdaptiveCards.TextWeight.Bolder
+      const cleanedAISummary = summary.replace(/(\r\n|\n|\r)/gm, '') // remove line breaks from the summary
+      const aiSummaryTextBlock = new AdaptiveCards.TextBlock(cleanedAISummary)
+      aiSummaryTextBlock.wrap = true
+      aiSummaryColumn.addItem(aiSummaryTitle)
+      aiSummaryColumn.addItem(aiSummaryTextBlock)
+      aiSummaryColumnSet.addColumn(aiSummaryColumn)
+      card.addItem(aiSummaryColumnSet)
+    }
 
     const meetingEndedDiscussionActionSet = new AdaptiveCards.ActionSet()
     const meetingEndedDiscussionAction = new AdaptiveCards.OpenUrlAction()

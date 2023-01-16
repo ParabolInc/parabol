@@ -16,6 +16,7 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {
+  Field,
   makeFieldsAttachment,
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
@@ -178,37 +179,43 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
   },
 
   async endMeeting(meeting, team) {
-    const {facilitatorUserId} = meeting
+    const {facilitatorUserId, summary} = meeting
     const {webhookUrl} = notificationChannel
 
     const summaryText = getSummaryText(meeting)
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
+    const fields: Field[] = [
+      {
+        short: true,
+        title: 'Team',
+        value: team.name
+      },
+      {
+        short: true,
+        title: 'Meeting',
+        value: meeting.name
+      },
+      {
+        short: false,
+        title: 'Stats',
+        value: summaryText
+      }
+    ]
+    if (summary) {
+      const cleanedAISummary = summary.replace(/(\r\n|\n|\r)/gm, '') // remove line breaks from the summary
+      fields.push({
+        short: false,
+        title: 'AI Summary 🤖',
+        value: cleanedAISummary
+      })
+    }
+    fields.push(...makeEndMeetingButtons(meeting))
     const attachments = [
-      makeFieldsAttachment(
-        [
-          {
-            short: true,
-            title: 'Team',
-            value: team.name
-          },
-          {
-            short: true,
-            title: 'Meeting',
-            value: meeting.name
-          },
-          {
-            short: false,
-            title: 'Summary',
-            value: summaryText
-          },
-          ...makeEndMeetingButtons(meeting)
-        ],
-        {
-          fallback: `Meeting completed, join: ${meetingUrl}`,
-          title: 'Meeting completed 🎉',
-          title_link: meetingUrl
-        }
-      )
+      makeFieldsAttachment(fields, {
+        fallback: `Meeting completed, join: ${meetingUrl}`,
+        title: 'Meeting completed 🎉',
+        title_link: meetingUrl
+      })
     ]
     return notifyMattermost('meetingEnd', webhookUrl, facilitatorUserId, team.id, attachments)
   },
