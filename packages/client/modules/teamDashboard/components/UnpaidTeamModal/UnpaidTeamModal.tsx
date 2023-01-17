@@ -98,16 +98,20 @@ const UnpaidTeamModal = (props: Props) => {
             {Threshold.MAX_PERSONAL_TIER_TEAMS} teams limit on the Starter Plan for more than{' '}
             {Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS} days, and your account has been locked.
           </p>
-          <p>You can re-activate your teams by upgrading your account.</p>
-          If you’d like to keep using Parabol on the Starter Plan, please{' '}
-          <ContactUsLink href={ExternalLinks.CONTACT} target='_blank' rel='noopener noreferrer'>
-            contact us
-          </ContactUsLink>{' '}
-          to let us know which teams you’d like to delete to fit within the two-team limit.
-          {isALeader && (
-            <StyledButton size='medium' onClick={() => goToBilling('organizationLockedModal')}>
-              <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
-            </StyledButton>
+          {isALeader ? (
+            <>
+              <p>You can re-activate your teams by upgrading your account.</p>
+              If you’d like to keep using Parabol on the Starter Plan, please{' '}
+              <ContactUsLink href={ExternalLinks.CONTACT} target='_blank' rel='noopener noreferrer'>
+                contact us
+              </ContactUsLink>{' '}
+              to let us know which teams you’d like to delete to fit within the two-team limit.
+              <StyledButton size='medium' onClick={() => goToBilling('organizationLockedModal')}>
+                <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
+              </StyledButton>
+            </>
+          ) : (
+            `Try reaching out to ${billingLeaderName} at ${email}`
           )}
         </LockedAtContent>
       </DashModal>
