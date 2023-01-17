@@ -226,7 +226,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!ensureHasText(value)) return
-      const text = value.trim();
+      const text = value.trim()
       const contentState = ContentState.createFromText(text)
       const rawText = convertStateToRaw(contentState)
       addComment(rawText)
