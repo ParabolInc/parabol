@@ -1,10 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {DISCUSS} from 'parabol-client/utils/constants'
+import {DISCUSS, PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
+import {RDatum} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -49,7 +50,9 @@ const finishRetroMeeting = async (
           commentCount: r
             .table('Comment')
             .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .filter({isActive: true})
+            .filter((row: RDatum) =>
+              row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
+            )
             .count()
             .default(0) as unknown as number,
           taskCount: r

@@ -137,6 +137,15 @@ jobs:
       - store_artifacts:
           path: ./packages/server/reports/junit
       - run:
+          name: Run client tests
+          command: yarn test:client -- --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./reports/junit
+      - store_test_results:
+          path: ./packages/client/reports/junit/
+      - store_artifacts:
+          path: ./packages/client/reports/junit
+      - run:
           name: Install Playwright system dependencies
           command: yarn workspace integration-tests playwright install-deps
       - run:

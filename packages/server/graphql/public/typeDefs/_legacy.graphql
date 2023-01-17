@@ -1501,16 +1501,6 @@ type AtlassianIntegration {
   projects: [JiraRemoteProject!]!
 
   """
-  The list of field names that can be used as a
-  """
-  jiraFields(
-    """
-    Filter the fields to single cloudId
-    """
-    cloudId: ID!
-  ): [String!]!
-
-  """
   the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
   """
   jiraSearchQueries: [JiraSearchQuery!]!
@@ -3426,6 +3416,11 @@ type Discussion {
     """
     after: String
   ): ThreadableConnection!
+
+  """
+  The stage where the discussion is
+  """
+  stage: NewMeetingStage
 }
 
 """
@@ -3554,6 +3549,7 @@ enum NotificationStatusEnum {
 The kind of notification
 """
 enum NotificationEnum {
+  DISCUSSION_MENTIONED
   KICKED_OUT
   PAYMENT_REJECTED
   PROMOTE_TO_BILLING_LEADER

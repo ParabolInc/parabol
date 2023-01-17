@@ -2030,16 +2030,6 @@ type AtlassianIntegration {
   projects: [JiraRemoteProject!]!
 
   """
-  The list of field names that can be used as a
-  """
-  jiraFields(
-    """
-    Filter the fields to single cloudId
-    """
-    cloudId: ID!
-  ): [String!]!
-
-  """
   the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
   """
   jiraSearchQueries: [JiraSearchQuery!]!
@@ -2074,81 +2064,6 @@ type JiraIssueEdge {
   """
   node: JiraIssue!
   cursor: DateTime
-}
-
-"""
-The Jira Issue that comes direct from Jira
-"""
-type JiraIssue implements TaskIntegration {
-  """
-  GUID cloudId:issueKey
-  """
-  id: ID!
-
-  """
-  The parabol teamId this issue was fetched for
-  """
-  teamId: ID!
-
-  """
-  The parabol userId this issue was fetched for
-  """
-  userId: ID!
-
-  """
-  The ID of the jira cloud where the issue lives
-  """
-  cloudId: ID!
-
-  """
-  The name of the jira cloud where the issue lives
-  """
-  cloudName: ID!
-
-  """
-  The url to access the issue
-  """
-  url: URL!
-
-  """
-  The key of the issue as found in Jira
-  """
-  issueKey: ID!
-
-  """
-  Type id of the issue
-  """
-  issueType: ID!
-
-  """
-  The key of the project, which is the prefix to the issueKey
-  """
-  projectKey: ID!
-
-  """
-  The project fetched from jira
-  """
-  project: JiraRemoteProject
-
-  """
-  The plaintext summary of the jira issue
-  """
-  summary: String!
-
-  """
-  Field names that exists on the issue and can be used as estimation fields
-  """
-  possibleEstimationFieldNames: [String!]!
-
-  """
-  The stringified ADF of the jira issue description
-  """
-  description: String!
-
-  """
-  The description converted into raw HTML
-  """
-  descriptionHTML: String!
 }
 
 interface TaskIntegration {
@@ -7741,6 +7656,11 @@ type LoginSAMLPayload {
   The new JWT
   """
   authToken: ID
+
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
 }
 
 type ErrorPayload {

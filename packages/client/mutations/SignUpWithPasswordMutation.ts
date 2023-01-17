@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import ReactGA from 'react-ga4'
 import {commitMutation} from 'react-relay'
 import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
@@ -47,6 +48,7 @@ const SignUpWithPasswordMutation: StandardMutation<
       const {error: uiError} = signUpWithPassword
       onCompleted({signUpWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
+      ReactGA.event('sign_up')
       if (!uiError && !errors) {
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken

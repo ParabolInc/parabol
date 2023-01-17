@@ -134,9 +134,10 @@ const TeamPromptMeeting = (props: Props) => {
   const {safeRoute, isDesktop} = useMeeting(meeting)
   const history = useHistory()
   const {isRightDrawerOpen, id: meetingId} = meeting
+  const params = new URLSearchParams(history.location.search)
+  const responseId = params.get('responseId')
   useEffect(() => {
-    const params = new URLSearchParams(history.location.search)
-    if (!params.get('responseId')) {
+    if (!responseId) {
       return
     }
 
@@ -151,7 +152,7 @@ const TeamPromptMeeting = (props: Props) => {
       meetingProxy.setValue(stage.id, 'localStageId')
       meetingProxy.setValue(true, 'isRightDrawerOpen')
     })
-  }, [])
+  }, [responseId])
   if (!safeRoute) return null
 
   return (

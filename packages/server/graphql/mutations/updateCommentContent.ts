@@ -62,6 +62,9 @@ export default {
       .update({content: normalizedContent, plaintextContent, updatedAt: now})
       .run()
 
+    // :TODO: (jmtaber129): diff new and old comment content for mentions and handle notifications
+    // appropriately.
+
     const data = {commentId}
     if (meetingId) {
       publish(
