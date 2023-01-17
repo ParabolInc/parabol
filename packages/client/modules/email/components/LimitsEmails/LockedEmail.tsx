@@ -46,7 +46,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
         <p style={{...copyStyle, marginBottom: '0px'}}>
           {'Unfortunately, '}
           <span style={{fontWeight: 600}}>
-            {`${orgName} has exceeded the two-team limit on the Starter Plan for more than ${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS} days, and your account has been deactivated.`}
+            {`${orgName} has exceeded the two-team limit on the Starter Plan for more than ${Threshold.STARTER_TIER_LOCK_AFTER_DAYS} days, and your account has been deactivated.`}
           </span>
           {` You will not be able to use your ${orgName} account until you either delete teams so that you have two or fewer teams, or upgrade your account.`}
         </p>
@@ -61,7 +61,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
         <Button url={billingURL}>{'Reactivate Teams'}</Button>
         <EmptySpace height={16} />
         <p style={copyStyle}>
-          {`If you have any questions feel free to contact us - `}
+          {`If you have any questions feel free to contact us —— `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {`we're here to help`}
           </a>

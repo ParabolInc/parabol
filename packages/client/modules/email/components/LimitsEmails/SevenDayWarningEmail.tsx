@@ -1,4 +1,4 @@
-import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
+import {ContactInfo, ExternalLinks, Threshold} from 'parabol-client/types/constEnums'
 import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -54,7 +54,7 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
         <p style={{...copyStyle}}>
           {`You'll need to `}
           <span style={{fontWeight: 600, textDecoration: 'underline'}}>
-            {`upgrade your account within the next 7 days`}
+            {`upgrade your account within the next ${Threshold.FINAL_WARNING_DAYS_BEFORE_LOCK} days`}
           </span>
           {` to avoid losing access to your agile meetings.`}
         </p>
@@ -65,7 +65,7 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {'contact us'}
           </a>
-          {` - we're happy to help make this process as smooth as possible.`}
+          {` —— we're happy to help make this process as smooth as possible.`}
         </p>
         <p style={copyStyle}>{'Parabol Team'}</p>
         <EmptySpace height={16} />

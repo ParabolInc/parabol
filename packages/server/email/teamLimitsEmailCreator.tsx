@@ -24,11 +24,11 @@ const textOnlySummary = (props: Props) => {
   const emailTextLookup = {
     thirtyDayWarning: `Hi ${preferredName} 👋
 
-    This is a friendly note to let you know that ${orgName} has officially reached ${Threshold.MAX_PERSONAL_TIER_TEAMS} active teams on Parabol - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.
+    This is a friendly note to let you know that ${orgName} has officially reached ${Threshold.MAX_STARTER_TIER_TEAMS} active teams on Parabol - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.
 
     As a reminder: Parabol's Starter Plan has a limit of two teams. Please upgrade your account to continue using Parabol with all of your teams: ${billingURL}
 
-    If you aren’t ready to upgrade, then in 30 days your account will revert to the two teams allowed on the Starter Plan. Feel free to contact us with any questions - we’re here to help!
+    If you aren’t ready to upgrade, then in ${Threshold.STARTER_TIER_LOCK_AFTER_DAYS} days your account will revert to the two teams allowed on the Starter Plan. Feel free to contact us with any questions - we’re here to help!
 
     Parabol Team
   `,
@@ -38,7 +38,7 @@ const textOnlySummary = (props: Props) => {
 
     Once your account is deactivated, you will lose access to your teams and won’t be able to run Retrospective, Sprint Poker or Standup meetings with Parabol.
 
-    You'll need to upgrade your account within the next 7 days to avoid losing access to your agile meetings: ${billingURL}
+    You'll need to upgrade your account within the next ${Threshold.FINAL_WARNING_DAYS_BEFORE_LOCK} days to avoid losing access to your agile meetings: ${billingURL}
 
     If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, feel free to contact us - we're happy to help make this process as smooth as possible.
 
@@ -46,13 +46,13 @@ const textOnlySummary = (props: Props) => {
     `,
     locked: `Hi ${preferredName} 👋
 
-    Unfortunately, ${orgName} has exceeded the two-team limit on the Starter Plan for more than 30 days, and your account has been deactivated.
+    Unfortunately, ${orgName} has exceeded the two-team limit on the Starter Plan for more than ${Threshold.STARTER_TIER_LOCK_AFTER_DAYS} days, and your account has been deactivated.
 
     Your teams will not be able to run meetings with Parabol, add new teams to your account, or access previous teams.
 
     You can re-activate your teams by upgrading your account: ${billingURL}
 
-    If you have any questions feel free to contact us - we’re here to help.
+    If you have any questions feel free to contact us —— we’re here to help.
 
     Parabol Team
   `

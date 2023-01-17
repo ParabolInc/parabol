@@ -40,7 +40,7 @@ export default function ThirtyDayWarningEmail(props: LimitsEmailProps) {
         <p style={{...copyStyle, marginBottom: '0px'}}>
           {'This is a friendly note to let you know that '}
           <span style={{fontWeight: 600}}>
-            {`${orgName} has officially reached ${Threshold.MAX_PERSONAL_TIER_TEAMS} active teams on Parabol`}
+            {`${orgName} has officially reached ${Threshold.MAX_STARTER_TIER_TEAMS} active teams on Parabol`}
           </span>
           {
             ' - congrats! We love to see organizations finding value in Parabol and improving their teams in the process.'
@@ -66,12 +66,12 @@ export default function ThirtyDayWarningEmail(props: LimitsEmailProps) {
           {`If you aren’t ready to upgrade, then `}
           <span
             style={{fontWeight: 600}}
-          >{`in 30 days your account will revert to the two teams `}</span>
+          >{`in ${Threshold.STARTER_TIER_LOCK_AFTER_DAYS} days your account will revert to the ${Threshold.MAX_STARTER_TIER_TEAMS} teams `}</span>
           {`allowed on the Starter plan. Feel free to `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {'contact us'}
           </a>
-          {` with any questions - we’re here to help!`}
+          {` with any questions —— we’re here to help!`}
         </p>
         <p style={copyStyle}>{'Parabol Team'}</p>
         <EmptySpace height={16} />

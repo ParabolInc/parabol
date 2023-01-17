@@ -13,10 +13,10 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 // Uncomment for easier testing
 // const enum Threshold {
-//   MAX_PERSONAL_TIER_TEAMS = 0,
+//   MAX_STARTER_TIER_TEAMS = 0,
 //   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
 //   MIN_STICKY_TEAM_MEETINGS = 1,
-//   PERSONAL_TIER_LOCK_AFTER_DAYS = 0
+//   STARTER_TIER_LOCK_AFTER_DAYS = 0
 // }
 
 const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
@@ -67,7 +67,7 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
 
-  if (teamIds.length <= Threshold.MAX_PERSONAL_TIER_TEAMS) {
+  if (teamIds.length <= Threshold.MAX_STARTER_TIER_TEAMS) {
     return false
   }
 
@@ -100,7 +100,7 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
         .ungroup()
         .filter((row) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
         .count()
-        .gt(Threshold.MAX_PERSONAL_TIER_TEAMS)
+        .gt(Threshold.MAX_STARTER_TIER_TEAMS)
     })
     .run()
 }
@@ -129,25 +129,17 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const [organization, teams] = await Promise.all([
-    dataLoader.get('organizations').load(orgId),
-    dataLoader.get('teamsByOrgIds').load(orgId)
-  ])
+  const organization = await dataLoader.get('organizations').load(orgId)
   const {tierLimitExceededAt, tier, featureFlags, name: orgName} = organization
-  const teamIds = teams.map(({id}) => id)
 
   if (!featureFlags?.includes('teamsLimit')) return
 
   if (tierLimitExceededAt || tier !== 'starter') return
 
-  if (teamIds.length <= Threshold.MAX_PERSONAL_TIER_TEAMS) return
-
   if (!(await isLimitExceeded(orgId, dataLoader))) return
 
   const now = new Date()
-  const scheduledLockAt = new Date(
-    now.getTime() + ms(`${Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS}d`)
-  )
+  const scheduledLockAt = new Date(now.getTime() + ms(`${Threshold.STARTER_TIER_LOCK_AFTER_DAYS}d`))
 
   await r
     .table('Organization')
