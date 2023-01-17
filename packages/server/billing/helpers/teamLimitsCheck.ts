@@ -167,8 +167,8 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
           orgName,
           emailType: 'thirtyDayWarning'
         })
-      )
-    ]),
+      ),
       scheduleTeamLimitsJobs(scheduledLockAt, orgId)
+    ])
   }
 }
