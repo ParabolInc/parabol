@@ -38,7 +38,6 @@ const generateGroupSummaries = async (
           userId: facilitator.id,
           tags: {summaryText, reflectionGroupId: group.id, meetingId}
         })
-
         return
       }
       return r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
