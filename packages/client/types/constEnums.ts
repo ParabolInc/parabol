@@ -198,7 +198,8 @@ export const enum LocalStorageKey {
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
-  ERROR_PRONE_AT = 'errorProneAt'
+  ERROR_PRONE_AT = 'errorProneAt',
+  DISMISS_GITHUB_INTERGRATION = 'dismissGithubIntergration'
 }
 
 export const enum LOCKED_MESSAGE {

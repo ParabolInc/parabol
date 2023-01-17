@@ -5,12 +5,14 @@ import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
+import {LocalStorageKey} from '~/types/constEnums'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -97,6 +99,48 @@ const OutcomeCard = memo((props: Props) => {
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
+  const atmosphere = useAtmosphere()
+  const hasGithubIntegration = integration?.__typename === 'GitHubIntegration'
+  const text = editorState.getCurrentContent().getPlainText()
+  const hasGithubLink = text.split(' ').some((word: string) => /github.com/.test(word))
+
+  const showIntergrationBanner = !hasGithubIntegration && hasGithubLink
+  const dismissGitHubIntergration = window.localStorage.getItem(
+    LocalStorageKey.DISMISS_GITHUB_INTERGRATION
+  )
+
+  const [intergrationBanner, setIntergrationBanner] = React.useState<boolean>(() => {
+    if (dismissGitHubIntergration) {
+      const {
+        integration,
+        showIntergrationBanner: showIntergrationBannerFromStorage,
+        userId
+      } = JSON.parse(dismissGitHubIntergration)
+      if (integration === 'GitHubIntegration' && userId === atmosphere.viewerId) {
+        return showIntergrationBannerFromStorage
+      }
+    }
+    return showIntergrationBanner
+  })
+
+  const handleDismissIntergrationBanner = () => {
+    setIntergrationBanner((state) => !state)
+    window.localStorage.setItem(
+      LocalStorageKey.DISMISS_GITHUB_INTERGRATION,
+      JSON.stringify({
+        integration: 'GitHubIntegration',
+        showIntergrationBanner: false,
+        userId: atmosphere.viewerId
+      })
+    )
+  }
+
+  const handleBannerVisbilityOnPaste = (action: boolean) => {
+    if (!dismissGitHubIntergration) {
+      setIntergrationBanner(action)
+    }
+  }
+
   return (
     <RootCard
       isTaskHovered={isTaskHovered}
@@ -135,6 +179,9 @@ const OutcomeCard = memo((props: Props) => {
               setEditorState={setEditorState}
               teamId={teamId}
               useTaskChild={useTaskChild}
+              showIntergrationBanner={intergrationBanner}
+              handleDismissIntergrationBanner={handleDismissIntergrationBanner}
+              handleBannerVisbilityOnPaste={handleBannerVisbilityOnPaste}
             />
           </TaskEditorWrapper>
         )}
