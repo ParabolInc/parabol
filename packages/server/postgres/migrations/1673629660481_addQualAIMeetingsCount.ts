@@ -15,8 +15,8 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-  ALTER TABLE "qualAIMeetingsCount"
-  DROP COLUMN IF EXISTS "summary";
+  ALTER TABLE "Team"
+  DROP COLUMN IF EXISTS "qualAIMeetingsCount";
   `)
   await client.end()
 }
