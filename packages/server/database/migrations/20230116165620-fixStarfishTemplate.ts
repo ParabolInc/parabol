@@ -29,7 +29,10 @@ export const up = async function (r: R) {
     updatedAt: now
   }
 
-  await r.table('ReflectPrompt').insert([missingLessOfPrompt, missingMoreOfPrompt]).run()
+  await r
+    .table('ReflectPrompt')
+    .insert([missingLessOfPrompt, missingMoreOfPrompt], {conflict: 'error'})
+    .run()
 }
 
 export const down = async function (r: R) {
