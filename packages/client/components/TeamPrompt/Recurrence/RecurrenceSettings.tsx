@@ -54,8 +54,10 @@ const RecurrenceIntervalInput = styled('input')({
   borderWidth: 1,
   borderRadius: 4,
   borderColor: PALETTE.SLATE_500,
-  '&:hover,:focus,:active': {
-    borderColor: PALETTE.SLATE_600
+  '&:hover, :focus, :focus-visible, :active': {
+    outline: `1px solid ${PALETTE.SLATE_600}`,
+    borderColor: PALETTE.SLATE_600,
+    borderRadius: 4
   }
 })
 
@@ -69,8 +71,10 @@ const RecurrenceFrequencySelect = styled('select')({
   borderWidth: 1,
   borderRadius: 4,
   borderColor: PALETTE.SLATE_500,
-  '&:hover,:focus,:active': {
-    borderColor: PALETTE.SLATE_600
+  '&:hover, :focus, :focus-visible, :active': {
+    outline: `1px solid ${PALETTE.SLATE_600}`,
+    borderColor: PALETTE.SLATE_600,
+    borderRadius: 4
   }
 })
 
@@ -102,7 +106,12 @@ const RecurrenceDayPickerRoot = styled('div')({
 const StartTimeDropdownToggle = styled(DropdownMenuToggle)({
   fontSize: 14,
   width: '100%',
-  marginTop: 8
+  marginTop: 8,
+  '&:hover, :focus, :focus-visible, :active': {
+    outline: `1px solid ${PALETTE.SLATE_600}`,
+    borderColor: PALETTE.SLATE_600,
+    borderRadius: 4
+  }
 })
 
 const StartTimeSection = styled('div')({
@@ -227,7 +236,7 @@ export const RecurrenceSettings = (props: Props) => {
       </RecurrenceFrequencyPickerRoot>
       <RecurrenceDayPickerRoot>
         {ALL_DAYS.map((day) => {
-          const isChecked = recurrenceDays.some(
+          const isSelected = recurrenceDays.some(
             (recurrenceDay) => recurrenceDay.intVal === day.intVal
           )
 
@@ -236,7 +245,7 @@ export const RecurrenceSettings = (props: Props) => {
               key={day.intVal}
               day={day}
               onToggle={handleDayChange}
-              isChecked={isChecked}
+              isChecked={isSelected}
             />
           )
         })}

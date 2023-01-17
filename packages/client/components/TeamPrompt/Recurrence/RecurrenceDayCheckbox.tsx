@@ -34,6 +34,10 @@ export const StyledCheckbox = styled('input')({
   '&:checked': {
     border: `2px solid ${PALETTE.SKY_500}`,
     backgroundColor: PALETTE.SKY_500
+  },
+  ':hover, :focus, :focus-visible, :active': {
+    outline: `2px solid ${PALETTE.SKY_500}`,
+    borderRadius: 4
   }
 })
 
