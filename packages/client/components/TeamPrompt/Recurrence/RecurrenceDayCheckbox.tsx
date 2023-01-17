@@ -13,9 +13,9 @@ type DayFullName =
   | 'Sunday'
 
 type DayShortName = 'M' | 'T' | 'W' | 'F' | 'S'
-export type Day = {name: DayFullName; short: DayShortName; rruleVal: Weekday}
+export type Day = {name: DayFullName; short: DayShortName; rruleVal: Weekday; intVal: number}
 
-export const CheckBoxRoot = styled('div')({
+export const CheckboxRoot = styled('div')({
   position: 'relative',
   width: 42,
   height: 42
@@ -53,29 +53,30 @@ export const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChe
   cursor: 'pointer'
 }))
 
-export interface RecurrenceDayCheckBox {
+export interface Props {
   day: Day
+  isChecked: boolean
   onToggle: (day: Day) => void
 }
 
-export const RecurrenceDayCheckBox = (props: RecurrenceDayCheckBox) => {
-  const {day, onToggle} = props
-  const [checked, setChecked] = React.useState(false)
+export const RecurrenceDayCheckbox = (props: Props) => {
+  const {day, onToggle, isChecked} = props
+  const toggle = () => {
+    onToggle(day)
+  }
 
   return (
-    <CheckBoxRoot>
+    <CheckboxRoot>
       <StyledCheckbox
         type='checkbox'
         id={day.name}
         name={day.short}
-        onChange={(e) => {
-          setChecked(e.target.checked)
-          onToggle(day)
-        }}
+        checked={isChecked}
+        onChange={toggle}
       />
-      <StyledCheckboxLabel htmlFor={day.name} isChecked={checked}>
+      <StyledCheckboxLabel htmlFor={day.name} isChecked={isChecked}>
         {day.short}
       </StyledCheckboxLabel>
-    </CheckBoxRoot>
+    </CheckboxRoot>
   )
 }

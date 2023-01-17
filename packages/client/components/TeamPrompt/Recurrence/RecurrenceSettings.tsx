@@ -6,18 +6,37 @@ import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
-import {Day, RecurrenceDayCheckBox} from './RecurrenceDayCheckBox'
+import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 
 export const ALL_DAYS: Day[] = [
-  {name: 'Monday', short: 'M', rruleVal: RRule.MO},
-  {name: 'Tuesday', short: 'T', rruleVal: RRule.TU},
-  {name: 'Wednesday', short: 'W', rruleVal: RRule.WE},
-  {name: 'Thursday', short: 'T', rruleVal: RRule.TH},
-  {name: 'Friday', short: 'F', rruleVal: RRule.FR},
-  {name: 'Saturday', short: 'S', rruleVal: RRule.SA},
-  {name: 'Sunday', short: 'S', rruleVal: RRule.SU}
+  {name: 'Monday', short: 'M', rruleVal: RRule.MO, intVal: 0},
+  {name: 'Tuesday', short: 'T', rruleVal: RRule.TU, intVal: 1},
+  {name: 'Wednesday', short: 'W', rruleVal: RRule.WE, intVal: 2},
+  {name: 'Thursday', short: 'T', rruleVal: RRule.TH, intVal: 3},
+  {name: 'Friday', short: 'F', rruleVal: RRule.FR, intVal: 4},
+  {name: 'Saturday', short: 'S', rruleVal: RRule.SA, intVal: 5},
+  {name: 'Sunday', short: 'S', rruleVal: RRule.SU, intVal: 6}
 ]
+
+const SUPPORTED_FREQUENCIES = [Frequency.WEEKLY, Frequency.MONTHLY] as const
+type SupportedFrequency = typeof SUPPORTED_FREQUENCIES[number]
+
+const SUPPORTED_FREQUENCIES_LABELS: Record<SupportedFrequency, string> = {
+  [Frequency.MONTHLY]: 'Monthly',
+  [Frequency.WEEKLY]: 'Weekly'
+}
+
+const INTERVAL_INPUT_PROPS_CONFIG: Record<SupportedFrequency, {min: number; max: number}> = {
+  [Frequency.WEEKLY]: {
+    min: 1,
+    max: 52
+  },
+  [Frequency.MONTHLY]: {
+    min: 1,
+    max: 12
+  }
+} as const
 
 const RecurrenceFrequencyPickerRoot = styled('div')({
   display: 'flex',
@@ -95,8 +114,10 @@ const convertToUTC = (localStartTime: Date) => {
     Date.UTC(
       localStartTime.getUTCFullYear(),
       localStartTime.getUTCMonth(),
-      localStartTime.getUTCDate() + 1,
-      localStartTime.getUTCHours()
+      localStartTime.getUTCDate(),
+      localStartTime.getUTCHours(),
+      localStartTime.getUTCMinutes(),
+      localStartTime.getUTCSeconds()
     )
   )
 }
@@ -111,19 +132,28 @@ export const RecurrenceSettings = (props: Props) => {
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
   )
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState(
-    recurrenceRule ? recurrenceRule.options.freq : RRule.WEEKLY
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState<SupportedFrequency>(
+    recurrenceRule ? (recurrenceRule.options.freq as SupportedFrequency) : Frequency.WEEKLY
   )
-  const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>([])
+  const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>(
+    recurrenceRule
+      ? recurrenceRule.options.byweekday.map(
+          (weekday) => ALL_DAYS.find((day) => day.intVal === weekday)!
+        )
+      : []
+  )
   const [startTime, setStartTime] = React.useState<Date>(
-    dayjs()
-      .add(1, 'day')
-      .set('hour', 6)
-      .set('minute', 0)
-      .set('second', 0)
-      .set('millisecond', 0)
-      .toDate() // suggest 6:00 AM tomorrow
+    recurrenceRule
+      ? recurrenceRule.options.dtstart
+      : dayjs()
+          .add(1, 'day')
+          .set('hour', 6)
+          .set('minute', 0)
+          .set('second', 0)
+          .set('millisecond', 0)
+          .toDate() // suggest 6:00 AM tomorrow)
   )
+
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
   const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
@@ -183,21 +213,33 @@ export const RecurrenceSettings = (props: Props) => {
         <span>Repeats every</span>
         <RecurrenceIntervalInput
           type='number'
-          min='1'
-          max='7'
-          defaultValue='1'
           onChange={handleIntervalChange}
+          value={recurrenceInterval}
+          {...INTERVAL_INPUT_PROPS_CONFIG[recurrenceFrequency]}
         />
-        <RecurrenceFrequencySelect onChange={handleFrequencyChange}>
-          <option value={Frequency.WEEKLY}>Week</option>
-          <option value={Frequency.MONTHLY}>Month</option>
-          <option value={Frequency.YEARLY}>Year</option>
+        <RecurrenceFrequencySelect onChange={handleFrequencyChange} value={recurrenceFrequency}>
+          {SUPPORTED_FREQUENCIES.map((frequency) => (
+            <option key={frequency} value={frequency}>
+              {SUPPORTED_FREQUENCIES_LABELS[frequency]}
+            </option>
+          ))}
         </RecurrenceFrequencySelect>
       </RecurrenceFrequencyPickerRoot>
       <RecurrenceDayPickerRoot>
-        {ALL_DAYS.map((day) => (
-          <RecurrenceDayCheckBox key={day.name} day={day} onToggle={handleDayChange} />
-        ))}
+        {ALL_DAYS.map((day) => {
+          const isChecked = recurrenceDays.some(
+            (recurrenceDay) => recurrenceDay.intVal === day.intVal
+          )
+
+          return (
+            <RecurrenceDayCheckbox
+              key={day.intVal}
+              day={day}
+              onToggle={handleDayChange}
+              isChecked={isChecked}
+            />
+          )
+        })}
       </RecurrenceDayPickerRoot>
       <HumanReadableRecurrenceRule>
         Your meeting{' '}
