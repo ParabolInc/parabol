@@ -124,6 +124,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
         updatedAt: new Date()
       })
       .run()
+    dataLoader.get('organizations').clear(orgId)
   }
 }
 
@@ -150,6 +151,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
       updatedAt: now
     })
     .run()
+  dataLoader.get('organizations').clear(orgId)
 
   const billingLeaders = await getBillingLeaders(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
