@@ -48,10 +48,10 @@ const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) 
     return processMeetingStageTimeLimits(
       job as ScheduledJobMeetingStageTimeLimit,
       dataLoader
-    ).catch(console.log)
+    ).catch(console.error)
   } else if (job.type === 'LOCK_ORGANIZATION') {
     return processLockOrganizationJob(job as ScheduledJobOrganizationLock, dataLoader).catch(
-      console.log
+      console.error
     )
   }
 }
