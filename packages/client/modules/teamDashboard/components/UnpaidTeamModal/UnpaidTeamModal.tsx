@@ -20,7 +20,10 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 const LockedAtContent = styled(DialogContent)({
-  textAlign: 'left'
+  textAlign: 'left',
+  p: {
+    marginBottom: 16
+  }
 })
 
 const ContactUsLink = styled('a')({
@@ -90,14 +93,12 @@ const UnpaidTeamModal = (props: Props) => {
       <DashModal>
         <DialogTitle>{'Organization Locked'}</DialogTitle>
         <LockedAtContent>
-          Unfortunately, <strong>{organizationName}</strong> has exceeded the{' '}
-          {Threshold.MAX_PERSONAL_TIER_TEAMS} teams limit on the Starter Plan for more than{' '}
-          {Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS} days, and your account has been locked.
-          <br />
-          <br />
-          You can re-activate your teams by upgrading your account.
-          <br />
-          <br />
+          <p>
+            Unfortunately, <strong>{organizationName}</strong> has exceeded the{' '}
+            {Threshold.MAX_PERSONAL_TIER_TEAMS} teams limit on the Starter Plan for more than{' '}
+            {Threshold.PERSONAL_TIER_LOCK_AFTER_DAYS} days, and your account has been locked.
+          </p>
+          <p>You can re-activate your teams by upgrading your account.</p>
           If you’d like to keep using Parabol on the Starter Plan, please{' '}
           <ContactUsLink href={ExternalLinks.CONTACT} target='_blank' rel='noopener noreferrer'>
             contact us
