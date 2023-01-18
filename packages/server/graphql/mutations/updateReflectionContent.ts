@@ -12,7 +12,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
-import getReflectionEntities from './helpers/getReflectionEntities'
+import {getReflectionEntities, getReflectionSentimentScore} from './helpers/getReflectionEntities'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
 
 export default {
@@ -67,12 +67,16 @@ export default {
     const entities = isVeryDifferent
       ? await getReflectionEntities(plaintextContent)
       : reflection.entities
+    const sentimentScore = isVeryDifferent
+      ? await getReflectionSentimentScore(plaintextContent)
+      : reflection.sentimentScore
     await r
       .table('RetroReflection')
       .get(reflectionId)
       .update({
         content: normalizedContent,
         entities,
+        sentimentScore,
         plaintextContent,
         updatedAt: now
       })

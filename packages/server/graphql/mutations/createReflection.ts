@@ -16,7 +16,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
-import getReflectionEntities from './helpers/getReflectionEntities'
+import {getReflectionEntities, getReflectionSentimentScore} from './helpers/getReflectionEntities'
 
 export default {
   type: CreateReflectionPayload,
@@ -58,6 +58,7 @@ export default {
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const entities = await getReflectionEntities(plaintextContent)
+    const sentimentScore = await getReflectionSentimentScore(plaintextContent)
     const reflectionGroupId = generateUID()
 
     const reflection = new Reflection({
@@ -65,6 +66,7 @@ export default {
       content: normalizedContent,
       plaintextContent,
       entities,
+      sentimentScore,
       meetingId,
       promptId,
       reflectionGroupId,

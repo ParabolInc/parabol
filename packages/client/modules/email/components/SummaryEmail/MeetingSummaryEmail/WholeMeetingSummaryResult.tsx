@@ -37,6 +37,21 @@ interface Props {
   meetingRef: WholeMeetingSummaryResult_meeting$key
 }
 
+const mapSentimentScoreToEmojis = (sentimentScore: number | null) => {
+  if (!sentimentScore) return ''
+  if (sentimentScore <= -0.6) {
+    return '★✩✩✩✩'
+  } else if (sentimentScore > -0.6 && sentimentScore <= -0.2) {
+    return '★★✩✩✩✩️'
+  } else if (sentimentScore > -0.2 && sentimentScore <= 0.2) {
+    return '️️★★★✩✩✩️'
+  } else if (sentimentScore > 0.2 && sentimentScore <= 0.6) {
+    return '★★★★✩'
+  } else {
+    return '★★★★★'
+  }
+}
+
 const WholeMeetingSummaryResult = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -45,6 +60,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
         __typename
         id
         summary
+        sentimentScore
         team {
           tier
         }
@@ -53,7 +69,7 @@ const WholeMeetingSummaryResult = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const {summary: wholeMeetingSummary, team} = meeting
+  const {summary: wholeMeetingSummary, team, sentimentScore} = meeting
   const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   useEffect(() => {
     SendClientSegmentEventMutation(atmosphere, 'AI Summary Viewed', {
@@ -76,6 +92,14 @@ const WholeMeetingSummaryResult = (props: Props) => {
           </tr>
           <tr>
             <td style={textStyle}>{wholeMeetingSummary}</td>
+          </tr>
+          <tr>
+            <td align='center' style={topicTitleStyle}>
+              {'🩺 Team Health'}
+            </td>
+          </tr>
+          <tr>
+            <td style={textStyle}>{mapSentimentScoreToEmojis(sentimentScore)}</td>
           </tr>
         </td>
       </tr>

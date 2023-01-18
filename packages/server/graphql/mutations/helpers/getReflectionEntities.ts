@@ -43,4 +43,12 @@ const getReflectionEntities = async (plaintextContent: string) => {
   return addLemmaToEntities(sanitizedReflectionResponse, reflectionSyntax)
 }
 
-export default getReflectionEntities
+const getReflectionSentimentScore = async (plaintextContent: string) => {
+  if (!plaintextContent) return 0.0
+  const manager = getGoogleLanguageManager()
+  const res = await manager.analyzeSentiment(plaintextContent)
+  const reflectionSentiment = manageErrorResponse(res)
+  return reflectionSentiment?.documentSentiment.score ?? 0.0
+}
+
+export {getReflectionEntities, getReflectionSentimentScore}
