@@ -22,6 +22,7 @@ const mutation = graphql`
       isNewUser
       user {
         tms
+        isPatient0
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
@@ -44,9 +45,9 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError, isNewUser} = loginWithGoogle
+      const {error: uiError, isNewUser, user} = loginWithGoogle
       if (isNewUser) {
-        ReactGA.event('sign_up')
+        ReactGA.event('sign_up', {isPatient0: user?.isPatient0})
       }
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
