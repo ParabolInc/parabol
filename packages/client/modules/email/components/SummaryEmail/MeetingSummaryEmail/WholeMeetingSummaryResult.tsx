@@ -40,15 +40,15 @@ interface Props {
 const mapSentimentScoreToEmojis = (sentimentScore: number | null) => {
   if (!sentimentScore) return ''
   if (sentimentScore <= -0.6) {
-    return '★✩✩✩✩'
+    return '🟢⚪️⚪️⚪️⚪️'
   } else if (sentimentScore > -0.6 && sentimentScore <= -0.2) {
-    return '★★✩✩✩✩️'
+    return '🟢🟢⚪️⚪️⚪️'
   } else if (sentimentScore > -0.2 && sentimentScore <= 0.2) {
-    return '️️★★★✩✩✩️'
+    return '️️🟢🟢🟢⚪️⚪️'
   } else if (sentimentScore > 0.2 && sentimentScore <= 0.6) {
-    return '★★★★✩'
+    return '🟢🟢🟢🟢⚪️'
   } else {
-    return '★★★★★'
+    return '🟢🟢🟢🟢🟢'
   }
 }
 
