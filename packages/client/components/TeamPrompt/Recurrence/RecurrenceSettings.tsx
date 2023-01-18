@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
+import utcPlugin from 'dayjs/plugin/utc'
 import React, {useEffect, useState} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
@@ -8,6 +9,7 @@ import {PALETTE} from '../../../styles/paletteV3'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
+dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
   {name: 'Monday', short: 'M', rruleVal: RRule.MO, intVal: 0},
@@ -118,19 +120,6 @@ const StartTimeSection = styled('div')({
   marginTop: 16
 })
 
-const convertToUTC = (localStartTime: Date) => {
-  return new Date(
-    Date.UTC(
-      localStartTime.getUTCFullYear(),
-      localStartTime.getUTCMonth(),
-      localStartTime.getUTCDate(),
-      localStartTime.getUTCHours(),
-      localStartTime.getUTCMinutes(),
-      localStartTime.getUTCSeconds()
-    )
-  )
-}
-
 interface Props {
   onRecurrenceRuleUpdated: (rrule: RRule | null) => void
   recurrenceRule: RRule | null
@@ -151,7 +140,7 @@ export const RecurrenceSettings = (props: Props) => {
         )
       : []
   )
-  const [startTime, setStartTime] = React.useState<Date>(
+  const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
     recurrenceRule
       ? recurrenceRule.options.dtstart
       : dayjs()
@@ -206,14 +195,14 @@ export const RecurrenceSettings = (props: Props) => {
             freq: recurrenceFrequency,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
-            dtstart: convertToUTC(startTime),
+            dtstart: dayjs(recurrenceStartTime).utc().toDate(),
             //TODO: this causes rrule to provide 'Invalid Date' for the next occurrences - see https://github.com/jakubroztocil/rrule/pull/547
             tzid: timeZone
           })
         : null
 
     onRecurrenceRuleUpdated(rrule)
-  }, [recurrenceDays, recurrenceFrequency, recurrenceInterval, startTime])
+  }, [recurrenceDays, recurrenceFrequency, recurrenceInterval, recurrenceStartTime])
 
   return (
     <RecurrenceSettingsRoot>
@@ -259,12 +248,14 @@ export const RecurrenceSettings = (props: Props) => {
       <StartTimeSection>
         <div>Each instance starts at</div>
         <StartTimeDropdownToggle
-          defaultText={`${dayjs(startTime).format('h:mm A')} (${timeZone})`}
+          defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
           onClick={togglePortal}
           ref={originRef}
           size='small'
         />
-        {menuPortal(<RecurrenceTimePicker menuProps={menuProps} onClick={setStartTime} />)}
+        {menuPortal(
+          <RecurrenceTimePicker menuProps={menuProps} onClick={setRecurrenceStartTime} />
+        )}
       </StartTimeSection>
     </RecurrenceSettingsRoot>
   )
