@@ -74,6 +74,7 @@ const startTeamPrompt = {
         viewerId,
         teamId,
         meeting.id,
+        meeting.name,
         recurrenceRule
       )
       analytics.recurrenceStarted(viewerId, meetingSeries)

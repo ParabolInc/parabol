@@ -10,8 +10,6 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
-const MEETING_DURATION_IN_MINUTES = 24 * 60 // 24 hours
-
 // Next meeting start is tomorrow at 9a UTC
 // :TODO: (jmtaber129): Determine this from meeting series configuration.
 const createNextMeetingStartDate = () => {
@@ -23,18 +21,22 @@ export const startNewMeetingSeries = async (
   viewerId: string,
   teamId: string,
   meetingId: string,
+  meetingName: string,
   recurrenceRule: RRule
 ) => {
   const now = new Date()
   const r = await getRethink()
 
+  // TODO: now, as new meeting series could be created from a new meeting view, let's grab the first part ie. "Standup - Jan 1" will be "Standup"
+  // TODO: this is a temporary solution, we should have a better way to handle this
+  const [cleanMeetingName] = meetingName.includes('-') ? meetingName.split('-') : [meetingName]
+
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
-    title: 'Async Standup',
+    title: cleanMeetingName!.trim(),
     recurrenceRule: recurrenceRule.toString(),
-    // TODO: do we even need duration?
-    // imagine a recurring meeting that is set tu recur every Thursday and Friday, what the duration would be?
-    duration: MEETING_DURATION_IN_MINUTES,
+    // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
+    duration: 0,
     teamId,
     facilitatorId: viewerId
   } as const
@@ -136,6 +138,7 @@ const startRecurrence: MutationResolvers['startRecurrence'] = async (
       viewerId,
       teamId,
       meetingId,
+      meeting.name,
       recurrenceRule
     )
     analytics.recurrenceStarted(viewerId, newMeetingSeries)
