@@ -36,6 +36,7 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
       />
       {menuPortal(
         <RecurrenceSettings
+          parentId='newMeetingRecurrenceSettings'
           onRecurrenceRuleUpdated={onRecurrenceRuleUpdated}
           recurrenceRule={recurrenceRule}
         />

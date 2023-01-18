@@ -5,6 +5,7 @@ import React, {useEffect, useState} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
+import {PortalId} from '../../../hooks/usePortal'
 import {PALETTE} from '../../../styles/paletteV3'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
@@ -121,12 +122,13 @@ const StartTimeSection = styled('div')({
 })
 
 interface Props {
+  parentId: PortalId
   onRecurrenceRuleUpdated: (rrule: RRule | null) => void
   recurrenceRule: RRule | null
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {onRecurrenceRuleUpdated, recurrenceRule} = props
+  const {parentId, onRecurrenceRuleUpdated, recurrenceRule} = props
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
   )
@@ -157,7 +159,7 @@ export const RecurrenceSettings = (props: Props) => {
     MenuPosition.LOWER_LEFT,
     {
       id: 'RecurrenceStartTimePicker',
-      parentId: 'newMeetingRecurrenceSettings',
+      parentId,
       isDropdown: true
     }
   )

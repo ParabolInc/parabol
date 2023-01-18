@@ -119,7 +119,8 @@ const TeamPromptTopBar = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
-    useModal()
+    useModal({id: 'updateRecurrenceSettingsModal'})
+
   const {viewerId} = atmosphere
   const {id: meetingId, name: meetingName, facilitatorUserId, meetingSeries} = meeting
   const isFacilitator = viewerId === facilitatorUserId
