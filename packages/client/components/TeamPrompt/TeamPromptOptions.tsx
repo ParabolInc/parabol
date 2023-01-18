@@ -25,12 +25,12 @@ const OptionsButton = styled(BaseButton)({
 
 interface Props {
   meetingRef: TeamPromptOptions_meeting$key
+  openRecurrenceSettingsModal: () => void
 }
 
 const TeamPromptOptions = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-
-  const {meetingRef} = props
+  const {meetingRef, openRecurrenceSettingsModal} = props
 
   const meeting = useFragment(
     graphql`
@@ -46,7 +46,13 @@ const TeamPromptOptions = (props: Props) => {
       <OptionsButton ref={originRef} onClick={togglePortal}>
         <IconLabel ref={originRef} icon='more_vert' iconLarge />
       </OptionsButton>
-      {menuPortal(<TeamPromptOptionsMenu meetingRef={meeting} menuProps={menuProps} />)}
+      {menuPortal(
+        <TeamPromptOptionsMenu
+          meetingRef={meeting}
+          menuProps={menuProps}
+          openRecurrenceSettingsModal={openRecurrenceSettingsModal}
+        />
+      )}
     </>
   )
 }

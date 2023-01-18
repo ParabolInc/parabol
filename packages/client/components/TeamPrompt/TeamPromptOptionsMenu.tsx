@@ -8,8 +8,6 @@ import {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
-import StartRecurrenceMutation from '~/mutations/StartRecurrenceMutation'
-import StopRecurrenceMutation from '~/mutations/StopRecurrenceMutation'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import Menu from '../Menu'
@@ -28,16 +26,17 @@ const FlagIcon = styled(Flag)({
 
 const OptionMenuItem = styled('div')({
   ...MenuItemLabelStyle,
-  width: '200px'
+  width: '240px'
 })
 
 interface Props {
   meetingRef: TeamPromptOptionsMenu_meeting$key
   menuProps: MenuProps
+  openRecurrenceSettingsModal: () => void
 }
 
 const TeamPromptOptionsMenu = (props: Props) => {
-  const {meetingRef, menuProps} = props
+  const {meetingRef, menuProps, openRecurrenceSettingsModal} = props
 
   const meeting = useFragment(
     graphql`
@@ -45,6 +44,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         id
         meetingSeries {
           id
+          recurrenceRule
           cancelledAt
           activeMeetings {
             id
@@ -60,6 +60,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
+
   const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
   const hasActiveMeetings = !!meetingSeries?.activeMeetings?.length
@@ -77,21 +78,25 @@ const TeamPromptOptionsMenu = (props: Props) => {
         label={
           <OptionMenuItem>
             <ReplayIcon />
-            {hasRecurrenceEnabled ? <span>{'Stop repeating'}</span> : <span>{'Repeat M-F'}</span>}
+            {hasRecurrenceEnabled ? (
+              <span>{'Edit recurrence settings'}</span>
+            ) : (
+              <span>{'Start recurrence'}</span>
+            )}
           </OptionMenuItem>
         }
         onClick={() => {
           menuProps.closePortal()
-
-          if (hasRecurrenceEnabled) {
-            StopRecurrenceMutation(
-              atmosphere,
-              {meetingSeriesId: meetingSeries.id},
-              {onCompleted, onError}
-            )
-          } else {
-            StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
-          }
+          openRecurrenceSettingsModal()
+          // if (hasRecurrenceEnabled) {
+          //   StopRecurrenceMutation(
+          //     atmosphere,
+          //     {meetingSeriesId: meetingSeries.id},
+          //     {onCompleted, onError}
+          //   )
+          // } else {
+          //   StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+          // }
         }}
       />
       <MenuItem
