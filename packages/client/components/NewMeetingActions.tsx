@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {Breakpoint, Threshold} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
@@ -72,6 +74,7 @@ const NewMeetingActions = (props: Props) => {
         ...NewMeetingActionsCurrentMeetings_team
         id
         organization {
+          id
           name
           lockedAt
         }
@@ -80,11 +83,22 @@ const NewMeetingActions = (props: Props) => {
     teamRef
   )
 
+  const atmosphere = useAtmosphere()
+
   const {organization} = team
 
-  const {lockedAt, name: organizationName} = organization
+  const {lockedAt, name: organizationName, id: orgId} = organization
 
   const isLocked = !!lockedAt
+
+  useEffect(() => {
+    if (isLocked) {
+      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+        upgradeCTALocation: 'startNewMeetingOrganizationLockedError',
+        orgId
+      })
+    }
+  }, [isLocked])
 
   return (
     <ActionRow>

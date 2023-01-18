@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
@@ -70,6 +70,16 @@ const UnpaidTeamModal = (props: Props) => {
   const {history} = useRouter()
   const {viewerId} = atmosphere
   const {team} = viewer
+
+  useEffect(() => {
+    if (team?.organization.lockedAt) {
+      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+        upgradeCTALocation: 'organizationLockedModal',
+        orgId: team.organization.id
+      })
+    }
+  }, [])
+
   if (!team) return null
   const {name: teamName, organization, lockMessageHTML} = team
 
