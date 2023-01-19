@@ -77,7 +77,7 @@ const LeftDashNavItem = (props: Props) => {
         {
           {
             forum: <Forum />,
-            timeline: <History />,
+            history: <History />,
             playlist_add_check: <PlaylistAddCheck />,
             add: <Add />,
             exit_to_app: <ExitToApp />,
