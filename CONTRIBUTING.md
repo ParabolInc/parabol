@@ -85,7 +85,7 @@ how it works:
 ## Points and sizes
 
 Before you begin working on an issue, you size it. Most issues will have a
-*SWAG* sizing from one of the Parabol maintainers, but it’s up to you to
+[*SWAG*](https://en.wikipedia.org/wiki/Scientific_wild-ass_guess) sizing from one of the Parabol maintainers, but it’s up to you to
 adjust it to what you think is fair.
 
 |  Points  | Individual *or* team effort required |

@@ -6,7 +6,6 @@ import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
 import {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
 import useRouter from '../hooks/useRouter'
-import NotificationSnackbarPicker from './NotificationSnackbarPicker'
 import TopBarIcon from './TopBarIcon'
 
 const NotificationDropdown = lazyPreload(
@@ -21,8 +20,6 @@ interface Props {
   queryRef: TopBarNotifications_query$key
 }
 
-const SHOW_SNACKBAR_NOTIFICATION_TYPES = ['TEAMS_LIMIT_EXCEEDED']
-
 const TopBarNotifications = ({queryRef}: Props) => {
   const data = useFragment(
     graphql`
@@ -36,7 +33,6 @@ const TopBarNotifications = ({queryRef}: Props) => {
                 id
                 status
                 type
-                ...NotificationSnackbarPicker_notification
               }
             }
           }
@@ -48,9 +44,6 @@ const TopBarNotifications = ({queryRef}: Props) => {
   const {viewer} = data
   const notifications = viewer?.notifications || {edges: []}
   const {edges} = notifications
-  const snackbarNotifications = edges.filter(
-    ({node}) => node.status === 'UNREAD' && SHOW_SNACKBAR_NOTIFICATION_TYPES.includes(node.type)
-  )
   const hasNotifications = edges.some(({node}) => node.status === 'UNREAD')
   const menuContentRef = useRef<HTMLDivElement>(null)
   const {togglePortal, openPortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
@@ -70,9 +63,6 @@ const TopBarNotifications = ({queryRef}: Props) => {
 
   return (
     <>
-      {snackbarNotifications.map(({node}) => (
-        <NotificationSnackbarPicker notificationRef={node} key={node.id} />
-      ))}
       <TopBarIcon
         ref={originRef}
         onClick={togglePortal}

@@ -1,0 +1,62 @@
+type NotifyDiscussionMentioned implements Notification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  The userId that should see this notification
+  """
+  userId: ID!
+
+  """
+  The id of the user that replied to the response
+  """
+  authorId: ID!
+
+  """
+  The user that replied to the response
+  """
+  author: User!
+
+  """
+  The id of the meeting the response was replied to in.
+  """
+  meetingId: String!
+
+  """
+  The meeting the response was replied to in.
+  """
+  meeting: TeamPromptMeeting!
+
+  """
+  The id of the reply comment
+  """
+  commentId: ID!
+
+  """
+  The reply comment
+  """
+  comment: Comment!
+
+  """
+  The id of the discussion
+  """
+  discussionId: ID!
+
+  """
+  The discussion
+  """
+  discussion: Discussion!
+}

@@ -44,7 +44,9 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     isFree: {type: GraphQLBoolean},
     source: {type: GraphQLString},
     upgradeTier: {type: TierEnum},
-    notificationType: {type: NotificationEnum}
+    notificationType: {type: NotificationEnum},
+    tier: {type: TierEnum},
+    discussionTopicId: {type: GraphQLID}
   })
 })
 
