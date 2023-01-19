@@ -47,7 +47,6 @@ const fromStageIdToUrl = (stageId: string, meetingRef: fromStageIdToUrl_meeting$
     findStageById(phases, stageId) ??
     findStageById(phases, facilitatorStageId) ??
     findBestNavigableStage(phases)
-  console.log('GEORG stageRes', stageRes)
   if (!stageRes) return '/'
   const {phase, stageIdx} = stageRes
   const {phaseType} = phase
