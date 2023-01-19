@@ -10,6 +10,7 @@ import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
+import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
@@ -17,7 +18,8 @@ const typePicker: Partial<
   DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast,
-  TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast
+  TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
+  TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast
 }
 
 graphql`
@@ -29,6 +31,7 @@ graphql`
       ...mapResponseMentionedToToast_notification @relay(mask: false)
       ...mapResponseRepliedToToast_notification @relay(mask: false)
       ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
+      ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
     }
   }
 `

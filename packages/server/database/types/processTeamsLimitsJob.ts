@@ -3,6 +3,8 @@ import {r} from 'rethinkdb-ts'
 import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
+import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import NotificationTeamsLimitReminder from './NotificationTeamsLimitReminder'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
@@ -32,6 +34,21 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
   if (type === 'LOCK_ORGANIZATION') {
     const now = new Date()
     await r.table('Organization').get(orgId).update({lockedAt: now}).run()
+  } else if (type === 'WARN_ORGANIZATION') {
+    const notificationsToInsert = billingLeadersIds.map((userId) => {
+      return new NotificationTeamsLimitReminder({
+        userId,
+        orgId
+      })
+    })
+
+    await r.table('Notification').insert(notificationsToInsert).run()
+
+    const operationId = dataLoader.share()
+    const subOptions = {operationId}
+    notificationsToInsert.forEach((notification) => {
+      publishNotification(notification, subOptions)
+    })
   }
 }
 
