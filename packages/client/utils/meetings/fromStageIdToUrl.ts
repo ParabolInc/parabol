@@ -5,6 +5,7 @@ import {
   NewMeetingPhaseTypeEnum
 } from '~/__generated__/fromStageIdToUrl_meeting.graphql'
 import {RetroDemo} from '../../types/constEnums'
+import findBestNavigableStage from './findBestNavigableStage'
 import findStageById from './findStageById'
 import {phaseTypeToSlug} from './lookups'
 
@@ -23,27 +24,30 @@ const phaseIsMultiStage = {
 } as Record<NewMeetingPhaseTypeEnum, boolean>
 
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals
-const fromStageIdToUrl = (
-  stageId: string,
-  meetingRef: fromStageIdToUrl_meeting$key,
-  fallbackStageId: string
-) => {
+const fromStageIdToUrl = (stageId: string, meetingRef: fromStageIdToUrl_meeting$key) => {
   const meeting = readInlineData(
     graphql`
       fragment fromStageIdToUrl_meeting on NewMeeting @inline {
         id
+        facilitatorStageId
         phases {
           phaseType
           stages {
             id
+            isComplete
+            isNavigable
           }
         }
       }
     `,
     meetingRef
   )
-  const {phases, id: meetingId} = meeting
-  const stageRes = findStageById(phases, stageId) || findStageById(phases, fallbackStageId)
+  const {phases, id: meetingId, facilitatorStageId} = meeting
+  const stageRes =
+    findStageById(phases, stageId) ??
+    findStageById(phases, facilitatorStageId) ??
+    findBestNavigableStage(phases)
+  console.log('GEORG stageRes', stageRes)
   if (!stageRes) return '/'
   const {phase, stageIdx} = stageRes
   const {phaseType} = phase

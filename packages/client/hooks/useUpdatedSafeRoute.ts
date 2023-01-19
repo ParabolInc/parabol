@@ -60,7 +60,7 @@ const useUpdatedSafeRoute = (
       if (isUpdatedPhase && !findStageById(phases, localStageId)) {
         updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       }
-      const nextPathname = fromStageIdToUrl(localStageId, meeting, facilitatorStageId)
+      const nextPathname = fromStageIdToUrl(localStageId, meeting)
       if (nextPathname !== location.pathname) {
         history.replace(nextPathname)
         // do not set as unsafe (repro: start meeting, end, start again)

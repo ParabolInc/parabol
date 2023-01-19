@@ -111,14 +111,13 @@ export default {
 
     // RESOLUTION
     const currentStageRes = findStageById(phases, facilitatorStageId)
-    if (!currentStageRes) {
-      return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
+    if (currentStageRes) {
+      const {stage} = currentStageRes
+      await handleCompletedStage(stage, meeting, dataLoader)
+      stage.isComplete = true
+      stage.endAt = now
     }
-    const {stage} = currentStageRes
-    await handleCompletedStage(stage, meeting, dataLoader)
     const phase = getMeetingPhase(phases)
-    stage.isComplete = true
-    stage.endAt = now
 
     const completedRetrospective = (await r
       .table('NewMeeting')
