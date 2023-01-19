@@ -25,6 +25,7 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
+import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
@@ -86,6 +87,7 @@ const subscription = graphql`
           ...NotificationPicker_notification @relay(mask: false)
         }
       }
+      ...popNotificationToast_notification @relay(mask: false)
 
       ... on AuthTokenPayload {
         id
@@ -232,7 +234,8 @@ const onNextHandlers = {
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
-  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext
+  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext,
+  AddedNotification: popNotificationToastOnNext
 } as const
 
 const NotificationSubscription = (

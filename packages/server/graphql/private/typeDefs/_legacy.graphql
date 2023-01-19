@@ -1280,7 +1280,7 @@ type User {
   """
   all the notifications for a single user
   """
-  notifications(first: Int!, after: DateTime): NotificationConnection!
+  notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
 
   """
   get a single organization

@@ -69,7 +69,7 @@ const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
     const {runAt} = job
     const timeout = Math.max(0, runAt.getTime() - now.getTime())
     setTimeout(() => {
-      processJob(job, dataLoader).catch(console.log)
+      processJob(job, dataLoader).catch(console.error)
     }, timeout)
   })
 
