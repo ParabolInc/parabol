@@ -6,6 +6,8 @@ import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import {TeamsLimitReminderNotification_notification$key} from '~/__generated__/TeamsLimitReminderNotification_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import {Threshold} from '../types/constEnums'
+import makeDateString from '../utils/makeDateString'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -21,19 +23,19 @@ const TeamsLimitReminderNotification = (props: Props) => {
       fragment TeamsLimitReminderNotification_notification on NotifyTeamsLimitReminder {
         ...NotificationTemplate_notification
         id
+        scheduledLockAt
         organization {
           id
           name
           picture
-          scheduledLockAt
         }
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
-  const {organization} = notification
-  const {name: orgName, picture: orgPicture, scheduledLockAt} = organization
+  const {organization, scheduledLockAt} = notification
+  const {name: orgName, picture: orgPicture} = organization
 
   const onActionClick = () => {
     SendClientSegmentEventMutation(atmosphere, 'Notification Clicked', {
@@ -45,7 +47,9 @@ const TeamsLimitReminderNotification = (props: Props) => {
   return (
     <NotificationTemplate
       avatar={orgPicture || defaultOrgAvatar}
-      message={`"${orgName}" is over the limit of 2 Free Teams. Your free access will end on ${scheduledLockAt}`}
+      message={`"${orgName}" is over the limit of ${
+        Threshold.MAX_STARTER_TIER_TEAMS
+      } Free Teams. Your free access will end on ${makeDateString(scheduledLockAt)}`}
       action={<NotificationAction label={'See Usage'} onClick={onActionClick} />}
       notification={notification}
     />

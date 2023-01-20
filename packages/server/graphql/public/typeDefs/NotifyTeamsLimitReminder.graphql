@@ -29,4 +29,9 @@ type NotifyTeamsLimitReminder implements Notification {
   Organization that exceeded the limit
   """
   organization: Organization!
+
+  """
+  Scheduled blocking time at the time of notification
+  """
+  scheduledLockAt: DateTime!
 }

@@ -38,7 +38,8 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
     const notificationsToInsert = billingLeadersIds.map((userId) => {
       return new NotificationTeamsLimitReminder({
         userId,
-        orgId
+        orgId,
+        scheduledLockAt
       })
     })
 
