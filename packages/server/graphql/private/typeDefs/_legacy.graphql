@@ -2065,7 +2065,7 @@ type LoginSAMLPayload {
   """
   if the user is patient 0
   """
-  isPatientZero: Boolean
+  isPatient0: Boolean
 }
 
 type ErrorPayload {
