@@ -1,5 +1,5 @@
 import ms from 'ms'
-// import {Threshold} from 'parabol-client/types/constEnums'
+import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
@@ -12,12 +12,12 @@ import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appe
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 // Uncomment for easier testing
-const enum Threshold {
-  MAX_STARTER_TIER_TEAMS = 0,
-  MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
-  MIN_STICKY_TEAM_MEETINGS = 1,
-  STARTER_TIER_LOCK_AFTER_DAYS = 0
-}
+// const enum Threshold {
+//   MAX_STARTER_TIER_TEAMS = 0,
+//   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
+//   MIN_STICKY_TEAM_MEETINGS = 1,
+//   STARTER_TIER_LOCK_AFTER_DAYS = 0
+// }
 
 const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const billingLeaderIds = (await r
