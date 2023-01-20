@@ -141,7 +141,7 @@ const updateTemplateScope = {
         clonePokerTemplate()
       }
     } else {
-      await updateMeetingTemplateScope(templateId, scope)
+      await updateMeetingTemplateScope(templateId, newScope)
     }
     const data = {templateId, teamId, clonedTemplateId}
 
