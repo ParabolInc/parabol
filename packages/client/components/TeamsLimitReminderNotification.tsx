@@ -35,13 +35,13 @@ const TeamsLimitReminderNotification = (props: Props) => {
   )
   const {history} = useRouter()
   const {organization, scheduledLockAt} = notification
-  const {name: orgName, picture: orgPicture} = organization
+  const {name: orgName, picture: orgPicture, id: orgId} = organization
 
   const onActionClick = () => {
     SendClientSegmentEventMutation(atmosphere, 'Notification Clicked', {
       notificationType: 'TEAMS_LIMIT_REMINDER'
     })
-    history.push(`/usage`)
+    history.push(`/me/organizations/${orgId}`)
   }
 
   return (
@@ -50,7 +50,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
       message={`"${orgName}" is over the limit of ${
         Threshold.MAX_STARTER_TIER_TEAMS
       } Free Teams. Your free access will end on ${makeDateString(scheduledLockAt)}`}
-      action={<NotificationAction label={'See Usage'} onClick={onActionClick} />}
+      action={<NotificationAction label={'Upgrade'} onClick={onActionClick} />}
       notification={notification}
     />
   )
