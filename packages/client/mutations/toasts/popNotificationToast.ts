@@ -55,7 +55,6 @@ export const popNotificationToastOnNext: OnNextHandler<
 
   const callback = notificationSnack.onManualDismiss
   notificationSnack.onManualDismiss = () => {
-    console.log('on manual dismiss - realtime')
     const {id: notificationId} = addedNotification
     SetNotificationStatusMutation(
       atmosphere,
