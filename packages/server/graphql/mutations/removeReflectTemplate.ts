@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
-import deactivateMeetingTemplate from '../../postgres/queries/deactivateMeetingTemplate'
+import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -58,7 +58,7 @@ const removeReflectTemplate = {
     // RESOLUTION
     const {id: settingsId} = settings
     await Promise.all([
-      deactivateMeetingTemplate(templateId),
+      removeMeetingTemplate(templateId),
       r
         .table('ReflectPrompt')
         .getAll(teamId, {index: 'teamId'})

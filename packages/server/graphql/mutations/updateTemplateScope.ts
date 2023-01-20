@@ -8,8 +8,8 @@ import PokerTemplate from '../../database/types/PokerTemplate'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import TemplateDimension from '../../database/types/TemplateDimension'
-import deactivateMeetingTemplate from '../../postgres/queries/deactivateMeetingTemplate'
 import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
+import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import updateMeetingTemplateScope from '../../postgres/queries/updateMeetingTemplateScope'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -100,7 +100,7 @@ const updateTemplateScope = {
       })
       await Promise.all([
         insertMeetingTemplate(clonedTemplate),
-        deactivateMeetingTemplate(templateId),
+        removeMeetingTemplate(templateId),
         r.table('ReflectPrompt').insert(clonedPrompts).run(),
         r.table('ReflectPrompt').getAll(r.args(promptIds)).update({removedAt: now}).run()
       ])
@@ -128,7 +128,7 @@ const updateTemplateScope = {
 
       await Promise.all([
         insertMeetingTemplate(clonedTemplate),
-        deactivateMeetingTemplate(templateId),
+        removeMeetingTemplate(templateId),
         r.table('TemplateDimension').insert(clonedDimensions).run(),
         r.table('TemplateDimension').getAll(r.args(dimensionIds)).update({removedAt: now}).run()
       ])

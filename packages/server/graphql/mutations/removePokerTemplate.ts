@@ -3,7 +3,7 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerTemplate from '../../database/types/PokerTemplate'
-import deactivateMeetingTemplate from '../../postgres/queries/deactivateMeetingTemplate'
+import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -59,7 +59,7 @@ const removePokerTemplate = {
     const {id: settingsId} = settings
     template.isActive = false
     await Promise.all([
-      deactivateMeetingTemplate(templateId),
+      removeMeetingTemplate(templateId),
       r
         .table('TemplateDimension')
         .getAll(teamId, {index: 'teamId'})

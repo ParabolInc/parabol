@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {maybeRemoveRestrictions} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
-import deactivateMeetingTemplatesForTeam from '../../postgres/queries/deactivateMeetingTemplatesForTeam'
+import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -57,7 +57,7 @@ export default {
       .coerceTo('array')
       .run()) as string[]
 
-    await deactivateMeetingTemplatesForTeam(teamId)
+    await removeMeetingTemplatesForTeam(teamId)
 
     const notifications = users
       .map((user) => user?.id)
