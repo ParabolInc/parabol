@@ -8,6 +8,9 @@ import PokerTemplate from '../../database/types/PokerTemplate'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import TemplateDimension from '../../database/types/TemplateDimension'
+import deactivateMeetingTemplate from '../../postgres/queries/deactivateMeetingTemplate'
+import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
+import updateMeetingTemplateScope from '../../postgres/queries/updateMeetingTemplateScope'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -95,15 +98,12 @@ const updateTemplateScope = {
           removedAt: null
         })
       })
-      await r({
-        clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
-        clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
-        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
-        inactivatedPrompts: r
-          .table('ReflectPrompt')
-          .getAll(r.args(promptIds))
-          .update({removedAt: now})
-      }).run()
+      await Promise.all([
+        insertMeetingTemplate(clonedTemplate),
+        deactivateMeetingTemplate(templateId),
+        r.table('ReflectPrompt').insert(clonedPrompts).run(),
+        r.table('ReflectPrompt').getAll(r.args(promptIds)).update({removedAt: now}).run()
+      ])
     }
 
     const clonePokerTemplate = async () => {
@@ -125,15 +125,13 @@ const updateTemplateScope = {
           templateId: clonedTemplateId!
         })
       })
-      await r({
-        clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
-        clonedDimensions: r.table('TemplateDimension').insert(clonedDimensions),
-        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
-        inactivatedDimensions: r
-          .table('TemplateDimension')
-          .getAll(r.args(dimensionIds))
-          .update({removedAt: now})
-      }).run()
+
+      await Promise.all([
+        insertMeetingTemplate(clonedTemplate),
+        deactivateMeetingTemplate(templateId),
+        r.table('TemplateDimension').insert(clonedDimensions).run(),
+        r.table('TemplateDimension').getAll(r.args(dimensionIds)).update({removedAt: now}).run()
+      ])
     }
 
     if (shouldClone) {
@@ -143,13 +141,7 @@ const updateTemplateScope = {
         clonePokerTemplate()
       }
     } else {
-      await r
-        .table('MeetingTemplate')
-        .get(templateId)
-        .update({
-          scope: newScope
-        })
-        .run()
+      await updateMeetingTemplateScope(templateId, scope)
     }
     const data = {templateId, teamId, clonedTemplateId}
 

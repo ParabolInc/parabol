@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
+import deactivateMeetingTemplate from '../../postgres/queries/deactivateMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -39,6 +40,7 @@ const removeReflectTemplate = {
 
     // VALIDATION
     const {teamId} = template
+    // Will convert to PG by Mar 1, 2023
     const {templates, settings} = await r({
       templates: r
         .table('MeetingTemplate')
@@ -55,12 +57,9 @@ const removeReflectTemplate = {
 
     // RESOLUTION
     const {id: settingsId} = settings
-    await r({
-      template: r
-        .table('MeetingTemplate')
-        .get(templateId)
-        .update({isActive: false, updatedAt: now}),
-      reflectPrompts: r
+    await Promise.all([
+      deactivateMeetingTemplate(templateId),
+      r
         .table('ReflectPrompt')
         .getAll(teamId, {index: 'teamId'})
         .filter({
@@ -70,7 +69,8 @@ const removeReflectTemplate = {
           removedAt: now,
           updatedAt: now
         })
-    }).run()
+        .run()
+    ])
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
