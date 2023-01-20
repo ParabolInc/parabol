@@ -32,7 +32,6 @@ const TopBarNotifications = ({queryRef}: Props) => {
               node {
                 id
                 status
-                type
               }
             }
           }
