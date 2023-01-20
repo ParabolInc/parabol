@@ -57,7 +57,7 @@ const MyDashboardTimeline = (props: Props) => {
   )
   const {viewer} = data
   useNewFeatureSnackbar(viewer)
-  useDocumentTitle('My Timeline | Parabol', 'Timeline')
+  useDocumentTitle('My History | Parabol', 'History')
   return (
     <FeedAndDrawer>
       <TimelineFeed>
