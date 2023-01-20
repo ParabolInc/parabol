@@ -123,8 +123,8 @@ const DashTopBar = (props: Props) => {
         <TopBarSearch viewer={data.viewer} />
         <TopBarIcons>
           <TopBarHelp />
-          <TopBarNotifications queryRef={data || null} />
-          <PinnedSnackbarNotifications queryRef={data || null} />
+          <TopBarNotifications queryRef={data} />
+          <PinnedSnackbarNotifications queryRef={data} />
           <TopBarAvatar viewer={data.viewer || null} />
         </TopBarIcons>
       </TopBarMain>
