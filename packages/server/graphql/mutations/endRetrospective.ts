@@ -146,7 +146,13 @@ export default {
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').load(templateId)
+      dataLoader.get('meetingTemplates').load(templateId),
+      r
+        .table('RetroReflectionGroup')
+        .getAll(meetingId, {index: 'meetingId'})
+        .filter({isActive: false})
+        .delete()
+        .run()
     ])
     // wait for removeEmptyTasks before finishRetroMeeting
     // don't await for the OpenAI response or it'll hang for a while when ending the retro
