@@ -7,7 +7,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
-import {Breakpoint, Layout} from '../types/constEnums'
+import {Breakpoint, EmptyMeetingViewMessage, Layout} from '../types/constEnums'
 import getSafeRegex from '../utils/getSafeRegex'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
@@ -80,7 +80,17 @@ const MeetingsDash = (props: Props) => {
         </Wrapper>
       ) : (
         <EmptyContainer>
-          <MeetingsDashEmpty name={preferredName} />
+          {dashSearch ? (
+            <MeetingsDashEmpty
+              name={preferredName}
+              message={EmptyMeetingViewMessage.NO_SEARCH_RESULTS}
+            />
+          ) : (
+            <MeetingsDashEmpty
+              name={preferredName}
+              message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
+            />
+          )}
           <Wrapper maybeTabletPlus={maybeTabletPlus}>
             <DemoMeetingCard />
             <TutorialMeetingCard />
