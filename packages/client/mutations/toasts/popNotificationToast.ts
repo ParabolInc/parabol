@@ -53,41 +53,21 @@ export const popNotificationToastOnNext: OnNextHandler<
     return
   }
 
-  if (notificationSnack.autoDismiss === 0) {
-    const callback = notificationSnack.onDismiss
-    notificationSnack.onDismiss = () => {
-      const {id: notificationId} = addedNotification
-      SetNotificationStatusMutation(
-        atmosphere,
-        {
-          notificationId,
-          status: 'CLICKED'
-        },
-        {}
-      )
+  const callback = notificationSnack.onManualDismiss
+  notificationSnack.onManualDismiss = () => {
+    console.log('on manual dismiss - realtime')
+    const {id: notificationId} = addedNotification
+    SetNotificationStatusMutation(
+      atmosphere,
+      {
+        notificationId,
+        status: 'CLICKED'
+      },
+      {}
+    )
 
-      callback?.()
-    }
+    callback?.()
   }
 
-  if (notificationSnack.action) {
-    const callback = notificationSnack.action.callback
-    notificationSnack.action = {
-      ...notificationSnack.action,
-      callback: () => {
-        const {id: notificationId} = addedNotification
-        SetNotificationStatusMutation(
-          atmosphere,
-          {
-            notificationId,
-            status: 'CLICKED'
-          },
-          {}
-        )
-
-        callback()
-      }
-    }
-  }
   atmosphere.eventEmitter.emit('addSnackbar', notificationSnack)
 }
