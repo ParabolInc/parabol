@@ -8,6 +8,7 @@ import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
 import {Breakpoint, Layout} from '../types/constEnums'
+import getSafeRegex from '../utils/getSafeRegex'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
@@ -38,18 +39,21 @@ const EmptyContainer = styled('div')({
 
 const MeetingsDash = (props: Props) => {
   const {meetingsDashRef, viewer} = props
-  const {teams = [], preferredName = ''} = viewer ?? {}
+  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const meetings = teams
       .flatMap((team) => team.activeMeetings)
       .filter(Boolean)
       .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
-    return meetings.map((meeting, displayIdx) => ({
+    const filteredMeetings = dashSearch
+      ? meetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
+      : meetings
+    return filteredMeetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
       displayIdx
     }))
-  }, [teams])
+  }, [teams, dashSearch])
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
@@ -94,6 +98,7 @@ graphql`
       ...MeetingCard_meeting
       ...useSnacksForNewMeetings_meetings
       id
+      name
       createdAt
       meetingMembers {
         user {
@@ -109,6 +114,7 @@ export default createFragmentContainer(MeetingsDash, {
   viewer: graphql`
     fragment MeetingsDash_viewer on User {
       id
+      dashSearch
       preferredName
       teams {
         ...MeetingsDashActiveMeetings @relay(mask: false)
