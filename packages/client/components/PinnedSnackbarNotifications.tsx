@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -45,6 +46,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     `,
     queryRef
   )
+
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
   const {viewer} = data
@@ -54,24 +56,24 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     ({node}) => node.status === 'UNREAD' && Object.keys(typePicker).includes(node.type)
   )
 
-  snackbarNotifications.forEach(({node}) => {
-    const specificNotificationToastMapper = typePicker[node.type]
-    if (!specificNotificationToastMapper) {
-      return
-    }
+  React.useEffect(() => {
+    snackbarNotifications.forEach(({node}) => {
+      const specificNotificationToastMapper = typePicker[node.type]
+      if (!specificNotificationToastMapper) {
+        return
+      }
 
-    const notificationSnack = specificNotificationToastMapper(node, {
-      atmosphere,
-      history
-    })
+      const notificationSnack = specificNotificationToastMapper(node, {
+        atmosphere,
+        history
+      })
 
-    if (!notificationSnack) {
-      return
-    }
+      if (!notificationSnack) {
+        return
+      }
 
-    if (notificationSnack.autoDismiss === 0) {
-      const callback = notificationSnack.onDismiss
-      notificationSnack.onDismiss = () => {
+      const callback = notificationSnack.onManualDismiss
+      notificationSnack.onManualDismiss = () => {
         const {id: notificationId} = node
         SetNotificationStatusMutation(
           atmosphere,
@@ -84,30 +86,10 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
 
         callback?.()
       }
-    }
 
-    if (notificationSnack.action) {
-      const callback = notificationSnack.action.callback
-      notificationSnack.action = {
-        ...notificationSnack.action,
-        callback: () => {
-          const {id: notificationId} = node
-          SetNotificationStatusMutation(
-            atmosphere,
-            {
-              notificationId,
-              status: 'CLICKED'
-            },
-            {}
-          )
-
-          callback()
-        }
-      }
-    }
-
-    atmosphere.eventEmitter.emit('addSnackbar', notificationSnack)
-  })
+      atmosphere.eventEmitter.emit('addSnackbar', notificationSnack)
+    })
+  }, [])
 
   return null
 }
