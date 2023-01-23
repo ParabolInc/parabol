@@ -4,8 +4,6 @@ import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import {TeamsLimitExceededNotification_notification$key} from '~/__generated__/TeamsLimitExceededNotification_notification.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -15,7 +13,6 @@ interface Props {
 
 const TeamsLimitExceededNotification = (props: Props) => {
   const {notification: notificationRef} = props
-  const atmosphere = useAtmosphere()
   const notification = useFragment(
     graphql`
       fragment TeamsLimitExceededNotification_notification on NotifyTeamsLimitExceeded {
@@ -35,9 +32,6 @@ const TeamsLimitExceededNotification = (props: Props) => {
   const {name: orgName, picture: orgPicture} = organization
 
   const onActionClick = () => {
-    SendClientSegmentEventMutation(atmosphere, 'Notification Clicked', {
-      notificationType: 'TEAMS_LIMIT_EXCEEDED'
-    })
     history.push(`/usage`)
   }
 

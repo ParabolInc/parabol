@@ -25,11 +25,15 @@ const mapTeamsLimitExceededToToast = (
     autoDismiss: 0,
     key: `newNotification:${notificationId}`,
     message: `Your account is on a roll! Check out "${orgName}"'s usage`,
+    onManualDismiss: () => {
+      SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
+        snackbarType: 'teamsLimitExceeded'
+      })
+    },
     action: {
       label: 'See Usage',
       callback: () => {
         history.push(`/usage`)
-        SendClientSegmentEventMutation(atmosphere, 'Clicked usage snackbar CTA')
       }
     }
   }
