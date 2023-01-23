@@ -33,8 +33,10 @@ const mapTeamsLimitReminderToToast = (
     action: {
       label: 'Upgrade',
       callback: () => {
+        SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+          upgradeCTALocation: 'teamsLimitReminderSnackbar'
+        })
         history.push(`/me/organizations/${orgId}`)
-        SendClientSegmentEventMutation(atmosphere, 'Clicked teams limit reminder snackbar')
       }
     }
   }
