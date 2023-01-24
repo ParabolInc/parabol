@@ -35,7 +35,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({orgId})
-    .update({suggestedTier: 'team'})
+    .update({suggestedTier: 'starter'})
     .run()
 
   await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())

@@ -60,25 +60,14 @@ const useUsageSnackNag = (insights: boolean) => {
           domains @include(if: $isUserNaggable) {
             tier
             suggestedTier
-            viewerOrganizations {
-              tierLimitExceededAt
-            }
           }
         }
       }
     `,
     {isUserNaggable}
   )
-
   const {domains} = viewer
-
-  // Do not use snack nag if the user has an organization with the limit exceeded, in this case we use a different warnings approach
-  const limitExceeded = domains?.find(({viewerOrganizations}) =>
-    viewerOrganizations.find(({tierLimitExceededAt}) => !!tierLimitExceededAt)
-  )
-
-  const nag =
-    !limitExceeded && domains?.find(({tier, suggestedTier}) => shouldNag(tier, suggestedTier))
+  const nag = domains?.find(({tier, suggestedTier}) => shouldNag(tier, suggestedTier))
   useEffect(() => {
     if (!nag) return
     emitNag(atmosphere, history)
