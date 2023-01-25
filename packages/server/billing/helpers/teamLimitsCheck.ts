@@ -139,9 +139,9 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   if (tierLimitExceededAt || tier !== 'starter') return
 
-  if (!(await isLimitExceeded(orgId, dataLoader))) return
-
   if (!organization.activeDomain) return
+
+  if (!(await isLimitExceeded(orgId, dataLoader))) return
 
   const hasActiveDeals = await domainHasActiveDeals(organization.activeDomain)
 

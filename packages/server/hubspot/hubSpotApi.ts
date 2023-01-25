@@ -115,6 +115,10 @@ const getDealsByCompanyIds = async (companyIds: string[]): Promise<DealsResponse
 }
 
 export const domainHasActiveDeals = async (domain: string): Promise<boolean | Error> => {
+  if (!accessToken || !accessToken.length) {
+    return new Error('HubSpot access token is not provided')
+  }
+
   const companies = await getCompaniesByDomain(domain)
 
   if (companies instanceof Error) {
