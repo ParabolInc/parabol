@@ -141,9 +141,9 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   if (!(await isLimitExceeded(orgId, dataLoader))) return
 
-  const hasActiveDeals = organization.activeDomain
-    ? await domainHasActiveDeals(organization.activeDomain)
-    : false
+  if (!organization.activeDomain) return
+
+  const hasActiveDeals = await domainHasActiveDeals(organization.activeDomain)
 
   if (hasActiveDeals) {
     if (hasActiveDeals instanceof Error) {
@@ -170,19 +170,17 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   const billingLeaders = await getBillingLeaders(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
-  if (organization.activeDomain) {
-    await Promise.all([
-      enableUsageStats(billingLeadersIds, orgId),
-      sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
-      billingLeaders.map((billingLeader) =>
-        sendTeamsLimitEmail({
-          user: billingLeader,
-          orgId,
-          orgName,
-          emailType: 'thirtyDayWarning'
-        })
-      ),
-      scheduleTeamLimitsJobs(scheduledLockAt, orgId)
-    ])
-  }
+  await Promise.all([
+    enableUsageStats(billingLeadersIds, orgId),
+    sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
+    billingLeaders.map((billingLeader) =>
+      sendTeamsLimitEmail({
+        user: billingLeader,
+        orgId,
+        orgName,
+        emailType: 'thirtyDayWarning'
+      })
+    ),
+    scheduleTeamLimitsJobs(scheduledLockAt, orgId)
+  ])
 }
