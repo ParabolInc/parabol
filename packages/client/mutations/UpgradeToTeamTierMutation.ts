@@ -18,6 +18,7 @@ graphql`
       periodEnd
       periodStart
       updatedAt
+      lockedAt
     }
     meetings {
       showConversionModal

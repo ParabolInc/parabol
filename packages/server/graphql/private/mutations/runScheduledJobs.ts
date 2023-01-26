@@ -43,6 +43,7 @@ const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) 
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
+
   if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
     return processMeetingStageTimeLimits(
       job as ScheduledJobMeetingStageTimeLimit,
