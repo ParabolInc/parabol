@@ -9,6 +9,14 @@ import publishNotification from '../../graphql/public/mutations/helpers/publishN
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 
+// Uncomment for easier testing
+// const enum Threshold {
+//   MAX_PERSONAL_TIER_TEAMS = 0,
+//   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
+//   MIN_STICKY_TEAM_MEETINGS = 1,
+//   PERSONAL_TIER_LOCK_AFTER_DAYS = 1
+// }
+
 const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const billingLeaderIds = (await r
     .table('OrganizationUser')
@@ -25,7 +33,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({orgId})
-    .update({suggestedTier: 'pro'})
+    .update({suggestedTier: 'team'})
     .run()
 
   await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
