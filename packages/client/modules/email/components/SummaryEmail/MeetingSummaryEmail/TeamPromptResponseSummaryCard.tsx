@@ -27,15 +27,10 @@ const avatarStyles = {
   minWidth: 48
 }
 
+// Note: Emotion doesn't work in email, so these styles will only be present in the app.
 const StyledEditor = styled('div')`
   min-height: 40px;
   line-height: 20px;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  white-space: break-spaces;
-  -webkit-font-variant-ligatures: none;
-  font-variant-ligatures: none;
-  font-feature-settings: 'liga' 0;
 
   :is(ul, ol) {
     list-style-position: outside;
