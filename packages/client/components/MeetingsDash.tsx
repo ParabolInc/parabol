@@ -80,17 +80,14 @@ const MeetingsDash = (props: Props) => {
         </Wrapper>
       ) : (
         <EmptyContainer>
-          {dashSearch ? (
-            <MeetingsDashEmpty
-              name={preferredName}
-              message={EmptyMeetingViewMessage.NO_SEARCH_RESULTS}
-            />
-          ) : (
-            <MeetingsDashEmpty
-              name={preferredName}
-              message={EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS}
-            />
-          )}
+          <MeetingsDashEmpty
+            name={preferredName}
+            message={
+              dashSearch
+                ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS
+                : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS
+            }
+          />
           <Wrapper maybeTabletPlus={maybeTabletPlus}>
             <DemoMeetingCard />
             <TutorialMeetingCard />
