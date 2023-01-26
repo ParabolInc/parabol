@@ -157,8 +157,8 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
   if (organization.activeDomain) {
+    await enableUsageStats(billingLeadersIds, orgId)
     await Promise.all([
-      enableUsageStats(billingLeadersIds, orgId),
       sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
       billingLeaders.map((billingLeader) =>
         sendTeamsLimitEmail({

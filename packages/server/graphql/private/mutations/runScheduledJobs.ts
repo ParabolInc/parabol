@@ -43,10 +43,13 @@ const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) 
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
-  if ('orgId' in job) {
-    return processTeamsLimitsJob(job, dataLoader).catch(console.log)
-  } else {
-    return processMeetingStageTimeLimits(job, dataLoader).catch(console.log)
+  if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
+    return processMeetingStageTimeLimits(
+      job as ScheduledJobMeetingStageTimeLimit,
+      dataLoader
+    ).catch(console.error)
+  } else if (job.type === 'LOCK_ORGANIZATION' || job.type === 'WARN_ORGANIZATION') {
+    return processTeamsLimitsJob(job as ScheduledTeamLimitsJob, dataLoader).catch(console.error)
   }
 }
 
