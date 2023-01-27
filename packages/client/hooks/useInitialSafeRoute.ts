@@ -23,6 +23,7 @@ const useInitialSafeRoute = (
     graphql`
       fragment useInitialSafeRoute_meeting on NewMeeting @inline {
         ...fromStageIdToUrl_meeting
+        ...updateLocalStage_meeting
         id
         meetingType
         facilitatorStageId
@@ -72,7 +73,7 @@ const useInitialSafeRoute = (
         const {id: localStageId} = localStage
         const nextUrl = fromStageIdToUrl(localStageId, meeting)
         history.replace(nextUrl)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         setSafeRoute(false)
         return
       }
@@ -85,7 +86,7 @@ const useInitialSafeRoute = (
       if (!phase) {
         const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
         history.replace(nextUrl)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         setSafeRoute(false)
         return
       }
@@ -100,7 +101,7 @@ const useInitialSafeRoute = (
           meetingId === RetroDemo.MEETING_ID
             ? '/retrospective-demo/reflect'
             : fromStageIdToUrl(facilitatorStageId, meeting)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         history.replace(nextUrl)
         setSafeRoute(false)
         return
@@ -112,13 +113,13 @@ const useInitialSafeRoute = (
         // too early to visit meeting or typo, go to facilitator
         const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
         history.replace(nextUrl)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         setSafeRoute(false)
         return
       }
 
       // legit URL!
-      updateLocalStage(atmosphere, meetingId, stage.id)
+      updateLocalStage(atmosphere, meeting, stage.id)
       setSafeRoute(true)
     },
     [

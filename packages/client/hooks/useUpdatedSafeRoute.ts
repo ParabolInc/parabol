@@ -17,6 +17,7 @@ const useUpdatedSafeRoute = (
     graphql`
       fragment useUpdatedSafeRoute_meeting on NewMeeting @inline {
         ...fromStageIdToUrl_meeting
+        ...updateLocalStage_meeting
         id
         localStage {
           id
@@ -47,7 +48,7 @@ const useUpdatedSafeRoute = (
       setSafeRoute(true)
       return
     }
-    const {id: meetingId, localStage, localPhase, facilitatorStageId, phases} = meeting
+    const {localStage, localPhase, facilitatorStageId, phases} = meeting
     const localStages = localPhase?.stages ?? null
     const localStageId = localStage?.id ?? null
     const oldLocalStages = oldMeeting?.localPhase?.stages ?? null
@@ -58,7 +59,7 @@ const useUpdatedSafeRoute = (
     const isUpdatedPhase = localStages !== oldLocalStages
     if (isNewLocalStageId || isUpdatedPhase) {
       if (isUpdatedPhase && !findStageById(phases, localStageId)) {
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
       }
       const nextPathname = fromStageIdToUrl(localStageId, meeting)
       if (nextPathname !== location.pathname) {
