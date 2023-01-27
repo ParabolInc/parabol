@@ -42,7 +42,7 @@ const generateWholeMeetingSummary = async (
     dataLoader.get('newMeetings').load(meetingId),
     r.table('NewMeeting').get(meetingId).update({summary}).run()
   ])
-  // mutate the cache
+  // mutate the cache. Don't copy this pattern: implement dataLoader updateCache: https://github.com/ParabolInc/parabol/issues/7687
   meeting.summary = summary
 }
 
