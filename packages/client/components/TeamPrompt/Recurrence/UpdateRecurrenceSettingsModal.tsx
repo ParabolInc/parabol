@@ -93,9 +93,32 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   ) => {
     onCompleted(res as any, errors)
     const error = getOnCompletedError(res as any, errors)
-    if (!error) {
-      closeModal()
+    if (error) {
+      return
     }
+
+    const message = ['🎉 Recurrence settings have been updated']
+    const isRecurrenceAcitve =
+      res.updateRecurrenceSettings.meeting?.meetingSeries?.cancelledAt === null
+    if (isRecurrenceAcitve && recurrenceRule) {
+      const nextOcurrenceDate = recurrenceRule.after(new Date())
+      message.push(
+        `Next meeting will start on ${new Intl.DateTimeFormat('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'medium'
+        }).format(nextOcurrenceDate)}.`
+      )
+    } else if (!isRecurrenceAcitve) {
+      message.push('No meetings will be created in the future.')
+    }
+
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: 'recurrenceSettingsUpdated',
+      message: message.join('. '),
+      autoDismiss: 10,
+      showDismissButton: true
+    })
+    closeModal()
   }
 
   const onUpdateRecurrenceClicked = () => {
