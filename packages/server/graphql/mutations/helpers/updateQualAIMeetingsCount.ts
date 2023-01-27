@@ -18,6 +18,7 @@ const updateQualAIMeetingsCount = async (
     qualAIMeetingsCount: qualAIMeetingsCount + 1
   }
   await updateTeamByTeamId(updates, teamId)
+  team.qualAIMeetingsCount = qualAIMeetingsCount + 1
 }
 
 export default updateQualAIMeetingsCount

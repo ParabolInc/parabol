@@ -12,15 +12,16 @@ const generateWholeMeetingSummary = async (
   facilitatorUserId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [facilitator, commentsByDiscussions, tasksByDiscussions, reflections, team] =
-    await Promise.all([
-      dataLoader.get('users').loadNonNull(facilitatorUserId),
-      dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
-      dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
-      dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId)
-    ])
+  const [facilitator, team] = await Promise.all([
+    dataLoader.get('users').loadNonNull(facilitatorUserId),
+    dataLoader.get('teams').load(teamId)
+  ])
   if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const [commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([
+    dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
+    dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+  ])
   const manager = new OpenAIServerManager()
   const reflectionsContent = reflections.map((reflection) => reflection.plaintextContent)
   const commentsContent = commentsByDiscussions

@@ -13,13 +13,15 @@ const generateDiscussionSummary = async (
   dataLoader: DataLoaderWorker
 ) => {
   const {id: meetingId, endedAt, facilitatorUserId, teamId} = meeting
-  const [facilitator, comments, tasks, team] = await Promise.all([
+  const [facilitator, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
-    dataLoader.get('commentsByDiscussionId').load(discussionId),
-    dataLoader.get('tasksByDiscussionId').load(discussionId),
     dataLoader.get('teams').load(teamId)
   ])
   if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const [comments, tasks] = await Promise.all([
+    dataLoader.get('commentsByDiscussionId').load(discussionId),
+    dataLoader.get('tasksByDiscussionId').load(discussionId)
+  ])
   const manager = new OpenAIServerManager()
   const commentsContent = comments
     .filter(({createdBy}) => createdBy !== PARABOL_AI_USER_ID)
