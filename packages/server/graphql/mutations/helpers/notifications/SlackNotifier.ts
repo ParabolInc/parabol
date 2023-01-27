@@ -181,7 +181,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     ]
     if (meeting.summary) {
       const aiSummaryTitle = 'AI Summary :robot_face:'
-      const summary = meeting.summary.replace(/(\r\n|\n|\r)/gm, '') // remove line breaks from the summary
+      const summary = meeting.summary.trim()
       blocks.push(makeSection(`*${aiSummaryTitle}*:\n${summary}`))
     }
     blocks.push(makeEndMeetingButtons(meeting))

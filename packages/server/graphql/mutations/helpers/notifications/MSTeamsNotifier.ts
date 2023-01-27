@@ -168,8 +168,8 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
       aiSummaryColumn.width = 'stretch'
       const aiSummaryTitle = new AdaptiveCards.TextBlock('AI Summary 🤖')
       aiSummaryTitle.weight = AdaptiveCards.TextWeight.Bolder
-      const cleanedAISummary = summary.replace(/(\r\n|\n|\r)/gm, '') // remove line breaks from the summary
-      const aiSummaryTextBlock = new AdaptiveCards.TextBlock(cleanedAISummary)
+      const trimmedAISummary = summary.trim()
+      const aiSummaryTextBlock = new AdaptiveCards.TextBlock(trimmedAISummary)
       aiSummaryTextBlock.wrap = true
       aiSummaryColumn.addItem(aiSummaryTitle)
       aiSummaryColumn.addItem(aiSummaryTextBlock)

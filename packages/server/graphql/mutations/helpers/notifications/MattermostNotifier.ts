@@ -202,11 +202,10 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
       }
     ]
     if (summary) {
-      const cleanedAISummary = summary.replace(/(\r\n|\n|\r)/gm, '') // remove line breaks from the summary
       fields.push({
         short: false,
         title: 'AI Summary 🤖',
-        value: cleanedAISummary
+        value: summary.trim()
       })
     }
     fields.push(...makeEndMeetingButtons(meeting))
