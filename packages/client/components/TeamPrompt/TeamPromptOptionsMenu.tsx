@@ -88,15 +88,6 @@ const TeamPromptOptionsMenu = (props: Props) => {
         onClick={() => {
           menuProps.closePortal()
           openRecurrenceSettingsModal()
-          // if (hasRecurrenceEnabled) {
-          //   StopRecurrenceMutation(
-          //     atmosphere,
-          //     {meetingSeriesId: meetingSeries.id},
-          //     {onCompleted, onError}
-          //   )
-          // } else {
-          //   StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
-          // }
         }}
       />
       <MenuItem

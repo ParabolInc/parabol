@@ -1,0 +1,26 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  updateRecurrenceSettings(
+    """
+    ID of the meeting to start recurrence for
+    """
+    meetingId: ID!
+    recurrenceRule: RRule
+  ): UpdateRecurrenceSettingsPayload!
+}
+
+"""
+Return value for updateRecurrenceSettings, which could be an error
+"""
+union UpdateRecurrenceSettingsPayload = UpdateRecurrenceSettingsSuccess | ErrorPayload
+
+type UpdateRecurrenceSettingsSuccess {
+  """
+  The updated meeting
+  """
+  meeting: TeamPromptMeeting!
+}
+
+extend union TeamSubscriptionPayload = UpdateRecurrenceSettingsSuccess

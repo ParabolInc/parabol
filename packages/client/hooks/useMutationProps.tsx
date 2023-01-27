@@ -18,7 +18,7 @@ export type MenuMutationProps = Pick<
   'onCompleted' | 'onError' | 'submitMutation' | 'submitting'
 >
 
-const getOnCompletedError = (
+export const getOnCompletedError = (
   res?: null | {[operationNames: string]: {error?: MutationServerError}},
   errors?: readonly PayloadError[] | null
 ) => {
