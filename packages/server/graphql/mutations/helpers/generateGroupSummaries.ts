@@ -9,13 +9,15 @@ const generateGroupSummaries = async (
   dataLoader: DataLoaderWorker,
   facilitatorUserId: string
 ) => {
-  const [reflections, reflectionGroups, facilitator, team] = await Promise.all([
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
+  const [facilitator, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').load(teamId)
   ])
   if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const [reflections, reflectionGroups] = await Promise.all([
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+  ])
   const r = await getRethink()
   const manager = new OpenAIServerManager()
   await Promise.all(
