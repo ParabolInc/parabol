@@ -1,4 +1,3 @@
-import ms from 'ms'
 import {r} from 'rethinkdb-ts'
 import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
 import {DataLoaderWorker} from '../../graphql/graphql'
@@ -8,7 +7,7 @@ import NotificationTeamsLimitReminder from './NotificationTeamsLimitReminder'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
-  const {orgId, runAt, type} = job
+  const {orgId, type} = job
   const [organization, orgUsers] = await Promise.all([
     dataLoader.get('organizations').load(orgId),
     dataLoader.get('organizationUsersByOrgId').load(orgId)
@@ -16,11 +15,6 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
   const {name: orgName, scheduledLockAt, lockedAt} = organization
 
   if (!scheduledLockAt || lockedAt) return
-
-  const expectedRunAt =
-    type === 'LOCK_ORGANIZATION' ? scheduledLockAt.getTime() : scheduledLockAt.getTime() - ms('7d')
-
-  if (expectedRunAt !== runAt.getTime()) return
 
   const billingLeadersIds = orgUsers
     .filter(({role}) => role === 'BILLING_LEADER')
@@ -34,6 +28,7 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
   if (type === 'LOCK_ORGANIZATION') {
     const now = new Date()
     await r.table('Organization').get(orgId).update({lockedAt: now}).run()
+    organization.lockedAt = lockedAt
   } else if (type === 'WARN_ORGANIZATION') {
     const notificationsToInsert = billingLeadersIds.map((userId) => {
       return new NotificationTeamsLimitReminder({

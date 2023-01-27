@@ -84,8 +84,8 @@ const ColorSpacer = styled('div')({
   width: 8,
   marginRight: 8
 })
-const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
-  ({groupColor, isFocused}) => ({
+const ColumnColorDrop = styled('div')<{groupColor: string; isDesktop: boolean; isFocused: boolean}>(
+  ({groupColor, isDesktop, isFocused}) => ({
     backgroundColor: groupColor,
     boxShadow: `0 0 0 1px ${PALETTE.SLATE_200}`,
     borderRadius: '50%',
@@ -96,7 +96,7 @@ const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
     height: 8,
     width: 8,
     top: 20, // must be out of layout  so it doesn't color the text
-    transform: `scale(${isFocused ? 163 : 1})`,
+    transform: `scale(${isFocused ? (isDesktop ? 200 : 350) : 1})`,
     transition: `all 300ms ${BezierCurve.DECELERATE}`,
     opacity: isFocused ? 0.35 : 1
   })
@@ -204,7 +204,7 @@ const PhaseItemColumn = (props: Props) => {
   return (
     <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop}>
-        <ColumnColorDrop isFocused={isFocused} groupColor={groupColor} />
+        <ColumnColorDrop isDesktop={isDesktop} isFocused={isFocused} groupColor={groupColor} />
         <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>

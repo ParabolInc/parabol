@@ -12,6 +12,9 @@ export type UpgradeCTALocationEnumType =
   | 'teamsLimitReminderSnackbar'
   | 'teamsLimitReminderNotification'
   | 'meetingSidebar'
+  | 'unpaidTeamModal'
+  | 'organizationLockedModal'
+  | 'startNewMeetingOrganizationLockedError'
 
 const UpgradeCTALocationEnum = new GraphQLEnumType({
   name: 'UpgradeCTALocationEnum',
@@ -27,7 +30,10 @@ const UpgradeCTALocationEnum = new GraphQLEnumType({
     timelineHistoryLock: {},
     teamsLimitReminderSnackbar: {},
     teamsLimitReminderNotification: {},
-    meetingSidebar: {}
+    meetingSidebar: {},
+    unpaidTeamModal: {},
+    organizationLockedModal: {},
+    startNewMeetingOrganizationLockedError: {}
   }
 })
 
