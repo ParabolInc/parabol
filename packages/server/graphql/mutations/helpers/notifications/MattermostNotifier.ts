@@ -205,7 +205,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
       fields.push({
         short: false,
         title: 'AI Summary 🤖',
-        value: summary.trim()
+        value: summary
       })
     }
     fields.push(...makeEndMeetingButtons(meeting))

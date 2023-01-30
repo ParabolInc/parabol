@@ -168,8 +168,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
       aiSummaryColumn.width = 'stretch'
       const aiSummaryTitle = new AdaptiveCards.TextBlock('AI Summary 🤖')
       aiSummaryTitle.weight = AdaptiveCards.TextWeight.Bolder
-      const trimmedAISummary = summary.trim()
-      const aiSummaryTextBlock = new AdaptiveCards.TextBlock(trimmedAISummary)
+      const aiSummaryTextBlock = new AdaptiveCards.TextBlock(summary)
       aiSummaryTextBlock.wrap = true
       aiSummaryColumn.addItem(aiSummaryTitle)
       aiSummaryColumn.addItem(aiSummaryTextBlock)
