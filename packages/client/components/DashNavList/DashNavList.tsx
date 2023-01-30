@@ -43,13 +43,15 @@ interface Props {
   onClick?: () => void
 }
 
+type Team = DashNavList_viewer['teams'][0]
+
 const DashNavList = (props: Props) => {
   const {className, onClick, viewer} = props
   const teams = viewer?.teams
 
   const teamsByOrgKey = useMemo(() => {
     if (!teams) return null
-    const teamsByOrgId = {} as {[key: string]: DashNavList_viewer['teams'][0][]}
+    const teamsByOrgId = {} as {[key: string]: Team[]}
     teams.forEach((team) => {
       const {organization} = team
       const {id: orgId, name: orgName} = organization
@@ -69,6 +71,11 @@ const DashNavList = (props: Props) => {
 
   // const team = Object.values(teamsByOrgKey)
   const isSingleOrg = teamsByOrgKey.length === 1
+
+  const showWarningIcon = (team: Team) => {
+    return team.isPaid && !team.organization.lockedAt ? 'group' : 'warning'
+  }
+
   return (
     <DashNavListStyles>
       {isSingleOrg
@@ -77,7 +84,7 @@ const DashNavList = (props: Props) => {
               className={className}
               onClick={onClick}
               key={team.id}
-              icon={team.isPaid ? 'group' : 'warning'}
+              icon={showWarningIcon(team)}
               href={`/team/${team.id}`}
               label={team.name}
             />
@@ -93,7 +100,7 @@ const DashNavList = (props: Props) => {
                     className={className}
                     onClick={onClick}
                     key={team.id}
-                    icon={team.isPaid ? 'group' : 'warning'}
+                    icon={showWarningIcon(team)}
                     href={`/team/${team.id}`}
                     label={team.name}
                   />
@@ -114,6 +121,7 @@ graphql`
     organization {
       id
       name
+      lockedAt
     }
   }
 `

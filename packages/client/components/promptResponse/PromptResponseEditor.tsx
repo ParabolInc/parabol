@@ -90,7 +90,7 @@ const StyledEditor = styled('div')`
   }
 
   .ProseMirror [data-type='mention'] {
-    background-color: #faebd3;
+    background-color: ${PALETTE.GOLD_100};
     border-radius: 2;
     font-weight: 600;
   }

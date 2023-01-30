@@ -13,6 +13,7 @@ interface Input {
   isPaid?: boolean
   tier: TierEnum
   orgId: string
+  qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
   updatedAt?: Date
 }
@@ -29,6 +30,7 @@ export default class Team {
   tier: TierEnum
   orgId: string
   isOnboardTeam: boolean
+  qualAIMeetingsCount: number
   updatedAt: Date
   constructor(input: Input) {
     const {
@@ -42,6 +44,7 @@ export default class Team {
       name,
       orgId,
       tier,
+      qualAIMeetingsCount,
       updatedAt
     } = input
     this.name = name.trim().slice(0, TEAM_NAME_LIMIT)
@@ -55,5 +58,6 @@ export default class Team {
     this.isArchived = isArchived ?? false
     this.isOnboardTeam = isOnboardTeam ?? false
     this.isPaid = isPaid ?? true
+    this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
   }
 }

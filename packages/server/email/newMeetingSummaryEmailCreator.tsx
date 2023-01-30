@@ -8,7 +8,7 @@ import renderSSRElement from './renderSSRElement'
 import ServerEnvironment from './ServerEnvironment'
 interface Props {
   meetingId: string
-  context: GQLContext
+  context: Pick<GQLContext, 'authToken' | 'dataLoader'>
 }
 
 const newMeetingSummaryEmailCreator = async (props: Props) => {

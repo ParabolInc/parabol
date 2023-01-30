@@ -28,9 +28,13 @@ type LoginWithGooglePayload {
   """
   authToken: ID
   userId: ID
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
 
   """
-  the newly created user
+  the newly created user, or the existing user
   """
   user: User
 }
