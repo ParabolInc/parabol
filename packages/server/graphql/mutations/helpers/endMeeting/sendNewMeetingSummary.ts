@@ -5,7 +5,10 @@ import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEm
 import {GQLContext} from '../../../graphql'
 import isValid from '../../../isValid'
 
-export default async function sendNewMeetingSummary(newMeeting: Meeting, context: GQLContext) {
+export default async function sendNewMeetingSummary(
+  newMeeting: Meeting,
+  context: Pick<GQLContext, 'dataLoader' | 'authToken'>
+) {
   const {id: meetingId, teamId, summarySentAt} = newMeeting
   if (summarySentAt) return
   const now = new Date()

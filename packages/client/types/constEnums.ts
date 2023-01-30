@@ -387,6 +387,7 @@ export const enum Threshold {
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_POKER_DIMENSION_NAME = 50,
+  MAX_QUAL_AI_MEETINGS = 3,
   MAX_REACTJIS = 12,
   MAX_PERSONAL_TIER_TEAMS = 2,
   MAX_POKER_STORIES = 50,
@@ -492,7 +493,12 @@ export const enum PollsAriaLabels {
 }
 
 export const enum AIExplainer {
-  STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you in your first few retros so you can see what they're like.`,
+  STARTER = `AI generated summaries 🤖 are a premium feature. We'll share them with you for a few retros so you can see what they're like.`,
   PREMIUM_MEETING = `Our friendly AI 🤖 is here to save you time by summarizing your meeting`,
   PREMIUM_REFLECTIONS = `Our friendly AI 🤖 is here to save you time by summarizing your reflections`
+}
+
+export const enum EmptyMeetingViewMessage {
+  NO_ACTIVE_MEETINGS = `Looks like you have no upcoming meetings 😎 Start one now or check out these tips and tricks.`,
+  NO_SEARCH_RESULTS = `Sorry we could not find any meetings matched with your query. Would you like to checkout these tips and tricks?`
 }

@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.89.0 2023-January-18
+
+### Fixed
+
+- fix: update non-anonymous Reflect description (#7651)
+- fix(ai-summary): remove AI comment from comment count (#7648)
+- fix(ai-summary): update Parabol AI picture (#7657)
+
+### Changed
+
+- chore(metrics): emit sign_up events from GA4 client side (#7635)
+- perf: moved global style creation outside of the render cycle (#7598)
+- chore: sendToSentry if unable to create topic summary (#7665)
+
 ## 6.88.0 2023-January-12
 
 ### Fixed
