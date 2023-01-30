@@ -30,11 +30,11 @@ const eventLookup = {
         }
       `
     },
-    payment_succeeded: {
+    paid: {
       getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
-        mutation StripeSucceedPayment($invoiceId: ID!) {
-          stripeSucceedPayment(invoiceId: $invoiceId)
+        mutation StripeInvoicePaid($invoiceId: ID!) {
+          stripeInvoicePaid(invoiceId: $invoiceId)
         }
       `
     },
@@ -105,7 +105,12 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  publishWebhookGQL(query, variables)
+  const result = await publishWebhookGQL(query, variables)
+  if (result?.data) {
+    res.writeStatus('200').end()
+  } else {
+    res.writeStatus('500').end()
+  }
 })
 
 export default stripeWebhookHandler
