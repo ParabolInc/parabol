@@ -15,6 +15,7 @@ import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import sendToSentry from '../../utils/sendToSentry'
 import {getStripeManager} from '../../utils/stripe'
+import StripeManager from '../../utils/stripe/StripeManager'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -298,11 +299,14 @@ export default async function generateInvoice(
   invoice: Stripe.Invoice,
   stripeLineItems: Stripe.InvoiceLineItem[],
   orgId: string,
+  quantity: number,
   invoiceId: string,
   dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
   const now = new Date()
+  console.log('GEORG invoice', invoice, invoiceId)
+  console.log('GEORG line items', stripeLineItems)
 
   const {itemDict, nextPeriodCharges, unknownLineItems} = makeItemDict(stripeLineItems)
   // technically, invoice.created could be called before invoiceitem.created is if there is a network hiccup. mutates itemDict!

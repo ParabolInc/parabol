@@ -40,7 +40,7 @@ export default {
     // RESOLUTION
     const {stripeId} = await r.table('Organization').get(orgId).pluck('stripeId').run()
     const dbAfter = after ? new Date(after) : r.maxval
-    const [tooManyInvoices, upcomingInvoice] = await Promise.all([
+    const [tooManyInvoices, orgUserCount] = await Promise.all([
       r
         .table('Invoice')
         .between([orgId, r.minval], [orgId, dbAfter], {
@@ -54,8 +54,17 @@ export default {
         .orderBy(r.desc('startAt'), r.desc('createdAt'))
         .limit(first + 1)
         .run(),
-      after ? Promise.resolve(undefined) : makeUpcomingInvoice(orgId, stripeId)
+    r
+      .table('OrganizationUser')
+      .getAll(orgId, {index: 'orgId'})
+      .filter({
+        inactive: false,
+        removedAt: null
+      })
+      .count()
+      .run()
     ])
+    const upcomingInvoice = after ? undefined : await makeUpcomingInvoice(orgId, orgUserCount, stripeId)
     const extraInvoices: Invoice[] = tooManyInvoices || []
     const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice

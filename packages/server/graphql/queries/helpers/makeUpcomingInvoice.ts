@@ -3,8 +3,9 @@ import Stripe from 'stripe'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
 import {getStripeManager} from '../../../utils/stripe'
+import StripeManager from '../../../utils/stripe/StripeManager'
 
-export default async function makeUpcomingInvoice(orgId: string, stripeId?: string | null) {
+export default async function makeUpcomingInvoice(orgId: string, quantity: number, stripeId?: string | null) {
   if (!stripeId) return undefined
   const manager = getStripeManager()
   let stripeInvoice: Stripe.Invoice
@@ -26,6 +27,16 @@ export default async function makeUpcomingInvoice(orgId: string, stripeId?: stri
         expiry: dayjs(`${cardSource.exp_year}-${cardSource.exp_month}-01`).format('MM/YY')
       }
     : undefined
+
+  const subscription = stripeInvoice.lines.data.find(({plan}) => plan?.id === StripeManager.PARABOL_TEAM_600)
+  if (subscription && subscription.quantity !== quantity) {
+    const {subscription_item: lineitemId} = subscription
+    await manager.updateSubscriptionItemQuantity(
+      lineitemId!,
+      quantity
+    )
+    stripeInvoice = await manager.retrieveUpcomingInvoice(stripeId)
+  }
 
   return {
     id: getUpcomingInvoiceId(orgId),

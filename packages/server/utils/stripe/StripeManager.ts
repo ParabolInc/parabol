@@ -2,8 +2,12 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import sendToSentry from '../sendToSentry'
 
+export function findTeamSubscriptionItem(items: Stripe.SubscriptionItem[]) {
+  return items.find(({plan}) => plan?.id === StripeManager.PARABOL_TEAM_600)
+}
+
 export default class StripeManager {
-  static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
+  static PARABOL_TEAM_600 = 'parabol-pro-600' // $6/seat/mo
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {apiVersion: '2020-08-27'})
@@ -50,18 +54,19 @@ export default class StripeManager {
     })
   }
 
-  async createProSubscription(customerId: string, orgId: string, quantity: number) {
+  async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
+      proration_behavior: 'none',
       metadata: {
         orgId
       },
       items: [
         {
-          plan: StripeManager.PARABOL_PRO_600,
+          plan: StripeManager.PARABOL_TEAM_600,
           quantity
         }
       ]
@@ -116,6 +121,24 @@ export default class StripeManager {
     return this.stripe.subscriptions.retrieve(subscriptionId)
   }
 
+  async retrieveSubscriptionItems(subscription: Stripe.Subscription) {
+    const {id, items} = subscription
+    const subscriptionItems = [...items.data]
+
+    for (let i = 0; i < 100; i++) {
+      const items = await this.stripe.subscriptionItems.list({
+        subscription: id,
+        starting_after: subscriptionItems[subscriptionItems.length - 1]!.id,
+        limit: 100,
+      })
+      subscriptionItems.push(...items.data)
+      if (!items.has_more) {
+        break
+      }
+    }
+    return subscriptionItems
+  }
+
   async retrieveUpcomingInvoice(stripeId: string) {
     return this.stripe.invoices.retrieveUpcoming({
       customer: stripeId
@@ -143,14 +166,22 @@ export default class StripeManager {
     return this.stripe.customers.update(customerId, {source})
   }
 
+  async updateSubscriptionQuantity(
+    subscriptionId: string,
+  ) {
+    this.stripe.subscriptions.update(subscriptionId, {
+    })
+  }
+
   async updateSubscriptionItemQuantity(
     stripeSubscriptionItemId: string,
     quantity: number,
-    prorationDate?: number
+    //prorationDate?: number
   ) {
     return this.stripe.subscriptionItems.update(stripeSubscriptionItemId, {
       quantity,
-      proration_date: prorationDate
+      proration_behavior: 'none'
+      //proration_date: prorationDate
     })
   }
 }
