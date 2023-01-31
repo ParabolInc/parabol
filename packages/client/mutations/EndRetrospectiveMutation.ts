@@ -28,6 +28,13 @@ graphql`
       reflectionCount
       taskCount
       topicCount
+      facilitator {
+        user {
+          featureFlags {
+            aiSummary
+          }
+        }
+      }
     }
     team {
       id
@@ -82,7 +89,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId} = meeting
+  const {id: meetingId, teamId, facilitator} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -95,7 +102,14 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else {
-      history.push(`/new-summary/${meetingId}`)
+      const {user} = facilitator
+      const {featureFlags} = user
+      const pathname = `/new-summary/${meetingId}`
+      const search = featureFlags.aiSummary ? '?ai=true' : ''
+      history.push({
+        pathname,
+        search
+      })
     }
   }
 }
