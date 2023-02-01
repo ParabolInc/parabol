@@ -2061,6 +2061,11 @@ type LoginSAMLPayload {
   if a new user is created
   """
   isNewUser: Boolean
+
+  """
+  if the user is patient 0
+  """
+  isPatient0: Boolean
 }
 
 type ErrorPayload {
