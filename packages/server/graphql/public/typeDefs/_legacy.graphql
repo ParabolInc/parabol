@@ -777,6 +777,16 @@ type User {
   ): NewMeeting
 
   """
+  A meeting series that the user has access to
+  """
+  meetingSeries(
+    """
+    The meeting series ID
+    """
+    meetingSeriesId: ID!
+  ): MeetingSeries
+
+  """
   all the notifications for a single user
   """
   notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
@@ -2226,6 +2236,11 @@ type Team {
   a list of meetings that are currently in progress
   """
   activeMeetings: [NewMeeting!]!
+
+  """
+  a list of meeting series that are currently active
+  """
+  activeMeetingSeries: [MeetingSeries!]!
 
   """
   The new meeting in progress, if any

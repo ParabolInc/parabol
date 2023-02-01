@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {
   AUTO_GROUPING_THRESHOLD,
@@ -525,6 +526,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description:
             'The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)'
         },
+        meetingSeriesId: {
+          type: GraphQLID,
+          description:
+            'The meetingSeriesId to check for the invitation, if teamId not available (e.g. on a meeting series route)'
+        },
         teamId: {
           type: GraphQLID,
           description: 'The teamId to check for the invitation'
@@ -532,10 +538,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       },
       resolve: async (
         {id: userId}: {id: string},
-        {meetingId, teamId: inTeamId},
+        {meetingId, meetingSeriesId, teamId: inTeamId},
         {authToken, dataLoader}: GQLContext
       ) => {
-        if (!meetingId && !inTeamId) return {}
+        if (!meetingId && !meetingSeriesId && !inTeamId) return {}
         const viewerId = getUserId(authToken)
         if (viewerId !== userId && !isSuperUser(authToken)) return {}
         const user = (await dataLoader.get('users').load(userId))!
@@ -546,12 +552,19 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           if (!meeting) return {meetingId}
           teamId = meeting.teamId
         }
+        if (!teamId && meetingSeriesId) {
+          const meetingSeries = await dataLoader
+            .get('meetingSeries')
+            .load(MeetingSeriesId.split(meetingSeriesId))
+          if (!meetingSeries) return {meetingSeriesId}
+          teamId = meetingSeries.teamId
+        }
         const teamInvitations = teamId
           ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
           : null
-        if (!teamInvitations) return {teamId, meetingId}
+        if (!teamInvitations) return {teamId, meetingId, meetingSeriesId}
         const teamInvitation = teamInvitations.find((invitation) => invitation.email === email)
-        return {teamInvitation, teamId, meetingId}
+        return {teamInvitation, teamId, meetingId, meetingSeriesId}
       }
     },
     teams: {
