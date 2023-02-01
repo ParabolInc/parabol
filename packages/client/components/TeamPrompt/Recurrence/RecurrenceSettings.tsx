@@ -158,7 +158,7 @@ export const RecurrenceSettings = (props: Props) => {
   const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {
-      id: 'RecurrenceStartTimePicker',
+      id: 'recurrenceStartTimePicker',
       parentId,
       isDropdown: true
     }
