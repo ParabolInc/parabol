@@ -49,8 +49,8 @@ const SignUpWithPasswordMutation: StandardMutation<
       const {error: uiError, user} = signUpWithPassword
       onCompleted({signUpWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
-      ReactGA.event('sign_up', {isPatient0: user?.isPatient0})
       if (!uiError && !errors) {
+        ReactGA.event('sign_up', {isPatient0: user!.isPatient0})
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken
         atmosphere.setAuthToken(authToken)
