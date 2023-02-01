@@ -54,17 +54,19 @@ export default {
         .orderBy(r.desc('startAt'), r.desc('createdAt'))
         .limit(first + 1)
         .run(),
-    r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({
-        inactive: false,
-        removedAt: null
-      })
-      .count()
-      .run()
+      r
+        .table('OrganizationUser')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({
+          inactive: false,
+          removedAt: null
+        })
+        .count()
+        .run()
     ])
-    const upcomingInvoice = after ? undefined : await makeUpcomingInvoice(orgId, orgUserCount, stripeId)
+    const upcomingInvoice = after
+      ? undefined
+      : await makeUpcomingInvoice(orgId, orgUserCount, stripeId)
     const extraInvoices: Invoice[] = tooManyInvoices || []
     const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice

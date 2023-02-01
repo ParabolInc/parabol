@@ -2,6 +2,7 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
+import sendToSentry from '../utils/sendToSentry'
 import {getStripeManager} from '../utils/stripe'
 
 interface InvoiceEventCallBackArg {
@@ -99,8 +100,6 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const {data, type} = verifiedBody
   const {object: payload} = data
   const {event, subEvent, action} = splitType(type)
-
-  console.log('GEORG stripe event', event, subEvent)
 
   const parentHandler = eventLookup[event as keyof typeof eventLookup]
   if (!parentHandler) {
