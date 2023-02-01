@@ -2,7 +2,7 @@ extend type Mutation {
   """
   Updates the recurrence settings for a meeting
   1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
-  2. When the meeting is recurring, this will update the recurrence rule with the given recurrenceRule
+  2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
   3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
   """
   updateRecurrenceSettings(
