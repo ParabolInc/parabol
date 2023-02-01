@@ -76,7 +76,8 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     return {
       userId: viewerId,
       // create a brand new auth token using the tms in our DB
-      authToken: encodeAuthToken(context.authToken)
+      authToken: encodeAuthToken(context.authToken),
+      isNewUser: false
     }
   }
 
@@ -99,7 +100,8 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   context.authToken = await bootstrapNewUser(newUser, !invitationToken)
   return {
     userId,
-    authToken: encodeAuthToken(context.authToken)
+    authToken: encodeAuthToken(context.authToken),
+    isNewUser: true
   }
 }
 

@@ -5,6 +5,73 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.90.0 2023-February-1
+
+### Fixed
+
+- Use stripe invoice.paid event instead of invoice.payment_succeeded (#7690)
+- Renamed 'next activity' to 'current activity' in ended meeting badge (#7691)
+- Line breaks in comments now work on Android (#7438)
+- Added missing prompts in starfish retro template (#7660)
+- Fixed prompt highlight color does not cover the full-height of the column (#7416)
+- Delete empty groups (#7673)
+
+### Changed
+
+- **ai-summary**: limit access to AI summaries (#7658)
+- Renamed "Timeline" to "History" (#7670)
+- Cleanup private _legacy.graphql types (#7689)
+
+### Added
+
+- **ai-summary**: add summary to end meeting notification (#7659)
+- **search**: add search ability to meeting view (#7676)
+- **standups**: Email Summaries (#7649)
+- **teams-limit**: lock organization if limit the is exceeded for 30 days (#7606)
+- **teams-limit**: Add snackbar to usage stats enabled notification (#7601)
+- **teams-limit**: implement organization locked modal (#7645)
+
+## 6.89.0 2023-January-18
+
+### Fixed
+
+- fix: update non-anonymous Reflect description (#7651)
+- fix(ai-summary): remove AI comment from comment count (#7648)
+- fix(ai-summary): update Parabol AI picture (#7657)
+
+### Changed
+
+- chore(metrics): emit sign_up events from GA4 client side (#7635)
+- perf: moved global style creation outside of the render cycle (#7598)
+- chore: sendToSentry if unable to create topic summary (#7665)
+
+## 6.88.0 2023-January-12
+
+### Fixed
+
+- emails landing in spam (#7618)
+- select dropdown can't be scrolled with keyboard (#7426)
+- server error undefined template (#7633)
+
+### Added
+
+- **standups/notifications**: Generalized notification toasts + new toasts (#7603)
+- **notifications**: Discussion Mention notifications (#7596)
+- slack uses oatuh2 redirect (#7628)
+- removed recurrence feature flag (#7636)
+
+### Changed
+
+- **teams-limit**: usage stats warning (#7587)
+- **teams-limit**: prevent new team creation (#7591)
+- **DX**: Show a warning on switching branch with migrations (#7616)
+- **deps**: bump fast-json-patch from 3.1.0 to 3.1.1 (#7614)
+- **deps**: bump jsonwebtoken from 8.5.1 to 9.0.0 (#7613)
+- **ai-summary**: improve prompt (#7646)
+- **ai-summary**: track when the summaries are viewed (#7619)
+- Add reviewer for PRs and assignee for issues on mention (#7620)
+- Add client unit tests to CircleCi (#7626)
+
 ## 6.87.1 2023-January-05
 
 ### Fixed

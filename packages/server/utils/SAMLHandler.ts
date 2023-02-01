@@ -10,6 +10,7 @@ mutation LoginSAML($queryString: String!, $samlName: ID!) {
       message
     }
     authToken
+    isNewUser
   }
 }
 `
@@ -36,14 +37,17 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     return
   }
   const {loginSAML} = data
-  const {error, authToken} = loginSAML
+  const {error, authToken, isNewUser} = loginSAML
   if (!authToken) {
     const message = error?.message || GENERIC_ERROR
     redirectOnError(res, message)
     return
   }
   res.cork(() => {
-    res.writeStatus('302').writeHeader('location', `/saml-redirect?token=${authToken}`).end()
+    res
+      .writeStatus('302')
+      .writeHeader('location', `/saml-redirect?token=${authToken}&isNewUser=${isNewUser}`)
+      .end()
   })
 })
 

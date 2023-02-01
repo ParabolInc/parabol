@@ -49,11 +49,8 @@ const startRecurringTeamPrompt = async (
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
 }
 
-const processRecurrence: MutationResolvers['processRecurrence'] = async (
-  _source,
-  {},
-  {dataLoader, socketId: mutatorId}
-) => {
+const processRecurrence: MutationResolvers['processRecurrence'] = async (_source, {}, context) => {
+  const {dataLoader, socketId: mutatorId} = context
   const r = await getRethink()
   const now = new Date()
   const operationId = dataLoader.share()
@@ -69,7 +66,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
 
   const res = await Promise.all(
     teamPromptMeetingsToEnd.map(async (meeting) => {
-      return await safeEndTeamPrompt({meeting, now, dataLoader, r, subOptions})
+      return await safeEndTeamPrompt({meeting, now, context, r, subOptions})
     })
   )
 
