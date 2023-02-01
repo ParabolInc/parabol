@@ -140,8 +140,6 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   if (!(await isLimitExceeded(orgId, dataLoader))) return
 
-  if (!organization.activeDomain) return
-
   const now = new Date()
   const scheduledLockAt = new Date(now.getTime() + ms(`${Threshold.STARTER_TIER_LOCK_AFTER_DAYS}d`))
 

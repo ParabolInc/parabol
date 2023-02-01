@@ -61,7 +61,7 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
         <Button url={billingURL}>{'Keep Access'}</Button>
         <EmptySpace height={16} />
         <p style={copyStyle}>
-          {`If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, feel free to `}
+          {`If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, or if you'd like to discuss enterprise plans, feel free to `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {'contact us'}
           </a>
