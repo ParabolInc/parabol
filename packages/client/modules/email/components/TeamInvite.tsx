@@ -30,7 +30,7 @@ const videoGraphicStyle = {
   width: '100%'
 }
 
-const videoGraphicSrc = `${ExternalLinks.EMAIL_CDN}retro-video-still.png`
+const videoGraphicSrc = `${ExternalLinks.EMAIL_CDN}online-retro-meeting-vid.png`
 const meetingCopyLabelLookup = {
   action: 'a Check-in Meeting',
   retrospective: 'a Retrospective Meeting',
@@ -136,7 +136,7 @@ const TeamInvite = (props: TeamInviteProps) => {
           }
         </p>
         <a
-          href={appendUTM(ExternalLinks.GETTING_STARTED_RETROS)}
+          href={appendUTM(ExternalLinks.GETTING_STARTED_RETRO_VIDEO)}
           style={videoLinkStyle}
           title='Retro 101'
         >
@@ -160,6 +160,14 @@ const TeamInvite = (props: TeamInviteProps) => {
             title='Leveling Up: Check-in 101'
           >
             {'Leveling Up: Check-in 101'}
+          </a>
+          <br />
+          <a
+            href={appendUTM(ExternalLinks.GETTING_STARTED_SPRINT_POKER)}
+            style={emailLinkStyle}
+            title='Estimating issues: Sprint Poker 101'
+          >
+            {'Estimating issues: Sprint Poker 101'}
           </a>
         </p>
         <p style={emailCopyStyle}>
