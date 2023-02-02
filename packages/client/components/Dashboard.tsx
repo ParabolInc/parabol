@@ -109,6 +109,7 @@ const Dashboard = (props: Props) => {
           overLimitCopy
           featureFlags {
             insights
+            checkoutFlow
           }
           teams {
             activeMeetings {
@@ -123,7 +124,7 @@ const Dashboard = (props: Props) => {
   )
   const {viewer} = data
   const {teams, featureFlags} = viewer
-  const {insights} = featureFlags
+  const {insights, checkoutFlow} = featureFlags
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -160,7 +161,12 @@ const Dashboard = (props: Props) => {
                 <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
               )}
             />
-            <Route path='/me' component={UserDashboard} />
+            <Route
+              path='/me'
+              render={(routeProps) => (
+                <UserDashboard {...routeProps} toggle={toggle} checkoutFlowFlag={checkoutFlow} />
+              )}
+            />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
             <Route path='/usage' component={InsightsRoot} />
