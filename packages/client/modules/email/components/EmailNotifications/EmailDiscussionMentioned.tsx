@@ -71,9 +71,7 @@ const EmailDiscussionMentioned = (props: Props) => {
   const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
   const {id: stageId, response} = stage ?? {}
 
-  const directUrl = stageId
-    ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
-    : `/meet/${meetingId}`
+  const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   const searchParams = response?.id
     ? {

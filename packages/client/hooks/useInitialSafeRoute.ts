@@ -23,6 +23,7 @@ const useInitialSafeRoute = (
     graphql`
       fragment useInitialSafeRoute_meeting on NewMeeting @inline {
         ...fromStageIdToUrl_meeting
+        ...updateLocalStage_meeting
         id
         meetingType
         facilitatorStageId
@@ -70,9 +71,9 @@ const useInitialSafeRoute = (
       // I’m headed to the lobby but the meeting is already going, send me there
       if (localStage && !phaseSlug) {
         const {id: localStageId} = localStage
-        const nextUrl = fromStageIdToUrl(localStageId, meeting, facilitatorStageId)
+        const nextUrl = fromStageIdToUrl(localStageId, meeting)
         history.replace(nextUrl)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         setSafeRoute(false)
         return
       }
@@ -83,9 +84,9 @@ const useInitialSafeRoute = (
 
       // typo in url, send to the facilitator
       if (!phase) {
-        const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting, facilitatorStageId)
+        const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
         history.replace(nextUrl)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         setSafeRoute(false)
         return
       }
@@ -99,8 +100,8 @@ const useInitialSafeRoute = (
         const nextUrl =
           meetingId === RetroDemo.MEETING_ID
             ? '/retrospective-demo/reflect'
-            : fromStageIdToUrl(facilitatorStageId, meeting, facilitatorStageId)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+            : fromStageIdToUrl(facilitatorStageId, meeting)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         history.replace(nextUrl)
         setSafeRoute(false)
         return
@@ -110,15 +111,15 @@ const useInitialSafeRoute = (
       const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
       if (!canNavigate) {
         // too early to visit meeting or typo, go to facilitator
-        const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting, facilitatorStageId)
+        const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
         history.replace(nextUrl)
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        updateLocalStage(atmosphere, meeting, facilitatorStageId)
         setSafeRoute(false)
         return
       }
 
       // legit URL!
-      updateLocalStage(atmosphere, meetingId, stage.id)
+      updateLocalStage(atmosphere, meeting, stage.id)
       setSafeRoute(true)
     },
     [
