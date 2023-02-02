@@ -19,7 +19,10 @@ const HeaderDescription = styled('div')({
 
 const HeaderName = styled('div')({
   color: PALETTE.SLATE_700,
-  fontWeight: 600
+  fontWeight: 600,
+  maxWidth: 200,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
 })
 
 const HeaderResult = styled('div')({

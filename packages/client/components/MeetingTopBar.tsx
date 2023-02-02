@@ -20,6 +20,7 @@ export const MeetingTopBarStyles = styled('div')({
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
+  overflowX: 'auto',
   paddingLeft: 16,
   paddingRight: 14, // compensate for overlapping block padding
   width: '100%',
