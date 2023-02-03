@@ -1,5 +1,6 @@
-import React, {useMemo} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
+import getRefreshPeriod from '../../utils/getRefreshPeriod'
 import Ellipsis from '../Ellipsis/Ellipsis'
 import {TimestampType} from './EditingStatus'
 
@@ -11,10 +12,33 @@ interface Props {
   isArchived?: boolean
 }
 
+const useTimeFrom = (timestamp: string) => {
+  const makeTimeFrom = useCallback(
+    () => relativeDate(timestamp, {smallDiff: 'just now'}),
+    [timestamp]
+  )
+  const [timeFrom, setTimeFrom] = useState(makeTimeFrom)
+  const timeoutRef = useRef<number | undefined>()
+  useEffect(() => {
+    timeoutRef.current = window.setTimeout(() => {
+      setTimeFrom(makeTimeFrom())
+    }, getRefreshPeriod(timestamp))
+    return () => {
+      window.clearTimeout(timeoutRef.current)
+    }
+  }, [makeTimeFrom, timeFrom, timestamp])
+  // to update on toggle
+  useEffect(() => {
+    setTimeFrom(makeTimeFrom())
+  }, [timestamp])
+
+  return timeFrom
+}
+
 const EditingStatusText = (props: Props) => {
   const {editors, isEditing, timestamp, timestampType, isArchived} = props
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated '
-  const timeFrom = useMemo(() => relativeDate(timestamp, {smallDiff: 'just now'}), [timestamp])
+  const timeFrom = useTimeFrom(timestamp)
   if (isArchived) {
     return <span>{`${timestampLabel}${timeFrom}`}</span>
   }
