@@ -27,23 +27,24 @@ const User: UserResolvers = {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
   meetingSeries: async (_source, {meetingSeriesId}, {dataLoader, authToken}) => {
-    if (meetingSeriesId) {
-      const series = await dataLoader
-        .get('meetingSeries')
-        .load(MeetingSeriesId.split(meetingSeriesId))
-      if (!series) {
-        return null
-      }
-
-      const {teamId} = series
-
-      if (!isTeamMember(authToken, teamId)) {
-        return null
-      }
-
-      return series
+    if (!meetingSeriesId) {
+      return null
     }
-    return null
+
+    const series = await dataLoader
+      .get('meetingSeries')
+      .load(MeetingSeriesId.split(meetingSeriesId))
+    if (!series) {
+      return null
+    }
+
+    const {teamId} = series
+
+    if (!isTeamMember(authToken, teamId)) {
+      return null
+    }
+
+    return series
   }
 }
 

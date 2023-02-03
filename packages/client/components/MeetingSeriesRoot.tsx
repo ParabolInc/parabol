@@ -9,8 +9,8 @@ import MeetingSeriesRedirector from './MeetingSeriesRedirector'
 const MeetingRoot = () => {
   const {history, match} = useRouter<{meetingSeriesId: string}>()
   const {params} = match
-  const {meetingSeriesId} = params
-  console.log('series id', meetingSeriesId)
+  const {meetingSeriesId: encodedMeetingSeriesId} = params
+  const meetingSeriesId = decodeURIComponent(encodedMeetingSeriesId)
   useEffect(() => {
     if (!meetingSeriesId) {
       history.replace('/meetings')
