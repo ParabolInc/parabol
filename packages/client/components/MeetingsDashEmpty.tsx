@@ -29,16 +29,14 @@ const Copy = styled('p')({
 
 interface Props {
   name: string
+  message: string
 }
 const MeetingsDashNewUser = (props: Props) => {
-  const {name} = props
+  const {name, message} = props
   return (
     <Section>
       <Heading>{`Hi ${name},`}</Heading>
-      <Copy>
-        Looks like you have no upcoming meetings 😎 Start one now or check out these tips and
-        tricks.
-      </Copy>
+      <Copy>{`${message}`}</Copy>
     </Section>
   )
 }

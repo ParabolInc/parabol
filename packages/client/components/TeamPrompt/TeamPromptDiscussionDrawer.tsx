@@ -20,7 +20,6 @@ import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
-import {TeamMemberName} from './TeamPromptResponseCard'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -94,6 +93,11 @@ const StyledReactjis = styled(ReactjiSection)({
 
 const DiscussionHeaderWrapper = styled('div')({
   padding: '0px 12px 20px 12px'
+})
+
+const TeamMemberName = styled('h3')({
+  padding: '0 8px',
+  margin: 0
 })
 
 interface Props {

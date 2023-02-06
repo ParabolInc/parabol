@@ -13,7 +13,7 @@ interface NextMeetingLinkProps {
 
 export const NextMeetingLink = (props: NextMeetingLinkProps) => {
   const {closestActiveMeetingId} = props
-  return <StyledLink to={`/meet/${closestActiveMeetingId}`}>Go to the next activity.</StyledLink>
+  return <StyledLink to={`/meet/${closestActiveMeetingId}`}>Go to the current activity.</StyledLink>
 }
 
 interface NextMeetingCountdownProps {

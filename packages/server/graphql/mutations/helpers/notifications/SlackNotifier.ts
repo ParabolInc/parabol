@@ -174,12 +174,16 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   async endMeeting(meeting, team) {
     const summaryText = getSummaryText(meeting)
     const title = 'Meeting completed :tada:'
-    const blocks = [
+    const blocks: Array<{type: string}> = [
       makeSection(title),
       makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),
-      makeSection(summaryText),
-      makeEndMeetingButtons(meeting)
+      makeSection(summaryText)
     ]
+    if (meeting.summary) {
+      const aiSummaryTitle = 'AI Summary :robot_face:'
+      blocks.push(makeSection(`*${aiSummaryTitle}*:\n${meeting.summary}`))
+    }
+    blocks.push(makeEndMeetingButtons(meeting))
     return notifySlack(notificationChannel, 'meetingEnd', team.id, blocks, title)
   },
 
