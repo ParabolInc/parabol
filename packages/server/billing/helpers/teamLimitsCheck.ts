@@ -19,13 +19,17 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 //   STARTER_TIER_LOCK_AFTER_DAYS = 0
 // }
 
-const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const billingLeaderIds = (await r
+const getBillingLeaderIds = async (orgId: string) => {
+  return r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null, role: 'BILLING_LEADER'})
     .coerceTo('array')('userId')
-    .run()) as unknown as string[]
+    .run()
+}
+
+const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
+  const billingLeaderIds = (await getBillingLeaderIds(orgId)) as unknown as string[]
 
   return (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
 }
@@ -114,8 +118,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    const billingLeaders = await getBillingLeaders(orgId, dataLoader)
-    const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
+    const billingLeadersIds = await getBillingLeaderIds(orgId)
     await Promise.all([
       r
         .table('Organization')
