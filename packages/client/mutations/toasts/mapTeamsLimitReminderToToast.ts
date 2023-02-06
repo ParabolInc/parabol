@@ -29,7 +29,7 @@ const mapTeamsLimitReminderToToast = (
     key: `newNotification:${notificationId}`,
     message: `"${orgName}" is over the limit of ${
       Threshold.MAX_STARTER_TIER_TEAMS
-    } Free Teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,
+    } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,
     onShow: () => {
       SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'teamsLimitReminderSnackbar',

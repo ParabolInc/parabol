@@ -56,7 +56,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
       avatar={orgPicture || defaultOrgAvatar}
       message={`"${orgName}" is over the limit of ${
         Threshold.MAX_STARTER_TIER_TEAMS
-      } Free Teams. Your free access will end on ${makeDateString(scheduledLockAt)}`}
+      } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`}
       action={<NotificationAction label={'Upgrade'} onClick={onActionClick} />}
       notification={notification}
     />
