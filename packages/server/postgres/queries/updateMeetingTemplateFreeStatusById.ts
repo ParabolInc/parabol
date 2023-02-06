@@ -5,7 +5,7 @@ const updateMeetingTemplateFreeStatusById = async (templateIds: string[], isFree
   const r = await getRethink()
   const now = new Date()
   const pg = getPg()
-  const [result] = await Promise.allSettled([
+  const [rRes] = await Promise.allSettled([
     r
       .table('MeetingTemplate')
       .getAll(r.args(templateIds))
@@ -20,8 +20,8 @@ const updateMeetingTemplateFreeStatusById = async (templateIds: string[], isFree
       templateIds
     ])
   ])
-  const updatedTemplateIds: string[] = result.status === 'fulfilled' ? result.value : []
-  return updatedTemplateIds
+  if (rRes.status === 'rejected') throw rRes.reason
+  return rRes.value as string[]
 }
 
 export default updateMeetingTemplateFreeStatusById

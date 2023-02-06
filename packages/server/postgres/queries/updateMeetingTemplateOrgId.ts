@@ -5,7 +5,7 @@ const updateMeetingTemplateOrgId = async (oldOrgId: string, newOrgId: string) =>
   const r = await getRethink()
   const now = new Date()
   const pg = getPg()
-  await Promise.allSettled([
+  const [rRes] = await Promise.allSettled([
     r
       .table('MeetingTemplate')
       .getAll(oldOrgId, {index: 'orgId'})
@@ -16,6 +16,7 @@ const updateMeetingTemplateOrgId = async (oldOrgId: string, newOrgId: string) =>
       .run(),
     pg.query(`UPDATE "MeetingTemplate" SET "orgId" = $1 WHERE "orgId" = $2;`, [newOrgId, oldOrgId])
   ])
+  if (rRes.status === 'rejected') throw rRes.reason
 }
 
 export default updateMeetingTemplateOrgId

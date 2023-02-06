@@ -6,10 +6,11 @@ const updateMeetingTemplateName = async (templateId: string, name: string) => {
   const now = new Date()
   const pg = getPg()
 
-  await Promise.allSettled([
+  const [rRes] = await Promise.allSettled([
     r.table('MeetingTemplate').get(templateId).update({name, updatedAt: now}).run(),
     pg.query(`UPDATE "MeetingTemplate" SET name = $1 WHERE id = $2;`, [name, templateId])
   ])
+  if (rRes.status === 'rejected') throw rRes.reason
 }
 
 export default updateMeetingTemplateName
