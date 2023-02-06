@@ -35,7 +35,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({orgId})
-    .update({suggestedTier: 'starter'})
+    .update({suggestedTier: 'team'})
     .run()
 
   await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
@@ -114,16 +114,27 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    await r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null,
-        updatedAt: new Date()
-      })
-      .run()
+    const billingLeaders = await getBillingLeaders(orgId, dataLoader)
+    const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
+    await Promise.all([
+      r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: new Date()
+        })
+        .run(),
+      r
+        .table('OrganizationUser')
+        .getAll(r.args(billingLeadersIds), {index: 'userId'})
+        .filter({orgId})
+        .update({suggestedTier: 'starter'})
+        .run()
+    ])
+
     dataLoader.get('organizations').clear(orgId)
   }
 }
