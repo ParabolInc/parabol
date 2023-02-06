@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import useRouter from '../hooks/useRouter'
+import {Redirect} from 'react-router'
 import {MeetingSeriesRedirectorQuery} from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
 interface Props {
   meetingSeriesId: string
@@ -11,7 +11,6 @@ interface Props {
 const MeetingSeriesRedirector = (props: Props) => {
   const {queryRef, meetingSeriesId} = props
 
-  const {history} = useRouter()
   const data = usePreloadedQuery<MeetingSeriesRedirectorQuery>(
     graphql`
       query MeetingSeriesRedirectorQuery($meetingSeriesId: ID!) {
@@ -32,25 +31,23 @@ const MeetingSeriesRedirector = (props: Props) => {
   const {viewer} = data
   const {meetingSeries} = viewer
 
-  useEffect(() => {
-    if (!meetingSeries) {
-      history.replace({
-        pathname: `/invitation-required`,
-        search: `?redirectTo=${encodeURIComponent(
-          window.location.pathname
-        )}&meetingSeriesId=${meetingSeriesId}`
-      })
-    } else {
-      const {mostRecentMeeting} = meetingSeries
-      const {id: meetingId} = mostRecentMeeting
+  if (!meetingSeries) {
+    return (
+      <Redirect
+        to={{
+          pathname: `/invitation-required`,
+          search: `?redirectTo=${encodeURIComponent(
+            window.location.pathname
+          )}&meetingSeriesId=${meetingSeriesId}`
+        }}
+      />
+    )
+  } else {
+    const {mostRecentMeeting} = meetingSeries
+    const {id: meetingId} = mostRecentMeeting
 
-      history.replace({
-        pathname: `/meet/${meetingId}`
-      })
-    }
-  }, [])
-
-  return null
+    return <Redirect to={`/meet/${meetingId}`} />
+  }
 }
 
 export default MeetingSeriesRedirector

@@ -1,4 +1,5 @@
-import React, {Suspense, useEffect} from 'react'
+import React, {Suspense} from 'react'
+import {Redirect} from 'react-router'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useRouter from '../hooks/useRouter'
 import meetingSeriesRedirectorQuery, {
@@ -7,19 +8,14 @@ import meetingSeriesRedirectorQuery, {
 import MeetingSeriesRedirector from './MeetingSeriesRedirector'
 
 const MeetingRoot = () => {
-  const {history, match} = useRouter<{meetingSeriesId: string}>()
+  const {match} = useRouter<{meetingSeriesId: string}>()
   const {params} = match
   const {meetingSeriesId: encodedMeetingSeriesId} = params
   const meetingSeriesId = decodeURIComponent(encodedMeetingSeriesId)
-  useEffect(() => {
-    if (!meetingSeriesId) {
-      history.replace('/meetings')
-    }
-  }, [])
   const queryRef = useQueryLoaderNow<MeetingSeriesRedirectorQuery>(meetingSeriesRedirectorQuery, {
     meetingSeriesId
   })
-  if (!meetingSeriesId) return null
+  if (!meetingSeriesId) return <Redirect to='/meetings' />
   return (
     <Suspense fallback={''}>
       {queryRef && (
