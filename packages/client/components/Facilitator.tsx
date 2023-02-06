@@ -52,7 +52,9 @@ const Subtext = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 13,
   fontWeight: 400,
-  lineHeight: '16px'
+  lineHeight: '16px',
+  overflowWrap: 'break-word',
+  width: 165
 })
 
 const StyledIcon = styled('span')({

@@ -2,18 +2,23 @@ import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../graphql'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateGroupSummaries = async (
   meetingId: string,
+  teamId: string,
   dataLoader: DataLoaderWorker,
   facilitatorUserId: string
 ) => {
-  const [reflections, reflectionGroups, facilitator] = await Promise.all([
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('users').loadNonNull(facilitatorUserId)
+  const [facilitator, team] = await Promise.all([
+    dataLoader.get('users').loadNonNull(facilitatorUserId),
+    dataLoader.get('teams').load(teamId)
   ])
-  if (!facilitator.featureFlags.includes('aiSummary')) return
+  if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const [reflections, reflectionGroups] = await Promise.all([
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+  ])
   const r = await getRethink()
   const manager = new OpenAIServerManager()
   if (!reflectionGroups.length) {
