@@ -14,6 +14,7 @@ type CompaniesResponse = {
   results: Company[]
 }
 
+// TODO: we can can use https://github.com/HubSpot/hubspot-api-nodejs
 const getCompaniesByDomain = async (domain: string): Promise<CompaniesResponse | Error> => {
   const body = JSON.stringify({
     properties: ['domain', 'hs_additional_domains'],
@@ -58,11 +59,7 @@ const getCompaniesByDomain = async (domain: string): Promise<CompaniesResponse |
   return resJson
 }
 
-const SALES_PIPELINE_ID = '14fa7db3-cc82-4562-8603-90d792014b42'
-const PQL_ACCEPTED_STAGE_ID = '2410510'
-const PQL_REPLIED_STAGE_ID = 'd394bd39-f31c-4cac-afba-2d9b85b57e2b'
-const SQL_STAGE_ID = '48c94b2b-1d51-47af-b563-cf490d799ec2'
-const SQL_IN_PROCUREMENT_STAGE_ID = '611924'
+const dealStages = process.env.HUBSPOT_SALES_PIPELINE_ACTIVE_STAGES?.split(',')
 
 const getDealsByCompanyIds = async (companyIds: string[]): Promise<DealsResponse | Error> => {
   const body = JSON.stringify({
@@ -74,17 +71,12 @@ const getDealsByCompanyIds = async (companyIds: string[]): Promise<DealsResponse
           {
             operator: 'EQ',
             propertyName: 'pipeline',
-            value: SALES_PIPELINE_ID
+            value: process.env.HUBSPOT_SALES_PIPELINE_ID
           },
           {
             operator: 'IN',
             propertyName: 'dealstage',
-            values: [
-              PQL_ACCEPTED_STAGE_ID,
-              PQL_REPLIED_STAGE_ID,
-              SQL_STAGE_ID,
-              SQL_IN_PROCUREMENT_STAGE_ID
-            ]
+            values: dealStages
           },
           {
             operator: 'IN',
