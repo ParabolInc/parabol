@@ -1,0 +1,33 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  verifyDomain(
+    """
+    a list of domains that the account has control over. usually the part after the @ of their email
+    """
+    domains: [ID!]!
+
+    """
+    organization id
+    """
+    orgId: String!
+
+    """
+    Company's slug
+    """
+    slug: String!
+  ): VerifyDomainPayload!
+}
+
+"""
+Return value for verifyDomain, which could be an error
+"""
+union VerifyDomainPayload = ErrorPayload | VerifyDomainSuccess
+
+type VerifyDomainSuccess {
+  """
+  Describe the first return field here
+  """
+  success: Boolean!
+}
