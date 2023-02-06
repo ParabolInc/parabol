@@ -61,7 +61,7 @@ export default function LockedEmail(props: LimitsEmailProps) {
         <Button url={billingURL}>{'Reactivate Teams'}</Button>
         <EmptySpace height={16} />
         <p style={copyStyle}>
-          {`If you have any questions feel free to contact us —— `}
+          {`If you have any questions, or if you'd like to discuss enterprise plans, feel free to contact us —— `}
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {`we're here to help`}
           </a>

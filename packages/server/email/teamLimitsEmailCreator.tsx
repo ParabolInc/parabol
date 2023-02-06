@@ -40,7 +40,7 @@ const textOnlySummary = (props: Props) => {
 
     You'll need to upgrade your account within the next ${Threshold.FINAL_WARNING_DAYS_BEFORE_LOCK} days to avoid losing access to your agile meetings: ${billingURL}
 
-    If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, feel free to contact us - we're happy to help make this process as smooth as possible.
+    If you aren’t able to upgrade, we'll automatically deactivate the teams over the limit. If you have any questions, or if you'd like to discuss enterprise plans, feel free to contact us - we're happy to help make this process as smooth as possible.
 
     Parabol Team
     `,
@@ -52,7 +52,7 @@ const textOnlySummary = (props: Props) => {
 
     You can re-activate your teams by upgrading your account: ${billingURL}
 
-    If you have any questions feel free to contact us —— we’re here to help.
+    If you have any questions, or if you'd like to discuss enterprise plans, feel free to contact us —— we’re here to help.
 
     Parabol Team
   `

@@ -3,7 +3,7 @@ import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
-import ScheduledJobOrganizationLock from '../../database/types/ScheduledJobOrganizationLock'
+import ScheduledTeamLimitsJob from '../../database/types/ScheduledTeamLimitsJob'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
@@ -40,19 +40,6 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .run()
 
   await appendUserFeatureFlagsQuery.run({ids: userIds, flag: 'insights'}, getPg())
-}
-
-const scheduleJobs = async (scheduledLockAt: Date, orgId: string) => {
-  const scheduledLock = r
-    .table('ScheduledJob')
-    .insert(new ScheduledJobOrganizationLock(scheduledLockAt, orgId))
-    .run()
-
-  // TODO: implement additional reminders
-  // const scheduleFirstReminder
-  // const scheduleSecondReminder
-
-  await Promise.all([scheduledLock])
 }
 
 const sendWebsiteNotifications = async (
@@ -170,27 +157,24 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   const billingLeaders = await getBillingLeaders(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
-  if (organization.activeDomain) {
-    await enableUsageStats(billingLeadersIds, orgId)
-    await Promise.all([
-      sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
-      billingLeaders.map((billingLeader) =>
-        sendTeamsLimitEmail({
-          user: billingLeader,
-          orgId,
-          orgName,
-          emailType: 'thirtyDayWarning'
-        })
-      ),
-      scheduleTeamLimitsJobs(scheduledLockAt, orgId)
-    ])
-  }
-
-  await scheduleJobs(scheduledLockAt, orgId)
+  // wait for usage stats to be enabled as we dont want to send notifications before it's available
+  await enableUsageStats(billingLeadersIds, orgId)
+  await Promise.all([
+    sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
+    billingLeaders.map((billingLeader) =>
+      sendTeamsLimitEmail({
+        user: billingLeader,
+        orgId,
+        orgName,
+        emailType: 'thirtyDayWarning'
+      })
+    ),
+    scheduleTeamLimitsJobs(scheduledLockAt, orgId)
+  ])
 }
 
 export const processLockOrganizationJob = async (
-  job: ScheduledJobOrganizationLock,
+  job: ScheduledTeamLimitsJob,
   dataLoader: DataLoaderWorker
 ) => {
   const {orgId, runAt} = job
