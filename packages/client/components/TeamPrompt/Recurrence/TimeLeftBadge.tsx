@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import React from 'react'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useRefreshInterval from '../../../hooks/useRefreshInterval'
@@ -25,7 +26,7 @@ export const TimeLeftBadge = (props: Props) => {
       <TeamPromptBadge onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
         {fromNow} left
       </TeamPromptBadge>
-      {tooltipPortal(`Ends at ${meetingEndTimeDate.toLocaleString()}`)}
+      {tooltipPortal(`Restarts at ${dayjs(meetingEndTimeDate).format('MMM D, YYYY h:mm A')}`)}
     </>
   )
 }

@@ -11,10 +11,11 @@ import useMutationProps, {getOnCompletedError} from '../../../hooks/useMutationP
 import {PALETTE} from '../../../styles/paletteV3'
 import {CompletedHandler} from '../../../types/relayMutations'
 import {UpdateRecurrenceSettingsMutationResponse} from '../../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
+import DialogContainer from '../../DialogContainer'
 import PlainButton from '../../PlainButton/PlainButton'
 import {RecurrenceSettings} from './RecurrenceSettings'
 
-const UpdateRecurrenceSettingsModalRoot = styled('div')({
+const UpdateRecurrenceSettingsModalRoot = styled(DialogContainer)({
   backgroundColor: PALETTE.WHITE,
   position: 'relative',
   width: 400
@@ -97,24 +98,9 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
       return
     }
 
-    const message = ['🎉 Recurrence settings have been updated']
-    const isRecurrenceAcitve =
-      res.updateRecurrenceSettings.meeting?.meetingSeries?.cancelledAt === null
-    if (isRecurrenceAcitve && recurrenceRule) {
-      const nextOcurrenceDate = recurrenceRule.after(new Date())
-      message.push(
-        `Next meeting will start on ${new Intl.DateTimeFormat('en-US', {
-          dateStyle: 'medium',
-          timeStyle: 'medium'
-        }).format(nextOcurrenceDate)}.`
-      )
-    } else if (!isRecurrenceAcitve) {
-      message.push('No meetings will be created in the future.')
-    }
-
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: 'recurrenceSettingsUpdated',
-      message: message.join('. '),
+      message: '🎉 Recurrence settings have been updated.',
       autoDismiss: 10,
       showDismissButton: true
     })

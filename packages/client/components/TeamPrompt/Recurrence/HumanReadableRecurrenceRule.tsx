@@ -82,7 +82,7 @@ interface Props {
 
 export const HumanReadableRecurrenceRule = ({recurrenceRule}: Props) => {
   const humanReadableText = useMemo(() => {
-    return toHumanReadable(RRule.fromString(recurrenceRule))
+    return toHumanReadable(RRule.fromString(recurrenceRule), {isPartOfSentence: true})
   }, [recurrenceRule])
 
   return (
