@@ -1,18 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
+import {useLocation} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
-import {NavSidebar} from '../../types/constEnums'
-import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
+import {Breakpoint, NavSidebar} from '../../types/constEnums'
+import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
+import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
-
-interface Props {
-  isOpen: boolean
-  viewer: DashSidebar_viewer | null
-}
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   // 78px is total height of 'Add meeting' block
@@ -57,8 +54,69 @@ const Wrapper = styled('div')({
   flexDirection: 'column'
 })
 
+const OrgName = styled('div')({
+  paddingTop: 8,
+  paddingLeft: 8,
+  fontWeight: 600,
+  fontSize: 12,
+  lineHeight: '24px',
+  color: PALETTE.SLATE_500,
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+    paddingLeft: 16
+  }
+})
+
+interface Props {
+  isOpen: boolean
+  viewerRef: DashSidebar_viewer$key | null
+}
+
 const DashSidebar = (props: Props) => {
-  const {isOpen, viewer} = props
+  const {isOpen, viewerRef} = props
+  const location = useLocation()
+  const {pathname} = location
+
+  const viewer = useFragment(
+    graphql`
+      fragment DashSidebar_viewer on User {
+        ...StandardHub_viewer
+        ...DashNavList_viewer
+        featureFlags {
+          checkoutFlow
+        }
+        organizations {
+          id
+          name
+        }
+      }
+    `,
+    viewerRef
+  )
+  if (!viewer) return null
+  const {featureFlags, organizations} = viewer
+  const showOrgSidebar = featureFlags.checkoutFlow && pathname.startsWith(`/me/organizations`)
+
+  if (showOrgSidebar) {
+    const orgId = pathname.split('/').pop()
+    const name = organizations.find((org) => org.id === orgId)?.name
+    return (
+      <Wrapper>
+        <SideBarStartMeetingButton isOpen={isOpen} />
+        <Nav isOpen={isOpen}>
+          <Contents>
+            <NavItemsWrap>
+              <NavItem icon={'arrowBack'} href={'/'} label={'Back'} />
+              <OrgName>{name}</OrgName>
+              <NavItem icon={'forum'} href={'/meetings'} label={'Members'} />
+              <NavItem icon={'history'} href={'/me'} label={'Plans & Billing'} />
+              <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Usage'} />
+            </NavItemsWrap>
+          </Contents>
+        </Nav>
+      </Wrapper>
+    )
+  }
+
   return (
     <Wrapper>
       <SideBarStartMeetingButton isOpen={isOpen} />
@@ -83,11 +141,4 @@ const DashSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DashSidebar, {
-  viewer: graphql`
-    fragment DashSidebar_viewer on User {
-      ...StandardHub_viewer
-      ...DashNavList_viewer
-    }
-  `
-})
+export default DashSidebar

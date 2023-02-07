@@ -1,5 +1,14 @@
 import styled from '@emotion/styled'
-import {Add, ExitToApp, Forum, Group, History, PlaylistAddCheck, Warning} from '@mui/icons-material'
+import {
+  Add,
+  ArrowBack,
+  ExitToApp,
+  Forum,
+  Group,
+  History,
+  PlaylistAddCheck,
+  Warning
+} from '@mui/icons-material'
 import React from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import useRouter from '~/hooks/useRouter'
@@ -44,13 +53,24 @@ const Label = styled('div')({
   wordBreak: 'break-word'
 })
 
+const iconLookup = {
+  arrowBack: <ArrowBack />,
+  forum: <Forum />,
+  history: <History />,
+  playlist_add_check: <PlaylistAddCheck />,
+  add: <Add />,
+  exit_to_app: <ExitToApp />,
+  group: <Group />,
+  warning: <Warning />
+}
+
 interface Props {
   className?: string
   onClick?: () => void
   label: string
   href: string
   //FIXME 6062: change to React.ComponentType
-  icon: string
+  icon: keyof typeof iconLookup
 }
 
 const getIsActive = (href: string) => {
@@ -73,19 +93,7 @@ const LeftDashNavItem = (props: Props) => {
   }
   return (
     <NavItem className={className} onClick={handleClick} isActive={isActive}>
-      <StyledIcon>
-        {
-          {
-            forum: <Forum />,
-            history: <History />,
-            playlist_add_check: <PlaylistAddCheck />,
-            add: <Add />,
-            exit_to_app: <ExitToApp />,
-            group: <Group />,
-            warning: <Warning />
-          }[icon]
-        }
-      </StyledIcon>
+      <StyledIcon>{iconLookup[icon]}</StyledIcon>
       <Label>{label}</Label>
     </NavItem>
   )

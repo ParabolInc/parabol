@@ -1,5 +1,5 @@
-import React, {lazy, useEffect} from 'react'
-import {Route, useLocation} from 'react-router'
+import React, {lazy} from 'react'
+import {Route} from 'react-router'
 import {Switch} from 'react-router-dom'
 
 const Organizations = lazy(
@@ -23,19 +23,10 @@ const UserProfile = lazy(
 
 interface Props {
   match: any
-  toggle: () => void
-  checkoutFlowFlag: boolean
 }
 
 const UserDashboard = (props: Props) => {
-  const {match, toggle, checkoutFlowFlag} = props
-  const location = useLocation()
-  const {pathname} = location
-  useEffect(() => {
-    if (checkoutFlowFlag && pathname.startsWith(`${match.url}/organizations`)) {
-      toggle()
-    }
-  }, [pathname])
+  const {match} = props
 
   return (
     <Switch>
