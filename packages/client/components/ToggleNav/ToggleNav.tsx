@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {CreditCard, Extension, Group} from '@mui/icons-material'
+import {CreditCard, Extension, Group, Key} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
@@ -54,7 +54,8 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
 const Icons = {
   group: <Group />,
   extension: <Extension />,
-  credit_card: <CreditCard />
+  credit_card: <CreditCard />,
+  key: <Key />
 } as const
 
 interface Item {

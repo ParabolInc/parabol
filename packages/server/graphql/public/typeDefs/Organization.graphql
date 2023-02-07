@@ -150,7 +150,7 @@ type Organization {
   """
   Any super power given to the organization via a super user
   """
-  featureFlags: OrganizationFeatureFlags!
+  featureFlags: OrganizationFeatureFlags
 }
 
 type MeetingStat {
@@ -169,4 +169,5 @@ The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
   teamsLimit: Boolean!
+  SAMLUI: Boolean!
 }
