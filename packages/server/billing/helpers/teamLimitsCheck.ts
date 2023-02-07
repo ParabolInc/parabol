@@ -110,6 +110,19 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
     .run()
 }
 
+export const removeTeamLimitsJobs = async (orgId: string) => {
+  const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION']
+  return r
+    .table('ScheduledJob')
+    .filter((row: RValue) => {
+      return row('orgId')
+        .eq(orgId)
+        .and(r.expr(removeJobTypes).contains(row('type')))
+    })
+    .delete()
+    .run()
+}
+
 // Warning: the function might be expensive
 export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').load(orgId)
@@ -119,16 +132,19 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    await r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null,
-        updatedAt: new Date()
-      })
-      .run()
+    await Promise.all([
+      r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: new Date()
+        })
+        .run(),
+      removeTeamLimitsJobs(orgId)
+    ])
     dataLoader.get('organizations').clear(orgId)
   }
 }
