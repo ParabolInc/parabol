@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw} from 'draft-js'
 import React, {memo, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
@@ -100,14 +101,15 @@ const OutcomeCardContainer = memo((props: Props) => {
       UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
     }
   }
-
   useScrollIntoView(ref, !contentState.hasText())
+  useClickAway(ref, () => setIsTaskHovered(false))
   return (
     <Wrapper
       tabIndex={-1}
       className={className}
       onMouseEnter={() => setIsTaskHovered(true)}
       onMouseLeave={() => setIsTaskHovered(false)}
+      onMouseOver={() => setIsTaskHovered(true)}
       ref={ref}
     >
       <OutcomeCard

@@ -74,7 +74,7 @@ const NewTeamOrgPicker = (props: Props) => {
         defaultText={
           <MenuToggleInner>
             <MenuToggleLabel>{defaultText}</MenuToggleLabel>
-            {org && org.tier !== 'personal' && <TierTag tier={org.tier} />}
+            {org && org.tier !== 'starter' && <TierTag tier={org.tier} />}
           </MenuToggleInner>
         }
       />

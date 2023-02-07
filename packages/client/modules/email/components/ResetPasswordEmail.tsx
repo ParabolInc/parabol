@@ -36,7 +36,7 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
             {'love@parabol.co'}
           </a>
         </p>
-        <EmptySpace height={16} />
+        <EmptySpace height={8} />
       </EmailBlock>
       <EmailBlock hasBackgroundColor innerMaxWidth={innerMaxWidth}>
         <EmailFooter />

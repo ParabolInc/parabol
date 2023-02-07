@@ -124,7 +124,6 @@ const MeetingCardOptionsMenu = (props: Props) => {
             </OptionMenuItem>
           }
           onClick={() => {
-            popTooltip()
             closePortal()
             EndMeetingMutationLookup[meetingType]?.(
               atmosphere,

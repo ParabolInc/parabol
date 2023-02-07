@@ -30,7 +30,7 @@ Run through this list at least once at [staging](https://action-staging.parabol.
 - [ ] Smoke tested cards on the dashboard
 - [ ] Created a 2nd team
 - [ ] Created a 2nd organization
-- [ ] Upgraded to Pro (Credit card number: `4242 4242 4242 4242`, expiration date: any month in the future, CVC: `123`)
+- [ ] Upgraded to Team (Credit card number: `4242 4242 4242 4242`, expiration date: any month in the future, CVC: `123`)
 - [ ] Smoke tested the app on a mobile device (e.g. navigate between views, smoke test a Retro meeting, etc.)
 - [ ] Test previously existed meetings to make sure that existing data is not corrupted
 

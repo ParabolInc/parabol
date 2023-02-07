@@ -168,8 +168,9 @@ const addReactjiToReactable = {
       viewerId,
       meetingId,
       meetingType,
-      reactableId,
+      reactable,
       reactableType,
+      reactji,
       !!isRemove
     )
     if (meetingId) {

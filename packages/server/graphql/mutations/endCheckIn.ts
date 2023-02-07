@@ -186,13 +186,12 @@ export default {
 
     // RESOLUTION
     const currentStageRes = findStageById(phases, facilitatorStageId)
-    if (!currentStageRes) {
-      return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
+    if (currentStageRes) {
+      const {stage} = currentStageRes
+      stage.isComplete = true
+      stage.endAt = now
     }
-    const {stage} = currentStageRes
     const phase = getMeetingPhase(phases)
-    stage.isComplete = true
-    stage.endAt = now
 
     const completedCheckIn = (await r
       .table('NewMeeting')

@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -17,6 +18,11 @@ import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {TaskFooterUserAssigneeMenuQuery} from '../../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
 import {TaskFooterUserAssigneeMenu_task} from '../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
 
+const StyledPreferredName = styled('div')({
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+  overflow: 'hidden'
+})
 interface Props {
   area: AreaEnum
   menuProps: MenuProps
@@ -40,7 +46,6 @@ const gqlQuery = graphql`
     }
   }
 `
-
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, queryRef} = props
   const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef, {
@@ -98,7 +103,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
             label={
               <MenuItemLabel>
                 <MenuAvatar alt={assignee.preferredName} src={assignee.picture || avatarUser} />
-                {assignee.preferredName}
+                <StyledPreferredName>{assignee.preferredName}</StyledPreferredName>
               </MenuItemLabel>
             }
             onClick={handleTaskUpdate(assignee)}

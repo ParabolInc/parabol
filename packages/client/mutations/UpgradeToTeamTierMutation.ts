@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {UpgradeToProMutation as TUpgradeToProMutation} from '../__generated__/UpgradeToProMutation.graphql'
+import {UpgradeToTeamTierMutation as TUpgradeToTeamTierMutation} from '../__generated__/UpgradeToTeamTierMutation.graphql'
 
 graphql`
-  fragment UpgradeToProMutation_organization on UpgradeToProPayload {
+  fragment UpgradeToTeamTierMutation_organization on UpgradeToTeamTierPayload {
     organization {
       creditCard {
         brand
@@ -18,6 +18,7 @@ graphql`
       periodEnd
       periodStart
       updatedAt
+      lockedAt
     }
     meetings {
       showConversionModal
@@ -26,7 +27,7 @@ graphql`
 `
 
 graphql`
-  fragment UpgradeToProMutation_team on UpgradeToProPayload {
+  fragment UpgradeToTeamTierMutation_team on UpgradeToTeamTierPayload {
     teams {
       isPaid
       tier
@@ -35,18 +36,18 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpgradeToProMutation($orgId: ID!, $stripeToken: ID!) {
-    upgradeToPro(orgId: $orgId, stripeToken: $stripeToken) {
+  mutation UpgradeToTeamTierMutation($orgId: ID!, $stripeToken: ID!) {
+    upgradeToTeamTier(orgId: $orgId, stripeToken: $stripeToken) {
       error {
         message
       }
-      ...UpgradeToProMutation_organization @relay(mask: false)
-      ...UpgradeToProMutation_team @relay(mask: false)
+      ...UpgradeToTeamTierMutation_organization @relay(mask: false)
+      ...UpgradeToTeamTierMutation_team @relay(mask: false)
     }
   }
 `
 
-const UpgradeToProMutation: StandardMutation<TUpgradeToProMutation> = (
+const UpgradeToTeamTierMutation: StandardMutation<TUpgradeToTeamTierMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
@@ -59,4 +60,4 @@ const UpgradeToProMutation: StandardMutation<TUpgradeToProMutation> = (
   })
 }
 
-export default UpgradeToProMutation
+export default UpgradeToTeamTierMutation

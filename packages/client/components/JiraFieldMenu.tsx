@@ -40,21 +40,20 @@ const JiraFieldMenu = (props: Props) => {
   const {meetingId, dimensionRef, serviceField, task} = stage
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {id: taskId, teamId, integration} = task
-  const {cloudId, projectKey, issueType, possibleEstimationFieldNames, missingEstimationFieldHint} =
-    integration
+  const {possibleEstimationFields, missingEstimationFieldHint} = integration
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   /* eslint-disable react-hooks/rules-of-hooks */
   const defaultActiveidx = useMemo(() => {
-    if (possibleEstimationFieldNames.length === 0) return undefined
+    if (possibleEstimationFields.length === 0) return undefined
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
-      return possibleEstimationFieldNames.length + 1
+      return possibleEstimationFields.length + 1
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL)
-      return possibleEstimationFieldNames.length + 2
-    const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
+      return possibleEstimationFields.length + 2
+    const idx = possibleEstimationFields.findIndex(({fieldName}) => fieldName === serviceFieldName)
     return idx === -1 ? undefined : idx
-  }, [serviceFieldName, possibleEstimationFieldNames])
+  }, [serviceFieldName, possibleEstimationFields])
 
   const handleClickMissingField = () => {
     if (!missingEstimationFieldHint) {
@@ -83,16 +82,14 @@ const JiraFieldMenu = (props: Props) => {
     })
   }
 
-  const handleClick = (fieldName: string) => () => {
+  const handleClick = (fieldId: string) => () => {
     UpdateJiraDimensionFieldMutation(
       atmosphere,
       {
+        taskId,
         dimensionName,
-        fieldName,
-        meetingId,
-        cloudId,
-        projectKey,
-        issueType
+        fieldId,
+        meetingId
       },
       {
         onCompleted: submitScore,
@@ -110,10 +107,10 @@ const JiraFieldMenu = (props: Props) => {
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}
     >
-      {possibleEstimationFieldNames.map((fieldName) => {
-        return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
+      {possibleEstimationFields.map(({fieldId, fieldName}) => {
+        return <MenuItem key={fieldId} label={fieldName} onClick={handleClick(fieldId)} />
       })}
-      {possibleEstimationFieldNames.length > 0 && <MenuItemHR />}
+      {possibleEstimationFields.length > 0 && <MenuItemHR />}
       <MenuItem
         key={'__comment'}
         label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
@@ -156,10 +153,10 @@ export default createFragmentContainer(JiraFieldMenu, {
         integration {
           ... on JiraIssue {
             __typename
-            projectKey
-            cloudId
-            issueType
-            possibleEstimationFieldNames
+            possibleEstimationFields {
+              fieldId
+              fieldName
+            }
             missingEstimationFieldHint
           }
         }

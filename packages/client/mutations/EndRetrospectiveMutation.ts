@@ -28,6 +28,19 @@ graphql`
       reflectionCount
       taskCount
       topicCount
+      reflectionGroups(sortBy: voteCount) {
+        summary
+      }
+      phases {
+        phaseType
+        ... on DiscussPhase {
+          stages {
+            discussion {
+              summary
+            }
+          }
+        }
+      }
     }
     team {
       id
@@ -52,6 +65,14 @@ graphql`
   }
 `
 
+graphql`
+  fragment EndRetrospectiveMutation_meeting on EndRetrospectiveSuccess {
+    meeting {
+      ...WholeMeetingSummary_meeting
+    }
+  }
+`
+
 const mutation = graphql`
   mutation EndRetrospectiveMutation($meetingId: ID!) {
     endRetrospective(meetingId: $meetingId) {
@@ -62,6 +83,7 @@ const mutation = graphql`
       }
       ...EndRetrospectiveMutation_notification @relay(mask: false)
       ...EndRetrospectiveMutation_team @relay(mask: false)
+      ...EndRetrospectiveMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -73,7 +95,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -86,7 +108,17 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else {
-      history.push(`/new-summary/${meetingId}`)
+      const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
+      const {stages} = discussPhase ?? {}
+      const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+      const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
+      const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+      const pathname = `/new-summary/${meetingId}`
+      const search = hasOpenAISummary ? '?ai=true' : ''
+      history.push({
+        pathname,
+        search
+      })
     }
   }
 }

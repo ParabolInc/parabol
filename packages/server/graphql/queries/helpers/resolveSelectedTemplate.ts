@@ -19,9 +19,13 @@ const resolveSelectedTemplate =
       dataLoader.get('meetingTemplates').load(selectedTemplateId)
     ])
     const {tier} = team
-    const {isFree, scope} = template
     const hasFeatureFlag = viewer.featureFlags.includes('templateLimit')
-    if (template && (hasFeatureFlag ? isFree || scope !== 'PUBLIC' || tier !== 'personal' : true)) {
+    if (
+      template &&
+      (hasFeatureFlag
+        ? template?.isFree || template?.scope !== 'PUBLIC' || tier !== 'starter'
+        : true)
+    ) {
       return template
     }
     // there may be holes in our template deletion or reselection logic, so doing this to be safe

@@ -2,7 +2,7 @@ class Legitity {
   value: any
   error: undefined | string
 
-  constructor(value: string) {
+  constructor(value: string | undefined) {
     this.value = value
     this.error = undefined
   }
@@ -36,21 +36,25 @@ class Legitity {
   }
 
   max(len: number, msg?: string) {
-    // this.value.length gives us the count of UTF-16 units, so 🔥 has a length of 2
-    // Spreading the string into an array gives us the desired length in codepoints (characters): https://stackoverflow.com/a/54369605
-    const value = [...this.value]
-    if (!this.error && value.length > len) {
-      this.error = msg || 'max'
+    if (this.value !== undefined) {
+      // this.value.length gives us the count of UTF-16 units, so 🔥 has a length of 2
+      // Spreading the string into an array gives us the desired length in codepoints (characters): https://stackoverflow.com/a/54369605
+      const value = [...this.value]
+      if (!this.error && value.length > len) {
+        this.error = msg || 'max'
+      }
     }
     return this
   }
 
   min(len: number, msg?: string) {
-    // this.value.length gives us the count of UTF-16 units, so 🔥 has a length of 2
-    // Spreading the string into an array gives us the desired length in codepoints (characters): https://stackoverflow.com/a/54369605
-    const value = [...this.value]
-    if (!this.error && value.length < len) {
-      this.error = msg || 'min'
+    if (this.value !== undefined) {
+      // this.value.length gives us the count of UTF-16 units, so 🔥 has a length of 2
+      // Spreading the string into an array gives us the desired length in codepoints (characters): https://stackoverflow.com/a/54369605
+      const value = [...this.value]
+      if (!this.error && value.length < len) {
+        this.error = msg || 'min'
+      }
     }
     return this
   }

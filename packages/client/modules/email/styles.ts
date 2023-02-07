@@ -40,7 +40,7 @@ export const emailCopyStyle = {
 export const emailLineHeight = 1.5
 
 export const emailLinkStyle = {
-  color: PALETTE.SKY_500,
+  color: PALETTE.SKY_600,
   fontFamily: emailFontFamily,
   fontWeight: 600,
   textDecoration: 'none'
@@ -68,8 +68,6 @@ export const emailTableBase = {
 } as const
 
 export const emailTextColor = PALETTE.SLATE_700
-export const emailTextColorLight = PALETTE.SLATE_600
-
 export const headCSS = `
   @media only screen and (max-width: 620px) {
     table[class=body] .maxWidthContainer {
