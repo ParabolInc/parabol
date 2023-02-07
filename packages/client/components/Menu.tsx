@@ -163,14 +163,17 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
+        e.preventDefault()
         setSafeIdx(activeIdx === null ? null : activeIdx + 1)
       } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
         setSafeIdx(activeIdx === null ? null : activeIdx - 1)
       } else if (e.key === 'Enter' || (tabReturns && e.key === 'Tab')) {
         e.preventDefault()
         if (activeIdx !== null) {
           const itemHandle = itemHandles.current[activeIdx]
           itemHandle?.onClick?.(e)
+          // Handles keyboard triggered route navigation.
           if (itemHandle?.to) {
             history.push(itemHandle?.to)
           }

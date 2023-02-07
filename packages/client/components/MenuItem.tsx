@@ -28,21 +28,19 @@ interface Props {
   parentRef?: RefObject<HTMLDivElement>
 }
 
-const MenuItemStyles = styled('div')<{
-  isActive: boolean
-  isDisabled: boolean | undefined
-  to?: string
-}>(({isActive, isDisabled}) => ({
-  alignItems: 'center',
-  backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
-  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-  cursor: isDisabled ? 'not-allowed' : 'pointer',
-  display: 'flex',
-  '&:hover,:focus': {
-    backgroundColor: isActive ? PALETTE.SLATE_200 : PALETTE.SLATE_100,
-    outline: 0
-  }
-}))
+const MenuItemStyles = styled('div')<{isActive: boolean; isDisabled: boolean | undefined}>(
+  ({isActive, isDisabled}) => ({
+    alignItems: 'center',
+    backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
+    color: isDisabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    display: 'flex',
+    '&:hover,:focus': {
+      backgroundColor: isActive ? PALETTE.SLATE_200 : PALETTE.SLATE_100,
+      outline: 0
+    }
+  })
+)
 
 const MINIMUM_VIEW_TIME = 300
 
@@ -118,7 +116,6 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
       role='menuitem'
       ref={itemRef}
       isActive={isActive}
-      to={to}
       onClick={handleClick}
       onMouseEnter={onMouseEnter}
     >
