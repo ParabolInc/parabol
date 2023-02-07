@@ -24,18 +24,15 @@ const TeamsLimitReminderNotification = (props: Props) => {
         ...NotificationTemplate_notification
         id
         scheduledLockAt
-        organization {
-          id
-          name
-          picture
-        }
+        orgId
+        orgName
+        orgPicture
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
-  const {organization, scheduledLockAt} = notification
-  const {name: orgName, picture: orgPicture, id: orgId} = organization
+  const {orgId, orgName, orgPicture, scheduledLockAt} = notification
 
   useEffect(() => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {

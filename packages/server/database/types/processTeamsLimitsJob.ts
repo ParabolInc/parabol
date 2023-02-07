@@ -12,7 +12,7 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
     dataLoader.get('organizations').load(orgId),
     dataLoader.get('organizationUsersByOrgId').load(orgId)
   ])
-  const {name: orgName, scheduledLockAt, lockedAt} = organization
+  const {name: orgName, picture: orgPicture, scheduledLockAt, lockedAt} = organization
 
   if (!scheduledLockAt || lockedAt) return
 
@@ -34,6 +34,8 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
       return new NotificationTeamsLimitReminder({
         userId,
         orgId,
+        orgName,
+        orgPicture,
         scheduledLockAt
       })
     })

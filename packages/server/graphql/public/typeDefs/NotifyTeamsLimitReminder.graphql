@@ -26,9 +26,14 @@ type NotifyTeamsLimitReminder implements Notification {
   orgId: ID!
 
   """
-  Organization that exceeded the limit
+  Organization name
   """
-  organization: Organization!
+  orgName: String!
+
+  """
+  Organization picture
+  """
+  orgPicture: URL
 
   """
   Scheduled blocking time at the time of notification

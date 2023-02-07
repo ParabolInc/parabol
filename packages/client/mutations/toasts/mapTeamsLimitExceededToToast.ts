@@ -7,10 +7,7 @@ import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 graphql`
   fragment mapTeamsLimitExceededToToast_notification on NotifyTeamsLimitExceeded {
     id
-    organization {
-      id
-      name
-    }
+    orgName
   }
 `
 
@@ -18,8 +15,7 @@ const mapTeamsLimitExceededToToast = (
   notification: mapTeamsLimitExceededToToast_notification,
   {history, atmosphere}: OnNextHistoryContext
 ): Snack => {
-  const {id: notificationId, organization} = notification
-  const {name: orgName} = organization
+  const {id: notificationId, orgName} = notification
 
   return {
     autoDismiss: 0,

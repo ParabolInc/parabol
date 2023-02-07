@@ -3,6 +3,7 @@ import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
+import Organization from '../../database/types/Organization'
 import ScheduledTeamLimitsJob from '../../database/types/ScheduledTeamLimitsJob'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
@@ -43,16 +44,19 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
 }
 
 const sendWebsiteNotifications = async (
-  orgId: string,
+  organization: Organization,
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
+  const {id: orgId, name: orgName, picture: orgPicture} = organization
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const notificationsToInsert = userIds.map((userId) => {
     return new NotificationTeamsLimitExceeded({
       userId,
-      orgId
+      orgId,
+      orgName,
+      orgPicture
     })
   })
 
@@ -160,7 +164,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   // wait for usage stats to be enabled as we dont want to send notifications before it's available
   await enableUsageStats(billingLeadersIds, orgId)
   await Promise.all([
-    sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
+    sendWebsiteNotifications(organization, billingLeadersIds, dataLoader),
     billingLeaders.map((billingLeader) =>
       sendTeamsLimitEmail({
         user: billingLeader,

@@ -10,10 +10,8 @@ graphql`
   fragment mapTeamsLimitReminderToToast_notification on NotifyTeamsLimitReminder {
     id
     scheduledLockAt
-    organization {
-      id
-      name
-    }
+    orgId
+    orgName
   }
 `
 
@@ -21,8 +19,7 @@ const mapTeamsLimitReminderToToast = (
   notification: mapTeamsLimitReminderToToast_notification,
   {history, atmosphere}: OnNextHistoryContext
 ): Snack => {
-  const {id: notificationId, organization, scheduledLockAt} = notification
-  const {name: orgName, id: orgId} = organization
+  const {id: notificationId, scheduledLockAt, orgId, orgName} = notification
 
   return {
     autoDismiss: 0,
