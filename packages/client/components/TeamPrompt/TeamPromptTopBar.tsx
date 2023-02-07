@@ -171,7 +171,7 @@ const TeamPromptTopBar = (props: Props) => {
       {recurrenceSettingsModal(
         <UpdateRecurrenceSettingsModal
           meeting={meeting}
-          recurrenceRule={meetingSeries?.recurrenceRule}
+          recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
           closeModal={toggleRecurrenceSettingsModal}
         />
       )}

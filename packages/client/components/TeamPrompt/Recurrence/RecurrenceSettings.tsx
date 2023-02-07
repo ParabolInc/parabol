@@ -151,7 +151,7 @@ export const RecurrenceSettings = (props: Props) => {
           .set('minute', 0)
           .set('second', 0)
           .set('millisecond', 0)
-          .toDate() // suggest 6:00 AM tomorrow)
+          .toDate() // suggest 6:00 AM tomorrow
   )
 
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
