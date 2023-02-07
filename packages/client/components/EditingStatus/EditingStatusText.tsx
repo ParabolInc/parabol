@@ -30,7 +30,7 @@ const useTimeFrom = (timestamp: string) => {
   // to update on toggle
   useEffect(() => {
     setTimeFrom(makeTimeFrom())
-  }, [timestamp])
+  }, [timestamp, makeTimeFrom])
 
   return timeFrom
 }
