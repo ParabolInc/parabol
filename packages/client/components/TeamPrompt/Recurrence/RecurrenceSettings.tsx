@@ -1,45 +1,28 @@
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
 import utcPlugin from 'dayjs/plugin/utc'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PortalId} from '../../../hooks/usePortal'
 import {PALETTE} from '../../../styles/paletteV3'
+import plural from '../../../utils/plural'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
+import {toHumanReadable} from './HumanReadableRecurrenceRule'
 import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
-  {name: 'Monday', short: 'M', rruleVal: RRule.MO, intVal: 0},
-  {name: 'Tuesday', short: 'T', rruleVal: RRule.TU, intVal: 1},
-  {name: 'Wednesday', short: 'W', rruleVal: RRule.WE, intVal: 2},
-  {name: 'Thursday', short: 'T', rruleVal: RRule.TH, intVal: 3},
-  {name: 'Friday', short: 'F', rruleVal: RRule.FR, intVal: 4},
-  {name: 'Saturday', short: 'S', rruleVal: RRule.SA, intVal: 5},
-  {name: 'Sunday', short: 'S', rruleVal: RRule.SU, intVal: 6}
+  {name: 'Monday', med: 'Mon', short: 'M', rruleVal: RRule.MO, intVal: 0, isWeekday: true},
+  {name: 'Tuesday', med: 'Tue', short: 'T', rruleVal: RRule.TU, intVal: 1, isWeekday: true},
+  {name: 'Wednesday', med: 'Wed', short: 'W', rruleVal: RRule.WE, intVal: 2, isWeekday: true},
+  {name: 'Thursday', med: 'Thu', short: 'T', rruleVal: RRule.TH, intVal: 3, isWeekday: true},
+  {name: 'Friday', med: 'Fri', short: 'F', rruleVal: RRule.FR, intVal: 4, isWeekday: true},
+  {name: 'Saturday', med: 'Sat', short: 'S', rruleVal: RRule.SA, intVal: 5, isWeekday: false},
+  {name: 'Sunday', med: 'Sun', short: 'S', rruleVal: RRule.SU, intVal: 6, isWeekday: false}
 ]
-
-const SUPPORTED_FREQUENCIES = [Frequency.WEEKLY, Frequency.MONTHLY] as const
-type SupportedFrequency = typeof SUPPORTED_FREQUENCIES[number]
-
-const SUPPORTED_FREQUENCIES_LABELS: Record<SupportedFrequency, string> = {
-  [Frequency.MONTHLY]: 'Monthly',
-  [Frequency.WEEKLY]: 'Weekly'
-}
-
-const INTERVAL_INPUT_PROPS_CONFIG: Record<SupportedFrequency, {min: number; max: number}> = {
-  [Frequency.WEEKLY]: {
-    min: 1,
-    max: 52
-  },
-  [Frequency.MONTHLY]: {
-    min: 1,
-    max: 12
-  }
-} as const
 
 const RecurrenceFrequencyPickerRoot = styled('div')({
   display: 'flex',
@@ -51,26 +34,10 @@ const RecurrenceFrequencyPickerRoot = styled('div')({
 
 const RecurrenceIntervalInput = styled('input')({
   height: 36,
+  maxWidth: 120,
   flex: 1,
   padding: 8,
   border: 'solid',
-  borderWidth: 1,
-  borderRadius: 4,
-  borderColor: PALETTE.SLATE_500,
-  '&:hover, :focus, :focus-visible, :active': {
-    outline: `1px solid ${PALETTE.SLATE_600}`,
-    borderColor: PALETTE.SLATE_600,
-    borderRadius: 4
-  }
-})
-
-const RecurrenceFrequencySelect = styled('select')({
-  height: 36,
-  appearance: 'none',
-  flex: 1,
-  padding: 8,
-  border: 'solid',
-  cursor: 'pointer',
   borderWidth: 1,
   borderRadius: 4,
   borderColor: PALETTE.SLATE_500,
@@ -132,9 +99,6 @@ export const RecurrenceSettings = (props: Props) => {
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
   )
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState<SupportedFrequency>(
-    recurrenceRule ? (recurrenceRule.options.freq as SupportedFrequency) : Frequency.WEEKLY
-  )
   const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>(
     recurrenceRule
       ? recurrenceRule.options.byweekday.map(
@@ -173,15 +137,6 @@ export const RecurrenceSettings = (props: Props) => {
     }
   }
 
-  const handleFrequencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    try {
-      const frequency = parseInt(e.target.value)
-      setRecurrenceFrequency(frequency)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   const handleDayChange = (day: Day) => {
     if (recurrenceDays.includes(day)) {
       setRecurrenceDays(recurrenceDays.filter((d) => d !== day))
@@ -194,7 +149,7 @@ export const RecurrenceSettings = (props: Props) => {
     const rrule =
       recurrenceDays.length > 0
         ? new RRule({
-            freq: recurrenceFrequency,
+            freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
             dtstart: dayjs(recurrenceStartTime).utc().toDate(),
@@ -204,7 +159,7 @@ export const RecurrenceSettings = (props: Props) => {
         : null
 
     onRecurrenceRuleUpdated(rrule)
-  }, [recurrenceDays, recurrenceFrequency, recurrenceInterval, recurrenceStartTime])
+  }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
 
   return (
     <RecurrenceSettingsRoot>
@@ -215,15 +170,10 @@ export const RecurrenceSettings = (props: Props) => {
           type='number'
           onChange={handleIntervalChange}
           value={recurrenceInterval}
-          {...INTERVAL_INPUT_PROPS_CONFIG[recurrenceFrequency]}
+          min={1}
+          max={52}
         />
-        <RecurrenceFrequencySelect onChange={handleFrequencyChange} value={recurrenceFrequency}>
-          {SUPPORTED_FREQUENCIES.map((frequency) => (
-            <option key={frequency} value={frequency}>
-              {SUPPORTED_FREQUENCIES_LABELS[frequency]}
-            </option>
-          ))}
-        </RecurrenceFrequencySelect>
+        <div>{plural(recurrenceInterval, 'week')}</div>
       </RecurrenceFrequencyPickerRoot>
       <RecurrenceDayPickerRoot>
         {ALL_DAYS.map((day) => {
@@ -244,7 +194,10 @@ export const RecurrenceSettings = (props: Props) => {
       <HumanReadableRecurrenceRule>
         Your meeting{' '}
         <strong>
-          {recurrenceRule ? `will restart ${recurrenceRule.toText()}` : 'will not restart'}
+          {recurrenceRule
+            ? `will restart ${toHumanReadable(recurrenceRule, {isPartOfSentence: true})}`
+            : // `will restart ${recurrenceRule.toText()}`
+              'will not restart'}
         </strong>
       </HumanReadableRecurrenceRule>
       <StartTimeSection>

@@ -12,8 +12,14 @@ type DayFullName =
   | 'Saturday'
   | 'Sunday'
 
-type DayShortName = 'M' | 'T' | 'W' | 'F' | 'S'
-export type Day = {name: DayFullName; short: DayShortName; rruleVal: Weekday; intVal: number}
+export type Day = {
+  name: DayFullName
+  med: string
+  short: string
+  rruleVal: Weekday
+  intVal: number
+  isWeekday: boolean
+}
 
 export const CheckboxRoot = styled('div')({
   position: 'relative',
