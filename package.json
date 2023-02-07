@@ -70,7 +70,8 @@
     "node-gyp": "^8.4.1",
     "simple-get": "^4.0.1",
     "caniuse-lite": "~1.0.0",
-    "git-url-parse": "12.0.0"
+    "git-url-parse": "12.0.0",
+    "fbjs": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.18.6",
