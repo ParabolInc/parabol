@@ -5,6 +5,7 @@ import {parse} from 'url'
 import readCert from './readCert'
 
 export default function getRethinkConfig() {
+  if (process.env.STAGE === 'build') return {}
   const envFile = path.join(__dirname, '../../../', '.env')
   dotenv.config({path: envFile})
   const urlString = process.env.RETHINKDB_URL
