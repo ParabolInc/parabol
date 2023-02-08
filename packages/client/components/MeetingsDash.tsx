@@ -54,6 +54,12 @@ const MeetingsDash = (props: Props) => {
           return 1
         }
 
+        if (aRecurring && bRecurring) {
+          // When ordering recurring meetings, sort based on when the series was created to maintain
+          // consistency when meetings are restarted.
+          return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
+        }
+
         return a.createdAt > b.createdAt ? -1 : 1
       })
     const filteredMeetings = dashSearch
@@ -126,6 +132,7 @@ graphql`
       }
       ... on TeamPromptMeeting {
         meetingSeries {
+          createdAt
           cancelledAt
         }
       }
