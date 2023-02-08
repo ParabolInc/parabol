@@ -13,9 +13,7 @@ RUN yarn install --frozen-lockfile && \
 
 COPY . .
 
-ENV STAGE=build
 RUN yarn build
-ENV STAGE=RUN
 RUN cp docker/entrypoint.prod.sh /bin/entrypoint && \
       chmod +x /bin/entrypoint
 EXPOSE 80
