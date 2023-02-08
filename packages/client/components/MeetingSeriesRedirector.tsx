@@ -4,21 +4,25 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import {MeetingSeriesRedirectorQuery} from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
 interface Props {
-  meetingSeriesId: string
+  meetingId: string
   queryRef: PreloadedQuery<MeetingSeriesRedirectorQuery>
 }
 
 const MeetingSeriesRedirector = (props: Props) => {
-  const {queryRef, meetingSeriesId} = props
+  const {queryRef, meetingId} = props
 
   const data = usePreloadedQuery<MeetingSeriesRedirectorQuery>(
     graphql`
-      query MeetingSeriesRedirectorQuery($meetingSeriesId: ID!) {
+      query MeetingSeriesRedirectorQuery($meetingId: ID!) {
         viewer {
           isConnected
-          meetingSeries(meetingSeriesId: $meetingSeriesId) {
-            mostRecentMeeting {
-              id
+          meeting(meetingId: $meetingId) {
+            ... on TeamPromptMeeting {
+              meetingSeries {
+                mostRecentMeeting {
+                  id
+                }
+              }
             }
           }
         }
@@ -29,24 +33,28 @@ const MeetingSeriesRedirector = (props: Props) => {
   )
 
   const {viewer} = data
-  const {meetingSeries} = viewer
+  const {meeting} = viewer
 
-  if (!meetingSeries) {
+  if (!meeting) {
     return (
       <Redirect
         to={{
           pathname: `/invitation-required`,
           search: `?redirectTo=${encodeURIComponent(
             window.location.pathname
-          )}&meetingSeriesId=${meetingSeriesId}`
+          )}&meetingId=${meetingId}`
         }}
       />
     )
   } else {
+    const {meetingSeries} = meeting
+    if (!meetingSeries) {
+      return <Redirect to={`/meet/${meetingId}`} />
+    }
     const {mostRecentMeeting} = meetingSeries
-    const {id: meetingId} = mostRecentMeeting
+    const {id: activeMeetingId} = mostRecentMeeting
 
-    return <Redirect to={`/meet/${meetingId}`} />
+    return <Redirect to={`/meet/${activeMeetingId}`} />
   }
 }
 

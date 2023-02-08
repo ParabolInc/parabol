@@ -21,9 +21,9 @@ interface Props {
 }
 
 const query = graphql`
-  query ViewerNotOnTeamQuery($teamId: ID, $meetingId: ID, $meetingSeriesId: ID) {
+  query ViewerNotOnTeamQuery($teamId: ID, $meetingId: ID) {
     viewer {
-      teamInvitation(teamId: $teamId, meetingId: $meetingId, meetingSeriesId: $meetingSeriesId) {
+      teamInvitation(teamId: $teamId, meetingId: $meetingId) {
         teamInvitation {
           token
         }

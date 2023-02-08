@@ -17,10 +17,6 @@ const TeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
     meetingId: {
       type: GraphQLID,
       description: 'one of the active meetings trying to join'
-    },
-    meetingSeriesId: {
-      type: GraphQLID,
-      description: 'one of the meeting series trying to join'
     }
   })
 })

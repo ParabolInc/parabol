@@ -44,7 +44,7 @@ const PrivateRoutes = () => {
     <Switch>
       <Route path='(/meetings|/me|/newteam|/team|/usage|/new-meeting)' component={DashboardRoot} />
       <Route path='/meet/:meetingId' component={MeetingRoot} />
-      <Route path='/meeting-series/:meetingSeriesId' component={MeetingSeriesRoot} />
+      <Route path='/meeting-series/:meetingId' component={MeetingSeriesRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />

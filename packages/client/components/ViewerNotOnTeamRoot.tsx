@@ -13,12 +13,10 @@ const ViewerNotOnTeamRoot = () => {
   const searchParams = new URLSearchParams(location.search)
   const teamId = searchParams.get('teamId')
   const meetingId = searchParams.get('meetingId')
-  const meetingSeriesId = searchParams.get('meetingSeriesId')
   useSubscription('ViewerNotOnTeamRoot', NotificationSubscription)
   const queryRef = useQueryLoaderNow<ViewerNotOnTeamQuery>(viewerNotOnTeamQuery, {
     teamId,
-    meetingId,
-    meetingSeriesId
+    meetingId
   })
   return (
     <Suspense fallback={renderLoader({size: LoaderSize.WHOLE_PAGE})}>

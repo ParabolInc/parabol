@@ -54,6 +54,11 @@ graphql`
       isPaid
       activeMeetings {
         id
+        ... on TeamPromptMeeting {
+          meetingSeries {
+            id
+          }
+        }
       }
       activeMeetingSeries {
         id

@@ -8,19 +8,16 @@ import meetingSeriesRedirectorQuery, {
 import MeetingSeriesRedirector from './MeetingSeriesRedirector'
 
 const MeetingRoot = () => {
-  const {match} = useRouter<{meetingSeriesId: string}>()
+  const {match} = useRouter<{meetingId: string}>()
   const {params} = match
-  const {meetingSeriesId: encodedMeetingSeriesId} = params
-  const meetingSeriesId = decodeURIComponent(encodedMeetingSeriesId)
+  const {meetingId} = params
   const queryRef = useQueryLoaderNow<MeetingSeriesRedirectorQuery>(meetingSeriesRedirectorQuery, {
-    meetingSeriesId
+    meetingId
   })
-  if (!meetingSeriesId) return <Redirect to='/meetings' />
+  if (!meetingId) return <Redirect to='/meetings' />
   return (
     <Suspense fallback={''}>
-      {queryRef && (
-        <MeetingSeriesRedirector meetingSeriesId={meetingSeriesId} queryRef={queryRef} />
-      )}
+      {queryRef && <MeetingSeriesRedirector meetingId={meetingId} queryRef={queryRef} />}
     </Suspense>
   )
 }

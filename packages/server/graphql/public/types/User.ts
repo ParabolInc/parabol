@@ -1,6 +1,5 @@
-import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {isNotNull} from 'parabol-client/utils/predicates'
-import {isSuperUser, isTeamMember} from '../../../utils/authorization'
+import {isSuperUser} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../../utils/isCompanyDomain'
 import {UserResolvers} from '../resolverTypes'
@@ -25,26 +24,6 @@ const User: UserResolvers = {
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
-  },
-  meetingSeries: async (_source, {meetingSeriesId}, {dataLoader, authToken}) => {
-    if (!meetingSeriesId) {
-      return null
-    }
-
-    const series = await dataLoader
-      .get('meetingSeries')
-      .load(MeetingSeriesId.split(meetingSeriesId))
-    if (!series) {
-      return null
-    }
-
-    const {teamId} = series
-
-    if (!isTeamMember(authToken, teamId)) {
-      return null
-    }
-
-    return series
   }
 }
 
