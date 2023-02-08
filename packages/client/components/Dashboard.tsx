@@ -149,7 +149,7 @@ const Dashboard = (props: Props) => {
           <DashSidebar viewerRef={viewer} isOpen={isOpen} />
         ) : (
           <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-            <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+            <MobileDashSidebar viewerRef={viewer} handleMenuClick={handleMenuClick} />
           </SwipeableDashSidebar>
         )}
         <DashMain id='main' ref={meetingsDashRef}>
