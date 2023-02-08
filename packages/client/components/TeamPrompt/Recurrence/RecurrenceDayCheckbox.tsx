@@ -14,8 +14,8 @@ type DayFullName =
 
 export type Day = {
   name: DayFullName
-  med: string
-  short: string
+  shortName: string
+  abbreviation: string
   rruleVal: Weekday
   intVal: number
   isWeekday: boolean
@@ -80,12 +80,12 @@ export const RecurrenceDayCheckbox = (props: Props) => {
       <StyledCheckbox
         type='checkbox'
         id={day.name}
-        name={day.short}
+        name={day.abbreviation}
         checked={isChecked}
         onChange={toggle}
       />
       <StyledCheckboxLabel htmlFor={day.name} isChecked={isChecked}>
-        {day.short}
+        {day.abbreviation}
       </StyledCheckboxLabel>
     </CheckboxRoot>
   )

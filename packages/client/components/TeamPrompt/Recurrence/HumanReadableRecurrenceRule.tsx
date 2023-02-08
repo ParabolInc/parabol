@@ -54,7 +54,7 @@ export const toHumanReadable = (
 
     const formatted = formatter.format(
       selectedDays.map((day) =>
-        useShortNames && selectedDaysCount > shortDayNameAfter ? day.med : day.name
+        useShortNames && selectedDaysCount > shortDayNameAfter ? day.shortName : day.name
       )
     )
     return interval > 1 ? `Every ${intervalString} on ${formatted}` : `Every ${formatted}`

@@ -15,13 +15,62 @@ import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
-  {name: 'Monday', med: 'Mon', short: 'M', rruleVal: RRule.MO, intVal: 0, isWeekday: true},
-  {name: 'Tuesday', med: 'Tue', short: 'T', rruleVal: RRule.TU, intVal: 1, isWeekday: true},
-  {name: 'Wednesday', med: 'Wed', short: 'W', rruleVal: RRule.WE, intVal: 2, isWeekday: true},
-  {name: 'Thursday', med: 'Thu', short: 'T', rruleVal: RRule.TH, intVal: 3, isWeekday: true},
-  {name: 'Friday', med: 'Fri', short: 'F', rruleVal: RRule.FR, intVal: 4, isWeekday: true},
-  {name: 'Saturday', med: 'Sat', short: 'S', rruleVal: RRule.SA, intVal: 5, isWeekday: false},
-  {name: 'Sunday', med: 'Sun', short: 'S', rruleVal: RRule.SU, intVal: 6, isWeekday: false}
+  {
+    name: 'Monday',
+    shortName: 'Mon',
+    abbreviation: 'M',
+    rruleVal: RRule.MO,
+    intVal: 0,
+    isWeekday: true
+  },
+  {
+    name: 'Tuesday',
+    shortName: 'Tue',
+    abbreviation: 'T',
+    rruleVal: RRule.TU,
+    intVal: 1,
+    isWeekday: true
+  },
+  {
+    name: 'Wednesday',
+    shortName: 'Wed',
+    abbreviation: 'W',
+    rruleVal: RRule.WE,
+    intVal: 2,
+    isWeekday: true
+  },
+  {
+    name: 'Thursday',
+    shortName: 'Thu',
+    abbreviation: 'T',
+    rruleVal: RRule.TH,
+    intVal: 3,
+    isWeekday: true
+  },
+  {
+    name: 'Friday',
+    shortName: 'Fri',
+    abbreviation: 'F',
+    rruleVal: RRule.FR,
+    intVal: 4,
+    isWeekday: true
+  },
+  {
+    name: 'Saturday',
+    shortName: 'Sat',
+    abbreviation: 'S',
+    rruleVal: RRule.SA,
+    intVal: 5,
+    isWeekday: false
+  },
+  {
+    name: 'Sunday',
+    shortName: 'Sun',
+    abbreviation: 'S',
+    rruleVal: RRule.SU,
+    intVal: 6,
+    isWeekday: false
+  }
 ]
 
 const RecurrenceFrequencyPickerRoot = styled('div')({
