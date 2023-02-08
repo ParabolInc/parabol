@@ -3,25 +3,13 @@ import {Frequency, RRule} from 'rrule'
 import {RRuleScalarConfig} from '../resolverTypes'
 
 const isRRuleValid = (rrule: RRule) => {
-  if (![Frequency.MONTHLY, Frequency.WEEKLY].includes(rrule.options.freq)) {
+  if (rrule.options.freq !== Frequency.WEEKLY) {
     return {
-      error: 'Query error: RRule frequency must be yearly, monthly, or weekly'
+      error: 'Query error: Weekly is the only supported frequency'
     }
   }
 
-  if (
-    rrule.options.freq === Frequency.MONTHLY &&
-    (rrule.options.interval < 1 || rrule.options.interval > 12)
-  ) {
-    return {
-      error: 'Query error: For Frequency.MONTHLY RRule interval must be between 1 and 12'
-    }
-  }
-
-  if (
-    rrule.options.freq === Frequency.WEEKLY &&
-    (rrule.options.interval < 1 || rrule.options.interval > 52)
-  ) {
+  if (rrule.options.interval < 1 || rrule.options.interval > 52) {
     return {
       error: 'Query error: For Frequency.WEEKLY RRule interval must be between 1 and 52'
     }
