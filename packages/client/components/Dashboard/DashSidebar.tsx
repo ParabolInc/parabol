@@ -110,14 +110,14 @@ const DashSidebar = (props: Props) => {
               <NavItem icon={'arrowBack'} href={'/me'} label={'Back'} />
               <OrgName>{name}</OrgName>
               <NavItem
-                icon={'group'}
-                href={`/me/organizations/${orgId}/member`}
-                label={'Members'}
-              />
-              <NavItem
                 icon={'creditScore'}
                 href={`/me/organizations/${orgId}/billing`}
                 label={'Plans & Billing'}
+              />
+              <NavItem
+                icon={'group'}
+                href={`/me/organizations/${orgId}/member`}
+                label={'Members'}
               />
             </NavItemsWrap>
           </Contents>

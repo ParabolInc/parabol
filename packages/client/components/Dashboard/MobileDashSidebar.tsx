@@ -127,15 +127,15 @@ const MobileDashSidebar = (props: Props) => {
               <OrgName>{name}</OrgName>
               <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'group'}
-                href={`/me/organizations/${orgId}/member`}
-                label={'Members'}
-              />
-              <LeftDashNavItem
-                onClick={handleMenuClick}
                 icon={'creditScore'}
                 href={`/me/organizations/${orgId}/billing`}
                 label={'Plans & Billing'}
+              />
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'group'}
+                href={`/me/organizations/${orgId}/member`}
+                label={'Members'}
               />
             </NavItemsWrap>
           </Nav>
