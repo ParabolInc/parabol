@@ -97,7 +97,7 @@ const TopLine = styled('div')({
   display: 'flex'
 })
 
-const THUMBNAIL = 'http://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
+const THUMBNAIL = 'https://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
 
 const TutorialMeetingCard = () => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
