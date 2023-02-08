@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {
   Add,
   ArrowBack,
+  CreditScore,
   ExitToApp,
   Forum,
   Group,
@@ -55,6 +56,7 @@ const Label = styled('div')({
 
 const iconLookup = {
   arrowBack: <ArrowBack />,
+  creditScore: <CreditScore />,
   forum: <Forum />,
   history: <History />,
   playlist_add_check: <PlaylistAddCheck />,
