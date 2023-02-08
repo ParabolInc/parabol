@@ -92,13 +92,15 @@ const DashSidebar = (props: Props) => {
     `,
     viewerRef
   )
+
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
   const showOrgSidebar = featureFlags.checkoutFlow && pathname.startsWith(`/me/organizations`)
 
   if (showOrgSidebar) {
-    const orgId = pathname.split('/').pop()
-    const name = organizations.find((org) => org.id === orgId)?.name
+    const orgIdFromPathname = pathname.split('/')[3]
+    const currentOrg = organizations.find((org) => org.id === orgIdFromPathname)
+    const {id: orgId, name} = currentOrg ?? {}
     return (
       <Wrapper>
         <SideBarStartMeetingButton isOpen={isOpen} />
@@ -107,9 +109,16 @@ const DashSidebar = (props: Props) => {
             <NavItemsWrap>
               <NavItem icon={'arrowBack'} href={'/'} label={'Back'} />
               <OrgName>{name}</OrgName>
-              <NavItem icon={'forum'} href={'/meetings'} label={'Members'} />
-              <NavItem icon={'history'} href={'/me'} label={'Plans & Billing'} />
-              <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Usage'} />
+              <NavItem
+                icon={'forum'}
+                href={`/me/organizations/${orgId}/members`}
+                label={'Members'}
+              />
+              <NavItem
+                icon={'history'}
+                href={`/me/organizations/${orgId}/billing`}
+                label={'Plans & Billing'}
+              />
             </NavItemsWrap>
           </Contents>
         </Nav>
