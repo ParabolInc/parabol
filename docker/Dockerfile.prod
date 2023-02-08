@@ -7,7 +7,7 @@ COPY packages/client/package.json ./packages/client/package.json
 COPY packages/gql-executor/package.json packages/gql-executor/package.json
 COPY packages/integration-tests/package.json packages/integration-tests/package.json
 COPY packages/server/package.json packages/server/package.json
-# Only install production dependencies
+
 RUN yarn install --frozen-lockfile && \
       yarn cache clean
 
