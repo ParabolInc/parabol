@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {Breakpoint, NavSidebar} from '../../types/constEnums'
+import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
 import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
@@ -111,12 +112,12 @@ const DashSidebar = (props: Props) => {
               <OrgName>{name}</OrgName>
               <NavItem
                 icon={'creditScore'}
-                href={`/me/organizations/${orgId}/billing`}
+                href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                 label={'Plans & Billing'}
               />
               <NavItem
                 icon={'group'}
-                href={`/me/organizations/${orgId}/member`}
+                href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
                 label={'Members'}
               />
             </NavItemsWrap>
