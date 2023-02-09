@@ -123,6 +123,7 @@ export const enum ExternalLinks {
   EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
+  GETTING_STARTED_RETRO_VIDEO = 'https://www.parabol.co/resources/retrospective-meetings/#video',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   GETTING_STARTED_ASYNC_STANDUP = 'https://www.parabol.co/resources/async-standup-meetings',
