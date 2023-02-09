@@ -3,8 +3,6 @@ const ssl = require('./getPgSSL')()
 
 const emitTemplateTarget = 'packages/server/postgres/queries/generated/{{name}}.ts'
 
-console.log('===process.env.POSTGRES_URL', process.env.POSTGRES_URL)
-
 const pgtypedConfig = {
   transforms: [
     {
@@ -29,5 +27,4 @@ const pgtypedConfig = {
     ssl: ssl ?? undefined
   }
 }
-
 module.exports = pgtypedConfig
