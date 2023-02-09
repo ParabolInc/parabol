@@ -1,3 +1,5 @@
+// This is copied almost entirely from rethinkdb-migrate
+// The only difference is this accepts a list of migrations instead of using a dynamic require
 import chalk from 'chalk'
 import nconf from 'nconf'
 import * as path from 'path'

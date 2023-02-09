@@ -1,3 +1,5 @@
+// This is copied almost entirely from pg-migrate
+// The only difference is this accepts a list of migrations instead of using a dynamic require
 import Db, {DBConnection} from 'node-pg-migrate/dist/db'
 import {Migration, RunMigration} from 'node-pg-migrate/dist/migration'
 import {
