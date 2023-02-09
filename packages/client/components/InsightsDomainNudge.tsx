@@ -131,7 +131,7 @@ const InsightsDomainNudge = (props: Props) => {
             <WarningMsg>
               <BoldText>{domainId}</BoldText>
               {` is over the limit of `}
-              <BoldText>{`${Threshold.MAX_PERSONAL_TIER_TEAMS} free teams`}</BoldText>
+              <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams`}</BoldText>
               {toBeLockedOrg?.scheduledLockAt && (
                 <>
                   {`. Your free access will end in `}

@@ -13,7 +13,10 @@ const CardBlock = styled('div')({
 const AddingHint = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: Card.FONT_SIZE,
-  textAlign: 'center'
+  textAlign: 'center',
+  overflowWrap: 'break-word',
+  overflow: 'visible',
+  width: '100%'
 })
 
 interface Props {

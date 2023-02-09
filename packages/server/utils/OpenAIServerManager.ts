@@ -16,12 +16,13 @@ class OpenAIServerManager {
     this.openAIApi = new OpenAIApi(configuration)
   }
 
-  async getSummary(text: string | string[]) {
+  async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     try {
+      const location = summaryLocation ?? 'retro meeting'
       const response = await this.openAIApi.createCompletion({
         model: 'text-davinci-003',
-        prompt: `Below is a comma-separated list of text. Summarize the text for a second-grade student in one or two sentences.
+        prompt: `Below is a comma-separated list of text from a ${location}. Summarize the text for a second-grade student in one or two sentences.
 
         Text: """
         ${text}

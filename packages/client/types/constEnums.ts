@@ -123,6 +123,7 @@ export const enum ExternalLinks {
   EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
+  GETTING_STARTED_RETRO_VIDEO = 'https://www.parabol.co/resources/retrospective-meetings/#video',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   GETTING_STARTED_ASYNC_STANDUP = 'https://www.parabol.co/resources/async-standup-meetings',
@@ -374,6 +375,7 @@ export const enum Threshold {
   JWT_LIFESPAN = 2592000000, // 30 days
   MASS_INVITATION_TOKEN_LIFESPAN = 2592000000, // 30 days
   TEAM_INVITATION_LIFESPAN = 2592000000, // 30 days
+  FINAL_WARNING_DAYS_BEFORE_LOCK = 7,
   MAX_FREE_TEAMS = 10,
   MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,
   MAX_ACCOUNT_DAILY_PASSWORD_RESETS = 3,
@@ -389,12 +391,12 @@ export const enum Threshold {
   MAX_POKER_DIMENSION_NAME = 50,
   MAX_QUAL_AI_MEETINGS = 3,
   MAX_REACTJIS = 12,
-  MAX_PERSONAL_TIER_TEAMS = 2,
+  MAX_STARTER_TIER_TEAMS = 2,
   MAX_POKER_STORIES = 50,
   MAX_INTEGRATION_FETCH_TIME = 10000,
   MIN_STICKY_TEAM_MEETING_ATTENDEES = 2,
   MIN_STICKY_TEAM_MEETINGS = 3,
-  PERSONAL_TIER_LOCK_AFTER_DAYS = 30,
+  STARTER_TIER_LOCK_AFTER_DAYS = 30,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
   VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days

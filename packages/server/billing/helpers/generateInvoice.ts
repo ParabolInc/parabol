@@ -337,18 +337,19 @@ export default async function generateInvoice(
   const [type] = invoiceId.split('_')
   const isUpcoming = type === 'upcoming'
 
-  let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
-  if (status === 'PENDING' && typeof invoice.charge === 'string') {
-    const manager = getStripeManager()
-    const charge = await manager.retrieveCharge(invoice.charge)
-    if (charge.status === 'failed') {
-      status = 'FAILED'
-    } else if (charge.status === 'succeeded') {
-      status = 'PAID'
-    }
-  }
+  const statusLookup = {
+    paid: 'PAID',
+    draft: 'PENDING',
+    open: 'PENDING'
+  } as Record<Stripe.Invoice.Status, InvoiceStatusEnum>
 
-  const paidAt = status === 'PAID' ? now : undefined
+  const status: InvoiceStatusEnum = isUpcoming
+    ? 'UPCOMING'
+    : statusLookup[invoice.status!] || 'FAILED'
+  const paidAt =
+    invoice.status === 'paid' && invoice.status_transitions.paid_at
+      ? fromEpochSeconds(invoice.status_transitions.paid_at)
+      : undefined
 
   const {organization, billingLeaderIds} = await r({
     organization: r.table('Organization').get(orgId) as unknown as Organization,
@@ -363,7 +364,6 @@ export default async function generateInvoice(
   const billingLeaderEmails = billingLeaders.map((user) => user.email)
 
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
-
   const coupon =
     (couponDetails?.name &&
       new Coupon({

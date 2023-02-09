@@ -86,7 +86,9 @@ const ResponseCardFooter = styled('div')({
 
 export const TeamMemberName = styled('h3')({
   padding: '0 8px',
-  margin: 0
+  margin: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
 })
 
 const StyledReactjis = styled(ReactjiSection)({
