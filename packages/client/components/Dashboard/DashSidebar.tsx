@@ -2,11 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
+import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
-import {Breakpoint, NavSidebar} from '../../types/constEnums'
+import {NavSidebar} from '../../types/constEnums'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
-import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
@@ -61,10 +60,7 @@ const OrgName = styled('div')({
   fontWeight: 600,
   fontSize: 12,
   lineHeight: '24px',
-  color: PALETTE.SLATE_500,
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    paddingLeft: 16
-  }
+  color: PALETTE.SLATE_500
 })
 
 interface Props {
@@ -74,8 +70,7 @@ interface Props {
 
 const DashSidebar = (props: Props) => {
   const {isOpen, viewerRef} = props
-  const location = useLocation()
-  const {pathname} = location
+  const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
 
   const viewer = useFragment(
     graphql`
@@ -96,11 +91,11 @@ const DashSidebar = (props: Props) => {
 
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
-  const showOrgSidebar = featureFlags.checkoutFlow && pathname.startsWith(`/me/organizations`)
+  const showOrgSidebar = featureFlags.checkoutFlow && match
 
   if (showOrgSidebar) {
-    const orgIdFromPathname = pathname.split('/')[3]
-    const currentOrg = organizations.find((org) => org.id === orgIdFromPathname)
+    const {orgId: orgIdFromParams} = match.params
+    const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (
       <Wrapper>

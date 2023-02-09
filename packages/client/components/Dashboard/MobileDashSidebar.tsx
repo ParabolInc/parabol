@@ -4,9 +4,8 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
-import {Breakpoint, NavSidebar} from '../../types/constEnums'
+import {NavSidebar} from '../../types/constEnums'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
-import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
@@ -54,10 +53,7 @@ const OrgName = styled('div')({
   fontWeight: 600,
   fontSize: 12,
   lineHeight: '24px',
-  color: PALETTE.SLATE_500,
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    paddingLeft: 16
-  }
+  color: PALETTE.SLATE_500
 })
 
 const NavMain = styled('div')({
