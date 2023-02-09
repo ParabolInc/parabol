@@ -16,7 +16,6 @@ export default class ServerHealthChecker {
   pendingPongs = new Set<string>()
   constructor() {
     this.subscriber.on('message', (channel, remoteServerId) => {
-      // console.log('message received', SERVER_ID, channel, remoteServerId)
       if (channel === 'socketServerPing') {
         if (remoteServerId === SERVER_ID) return
         this.publisher.publish(`socketServerPong:${remoteServerId}`, SERVER_ID)
@@ -41,7 +40,6 @@ export default class ServerHealthChecker {
     await this.reportDeadServers(deadServerIds)
   }
 
-  // Uses a callback because sigint will not await promises
   async reportDeadServers(deadServerIds: string[]) {
     if (deadServerIds.length === 0) return
     const authToken = new ServerAuthToken()
