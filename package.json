@@ -71,9 +71,7 @@
     "simple-get": "^4.0.1",
     "caniuse-lite": "~1.0.0",
     "git-url-parse": "12.0.0",
-    "fbjs": "^3.0.0",
-    "undici": "^5.8.2",
-    "parse-url": "^8.1.0"
+    "fbjs": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -91,7 +89,6 @@
     "babel-loader": "^9.1.2",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "15.7.2",
-    "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
     "jscodeshift": "^0.14.0",
     "lerna": "^6.4.1",
@@ -105,12 +102,10 @@
     "relay-compiler-language-typescript": "^15.0.1",
     "relay-config": "^12.0.0",
     "sucrase": "^3.23.0",
-    "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "9.2.6",
     "vscode-apollo-relay": "^1.5.0",
-    "webpack": "^5.75.0",
+    "webpack": "5.64.1",
     "webpack-cli": "4.9.1",
-    "workbox-webpack-plugin": "^6.5.4",
     "yarn-deduplicate": "^3.1.0"
   },
   "dependencies": {}
