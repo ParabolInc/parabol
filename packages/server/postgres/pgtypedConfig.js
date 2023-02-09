@@ -24,7 +24,9 @@ const pgtypedConfig = {
     password: process.env.POSTGRES_PASSWORD,
     host: process.env.POSTGRES_HOST,
     port: Number(process.env.POSTGRES_PORT),
-    ssl: ssl ?? undefined
+    ssl: ssl ?? {
+      rejectUnauthorized: false
+    }
   }
 }
 module.exports = pgtypedConfig
