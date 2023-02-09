@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {resolveTeam, resolveTeamMember} from '../resolvers'
@@ -37,7 +36,7 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     meeting: {
       type: NewMeeting,
-      description: 'the requested meeting',
+      description: 'The requested meeting',
       resolve: async (
         {meetingId}: {meetingId: string},
         _args: unknown,
@@ -51,12 +50,8 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
         }
         const {teamId} = meeting
         if (!isTeamMember(authToken, teamId)) {
-          const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-          const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-          if (!meetingMember) {
-            // standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
-            return null
-          }
+          standardError(new Error('Viewer not on team'), {userId: viewerId, tags: {teamId}})
+          return null
         }
         return meeting
       }

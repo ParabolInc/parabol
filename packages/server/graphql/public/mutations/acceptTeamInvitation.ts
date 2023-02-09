@@ -99,7 +99,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const teamMemberId = toTeamMemberId(teamId, viewerId)
 
   const data = {
-    meetingId: meetingId,
+    meetingId,
     teamId,
     teamMemberId,
     invitationNotificationIds
