@@ -239,7 +239,7 @@ const NewTeamForm = (props: Props) => {
             <WarningMsg>
               <BoldText>{lockedSelectedOrg.name}</BoldText>
               {` has reached the limit of `}
-              <BoldText>{`${Threshold.MAX_PERSONAL_TIER_TEAMS} free teams.`} </BoldText>
+              <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams.`} </BoldText>
               <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
               {' to create more teams.'}
             </WarningMsg>
