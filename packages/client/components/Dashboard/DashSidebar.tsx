@@ -56,11 +56,11 @@ const Wrapper = styled('div')({
 
 const OrgName = styled('div')({
   paddingTop: 8,
-  paddingLeft: 8,
   fontWeight: 600,
   fontSize: 12,
   lineHeight: '24px',
-  color: PALETTE.SLATE_500
+  color: PALETTE.SLATE_500,
+  paddingLeft: 16
 })
 
 interface Props {
@@ -103,7 +103,7 @@ const DashSidebar = (props: Props) => {
         <Nav isOpen={isOpen}>
           <Contents>
             <NavItemsWrap>
-              <NavItem icon={'arrowBack'} href={'/me'} label={'Back'} />
+              <NavItem icon={'arrowBack'} href={'/meetings'} label={'Back'} />
               <OrgName>{name}</OrgName>
               <NavItem
                 icon={'creditScore'}
