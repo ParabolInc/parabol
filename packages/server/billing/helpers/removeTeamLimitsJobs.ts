@@ -5,11 +5,8 @@ const removeTeamLimitsJobs = async (orgId: string) => {
   const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION']
   return r
     .table('ScheduledJob')
-    .filter((row: RValue) => {
-      return row('orgId')
-        .eq(orgId)
-        .and(r.expr(removeJobTypes).contains(row('type')))
-    })
+    .getAll(orgId, {index: 'orgId'})
+    .filter((row: RValue) => r.expr(removeJobTypes).contains(row('type')))
     .delete()
     .run()
 }
