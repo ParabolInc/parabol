@@ -46,7 +46,6 @@ module.exports = {
       'react-router-dom',
       'react-swipeable-views',
       'react-swipeable-views-core',
-      'react-swipeable-views-utils',
       'react-textarea-autosize',
       'react-transition-group',
       'react-virtualized',
