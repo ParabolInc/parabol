@@ -54,16 +54,16 @@ graphql`
       isPaid
       activeMeetings {
         id
-        ... on TeamPromptMeeting {
-          meetingSeries {
+      }
+    }
+    meeting {
+      id
+      ... on TeamPromptMeeting {
+        meetingSeries {
+          id
+          mostRecentMeeting {
             id
           }
-        }
-      }
-      activeMeetingSeries {
-        id
-        mostRecentMeeting {
-          id
         }
       }
     }
@@ -113,16 +113,15 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
 
   // the viewer could have requested the meeting & had it return null
   const activeMeetings = team.getLinkedRecords('activeMeetings')
-  const activeMeetingSeries = team.getLinkedRecords('activeMeetingSeries')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (viewer) {
+    const requestedMeeting = payload.getLinkedRecord('meeting')
+    const requestedMeetingId = requestedMeeting.getValue('id')
+    viewer.setLinkedRecord(requestedMeeting, 'meeting', {meetingId: requestedMeetingId})
+
     activeMeetings.forEach((activeMeeting) => {
       const meetingId = activeMeeting.getValue('id')
       viewer.setLinkedRecord(activeMeeting, 'meeting', {meetingId})
-    })
-    activeMeetingSeries.forEach((singleActiveMeetingSeries) => {
-      const meetingSeriesId = singleActiveMeetingSeries.getValue('id')
-      viewer.setLinkedRecord(singleActiveMeetingSeries, 'meetingSeries', {meetingSeriesId})
     })
   }
 }

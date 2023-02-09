@@ -38,7 +38,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     invitationToken,
     viewerId,
     dataLoader,
-    notificationId
+    notificationId ?? undefined
   )
   if (invitationRes.error) {
     const {error: message, teamId, meetingId} = invitationRes
@@ -51,8 +51,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const {invitation} = invitationRes
   const {meetingId, teamId, invitedBy: inviterId} = invitation
   const acceptAt = invitation.meetingId ? 'meeting' : 'team'
-  const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
-  const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
 
@@ -101,7 +99,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   const teamMemberId = toTeamMemberId(teamId, viewerId)
 
   const data = {
-    meetingId: activeMeetingId,
+    meetingId: meetingId,
     teamId,
     teamMemberId,
     invitationNotificationIds

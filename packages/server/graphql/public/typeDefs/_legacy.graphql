@@ -2228,11 +2228,6 @@ type Team {
   activeMeetings: [NewMeeting!]!
 
   """
-  a list of meeting series that are currently active
-  """
-  activeMeetingSeries: [MeetingSeries!]!
-
-  """
   The new meeting in progress, if any
   """
   meeting(
