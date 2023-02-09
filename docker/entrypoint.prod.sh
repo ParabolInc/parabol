@@ -3,5 +3,5 @@
 yarn db:migrate
 yarn pg:migrate up
 yarn pg:build
-yarn postdeploy
+yarn build
 exec "$@"
