@@ -71,7 +71,7 @@ export default function ThirtyDayWarningEmail(props: LimitsEmailProps) {
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {'contact us'}
           </a>
-          {` with any questions —— we’re here to help!`}
+          {` with any questions — we’re here to help!`}
         </p>
         <p style={copyStyle}>{'Parabol Team'}</p>
         <EmptySpace height={16} />
