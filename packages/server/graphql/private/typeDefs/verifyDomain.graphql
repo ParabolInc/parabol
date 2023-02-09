@@ -11,7 +11,7 @@ extend type Mutation {
     """
     organization id
     """
-    orgId: String!
+    orgId: ID!
 
     """
     Company's slug

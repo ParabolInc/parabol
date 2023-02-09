@@ -3,6 +3,7 @@ import {v4 as uuid} from 'uuid'
 import zlib from 'zlib'
 import getRethink from '../../../database/rethinkDriver'
 import {MutationResolvers} from '../resolverTypes'
+import {normalizeSlugName} from './helpers/SAMLHelpers'
 
 const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   const template = `
@@ -21,15 +22,6 @@ const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   url.searchParams.append('SAMLRequest', SAMLRequest)
   // calling toString will URI encode everything for us!
   return url.toString()
-}
-
-const normalizeName = (name: string) => {
-  const normalizedName = name.trim().toLowerCase()
-  const nameRegex = /^[a-z0-9_-]+$/
-  if (!nameRegex.test(normalizedName)) {
-    return new Error('Name must be letters and numbers or _ or - with no spaces')
-  }
-  return normalizedName
 }
 
 const validateDomains = async (domains: string[] | null | undefined, slugName: string) => {
@@ -74,7 +66,7 @@ const enableSAMLForDomain: MutationResolvers['enableSAMLForDomain'] = async (
   const r = await getRethink()
 
   // VALIDATION
-  const slugName = normalizeName(name)
+  const slugName = normalizeSlugName(name)
   if (slugName instanceof Error) return {error: {message: slugName.message}}
 
   const signOnURL = getSignOnURL(metadata, slugName)
