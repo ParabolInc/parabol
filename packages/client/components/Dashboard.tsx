@@ -99,7 +99,7 @@ const Dashboard = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
-      query DashboardQuery($first: Int!, $after: DateTime) {
+      query DashboardQuery($first: Int!, $after: DateTime, $teamIds: [ID!]) {
         ...DashTopBar_query
         ...MobileDashTopBar_query
         viewer {
@@ -110,10 +110,8 @@ const Dashboard = (props: Props) => {
           featureFlags {
             insights
           }
-          teams {
-            activeMeetings {
-              ...useSnacksForNewMeetings_meetings
-            }
+          activeMeetings(teamIds: $teamIds) {
+            ...useSnacksForNewMeetings_meetings
           }
         }
       }
@@ -122,9 +120,8 @@ const Dashboard = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
   const {viewer} = data
-  const {teams, featureFlags} = viewer
+  const {featureFlags, activeMeetings} = viewer
   const {insights} = featureFlags
-  const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy

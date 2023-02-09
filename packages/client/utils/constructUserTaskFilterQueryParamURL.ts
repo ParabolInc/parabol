@@ -4,6 +4,8 @@ const constructUserTaskFilterQueryParamURL = (
   showArchived?: boolean
 ) => {
   const filters = [] as string[]
+
+  const {pathname} = location
   if (teamIds) {
     filters.push(`teamIds=${teamIds.join(',')}`)
   }
@@ -13,7 +15,7 @@ const constructUserTaskFilterQueryParamURL = (
   if (showArchived) {
     filters.push(`archived=true`)
   }
-  const prefix = `/me/tasks${filters.length > 0 ? '?' : ''}`
+  const prefix = `${pathname}${filters.length > 0 ? '?' : ''}`
 
   return `${prefix}${filters.join('&')}`
 }

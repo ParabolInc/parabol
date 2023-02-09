@@ -3,12 +3,26 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
+import {MenuPosition} from '../hooks/useCoords'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import useMenu from '../hooks/useMenu'
 import useTransition from '../hooks/useTransition'
-import {Breakpoint, EmptyMeetingViewMessage, Layout} from '../types/constEnums'
+import {
+  Breakpoint,
+  EmptyMeetingViewMessage,
+  Layout,
+  UserTaskViewFilterLabels
+} from '../types/constEnums'
 import getSafeRegex from '../utils/getSafeRegex'
+import lazyPreload from '../utils/lazyPreload'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import {useUserTaskFilters} from '../utils/useUserTaskFilters'
+import DashSectionControls from './Dashboard/DashSectionControls'
+import DashSectionHeader from './Dashboard/DashSectionHeader'
+import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
@@ -19,6 +33,30 @@ interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
+
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
+
+const UserDashTeamMenu = lazyPreload(
+  () =>
+    import(
+      /* webpackChunkName: 'UserDashTeamMenu' */
+      './UserDashTeamMenu'
+    )
+)
+
+const StyledDashFilterToggle = styled(DashFilterToggle)({
+  margin: '4px 16px 4px 0',
+  [desktopBreakpoint]: {
+    margin: '0 24px 0 0'
+  }
+})
+
+const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
+  justifyContent: 'flex-start',
+  flexWrap: 'wrap',
+  width: '100%',
+  overflow: 'initial'
+})
 
 const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   padding: maybeTabletPlus ? 0 : 16,
@@ -38,11 +76,12 @@ const EmptyContainer = styled('div')({
 })
 
 const MeetingsDash = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {meetingsDashRef, viewer} = props
-  const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
+  const {teams = [], preferredName = '', dashSearch, activeMeetings: meetings} = viewer ?? {}
   const activeMeetings = useMemo(() => {
-    const meetings = teams
-      .flatMap((team) => team.activeMeetings)
+    const sortedMeetings = meetings
       .filter(Boolean)
       .sort((a, b) => {
         const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
@@ -63,8 +102,8 @@ const MeetingsDash = (props: Props) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })
     const filteredMeetings = dashSearch
-      ? meetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
-      : meetings
+      ? sortedMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
+      : sortedMeetings
     return filteredMeetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
@@ -76,11 +115,47 @@ const MeetingsDash = (props: Props) => {
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
+
+  const {
+    menuPortal: teamFilterMenuPortal,
+    togglePortal: teamFilterTogglePortal,
+    originRef: teamFilterOriginRef,
+    menuProps: teamFilterMenuProps
+  } = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
+
+  const {teamIds} = useUserTaskFilters(viewerId)
+
+  const teamFilter = useMemo(
+    () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
+    [teamIds, teams]
+  )
+
+  const teamFilterName = (teamFilter && teamFilter.name) || UserTaskViewFilterLabels.ALL_TEAMS
+
   if (!viewer || !cardsPerRow) return null
   return (
     <>
       {hasMeetings ? (
         <Wrapper maybeTabletPlus={maybeTabletPlus}>
+          <DashSectionHeader>
+            <UserTasksHeaderDashSectionControls>
+              <StyledDashFilterToggle
+                label='Team'
+                onClick={teamFilterTogglePortal}
+                onMouseEnter={UserDashTeamMenu.preload}
+                ref={teamFilterOriginRef}
+                value={teamFilterName}
+                iconText='group'
+                dataCy='team-filter'
+              />
+              {teamFilterMenuPortal(
+                <UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />
+              )}
+            </UserTasksHeaderDashSectionControls>
+          </DashSectionHeader>
+
           {transitioningMeetings.map((meeting) => {
             const {child} = meeting
             const {id, displayIdx} = child
@@ -147,8 +222,24 @@ export default createFragmentContainer(MeetingsDash, {
       dashSearch
       preferredName
       teams {
+        id
+        name
         ...MeetingsDashActiveMeetings @relay(mask: false)
       }
+      activeMeetings(teamIds: $teamIds) {
+        ...MeetingCard_meeting
+        ...useSnacksForNewMeetings_meetings
+        id
+        name
+        createdAt
+        meetingMembers {
+          user {
+            isConnected
+            lastSeenAtURLs
+          }
+        }
+      }
+      ...UserDashTeamMenu_viewer
     }
   `
 })
