@@ -19,7 +19,7 @@ const isMeetingLocked = async (
   const {featureFlags} = viewer
   const {tier, isPaid, orgId, isArchived} = team
 
-  if (!featureFlags.includes('meetingHistoryLimit')) {
+  if (featureFlags.includes('noMeetingHistoryLimit')) {
     return false
   }
 
