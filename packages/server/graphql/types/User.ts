@@ -28,7 +28,6 @@ import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
-import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
 import AuthIdentity from './AuthIdentity'
@@ -81,7 +80,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description:
         'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
-    invoiceDetails,
     invoices,
     isAnyBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
