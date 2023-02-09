@@ -39,7 +39,9 @@ const UserDashTeamMenu = (props: Props) => {
     return {
       filteredTeams,
       defaultActiveIdx:
-        filteredTeams.findIndex((team) => teamIds?.includes(team.id)) + (showAllTeams ? 2 : 1)
+        filteredTeams.findIndex((team) => teamIds?.includes(team.id)) +
+        (showAllTeams ? 3 : 2) +
+        (filteredTeams.length > 5 ? 1 : 0)
     }
   }, [userIds, teamIds])
 
