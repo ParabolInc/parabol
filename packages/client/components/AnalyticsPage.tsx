@@ -11,6 +11,7 @@ import safeIdentify from '~/utils/safeIdentify'
 import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
+import getContentGroup from '../utils/getContentGroup'
 import makeHref from '../utils/makeHref'
 
 const query = graphql`
@@ -93,12 +94,13 @@ const AnalyticsPage = () => {
     if (gaMeasurementId) {
       ReactGA.initialize(gaMeasurementId, {
         gtagOptions: {
-          send_page_view: true
+          debug_mode: !__PRODUCTION__
         }
       })
     }
   }, [ReactGA.isInitialized, gaMeasurementId])
 
+  const {href, pathname} = location
   useEffect(() => {
     const configGA = async () => {
       if (!ReactGA.isInitialized || !isSegmentLoaded) {
@@ -106,6 +108,9 @@ const AnalyticsPage = () => {
       }
 
       const {viewerId} = atmosphere
+      ReactGA.set({
+        content_group: getContentGroup(pathname)
+      })
       if (viewerId) {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
         if (!res) return
@@ -123,10 +128,9 @@ const AnalyticsPage = () => {
       }
     }
     configGA()
-  }, [ReactGA.isInitialized, atmosphere.viewerId])
+  }, [ReactGA.isInitialized, atmosphere.viewerId, pathname])
 
   /* eslint-disable */
-  const {href, pathname} = location
   const pathnameRef = useRef(pathname)
   const segmentKey = window.__ACTION__.segment
   useEffect(() => {
@@ -192,6 +196,7 @@ const AnalyticsPage = () => {
         // See: segmentIo.ts:28 for more information on the next line
         {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
       )
+      ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
 
