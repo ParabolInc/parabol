@@ -233,9 +233,7 @@ const MeetingCard = (props: Props) => {
   const {id: teamId, name: teamName} = team
 
   const isRecurring = !!(meetingSeries && !meetingSeries.cancelledAt)
-  const meetingLink = isRecurring
-    ? `/meeting-series/${encodeURIComponent(meetingSeries.id)}`
-    : `/meet/${meetingId}`
+  const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
 
   return (
     <CardWrapper
