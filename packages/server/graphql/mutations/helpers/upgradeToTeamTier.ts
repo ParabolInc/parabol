@@ -1,4 +1,4 @@
-import {removeTeamLimitsJobs} from '../../../billing/helpers/teamLimitsCheck'
+import removeTeamLimitsJobs from '../../../billing/helpers/removeTeamLimitsJobs'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {fromEpochSeconds} from '../../../utils/epochTime'

@@ -11,6 +11,7 @@ import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import removeTeamLimitsJobs from './removeTeamLimitsJobs'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 // Uncomment for easier testing
@@ -107,19 +108,6 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
         .count()
         .gt(Threshold.MAX_STARTER_TIER_TEAMS)
     })
-    .run()
-}
-
-export const removeTeamLimitsJobs = async (orgId: string) => {
-  const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION']
-  return r
-    .table('ScheduledJob')
-    .filter((row: RValue) => {
-      return row('orgId')
-        .eq(orgId)
-        .and(r.expr(removeJobTypes).contains(row('type')))
-    })
-    .delete()
     .run()
 }
 
