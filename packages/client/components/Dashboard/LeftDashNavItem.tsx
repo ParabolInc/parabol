@@ -1,13 +1,5 @@
 import styled from '@emotion/styled'
-import {
-  Add,
-  ExitToApp,
-  Forum,
-  Group,
-  PlaylistAddCheck,
-  Timeline,
-  Warning
-} from '@mui/icons-material'
+import {Add, ExitToApp, Forum, Group, History, PlaylistAddCheck, Warning} from '@mui/icons-material'
 import React from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import useRouter from '~/hooks/useRouter'
@@ -85,7 +77,7 @@ const LeftDashNavItem = (props: Props) => {
         {
           {
             forum: <Forum />,
-            timeline: <Timeline />,
+            history: <History />,
             playlist_add_check: <PlaylistAddCheck />,
             add: <Add />,
             exit_to_app: <ExitToApp />,

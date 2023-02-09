@@ -44,6 +44,7 @@ export interface Snack {
   autoDismiss: number // seconds. 0 means never dismiss
   noDismissOnClick?: boolean // clicking has no effect on the show state
   onDismiss?: () => void
+  onManualDismiss?: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
   showDismissButton?: boolean
@@ -159,6 +160,7 @@ const Snackbar = React.memo(() => {
         const dismiss = () => {
           if (child.noDismissOnClick) return
           dismissSnack(child)
+          child.onManualDismiss?.()
         }
         return (
           <SnackbarMessage

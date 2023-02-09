@@ -38,7 +38,6 @@ const DiscussionMentioned = (props: Props) => {
         meeting {
           id
           name
-          facilitatorStageId
           ...fromStageIdToUrl_meeting
         }
         comment {
@@ -64,11 +63,9 @@ const DiscussionMentioned = (props: Props) => {
   const {picture: authorPicture, preferredName: authorName} = author
   const {stage} = discussion
   const {id: stageId, response} = stage ?? {}
-  const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
+  const {id: meetingId, name: meetingName} = meeting
 
-  const directUrl = stageId
-    ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
-    : `/meet/${meetingId}`
+  const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   const goThere = () => {
     history.push(

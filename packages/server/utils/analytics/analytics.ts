@@ -1,9 +1,12 @@
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
+import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {ReactableEnum} from '../../database/types/Reactable'
+import {Reactable} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
+import {ReactableEnum} from '../../graphql/private/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
@@ -72,6 +75,7 @@ export type AnalyticsEvent =
   | 'Invite Email Sent'
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
+  | 'Notification Email Sent'
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
@@ -224,16 +228,21 @@ class Analytics {
     userId: string,
     meetingId: string,
     meetingType: MeetingTypeEnum,
-    reactableId: string,
+    reactable: Reactable,
     reactableType: ReactableEnum,
+    reactji: string,
     isRemove: boolean
   ) => {
+    const isAIComment = 'createdBy' in reactable && reactable.createdBy === PARABOL_AI_USER_ID
+    const {id: reactableId} = reactable
     this.track(userId, 'Reactji Interacted', {
       meetingId,
       meetingType,
       reactableId,
       reactableType,
-      isRemove
+      reactji,
+      isRemove,
+      isAIComment
     })
   }
 
@@ -367,6 +376,10 @@ class Analytics {
 
   toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
     this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
+  }
+
+  notificationEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
+    this.track(userId, 'Notification Email Sent', {type, orgId})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

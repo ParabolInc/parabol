@@ -67,7 +67,7 @@ const handleCompletedRetrospectiveStage = async (
 
       data.reflectionGroups = sortedReflectionGroups
     } else if (stage.phaseType === GROUP) {
-      const {facilitatorUserId, phases} = meeting
+      const {facilitatorUserId, phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await r
         .table('NewMeeting')
@@ -78,7 +78,7 @@ const handleCompletedRetrospectiveStage = async (
         .run()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateGroupSummaries(meeting.id, dataLoader, facilitatorUserId)
+      generateGroupSummaries(meeting.id, teamId, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}

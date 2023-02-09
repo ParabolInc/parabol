@@ -13,7 +13,6 @@ graphql`
     meeting {
       id
       name
-      facilitatorStageId
       ...fromStageIdToUrl_meeting
     }
     discussion {
@@ -38,13 +37,11 @@ const mapDiscussionMentionedToToast = (
   if (!notification) return null
   const {meeting, author, discussion} = notification
   const {preferredName: authorName} = author
-  const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
+  const {id: meetingId, name: meetingName} = meeting
   const {stage} = discussion
   const {id: stageId, response} = stage ?? {}
 
-  const directUrl = stageId
-    ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
-    : `/meet/${meetingId}`
+  const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
   // thread, and do nothing if we are.

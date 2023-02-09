@@ -31,17 +31,17 @@ const InvitationLink = lazy(
   () => import(/* webpackChunkName: 'InvitationLinkRoot' */ '../InvitationLinkRoot')
 )
 
+const GlobalCSS = css`
+  ${globalStyles}
+`
+
 const Action = memo(() => {
   useTrebuchetEvents()
   useServiceWorkerUpdater()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   return (
     <>
-      <Global
-        styles={css`
-          ${globalStyles}
-        `}
-      />
+      <Global styles={GlobalCSS} />
       <ErrorBoundary>
         <Snackbar />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
@@ -92,5 +92,7 @@ const Action = memo(() => {
     </>
   )
 })
+
+Action.displayName = 'Action'
 
 export default Action

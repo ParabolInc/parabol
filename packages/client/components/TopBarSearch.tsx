@@ -24,6 +24,11 @@ const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
       path: '/team/:teamId/archive',
       exact: true,
       strict: false
+    }) ||
+    !!matchPath(pathname, {
+      path: '/meetings',
+      exact: true,
+      strict: false
     })
   )
 }

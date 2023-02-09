@@ -16,19 +16,24 @@ class OpenAIServerManager {
     this.openAIApi = new OpenAIApi(configuration)
   }
 
-  async getSummary(text: string | string[]) {
+  async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     try {
+      const location = summaryLocation ?? 'retro meeting'
       const response = await this.openAIApi.createCompletion({
         model: 'text-davinci-003',
-        prompt: `Summarize this for a second-grade student in one or two sentences: ${text}`,
+        prompt: `Below is a comma-separated list of text from a ${location}. Summarize the text for a second-grade student in one or two sentences.
+
+        Text: """
+        ${text}
+        """`,
         temperature: 0.7,
         max_tokens: 256,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
       })
-      return (response.data.choices[0]?.text as string) ?? null
+      return (response.data.choices[0]?.text?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
