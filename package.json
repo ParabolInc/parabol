@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "start": "pm2-runtime start pm2.config.js",
-    "heroku-postbuild": "yarn codegen && yarn build && yarn db:migrate && yarn pg:migrate up && yarn pg:build && yarn postdeploy",
+    "heroku-postbuild": "yarn db:migrate && yarn pg:migrate up && yarn pg:build && yarn build --deploy && yarn postdeploy",
     "build": "node scripts/prod.js",
     "clean": "rm -rf ./packages/client/__generated__ ./queryMap.json ./packages/server/graphql/public/schema.graphql ./packages/server/graphql/private/schema.graphql ./dev ./dist ./build",
     "codegen": "node scripts/codegenGraphQL.js",
