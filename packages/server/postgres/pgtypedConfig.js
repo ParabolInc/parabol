@@ -1,4 +1,9 @@
+require('../../../scripts/webpack/utils/dotenv')
+const ssl = require('./getPgSSL')()
+
 const emitTemplateTarget = 'packages/server/postgres/queries/generated/{{name}}.ts'
+
+console.log('===process.env.POSTGRES_URL', process.env.POSTGRES_URL)
 
 const pgtypedConfig = {
   transforms: [
@@ -15,7 +20,7 @@ const pgtypedConfig = {
   ],
   srcDir: 'packages/server/postgres/queries/src',
   camelCaseColumnNames: false,
-  dbUrl: 'postgres://postgres:dcac4a55540fbd2f20ca6745c2beb346@localhost:5432/pb_pg'
+  dbUrl: process.env.POSTGRES_URL
 }
 
 module.exports = pgtypedConfig
