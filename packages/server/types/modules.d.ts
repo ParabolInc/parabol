@@ -1,7 +1,7 @@
 // this is just to get typescript to stop complaining about imports
 // declare module '*'
 declare module '*.png'
-declare module '*.jpg'
+
 declare module '*.svg'
 
 declare module '*.graphql' {
