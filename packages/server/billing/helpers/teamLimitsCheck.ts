@@ -142,6 +142,9 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   if (tierLimitExceededAt || tier !== 'starter') return
 
+  // if an org is using a free provider, e.g. gmail.com, we can't show them usage stats, so don't send notifications/emails directing them there for now. Issue to fix this here: https://github.com/ParabolInc/parabol/issues/7723
+  if (!organization.activeDomain) return
+
   if (!(await isLimitExceeded(orgId, dataLoader))) return
 
   const now = new Date()

@@ -65,7 +65,7 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
           <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
             {'contact us'}
           </a>
-          {` —— we're happy to help make this process as smooth as possible.`}
+          {` — we're happy to help make this process as smooth as possible.`}
         </p>
         <p style={copyStyle}>{'Parabol Team'}</p>
         <EmptySpace height={16} />

@@ -73,11 +73,13 @@ const AvatarLabel = styled('div')({
   ...label,
   color: PALETTE.SLATE_600,
   flex: 1,
-  minWidth: 0
+  minWidth: 0,
+  overflowWrap: 'break-word'
 })
 
 const TooltipToggle = styled('div')({
-  display: 'inline-flex'
+  display: 'inline-flex',
+  width: '100%'
 })
 
 const StyledIcon = styled('div')({

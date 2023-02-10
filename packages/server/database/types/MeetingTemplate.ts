@@ -45,7 +45,7 @@ export default class MeetingTemplate {
     this.parentTemplateId = parentTemplateId
     this.lastUsedAt = lastUsedAt ?? undefined
     this.type = type
-    this.isStarter = isStarter
-    this.isFree = isFree ?? false
+    this.isStarter = isStarter || false
+    this.isFree = isFree || false
   }
 }

@@ -170,6 +170,7 @@ export const meetingTemplatesByOrgId = new RethinkForeignKeyLoaderMaker(
   'orgId',
   async (orgId) => {
     const r = await getRethink()
+    // Will convert to PG by Mar 1, 2023
     return r
       .table('MeetingTemplate')
       .getAll(r.args(orgId), {index: 'orgId'})
@@ -182,6 +183,7 @@ export const meetingTemplatesByTeamId = new RethinkForeignKeyLoaderMaker(
   'teamId',
   async (teamIds) => {
     const r = await getRethink()
+    // Will convert to PG by Mar 1, 2023
     return r
       .table('MeetingTemplate')
       .getAll(r.args(teamIds), {index: 'teamId'})

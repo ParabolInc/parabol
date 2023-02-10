@@ -11,7 +11,7 @@ import EditCommentingMutation from '~/mutations/EditCommentingMutation'
 import {Elevation} from '~/styles/elevation'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import {convertStateToRaw} from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {DiscussionThreadInput_discussion} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
 import {DiscussionThreadInput_viewer} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
@@ -226,7 +226,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!ensureHasText(value)) return
-      addComment(convertToTaskContent(value))
+      const text = value.trim()
+      const contentState = ContentState.createFromText(text)
+      const rawText = convertStateToRaw(contentState)
+      addComment(rawText)
       return
     }
     const content = editorState.getCurrentContent()
