@@ -23,11 +23,11 @@ export const startNewMeetingSeries = async (
 
   // TODO: now, as new meeting series could be created from a new meeting view, let's grab the first part ie. "Standup - Jan 1" will be "Standup"
   // TODO: this is a temporary solution, we should have a better way to handle this
-  const [cleanMeetingName] = meetingName.includes('-') ? meetingName.split('-') : [meetingName]
+  const [cleanMeetingName] = meetingName.split('-')
 
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
-    title: cleanMeetingName!.trim(),
+    title: cleanMeetingName.trim(),
     recurrenceRule: recurrenceRule.toString(),
     // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
     duration: 0,
