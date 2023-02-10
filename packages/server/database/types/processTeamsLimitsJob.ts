@@ -2,6 +2,8 @@ import {r} from 'rethinkdb-ts'
 import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
+import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import NotificationTeamsLimitReminder from './NotificationTeamsLimitReminder'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
@@ -10,7 +12,7 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
     dataLoader.get('organizations').load(orgId),
     dataLoader.get('organizationUsersByOrgId').load(orgId)
   ])
-  const {name: orgName, scheduledLockAt, lockedAt} = organization
+  const {name: orgName, picture: orgPicture, scheduledLockAt, lockedAt} = organization
 
   if (!scheduledLockAt || lockedAt) return
 
@@ -27,6 +29,24 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
     const now = new Date()
     await r.table('Organization').get(orgId).update({lockedAt: now}).run()
     organization.lockedAt = lockedAt
+  } else if (type === 'WARN_ORGANIZATION') {
+    const notificationsToInsert = billingLeadersIds.map((userId) => {
+      return new NotificationTeamsLimitReminder({
+        userId,
+        orgId,
+        orgName,
+        orgPicture,
+        scheduledLockAt
+      })
+    })
+
+    await r.table('Notification').insert(notificationsToInsert).run()
+
+    const operationId = dataLoader.share()
+    const subOptions = {operationId}
+    notificationsToInsert.forEach((notification) => {
+      publishNotification(notification, subOptions)
+    })
   }
 }
 

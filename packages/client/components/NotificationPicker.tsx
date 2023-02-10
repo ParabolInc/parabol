@@ -25,6 +25,12 @@ const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
         /* webpackChunkName: 'TeamsLimitExceededNotification' */ './TeamsLimitExceededNotification'
       )
   ),
+  TEAMS_LIMIT_REMINDER: lazyPreload(
+    () =>
+      import(
+        /* webpackChunkName: 'TeamsLimitReminderNotification' */ './TeamsLimitReminderNotification'
+      )
+  ),
   TEAM_ARCHIVED: lazyPreload(() => import(/* webpackChunkName: 'TeamArchived' */ './TeamArchived')),
   TEAM_INVITATION: lazyPreload(
     () => import(/* webpackChunkName: 'TeamInvitation' */ './TeamInvitationNotification')
@@ -71,6 +77,7 @@ export default createFragmentContainer(NotificationPicker, {
       ...ResponseMentioned_notification
       ...ResponseReplied_notification
       ...TeamsLimitExceededNotification_notification
+      ...TeamsLimitReminderNotification_notification
     }
   `
 })

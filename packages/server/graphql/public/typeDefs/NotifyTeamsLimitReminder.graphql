@@ -1,4 +1,4 @@
-type NotifyTeamsLimitExceeded implements Notification {
+type NotifyTeamsLimitReminder implements Notification {
   """
   A shortid for the notification
   """
@@ -34,4 +34,9 @@ type NotifyTeamsLimitExceeded implements Notification {
   Organization picture
   """
   orgPicture: URL
+
+  """
+  Scheduled blocking time at the time of notification
+  """
+  scheduledLockAt: DateTime!
 }
