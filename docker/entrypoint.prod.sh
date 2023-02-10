@@ -1,6 +1,6 @@
 #!/bin/sh
 
-yarn db:migrate
+NODE_ENV=production yarn db:migrate
 yarn pg:migrate up
 yarn pg:build
 yarn build
