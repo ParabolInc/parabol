@@ -57,6 +57,12 @@ export default class GoogleServerManager extends GoogleManager {
     const tokenJson = (await tokenRes.json()) as OAuth2Response
     const {access_token: accessToken, id_token: idToken} = tokenJson
     const id = decode(idToken) as GoogleIDToken
+    console.log('===LOGIN RESULT', {
+      qp: JSON.stringify(queryParams),
+      uri,
+      tokenJSON: JSON.stringify(tokenJson),
+      id
+    })
     return new GoogleServerManager(accessToken, id)
   }
 
