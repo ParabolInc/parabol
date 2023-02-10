@@ -26,7 +26,7 @@ export const TimeLeftBadge = (props: Props) => {
       <TeamPromptBadge onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
         {fromNow} left
       </TeamPromptBadge>
-      {tooltipPortal(`Restarts at ${dayjs(meetingEndTimeDate).format('MMM D, YYYY h:mm A')}`)}
+      {tooltipPortal(`Restarts on ${dayjs(meetingEndTimeDate).format('MMM D, YYYY h:mm A')}`)}
     </>
   )
 }
