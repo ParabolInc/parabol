@@ -69,6 +69,7 @@ const useUsageSnackNag = (insights: boolean) => {
     `,
     {isUserNaggable}
   )
+
   const {domains} = viewer
 
   // Do not use snack nag if the user has an organization with the limit exceeded, in this case we use a different warnings approach

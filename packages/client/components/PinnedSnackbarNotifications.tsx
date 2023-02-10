@@ -46,7 +46,6 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     `,
     queryRef
   )
-
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
   const {viewer} = data

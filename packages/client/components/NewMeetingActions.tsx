@@ -1,9 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
-import {Breakpoint} from '../types/constEnums'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import {Breakpoint, Threshold} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import StyledError from './StyledError'
@@ -51,6 +53,12 @@ const StartButton = styled(FlatPrimaryButton)({
   height: 50
 })
 
+const ErrorBlock = styled(StyledError)({
+  paddingBottom: 24,
+  width: '100%',
+  textAlign: 'center'
+})
+
 interface Props {
   error?: {message: string}
   teamRef: NewMeetingActions_team$key
@@ -65,19 +73,49 @@ const NewMeetingActions = (props: Props) => {
       fragment NewMeetingActions_team on Team {
         ...NewMeetingActionsCurrentMeetings_team
         id
+        organization {
+          id
+          name
+          lockedAt
+        }
       }
     `,
     teamRef
   )
 
+  const atmosphere = useAtmosphere()
+
+  const {organization} = team
+
+  const {lockedAt, name: organizationName, id: orgId} = organization
+
+  const isLocked = !!lockedAt
+
+  useEffect(() => {
+    if (isLocked) {
+      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+        upgradeCTALocation: 'startNewMeetingOrganizationLockedError',
+        orgId
+      })
+    }
+  }, [isLocked])
+
   return (
     <ActionRow>
+      {error && <ErrorBlock>{error.message}</ErrorBlock>}
+      {isLocked && (
+        <ErrorBlock>
+          Unfortunately, {organizationName} has exceeded the {Threshold.MAX_STARTER_TIER_TEAMS}{' '}
+          teams limit on the Starter Plan for more than {Threshold.STARTER_TIER_LOCK_AFTER_DAYS}{' '}
+          days, and your account has been locked. You can re-activate your teams by upgrading your
+          account.
+        </ErrorBlock>
+      )}
       <ActiveMeetingsBlock>
         <NewMeetingActionsCurrentMeetings team={team} />
-        {error && <StyledError>{error.message}</StyledError>}
       </ActiveMeetingsBlock>
       <ButtonBlock>
-        <StartButton onClick={onStartMeetingClick} waiting={submitting}>
+        <StartButton onClick={onStartMeetingClick} waiting={submitting} disabled={isLocked}>
           Start Meeting
         </StartButton>
       </ButtonBlock>

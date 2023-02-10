@@ -10,10 +10,8 @@ graphql`
   fragment mapTeamsLimitReminderToToast_notification on NotifyTeamsLimitReminder {
     id
     scheduledLockAt
-    organization {
-      id
-      name
-    }
+    orgId
+    orgName
   }
 `
 
@@ -21,15 +19,14 @@ const mapTeamsLimitReminderToToast = (
   notification: mapTeamsLimitReminderToToast_notification,
   {history, atmosphere}: OnNextHistoryContext
 ): Snack => {
-  const {id: notificationId, organization, scheduledLockAt} = notification
-  const {name: orgName, id: orgId} = organization
+  const {id: notificationId, scheduledLockAt, orgId, orgName} = notification
 
   return {
     autoDismiss: 0,
     key: `newNotification:${notificationId}`,
     message: `"${orgName}" is over the limit of ${
       Threshold.MAX_STARTER_TIER_TEAMS
-    } Free Teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,
+    } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,
     onShow: () => {
       SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
         upgradeCTALocation: 'teamsLimitReminderSnackbar',

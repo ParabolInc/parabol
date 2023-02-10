@@ -1,6 +1,9 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import {resolveTeam, resolveTeamMember} from '../resolvers'
 import {GQLContext} from './../graphql'
+import NewMeeting from './NewMeeting'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
@@ -30,6 +33,28 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       type: TeamMember,
       description: 'The new team member on the team',
       resolve: resolveTeamMember
+    },
+    meeting: {
+      type: NewMeeting,
+      description: 'The requested meeting',
+      resolve: async (
+        {meetingId}: {meetingId: string},
+        _args: unknown,
+        {dataLoader, authToken}: GQLContext
+      ) => {
+        const viewerId = getUserId(authToken)
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        if (!meeting) {
+          standardError(new Error('Meeting not found'), {userId: viewerId, tags: {meetingId}})
+          return null
+        }
+        const {teamId} = meeting
+        if (!isTeamMember(authToken, teamId)) {
+          standardError(new Error('Viewer not on team'), {userId: viewerId, tags: {teamId}})
+          return null
+        }
+        return meeting
+      }
     },
     notifications: {
       type: NotificationTeamInvitation,

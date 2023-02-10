@@ -24,18 +24,15 @@ const TeamsLimitReminderNotification = (props: Props) => {
         ...NotificationTemplate_notification
         id
         scheduledLockAt
-        organization {
-          id
-          name
-          picture
-        }
+        orgId
+        orgName
+        orgPicture
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
-  const {organization, scheduledLockAt} = notification
-  const {name: orgName, picture: orgPicture, id: orgId} = organization
+  const {orgId, orgName, orgPicture, scheduledLockAt} = notification
 
   useEffect(() => {
     SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
@@ -56,7 +53,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
       avatar={orgPicture || defaultOrgAvatar}
       message={`"${orgName}" is over the limit of ${
         Threshold.MAX_STARTER_TIER_TEAMS
-      } Free Teams. Your free access will end on ${makeDateString(scheduledLockAt)}`}
+      } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`}
       action={<NotificationAction label={'Upgrade'} onClick={onActionClick} />}
       notification={notification}
     />

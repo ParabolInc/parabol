@@ -16,6 +16,7 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
   const meeting = readInlineData(
     graphql`
       fragment useGotoStageId_meeting on NewMeeting @inline {
+        ...updateLocalStage_meeting
         endedAt
         teamId
         facilitatorStageId
@@ -56,7 +57,7 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
       if (teamId === demoTeamId) {
         await (atmosphere as any as LocalAtmosphere).clientGraphQLServer.finishBotActions()
       }
-      updateLocalStage(atmosphere, meetingId, stageId)
+      updateLocalStage(atmosphere, meeting, stageId)
       if (isViewerFacilitator && isNavigableByFacilitator && !endedAt) {
         const res = findStageById(phases, facilitatorStageId)
         if (!res) return

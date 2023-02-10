@@ -18,18 +18,14 @@ const TeamsLimitExceededNotification = (props: Props) => {
       fragment TeamsLimitExceededNotification_notification on NotifyTeamsLimitExceeded {
         ...NotificationTemplate_notification
         id
-        organization {
-          id
-          name
-          picture
-        }
+        orgName
+        orgPicture
       }
     `,
     notificationRef
   )
   const {history} = useRouter()
-  const {organization} = notification
-  const {name: orgName, picture: orgPicture} = organization
+  const {orgName, orgPicture} = notification
 
   const onActionClick = () => {
     history.push(`/usage`)

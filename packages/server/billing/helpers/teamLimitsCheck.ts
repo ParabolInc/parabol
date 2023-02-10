@@ -3,6 +3,7 @@ import {Threshold} from 'parabol-client/types/constEnums'
 import {r} from 'rethinkdb-ts'
 import {RDatum, RValue} from '../../database/stricterR'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
+import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
@@ -46,16 +47,19 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
 }
 
 const sendWebsiteNotifications = async (
-  orgId: string,
+  organization: Organization,
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
+  const {id: orgId, name: orgName, picture: orgPicture} = organization
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const notificationsToInsert = userIds.map((userId) => {
     return new NotificationTeamsLimitExceeded({
       userId,
-      orgId
+      orgId,
+      orgName,
+      orgPicture
     })
   })
 
@@ -151,6 +155,9 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   if (tierLimitExceededAt || tier !== 'starter') return
 
+  // if an org is using a free provider, e.g. gmail.com, we can't show them usage stats, so don't send notifications/emails directing them there for now. Issue to fix this here: https://github.com/ParabolInc/parabol/issues/7723
+  if (!organization.activeDomain) return
+
   if (!(await isLimitExceeded(orgId, dataLoader))) return
 
   const now = new Date()
@@ -170,19 +177,18 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   const billingLeaders = await getBillingLeaders(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
-  if (organization.activeDomain) {
-    await Promise.all([
-      enableUsageStats(billingLeadersIds, orgId),
-      sendWebsiteNotifications(orgId, billingLeadersIds, dataLoader),
-      billingLeaders.map((billingLeader) =>
-        sendTeamsLimitEmail({
-          user: billingLeader,
-          orgId,
-          orgName,
-          emailType: 'thirtyDayWarning'
-        })
-      ),
-      scheduleTeamLimitsJobs(scheduledLockAt, orgId)
-    ])
-  }
+  // wait for usage stats to be enabled as we dont want to send notifications before it's available
+  await enableUsageStats(billingLeadersIds, orgId)
+  await Promise.all([
+    sendWebsiteNotifications(organization, billingLeadersIds, dataLoader),
+    billingLeaders.map((billingLeader) =>
+      sendTeamsLimitEmail({
+        user: billingLeader,
+        orgId,
+        orgName,
+        emailType: 'thirtyDayWarning'
+      })
+    ),
+    scheduleTeamLimitsJobs(scheduledLockAt, orgId)
+  ])
 }

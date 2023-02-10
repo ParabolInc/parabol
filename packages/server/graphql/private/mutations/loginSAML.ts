@@ -28,7 +28,11 @@ const getRelayState = (body: any) => {
   return relayState
 }
 
-const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
+const loginSAML: MutationResolvers['loginSAML'] = async (
+  _source,
+  {samlName, queryString},
+  {dataLoader}
+) => {
   const r = await getRethink()
   const body = querystring.parse(queryString)
   const normalizedName = samlName.trim().toLowerCase()
@@ -75,21 +79,25 @@ const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, que
   const user = await getUserByEmail(email)
   if (user) {
     return {
-      authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol}))
+      authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),
+      isNewUser: false
     }
   }
 
   const userId = `sso|${generateUID()}`
-  const newUser = new User({
+  const tempUser = new User({
     id: userId,
     email,
     preferredName,
     tier: 'enterprise'
   })
 
-  const authToken = await bootstrapNewUser(newUser, !isInvited)
+  const authToken = await bootstrapNewUser(tempUser, !isInvited)
+  const newUser = await dataLoader.get('users').loadNonNull(userId)
   return {
-    authToken: encodeAuthToken(authToken)
+    authToken: encodeAuthToken(authToken),
+    isNewUser: true,
+    isPatient0: newUser.isPatient0
   }
 }
 

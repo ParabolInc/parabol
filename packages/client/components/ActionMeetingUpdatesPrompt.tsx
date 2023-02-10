@@ -25,7 +25,9 @@ const PromptText = styled('div')({
 })
 
 const StyledHeader = styled(PhaseHeaderTitle)({
-  fontSize: 18
+  fontSize: 18,
+  overflowWrap: 'break-word',
+  width: '55vw'
 })
 
 const getQuestion = (isConnected: boolean | null, taskCount: number, preferredName: string) => {
