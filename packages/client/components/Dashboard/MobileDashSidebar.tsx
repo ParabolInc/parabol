@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
+import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
@@ -82,6 +82,7 @@ const FooterBottom = styled('div')({})
 
 const MobileDashSidebar = (props: Props) => {
   const {handleMenuClick, viewerRef} = props
+  const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
 
   const viewer = useFragment(
     graphql`
@@ -99,15 +100,13 @@ const MobileDashSidebar = (props: Props) => {
     `,
     viewerRef
   )
-  const location = useLocation()
-  const {pathname} = location
   if (!viewer) return null
   const {featureFlags, organizations} = viewer
-  const showOrgSidebar = featureFlags.checkoutFlow && pathname.startsWith(`/me/organizations`)
+  const showOrgSidebar = featureFlags.checkoutFlow && match
 
   if (showOrgSidebar) {
-    const orgIdFromPathname = pathname.split('/')[3]
-    const currentOrg = organizations.find((org) => org.id === orgIdFromPathname)
+    const {orgId: orgIdFromParams} = match.params
+    const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (
       <DashSidebarStyles>
@@ -118,8 +117,8 @@ const MobileDashSidebar = (props: Props) => {
               <LeftDashNavItem
                 onClick={handleMenuClick}
                 icon={'arrowBack'}
-                href={'/me'}
-                label={'Back'}
+                href={'/me/organizations'}
+                label={'Organizations'}
               />
               <OrgName>{name}</OrgName>
               <LeftDashNavItem

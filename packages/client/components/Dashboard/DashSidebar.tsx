@@ -103,7 +103,7 @@ const DashSidebar = (props: Props) => {
         <Nav isOpen={isOpen}>
           <Contents>
             <NavItemsWrap>
-              <NavItem icon={'arrowBack'} href={'/meetings'} label={'Back'} />
+              <NavItem icon={'arrowBack'} href={'/me/organizations'} label={'Organizations'} />
               <OrgName>{name}</OrgName>
               <NavItem
                 icon={'creditScore'}

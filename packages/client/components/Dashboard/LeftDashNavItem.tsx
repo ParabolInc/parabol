@@ -11,8 +11,8 @@ import {
   Warning
 } from '@mui/icons-material'
 import React from 'react'
+import {useHistory, useRouteMatch} from 'react-router'
 import PlainButton from '~/components/PlainButton/PlainButton'
-import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint, NavSidebar} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
@@ -36,7 +36,7 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
     borderRadius: '0 4px 4px 0'
   },
-  ':hover,:focus': {
+  ':hover': {
     backgroundColor: PALETTE.SLATE_300
   }
 }))
@@ -75,26 +75,16 @@ interface Props {
   icon: keyof typeof iconLookup
 }
 
-const getIsActive = (href: string) => {
-  const {pathname} = window.location
-  const slashlessPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
-  if (href === '/me') return slashlessPath === href
-  if (href.startsWith('/newteam')) {
-    return href.startsWith(slashlessPath)
-  }
-  return slashlessPath.startsWith(href)
-}
-
 const LeftDashNavItem = (props: Props) => {
   const {className, label, icon, href, onClick} = props
-  const {history} = useRouter()
-  const isActive = getIsActive(href)
+  const history = useHistory()
+  const match = useRouteMatch(href)
   const handleClick = () => {
     history.push(href)
     onClick?.()
   }
   return (
-    <NavItem className={className} onClick={handleClick} isActive={isActive}>
+    <NavItem className={className} onClick={handleClick} isActive={!!match?.isExact}>
       <StyledIcon>{iconLookup[icon]}</StyledIcon>
       <Label>{label}</Label>
     </NavItem>
