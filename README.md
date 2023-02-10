@@ -227,6 +227,9 @@ sudo dokku ps:restart parabol
 ```
 sudo dokku config:set parabol GOOGLE_OAUTH_CLIENT_ID='client_id' --no-restart
 sudo dokku config:set parabol GOOGLE_OAUTH_CLIENT_SECRET='secret' --no-restart
+sudo dokku config:set parabol PROTO=https --no-restart
+sudo dokku config:set parabol HOST=<your.domain>
+sudo dokku config:set parabol PORT=443 --no-restart
 sudo dokku ps:restart parabol
 ```
 
