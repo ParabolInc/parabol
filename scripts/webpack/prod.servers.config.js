@@ -26,25 +26,6 @@ const getNormalizedWebpackPublicPath = () => {
   return normalizedPath
 }
 
-class IgnoreDynamicRequire {
-  apply(compiler) {
-    compiler.hooks.normalModuleFactory.tap('IgnoreDynamicRequire', (factory) => {
-      factory.hooks.parser.for('javascript/auto').tap('IgnoreDynamicRequire', (parser, options) => {
-        parser.hooks.call.for('require').tap('IgnoreDynamicRequire', (expression) => {
-          // This is a SyncBailHook, so returning anything stops the parser, and nothing allows to continue
-          if (expression.arguments.length !== 1 || expression.arguments[0].type === 'Literal') {
-            return
-          }
-          const arg = parser.evaluateExpression(expression.arguments[0])
-          if (!arg.isString() && !arg.isConditional()) {
-            return true
-          }
-        })
-      })
-    })
-  }
-}
-
 module.exports = ({isDeploy}) => ({
   mode: 'production',
   node: {
@@ -78,7 +59,6 @@ module.exports = ({isDeploy}) => ({
     minimize: false
   },
   plugins: [
-    new IgnoreDynamicRequire(),
     new webpack.DefinePlugin({
       __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
       // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary

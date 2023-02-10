@@ -73,11 +73,12 @@ async function getMigrationsExcept(
   numToApply: -1 | 1,
 ) {
   const allMigrations = Object.entries(migrations).map(([filename, code]) => {
-    const tsix = filename.indexOf('-')
+    // const tsix = filename.indexOf('-')
+    const [timestamp, name] = filename.split('-')
     return {
-      name: filename.substring(tsix + 1, filename.lastIndexOf('.')),
-      timestamp: filename.substring(0, tsix),
-      filename: filename,
+      name,
+      timestamp,
+      filename,
       code
     }
   }).filter((migration) => {
