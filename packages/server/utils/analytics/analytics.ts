@@ -1,4 +1,5 @@
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
+import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
@@ -74,6 +75,7 @@ export type AnalyticsEvent =
   | 'Invite Email Sent'
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
+  | 'Notification Email Sent'
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
@@ -374,6 +376,10 @@ class Analytics {
 
   toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
     this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
+  }
+
+  notificationEmailSent = (userId: string, orgId: string, type: TeamLimitsEmailType) => {
+    this.track(userId, 'Notification Email Sent', {type, orgId})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

@@ -31,7 +31,6 @@
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
     "db:start": "docker compose -f docker/dev.yml up -d",
     "db:stop": "docker compose -f docker/dev.yml down",
-    "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/migrate.js",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
