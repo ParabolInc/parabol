@@ -9,17 +9,25 @@ interface Props {
   menuProps: MenuProps
   onClick: (n: Date) => void
 }
-const options = [...Array(96).keys()].map((n) => n * ms('15m'))
+
+const OPTIONS = [...Array(96).keys()].map((n) => n * ms('15m'))
+// by default, we'll suggest 6:00 AM
+const DEFAULT_MEETING_START_TIME_IDX = OPTIONS.findIndex((n) => n === ms('6h'))
+
 export const RecurrenceTimePicker = (props: Props) => {
   const {menuProps, onClick} = props
   const startOfToday = new Date().setHours(0, 0, 0, 0)
   return (
-    <Menu {...menuProps} ariaLabel={'6:00 AM'}>
-      {options.map((n) => {
+    <Menu
+      {...menuProps}
+      ariaLabel={'Select the time when a recurring meeting will be created'}
+      defaultActiveIdx={DEFAULT_MEETING_START_TIME_IDX}
+    >
+      {OPTIONS.map((n, idx) => {
         const proposedTime = dayjs(startOfToday + n).add(1, 'day')
         return (
           <MenuItem
-            key={n}
+            key={idx}
             label={proposedTime.format('h:mm A')}
             onClick={() => onClick(proposedTime.toDate())}
           />
