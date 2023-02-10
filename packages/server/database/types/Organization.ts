@@ -65,3 +65,38 @@ export default class Organization {
     this.payLaterClickCount = payLaterClickCount || 0
   }
 }
+
+export class StubbedOrganization extends Organization {
+  isPaid: boolean
+
+  constructor(input: Input) {
+    const {
+      id,
+      activeDomain,
+      isActiveDomainTouched,
+      createdAt,
+      updatedAt,
+      creditCard,
+      name,
+      showConversionModal,
+      payLaterClickCount,
+      picture,
+      tier
+    } = input
+    super({
+      id,
+      activeDomain,
+      isActiveDomainTouched,
+      createdAt,
+      updatedAt,
+      creditCard,
+      name,
+      showConversionModal,
+      payLaterClickCount,
+      picture,
+      tier
+    })
+    this.tier = 'enterprise' || tier
+    this.isPaid = true
+  }
+}

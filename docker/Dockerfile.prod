@@ -1,22 +1,3 @@
-# First, install all dependencies, including devDependencies, to run the build process
-FROM node:16.16.0 as build
-
-WORKDIR /parabol
-
-# Only copy dependency-related files here (vs. COPY . .) to avoid breaking the cache and running
-# the slow `yarn install` more than necessary
-COPY package.json yarn.lock ./
-COPY packages/client/package.json ./packages/client/package.json
-COPY packages/gql-executor/package.json packages/gql-executor/package.json
-COPY packages/integration-tests/package.json packages/integration-tests/package.json
-COPY packages/server/package.json packages/server/package.json
-RUN yarn install --frozen-lockfile && \
-      yarn cache clean
-
-COPY . .
-RUN yarn build
-
-# Now, start over with a new stage so we don't pull over devDependencies
 FROM node:16.16.0 as prod
 
 WORKDIR /parabol
@@ -26,14 +7,11 @@ COPY packages/client/package.json ./packages/client/package.json
 COPY packages/gql-executor/package.json packages/gql-executor/package.json
 COPY packages/integration-tests/package.json packages/integration-tests/package.json
 COPY packages/server/package.json packages/server/package.json
-# Only install production dependencies
-RUN yarn install --prod --frozen-lockfile && \
+
+RUN yarn install --frozen-lockfile && \
       yarn cache clean
 
 COPY . .
-COPY --from=build /parabol/build ./build
-COPY --from=build /parabol/dist ./dist
-COPY --from=build /parabol/queryMap.json ./
 
 RUN cp docker/entrypoint.prod.sh /bin/entrypoint && \
       chmod +x /bin/entrypoint

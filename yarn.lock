@@ -4770,7 +4770,7 @@
     tslib "^2.4.1"
     webcrypto-core "^1.7.4"
 
-"@pgtyped/cli@^0.11.0":
+"@pgtyped/cli@0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pgtyped/cli/-/cli-0.11.0.tgz#c74dc7470cc572d0d2bbee5f8c9679acd97d86b0"
   integrity sha512-yvXfd2aJw33l39l2FPuDkbmtVqn9XNmxsw4cklnU7Al04Uu6h/e/4O+X9BicePrtvjoGnv6w8jKp7qxDk4DwuA==
@@ -4791,7 +4791,7 @@
     ts-parse-database-url "^1.0.3"
     yargs "^17.0.1"
 
-"@pgtyped/query@^0.11.0":
+"@pgtyped/query@0.11.0", "@pgtyped/query@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pgtyped/query/-/query-0.11.0.tgz#49f59193a7a192e95d672ca10e259ec120d80a53"
   integrity sha512-MApOM81ybJBMXAtpowPUm9lvCPPglNWs52Wl453D7w1C58uLPkQ6ETdVQtWaLtFI8hnpJtqIVt42jTvlRGo0xA==
@@ -7657,9 +7657,9 @@ chai@latest:
     type-detect "^4.0.5"
 
 chalk@*:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.0.0.tgz#bd96c6bb8e02b96e08c0c3ee2a9d90e050c7b832"
-  integrity sha512-/duVOqst+luxCQRKEo4bNxinsOQtMP80ZYm7mMqzuh5PociNL0PvmHFvREJ9ueYL2TxlHjBcmLCdmocx9Vg+IQ==
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.2.0.tgz#249623b7d66869c673699fb66d65723e54dfcfb3"
+  integrity sha512-ree3Gqw/nazQAPuJJEy+avdl7QfZMcUvmHIKgEZkGL+xOBzRvup5Hxo6LHuMceSxOabuJLJm5Yp/92R9eMmMvA==
 
 chalk@3.0.0, chalk@~3.0.0:
   version "3.0.0"
@@ -10066,16 +10066,7 @@ fs-constants@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
   integrity sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==
 
-fs-extra@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.0.tgz#9ff61b655dde53fb34a82df84bb214ce802e17c1"
-  integrity sha512-C5owb14u9eJwizKGdchcDUQeFtlSHHthBk8pbX9Vc1PFZrLombudjDnNns88aYslCyF6IY5SUw3Roz6xShcEIQ==
-  dependencies:
-    graceful-fs "^4.2.0"
-    jsonfile "^6.0.1"
-    universalify "^2.0.0"
-
-fs-extra@^10.1.0:
+fs-extra@^10.0.0, fs-extra@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
   integrity sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==
@@ -11160,9 +11151,9 @@ io-ts-reporters@^1.0.0:
   integrity sha512-igASwWWkDY757OutNcM6zTtdJf/eTZYkoe2ymsX2qpm5bKZLo74FJYjsCtMQOEdY7dRHLLEulCyFQwdN69GBCg==
 
 io-ts@^2.1.2:
-  version "2.2.16"
-  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.16.tgz#597dffa03db1913fc318c9c6df6931cb4ed808b2"
-  integrity sha512-y5TTSa6VP6le0hhmIyN0dqEXkrZeJLeC5KApJq6VLci3UEKF80lZ+KuoUs02RhBxNWlrqSNxzfI7otLX1Euv8Q==
+  version "2.2.20"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.20.tgz#be42b75f6668a2c44f706f72ee6e4c906777c7f5"
+  integrity sha512-Rq2BsYmtwS5vVttie4rqrOCIfHCS9TgpRLFpKQCM1wZBBRY9nWVGmEvm2FnDbSE2un1UE39DvFpTR5UL47YDcA==
 
 ioredis@^5.2.3:
   version "5.2.3"

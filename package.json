@@ -22,9 +22,9 @@
   ],
   "scripts": {
     "start": "pm2-runtime start pm2.config.js",
-    "heroku-postbuild": "echo 'Skipping build'",
+    "heroku-postbuild": "yarn db:migrate && yarn pg:migrate up && yarn pg:build && yarn build",
     "build": "node scripts/prod.js",
-    "clean": "rm -rf ./packages/client/__generated__ ./queryMap.json ./packages/server/graphql/public/schema.graphql ./packages/server/graphql/private/schema.graphql ./dev ./dist ./build",
+    "clean": "rm -rf ./packages/client/__generated__ ./queryMap.json ./packages/server/graphql/public/schema.graphql ./packages/server/graphql/private/schema.graphql ./dev ./dist ./build ./packages/server/postgres/queries/generated",
     "codegen": "node scripts/codegenGraphQL.js",
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
