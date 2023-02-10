@@ -5,7 +5,6 @@ const getSSL = () => {
   try {
     // optional env var, likely outside the app dir
     const POSTGRES_SSL_DIR = process.env.POSTGRES_SSL_DIR
-    console.log('==== POSTGRES_SSL_DIR', POSTGRES_SSL_DIR)
     if (!POSTGRES_SSL_DIR) return undefined
 
     const ca = readFileSync(path.join(POSTGRES_SSL_DIR, 'root.crt'))
