@@ -3,6 +3,7 @@ const path = require('path')
 const migrate = require('rethinkdb-ts-migrate')
 const {parse} = require('url')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
+const fs = require('fs')
 
 const startMigration = async (direction = 'up') => {
 
@@ -18,6 +19,11 @@ const startMigration = async (direction = 'up') => {
   process.env.port = port
   process.env.db = urlPath.slice(1)
   process.env.r = process.cwd()
+  if (direction === 'up') {
+    const files = fs.readdirSync(path.join(DB_ROOT, 'migrations'))
+    if (files.length !== 154) throw new Error('New migrations must live in the postgres/migrations directory')
+  }
+
   try {
     await migrate[direction]({all, root: DB_ROOT})
   } catch (e) {

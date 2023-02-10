@@ -29,6 +29,11 @@ type AcceptTeamInvitationPayload {
   meetingId: ID
 
   """
+  The requested meeting
+  """
+  meeting: NewMeeting
+
+  """
   The team that the invitee will be joining
   """
   team: Team

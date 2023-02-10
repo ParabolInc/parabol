@@ -1,0 +1,11 @@
+extend type Mutation {
+  """
+  When stripe tells us an invoice is paid (inside or outside of stripe), update it in our DB
+  """
+  stripeInvoicePaid(
+    """
+    The stripe invoice ID
+    """
+    invoiceId: ID!
+  ): Boolean
+}

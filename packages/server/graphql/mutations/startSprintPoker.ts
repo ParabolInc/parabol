@@ -9,6 +9,7 @@ import generateUID from '../../generateUID'
 import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
+import updateMeetingTemplateLastUsedAt from '../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {analytics} from '../../utils/analytics/analytics'
@@ -126,11 +127,10 @@ export default {
     })
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    const now = new Date()
-    await r({
-      template: r.table('MeetingTemplate').get(selectedTemplateId).update({lastUsedAt: now}),
-      meeting: r.table('NewMeeting').insert(meeting)
-    }).run()
+    await Promise.all([
+      r.table('NewMeeting').insert(meeting).run(),
+      updateMeetingTemplateLastUsedAt(selectedTemplateId)
+    ])
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)

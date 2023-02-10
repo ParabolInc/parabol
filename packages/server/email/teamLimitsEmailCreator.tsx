@@ -52,7 +52,7 @@ const textOnlySummary = (props: Props) => {
 
     You can re-activate your teams by upgrading your account: ${billingURL}
 
-    If you have any questions, or if you'd like to discuss enterprise plans, feel free to contact us —— we’re here to help.
+    If you have any questions, or if you'd like to discuss enterprise plans, feel free to contact us — we’re here to help.
 
     Parabol Team
   `

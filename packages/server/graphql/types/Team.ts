@@ -228,6 +228,11 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         return dataLoader.get('activeMeetingsByTeamId').load(teamId)
       }
     },
+    qualAIMeetingsCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        'The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections'
+    },
     meeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
