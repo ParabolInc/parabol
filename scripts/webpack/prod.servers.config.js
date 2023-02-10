@@ -7,6 +7,7 @@ const S3Plugin = require('webpack-s3-plugin')
 const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -26,7 +27,7 @@ const getNormalizedWebpackPublicPath = () => {
   return normalizedPath
 }
 
-module.exports = ({isDeploy}) => ({
+module.exports = ({isDeploy, noDeps}) => ({
   mode: 'production',
   node: {
     __dirname: false
@@ -55,8 +56,29 @@ module.exports = ({isDeploy}) => ({
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },
   target: 'node',
+  externals: [
+    !noDeps && nodeExternals({
+      allowlist: [/parabol-client/, /parabol-server/]
+    })
+  ].filter(Boolean),
   optimization: {
-    minimize: false
+    minimize: noDeps,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+        parallel: noDeps ? 2 : true,
+        terserOptions: {
+          output: {
+            comments: false,
+            ecma: 6
+          },
+          compress: {
+            ecma: 6
+          }
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        }
+      })
+    ]
   },
   plugins: [
     new webpack.DefinePlugin({

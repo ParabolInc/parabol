@@ -49,8 +49,7 @@
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
     "test:client": "yarn workspace parabol-client test",
-    "test:server": "yarn workspace parabol-server test",
-    "mig": "node dist/migrate.js"
+    "test:server": "yarn workspace parabol-server test"
   },
   "resolutions": {
     "typescript": "4.6.3",
