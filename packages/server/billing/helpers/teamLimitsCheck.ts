@@ -8,8 +8,10 @@ import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
+import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import sendToSentry from '../../utils/sendToSentry'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 // Uncomment for easier testing
@@ -159,6 +161,16 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
   if (!organization.activeDomain) return
 
   if (!(await isLimitExceeded(orgId, dataLoader))) return
+
+  const hasActiveDeals = await domainHasActiveDeals(organization.activeDomain)
+
+  if (hasActiveDeals) {
+    if (hasActiveDeals instanceof Error) {
+      sendToSentry(hasActiveDeals)
+    }
+
+    return
+  }
 
   const now = new Date()
   const scheduledLockAt = new Date(now.getTime() + ms(`${Threshold.STARTER_TIER_LOCK_AFTER_DAYS}d`))
