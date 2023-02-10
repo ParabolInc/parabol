@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import Organization from '../../../database/types/Organization'
+import {StubbedOrganization as Organization} from '../../../database/types/Organization'
 import OrganizationUser from '../../../database/types/OrganizationUser'
 import insertOrgUserAudit from '../../../postgres/helpers/insertOrgUserAudit'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
