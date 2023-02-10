@@ -6971,7 +6971,7 @@ async@^2.6.2, async@^2.6.3, async@~2.6.1:
   dependencies:
     lodash "^4.17.14"
 
-async@^3.0.0, async@^3.2.0, async@^3.2.3, async@~3.2.0:
+async@^3.2.0, async@^3.2.3, async@~3.2.0:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/async/-/async-3.2.3.tgz#ac53dafd3f4720ee9e8a160628f18ea91df196c9"
   integrity sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g==
@@ -13643,15 +13643,12 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-nconf@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/nconf/-/nconf-0.12.0.tgz#9cf70757aae4d440d43ed53c42f87da18471b8bf"
-  integrity sha512-T3fZPw3c7Dfrz8JBQEbEcZJ2s8f7cUMpKuyBtsGQe0b71pcXx6gNh4oti2xh5dxB+gO9ufNfISBlGvvWtfyMcA==
+nconf@indexzero/nconf#ce212b2f1dbf96cee001b5f621979c564638f0e7:
+  version "1.0.0-beta.0"
+  resolved "https://codeload.github.com/indexzero/nconf/tar.gz/ce212b2f1dbf96cee001b5f621979c564638f0e7"
   dependencies:
-    async "^3.0.0"
     ini "^2.0.0"
-    secure-keys "^1.0.0"
-    yargs "^16.1.1"
+    yargs "^17.0.0"
 
 needle@2.4.0:
   version "2.4.0"
@@ -16262,15 +16259,15 @@ restore-cursor@^3.1.0:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
 
-rethinkdb-ts-migrate@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/rethinkdb-ts-migrate/-/rethinkdb-ts-migrate-0.3.3.tgz#12dae27f67920ae6b43ba0220d3f1e51e149735d"
-  integrity sha512-cKcexfzMIcL3Ywgq2dCsn400x5iMycNPdIQV5CDEev/gCMdfZsdgpvlUEnv2O50ZMjvACdJXwnIiVn26ZU8JUw==
+rethinkdb-ts-migrate@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/rethinkdb-ts-migrate/-/rethinkdb-ts-migrate-0.3.6.tgz#6621295a984b0b0d0e16ac4b242786903063fd29"
+  integrity sha512-Q9yZVZ+6kiWXT2fykjKYNUD82ZH+jr/b+Ps969olWy4Pdu0W1kHlnW13g3DSL/QdNPDNZIDJury3Pw6hM5gc3w==
   dependencies:
     chalk "^4.1.0"
     meow "^10.1.2"
     moment "^2.29.3"
-    nconf "^0.12.0"
+    nconf indexzero/nconf#ce212b2f1dbf96cee001b5f621979c564638f0e7
     rethinkdb-ts "^2.4.5"
     sucrase "^3.21.0"
     tslib "^2.4.0"
@@ -16496,11 +16493,6 @@ scuid@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/scuid/-/scuid-1.1.0.tgz#d3f9f920956e737a60f72d0e4ad280bf324d5dab"
   integrity sha512-MuCAyrGZcTLfQoH2XoBlQ8C6bzwN88XT/0slOGz0pn8+gIP85BOAfYa44ZXQUTOwRwPU0QvgU+V+OSajl/59Xg==
-
-secure-keys@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/secure-keys/-/secure-keys-1.0.0.tgz#f0c82d98a3b139a8776a8808050b824431087fca"
-  integrity sha1-8MgtmKOxOah3aogIBQuCRDEIf8o=
 
 select-hose@^2.0.0:
   version "2.0.0"
@@ -19235,7 +19227,7 @@ yargs@^15.3.1:
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
 
-yargs@^16.1.1, yargs@^16.2.0, yargs@~16.2.0:
+yargs@^16.2.0, yargs@~16.2.0:
   version "16.2.0"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-16.2.0.tgz#1c82bf0f6b6a66eafce7ef30e376f49a12477f66"
   integrity sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==

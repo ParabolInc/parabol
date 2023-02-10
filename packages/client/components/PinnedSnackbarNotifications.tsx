@@ -6,6 +6,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import mapTeamsLimitExceededToToast from '../mutations/toasts/mapTeamsLimitExceededToToast'
+import mapTeamsLimitReminderToToast from '../mutations/toasts/mapTeamsLimitReminderToToast'
 import {OnNextHistoryContext} from '../types/relayMutations'
 import {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
 import {Snack} from './Snackbar'
@@ -17,7 +18,8 @@ interface Props {
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
 > = {
-  TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast
+  TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
+  TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast
 }
 
 const PinnedSnackbarNotifications = ({queryRef}: Props) => {
@@ -25,13 +27,17 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     graphql`
       fragment PinnedSnackbarNotifications_query on Query {
         viewer {
-          pinnedNotifications: notifications(first: 10, types: [TEAMS_LIMIT_EXCEEDED]) {
+          pinnedNotifications: notifications(
+            first: 10
+            types: [TEAMS_LIMIT_EXCEEDED, TEAMS_LIMIT_REMINDER]
+          ) {
             edges {
               node {
                 id
                 status
                 type
                 ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
+                ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
               }
             }
           }
