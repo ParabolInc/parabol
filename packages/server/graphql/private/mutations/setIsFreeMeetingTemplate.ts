@@ -1,4 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
+import updateMeetingTemplateFreeStatusById from '../../../postgres/queries/updateMeetingTemplateFreeStatusById'
+import updateMeetingTemplateFreeStatusByName from '../../../postgres/queries/updateMeetingTemplateFreeStatusByName'
 import {MutationResolvers} from '../resolverTypes'
 
 const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = async (
@@ -16,29 +18,13 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
 
   // RESOLUTION
   if (templateIds?.length) {
-    const updatedTemplateIds = await r
-      .table('MeetingTemplate')
-      .getAll(r.args(templateIds))
-      .update(
-        {isFree},
-        {returnChanges: true}
-      )('changes')('new_val')('id')
-      .default([])
-      .run()
+    const updatedTemplateIds = await updateMeetingTemplateFreeStatusById(templateIds, isFree)
     return {updatedTemplateIds}
-  } else {
-    const updatedTemplateIds = await r
-      .table('MeetingTemplate')
-      .getAll('aGhostTeam', {index: 'teamId'})
-      .filter((row) => r.expr(templateNames).contains(row('name')))
-      .update(
-        {isFree},
-        {returnChanges: true}
-      )('changes')('new_val')('id')
-      .default([])
-      .run()
+  } else if (templateNames?.length) {
+    const updatedTemplateIds = await updateMeetingTemplateFreeStatusByName(templateNames, isFree)
     return {updatedTemplateIds}
   }
+  return {error: {message: 'Invalid args'}}
 }
 
 export default setIsFreeMeetingTemplate

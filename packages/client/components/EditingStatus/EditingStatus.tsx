@@ -25,6 +25,10 @@ const StatusHeader = styled('div')({
   textAlign: 'left'
 })
 
+const EditingTextWrapper = styled('div')({
+  width: '100%'
+})
+
 const EditingText = styled('span')<{isEditing: boolean}>(({isEditing}) => ({
   cursor: isEditing ? 'default' : 'pointer'
 }))
@@ -61,7 +65,7 @@ const EditingStatus = (props: Props) => {
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>
-      <div>
+      <EditingTextWrapper>
         {children}
         <EditingText
           isEditing={isEditing}
@@ -79,7 +83,7 @@ const EditingStatus = (props: Props) => {
           />
         </EditingText>
         {tooltipPortal(<div>{'Toggle Timestamp'}</div>)}
-      </div>
+      </EditingTextWrapper>
       <DueDateToggle
         cardIsActive={isEditing || isTaskHovered}
         isArchived={isArchived}

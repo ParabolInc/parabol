@@ -3,6 +3,7 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerTemplate from '../../database/types/PokerTemplate'
+import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -39,6 +40,7 @@ const removePokerTemplate = {
 
     // VALIDATION
     const {teamId} = template
+    // Will convert to PG by Mar 1, 2023
     const {templates, settings} = await r({
       templates: r
         .table('MeetingTemplate')
@@ -56,19 +58,17 @@ const removePokerTemplate = {
     // RESOLUTION
     const {id: settingsId} = settings
     template.isActive = false
-    await r({
-      template: r
-        .table('MeetingTemplate')
-        .get(templateId)
-        .update({isActive: false, updatedAt: now}),
-      dimensions: r
+    await Promise.all([
+      removeMeetingTemplate(templateId),
+      r
         .table('TemplateDimension')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           templateId
         })
         .update({removedAt: now})
-    }).run()
+        .run()
+    ])
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)

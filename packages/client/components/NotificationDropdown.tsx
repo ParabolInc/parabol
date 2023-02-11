@@ -12,6 +12,7 @@ import {
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import {MenuProps} from '../hooks/useMenu'
 import useSegmentTrack from '../hooks/useSegmentTrack'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {NotificationDropdownPaginationQuery} from '../__generated__/NotificationDropdownPaginationQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -52,6 +53,7 @@ const NotificationDropdown = (props: Props) => {
               node {
                 id
                 status
+                type
                 ...NotificationPicker_notification
               }
             }
@@ -80,12 +82,15 @@ const NotificationDropdown = (props: Props) => {
         <MenuItem label={<NoNotifications>{'You’re all caught up! 💯'}</NoNotifications>} />
       )}
       {edges.map(({node}) => {
-        const {id: notificationId, status} = node
+        const {id: notificationId, status, type} = node
         const onViewFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'READ'}, {})
         }
         const onClickFn = () => {
           SetNotificationStatusMutation(atmosphere, {notificationId, status: 'CLICKED'}, {})
+          SendClientSegmentEventMutation(atmosphere, 'Notification Clicked', {
+            notificationType: type
+          })
         }
         const onView = status === 'UNREAD' ? onViewFn : undefined
         return (
