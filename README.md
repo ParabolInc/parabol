@@ -22,6 +22,10 @@ The easiest way, you just need to clone this repo and then you should be able to
 
 Then you can config the other .env value later. Please refer to upstream repo for available .env config https://github.com/ParabolInc/parabol
 
+> You might wanna run
+> `docker-compose -f docker-compose.yml -f ./docker/docker-compose.selfHosted.yml up -d`
+> instead to make the storage persistance
+
 ## Dokku Deployment
 
 The most preferred way if you want to deploy it on server
@@ -37,7 +41,11 @@ The most preferred way if you want to deploy it on server
 ```
 sudo dokku apps:create parabol
 sudo dokku proxy:ports-set parabol http:80:80
+sudo dokku storage:ensure-directory parabol-data
+sudo dokku storage:mount parabol /var/lib/dokku/data/storage/parabol-data:/parabol/self-hosted
 ```
+
+That will create the app and mount the self hosted directory
 
 ### 2. You need to install 3 plugins: `redis`, `postgres`, `rethinkdb` 
 
@@ -222,7 +230,7 @@ sudo dokku config:set parabol PORT=80 --no-restart
 sudo dokku ps:restart parabol
 ```
 
-## To enable google sign in you need to set
+## Enable Google Sign In
 
 ```
 sudo dokku config:set parabol GOOGLE_OAUTH_CLIENT_ID='client_id' --no-restart
@@ -233,7 +241,29 @@ sudo dokku config:set parabol PORT=443 --no-restart
 sudo dokku ps:restart parabol
 ```
 
-The value of `client id` and `secret` can be gather on google cloud console (google for it). You don't need to pay anything to enable it
+The value of `client id` and `secret` can be gather on google cloud console https://developers.google.com/identity/protocols/oauth2. You don't need to pay anything to enable it
+
+You need to set Authorized redirect URI's to `https://<your.domain>/auth/google` on google cloud console
+
+> Make sure to correctly set vaalue for `PROTO` `HOST` and `PORT`, since it'll be used on `packages/server/appOrigin.ts` to construct app origin and later will be use to construct google callback URL. If you find `Invalid Code` during google login you might wanna check these setting or the callback url you set on google cloud console
+
+## Enable JIRA integration
+
+You need to create account on developer.atlassian.com https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/
+set auth callback url to `https://<your.domain>/auth/callback`
+and set `OAUTH2_REDIRECT` env
+
+```
+sudo dokku config:set parabol OAUTH2_REDIRECT=https://<your.domain>/auth/callback
+```
+
+from attlasian developer console you can receive `client_id` and `secret`. Then on your server run:
+
+```
+sudo dokku config:set parabol ATLASSIAN_CLIENT_ID="your_client_id" --no-restart
+sudo dokku config:set parabol ATLASSIAN_CLIENT_SECRET="your_secret" --no-restart
+sudo dokku ps:restart parabol
+```
 
 ## Other things?
 
