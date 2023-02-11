@@ -1,4 +1,4 @@
-export const normalizeSlugName = (name: string) => {
+export default (name: string) => {
   const normalizedName = name.trim().toLowerCase()
   const nameRegex = /^[a-z0-9_-]+$/
   if (!nameRegex.test(normalizedName)) {

@@ -16,7 +16,7 @@ extend type Mutation {
     """
     Company's slug
     """
-    slug: String!
+    slug: ID!
   ): VerifyDomainPayload!
 }
 

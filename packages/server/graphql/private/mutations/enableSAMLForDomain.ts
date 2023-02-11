@@ -3,7 +3,7 @@ import {v4 as uuid} from 'uuid'
 import zlib from 'zlib'
 import getRethink from '../../../database/rethinkDriver'
 import {MutationResolvers} from '../resolverTypes'
-import {normalizeSlugName} from './helpers/SAMLHelpers'
+import normalizeSlugName from './helpers/normalizeSlugName'
 
 const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   const template = `

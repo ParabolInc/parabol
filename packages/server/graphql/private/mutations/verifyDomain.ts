@@ -1,6 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import {MutationResolvers} from '../resolverTypes'
-import {normalizeSlugName} from './helpers/SAMLHelpers'
+import normalizeSlugName from './helpers/normalizeSlugName'
 
 const verifyDomain: MutationResolvers['verifyDomain'] = async (_source, {slug, domains, orgId}) => {
   const r = await getRethink()
@@ -10,8 +10,11 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (_source, {slug, d
   const slugName = normalizeSlugName(slug)
   if (slugName instanceof Error) return {error: {message: slugName.message}}
 
-  const organizationSAMLExist = await r.table('SAML').get(slugName).run()
-  if (organizationSAMLExist) return {error: {message: 'SAML exist for organization'}}
+  const slugNameExist = await r.table('SAML')('id').count(slugName).eq(1).run()
+  if (slugNameExist) return {error: {message: 'SAML exist with slug name'}}
+
+  const orgIdExist = await r.table('SAML')('orgId').count(orgId).eq(1).run()
+  if (orgIdExist) return {error: {message: 'SAML exist for organization'}}
 
   await r
     .table('SAML')
