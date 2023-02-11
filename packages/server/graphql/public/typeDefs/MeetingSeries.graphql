@@ -46,4 +46,10 @@ type MeetingSeries {
   The meetings that belong to the meeting series
   """
   activeMeetings: [NewMeeting!]!
+
+  """
+  The most recent meeting in the series. Any active meeting takes precendence over inactive
+  meetings.
+  """
+  mostRecentMeeting: NewMeeting!
 }

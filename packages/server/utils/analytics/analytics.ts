@@ -93,6 +93,8 @@ export type AnalyticsEvent =
   | 'Connect WebSocket'
   | 'Disconnect WebSocket'
   | 'Summary Email Setting Changed'
+  // snackbar
+  | 'Snackbar Clicked'
 
 /**
  * Provides a unified inteface for sending all the analytics events
