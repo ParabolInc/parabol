@@ -245,7 +245,7 @@ The value of `client id` and `secret` can be gather on google cloud console http
 
 You need to set Authorized redirect URI's to `https://<your.domain>/auth/google` on google cloud console
 
-> Make sure to correctly set vaalue for `PROTO` `HOST` and `PORT`, since it'll be used on `packages/server/appOrigin.ts` to construct app origin and later will be use to construct google callback URL. If you find `Invalid Code` during google login you might wanna check these setting or the callback url you set on google cloud console
+> Make sure to correctly set vaalue for `PROTO` `HOST` and `PORT`, since it'll be used on `packages/server/appOrigin.ts` to construct app origin and later will be use to construct google callback URL. If you find `Invalid Login Code` during google login you might wanna check these setting or the callback url you set on google cloud console
 
 ## Enable JIRA integration
 
