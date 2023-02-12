@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import updateMeetingTemplateName from '../../postgres/queries/updateMeetingTemplateName'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -25,7 +26,6 @@ const renameMeetingTemplate = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = (await dataLoader.get('meetingTemplates').load(templateId)) as MeetingTemplate
@@ -43,6 +43,7 @@ const renameMeetingTemplate = {
     const {teamId} = template
     const trimmedName = name.trim().slice(0, 100)
     const normalizedName = trimmedName || 'Unnamed Template'
+    // Will convert to PG by Mar 1, 2023
     const allTemplates = await r
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
@@ -54,11 +55,7 @@ const renameMeetingTemplate = {
 
     // RESOLUTION
     template.name = normalizedName
-    await r
-      .table('MeetingTemplate')
-      .get(templateId)
-      .update({name: normalizedName, updatedAt: now})
-      .run()
+    await updateMeetingTemplateName(templateId, normalizedName)
 
     const data = {templateId}
     publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingTemplatePayload', data, subOptions)

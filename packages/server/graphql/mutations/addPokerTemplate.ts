@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
+import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -38,6 +39,7 @@ const addPokerTemplate = {
     }
 
     // VALIDATION
+    // Will convert to PG by Mar 1, 2023
     const allTemplates = await r
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
@@ -75,6 +77,7 @@ const addPokerTemplate = {
         }
       }
       const copyName = `${name} Copy`
+      // Will convert to PG by Mar 1, 2023
       const existingCopyCount = await r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
@@ -103,10 +106,10 @@ const addPokerTemplate = {
         })
       })
 
-      await r({
-        newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimensions: r.table('TemplateDimension').insert(newTemplateDimensions)
-      }).run()
+      await Promise.all([
+        r.table('TemplateDimension').insert(newTemplateDimensions).run(),
+        insertMeetingTemplate(newTemplate)
+      ])
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
@@ -126,10 +129,10 @@ const addPokerTemplate = {
         templateId
       })
 
-      await r({
-        newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimension: r.table('TemplateDimension').insert(newDimension)
-      }).run()
+      await Promise.all([
+        r.table('TemplateDimension').insert(newDimension).run(),
+        insertMeetingTemplate(newTemplate)
+      ])
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }

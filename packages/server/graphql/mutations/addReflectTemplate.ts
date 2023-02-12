@@ -5,6 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import insertMeetingTemplate from '../../postgres/queries/insertMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -40,6 +41,7 @@ const addReflectTemplate = {
     }
 
     // VALIDATION
+    // Will convert to PG by Mar 1, 2023
     const allTemplates = await r
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
@@ -76,6 +78,7 @@ const addReflectTemplate = {
         }
       }
       const copyName = `${name} Copy`
+      // Will convert to PG by Mar 1, 2023
       const existingCopyCount = await r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
@@ -102,10 +105,11 @@ const addReflectTemplate = {
           removedAt: null
         })
       })
-      await r({
-        newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts)
-      }).run()
+
+      await Promise.all([
+        r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
+        insertMeetingTemplate(newTemplate)
+      ])
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
@@ -131,10 +135,10 @@ const addReflectTemplate = {
       // guaranteed since base has 1 key
       const newTemplate = templates[0]!
       const {id: templateId} = newTemplate
-      await r({
-        newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts)
-      }).run()
+      await Promise.all([
+        r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
+        insertMeetingTemplate(newTemplate)
+      ])
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }

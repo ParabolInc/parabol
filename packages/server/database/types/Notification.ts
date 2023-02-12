@@ -13,6 +13,8 @@ export type NotificationEnum =
   | 'TEAM_ARCHIVED'
   | 'TEAM_INVITATION'
   | 'TEAMS_LIMIT_EXCEEDED'
+  | 'TEAMS_LIMIT_REMINDER'
+
 export interface NotificationInput {
   type: NotificationEnum
   userId: string

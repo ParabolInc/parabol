@@ -406,6 +406,7 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
+          // Will convert to PG by Mar 1, 2023
           return r
             .table('MeetingTemplate')
             .getAll(r.args(teamIds), {index: 'teamId'})
