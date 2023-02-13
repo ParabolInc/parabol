@@ -1,8 +1,13 @@
 import styled from '@emotion/styled'
-import {Add} from '@mui/icons-material'
+import {Add, Check} from '@mui/icons-material'
 import React from 'react'
+import makeMaxWidthMediaQuery from '~/utils/makeMaxWidthMediaQuery'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {ExternalLinks} from '../../../../types/constEnums'
+
+const mobileBreakpoint = makeMaxWidthMediaQuery(420)
+const largeMobileBreakpoint = makeMaxWidthMediaQuery(540)
 
 const IconBlock = styled('div')({
   display: 'flex',
@@ -18,14 +23,28 @@ const StyledAddIcon = styled(Add)({
   }
 })
 
+const StyledCheckIcon = styled(Check)({
+  color: PALETTE.SUCCESS_LIGHT,
+  width: '24px',
+  height: '24px',
+  ':hover': {
+    cursor: 'pointer'
+  }
+})
+
 const SSOEnabledToggleBlock = styled('div')({
   display: 'flex',
   width: '500px',
   padding: '4px 16px',
   border: `1px solid ${PALETTE.SLATE_500}`,
   borderRadius: '4px',
-  marginLeft: '16px',
-  marginBottom: '28px'
+  margin: '0 16px 28px 16px',
+  [mobileBreakpoint]: {
+    maxWidth: '100%'
+  },
+  [largeMobileBreakpoint]: {
+    width: 'auto'
+  }
 })
 
 const SSOEnabledLabelBlock = styled('div')({
@@ -54,22 +73,36 @@ const ContactLink = styled('a')({
   }
 })
 
-const OrgAuthenticationSSOEnabled = () => {
+interface Props {
+  disabled: boolean
+}
+
+const OrgAuthenticationSSOEnabled = (props: Props) => {
+  const {disabled} = props
+
+  const isSSOEnabled = false
+
   return (
     <SSOEnabledToggleBlock>
       <IconBlock>
-        <StyledAddIcon>{'info'}</StyledAddIcon>
+        {isSSOEnabled ? (
+          <StyledCheckIcon>{'check'}</StyledCheckIcon>
+        ) : (
+          <StyledAddIcon>{'add'}</StyledAddIcon>
+        )}
       </IconBlock>
       <SSOEnabledLabelBlock>
         <SubTitle>Enable SSO</SubTitle>
         <SSOEnabledLabel>
           <ContactLink
-            href={'mailto:support@parabol.co'}
+            href={`${ExternalLinks.SUPPORT}?subject=${
+              disabled ? 'Enable SSO' : 'Update Email Domains'
+            }`}
             title={'Contact customer success to enable SSO'}
           >
             Contact customer success
           </ContactLink>{' '}
-          to enable SSO
+          {disabled ? 'to enable SSO' : 'to unpdate email domains'}
         </SSOEnabledLabel>
       </SSOEnabledLabelBlock>
     </SSOEnabledToggleBlock>

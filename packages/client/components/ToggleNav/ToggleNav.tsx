@@ -43,6 +43,7 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
     lineHeight: '26px',
     textAlign: 'center',
     textDecoration: 'none',
+    padding: '0px 8px',
     ':hover,:focus': {
       backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_300,
       color: isActive ? '#FFFFFF' : PALETTE.GRAPE_800,

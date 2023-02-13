@@ -6,9 +6,7 @@ import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils
 
 interface Props {
   orgId: string
-  featureFlags?: {
-    SAMLUI: boolean
-  } | null
+  hasSamlFeatureFlag?: boolean
 }
 const BillingMembersToggle = (props: Props) => {
   const {
@@ -16,10 +14,10 @@ const BillingMembersToggle = (props: Props) => {
     location: {pathname},
     match
   } = useRouter()
-  const {orgId, featureFlags} = props
+  const {orgId, hasSamlFeatureFlag} = props
   const areaMatch = matchPath<{area: string}>(pathname, {path: `${match.url}/:area?`})
   const activeOrgDetail = areaMatch?.params.area ?? BILLING_PAGE
-  const SAMLUI = featureFlags?.SAMLUI
+
   const items = [
     {
       label: 'Billing',
@@ -41,7 +39,7 @@ const BillingMembersToggle = (props: Props) => {
     }
   ]
 
-  const tabs = SAMLUI ? items : items.slice(0, 2)
+  const tabs = hasSamlFeatureFlag ? items : items.slice(0, 2)
 
   return <ToggleNav items={tabs} />
 }
