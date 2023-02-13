@@ -6,7 +6,7 @@ const UserFeatureFlags: UserFeatureFlagsResolvers = {
   insights: ({insights}) => !!insights,
   templateLimit: ({templateLimit}) => !!templateLimit,
   aiSummary: ({aiSummary}) => !!aiSummary,
-  meetingHistoryLimit: ({meetingHistoryLimit}) => !!meetingHistoryLimit,
+  noMeetingHistoryLimit: ({noMeetingHistoryLimit}) => !!noMeetingHistoryLimit,
   checkoutFlow: ({checkoutFlow}) => !!checkoutFlow
 }
 

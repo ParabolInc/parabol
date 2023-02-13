@@ -5,6 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import Notification from '../../database/types/Notification'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import updateMeetingTemplateOrgId from '../../postgres/queries/updateMeetingTemplateOrgId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
@@ -80,9 +81,6 @@ const moveToOrg = async (
         .filter({teamId})
         .filter((notification: RDatum) => notification('orgId').default(null).ne(null))
         .update({orgId}) as unknown as Notification[],
-      templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
-        orgId
-      }),
       newToOrgUserIds: r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
@@ -97,6 +95,7 @@ const moveToOrg = async (
         })('userId')
         .coerceTo('array') as unknown as string[]
     }).run(),
+    updateMeetingTemplateOrgId(currentOrgId, orgId),
     updateTeamByTeamId(updates, teamId)
   ])
   const {newToOrgUserIds} = rethinkResult
