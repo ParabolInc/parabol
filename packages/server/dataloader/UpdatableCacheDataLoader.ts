@@ -1,8 +1,7 @@
 import DataLoader, {CacheMap} from 'dataloader'
 
 /**
- * Most loading functions return undefined for non-existing keys.
- * This class adds a convenience method for asserting the value exists for cases when we know the value exists because of DB constraints.
+ * Adds an ability to update specific properties of a cached item. Uses a custom cache object for that.
  */
 class UpdatableCacheDataLoader<Key, Value, CacheKey = Key> extends DataLoader<
   Key,
