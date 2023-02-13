@@ -29,10 +29,6 @@ const InvitationLink = lazy(
   () => import(/* webpackChunkName: 'InvitationLinkRoot' */ '../InvitationLinkRoot')
 )
 
-const GlobalCSS = css`
-  ${globalStyles}
-`
-
 const Action = memo(() => {
   useTrebuchetEvents()
   useServiceWorkerUpdater()
