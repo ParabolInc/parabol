@@ -151,19 +151,19 @@ const promptsInfo = [
     sortOrder: 3
   },
   {
-    question: '🧧 Hongbao',
+    question: 'Hongbao 🧧',
     description: 'Who deserves a red envelope with kudos and some words of appreciation?',
     templateId: makeId(templateNames[3], 'template'),
     sortOrder: 0
   },
   {
-    question: '🎊 Couplets',
+    question: 'Couplets 🎊 ',
     description: 'What important messages should we remember for guidance?',
     templateId: makeId(templateNames[3], 'template'),
     sortOrder: 1
   },
   {
-    question: '🧨 Firecracker',
+    question: 'Firecracker 🧨',
     description: 'What caught us by surprise or gave us a fright?',
     templateId: makeId(templateNames[3], 'template'),
     sortOrder: 2
