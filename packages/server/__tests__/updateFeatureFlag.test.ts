@@ -2,9 +2,9 @@ import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {sendPublic, signUp} from './common'
 
-const ADD_FEATURE_FLAG = `
-  mutation AddFeatureFlag($emails: [String!], $domain: String, $flag: UserFlagEnum!) {
-    addFeatureFlag(emails: $emails, domain: $domain, flag: $flag) {
+const UPDATE_FEATURE_FLAG = `
+  mutation UpdateFeatureFlag($emails: [String!], $domain: String, $flag: UserFlagEnum!, $addFlag: Boolean!) {
+    updateFeatureFlag(emails: $emails, domain: $domain, flag: $flag, addFlag: $addFlag) {
       error {
         title
         message
@@ -24,17 +24,18 @@ test('Add feature flag by email', async () => {
   const authToken = encodeAuthToken(new ServerAuthToken())
 
   const update = await sendPublic({
-    query: ADD_FEATURE_FLAG,
+    query: UPDATE_FEATURE_FLAG,
     variables: {
       emails: [email],
-      flag: 'azureDevOps'
+      flag: 'azureDevOps',
+      addFlag: true
     },
     authToken
   })
 
   expect(update).toEqual({
     data: {
-      addFeatureFlag: {
+      updateFeatureFlag: {
         error: null,
         users: [
           {
