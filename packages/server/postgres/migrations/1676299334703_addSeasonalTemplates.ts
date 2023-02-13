@@ -1,5 +1,6 @@
-import {R} from 'rethinkdb-ts'
+import {r} from 'rethinkdb-ts'
 import {PALETTE} from '../../../client/styles/paletteV3'
+import {ParabolR} from '../../database/rethinkDriver'
 
 const createdAt = new Date()
 
@@ -173,8 +174,19 @@ const promptsInfo = [
 const templates = templateNames.map((templateName) => makeTemplate(templateName))
 const reflectPrompts = promptsInfo.map((promptInfo, idx) => makePrompt(promptInfo, idx))
 
-export const up = async function (r: R) {
+const connectRethinkDB = async () => {
+  const {hostname: host, port, pathname} = new URL(process.env.RETHINKDB_URL!)
+  await r.connectPool({
+    host,
+    port: parseInt(port, 10),
+    db: pathname.split('/')[1]
+  })
+  return r as any as ParabolR
+}
+
+export const up = async function () {
   try {
+    await connectRethinkDB()
     await Promise.all([
       r.table('MeetingTemplate').insert(templates).run(),
       r.table('ReflectPrompt').insert(reflectPrompts).run()
@@ -184,10 +196,11 @@ export const up = async function (r: R) {
   }
 }
 
-export const down = async function (r: R) {
+export const down = async function () {
   const templateIds = templates.map(({id}) => id)
   const promptIds = reflectPrompts.map(({id}) => id)
   try {
+    await connectRethinkDB()
     await Promise.all([
       r.table('MeetingTemplate').getAll(r.args(templateIds)).delete().run(),
       r.table('ReflectPrompt').getAll(r.args(promptIds)).delete().run()
