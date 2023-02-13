@@ -81,6 +81,16 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
   const activeMeetingSeries = await getActiveMeetingSeries()
   await Promise.all(
     activeMeetingSeries.map(async (meetingSeries) => {
+      const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
+      if (seriesTeam.isArchived || !seriesTeam.isPaid) {
+        return
+      }
+
+      const seriesOrg = await dataLoader.get('organizations').load(seriesTeam.orgId)
+      if (seriesOrg.lockedAt) {
+        return
+      }
+
       const lastMeeting = await r
         .table('NewMeeting')
         .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
