@@ -5,10 +5,18 @@ import {isMeetingAction} from '../../../../database/types/MeetingAction'
 import {isMeetingPoker} from '../../../../database/types/MeetingPoker'
 import {isMeetingRetrospective} from '../../../../database/types/MeetingRetrospective'
 import {isMeetingTeamPrompt} from '../../../../database/types/MeetingTeamPrompt'
+import sendToSentry from '../../../../utils/sendToSentry'
 
 const getSummaryText = (meeting: Meeting) => {
   if (isMeetingRetrospective(meeting)) {
     const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
+    const hasNonZeroStat = commentCount || reflectionCount || topicCount || taskCount
+    if (!hasNonZeroStat && meeting.summary) {
+      sendToSentry(new Error('No stats found for meeting'), {
+        tags: {meetingId: meeting.id, summary: meeting.summary}
+      })
+    }
+
     return `Your team shared ${reflectionCount} ${plural(
       reflectionCount,
       'reflection'
