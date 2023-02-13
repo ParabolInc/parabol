@@ -1,4 +1,4 @@
-import NullableDataLoader from '../nullableDataLoader'
+import NullableDataLoader from '../NullableDataLoader'
 
 describe('NullableDataLoader', () => {
   let nullableDataLoader: NullableDataLoader<number, {id: number; name: string}, string>
