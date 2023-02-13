@@ -49,3 +49,34 @@ test('Add feature flag by email', async () => {
     }
   })
 })
+
+test('Remove feature flag by email', async () => {
+  const {email, userId} = await signUp()
+  const authToken = encodeAuthToken(new ServerAuthToken())
+
+  const update = await sendPublic({
+    query: UPDATE_FEATURE_FLAG,
+    variables: {
+      emails: [email],
+      flag: 'azureDevOps',
+      addFlag: false
+    },
+    authToken
+  })
+
+  expect(update).toEqual({
+    data: {
+      updateFeatureFlag: {
+        error: null,
+        users: [
+          {
+            id: userId,
+            featureFlags: {
+              azureDevOps: false
+            }
+          }
+        ]
+      }
+    }
+  })
+})
