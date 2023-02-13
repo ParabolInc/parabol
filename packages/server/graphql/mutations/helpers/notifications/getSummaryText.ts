@@ -16,7 +16,6 @@ const getSummaryText = (meeting: Meeting) => {
         tags: {meetingId: meeting.id, summary: meeting.summary}
       })
     }
-
     return `Your team shared ${reflectionCount} ${plural(
       reflectionCount,
       'reflection'
