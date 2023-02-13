@@ -30,13 +30,6 @@ const makeTemplate = (name: string) => ({
   isFree: false
 })
 
-type PromptInfo = {
-  question: string
-  description: string
-  templateId: string
-  sortOrder: number
-}
-
 const promptColors = [
   PALETTE.JADE_400,
   PALETTE.TOMATO_500,
@@ -47,6 +40,13 @@ const promptColors = [
   PALETTE.FUSCIA_400,
   PALETTE.SLATE_700
 ]
+
+type PromptInfo = {
+  question: string
+  description: string
+  templateId: string
+  sortOrder: number
+}
 
 const makePrompt = (promptInfo: PromptInfo, idx: number) => {
   const {question, description, templateId, sortOrder} = promptInfo
