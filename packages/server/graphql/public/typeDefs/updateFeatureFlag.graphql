@@ -32,7 +32,7 @@ extend type Mutation {
   """
   Give someone advanced features in a flag
   """
-  addFeatureFlag(
+  updateFeatureFlag(
     """
     a list of the complete or partial email of the person to whom you are giving advanced features.
           Matches via a regex to support entire domains
@@ -48,10 +48,15 @@ extend type Mutation {
     the flag that you want to give to the user
     """
     flag: UserFlagEnum!
-  ): AddFeatureFlagPayload!
+
+    """
+    whether to add or remove the flag
+    """
+    addFlag: Boolean!
+  ): UpdateFeatureFlagPayload!
 }
 
-type AddFeatureFlagPayload {
+type UpdateFeatureFlagPayload {
   error: StandardMutationError
 
   """
@@ -65,4 +70,4 @@ type AddFeatureFlagPayload {
   users: [User]
 }
 
-extend union NotificationSubscriptionPayload = AddFeatureFlagPayload
+extend union NotificationSubscriptionPayload = UpdateFeatureFlagPayload

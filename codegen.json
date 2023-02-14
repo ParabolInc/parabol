@@ -37,7 +37,7 @@
         "mappers": {
           "RRule": "rrule#RRule",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
-          "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
+          "UpdateFeatureFlagPayload": "./types/UpdateFeatureFlagPayload#UpdateFeatureFlagPayloadSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",

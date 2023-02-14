@@ -113,7 +113,7 @@ const subscription = graphql`
       }
 
       # Feature flags
-      ... on AddFeatureFlagPayload {
+      ... on UpdateFeatureFlagPayload {
         user {
           id
           # add flag here
@@ -255,7 +255,7 @@ const NotificationSubscription = (
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationNotificationUpdater(payload, context)
           break
-        case 'AddFeatureFlagPayload':
+        case 'UpdateFeatureFlagPayload':
           break
         case 'AddNewFeaturePayload':
           addNewFeatureNotificationUpdater(payload, context)
