@@ -14,6 +14,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
+import OrgPage from '../OrgBilling/OrgPage'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
@@ -65,6 +66,9 @@ interface Props {
 const query = graphql`
   query OrganizationQuery($orgId: ID!) {
     viewer {
+      featureFlags {
+        checkoutFlow
+      }
       organization(orgId: $orgId) {
         ...EditableOrgName_organization
         ...OrganizationPage_organization
@@ -96,7 +100,7 @@ const Organization = (props: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  const {organization} = viewer
+  const {organization, featureFlags} = viewer
   const {history} = useRouter()
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
@@ -111,6 +115,9 @@ const Organization = (props: Props) => {
   const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
+  const {checkoutFlow} = featureFlags
+  if (checkoutFlow) return <OrgPage />
+
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>
