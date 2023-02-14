@@ -131,6 +131,7 @@ export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team>
 ) => {
   const removedUserId = payload.getLinkedRecord('user').getValue('id')
   const {viewerId} = atmosphere
+
   if (removedUserId === viewerId) {
     const teams = payload.getLinkedRecords('teams')
     const teamIds = teams.map((team) => team.getValue('id'))
@@ -148,6 +149,8 @@ export const removeOrgUserTaskUpdater: SharedUpdater<RemoveOrgUserMutation_task>
 ) => {
   const removedUserId = payload.getLinkedRecord('user').getValue('id')
   const tasks = payload.getLinkedRecords('updatedTasks')
+  if (!tasks) return
+
   if (removedUserId === atmosphere.viewerId) {
     const taskIds = tasks.map((task) => task.getValue('id'))
     handleRemoveTasks(taskIds, store)
@@ -171,7 +174,9 @@ export const removeOrgUserTeamOnNext: OnNextHandler<RemoveOrgUserMutation_team> 
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
-        const viewerStageId = meetingProxy.getLinkedRecord('localStage')!.getValue('id') as string
+        const localStage = meetingProxy.getLinkedRecord('localStage')
+        if (!localStage) return
+        const viewerStageId = localStage.getValue('id') as string
         const stageRes = findStageById(phases, viewerStageId)
         if (!stageRes) {
           setLocalStageAndPhase(store, meetingId, facilitatorStageId)
