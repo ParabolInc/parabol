@@ -125,7 +125,7 @@
     "regenerator-runtime": "^0.13.5",
     "relay-runtime": "^12.0.0",
     "resize-observer-polyfill": "^1.5.0",
-    "rrule": "^2.7.1",
+    "rrule": "^2.7.2",
     "string-score": "^1.0.1",
     "swiper": "^8.3.1",
     "tayden-clusterfck": "^0.7.0",

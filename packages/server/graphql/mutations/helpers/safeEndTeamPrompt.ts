@@ -7,7 +7,7 @@ import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTe
 import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
+import {InternalContext} from '../../graphql'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 
 const safeEndTeamPrompt = async ({
@@ -22,7 +22,7 @@ const safeEndTeamPrompt = async ({
   now: Date
   viewerId?: string
   r: ParabolR
-  context: GQLContext
+  context: InternalContext
   subOptions: SubOptions
 }) => {
   const {dataLoader} = context

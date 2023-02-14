@@ -5,13 +5,14 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import {PALETTE} from '~/styles/paletteV3'
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import useModal from '../../hooks/useModal'
 import {meetingAvatarMediaQueries, meetingTopBarMediaQuery} from '../../styles/meeting'
 import EditableText from '../EditableText'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {HumanReadableRecurrenceRule} from './Recurrence/HumanReadableRecurrenceRule'
+import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
@@ -78,17 +79,6 @@ const ButtonContainer = styled('div')({
   }
 })
 
-const BetaBadge = styled('div')({
-  borderRadius: 44,
-  backgroundColor: PALETTE.GRAPE_500,
-  color: PALETTE.SLATE_100,
-  fontWeight: 600,
-  fontSize: 12,
-  lineHeight: '11px',
-  marginRight: 53,
-  padding: '8px 16px 8px 16px'
-})
-
 interface Props {
   meetingRef: TeamPromptTopBar_meeting$key
   isDesktop: boolean
@@ -111,11 +101,15 @@ const TeamPromptTopBar = (props: Props) => {
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
+        ...UpdateRecurrenceSettingsModal_meeting
       }
     `,
     meetingRef
   )
   const atmosphere = useAtmosphere()
+  const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
+    useModal({id: 'updateRecurrenceSettingsModal'})
+
   const {viewerId} = atmosphere
   const {id: meetingId, name: meetingName, facilitatorUserId, meetingSeries} = meeting
   const isFacilitator = viewerId === facilitatorUserId
@@ -152,13 +146,22 @@ const TeamPromptTopBar = (props: Props) => {
       )}
       <RightSection>
         <RightSectionContainer>
-          {isDesktop && <BetaBadge>BETA</BetaBadge>}
           <NewMeetingAvatarGroup meetingRef={meeting} />
           <ButtonContainer>
-            <TeamPromptOptions meetingRef={meeting} />
+            <TeamPromptOptions
+              meetingRef={meeting}
+              openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
+            />
           </ButtonContainer>
         </RightSectionContainer>
       </RightSection>
+      {recurrenceSettingsModal(
+        <UpdateRecurrenceSettingsModal
+          meeting={meeting}
+          recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
+          closeModal={toggleRecurrenceSettingsModal}
+        />
+      )}
     </MeetingTopBarStyles>
   )
 }
