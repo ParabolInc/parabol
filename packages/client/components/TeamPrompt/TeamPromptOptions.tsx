@@ -52,7 +52,7 @@ const TeamPromptOptions = (props: Props) => {
   return (
     <>
       <OptionsButton
-        ref={mergeRefs([originRef, tooltipOriginRef])}
+        ref={mergeRefs(originRef, tooltipOriginRef)}
         onClick={togglePortal}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
