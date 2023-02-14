@@ -15,7 +15,7 @@ class UpdatableCacheDataLoader<Key, Value, CacheKey = Key> extends DataLoader<
     batchLoadFn: DataLoader.BatchLoadFn<Key, Value>,
     options?: DataLoader.Options<Key, Value, CacheKey>
   ) {
-    const cacheMap = new Map()
+    const cacheMap = new Map<CacheKey, Promise<Value>>()
     super(batchLoadFn, {cacheMap, ...options})
     this.cacheKeyFn = options?.cacheKeyFn ?? ((k: Key): CacheKey => k as unknown as CacheKey)
     this.cache = cacheMap
