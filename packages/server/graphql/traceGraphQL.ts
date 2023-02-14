@@ -28,8 +28,6 @@ interface Config {
    * A record where the key is the operationName and the value is
    * an array of variables to exclude.
    * Useful for excluding private variables like passwords
-   *
-   * @default true
    */
   excludeArgs?: Record<string, string[]>
   /**
