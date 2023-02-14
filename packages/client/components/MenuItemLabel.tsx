@@ -8,7 +8,7 @@ export const MenuItemLabelStyle = {
   flex: 1,
   fontSize: 14,
   lineHeight: '24px',
-  padding: `4px 8px 4px 16px`
+  padding: `4px 16px 4px 16px`
 }
 
 const MenuItemLabel = styled('div')(MenuItemLabelStyle)

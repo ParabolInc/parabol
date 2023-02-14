@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Flag, Replay} from '@mui/icons-material'
+import {Flag, Link, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -9,10 +9,17 @@ import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../styles/paletteV3'
+import makeAppURL from '../../utils/makeAppURL'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
 import {MenuItemLabelStyle} from '../MenuItemLabel'
+
+const LinkIcon = styled(Link)({
+  color: PALETTE.SLATE_600,
+  marginRight: 8
+})
 
 const ReplayIcon = styled(Replay)({
   color: PALETTE.SLATE_600,
@@ -42,6 +49,9 @@ const TeamPromptOptionsMenu = (props: Props) => {
     graphql`
       fragment TeamPromptOptionsMenu_meeting on TeamPromptMeeting {
         id
+        team {
+          id
+        }
         meetingSeries {
           id
           recurrenceRule
@@ -56,7 +66,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt} = meeting
+  const {id: meetingId, meetingSeries, endedAt, team} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
@@ -72,6 +82,26 @@ const TeamPromptOptionsMenu = (props: Props) => {
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+      {hasRecurrenceEnabled && (
+        <MenuItem
+          key='link'
+          label={
+            <OptionMenuItem>
+              <LinkIcon />
+              Copy meeting permalink
+            </OptionMenuItem>
+          }
+          onClick={async () => {
+            const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
+            await navigator.clipboard.writeText(copyUrl)
+
+            SendClientSegmentEventMutation(atmosphere, 'Copied Meeting Series Link', {
+              teamId: team?.id,
+              meetingId: meetingId
+            })
+          }}
+        />
+      )}
       <MenuItem
         key='copy'
         isDisabled={!canToggleRecurrence}
