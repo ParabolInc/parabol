@@ -16,11 +16,11 @@ export default class SAML {
   orgId: string | null
 
   constructor(input: Input) {
-    const {id, domains, url, metadata} = input
+    const {id, domains, url, metadata, orgId} = input
     this.id = id || generateUID()
     this.domains = domains
     this.url = url ?? null
     this.metadata = metadata ?? null
-    this.orgId = input.orgId ?? null
+    this.orgId = orgId ?? null
   }
 }

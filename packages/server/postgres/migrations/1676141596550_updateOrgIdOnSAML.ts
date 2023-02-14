@@ -25,5 +25,7 @@ export async function up() {
 }
 
 export async function down() {
+  await connectRethinkDB()
   await r.table('SAML').indexDrop('orgId').run()
+  await r.getPoolMaster()?.drain()
 }

@@ -10,10 +10,11 @@ const verifyDomain: MutationResolvers['verifyDomain'] = async (_source, {slug, d
   const slugName = normalizeSlugName(slug)
   if (slugName instanceof Error) return {error: {message: slugName.message}}
 
-  const slugNameExist = await r.table('SAML')('id').count(slugName).eq(1).run()
+  const [slugNameExist, orgIdExist] = await Promise.all([
+    r.table('SAML')('id').count(slugName).eq(1).run(),
+    r.table('SAML')('orgId').count(orgId).eq(1).run()
+  ])
   if (slugNameExist) return {error: {message: 'SAML exist with slug name'}}
-
-  const orgIdExist = await r.table('SAML')('orgId').count(orgId).eq(1).run()
   if (orgIdExist) return {error: {message: 'SAML exist for organization'}}
 
   await r
