@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
+import {mergeRefs} from '~/utils/react/mergeRefs'
 import {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
 import useTooltip from '../../hooks/useTooltip'
 import BaseButton from '../BaseButton'
@@ -36,7 +37,7 @@ const TeamPromptOptions = (props: Props) => {
     openTooltip,
     closeTooltip,
     originRef: tooltipOriginRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
   const {meetingRef, openRecurrenceSettingsModal} = props
 
   const meeting = useFragment(
@@ -49,9 +50,9 @@ const TeamPromptOptions = (props: Props) => {
   )
 
   return (
-    <div ref={tooltipOriginRef}>
+    <>
       <OptionsButton
-        ref={originRef}
+        ref={mergeRefs([originRef, tooltipOriginRef])}
         onClick={togglePortal}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
@@ -66,7 +67,7 @@ const TeamPromptOptions = (props: Props) => {
           openRecurrenceSettingsModal={openRecurrenceSettingsModal}
         />
       )}
-    </div>
+    </>
   )
 }
 
