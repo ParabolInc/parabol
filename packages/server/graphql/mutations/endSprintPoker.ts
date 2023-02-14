@@ -107,7 +107,7 @@ export default {
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template)
-    const isKill = phase && phase.phaseType !== 'ESTIMATE'
+    const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
       checkTeamsLimit(team.orgId, dataLoader)
