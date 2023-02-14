@@ -1,3 +1,7 @@
+/**
+ * Merges multiple React refs into a single ref callback.
+ * Credit: https://github.com/gregberge/react-merge-refs
+ */
 export function mergeRefs<T = any>(
   refs: Array<React.MutableRefObject<T | null> | React.LegacyRef<T>>
 ): React.Ref<T> {
