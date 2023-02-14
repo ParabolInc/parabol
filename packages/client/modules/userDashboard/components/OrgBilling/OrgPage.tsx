@@ -1,11 +1,12 @@
 import React from 'react'
+import OrgNav from '../Organization/OrgNav'
 import OrgPlansAndBilling from './OrgPlansAndBilling'
 
 const OrgPage = () => {
   // add routing here
   return (
     <>
-      <div>{'nav'}</div>
+      <OrgNav />
       <OrgPlansAndBilling />
     </>
   )
