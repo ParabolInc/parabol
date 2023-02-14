@@ -3,9 +3,23 @@ import {GraphQLSchema, parse} from 'graphql'
 import {CompiledQuery} from 'graphql-jit'
 import getRethink from '../database/rethinkDriver'
 import PROD from '../PROD'
+import {MutationResolvers, QueryResolvers, Resolver} from './public/resolverTypes'
 import {tracedCompileQuery} from './traceGraphQL'
 
+type OperationResolvers = QueryResolvers & MutationResolvers
+type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
+type ExcludedArgs = {
+  [P in keyof OperationResolvers]?: Array<keyof ExtractArgs<OperationResolvers[P]>>
+}
+
 const compileQuery = tracedCompileQuery(tracer, {
+  excludeArgs: {
+    loginWithPassword: ['password'],
+    resetPassword: ['token', 'newPassword'],
+    signUpWithPassword: ['password', 'invitationToken'],
+    updateCreditCard: ['stripeToken'],
+    verifyEmail: ['verificationToken']
+  } as ExcludedArgs,
   hooks: {
     execute: (span, args) => {
       span.setTag('viewerId', args.contextValue?.authToken?.sub ?? 'null')

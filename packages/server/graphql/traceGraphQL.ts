@@ -25,6 +25,14 @@ interface ExecutionArgs {
 
 interface Config {
   /**
+   * A record where the key is the operationName and the value is
+   * an array of variables to exclude.
+   * Useful for excluding private variables like passwords
+   *
+   * @default true
+   */
+  excludeArgs?: Record<string, string[]>
+  /**
    * Whether to collapse list items into a single element. (i.e. single
    * `users.*.name` span instead of `users.0.name`, `users.1.name`, etc)
    *
@@ -71,7 +79,7 @@ export function tracedCompileQuery(tracer: Tracer, config: Config) {
       const operation = getOperation(document, operationName)!
       const type = operation.operation
       const name = operation.name?.value
-      wrapCompiledQuery(tracer, config, query, name, type)
+      wrapCompiledQuery(tracer, config, query, name, type, config.excludeArgs)
     }
     return query
   }
@@ -79,6 +87,21 @@ export function tracedCompileQuery(tracer: Tracer, config: Config) {
 
 type PatchedMarker = {
   _datadog_patched?: boolean
+}
+
+function addVariableTags(
+  variables: {[key: string]: any} | null | undefined,
+  operationName: string | undefined,
+  excludeArgs: Config['excludeArgs']
+) {
+  if (!variables) return
+  const tags = {} as Record<string, any>
+  Object.keys(variables).map((key) => {
+    if (!excludeArgs || !excludeArgs[operationName!]?.includes(key)) {
+      tags[`graphql.variables.${key}`] = variables[key]
+    }
+  })
+  return tags
 }
 
 /**
@@ -90,7 +113,8 @@ function wrapCompiledQuery(
   config: Config,
   compiledQuery: CompiledQuery,
   operationName?: string,
-  operationType?: string
+  operationType?: string,
+  excludeArgs?: Config['excludeArgs']
 ) {
   const query = compiledQuery.query
   if ((query as PatchedMarker)._datadog_patched) return
@@ -101,10 +125,12 @@ function wrapCompiledQuery(
     context: PatchedContext,
     variables: {[key: string]: any} | null | undefined
   ): Promise<ExecutionResult> => {
+    const variableTags = addVariableTags(variables, operationName, excludeArgs)
     return tracer.trace(
       'graphql',
       {
         tags: {
+          ...variableTags,
           'graphql.operation.name': operationName,
           'graphql.operation.type': operationType
         },
