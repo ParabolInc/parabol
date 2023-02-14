@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {Route, RouteComponentProps, Switch, withRouter} from 'react-router'
+import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
@@ -36,7 +36,7 @@ const OrganizationPage = (props: Props) => {
           <Route
             exact
             path={`${match.url}`}
-            render={(p) => <OrgBilling {...p} organization={organization} />}
+            render={() => <Redirect to={`${match.url}/${BILLING_PAGE}`} />}
           />
           <Route
             exact

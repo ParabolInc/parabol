@@ -23,11 +23,11 @@ const UserProfile = lazy(
 
 interface Props {
   match: any
-  notifications: any
 }
 
 const UserDashboard = (props: Props) => {
   const {match} = props
+
   return (
     <Switch>
       <Route path={`${match.url}/profile`} component={UserProfile} />

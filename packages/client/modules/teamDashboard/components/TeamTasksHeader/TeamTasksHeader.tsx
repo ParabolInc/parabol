@@ -125,7 +125,7 @@ const TeamTasksHeader = (props: Props) => {
                   <NavLink
                     className={css(linkStyles)}
                     title={orgName}
-                    to={`/me/organizations/${orgId}`}
+                    to={`/me/organizations/${orgId}/billing`}
                   >
                     {orgName}
                   </NavLink>
