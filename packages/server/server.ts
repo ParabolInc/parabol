@@ -26,7 +26,7 @@ import SAMLHandler from './utils/SAMLHandler'
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
+  plugins: true
 })
 
 const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)

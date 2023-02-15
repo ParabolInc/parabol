@@ -110,7 +110,8 @@ function wrapCompiledQuery(
         },
         type: 'graphql',
         resource: resourceName,
-        measured: true
+        measured: true,
+        childOf: context?.ddChildOf
       } as TraceOptions & SpanOptions,
       async (span) => {
         if (!span) {
@@ -186,6 +187,7 @@ interface Field {
 }
 
 type PatchedContext = {
+  ddChildOf?: any
   _datadog_graphql: {
     span: Span
     fields: {[name: string]: Field}

@@ -56,7 +56,7 @@ if (dsn) {
 }
 
 const datadogEnabled =
-  __PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogService
+  true || (__PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogService)
 if (datadogEnabled) {
   datadogRum.init({
     applicationId: `${datadogApplicationId}`,
@@ -71,13 +71,16 @@ if (datadogEnabled) {
       }
       return undefined
     },
-    clientToken: datadogClientToken,
+    clientToken: datadogClientToken!,
     site: 'datadoghq.com',
     service: datadogService,
     version: __APP_VERSION__,
     sampleRate: 100,
     trackInteractions: true,
     defaultPrivacyLevel: 'allow'
+    // allowedTracingUrlds: [
+    //   { match: /.*/, propagatorTypes: ["tracecontext"]}
+    // ]
   })
   datadogRum.startSessionReplayRecording()
 }

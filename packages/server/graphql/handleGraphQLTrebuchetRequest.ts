@@ -1,4 +1,5 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
+import tracer from 'dd-trace'
 import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {getUserId} from '../utils/authorization'
@@ -7,7 +8,6 @@ import relayUnsubscribe from '../utils/relayUnsubscribe'
 import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
 import sendToSentry from '../utils/sendToSentry'
 import subscribeGraphQL from './subscribeGraphQL'
-
 export type GraphQLMessageType = 'data' | 'complete' | 'error'
 
 const handleGraphQLTrebuchetRequest = async (
@@ -38,24 +38,29 @@ const handleGraphQLTrebuchetRequest = async (
       return
     }
     try {
-      const result = await getGraphQLExecutor().publish({
-        docId,
-        query,
-        variables,
-        socketId,
-        authToken,
-        ip
+      return tracer.trace('handleGraphQLTrebuchetRequest', async (span) => {
+        const carrier = {}
+        tracer.inject(span!, 'http_headers', carrier)
+        const result = await getGraphQLExecutor().publish({
+          docId,
+          query,
+          variables,
+          socketId,
+          authToken,
+          ip,
+          carrier
+        })
+        if (result.errors?.[0]) {
+          const [firstError] = result.errors
+          const safeError = new Error(firstError.message)
+          safeError.stack = firstError.stack
+          sendToSentry(safeError)
+        }
+        const safeResult = sanitizeGraphQLErrors(result)
+        // TODO if multiple results, send GQL_DATA for all but the last
+        const messageType = result.data ? 'complete' : 'error'
+        return {type: messageType, id: opId, payload: safeResult} as const
       })
-      if (result.errors?.[0]) {
-        const [firstError] = result.errors
-        const safeError = new Error(firstError.message)
-        safeError.stack = firstError.stack
-        sendToSentry(safeError)
-      }
-      const safeResult = sanitizeGraphQLErrors(result)
-      // TODO if multiple results, send GQL_DATA for all but the last
-      const messageType = result.data ? 'complete' : 'error'
-      return {type: messageType, id: opId, payload: safeResult} as const
     } catch (e) {
       if (e instanceof Error && e.message === 'TIMEOUT') {
         sendToSentry(new Error('GQL executor took too long to respond'), {

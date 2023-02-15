@@ -26,6 +26,7 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
   subChannel: string
   stream: string
   jobCounter = 0
+  carrier: any
 
   constructor(stream: string, subChannel: string) {
     this.stream = stream

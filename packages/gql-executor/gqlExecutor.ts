@@ -10,7 +10,7 @@ import RedisStream from './RedisStream'
 tracer.init({
   service: `GQLExecutor ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false
+  plugins: true
 })
 
 const {REDIS_URL, SERVER_ID} = process.env
