@@ -289,6 +289,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             setEditorState={setEditorState}
             teamId={teamId}
             readOnly={!allowComments}
+            discussionId={discussion.id}
           />
         </EditorWrap>
         <SendCommentButton
