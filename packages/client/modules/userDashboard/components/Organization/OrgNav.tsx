@@ -6,6 +6,7 @@ import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
+import {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -35,7 +36,7 @@ const NavItemLabel = styled('span')<{isBold?: boolean}>(({isBold}) => ({
 }))
 
 type Props = {
-  organizationRef: any // OrgPage_organization$key
+  organizationRef: OrgNav_organization$key
 }
 
 const OrgNav = (props: Props) => {

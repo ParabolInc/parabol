@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
 import OrgPlansAndBilling from './OrgPlansAndBilling'
 
 type Props = {
-  organizationRef: any // OrgPage_organization$key
+  organizationRef: OrgPage_organization$key
 }
 
 const OrgPage = (props: Props) => {
