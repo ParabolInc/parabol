@@ -42,6 +42,9 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
         _args: unknown,
         {dataLoader, authToken}: GQLContext
       ) => {
+        if (!meetingId) {
+          return null
+        }
         const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         if (!meeting) {
