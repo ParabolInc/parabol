@@ -191,6 +191,7 @@ export const up = async function () {
       r.table('MeetingTemplate').insert(templates).run(),
       r.table('ReflectPrompt').insert(reflectPrompts).run()
     ])
+    await r.getPoolMaster()?.drain()
   } catch (e) {
     console.log(e)
   }
@@ -205,6 +206,7 @@ export const down = async function () {
       r.table('MeetingTemplate').getAll(r.args(templateIds)).delete().run(),
       r.table('ReflectPrompt').getAll(r.args(promptIds)).delete().run()
     ])
+    await r.getPoolMaster()?.drain()
   } catch (e) {
     console.log(e)
   }
