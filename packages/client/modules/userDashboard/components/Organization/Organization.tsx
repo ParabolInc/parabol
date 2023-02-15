@@ -70,6 +70,7 @@ const query = graphql`
         checkoutFlow
       }
       organization(orgId: $orgId) {
+        ...OrgPage_organization
         ...EditableOrgName_organization
         ...OrganizationPage_organization
         orgId: id
@@ -116,7 +117,7 @@ const Organization = (props: Props) => {
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
   const {checkoutFlow} = featureFlags
-  if (checkoutFlow) return <OrgPage />
+  if (checkoutFlow) return <OrgPage organizationRef={organization} />
 
   return (
     <UserSettingsWrapper>

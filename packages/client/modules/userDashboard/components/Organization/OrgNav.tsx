@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import {NavigateNext} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
@@ -32,8 +34,23 @@ const NavItemLabel = styled('span')<{isBold?: boolean}>(({isBold}) => ({
   }
 }))
 
-const OrgNav = () => {
+type Props = {
+  organizationRef: any // OrgPage_organization$key
+}
+
+const OrgNav = (props: Props) => {
+  const {organizationRef} = props
   const history = useHistory()
+  const organization = useFragment(
+    graphql`
+      fragment OrgNav_organization on Organization {
+        name
+      }
+    `,
+    organizationRef
+  )
+  const {name} = organization
+
   return (
     <Wrapper>
       <NavItemLabel onClick={() => history.push('/meetings')}>Dashboard</NavItemLabel>
@@ -44,7 +61,7 @@ const OrgNav = () => {
       <StyledIcon>
         <NavigateNext />
       </StyledIcon>
-      <NavItemLabel isBold>{`Hardcoded's Org`}</NavItemLabel>
+      <NavItemLabel isBold>{`${name}'s Org`}</NavItemLabel>
     </Wrapper>
   )
 }
