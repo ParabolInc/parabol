@@ -1,9 +1,14 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
 import OrgPlansAndBilling from './OrgPlansAndBilling'
+
+const Container = styled('div')({
+  padding: '0px 16px'
+})
 
 type Props = {
   organizationRef: OrgPage_organization$key
@@ -24,10 +29,10 @@ const OrgPage = (props: Props) => {
 
   // add routing here
   return (
-    <>
+    <Container>
       <OrgNav organizationRef={organization} />
       <OrgPlansAndBilling organizationRef={organization} />
-    </>
+    </Container>
   )
 }
 

@@ -27,7 +27,6 @@ const StyledIcon = styled('div')({
 })
 
 const NavItemLabel = styled('span')<{isBold?: boolean}>(({isBold}) => ({
-  display: 'inline-block',
   verticalAlign: 'middle',
   fontWeight: isBold ? 600 : 400,
   '&:hover': {

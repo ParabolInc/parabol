@@ -28,7 +28,6 @@ const Wrapper = styled('div')({
   fontSize: 20,
   fontWeight: 600,
   lineHeight: '24px',
-  height: 28,
   padding: '16px 0px',
   flexWrap: 'wrap'
 })
