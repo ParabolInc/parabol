@@ -33,15 +33,13 @@ const startRecurringTeamPrompt = async (
     day: 'numeric'
   })
 
+  const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+  const nextMeetingStartDate = rrule.after(startTime)
   const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
     name: `${meetingSeries.title} - ${formattedDate}`,
-    scheduledEndTime: new Date(startTime.getTime() + ms(`${meetingSeries.duration}m`)),
+    scheduledEndTime: nextMeetingStartDate,
     meetingSeriesId: meetingSeries.id
   })
-
-  meeting.name = `${meetingSeries.title} - ${formattedDate}`
-  meeting.scheduledEndTime = new Date(startTime.getTime() + ms(`${meetingSeries.duration}m`))
-  meeting.meetingSeriesId = meetingSeries.id
 
   await r.table('NewMeeting').insert(meeting).run()
 
@@ -81,6 +79,16 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
   const activeMeetingSeries = await getActiveMeetingSeries()
   await Promise.all(
     activeMeetingSeries.map(async (meetingSeries) => {
+      const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
+      if (seriesTeam.isArchived || !seriesTeam.isPaid) {
+        return
+      }
+
+      const seriesOrg = await dataLoader.get('organizations').load(seriesTeam.orgId)
+      if (seriesOrg.lockedAt) {
+        return
+      }
+
       const lastMeeting = await r
         .table('NewMeeting')
         .getAll(meetingSeries.id, {index: 'meetingSeriesId'})

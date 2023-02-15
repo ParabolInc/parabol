@@ -1,3 +1,4 @@
+import removeTeamLimitsJobs from '../../../billing/helpers/removeTeamLimitsJobs'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {fromEpochSeconds} from '../../../utils/epochTime'
@@ -58,7 +59,8 @@ const upgradeToTeamTier = async (orgId: string, source: string, email: string) =
         tier: 'team'
       },
       orgId
-    )
+    ),
+    removeTeamLimitsJobs(orgId)
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])

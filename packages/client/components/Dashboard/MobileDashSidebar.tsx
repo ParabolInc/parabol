@@ -1,10 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
+import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
+import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
+import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import StandardHub from '../StandardHub/StandardHub'
 import LeftDashNavItem from './LeftDashNavItem'
@@ -12,7 +14,7 @@ import LeftDashParabol from './LeftDashNavParabol'
 
 interface Props {
   handleMenuClick: () => void
-  viewer: DashSidebar_viewer | null
+  viewerRef: DashSidebar_viewer$key | null
 }
 
 const DashSidebarStyles = styled('div')({
@@ -45,6 +47,15 @@ const Nav = styled('nav')({
   width: '100%'
 })
 
+const OrgName = styled('div')({
+  paddingTop: 8,
+  paddingLeft: 8,
+  fontWeight: 600,
+  fontSize: 12,
+  lineHeight: '24px',
+  color: PALETTE.SLATE_500
+})
+
 const NavMain = styled('div')({
   overflowY: 'auto'
 })
@@ -70,7 +81,65 @@ const Footer = styled('div')({
 const FooterBottom = styled('div')({})
 
 const MobileDashSidebar = (props: Props) => {
-  const {handleMenuClick, viewer} = props
+  const {handleMenuClick, viewerRef} = props
+  const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
+
+  const viewer = useFragment(
+    graphql`
+      fragment MobileDashSidebar_viewer on User {
+        ...StandardHub_viewer
+        ...DashNavList_viewer
+        featureFlags {
+          checkoutFlow
+        }
+        organizations {
+          id
+          name
+        }
+      }
+    `,
+    viewerRef
+  )
+  if (!viewer) return null
+  const {featureFlags, organizations} = viewer
+  const showOrgSidebar = featureFlags.checkoutFlow && match
+
+  if (showOrgSidebar) {
+    const {orgId: orgIdFromParams} = match.params
+    const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
+    const {id: orgId, name} = currentOrg ?? {}
+    return (
+      <DashSidebarStyles>
+        <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
+        <NavBlock>
+          <Nav>
+            <NavItemsWrap>
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'arrowBack'}
+                href={'/me/organizations'}
+                label={'Organizations'}
+              />
+              <OrgName>{name}</OrgName>
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'creditScore'}
+                href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
+                label={'Plans & Billing'}
+              />
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                icon={'group'}
+                href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
+                label={'Members'}
+              />
+            </NavItemsWrap>
+          </Nav>
+        </NavBlock>
+      </DashSidebarStyles>
+    )
+  }
+
   return (
     <DashSidebarStyles>
       <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
@@ -128,11 +197,4 @@ const MobileDashSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(MobileDashSidebar, {
-  viewer: graphql`
-    fragment MobileDashSidebar_viewer on User {
-      ...StandardHub_viewer
-      ...DashNavList_viewer
-    }
-  `
-})
+export default MobileDashSidebar

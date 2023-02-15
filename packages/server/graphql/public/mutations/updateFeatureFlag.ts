@@ -1,6 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getPg from '../../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import {removeUserFeatureFlagsQuery} from '../../../postgres/queries/generated/removeUserFeatureFlagsQuery'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import IUser from '../../../postgres/types/IUser'
@@ -9,9 +10,9 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
-const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
+const updateFeatureFlag: MutationResolvers['updateFeatureFlag'] = async (
   _source,
-  {emails, domain, flag},
+  {emails, domain, flag, addFlag},
   {authToken, dataLoader}
 ) => {
   const operationId = dataLoader.share()
@@ -19,9 +20,9 @@ const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const isAddingFlagToViewer = !emails?.length && !domain
-  if (!isAddingFlagToViewer && !isSuperUser(authToken)) {
-    return standardError(new Error('Not authorised to add feature flag'), {
+  const isUpdatingViewerFlag = !emails?.length && !domain
+  if (!isUpdatingViewerFlag && !isSuperUser(authToken)) {
+    return standardError(new Error('Not authorised to update feature flag'), {
       userId: viewerId
     })
   }
@@ -41,14 +42,16 @@ const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
     return {error: {message: 'No users found matching the email or domain'}}
   }
 
-  const userIds = isAddingFlagToViewer ? [viewerId] : users.map(({id}) => id)
-  await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
+  const userIds = isUpdatingViewerFlag ? [viewerId] : users.map(({id}) => id)
+  addFlag
+    ? await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
+    : await removeUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
   userIds.forEach((userId) => {
     const data = {userId}
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'AddFeatureFlagPayload', data, subOptions)
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdateFeatureFlagPayload', data, subOptions)
   })
 
   return {userIds}
 }
 
-export default addFeatureFlag
+export default updateFeatureFlag
