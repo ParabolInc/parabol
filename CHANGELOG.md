@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.91.1 2023-Feb-14
+
+### Fixed
+
+- Sometimes meetings could not be closed (#7769)
+
 ## 6.91.0 2023-Feb-08
 
 ### Fixed
