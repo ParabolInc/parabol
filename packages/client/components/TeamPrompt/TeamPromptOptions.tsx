@@ -5,7 +5,9 @@ import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
+import {mergeRefs} from '~/utils/react/mergeRefs'
 import {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
+import useTooltip from '../../hooks/useTooltip'
 import BaseButton from '../BaseButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
@@ -30,6 +32,12 @@ interface Props {
 
 const TeamPromptOptions = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipOriginRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
   const {meetingRef, openRecurrenceSettingsModal} = props
 
   const meeting = useFragment(
@@ -43,9 +51,15 @@ const TeamPromptOptions = (props: Props) => {
 
   return (
     <>
-      <OptionsButton ref={originRef} onClick={togglePortal}>
+      <OptionsButton
+        ref={mergeRefs(originRef, tooltipOriginRef)}
+        onClick={togglePortal}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+      >
         <IconLabel ref={originRef} icon='more_vert' iconLarge />
       </OptionsButton>
+      {tooltipPortal('Options')}
       {menuPortal(
         <TeamPromptOptionsMenu
           meetingRef={meeting}
