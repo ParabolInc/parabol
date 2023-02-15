@@ -5,33 +5,22 @@ import makeMaxWidthMediaQuery from '~/utils/makeMaxWidthMediaQuery'
 import CopyLink from '../../../../components/CopyLink'
 import DialogTitle from '../../../../components/DialogTitle'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import RowActions from '../../../../components/Row/RowActions'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const mobileBreakpoint = makeMaxWidthMediaQuery(420)
-
-const largeMobileBreakpoint = makeMaxWidthMediaQuery(540)
+const mobileBreakpoint = makeMaxWidthMediaQuery(520)
 
 const Section = styled('div')({
-  margin: '0 auto',
-  maxWidth: '608px',
-  padding: '0px 16px 12px 16px',
-  [mobileBreakpoint]: {
-    padding: '0 28px 12px 28px'
-  }
+  padding: '0px 28px 12px 28px'
 })
 
 const InputSection = styled('div')({
   display: 'flex',
-  padding: 0,
-  maxWidth: '560px',
-  marginLeft: '16px',
-  [mobileBreakpoint]: {
-    marginLeft: '16px'
-  }
+  flexDirection: 'row',
+  paddingLeft: '16px',
+  maxWidth: '556px'
 })
 
 const SubTitle = styled(DialogTitle)<{disabled: boolean}>(({disabled}) => ({
@@ -48,23 +37,14 @@ const Label = styled('div')<{disabled: boolean}>(({disabled}) => ({
 }))
 
 const CopyButton = styled(SecondaryButton)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginLeft: '16px',
-  marginRight: '8px',
+  margin: '0 16px',
   color: PALETTE.SLATE_600,
   padding: '0',
   border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: '50px',
   width: '40px',
-  height: '40px',
   [mobileBreakpoint]: {
-    marginLeft: '0px'
-  },
-  [largeMobileBreakpoint]: {
-    marginLeft: '8px',
-    marginRight: '16px'
+    marginLeft: '8px'
   }
 })
 
@@ -80,7 +60,7 @@ const StyledContentCopyIcon = styled(ContentCopy)({
 })
 
 const Container = styled('div')({
-  marginBottom: '24px'
+  marginBottom: '0'
 })
 
 interface Props {
@@ -114,14 +94,12 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
           error={undefined}
           onChange={(e) => e.preventDefault()}
         />
-        <RowActions>
-          <CopyButton onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-            <CopyLink title={undefined} tooltip={undefined} url={singleSignOnUrl}>
-              <StyledContentCopyIcon />
-            </CopyLink>
-          </CopyButton>
-          {tooltipPortal('Copy')}
-        </RowActions>
+        <CopyButton onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+          <CopyLink title={undefined} tooltip={undefined} url={singleSignOnUrl}>
+            <StyledContentCopyIcon />
+          </CopyLink>
+        </CopyButton>
+        {tooltipPortal('Copy')}
       </InputSection>
     </Container>
   )

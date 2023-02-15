@@ -3,21 +3,13 @@ import {Info} from '@mui/icons-material'
 import React from 'react'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
-import makeMaxWidthMediaQuery from '../../../../utils/makeMaxWidthMediaQuery'
-
-const mobileBreakpoint = makeMaxWidthMediaQuery(420)
 
 const Inner = styled('div')({
-  margin: '0 auto',
-  maxWidth: '608px',
-  padding: '24px 16px 28px 16px',
-  [mobileBreakpoint]: {
-    padding: '24px 28px 28px 28px'
-  }
+  padding: '24px 16px 28px 28px'
 })
 
 const Title = styled(DialogTitle)({
-  padding: '0 0 9px'
+  padding: '0 0 8px 0'
 })
 
 const InfoWrapper = styled('div')({

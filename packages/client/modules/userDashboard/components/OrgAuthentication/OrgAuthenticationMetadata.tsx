@@ -1,34 +1,18 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
-import makeMaxWidthMediaQuery from '~/utils/makeMaxWidthMediaQuery'
 import DialogTitle from '../../../../components/DialogTitle'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const mobileBreakpoint = makeMaxWidthMediaQuery(420)
-const largeMobileBreakpoint = makeMaxWidthMediaQuery(540)
-
 const Section = styled('div')({
-  margin: '0 auto',
-  maxWidth: '608px',
-  padding: '0px 16px 12px 16px',
-  [mobileBreakpoint]: {
-    padding: '0px 28px 12px 28px'
-  }
+  padding: '24px 16px 8px 28px'
 })
 
 const InputSection = styled('div')({
   display: 'flex',
-  padding: 0,
-  width: '500px',
-  margin: '0 16px 8px 16px',
-  [mobileBreakpoint]: {
-    maxWidth: '350px'
-  },
-  [largeMobileBreakpoint]: {
-    width: 'auto'
-  }
+  maxWidth: '500px',
+  padding: '0 16px 8px 16px'
 })
 
 const SubTitle = styled(DialogTitle)<{disabled: boolean}>(({disabled}) => ({
@@ -45,19 +29,15 @@ const Label = styled('div')<{disabled: boolean}>(({disabled}) => ({
 }))
 
 const Container = styled('div')({
-  marginBottom: '24px'
+  marginBottom: '16px'
 })
 
 const ButtonSection = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-  marginTop: '8px',
-  width: '500px',
-  backgroundColor: PALETTE.WHITE,
-  margin: '0 16px 28px 16px',
-  [largeMobileBreakpoint]: {
-    width: 'auto'
-  }
+  maxWidth: '500px',
+  padding: '0px 16px 0px 16px',
+  backgroundColor: PALETTE.WHITE
 })
 
 interface Props {
