@@ -9,18 +9,17 @@ import sendToSentry from './sendToSentry'
 const REDIS_URL = process.env.REDIS_URL!
 const SERVER_ID = process.env.SERVER_ID!
 
-// When a socket server starts up, it d
 export default class ServerHealthChecker {
   publisher = new Redis(REDIS_URL, {connectionName: 'serverHealth_pub'})
   subscriber = new Redis(REDIS_URL, {connectionName: 'serverHealth_sub'})
-  pendingPongs = new Set<string>()
+  pendingPongs: null | Set<string> = null
   constructor() {
     this.subscriber.on('message', (channel, remoteServerId) => {
       if (channel === 'socketServerPing') {
         if (remoteServerId === SERVER_ID) return
         this.publisher.publish(`socketServerPong:${remoteServerId}`, SERVER_ID)
       } else if (channel === `socketServerPong:${SERVER_ID}`) {
-        this.pendingPongs.delete(remoteServerId)
+        this.pendingPongs?.delete(remoteServerId)
       }
     })
     this.subscriber.subscribe('socketServerPing', `socketServerPong:${SERVER_ID}`)
@@ -31,6 +30,8 @@ export default class ServerHealthChecker {
   // ping all servers
   // if there are servers who say they're alive but they have responded, flag them as dead
   async ping() {
+    if (this.pendingPongs) return
+    this.pendingPongs = new Set()
     const socketServers = await this.publisher.smembers('socketServers')
     this.pendingPongs = new Set(...socketServers.filter((id) => id !== SERVER_ID))
     await this.publisher.publish('socketServerPing', SERVER_ID)
@@ -38,6 +39,7 @@ export default class ServerHealthChecker {
     // if a server hasn't replied in 500ms, assume it is offline
     const deadServerIds = [...this.pendingPongs]
     await this.reportDeadServers(deadServerIds)
+    this.pendingPongs = null
   }
 
   async reportDeadServers(deadServerIds: string[]) {
@@ -55,26 +57,25 @@ export default class ServerHealthChecker {
       userPresenceStream.pause()
 
       const presenceBatch = (await this.publisher.multi(reads).exec()) as [null, string[]][]
-      const disconnectPromises = [] as Promise<any>[]
-      presenceBatch.map((record, idx) => {
-        const key = keys[idx]!
-        const userId = key.slice(key.indexOf(':') + 1)
-        const connections = record[1]
-        connections.forEach((connection) => {
-          const presence = JSON.parse(connection) as UserPresence
-          const {socketServerId, socketId} = presence
-          if (!deadServerIds.includes(socketServerId)) return
-          // let GQL handle the disconnect logic so it can do special handling like notify team memers
-          const promise = publishInternalGQL({
-            authToken,
-            query: disconnectQuery,
-            socketId,
-            variables: {userId}
+      await Promise.all(
+        presenceBatch.flatMap((record, idx) => {
+          const key = keys[idx]!
+          const userId = key.slice(key.indexOf(':') + 1)
+          const connections = record[1]
+          return connections.map((connection) => {
+            const presence = JSON.parse(connection) as UserPresence
+            const {socketServerId, socketId} = presence
+            if (!deadServerIds.includes(socketServerId)) return
+            // let GQL handle the disconnect logic so it can do special handling like notify team memers
+            return publishInternalGQL({
+              authToken,
+              query: disconnectQuery,
+              socketId,
+              variables: {userId}
+            })
           })
-          disconnectPromises.push(promise)
         })
-      })
-      await Promise.all(disconnectPromises)
+      )
       userPresenceStream.resume()
     })
     await new Promise((resolve, reject) => {

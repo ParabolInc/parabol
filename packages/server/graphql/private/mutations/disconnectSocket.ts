@@ -12,7 +12,6 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   {userId},
   {dataLoader, socketId}
 ) => {
-  // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
   const redis = getRedis()
 
   // AUTH
