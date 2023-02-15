@@ -38,7 +38,7 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       type: NewMeeting,
       description: 'The requested meeting',
       resolve: async (
-        {meetingId}: {meetingId: string},
+        {meetingId}: {meetingId?: string},
         _args: unknown,
         {dataLoader, authToken}: GQLContext
       ) => {
