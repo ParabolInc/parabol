@@ -55,9 +55,6 @@ const ButtonSection = styled('div')({
   width: '500px',
   backgroundColor: PALETTE.WHITE,
   margin: '0 16px 28px 16px',
-  [mobileBreakpoint]: {
-    width: 'auto'
-  },
   [largeMobileBreakpoint]: {
     width: 'auto'
   }
@@ -75,7 +72,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
     <Container>
       <Section>
         <SubTitle disabled={disabled}>Metadata</SubTitle>
-        <Label disabled={disabled}>Paste metadata from your identify provider</Label>
+        <Label disabled={disabled}>Paste metadata from your identity provider</Label>
       </Section>
       <InputSection>
         <BasicTextArea
