@@ -40,10 +40,11 @@ interface Props {
   meetingRef: TeamPromptOptionsMenu_meeting$key
   menuProps: MenuProps
   openRecurrenceSettingsModal: () => void
+  popTooltip: () => void
 }
 
 const TeamPromptOptionsMenu = (props: Props) => {
-  const {meetingRef, menuProps, openRecurrenceSettingsModal} = props
+  const {meetingRef, menuProps, openRecurrenceSettingsModal, popTooltip} = props
 
   const meeting = useFragment(
     graphql`
@@ -92,6 +93,8 @@ const TeamPromptOptionsMenu = (props: Props) => {
             </OptionMenuItem>
           }
           onClick={async () => {
+            popTooltip()
+            menuProps.closePortal()
             const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
             await navigator.clipboard.writeText(copyUrl)
 
