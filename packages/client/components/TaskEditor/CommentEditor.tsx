@@ -54,6 +54,7 @@ interface Props extends DraftProps {
   teamId: string
   dataCy: string
   discussionId?: string
+  autofocus?: boolean
 }
 
 const CommentEditor = (props: Props) => {
@@ -68,6 +69,7 @@ const CommentEditor = (props: Props) => {
     onBlur,
     onFocus,
     discussionId,
+    autofocus,
     dataCy
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
@@ -192,10 +194,14 @@ const CommentEditor = (props: Props) => {
   }
 
   useEffect(() => {
+    if (!autofocus) {
+      return
+    }
+
     if (editorRef.current) {
       editorRef.current.focus()
     }
-  }, [editorRef, discussionId])
+  }, [editorRef, discussionId, autofocus])
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)

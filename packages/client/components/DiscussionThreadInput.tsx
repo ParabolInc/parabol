@@ -123,7 +123,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: discussionId, meetingId, isAnonymousComment, teamId} = discussion
+  const {id: discussionId, meetingId, isAnonymousComment, teamId, discussionTopicType} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -310,6 +310,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             teamId={teamId}
             readOnly={!allowComments}
             discussionId={discussion.id}
+            autofocus={discussionTopicType === 'teamPromptResponse'}
           />
         </EditorWrap>
         <SendCommentButton
