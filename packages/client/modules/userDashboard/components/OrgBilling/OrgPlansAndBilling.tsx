@@ -1,8 +1,31 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
 import OrgPlans from './OrgPlans'
+import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
 
-const OrgPlansAndBilling = () => {
-  return <OrgPlans />
+type Props = {
+  organizationRef: OrgPlansAndBilling_organization$key
+}
+
+const OrgPlansAndBilling = (props: Props) => {
+  const {organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgPlansAndBilling_organization on Organization {
+        ...OrgPlansAndBillingHeading_organization
+      }
+    `,
+    organizationRef
+  )
+
+  return (
+    <>
+      <OrgPlansAndBillingHeading organizationRef={organization} />
+      <OrgPlans />
+    </>
+  )
 }
 
 export default OrgPlansAndBilling

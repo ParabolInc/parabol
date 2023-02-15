@@ -16,6 +16,7 @@ const OrgPage = (props: Props) => {
     graphql`
       fragment OrgPage_organization on Organization {
         ...OrgNav_organization
+        ...OrgPlansAndBilling_organization
       }
     `,
     organizationRef
@@ -25,7 +26,7 @@ const OrgPage = (props: Props) => {
   return (
     <>
       <OrgNav organizationRef={organization} />
-      <OrgPlansAndBilling />
+      <OrgPlansAndBilling organizationRef={organization} />
     </>
   )
 }

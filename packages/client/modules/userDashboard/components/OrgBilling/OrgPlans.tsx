@@ -1,7 +1,7 @@
 import React from 'react'
 
 const OrgPlans = () => {
-  return <div>{'heyyy'}</div>
+  return <div>{''}</div>
 }
 
 export default OrgPlans

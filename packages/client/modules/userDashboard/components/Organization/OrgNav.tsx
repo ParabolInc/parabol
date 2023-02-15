@@ -12,7 +12,7 @@ const Wrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexShrink: 0,
-  fontSize: 13,
+  fontSize: 14,
   lineHeight: '20px',
   padding: '16px 0px',
   width: '100%'
