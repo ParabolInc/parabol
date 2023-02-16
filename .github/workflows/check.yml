@@ -66,6 +66,12 @@ jobs:
           path: |
             **/node_modules
           key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          # GH actions doesn't have latest, so only use major version here if necessary
+          node-version: 18
+          cache: "yarn"
       - name: Build Databases
         run: |
           cp .env.example .env
