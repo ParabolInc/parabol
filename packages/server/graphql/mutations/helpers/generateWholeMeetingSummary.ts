@@ -38,12 +38,10 @@ const generateWholeMeetingSummary = async (
   if (contentToSummarize.length <= 1) return
   const [r, summary] = await Promise.all([getRethink(), manager.getSummary(contentToSummarize)])
   if (!summary) return
-  const [meeting] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
+  await Promise.all([
+    dataLoader.get('newMeetings').updateCache(meetingId, {summary}),
     r.table('NewMeeting').get(meetingId).update({summary}).run()
   ])
-  // mutate the cache. Don't copy this pattern: implement dataLoader updateCache: https://github.com/ParabolInc/parabol/issues/7687
-  meeting.summary = summary
 }
 
 export default generateWholeMeetingSummary

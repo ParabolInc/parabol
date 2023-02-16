@@ -35,6 +35,11 @@ const useTimeFrom = (timestamp: string) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [makeTimeFrom, timeFrom, timestamp])
+  // to update on toggle
+  useEffect(() => {
+    setTimeFrom(makeTimeFrom())
+  }, [timestamp, makeTimeFrom])
+
   return timeFrom
 }
 

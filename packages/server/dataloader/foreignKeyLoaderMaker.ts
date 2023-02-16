@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import RootDataLoader from './RootDataLoader'
+import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 type LoaderMakers = typeof primaryKeyLoaderMakers
 type LoaderKeys = keyof LoaderMakers
@@ -35,7 +36,7 @@ export function foreignKeyLoaderMaker<
   type KeyValue = T[KeyName]
   return (parent: RootDataLoader) => {
     const primaryLoader = parent.get(primaryLoaderKey) as DataLoader<PrimaryKeyT, T, PrimaryKeyT>
-    return new DataLoader<KeyValue, T[], KeyValue>(
+    return new UpdatableCacheDataLoader<KeyValue, T[], KeyValue>(
       async (ids) => {
         const items = await fetchFn(ids)
         items.forEach((item) => {
