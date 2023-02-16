@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
+import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 const rethinkForeignKeyLoader = <T extends keyof DBType>(
   standardLoader: DataLoader<string, DBType[T]>,
@@ -14,7 +15,7 @@ const rethinkForeignKeyLoader = <T extends keyof DBType>(
     })
     return ids.map((id) => items.filter((item) => item[field] === id))
   }
-  return new DataLoader<string, DBType[T]>(batchFn, options)
+  return new UpdatableCacheDataLoader<string, DBType[T]>(batchFn, options)
 }
 
 export default rethinkForeignKeyLoader
