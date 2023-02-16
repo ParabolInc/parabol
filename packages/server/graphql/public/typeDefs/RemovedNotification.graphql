@@ -1,0 +1,8 @@
+type RemovedNotification {
+  """
+  A notification ID
+  """
+  removedNotificationId: ID!
+}
+
+extend union NotificationSubscriptionPayload = RemovedNotification

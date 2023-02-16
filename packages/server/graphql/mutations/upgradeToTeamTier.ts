@@ -53,7 +53,7 @@ export default {
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
     try {
-      await upgradeToTeamTier(orgId, stripeToken, email)
+      await upgradeToTeamTier(orgId, stripeToken, email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e

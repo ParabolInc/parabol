@@ -17,6 +17,7 @@ import {
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
+import handleRemoveNotifications from '../mutations/handlers/handleRemoveNotifications'
 import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
@@ -26,6 +27,7 @@ import {
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
+import {removeNotificationToastOnNext} from '../mutations/toasts/removeNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
@@ -87,7 +89,13 @@ const subscription = graphql`
           ...NotificationPicker_notification @relay(mask: false)
         }
       }
+
+      ... on RemovedNotification {
+        removedNotificationId
+      }
+
       ...popNotificationToast_notification @relay(mask: false)
+      ...removeNotificationToast_notification @relay(mask: false)
 
       ... on AuthTokenPayload {
         id
@@ -235,7 +243,8 @@ const onNextHandlers = {
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
   InvalidateSessionsPayload: invalidateSessionsNotificationOnNext,
-  AddedNotification: popNotificationToastOnNext
+  AddedNotification: popNotificationToastOnNext,
+  RemovedNotification: removeNotificationToastOnNext
 } as const
 
 const NotificationSubscription = (
@@ -298,6 +307,11 @@ const NotificationSubscription = (
           const notification = payload.getLinkedRecord('addedNotification' as any)
           if (!notification) break
           handleAddNotifications(notification, context.store)
+          break
+        case 'RemovedNotification':
+          const removedNotificationId = payload.getValue('removedNotificationId' as any)
+          if (!removedNotificationId) break
+          handleRemoveNotifications(removedNotificationId, context.store)
           break
         default:
           console.error('NotificationSubscription case fail', type)
