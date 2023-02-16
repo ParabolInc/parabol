@@ -9,15 +9,21 @@ import {Breakpoint} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: 800
+  maxWidth: '90%'
 })
 
 const StyledRow = styled(Row)({
-  padding: '12px 8px 12px 16px',
+  padding: '12px 8px',
   display: 'flex',
   flex: 1,
   justifyContent: 'space-evenly',
-  flexWrap: 'nowrap'
+  flexWrap: 'nowrap',
+  ':first-of-type': {
+    paddingTop: 16
+  },
+  ':nth-of-type(2)': {
+    border: 'none'
+  }
 })
 
 const StatBlocks = styled('div')({
@@ -77,12 +83,18 @@ const PlanTitle = styled('div')({
   alignItems: 'center'
 })
 
-const PlanSubtitle = styled('div')<{isItalic?: boolean}>(({isItalic}) => ({
+const SubtitleBlock = styled('div')({
+  display: 'flex',
+  flexWrap: 'wrap',
+  lineHeight: '30px'
+})
+
+const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   color: PALETTE.SLATE_800,
   fontSize: 20,
   width: '100%',
   lineHeight: '30px',
-  textTransform: 'capitalize',
+  textTransform: 'none',
   textAlign: 'center',
   display: 'flex',
   alignItems: 'center',
@@ -90,13 +102,6 @@ const PlanSubtitle = styled('div')<{isItalic?: boolean}>(({isItalic}) => ({
   fontWeight: 400,
   fontStyle: isItalic ? 'italic' : 'normal'
 }))
-
-const PlanWrapper = styled('div')({
-  // padding: '16px 8px',
-  display: 'flex',
-  flexWrap: 'nowrap'
-  // justifyContent: 'space-between'
-})
 
 const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   background:
@@ -107,16 +112,16 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   textTransform: 'capitalize',
   textAlign: 'center',
   display: 'flex',
-  alignItems: 'center',
   flex: 1,
   margin: '0 8px',
   flexWrap: 'wrap',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
   padding: '16px 8px',
+  alignContent: 'space-between',
   height: 360
 }))
 
-const UL = styled('ul')()
+const UL = styled('ul')({})
 
 const LI = styled('li')({
   fontSize: 18,
@@ -125,6 +130,12 @@ const LI = styled('li')({
   textTransform: 'none',
   fontWeight: 400,
   textAlign: 'left'
+})
+
+const ButtonBlock = styled('div')({
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center'
 })
 
 const UpgradeButton = styled(FlatPrimaryButton)({
@@ -152,7 +163,6 @@ const OrgPlans = () => {
         </StatBlocks>
       </StyledRow>
       <StyledRow>
-        {/* <PlanWrapper> */}
         <Plan tier='starter'>
           <PlanTitle>{'Starter'}</PlanTitle>
           <PlanSubtitle>{'Free'}</PlanSubtitle>
@@ -162,24 +172,26 @@ const OrgPlans = () => {
             <LI>Retrospectives, Sprint Poker, Standups, Check-Ins</LI>
             <LI>Unlimited team members</LI>
           </UL>
-          <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+          <ButtonBlock>
+            <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+          </ButtonBlock>
         </Plan>
-        {/* </PlanWrapper> */}
-        {/* <PlanWrapper> */}
         <Plan tier='team'>
           <PlanTitle>{'Team'}</PlanTitle>
-          <PlanSubtitle>{'$6 per active member '}</PlanSubtitle>
-          <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+          <SubtitleBlock>
+            <PlanSubtitle>{'$6 per active member '}</PlanSubtitle>
+            <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+          </SubtitleBlock>
           <UL>
             <LI>Everything in Starter</LI>
             <LI>Premium templates</LI>
             <LI>Custom templates</LI>
             <LI>Unlimited teams</LI>
           </UL>
-          <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+          <ButtonBlock>
+            <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+          </ButtonBlock>
         </Plan>
-        {/* </PlanWrapper> */}
-        {/* <PlanWrapper> */}
         <Plan tier='enterprise'>
           <PlanTitle>{'Enterprise'}</PlanTitle>
           <PlanSubtitle>{'Contact for quote'}</PlanSubtitle>
@@ -187,9 +199,10 @@ const OrgPlans = () => {
             <LI>Everything in Team</LI>
             <LI>SSO</LI>
           </UL>
-          <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+          <ButtonBlock>
+            <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+          </ButtonBlock>
         </Plan>
-        {/* // </PlanWrapper> */}
       </StyledRow>
     </StyledPanel>
   )
