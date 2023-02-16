@@ -23,16 +23,19 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
 - fix: Profile name length should have the upper limit (#7425)
 -
+
 ### Added
 
 - chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
 - chore(checkout-flow): add checkout feature flag (#7709)
 -
+
 ### Changed
 
 - chore: update team invite email (#7710)
 - chore(ai-summary): update meeting summary url (#7705)
 -
+
 ## 6.90.0 2023-February-1
 
 ### Fixed
@@ -50,7 +53,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - **ai-summary**: limit access to AI summaries (#7658)
 - Renamed "Timeline" to "History" (#7670)
-- Cleanup private _legacy.graphql types (#7689)
+- Cleanup private \_legacy.graphql types (#7689)
 
 ### Added
 
@@ -392,7 +395,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **Review Stats**: Count IssueComment events towards comment count (#7230)
 - Boot message changed to include Server ID and task. (#7237)
 - Update code review policy (#7228)
-- Upgrade node to 16.16.0 (#6998)
+- Upgrade node to 18.13.0 (#6998)
 
 ## 6.76.0 2022-September-28
 

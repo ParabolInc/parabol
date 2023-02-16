@@ -71,7 +71,7 @@
     "sucrase": "^3.23.0",
     "ts-jest": "^27.0.5",
     "ts-node": "^8.6.2",
-    "typescript": "4.6.3",
+    "typescript": "4.9.5",
     "url-loader": "4.1.1",
     "vscode-apollo-relay": "^1.5.0",
     "webpack-bundle-analyzer": "4.3.0",
@@ -131,13 +131,13 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "relay-runtime": "^12.0.0",
-    "rethinkdb-ts": "2.4.5",
+    "rethinkdb-ts": "2.5.1",
     "rrule": "^2.7.2",
     "samlify": "^2.8.2",
     "sharp": "^0.30.7",
     "string-similarity": "^3.0.0",
     "stripe": "^9.13.0",
     "tslib": "^2.4.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v19.3.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.19.0"
   }
 }
