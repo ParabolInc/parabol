@@ -5,7 +5,7 @@ import getPg from '../getPg'
 const insertMeetingTemplate = async (meetingTemplate: MeetingTemplate) => {
   const r = await getRethink()
   const pg = getPg()
-  const {id, name, teamId, orgId, parentTemplateId, type, scope, lastUsedAt, isStarter, isFree} =
+  const {id, name, teamId, orgId, parentTemplateId, type, scope, lastUsedAt, isStarter, isFree, } =
     meetingTemplate
   const [rRes, pgRes] = await Promise.allSettled([
     r.table('MeetingTemplate').insert(meetingTemplate).run(),
