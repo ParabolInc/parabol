@@ -9,7 +9,8 @@ import {Breakpoint} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: '90%'
+  maxWidth: '90%',
+  padding: '0px 8px 16px 8px'
 })
 
 const StyledRow = styled(Row)({
@@ -118,7 +119,12 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   justifyContent: 'flex-start',
   padding: '16px 8px',
   alignContent: 'space-between',
-  height: 360
+  height: 400,
+  borderRadius: 4,
+  border: `2px solid transparent`,
+  '&:hover': {
+    border: `2px solid ${PALETTE.SKY_500}`
+  }
 }))
 
 const UL = styled('ul')({})
