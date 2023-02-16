@@ -12,6 +12,8 @@ import BaseButton from '../BaseButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
+const COPIED_TOOLTIP_DURATION_MS = 2000
+
 const OptionsButton = styled(BaseButton)({
   color: PALETTE.SLATE_600,
   height: '100%',
@@ -33,11 +35,17 @@ interface Props {
 const TeamPromptOptions = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipOriginRef
+    tooltipPortal: optionsTooltipPortal,
+    openTooltip: openOptionsTooltip,
+    closeTooltip: closeOptionsTooltip,
+    originRef: optionsTooltipOriginRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
+  const {
+    tooltipPortal: copiedTooltipPortal,
+    openTooltip: openCopiedTooltip,
+    closeTooltip: closeCopiedTooltip,
+    originRef: copiedTooltipRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_RIGHT)
   const {meetingRef, openRecurrenceSettingsModal} = props
 
   const meeting = useFragment(
@@ -49,22 +57,31 @@ const TeamPromptOptions = (props: Props) => {
     meetingRef
   )
 
+  const popTooltip = () => {
+    openCopiedTooltip()
+    setTimeout(() => {
+      closeCopiedTooltip()
+    }, COPIED_TOOLTIP_DURATION_MS)
+  }
+
   return (
     <>
       <OptionsButton
-        ref={mergeRefs(originRef, tooltipOriginRef)}
+        ref={mergeRefs(originRef, optionsTooltipOriginRef, copiedTooltipRef)}
         onClick={togglePortal}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
+        onMouseEnter={openOptionsTooltip}
+        onMouseLeave={closeOptionsTooltip}
       >
         <IconLabel ref={originRef} icon='more_vert' iconLarge />
       </OptionsButton>
-      {tooltipPortal('Options')}
+      {optionsTooltipPortal('Options')}
+      {copiedTooltipPortal('Copied!')}
       {menuPortal(
         <TeamPromptOptionsMenu
           meetingRef={meeting}
           menuProps={menuProps}
           openRecurrenceSettingsModal={openRecurrenceSettingsModal}
+          popTooltip={popTooltip}
         />
       )}
     </>
