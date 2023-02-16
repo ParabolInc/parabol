@@ -12,7 +12,6 @@ export const enum PALETTE {
   AQUA_400 = '#55C0CF',
 
   FOREST_400 = '#73A153',
-
   FUSCIA_400 = '#DB70DB',
 
   GOLD_100 = '#FAEBD3',
@@ -78,5 +77,7 @@ export const enum PALETTE {
 
   WHITE = '#FFFFFF',
 
-  SUCCESS_LIGHT = '#2db553'
+  SUCCESS_LIGHT = '#2db553',
+
+  STARTER = '#F2E1F7'
 }
