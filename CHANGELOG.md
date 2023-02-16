@@ -13,6 +13,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore: fix case-sensitive (#7749)
 - fix: yarn dev remove graphiql from dll (#7750)
 - fix(recurrence): Don't restart meetings on archived teams (#7747)
+- fix: 'Updated time/Created time' is not instantaneous on task cards (#7254)
+- fix: Fix server error when joining a team by invitation link (#7775)
 
 ### Added
 
@@ -37,6 +39,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore: removed beta badge from standups (#7767)
 - chore(teams-limit): Remove scheduled jobs
 - chore(ai-summary): track no stats in Slack summary (#7759)
+- chore(dx): add updateCache function to dataLoader (#7758)
 
 ## 6.91.1 2023-Feb-14
 
