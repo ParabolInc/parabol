@@ -306,7 +306,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       return new Error('Azure DevOps is down')
     }
   }
-  private readonly get = async <T>(url: string) => {
+  private readonly get = async <T extends object>(url: string) => {
     const res = await this.fetchWithTimeout(url, {headers: this.headers})
     if (res instanceof Error) {
       return res
@@ -322,7 +322,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     }
     return json
   }
-  private readonly post = async <T>(url: string, payload: any) => {
+  private readonly post = async <T extends object>(url: string, payload: any) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'POST',
       headers: this.headers,
@@ -338,7 +338,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     return json
   }
 
-  private readonly patch = async <T>(url: string, payload: any) => {
+  private readonly patch = async <T extends object>(url: string, payload: any) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'PATCH',
       headers: {

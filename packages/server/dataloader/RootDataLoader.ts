@@ -16,6 +16,7 @@ import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
 import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -70,7 +71,7 @@ type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 
 export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
   ? TypeFromCustom<LoaderName>
-  : DataLoader<
+  : UpdatableCacheDataLoader<
       string,
       LoaderName extends ForeignLoaders
         ? TypeFromForeign<LoaderName>[]

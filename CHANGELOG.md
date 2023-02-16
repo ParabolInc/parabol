@@ -5,6 +5,42 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.92.0 2023-Feb-15
+
+### Fixed
+
+- fix: show invoice coupons in parabol (#7711)
+- chore: fix case-sensitive (#7749)
+- fix: yarn dev remove graphiql from dll (#7750)
+- fix(recurrence): Don't restart meetings on archived teams (#7747)
+- fix: 'Updated time/Created time' is not instantaneous on task cards (#7254)
+- fix: Fix server error when joining a team by invitation link (#7775)
+
+### Added
+
+- chore(teams-limit): send locked & warning email (#7637)
+- feat(recurrence): Stable link for meeting series (#7707)
+- feat(teams-limit): add 7 days reminder notification and snackbar (#7677)
+- feat(recurrence): Recurrence-specific meeting card (#7716)
+- feat(recurrence): Added advanced recurrence settings (#7585)
+- feat(checkout-flow): left sidebar (#7733)
+- feat: add seasonal retros (#7760)
+- feat(standups): added options menu tooltip (#7768)
+
+### Changed
+
+- chore: Invert meetingHistoryLimit feature flag (#7725)
+- chore: prevent new rethinkdb migrations in the database/migrations
+- chore(teams-limit): avoid showing nagging snackbar if the limit is fixed
+- chore: Switch to review stats package (#7753)
+- chore(metrics): Do not call identify() on feature flag changes (#7752)
+- feat: create bundles without node_modules (#7402)
+- chore: remove user feature flag (#7765)
+- chore: removed beta badge from standups (#7767)
+- chore(teams-limit): Remove scheduled jobs
+- chore(ai-summary): track no stats in Slack summary (#7759)
+- chore(dx): add updateCache function to dataLoader (#7758)
+
 ## 6.91.1 2023-Feb-14
 
 ### Fixed
