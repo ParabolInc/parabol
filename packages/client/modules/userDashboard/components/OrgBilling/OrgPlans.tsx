@@ -13,7 +13,11 @@ const StyledPanel = styled(Panel)({
 })
 
 const StyledRow = styled(Row)({
-  padding: '12px 8px 12px 16px'
+  padding: '12px 8px 12px 16px',
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'space-evenly',
+  flexWrap: 'nowrap'
 })
 
 const StatBlocks = styled('div')({
@@ -73,7 +77,7 @@ const PlanTitle = styled('div')({
   alignItems: 'center'
 })
 
-const PlanSubtitle = styled('div')({
+const PlanSubtitle = styled('div')<{isItalic?: boolean}>(({isItalic}) => ({
   color: PALETTE.SLATE_800,
   fontSize: 20,
   width: '100%',
@@ -83,11 +87,20 @@ const PlanSubtitle = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontWeight: 400
+  fontWeight: 400,
+  fontStyle: isItalic ? 'italic' : 'normal'
+}))
+
+const PlanWrapper = styled('div')({
+  // padding: '16px 8px',
+  display: 'flex',
+  flexWrap: 'nowrap'
+  // justifyContent: 'space-between'
 })
 
-const Plan = styled('div')<{type: TierEnum}>(({type}) => ({
-  background: type === 'starter' ? PALETTE.STARTER : undefined,
+const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
+  background:
+    tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
   fontSize: 12,
   fontWeight: 600,
   lineHeight: '16px',
@@ -95,10 +108,12 @@ const Plan = styled('div')<{type: TierEnum}>(({type}) => ({
   textAlign: 'center',
   display: 'flex',
   alignItems: 'center',
-  width: '33.33%',
+  flex: 1,
+  margin: '0 8px',
   flexWrap: 'wrap',
   justifyContent: 'center',
-  padding: '16px 8px'
+  padding: '16px 8px',
+  height: 360
 }))
 
 const UL = styled('ul')()
@@ -137,7 +152,8 @@ const OrgPlans = () => {
         </StatBlocks>
       </StyledRow>
       <StyledRow>
-        <Plan tier={'starter'}>
+        {/* <PlanWrapper> */}
+        <Plan tier='starter'>
           <PlanTitle>{'Starter'}</PlanTitle>
           <PlanSubtitle>{'Free'}</PlanSubtitle>
           <UL>
@@ -148,6 +164,32 @@ const OrgPlans = () => {
           </UL>
           <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
         </Plan>
+        {/* </PlanWrapper> */}
+        {/* <PlanWrapper> */}
+        <Plan tier='team'>
+          <PlanTitle>{'Team'}</PlanTitle>
+          <PlanSubtitle>{'$6 per active member '}</PlanSubtitle>
+          <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+          <UL>
+            <LI>Everything in Starter</LI>
+            <LI>Premium templates</LI>
+            <LI>Custom templates</LI>
+            <LI>Unlimited teams</LI>
+          </UL>
+          <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+        </Plan>
+        {/* </PlanWrapper> */}
+        {/* <PlanWrapper> */}
+        <Plan tier='enterprise'>
+          <PlanTitle>{'Enterprise'}</PlanTitle>
+          <PlanSubtitle>{'Contact for quote'}</PlanSubtitle>
+          <UL>
+            <LI>Everything in Team</LI>
+            <LI>SSO</LI>
+          </UL>
+          <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+        </Plan>
+        {/* // </PlanWrapper> */}
       </StyledRow>
     </StyledPanel>
   )

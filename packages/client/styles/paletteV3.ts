@@ -79,5 +79,7 @@ export const enum PALETTE {
 
   SUCCESS_LIGHT = '#2db553',
 
-  STARTER = '#F2E1F7'
+  STARTER = '#F2E1F7',
+  TEAM = '#CBECF0',
+  ENTERPRISE = '#FFE2E0'
 }
