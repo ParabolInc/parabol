@@ -84,7 +84,7 @@ const PlanTitle = styled('div')({
   alignItems: 'center'
 })
 
-const SubtitleBlock = styled('div')({
+const HeadingBlock = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
   lineHeight: '30px'
@@ -123,11 +123,17 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   borderRadius: 4,
   border: `2px solid transparent`,
   '&:hover': {
-    border: `2px solid ${PALETTE.SKY_500}`
+    border: `2px solid ${
+      tier === 'starter'
+        ? PALETTE.GRAPE_500
+        : tier === 'team'
+        ? PALETTE.AQUA_400
+        : PALETTE.TOMATO_200
+    }`
   }
 }))
 
-const UL = styled('ul')({})
+const UL = styled('ul')()
 
 const LI = styled('li')({
   fontSize: 18,
@@ -144,9 +150,11 @@ const ButtonBlock = styled('div')({
   justifyContent: 'center'
 })
 
-const UpgradeButton = styled(FlatPrimaryButton)({
-  width: '80%'
-})
+const UpgradeButton = styled(FlatPrimaryButton)<{disabled?: boolean}>(({disabled}) => ({
+  width: '80%',
+  background: disabled ? PALETTE.SLATE_300 : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
+  color: disabled ? PALETTE.SLATE_600 : PALETTE.WHITE
+}))
 
 const OrgPlans = () => {
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
@@ -179,15 +187,17 @@ const OrgPlans = () => {
             <LI>Unlimited team members</LI>
           </UL>
           <ButtonBlock>
-            <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+            <UpgradeButton disabled size='medium'>
+              {'Current Plan'}
+            </UpgradeButton>
           </ButtonBlock>
         </Plan>
         <Plan tier='team'>
           <PlanTitle>{'Team'}</PlanTitle>
-          <SubtitleBlock>
+          <HeadingBlock>
             <PlanSubtitle>{'$6 per active member '}</PlanSubtitle>
             <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-          </SubtitleBlock>
+          </HeadingBlock>
           <UL>
             <LI>Everything in Starter</LI>
             <LI>Premium templates</LI>
@@ -195,7 +205,7 @@ const OrgPlans = () => {
             <LI>Unlimited teams</LI>
           </UL>
           <ButtonBlock>
-            <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+            <UpgradeButton size='medium'>{'Selected'}</UpgradeButton>
           </ButtonBlock>
         </Plan>
         <Plan tier='enterprise'>
@@ -206,7 +216,7 @@ const OrgPlans = () => {
             <LI>SSO</LI>
           </UL>
           <ButtonBlock>
-            <UpgradeButton size='medium'>{'Current Plan'}</UpgradeButton>
+            <UpgradeButton size='medium'>{'Contact Us'}</UpgradeButton>
           </ButtonBlock>
         </Plan>
       </StyledRow>

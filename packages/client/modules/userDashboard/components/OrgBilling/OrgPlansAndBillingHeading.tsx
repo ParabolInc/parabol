@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ExpandMore} from '@mui/icons-material'
+import {Article} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -44,7 +44,7 @@ const SubtitleBlock = styled('div')({
   fontWeight: 500
 })
 
-const StyledIcon = styled(ExpandMore)({
+const StyledIcon = styled('div')({
   color: PALETTE.SKY_500,
   height: 20,
   width: 20,
@@ -71,7 +71,7 @@ const Label = styled.span({
   display: 'block',
   fontWeight: 600,
   fontSize: 12,
-  lineHeight: '20px',
+  lineHeight: '28px',
   textDecoration: 'none',
   textAlign: 'center'
 })
@@ -102,7 +102,10 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
       <StyledButton>
-        <StyledIcon />
+        {/* <StyledIcon /> */}
+        <StyledIcon>
+          <Article />
+        </StyledIcon>
         <Label>{'Plan Details'}</Label>
       </StyledButton>
     </Wrapper>
