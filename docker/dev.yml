@@ -27,6 +27,7 @@ services:
     networks:
       - parabol-network
   pgadmin:
+    platform: "${PGADMIN_PLATFORM}"
     container_name: pgadmin_container
     image: dpage/pgadmin4:latest
     depends_on:
@@ -40,7 +41,7 @@ services:
       - parabol-network
     restart: unless-stopped
   redis:
-    platform: linux/x86_64
+    platform: "${REDIS_PLATFORM}"
     image: redis:latest
     restart: unless-stopped
     ports:
@@ -50,6 +51,7 @@ services:
     networks:
       - parabol-network
   redis-commander:
+    platform: "${REDIS_COMMANDER_PLATFORM}"
     container_name: redis_commander
     image: rediscommander/redis-commander:latest
     hostname: redis-commander
