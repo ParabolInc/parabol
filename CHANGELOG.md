@@ -395,7 +395,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **Review Stats**: Count IssueComment events towards comment count (#7230)
 - Boot message changed to include Server ID and task. (#7237)
 - Update code review policy (#7228)
-- Upgrade node to 18.13.0 (#6998)
+- Upgrade node to 16.16.0 (#6998)
 
 ## 6.76.0 2022-September-28
 
