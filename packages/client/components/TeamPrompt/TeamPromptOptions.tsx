@@ -12,6 +12,8 @@ import BaseButton from '../BaseButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
+const COPIED_TOOLTIP_DURATION_MS = 2000
+
 const OptionsButton = styled(BaseButton)({
   color: PALETTE.SLATE_600,
   height: '100%',
@@ -59,7 +61,7 @@ const TeamPromptOptions = (props: Props) => {
     openCopiedTooltip()
     setTimeout(() => {
       closeCopiedTooltip()
-    }, 2000)
+    }, COPIED_TOOLTIP_DURATION_MS)
   }
 
   return (
