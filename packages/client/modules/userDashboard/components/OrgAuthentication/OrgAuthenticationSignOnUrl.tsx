@@ -59,10 +59,6 @@ const StyledContentCopyIcon = styled(ContentCopy)({
   }
 })
 
-const Container = styled('div')({
-  marginBottom: '0'
-})
-
 interface Props {
   disabled: boolean
   singleSignOnUrl?: string | null
@@ -77,7 +73,7 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
   )
 
   return (
-    <Container>
+    <>
       <Section>
         <SubTitle disabled={disabled}>Single Sign-On URL</SubTitle>
         <Label disabled={disabled}>
@@ -101,7 +97,7 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
         </CopyButton>
         {tooltipPortal('Copy')}
       </InputSection>
-    </Container>
+    </>
   )
 }
 
