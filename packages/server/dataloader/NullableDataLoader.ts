@@ -1,10 +1,11 @@
 import DataLoader from 'dataloader'
+import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 /**
  * Most loading functions return undefined for non-existing keys.
  * This class adds a convenience method for asserting the value exists for cases when we know the value exists because of DB constraints.
  */
-class NullableDataLoader<Key, Value, CacheKey = Key> extends DataLoader<
+class NullableDataLoader<Key, Value, CacheKey = Key> extends UpdatableCacheDataLoader<
   Key,
   Value | undefined,
   CacheKey

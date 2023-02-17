@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import getRethink, {DBType} from '../database/rethinkDriver'
 import normalizeResults from './normalizeResults'
+import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 const rethinkPrimaryKeyLoader = <T extends keyof DBType>(
   options: DataLoader.Options<string, DBType[T]>,
@@ -15,7 +16,7 @@ const rethinkPrimaryKeyLoader = <T extends keyof DBType>(
       .run()) as any
     return normalizeResults<string, DBType[T]>(keys, docs)
   }
-  return new DataLoader<string, DBType[T]>(batchFn, options)
+  return new UpdatableCacheDataLoader<string, DBType[T]>(batchFn, options)
 }
 
 export default rethinkPrimaryKeyLoader

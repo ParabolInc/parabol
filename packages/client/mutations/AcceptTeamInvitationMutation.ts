@@ -116,9 +116,10 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (viewer) {
     const requestedMeeting = payload.getLinkedRecord('meeting')
-    const requestedMeetingId = requestedMeeting.getValue('id')
-    viewer.setLinkedRecord(requestedMeeting, 'meeting', {meetingId: requestedMeetingId})
-
+    if (requestedMeeting) {
+      const requestedMeetingId = requestedMeeting.getValue('id')
+      viewer.setLinkedRecord(requestedMeeting, 'meeting', {meetingId: requestedMeetingId})
+    }
     activeMeetings.forEach((activeMeeting) => {
       const meetingId = activeMeeting.getValue('id')
       viewer.setLinkedRecord(activeMeeting, 'meeting', {meetingId})
