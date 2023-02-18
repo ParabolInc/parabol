@@ -150,7 +150,7 @@ type Organization {
   """
   Any super power given to the organization via a super user
   """
-  featureFlags: OrganizationFeatureFlags
+  featureFlags: OrganizationFeatureFlags!
 }
 
 type MeetingStat {

@@ -11,7 +11,6 @@ const Section = styled('div')({
 
 const InputSection = styled('div')({
   display: 'flex',
-  maxWidth: '500px',
   padding: '0 16px 8px 16px'
 })
 
@@ -35,7 +34,6 @@ const Container = styled('div')({
 const ButtonSection = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-  maxWidth: '500px',
   padding: '0px 16px 0px 16px',
   backgroundColor: PALETTE.WHITE
 })

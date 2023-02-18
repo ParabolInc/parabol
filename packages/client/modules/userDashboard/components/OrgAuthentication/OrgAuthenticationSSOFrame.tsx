@@ -12,24 +12,17 @@ const IconBlock = styled('div')({
 const StyledAddIcon = styled(Add)({
   color: PALETTE.SKY_500,
   width: '24px',
-  height: '24px',
-  ':hover': {
-    cursor: 'pointer'
-  }
+  height: '24px'
 })
 
 const StyledCheckIcon = styled(Check)({
   color: PALETTE.SUCCESS_LIGHT,
   width: '24px',
-  height: '24px',
-  ':hover': {
-    cursor: 'pointer'
-  }
+  height: '24px'
 })
 
 const SSOEnabledToggleBlock = styled('div')({
-  padding: '0 16px 28px 16px',
-  maxWidth: '500px'
+  padding: '0 16px 28px 16px'
 })
 
 const ContentWrapper = styled('div')({
@@ -69,7 +62,7 @@ interface Props {
   disabled: boolean
 }
 
-const OrgAuthenticationSSOEnabled = (props: Props) => {
+const OrgAuthenticationSSOFrame = (props: Props) => {
   const {disabled} = props
 
   const isSSOEnabled = false
@@ -103,4 +96,4 @@ const OrgAuthenticationSSOEnabled = (props: Props) => {
   )
 }
 
-export default OrgAuthenticationSSOEnabled
+export default OrgAuthenticationSSOFrame

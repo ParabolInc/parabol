@@ -25,10 +25,7 @@ const StyledInfoIcon = styled(Info)({
   color: PALETTE.SLATE_600,
   width: '18px',
   height: '18px',
-  marginRight: '8px',
-  ':hover': {
-    cursor: 'pointer'
-  }
+  marginRight: '8px'
 })
 
 const OrgAuthenticationHeader = () => {

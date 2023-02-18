@@ -59,7 +59,7 @@ const Icons = {
   key: <Key />
 } as const
 
-interface Item {
+export interface Item {
   label: string
   icon: keyof typeof Icons
   isActive: boolean

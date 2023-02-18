@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ContentCopy} from '@mui/icons-material'
 import React from 'react'
-import makeMaxWidthMediaQuery from '~/utils/makeMaxWidthMediaQuery'
 import CopyLink from '../../../../components/CopyLink'
 import DialogTitle from '../../../../components/DialogTitle'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -10,8 +9,6 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const mobileBreakpoint = makeMaxWidthMediaQuery(520)
-
 const Section = styled('div')({
   padding: '0px 28px 12px 28px'
 })
@@ -19,8 +16,7 @@ const Section = styled('div')({
 const InputSection = styled('div')({
   display: 'flex',
   flexDirection: 'row',
-  paddingLeft: '16px',
-  maxWidth: '556px'
+  padding: '0 16px'
 })
 
 const SubTitle = styled(DialogTitle)<{disabled: boolean}>(({disabled}) => ({
@@ -37,26 +33,19 @@ const Label = styled('div')<{disabled: boolean}>(({disabled}) => ({
 }))
 
 const CopyButton = styled(SecondaryButton)({
-  margin: '0 16px',
   color: PALETTE.SLATE_600,
   padding: '0',
   border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: '50px',
   width: '40px',
-  [mobileBreakpoint]: {
-    marginLeft: '8px'
-  }
+  marginLeft: '8px'
 })
 
 const StyledContentCopyIcon = styled(ContentCopy)({
   color: PALETTE.SLATE_600,
   display: 'block',
   width: '18px',
-  height: '18px',
-  ':hover': {
-    cursor: 'pointer',
-    color: PALETTE.SLATE_700
-  }
+  height: '18px'
 })
 
 interface Props {

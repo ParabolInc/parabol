@@ -3,14 +3,14 @@ import Panel from '../../../../components/Panel/Panel'
 import OrgAuthenticationHeader from './OrgAuthenticationHeader'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
-import OrgAuthenticationSSOEnabled from './OrgAuthenticationSSOEnabled'
+import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 
 const OrgAuthentication = () => {
   const disabled = true
   return (
     <Panel>
       <OrgAuthenticationHeader />
-      <OrgAuthenticationSSOEnabled disabled={disabled} />
+      <OrgAuthenticationSSOFrame disabled={disabled} />
       <OrgAuthenticationSignOnUrl disabled={disabled} />
       <OrgAuthenticationMetadata disabled={disabled} />
     </Panel>

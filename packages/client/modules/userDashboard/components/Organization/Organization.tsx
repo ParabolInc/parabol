@@ -114,7 +114,7 @@ const Organization = (props: Props) => {
   const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier, featureFlags} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
-  const hasSamlFeatureFlag = featureFlags?.SAMLUI
+  const showAuthentication = featureFlags?.SAMLUI
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>
@@ -147,7 +147,7 @@ const Organization = (props: Props) => {
         </AvatarAndName>
         {!onlyShowMembers && (
           <ToggleNavBlock>
-            <BillingMembersToggle orgId={orgId} hasSamlFeatureFlag={hasSamlFeatureFlag} />
+            <BillingMembersToggle orgId={orgId} showAuthentication={showAuthentication} />
           </ToggleNavBlock>
         )}
         <OrganizationPage organization={organization} />
