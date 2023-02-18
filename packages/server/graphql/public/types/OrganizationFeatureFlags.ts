@@ -1,4 +1,4 @@
-import {OrganizationFeatureFlagsResolvers} from '../resolvers'
+import {OrganizationFeatureFlagsResolvers} from '../resolverTypes'
 
 const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   SAMLUI: ({SAMLUI}) => !!SAMLUI,
