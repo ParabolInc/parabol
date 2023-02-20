@@ -38,11 +38,15 @@ const CardWrapper = styled('div')<{
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   margin: 8,
   width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
-  userSelect: 'none',
+  userSelect: 'none'
+}))
+
+const InnerCardWrapper = styled('div')({
+  position: 'relative',
   ':hover': {
     boxShadow: Elevation.CARD_SHADOW_HOVER
   }
-}))
+})
 
 const STACK_DEGREES = {
   0: 1,
@@ -242,7 +246,7 @@ const MeetingCard = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <div style={{position: 'relative'}}>
+      <InnerCardWrapper>
         {isRecurring && (
           <>
             <StackedCard stackIndex={0}>
@@ -296,7 +300,7 @@ const MeetingCard = (props: Props) => {
           )}
           {tooltipPortal('Copied!')}
         </InnerCard>
-      </div>
+      </InnerCardWrapper>
     </CardWrapper>
   )
 }
