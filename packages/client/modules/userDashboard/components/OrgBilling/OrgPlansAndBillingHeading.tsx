@@ -12,8 +12,6 @@ const Wrapper = styled('div')({
   alignItems: 'center',
   color: PALETTE.SLATE_700,
   display: 'flex',
-  fontSize: 20,
-  fontWeight: 600,
   lineHeight: '24px',
   padding: '16px 0px',
   flexWrap: 'wrap',
@@ -23,12 +21,9 @@ const Wrapper = styled('div')({
 
 const Title = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_700,
   display: 'flex',
   fontSize: 20,
   fontWeight: 600,
-  lineHeight: '24px',
-  height: 28,
   width: '100%'
 })
 
@@ -37,11 +32,7 @@ const Subtitle = styled('span')<{isBold?: boolean}>(({isBold}) => ({
 }))
 
 const SubtitleBlock = styled('div')({
-  padding: '8px 0px',
-  fontSize: 16,
-  borderRadius: 2,
-  lineHeight: '26px',
-  fontWeight: 500
+  padding: '8px 0px'
 })
 
 const StyledIcon = styled('div')({
@@ -54,26 +45,16 @@ const StyledIcon = styled('div')({
 
 const StyledButton = styled(PlainButton)({
   alignItems: 'center',
-  backgroundColor: 'transparent',
   display: 'flex',
   flexDirection: 'column',
-  height: 'fit-content',
-  justifyContent: 'center',
-  margin: 0,
-  padding: 0,
   position: 'absolute',
-  right: 0,
-  opacity: 1,
-  width: 'fit-content'
+  right: 0
 })
 
-const Label = styled.span({
-  display: 'block',
+const Label = styled('span')({
   fontWeight: 600,
   fontSize: 12,
-  lineHeight: '28px',
-  textDecoration: 'none',
-  textAlign: 'center'
+  lineHeight: '28px'
 })
 
 type Props = {

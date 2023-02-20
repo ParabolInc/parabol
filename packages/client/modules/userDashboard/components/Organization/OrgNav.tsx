@@ -9,9 +9,7 @@ import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 
 const Wrapper = styled('div')({
-  alignItems: 'center',
   display: 'flex',
-  flexShrink: 0,
   fontSize: 14,
   lineHeight: '20px',
   padding: '16px 0px',
