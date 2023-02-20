@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import removeTeamLimitsJobs from '../../billing/helpers/removeTeamLimitsJobs'
 import getRethink from '../../database/rethinkDriver'
 import Team from '../../database/types/Team'
 import User from '../../database/types/User'
@@ -82,14 +83,17 @@ export default {
 
     const uniqueUserIds = Array.from(new Set(allUserIds))
 
-    await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})
-      .update({
-        removedAt: now
-      })
-      .run()
+    await Promise.all([
+      r
+        .table('OrganizationUser')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({removedAt: null})
+        .update({
+          removedAt: now
+        })
+        .run(),
+      removeTeamLimitsJobs(orgId)
+    ])
 
     const data = {
       orgId,
