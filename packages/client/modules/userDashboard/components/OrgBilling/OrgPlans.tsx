@@ -10,7 +10,7 @@ import {Breakpoint} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: '90%',
+  maxWidth: 976,
   padding: '0px 8px 16px 8px'
 })
 
@@ -31,6 +31,7 @@ const StyledRow = styled(Row)({
 const StatBlocks = styled('div')({
   display: 'flex',
   width: '100%',
+  padding: '8px 0px',
   flexWrap: 'wrap'
 })
 
@@ -63,7 +64,7 @@ const StatBlockNumber = styled('div')({
 
 const StatBlockLabel = styled('div')({
   color: PALETTE.SLATE_800,
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: 600,
   lineHeight: '16px',
   textTransform: 'capitalize',
@@ -81,6 +82,7 @@ const PlanTitle = styled('div')({
   textAlign: 'center',
   display: 'flex',
   width: '100%',
+  paddingBottom: 8,
   justifyContent: 'center',
   alignItems: 'center'
 })
@@ -88,7 +90,9 @@ const PlanTitle = styled('div')({
 const HeadingBlock = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
-  lineHeight: '30px'
+  width: '100%',
+  lineHeight: '30px',
+  paddingBottom: 8
 })
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
@@ -145,12 +149,6 @@ const LI = styled('li')({
   textAlign: 'left'
 })
 
-const ButtonBlock = styled('div')({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center'
-})
-
 const StyledIcon = styled('div')({
   height: 24,
   width: 24,
@@ -161,8 +159,19 @@ const StyledIcon = styled('div')({
   }
 })
 
+const Content = styled('div')({})
+
+const ButtonBlock = styled('div')({
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  position: 'relative'
+})
+
 const UpgradeButton = styled(FlatPrimaryButton)<{disabled?: boolean}>(({disabled}) => ({
   width: '80%',
+  position: 'absolute',
+  bottom: 0,
   background: disabled ? PALETTE.SLATE_300 : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
   color: disabled ? PALETTE.SLATE_600 : PALETTE.WHITE
 }))
@@ -175,28 +184,32 @@ const OrgPlans = () => {
         <StatBlocks>
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{'18'}</StatBlockNumber>
-            <StatBlockLabel>{'Organization'}</StatBlockLabel>
+            <StatBlockLabel>{'Active Teams'}</StatBlockLabel>
           </StatBlock>
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{'18'}</StatBlockNumber>
-            <StatBlockLabel>{'Active Team'}</StatBlockLabel>
+            <StatBlockLabel>{'Active Members'}</StatBlockLabel>
           </StatBlock>
           <StatBlock isDesktop={isDesktop}>
             <StatBlockNumber>{'18'}</StatBlockNumber>
-            <StatBlockLabel>{'Active Member'}</StatBlockLabel>
+            <StatBlockLabel>{'Total Meetings'}</StatBlockLabel>
           </StatBlock>
         </StatBlocks>
       </StyledRow>
       <StyledRow>
         <Plan tier='starter'>
-          <PlanTitle>{'Starter'}</PlanTitle>
-          <PlanSubtitle>{'Free'}</PlanSubtitle>
-          <UL>
-            <LI>2 teams</LI>
-            <LI>Essential templates</LI>
-            <LI>Retrospectives, Sprint Poker, Standups, Check-Ins</LI>
-            <LI>Unlimited team members</LI>
-          </UL>
+          <Content>
+            <HeadingBlock>
+              <PlanTitle>{'Starter'}</PlanTitle>
+              <PlanSubtitle>{'Free'}</PlanSubtitle>
+            </HeadingBlock>
+            <UL>
+              <LI>2 teams</LI>
+              <LI>Essential templates</LI>
+              <LI>Retrospectives, Sprint Poker, Standups, Check-Ins</LI>
+              <LI>Unlimited team members</LI>
+            </UL>
+          </Content>
           <ButtonBlock>
             <UpgradeButton disabled size='medium'>
               {'Current Plan'}
@@ -204,31 +217,37 @@ const OrgPlans = () => {
           </ButtonBlock>
         </Plan>
         <Plan tier='team'>
-          <PlanTitle>{'Team'}</PlanTitle>
-          <HeadingBlock>
-            <PlanSubtitle>
-              {'$6 per active member '}
-              <StyledIcon>{<Info />}</StyledIcon>
-            </PlanSubtitle>
-            <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-          </HeadingBlock>
-          <UL>
-            <LI>Everything in Starter</LI>
-            <LI>Premium templates</LI>
-            <LI>Custom templates</LI>
-            <LI>Unlimited teams</LI>
-          </UL>
+          <Content>
+            <HeadingBlock>
+              <PlanTitle>{'Team'}</PlanTitle>
+              <PlanSubtitle>
+                {'$6 per active member '}
+                <StyledIcon>{<Info />}</StyledIcon>
+              </PlanSubtitle>
+              <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+            </HeadingBlock>
+            <UL>
+              <LI>Everything in Starter</LI>
+              <LI>Premium templates</LI>
+              <LI>Custom templates</LI>
+              <LI>Unlimited teams</LI>
+            </UL>
+          </Content>
           <ButtonBlock>
             <UpgradeButton size='medium'>{'Selected'}</UpgradeButton>
           </ButtonBlock>
         </Plan>
         <Plan tier='enterprise'>
-          <PlanTitle>{'Enterprise'}</PlanTitle>
-          <PlanSubtitle>{'Contact for quote'}</PlanSubtitle>
-          <UL>
-            <LI>Everything in Team</LI>
-            <LI>SSO</LI>
-          </UL>
+          <Content>
+            <HeadingBlock>
+              <PlanTitle>{'Enterprise'}</PlanTitle>
+              <PlanSubtitle>{'Contact for quote'}</PlanSubtitle>
+            </HeadingBlock>
+            <UL>
+              <LI>Everything in Team</LI>
+              <LI>SSO</LI>
+            </UL>
+          </Content>
           <ButtonBlock>
             <UpgradeButton size='medium'>{'Contact Us'}</UpgradeButton>
           </ButtonBlock>
