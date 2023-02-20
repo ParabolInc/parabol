@@ -5,13 +5,11 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 
 const Wrapper = styled('div')({
   display: 'flex',
   fontSize: 14,
-  lineHeight: '20px',
   padding: '16px 0px',
   width: '100%'
 })
@@ -19,16 +17,18 @@ const Wrapper = styled('div')({
 const StyledIcon = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  height: ICON_SIZE.MD18,
-  color: PALETTE.SLATE_700,
   opacity: 0.5
 })
 
+const NavigateNextIcon = styled(NavigateNext)({
+  height: 18,
+  color: PALETTE.SLATE_900
+})
+
 const NavItemLabel = styled('span')<{isBold?: boolean}>(({isBold}) => ({
-  verticalAlign: 'middle',
   fontWeight: isBold ? 600 : 400,
   '&:hover': {
-    cursor: 'pointer'
+    cursor: isBold ? 'default' : 'pointer'
   }
 }))
 
@@ -53,11 +53,11 @@ const OrgNav = (props: Props) => {
     <Wrapper>
       <NavItemLabel onClick={() => history.push('/meetings')}>Dashboard</NavItemLabel>
       <StyledIcon>
-        <NavigateNext />
+        <NavigateNextIcon />
       </StyledIcon>
       <NavItemLabel onClick={() => history.push('/me/organizations')}>Organization</NavItemLabel>
       <StyledIcon>
-        <NavigateNext />
+        <NavigateNextIcon />
       </StyledIcon>
       <NavItemLabel isBold>{`${name}'s Org`}</NavItemLabel>
     </Wrapper>
