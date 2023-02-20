@@ -8,6 +8,19 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {upperFirst} from '../../../../utils/upperFirst'
 import {OrgPlansAndBillingHeading_organization$key} from '../../../../__generated__/OrgPlansAndBillingHeading_organization.graphql'
 
+const Wrapper = styled('div')({
+  alignItems: 'center',
+  color: PALETTE.SLATE_700,
+  display: 'flex',
+  fontSize: 20,
+  fontWeight: 600,
+  lineHeight: '24px',
+  padding: '16px 0px',
+  flexWrap: 'wrap',
+  maxWidth: 976,
+  position: 'relative'
+})
+
 const Title = styled('div')({
   alignItems: 'center',
   color: PALETTE.SLATE_700,
@@ -22,19 +35,6 @@ const Title = styled('div')({
 const Subtitle = styled('span')<{isBold?: boolean}>(({isBold}) => ({
   fontWeight: isBold ? 600 : 400
 }))
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.SLATE_700,
-  display: 'flex',
-  fontSize: 20,
-  fontWeight: 600,
-  lineHeight: '24px',
-  padding: '16px 0px',
-  flexWrap: 'wrap',
-  maxWidth: 800,
-  position: 'relative'
-})
 
 const SubtitleBlock = styled('div')({
   padding: '8px 0px',
@@ -102,7 +102,6 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
       <StyledButton>
-        {/* <StyledIcon /> */}
         <StyledIcon>
           <Article />
         </StyledIcon>

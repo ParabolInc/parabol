@@ -5,6 +5,7 @@ import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
@@ -168,12 +169,26 @@ const ButtonBlock = styled('div')({
   position: 'relative'
 })
 
-const UpgradeButton = styled(FlatPrimaryButton)<{disabled?: boolean}>(({disabled}) => ({
+const UpgradeButton = styled(FlatPrimaryButton)<{
+  buttonStyle: 'disabled' | 'primary' | 'secondary'
+}>(({buttonStyle}) => ({
   width: '80%',
+  boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
   position: 'absolute',
   bottom: 0,
-  background: disabled ? PALETTE.SLATE_300 : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.WHITE
+  background:
+    buttonStyle === 'primary'
+      ? PALETTE.GRADIENT_TOMATO_600_ROSE_500
+      : buttonStyle === 'secondary'
+      ? PALETTE.WHITE
+      : PALETTE.SLATE_300,
+  color:
+    buttonStyle === 'primary'
+      ? PALETTE.WHITE
+      : buttonStyle === 'secondary'
+      ? PALETTE.SLATE_900
+      : PALETTE.SLATE_600,
+  border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none'
 }))
 
 const OrgPlans = () => {
@@ -211,7 +226,7 @@ const OrgPlans = () => {
             </UL>
           </Content>
           <ButtonBlock>
-            <UpgradeButton disabled size='medium'>
+            <UpgradeButton buttonStyle='disabled' size='medium'>
               {'Current Plan'}
             </UpgradeButton>
           </ButtonBlock>
@@ -234,7 +249,9 @@ const OrgPlans = () => {
             </UL>
           </Content>
           <ButtonBlock>
-            <UpgradeButton size='medium'>{'Selected'}</UpgradeButton>
+            <UpgradeButton buttonStyle='primary' size='medium'>
+              {'Select Plan'}
+            </UpgradeButton>
           </ButtonBlock>
         </Plan>
         <Plan tier='enterprise'>
@@ -249,7 +266,9 @@ const OrgPlans = () => {
             </UL>
           </Content>
           <ButtonBlock>
-            <UpgradeButton size='medium'>{'Contact Us'}</UpgradeButton>
+            <UpgradeButton buttonStyle='secondary' color='white' size='medium'>
+              {'Contact'}
+            </UpgradeButton>
           </ButtonBlock>
         </Plan>
       </StyledRow>
