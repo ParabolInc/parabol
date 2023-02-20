@@ -4,10 +4,8 @@ import React from 'react'
 import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const StyledPanel = styled(Panel)({
@@ -19,8 +17,6 @@ const StyledRow = styled(Row)({
   padding: '12px 8px',
   display: 'flex',
   flex: 1,
-  justifyContent: 'space-evenly',
-  flexWrap: 'nowrap',
   ':first-of-type': {
     paddingTop: 16
   },
@@ -32,30 +28,20 @@ const StyledRow = styled(Row)({
 const StatBlocks = styled('div')({
   display: 'flex',
   width: '100%',
-  padding: '8px 0px',
-  flexWrap: 'wrap'
+  padding: '8px 0px'
 })
 
-const StatBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const StatBlock = styled('div')({
   borderLeft: `1px solid ${PALETTE.SLATE_400}`,
   ':first-of-type': {
-    border: 'none',
-    borderBottom: isDesktop ? 'none' : `1px solid ${PALETTE.SLATE_400}`
-  },
-  ':nth-of-type(2)': {
-    borderBottom: isDesktop ? 'none' : `1px solid ${PALETTE.SLATE_400}`
-  },
-  ':nth-of-type(3)': {
-    borderLeft: isDesktop ? `1px solid ${PALETTE.SLATE_400}` : 'none'
+    borderLeft: 'none'
   },
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'flex-start',
   width: '33.33%',
-  paddingTop: 14,
-  paddingBottom: 14
-}))
+  padding: '14px 0px'
+})
 
 const StatBlockNumber = styled('div')({
   color: PALETTE.SLATE_600,
@@ -69,9 +55,7 @@ const StatBlockLabel = styled('div')({
   fontWeight: 600,
   lineHeight: '16px',
   textTransform: 'capitalize',
-  textAlign: 'center',
-  display: 'flex',
-  alignItems: 'center'
+  display: 'flex'
 })
 
 const PlanTitle = styled('div')({
@@ -84,8 +68,7 @@ const PlanTitle = styled('div')({
   display: 'flex',
   width: '100%',
   paddingBottom: 8,
-  justifyContent: 'center',
-  alignItems: 'center'
+  justifyContent: 'center'
 })
 
 const HeadingBlock = styled('div')({
@@ -102,9 +85,7 @@ const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   width: '100%',
   lineHeight: '30px',
   textTransform: 'none',
-  textAlign: 'center',
   display: 'flex',
-  alignItems: 'center',
   justifyContent: 'center',
   fontWeight: 400,
   fontStyle: isItalic ? 'italic' : 'normal'
@@ -124,7 +105,6 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
   padding: '16px 8px',
-  alignContent: 'space-between',
   height: 400,
   borderRadius: 4,
   border: `2px solid transparent`,
@@ -200,20 +180,19 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
 }))
 
 const OrgPlans = () => {
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
         <StatBlocks>
-          <StatBlock isDesktop={isDesktop}>
+          <StatBlock>
             <StatBlockNumber>{'18'}</StatBlockNumber>
             <StatBlockLabel>{'Active Teams'}</StatBlockLabel>
           </StatBlock>
-          <StatBlock isDesktop={isDesktop}>
+          <StatBlock>
             <StatBlockNumber>{'18'}</StatBlockNumber>
             <StatBlockLabel>{'Active Members'}</StatBlockLabel>
           </StatBlock>
-          <StatBlock isDesktop={isDesktop}>
+          <StatBlock>
             <StatBlockNumber>{'18'}</StatBlockNumber>
             <StatBlockLabel>{'Total Meetings'}</StatBlockLabel>
           </StatBlock>
