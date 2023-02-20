@@ -76,7 +76,7 @@ const HeadingBlock = styled('div')({
   flexWrap: 'wrap',
   width: '100%',
   lineHeight: '30px',
-  paddingBottom: 16
+  paddingBottom: 24
 })
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
@@ -120,11 +120,13 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   }
 }))
 
-const UL = styled('ul')()
+const UL = styled('ul')({
+  margin: 0
+})
 
 const LI = styled('li')({
   fontSize: 18,
-  lineHeight: '28px',
+  lineHeight: '32px',
   color: PALETTE.SLATE_900,
   textTransform: 'none',
   fontWeight: 400,
