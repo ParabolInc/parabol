@@ -134,6 +134,7 @@
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^2.4.0",
-    "unicode-substring": "^1.0.0"
+    "unicode-substring": "^1.0.0",
+    "clsx": "^1.2.1"
   }
 }
