@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Info} from '@mui/icons-material'
 import React from 'react'
 import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
@@ -150,6 +151,16 @@ const ButtonBlock = styled('div')({
   justifyContent: 'center'
 })
 
+const StyledIcon = styled('div')({
+  height: 24,
+  width: 24,
+  color: PALETTE.SLATE_600,
+  paddingLeft: 8,
+  '&:hover': {
+    cursor: 'pointer'
+  }
+})
+
 const UpgradeButton = styled(FlatPrimaryButton)<{disabled?: boolean}>(({disabled}) => ({
   width: '80%',
   background: disabled ? PALETTE.SLATE_300 : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
@@ -195,7 +206,10 @@ const OrgPlans = () => {
         <Plan tier='team'>
           <PlanTitle>{'Team'}</PlanTitle>
           <HeadingBlock>
-            <PlanSubtitle>{'$6 per active member '}</PlanSubtitle>
+            <PlanSubtitle>
+              {'$6 per active member '}
+              <StyledIcon>{<Info />}</StyledIcon>
+            </PlanSubtitle>
             <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
           </HeadingBlock>
           <UL>
