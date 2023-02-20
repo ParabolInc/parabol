@@ -76,7 +76,7 @@ const HeadingBlock = styled('div')({
   flexWrap: 'wrap',
   width: '100%',
   lineHeight: '30px',
-  paddingBottom: 8
+  paddingBottom: 16
 })
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
@@ -86,6 +86,7 @@ const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   lineHeight: '30px',
   textTransform: 'none',
   display: 'flex',
+  alignItems: 'center',
   justifyContent: 'center',
   fontWeight: 400,
   fontStyle: isItalic ? 'italic' : 'normal'
@@ -180,84 +181,92 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
 }))
 
 const OrgPlans = () => {
+  const stats = [
+    {
+      label: 'Active Teams',
+      value: 18
+    },
+    {
+      label: 'Active Members',
+      value: 18
+    },
+    {
+      label: 'Total Meetings',
+      value: 18
+    }
+  ]
+
+  const plans = [
+    {
+      tier: 'starter',
+      subtitle: 'Free',
+      stats: [
+        '2 teams',
+        'Essential templates',
+        'Retrospectives, Sprint Poker, Standups, Check-Ins',
+        'Unlimited team members'
+      ],
+      buttonStyle: 'disabled',
+      buttonLabel: 'Current Plan'
+    },
+    {
+      tier: 'team',
+      stats: ['Everything in Starter', 'Premium templates', 'Custom templates', 'Unlimited teams'],
+      buttonStyle: 'primary',
+      buttonLabel: 'Select Plan'
+    },
+    {
+      tier: 'enterprise',
+      subtitle: 'Contact for quote',
+      stats: ['Everything in Team', 'SSO'],
+      buttonStyle: 'secondary',
+      buttonLabel: 'Contact'
+    }
+  ] as const
+
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
         <StatBlocks>
-          <StatBlock>
-            <StatBlockNumber>{'18'}</StatBlockNumber>
-            <StatBlockLabel>{'Active Teams'}</StatBlockLabel>
-          </StatBlock>
-          <StatBlock>
-            <StatBlockNumber>{'18'}</StatBlockNumber>
-            <StatBlockLabel>{'Active Members'}</StatBlockLabel>
-          </StatBlock>
-          <StatBlock>
-            <StatBlockNumber>{'18'}</StatBlockNumber>
-            <StatBlockLabel>{'Total Meetings'}</StatBlockLabel>
-          </StatBlock>
+          {stats.map((stat) => (
+            <StatBlock key={stat.label}>
+              <StatBlockNumber>{stat.value}</StatBlockNumber>
+              <StatBlockLabel>{stat.label}</StatBlockLabel>
+            </StatBlock>
+          ))}
         </StatBlocks>
       </StyledRow>
       <StyledRow>
-        <Plan tier='starter'>
-          <Content>
-            <HeadingBlock>
-              <PlanTitle>{'Starter'}</PlanTitle>
-              <PlanSubtitle>{'Free'}</PlanSubtitle>
-            </HeadingBlock>
-            <UL>
-              <LI>2 teams</LI>
-              <LI>Essential templates</LI>
-              <LI>Retrospectives, Sprint Poker, Standups, Check-Ins</LI>
-              <LI>Unlimited team members</LI>
-            </UL>
-          </Content>
-          <ButtonBlock>
-            <UpgradeButton buttonStyle='disabled' size='medium'>
-              {'Current Plan'}
-            </UpgradeButton>
-          </ButtonBlock>
-        </Plan>
-        <Plan tier='team'>
-          <Content>
-            <HeadingBlock>
-              <PlanTitle>{'Team'}</PlanTitle>
-              <PlanSubtitle>
-                {'$6 per active member '}
-                <StyledIcon>{<Info />}</StyledIcon>
-              </PlanSubtitle>
-              <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-            </HeadingBlock>
-            <UL>
-              <LI>Everything in Starter</LI>
-              <LI>Premium templates</LI>
-              <LI>Custom templates</LI>
-              <LI>Unlimited teams</LI>
-            </UL>
-          </Content>
-          <ButtonBlock>
-            <UpgradeButton buttonStyle='primary' size='medium'>
-              {'Select Plan'}
-            </UpgradeButton>
-          </ButtonBlock>
-        </Plan>
-        <Plan tier='enterprise'>
-          <Content>
-            <HeadingBlock>
-              <PlanTitle>{'Enterprise'}</PlanTitle>
-              <PlanSubtitle>{'Contact for quote'}</PlanSubtitle>
-            </HeadingBlock>
-            <UL>
-              <LI>Everything in Team</LI>
-              <LI>SSO</LI>
-            </UL>
-          </Content>
-          <ButtonBlock>
-            <UpgradeButton buttonStyle='secondary' color='white' size='medium'>
-              {'Contact'}
-            </UpgradeButton>
-          </ButtonBlock>
-        </Plan>
+        {plans.map((plan) => (
+          <Plan key={plan.tier} tier={plan.tier}>
+            <Content>
+              <HeadingBlock>
+                <PlanTitle>{plan.tier}</PlanTitle>
+                {plan.tier === 'team' ? (
+                  <>
+                    <PlanSubtitle>
+                      {'$6 per active member '}
+                      <StyledIcon>{<Info />}</StyledIcon>
+                    </PlanSubtitle>
+                    <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                  </>
+                ) : (
+                  <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
+                )}
+              </HeadingBlock>
+              {plan.stats.map((stat) => (
+                <UL key={stat}>
+                  <LI>{stat}</LI>
+                </UL>
+              ))}
+            </Content>
+            <ButtonBlock>
+              <UpgradeButton buttonStyle={plan.buttonStyle} size='medium'>
+                {plan.buttonLabel}
+              </UpgradeButton>
+            </ButtonBlock>
+          </Plan>
+        ))}
       </StyledRow>
     </StyledPanel>
   )
