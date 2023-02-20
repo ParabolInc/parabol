@@ -169,4 +169,5 @@ The types of flags that give an individual organization super powers
 """
 type OrganizationFeatureFlags {
   teamsLimit: Boolean!
+  SAMLUI: Boolean!
 }
