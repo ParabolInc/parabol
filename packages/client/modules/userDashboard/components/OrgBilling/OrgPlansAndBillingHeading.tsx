@@ -15,7 +15,7 @@ const Wrapper = styled('div')({
   lineHeight: '24px',
   padding: '16px 0px',
   flexWrap: 'wrap',
-  maxWidth: 976,
+  maxWidth: 976, // same as usage stats to be consistent
   position: 'relative'
 })
 

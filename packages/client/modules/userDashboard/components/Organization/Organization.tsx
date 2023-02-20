@@ -104,7 +104,7 @@ const Organization = (props: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  const {organization, featureFlags} = viewer
+  const {organization, featureFlags: userFeatureFlags} = viewer
   const {history} = useRouter()
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
@@ -116,12 +116,19 @@ const Organization = (props: Props) => {
   const orgName = (organization && organization.name) || 'Unknown'
   useDocumentTitle(`Organization Settings | ${orgName}`, orgName)
   if (!organization) return <div />
-  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier, featureFlags} = organization
+  const {
+    orgId,
+    createdAt,
+    isBillingLeader,
+    picture: orgAvatar,
+    tier,
+    featureFlags: orgFeatureFlags
+  } = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
-    const showAuthentication = featureFlags?.SAMLUI
-  const {checkoutFlow} = featureFlags
-  
+  const showAuthentication = orgFeatureFlags?.SAMLUI
+  const {checkoutFlow} = userFeatureFlags
+
   if (checkoutFlow) return <OrgPage organizationRef={organization} />
   return (
     <UserSettingsWrapper>
