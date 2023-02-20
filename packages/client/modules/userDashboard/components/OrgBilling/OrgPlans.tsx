@@ -188,7 +188,15 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
       : buttonStyle === 'secondary'
       ? PALETTE.SLATE_900
       : PALETTE.SLATE_600,
-  border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none'
+  border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
+  ':hover': {
+    background:
+      buttonStyle === 'primary'
+        ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
+        : buttonStyle === 'secondary'
+        ? PALETTE.SLATE_100
+        : PALETTE.SLATE_300
+  }
 }))
 
 const OrgPlans = () => {
