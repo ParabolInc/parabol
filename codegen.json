@@ -37,6 +37,7 @@
         "mappers": {
           "RRule": "rrule#RRule",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
+          "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
           "UpdateFeatureFlagPayload": "./types/UpdateFeatureFlagPayload#UpdateFeatureFlagPayloadSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
@@ -69,6 +70,7 @@
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
+          "UpdateSAMLSuccess": "./types/UpdateSAMLSuccess#UpdateSAMLSuccessSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",

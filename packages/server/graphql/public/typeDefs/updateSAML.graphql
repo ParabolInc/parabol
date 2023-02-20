@@ -1,0 +1,28 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  updateSAML(
+    """
+    The organization id
+    """
+    orgId: ID!
+
+    """
+    A big chunk of XML data containing the redirect URL and X.509 certificate
+    """
+    metadata: String
+  ): UpdateSAMLPayload!
+}
+
+"""
+Return value for updateSAML, which could be an error
+"""
+union UpdateSAMLPayload = ErrorPayload | UpdateSAMLSuccess
+
+type UpdateSAMLSuccess {
+  """
+  Describe the first return field here
+  """
+  success: Boolean!
+}
