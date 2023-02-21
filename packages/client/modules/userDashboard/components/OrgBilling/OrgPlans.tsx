@@ -176,6 +176,7 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
       : PALETTE.SLATE_600,
   border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
   ':hover': {
+    cursor: buttonStyle === 'disabled' ? 'default' : 'pointer',
     background:
       buttonStyle === 'primary'
         ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
@@ -276,6 +277,7 @@ const OrgPlans = (props: Props) => {
     } else if (label === 'Select Plan') {
       // TODO: handle select plan when billing is implemented
     } else if (label === 'Downgrade') {
+      // TODO: handle in https://github.com/ParabolInc/parabol/issues/7697
     }
   }
 
