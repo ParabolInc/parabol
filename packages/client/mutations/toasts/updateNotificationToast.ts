@@ -18,7 +18,7 @@ export const updateNotificationToastOnNext: OnNextHandler<
 > = (payload, {atmosphere}) => {
   const {updatedNotification} = payload
 
-  if (updatedNotification.status === 'CLICKED') {
+  if (['CLICKED', 'READ'].includes(updatedNotification.status)) {
     atmosphere.eventEmitter.emit(
       'removeSnackbar',
       (snack) => snack.key === makeNotificationToastKey(updatedNotification.id)

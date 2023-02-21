@@ -13,8 +13,6 @@ const UpdatedNotification: UpdatedNotificationResolvers = {
       )
     }
 
-    console.log('returning notification', notification)
-
     return notification
   }
 }
