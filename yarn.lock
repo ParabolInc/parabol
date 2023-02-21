@@ -16326,15 +16326,10 @@ rethinkdb-ts-migrate@^0.3.6:
     sucrase "^3.21.0"
     tslib "^2.4.0"
 
-rethinkdb-ts@2.4.5:
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/rethinkdb-ts/-/rethinkdb-ts-2.4.5.tgz#986916d3ec21deb1be84e0376c06fe8738837833"
-  integrity sha512-Dcp6+TTyFjfSwX7Ai0JWnOr+dfAv7FrWUs/ufSGU+auapWuolwn/WjpvKYrPMpwgvgOHeJldA8IE8yTW2nYc7g==
-
-rethinkdb-ts@^2.4.5:
-  version "2.4.18"
-  resolved "https://registry.yarnpkg.com/rethinkdb-ts/-/rethinkdb-ts-2.4.18.tgz#f6221f59194e43368da5b06cc404a8828b6ce3a2"
-  integrity sha512-7PvElU5xHbwz0U6GfF6CizfNsONItd0DuOXfnulS9YbRkBkZGeEHBqIvRKMzSkUVeBH0brbVTxt4M8MqQRzvhw==
+rethinkdb-ts@2.5.1, rethinkdb-ts@^2.4.5:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/rethinkdb-ts/-/rethinkdb-ts-2.5.1.tgz#6b77efda9c6e4e60e1081ce626fe9a55323bb941"
+  integrity sha512-ssNcMhVxrLeLe6/iw7MeU7lGqyfnv2XMdixyCVU27ToZk8PyuBvNr04lNrKTJ5A4GqbDtPip5xd3o7NRzBktYQ==
 
 retry@^0.10.1:
   version "0.10.1"
@@ -18076,14 +18071,14 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.6.3, "typescript@^3 || ^4", typescript@^4.2.4, typescript@^4.5.5:
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
-  integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
+typescript@4.9.5, "typescript@^3 || ^4", typescript@^4.2.4, typescript@^4.5.5:
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
+  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v19.3.0:
-  version "19.3.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/7bf0faac5859fef2d113e83d22803f7833774c11"
+uWebSockets.js@uNetworking/uWebSockets.js#v20.19.0:
+  version "20.19.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/42c9c0d5d31f46ca4115dc75672b0037ec970f28"
 
 ua-parser-js@^0.7.30:
   version "0.7.33"

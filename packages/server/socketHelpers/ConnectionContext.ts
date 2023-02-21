@@ -2,6 +2,7 @@ import {ExecutionResult} from 'graphql/execution/execute'
 import {HttpResponse, WebSocket} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import generateUID from '../generateUID'
+import {SocketUserData} from '../socketHandlers/handleOpen'
 import isHttpResponse from './isHttpResponse'
 
 export interface ConnectedSubs {
@@ -11,7 +12,7 @@ export interface ConnectedSubs {
 export type ReliableQueue = {[mid: number]: string}
 
 const MAX_MID = 2 ** 31 - 1
-class ConnectionContext<T = WebSocket | HttpResponse> {
+class ConnectionContext<T = WebSocket<SocketUserData> | HttpResponse> {
   authToken: AuthToken
   availableResubs: any[] = []
   cancelKeepAlive: NodeJS.Timeout | undefined = undefined
