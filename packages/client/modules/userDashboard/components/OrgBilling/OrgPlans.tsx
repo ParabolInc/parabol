@@ -185,6 +185,26 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
   }
 }))
 
+const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
+  if (tier === 'starter') {
+    return plan === 'starter' ? 'disabled' : plan === 'team' ? 'primary' : 'secondary'
+  } else if (tier === 'team') {
+    return plan === 'team' ? 'disabled' : 'secondary'
+  } else {
+    return plan === 'enterprise' ? 'disabled' : 'secondary'
+  }
+}
+
+const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
+  if (tier === 'starter') {
+    return plan === 'starter' ? 'Current Plan' : plan === 'team' ? 'Select Plan' : 'Contact'
+  } else if (tier === 'team') {
+    return plan === 'team' ? 'Current Plan' : plan === 'starter' ? 'Downgrade' : 'Contact'
+  } else {
+    return plan === 'enterprise' ? 'Current Plan' : 'Contact'
+  }
+}
+
 type Props = {
   organizationRef: any
 }
@@ -221,26 +241,6 @@ const OrgPlans = (props: Props) => {
       value: totalMeetingCount
     }
   ]
-
-  const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
-    if (tier === 'starter') {
-      return plan === 'starter' ? 'disabled' : plan === 'team' ? 'primary' : 'secondary'
-    } else if (tier === 'team') {
-      return plan === 'team' ? 'disabled' : 'secondary'
-    }
-    // dont show plans for enterprise users
-    return null
-  }
-
-  const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
-    if (tier === 'starter') {
-      return plan === 'starter' ? 'Current Plan' : plan === 'team' ? 'Select Plan' : 'Contact'
-    } else if (tier === 'team') {
-      return plan === 'team' ? 'Current Plan' : plan === 'starter' ? 'Downgrade' : 'Contact'
-    }
-    // dont show plans for enterprise users
-    return null
-  }
 
   const plans = [
     {
