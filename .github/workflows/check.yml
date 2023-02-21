@@ -3,30 +3,9 @@ name: Check Code Style
 on: [push]
 
 env:
-  DEPENDENCIES_CACHE: cache-node-modules-v0
+  DEPENDENCIES_CACHE: cache-node-modules
 
 jobs:
-  install-deps:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16.16.0"
-          cache: "yarn"
-      - name: Cache node modules
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            **/node_modules
-          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
-      - name: yarn install
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
   build:
     services:
       rethinkdb:
@@ -52,7 +31,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     runs-on: ubuntu-latest
-    needs: install-deps
     steps:
       - uses: actions/checkout@v2
         with:
@@ -62,6 +40,16 @@ jobs:
         with:
           node-version: "16.16.0"
           cache: "yarn"
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
       - name: Get cached node modules
