@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
@@ -182,15 +184,37 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
   }
 }))
 
-const OrgPlans = () => {
+type Props = {
+  organizationRef: any
+}
+
+const OrgPlans = (props: Props) => {
+  const {organizationRef} = props
+
+  const organization = useFragment(
+    graphql`
+      fragment OrgPlans_organization on Organization {
+        orgUserCount {
+          activeUserCount
+        }
+        teams {
+          id
+        }
+      }
+    `,
+    organizationRef
+  )
+
+  const {teams, orgUserCount} = organization
+
   const stats = [
     {
       label: 'Active Teams',
-      value: 18
+      value: teams.length
     },
     {
       label: 'Active Members',
-      value: 18
+      value: orgUserCount.activeUserCount
     },
     {
       label: 'Total Meetings',
