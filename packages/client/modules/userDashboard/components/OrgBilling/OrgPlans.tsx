@@ -9,7 +9,9 @@ import Row from '../../../../components/Row/Row'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Threshold} from '../../../../types/constEnums'
+import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
+import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
@@ -26,39 +28,6 @@ const StyledRow = styled(Row)({
   ':nth-of-type(2)': {
     border: 'none'
   }
-})
-
-const StatBlocks = styled('div')({
-  display: 'flex',
-  width: '100%',
-  padding: '8px 0px'
-})
-
-const StatBlock = styled('div')({
-  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
-  ':first-of-type': {
-    borderLeft: 'none'
-  },
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  width: '33.33%',
-  padding: '14px 0px'
-})
-
-const StatBlockNumber = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 40,
-  lineHeight: '60px'
-})
-
-const StatBlockLabel = styled('div')({
-  color: PALETTE.SLATE_800,
-  fontSize: 14,
-  fontWeight: 600,
-  lineHeight: '16px',
-  textTransform: 'capitalize',
-  display: 'flex'
 })
 
 const PlanTitle = styled('div')({
@@ -137,10 +106,12 @@ const LI = styled('li')({
 })
 
 const StyledIcon = styled('div')({
-  height: 24,
-  width: 24,
+  width: 18,
+  height: 18,
   color: PALETTE.SLATE_600,
   paddingLeft: 8,
+  display: 'flex',
+  alignItems: 'center',
   '&:hover': {
     cursor: 'pointer'
   }
@@ -207,7 +178,7 @@ const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
 }
 
 type Props = {
-  organizationRef: any
+  organizationRef: OrgPlans_organization$key
 }
 
 const OrgPlans = (props: Props) => {
@@ -215,39 +186,19 @@ const OrgPlans = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment OrgPlans_organization on Organization {
-        orgUserCount {
-          activeUserCount
-        }
-        totalMeetingCount
-        activeTeamCount
+        ...OrgStats_organization
         tier
       }
     `,
     organizationRef
   )
-
-  const {activeTeamCount, orgUserCount, totalMeetingCount, tier} = organization
-
-  const stats = [
-    {
-      label: 'Active Teams',
-      value: activeTeamCount
-    },
-    {
-      label: 'Active Members',
-      value: orgUserCount.activeUserCount
-    },
-    {
-      label: 'Total Meetings',
-      value: totalMeetingCount
-    }
-  ]
+  const {tier} = organization
 
   const plans = [
     {
       tier: 'starter',
       subtitle: 'Free',
-      stats: [
+      details: [
         `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
         'Essential templates',
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
@@ -258,14 +209,19 @@ const OrgPlans = (props: Props) => {
     },
     {
       tier: 'team',
-      stats: ['Everything in Starter', 'Premium templates', 'Custom templates', 'Unlimited teams'],
+      details: [
+        'Everything in Starter',
+        'Premium templates',
+        'Custom templates',
+        'Unlimited teams'
+      ],
       buttonStyle: getButtonStyle(tier, 'team'),
       buttonLabel: getButtonLabel(tier, 'team')
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
-      stats: ['Everything in Team', 'SSO'],
+      details: ['Everything in Team', 'SSO'],
       buttonStyle: getButtonStyle(tier, 'enterprise'),
       buttonLabel: getButtonLabel(tier, 'enterprise')
     }
@@ -284,14 +240,7 @@ const OrgPlans = (props: Props) => {
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
-        <StatBlocks>
-          {stats.map((stat) => (
-            <StatBlock key={stat.label}>
-              <StatBlockNumber>{stat.value}</StatBlockNumber>
-              <StatBlockLabel>{stat.label}</StatBlockLabel>
-            </StatBlock>
-          ))}
-        </StatBlocks>
+        <OrgStats organizationRef={organization} />
       </StyledRow>
       <StyledRow>
         {plans.map((plan) => (
@@ -311,9 +260,9 @@ const OrgPlans = (props: Props) => {
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
                 )}
               </HeadingBlock>
-              {plan.stats.map((stat) => (
-                <UL key={stat}>
-                  <LI>{stat}</LI>
+              {plan.details.map((detail) => (
+                <UL key={detail}>
+                  <LI>{detail}</LI>
                 </UL>
               ))}
             </Content>
