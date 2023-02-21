@@ -3,7 +3,7 @@ name: Check Code Style
 on: [push]
 
 env:
-  DEPENDENCIES_CACHE: cache-node-modules-v0
+  DEPENDENCIES_CACHE: cache-node-modules-v1
 
 jobs:
   build:
