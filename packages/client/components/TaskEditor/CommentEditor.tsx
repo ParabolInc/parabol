@@ -201,7 +201,7 @@ const CommentEditor = (props: Props) => {
     if (editorRef.current) {
       editorRef.current.focus()
     }
-  }, [editorRef, discussionId, autofocus])
+  }, [discussionId, autofocus])
 
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
