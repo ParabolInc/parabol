@@ -58,19 +58,16 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore(deps): bump deps to fix vulns (#7730)
 - chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
 - fix: Profile name length should have the upper limit (#7425)
--
 
 ### Added
 
 - chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
 - chore(checkout-flow): add checkout feature flag (#7709)
--
 
 ### Changed
 
 - chore: update team invite email (#7710)
 - chore(ai-summary): update meeting summary url (#7705)
--
 
 ## 6.90.0 2023-February-1
 
