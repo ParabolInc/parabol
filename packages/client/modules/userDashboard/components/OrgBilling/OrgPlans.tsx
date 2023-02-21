@@ -199,12 +199,13 @@ const OrgPlans = (props: Props) => {
         }
         totalMeetingCount
         activeTeamCount
+        tier
       }
     `,
     organizationRef
   )
 
-  const {activeTeamCount, orgUserCount, totalMeetingCount} = organization
+  const {activeTeamCount, orgUserCount, totalMeetingCount, tier} = organization
 
   const stats = [
     {
@@ -221,6 +222,26 @@ const OrgPlans = (props: Props) => {
     }
   ]
 
+  const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
+    if (tier === 'starter') {
+      return plan === 'starter' ? 'disabled' : plan === 'team' ? 'primary' : 'secondary'
+    } else if (tier === 'team') {
+      return plan === 'team' ? 'disabled' : 'secondary'
+    }
+    // dont show plans for enterprise users
+    return null
+  }
+
+  const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
+    if (tier === 'starter') {
+      return plan === 'starter' ? 'Current Plan' : plan === 'team' ? 'Select Plan' : 'Contact'
+    } else if (tier === 'team') {
+      return plan === 'team' ? 'Current Plan' : plan === 'starter' ? 'Downgrade' : 'Contact'
+    }
+    // dont show plans for enterprise users
+    return null
+  }
+
   const plans = [
     {
       tier: 'starter',
@@ -231,21 +252,21 @@ const OrgPlans = (props: Props) => {
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
-      buttonStyle: 'disabled',
-      buttonLabel: 'Current Plan'
+      buttonStyle: getButtonStyle(tier, 'starter'),
+      buttonLabel: getButtonLabel(tier, 'starter')
     },
     {
       tier: 'team',
       stats: ['Everything in Starter', 'Premium templates', 'Custom templates', 'Unlimited teams'],
-      buttonStyle: 'primary',
-      buttonLabel: 'Select Plan'
+      buttonStyle: getButtonStyle(tier, 'team'),
+      buttonLabel: getButtonLabel(tier, 'team')
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       stats: ['Everything in Team', 'SSO'],
-      buttonStyle: 'secondary',
-      buttonLabel: 'Contact'
+      buttonStyle: getButtonStyle(tier, 'enterprise'),
+      buttonLabel: getButtonLabel(tier, 'enterprise')
     }
   ] as const
 
@@ -286,9 +307,11 @@ const OrgPlans = (props: Props) => {
               ))}
             </Content>
             <ButtonBlock>
-              <UpgradeButton buttonStyle={plan.buttonStyle} size='medium'>
-                {plan.buttonLabel}
-              </UpgradeButton>
+              {plan.buttonStyle && (
+                <UpgradeButton buttonStyle={plan.buttonStyle} size='medium'>
+                  {plan.buttonLabel}
+                </UpgradeButton>
+              )}
             </ButtonBlock>
           </Plan>
         ))}
