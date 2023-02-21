@@ -7,6 +7,7 @@ import Row from '../../../../components/Row/Row'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
+import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
@@ -23,39 +24,6 @@ const StyledRow = styled(Row)({
   ':nth-of-type(2)': {
     border: 'none'
   }
-})
-
-const StatBlocks = styled('div')({
-  display: 'flex',
-  width: '100%',
-  padding: '8px 0px'
-})
-
-const StatBlock = styled('div')({
-  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
-  ':first-of-type': {
-    borderLeft: 'none'
-  },
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  width: '33.33%',
-  padding: '14px 0px'
-})
-
-const StatBlockNumber = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 40,
-  lineHeight: '60px'
-})
-
-const StatBlockLabel = styled('div')({
-  color: PALETTE.SLATE_800,
-  fontSize: 14,
-  fontWeight: 600,
-  lineHeight: '16px',
-  textTransform: 'capitalize',
-  display: 'flex'
 })
 
 const PlanTitle = styled('div')({
@@ -134,10 +102,12 @@ const LI = styled('li')({
 })
 
 const StyledIcon = styled('div')({
-  height: 24,
-  width: 24,
+  width: 18,
+  height: 18,
   color: PALETTE.SLATE_600,
   paddingLeft: 8,
+  display: 'flex',
+  alignItems: 'center',
   '&:hover': {
     cursor: 'pointer'
   }
@@ -173,6 +143,7 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
       : PALETTE.SLATE_600,
   border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
   ':hover': {
+    cursor: buttonStyle === 'disabled' ? 'default' : 'pointer',
     background:
       buttonStyle === 'primary'
         ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
@@ -183,26 +154,11 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
 }))
 
 const OrgPlans = () => {
-  const stats = [
-    {
-      label: 'Active Teams',
-      value: 18
-    },
-    {
-      label: 'Active Members',
-      value: 18
-    },
-    {
-      label: 'Total Meetings',
-      value: 18
-    }
-  ]
-
   const plans = [
     {
       tier: 'starter',
       subtitle: 'Free',
-      stats: [
+      details: [
         '2 teams',
         'Essential templates',
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
@@ -213,14 +169,19 @@ const OrgPlans = () => {
     },
     {
       tier: 'team',
-      stats: ['Everything in Starter', 'Premium templates', 'Custom templates', 'Unlimited teams'],
+      details: [
+        'Everything in Starter',
+        'Premium templates',
+        'Custom templates',
+        'Unlimited teams'
+      ],
       buttonStyle: 'primary',
       buttonLabel: 'Select Plan'
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
-      stats: ['Everything in Team', 'SSO'],
+      details: ['Everything in Team', 'SSO'],
       buttonStyle: 'secondary',
       buttonLabel: 'Contact'
     }
@@ -229,14 +190,7 @@ const OrgPlans = () => {
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
-        <StatBlocks>
-          {stats.map((stat) => (
-            <StatBlock key={stat.label}>
-              <StatBlockNumber>{stat.value}</StatBlockNumber>
-              <StatBlockLabel>{stat.label}</StatBlockLabel>
-            </StatBlock>
-          ))}
-        </StatBlocks>
+        <OrgStats />
       </StyledRow>
       <StyledRow>
         {plans.map((plan) => (
@@ -256,9 +210,9 @@ const OrgPlans = () => {
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
                 )}
               </HeadingBlock>
-              {plan.stats.map((stat) => (
-                <UL key={stat}>
-                  <LI>{stat}</LI>
+              {plan.details.map((detail) => (
+                <UL key={detail}>
+                  <LI>{detail}</LI>
                 </UL>
               ))}
             </Content>
