@@ -9,13 +9,13 @@ jobs:
   install-deps:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "^16.16.0"
+          node-version: "16.16.0"
           cache: "yarn"
       - name: Cache node modules
         id: cache
