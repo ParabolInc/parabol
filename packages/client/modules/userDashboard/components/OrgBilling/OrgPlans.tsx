@@ -270,6 +270,15 @@ const OrgPlans = (props: Props) => {
     }
   ] as const
 
+  const handleClick = (label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan') => {
+    if (label === 'Contact') {
+      window.open('mailto:love@parabol.co', '_blank')
+    } else if (label === 'Select Plan') {
+      // TODO: handle select plan when billing is implemented
+    } else if (label === 'Downgrade') {
+    }
+  }
+
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
@@ -308,7 +317,11 @@ const OrgPlans = (props: Props) => {
             </Content>
             <ButtonBlock>
               {plan.buttonStyle && (
-                <UpgradeButton buttonStyle={plan.buttonStyle} size='medium'>
+                <UpgradeButton
+                  onClick={() => handleClick(plan.buttonLabel)}
+                  buttonStyle={plan.buttonStyle}
+                  size='medium'
+                >
                   {plan.buttonLabel}
                 </UpgradeButton>
               )}
