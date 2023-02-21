@@ -8,6 +8,7 @@ import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const StyledPanel = styled(Panel)({
@@ -190,27 +191,25 @@ type Props = {
 
 const OrgPlans = (props: Props) => {
   const {organizationRef} = props
-
   const organization = useFragment(
     graphql`
       fragment OrgPlans_organization on Organization {
         orgUserCount {
           activeUserCount
         }
-        teams {
-          id
-        }
+        totalMeetingCount
+        activeTeamCount
       }
     `,
     organizationRef
   )
 
-  const {teams, orgUserCount} = organization
+  const {activeTeamCount, orgUserCount, totalMeetingCount} = organization
 
   const stats = [
     {
       label: 'Active Teams',
-      value: teams.length
+      value: activeTeamCount
     },
     {
       label: 'Active Members',
@@ -218,7 +217,7 @@ const OrgPlans = (props: Props) => {
     },
     {
       label: 'Total Meetings',
-      value: 18
+      value: totalMeetingCount
     }
   ]
 
@@ -227,7 +226,7 @@ const OrgPlans = (props: Props) => {
       tier: 'starter',
       subtitle: 'Free',
       stats: [
-        '2 teams',
+        `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
         'Essential templates',
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
