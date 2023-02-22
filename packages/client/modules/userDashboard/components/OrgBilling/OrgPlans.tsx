@@ -15,11 +15,11 @@ import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
-  padding: '0px 8px 16px 8px'
+  paddingBottom: 16
 })
 
 const StyledRow = styled(Row)({
-  padding: '12px 8px',
+  padding: '12px 16px',
   display: 'flex',
   flex: 1,
   ':first-of-type': {
@@ -32,7 +32,7 @@ const StyledRow = styled(Row)({
 
 const PlanTitle = styled('div')({
   color: PALETTE.SLATE_800,
-  fontSize: 24,
+  fontSize: 22,
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
@@ -53,7 +53,7 @@ const HeadingBlock = styled('div')({
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
   color: PALETTE.SLATE_800,
-  fontSize: 20,
+  fontSize: 18,
   width: '100%',
   lineHeight: '30px',
   textTransform: 'none',
@@ -97,7 +97,7 @@ const UL = styled('ul')({
 })
 
 const LI = styled('li')({
-  fontSize: 18,
+  fontSize: 16,
   lineHeight: '32px',
   color: PALETTE.SLATE_900,
   textTransform: 'none',
