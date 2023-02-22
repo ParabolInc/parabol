@@ -43,6 +43,10 @@ const NewMeetingRoot = lazy(
   () => import(/* webpackChunkName: 'NewMeetingRoot' */ './NewMeetingRoot')
 )
 
+const ActivityLibraryRoute = lazy(
+  () => import(/* webpackChunkName: 'ActivityLibrary' */ './ActivityLibrary/ActivityLibraryRoute')
+)
+
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
 }
@@ -167,6 +171,7 @@ const Dashboard = (props: Props) => {
           </Switch>
           <Switch>
             <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
+            <Route path='/activity-library' component={ActivityLibraryRoute} />
           </Switch>
         </DashMain>
       </DashPanel>
