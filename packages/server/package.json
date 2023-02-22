@@ -114,7 +114,7 @@
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
     "mailcomposer": "^4.0.1",
-    "mailgun.js": "^3.5.2",
+    "mailgun.js": "^7.0.4",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "mattkrick/nest-graphql-endpoint#add-options",
