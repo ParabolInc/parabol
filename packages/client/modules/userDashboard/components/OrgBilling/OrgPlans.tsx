@@ -11,11 +11,11 @@ import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
-  padding: '0px 8px 16px 8px'
+  paddingBottom: 16
 })
 
 const StyledRow = styled(Row)({
-  padding: '12px 8px',
+  padding: '12px 16px',
   display: 'flex',
   flex: 1,
   ':first-of-type': {
