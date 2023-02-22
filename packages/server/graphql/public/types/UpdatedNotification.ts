@@ -9,7 +9,7 @@ const UpdatedNotification: UpdatedNotificationResolvers = {
     const notification = await dataLoader.get('notifications').load(updatedNotificationId)
     if (notification.userId !== viewerId) {
       throw new Error(
-        `Viewer ID does not match notification user ID: notification ${updatedNotificationId} for user ${notification.userId} published to user ${viewerId}`
+        `Viewer ID does not match notification user ID: notification ${updatedNotificationId} published to user ${viewerId}`
       )
     }
 
