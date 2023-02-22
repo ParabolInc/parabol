@@ -93,7 +93,6 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
     .distinct()
     .do((endedMeetingIds: RValue) => {
       return r
-        .db('actionDevelopment')
         .table('MeetingMember')
         .getAll(r.args(endedMeetingIds), {index: 'meetingId'})
         .group('teamId', 'meetingId')
