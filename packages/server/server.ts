@@ -26,8 +26,9 @@ import SAMLHandler from './utils/SAMLHandler'
 tracer.init({
   service: `Web ${process.env.SERVER_ID}`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: true
+  plugins: false
 })
+tracer.use('ioredis').use('http').use('pg').use('fs')
 
 const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
 if (!PROD) {
