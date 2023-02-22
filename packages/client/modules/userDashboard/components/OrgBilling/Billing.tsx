@@ -78,7 +78,7 @@ const NewIssueInput = styled('input')({
   appearance: 'none',
   background: PALETTE.SLATE_200,
   border: 'none',
-  borderBottom: `1px solid ${PALETTE.GRAPE_700}`,
+  borderBottom: `1px solid ${PALETTE.SLATE_400}`,
   color: PALETTE.SLATE_800,
   fontSize: 16,
   marginBottom: 16,
