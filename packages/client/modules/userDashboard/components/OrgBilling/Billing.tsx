@@ -1,8 +1,12 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
+import useForm from '../../../../hooks/useForm'
+import useScript from '../../../../hooks/useScript'
 import {PALETTE} from '../../../../styles/paletteV3'
+import StripeClientManager from '../../../../utils/StripeClientManager'
+import CreditCardErrorLine from '../CreditCardModal/CreditCardErrorLine'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
@@ -74,7 +78,7 @@ const Form = styled('form')({
   paddingTop: 16
 })
 
-const NewIssueInput = styled('input')({
+const StyledInput = styled('input')({
   appearance: 'none',
   background: PALETTE.SLATE_200,
   border: 'none',
@@ -114,6 +118,30 @@ const InputBlock = styled('div')({
 })
 
 const Billing = () => {
+  const [stripeClientManager] = useState(() => new StripeClientManager())
+  const {fields, onChange, setDirtyField, validateField} = useForm({
+    creditCardNumber: {
+      getDefault: () => '',
+      normalize: stripeClientManager.normalizeCardNumber,
+      validate: stripeClientManager.validateCardNumber
+    },
+    cvc: {
+      getDefault: () => '',
+      normalize: stripeClientManager.normalizeCVC,
+      validate: stripeClientManager.validateCVC
+    },
+    expiry: {
+      getDefault: () => '',
+      normalize: stripeClientManager.normalizeExpiry,
+      validate: stripeClientManager.validateExpiry
+    }
+  })
+  const isStripeLoaded = useScript('https://js.stripe.com/v2/')
+  useEffect(() => {
+    if (isStripeLoaded) {
+      stripeClientManager.init()
+    }
+  }, [isStripeLoaded])
   return (
     <StyledPanel label='Credit Card'>
       <StyledRow>
@@ -128,10 +156,8 @@ const Billing = () => {
             <Title>{'Credit Card Details'}</Title>
             <Form>
               <InputLabel>{'Cardholder Name'}</InputLabel>
-              <NewIssueInput
+              <StyledInput
                 autoFocus
-                // onBlur={handleCreateNewIssue}
-                // onChange={onChange}
                 maxLength={255}
                 placeholder='Full Name'
                 // ref={ref}
@@ -141,50 +167,52 @@ const Billing = () => {
                 autoComplete='cc-name'
               />
               <InputLabel>{'Card Number'}</InputLabel>
-              <NewIssueInput
-                autoFocus
-                // onBlur={handleCreateNewIssue}
-                // onChange={onChange}
+              <StyledInput
                 maxLength={255}
                 placeholder='1234 5678 8765 4321'
+                onBlur={() => setDirtyField('creditCardNumber')}
+                onChange={onChange}
                 // ref={ref}
                 id='card-number'
-                name='cardNumber'
+                name={'creditCardNumber'}
                 type='text'
                 autoComplete='cc-number'
               />
               <InputWrapper>
                 <InputBlock>
                   <InputLabel>{'Expiry Date'}</InputLabel>
-                  <NewIssueInput
-                    autoFocus
-                    // onBlur={handleCreateNewIssue}
-                    // onChange={onChange}
+                  <StyledInput
                     maxLength={16}
                     placeholder='MM/YY'
                     // ref={ref}
+                    onChange={onChange}
+                    onBlur={() => setDirtyField('expiry')}
                     id='expiry'
-                    name='expiry'
+                    name={'expiry'}
                     type='text'
                     autoComplete='cc-exp'
                   />
                 </InputBlock>
                 <InputBlock>
                   <InputLabel>{'CVV'}</InputLabel>
-                  <NewIssueInput
-                    autoFocus
-                    // onBlur={handleCreateNewIssue}
-                    // onChange={onChange}
+                  <StyledInput
                     maxLength={4}
                     placeholder='123'
                     // ref={ref}
+                    onBlur={() => setDirtyField('cvc')}
+                    onChange={onChange}
                     id='cvv'
-                    name='cvv'
+                    name={'cvc'}
                     type='text'
                     autoComplete='cc-csc'
                   />
                 </InputBlock>
               </InputWrapper>
+              <CreditCardErrorLine
+                stripeClientManager={stripeClientManager}
+                fields={fields as any}
+                // serverError={error ? error.message : undefined}
+              />
             </Form>
           </Content>
         </Plan>
