@@ -1,12 +1,15 @@
 import {WebSocket} from 'uWebSockets.js'
 import sendToSentry from '../utils/sendToSentry'
 import handleDisconnect from './handleDisconnect'
+import {SocketUserData} from './handleOpen'
 
-const handleClose = (ws: WebSocket) => {
-  if (!ws.connectionContext) return
-  ws.done = true
+const handleClose = (ws: WebSocket<SocketUserData>) => {
+  const userData = ws.getUserData()
+  const {connectionContext} = userData
+  if (!connectionContext) return
+  userData.done = true
   try {
-    handleDisconnect(ws.connectionContext)
+    handleDisconnect(connectionContext)
   } catch (e) {
     const error = e instanceof Error ? e : new Error('handleDisconnect failed')
     sendToSentry(error)

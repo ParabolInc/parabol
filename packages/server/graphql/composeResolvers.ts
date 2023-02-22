@@ -67,7 +67,7 @@ const composeResolvers = <T extends ResolverMap>(resolverMap: T, permissionMap: 
     // only clone field maps that will be mutated by permissions
     nextResolverMap[typeName] = {...nextResolverMap[typeName]}
     const nextResolverFieldMap = nextResolverMap[typeName]
-    if (!nextResolverFieldMap) throw new Error(`No resolver exists for type: ${typeName}`)
+    if (!nextResolverFieldMap) throw new Error(`No resolver exists for type: ${String(typeName)}`)
     Object.entries(ruleFieldMap).forEach(([fieldName, rule]) => {
       if (fieldName === '*') {
         // apply this rule to every member of the nextResolverFieldMap

@@ -3,9 +3,11 @@ import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
 import {mapDiscussionMentionedToToast_notification} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
+import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapDiscussionMentionedToToast_notification on NotifyDiscussionMentioned {
+    id
     author {
       id
       preferredName
@@ -35,7 +37,7 @@ const mapDiscussionMentionedToToast = (
   {history}: OnNextHistoryContext
 ): Snack | null => {
   if (!notification) return null
-  const {meeting, author, discussion} = notification
+  const {id: notificationId, meeting, author, discussion} = notification
   const {preferredName: authorName} = author
   const {id: meetingId, name: meetingName} = meeting
   const {stage} = discussion
@@ -47,7 +49,7 @@ const mapDiscussionMentionedToToast = (
   // thread, and do nothing if we are.
 
   return {
-    key: `discussionMentioned:${discussion.id}:${author.id}`,
+    key: makeNotificationToastKey(notificationId),
     autoDismiss: 10,
     message: `${authorName} mentioned you in a discussion in ${meetingName}.`,
     action: {

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.91.1",
+  "version": "6.92.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -71,7 +71,7 @@
     "sucrase": "^3.23.0",
     "ts-jest": "^27.0.5",
     "ts-node": "^8.6.2",
-    "typescript": "4.6.3",
+    "typescript": "4.9.5",
     "url-loader": "4.1.1",
     "vscode-apollo-relay": "^1.5.0",
     "webpack-bundle-analyzer": "4.3.0",
@@ -114,7 +114,7 @@
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
     "mailcomposer": "^4.0.1",
-    "mailgun.js": "^3.5.2",
+    "mailgun.js": "^7.0.4",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "mattkrick/nest-graphql-endpoint#add-options",
@@ -125,19 +125,19 @@
     "oauth-1.0a": "^2.2.6",
     "openai": "^3.1.0",
     "oy-vey": "^0.11.0",
-    "parabol-client": "^6.91.0",
+    "parabol-client": "^6.92.0",
     "pg": "^8.5.1",
     "pm2": "^5.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "relay-runtime": "^12.0.0",
-    "rethinkdb-ts": "2.4.5",
+    "rethinkdb-ts": "2.5.1",
     "rrule": "^2.7.2",
     "samlify": "^2.8.2",
     "sharp": "^0.30.7",
     "string-similarity": "^3.0.0",
     "stripe": "^9.13.0",
     "tslib": "^2.4.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v19.3.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.19.0"
   }
 }

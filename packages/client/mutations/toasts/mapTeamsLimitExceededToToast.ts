@@ -3,6 +3,7 @@ import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapTeamsLimitExceededToToast_notification} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapTeamsLimitExceededToToast_notification on NotifyTeamsLimitExceeded {
@@ -19,7 +20,7 @@ const mapTeamsLimitExceededToToast = (
 
   return {
     autoDismiss: 0,
-    key: `newNotification:${notificationId}`,
+    key: makeNotificationToastKey(notificationId),
     message: `Your account is on a roll! Check out "${orgName}"'s usage`,
     onManualDismiss: () => {
       SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
