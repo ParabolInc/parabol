@@ -35,7 +35,9 @@ const Plan = styled('div')({
   padding: '16px',
   height: 400,
   borderRadius: 4,
-  border: `2px solid red`
+  border: `2px solid red`,
+  width: '50%',
+  overflow: 'hidden'
 })
 
 const Heading = styled('span')<{isBold?: boolean}>(({isBold}) => ({
@@ -45,9 +47,7 @@ const Heading = styled('span')<{isBold?: boolean}>(({isBold}) => ({
 }))
 
 const HeadingBlock = styled('div')({
-  padding: '16px',
-  display: 'flex',
-  justifyContent: 'flex-start'
+  padding: '16px'
 })
 
 const Title = styled('div')({
@@ -77,15 +77,16 @@ const Form = styled('form')({
 const NewIssueInput = styled('input')({
   appearance: 'none',
   background: PALETTE.SLATE_200,
-  borderBottom: `1px solid ${PALETTE.GRAPE_700}`,
   border: 'none',
-  color: PALETTE.SLATE_600,
+  borderBottom: `1px solid ${PALETTE.GRAPE_700}`,
+  color: PALETTE.SLATE_800,
   fontSize: 16,
   marginBottom: 16,
   padding: 16,
-  // padding: '0px 8px 0px 0px',
   outline: 0,
-  width: '100%'
+  '::placeholder': {
+    color: PALETTE.SLATE_600
+  }
 })
 
 const InputLabel = styled('span')({
@@ -96,6 +97,20 @@ const InputLabel = styled('span')({
   paddingBottom: 4,
   color: PALETTE.SLATE_600,
   textTransform: 'uppercase'
+})
+
+const InputWrapper = styled('div')({
+  display: 'flex',
+  width: '100%',
+  flexWrap: 'nowrap',
+  flex: 1,
+  justifyContent: 'space-between'
+})
+
+const InputBlock = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '47%'
 })
 
 const Billing = () => {
@@ -118,10 +133,12 @@ const Billing = () => {
                 // onBlur={handleCreateNewIssue}
                 // onChange={onChange}
                 maxLength={255}
-                name='newIssue'
                 placeholder='Full Name'
                 // ref={ref}
+                id='cardholder-name'
+                name='cardholderName'
                 type='text'
+                autoComplete='cc-name'
               />
               <InputLabel>{'Card Number'}</InputLabel>
               <NewIssueInput
@@ -129,11 +146,45 @@ const Billing = () => {
                 // onBlur={handleCreateNewIssue}
                 // onChange={onChange}
                 maxLength={255}
-                name='newIssue'
                 placeholder='1234 5678 8765 4321'
                 // ref={ref}
+                id='card-number'
+                name='cardNumber'
                 type='text'
+                autoComplete='cc-number'
               />
+              <InputWrapper>
+                <InputBlock>
+                  <InputLabel>{'Expiry Date'}</InputLabel>
+                  <NewIssueInput
+                    autoFocus
+                    // onBlur={handleCreateNewIssue}
+                    // onChange={onChange}
+                    maxLength={16}
+                    placeholder='MM/YY'
+                    // ref={ref}
+                    id='expiry'
+                    name='expiry'
+                    type='text'
+                    autoComplete='cc-exp'
+                  />
+                </InputBlock>
+                <InputBlock>
+                  <InputLabel>{'CVV'}</InputLabel>
+                  <NewIssueInput
+                    autoFocus
+                    // onBlur={handleCreateNewIssue}
+                    // onChange={onChange}
+                    maxLength={4}
+                    placeholder='123'
+                    // ref={ref}
+                    id='cvv'
+                    name='cvv'
+                    type='text'
+                    autoComplete='cc-csc'
+                  />
+                </InputBlock>
+              </InputWrapper>
             </Form>
           </Content>
         </Plan>
