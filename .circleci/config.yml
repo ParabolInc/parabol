@@ -17,7 +17,6 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Production` PostgreSQL backup..."}' $SLACK_DEVOPS_URL
-      - checkout
       - run:
           name: DevOps checkout
           command: |
@@ -26,8 +25,7 @@ jobs:
           name: Backup
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
-            $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
+            . $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
       - run:
           name: Slack completion
           command: |
@@ -50,7 +48,6 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Staging` PostgreSQL wipe out and restore..."}' $SLACK_DEVOPS_URL
-      - checkout
       - run:
           name: DevOps checkout
           command: |
@@ -59,8 +56,7 @@ jobs:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
+            . $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
       - run:
           name: Slack completion
           command: |
@@ -84,11 +80,6 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` Backing up..."}' $SLACK_DEVOPS_URL
-      - checkout
-      - run:
-          name: DevOps checkout
-          command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
           no_output_timeout: 55m
@@ -119,11 +110,6 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Staging` RethinkDB wipe out and restore..."}' $SLACK_DEVOPS_URL
-      - checkout
-      - run:
-          name: DevOps checkout
-          command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Fetch last Production backup
           no_output_timeout: 55m
