@@ -116,6 +116,7 @@
   },
   "dependencies": {
     "dotenv": "8.0.0",
-    "dotenv-expand": "5.1.0"
+    "dotenv-expand": "5.1.0",
+    "rethinkdb-ts-migrate": "^0.3.6"
   }
 }
