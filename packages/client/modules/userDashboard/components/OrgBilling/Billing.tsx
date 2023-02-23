@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Error as ErrorIcon} from '@mui/icons-material'
 import {Divider} from '@mui/material'
+import Cleave from 'cleave.js/react'
 import React, {useEffect, useState} from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -106,6 +107,21 @@ const Form = styled('form')({
 })
 
 const StyledInput = styled('input')({
+  appearance: 'none',
+  background: PALETTE.SLATE_200,
+  border: 'none',
+  borderBottom: `1px solid ${PALETTE.SLATE_400}`,
+  color: PALETTE.SLATE_800,
+  fontSize: 16,
+  marginBottom: 16,
+  padding: '12px 16px',
+  outline: 0,
+  '::placeholder': {
+    color: PALETTE.SLATE_600
+  }
+})
+
+const CardNumberInput = styled(Cleave)({
   appearance: 'none',
   background: PALETTE.SLATE_200,
   border: 'none',
@@ -251,15 +267,15 @@ const Billing = () => {
                 autoComplete='cc-name'
               />
               <InputLabel>{'Card Number'}</InputLabel>
-              <StyledInput
-                maxLength={255}
+              <CardNumberInput
+                options={{creditCard: true}}
+                autoComplete='cc-number'
+                id='card-number'
                 placeholder='1234 5678 8765 4321'
+                name={'cardNumber'}
                 onBlur={() => setDirtyField('cardNumber')}
                 onChange={onChange}
-                id='card-number'
-                name={'cardNumber'}
                 type='text'
-                autoComplete='cc-number'
               />
               <InputWrapper>
                 <InputBlock>
