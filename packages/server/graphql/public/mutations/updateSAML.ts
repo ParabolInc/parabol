@@ -1,9 +1,12 @@
 import getRethink from '../../../database/rethinkDriver'
+import {getUserId} from '../../../utils/authorization'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import getSignOnURL from './helpers/SAMLHelpers/getSignOnURL'
 
-const updateSAML: MutationResolvers['updateSAML'] = async (_source, {orgId, metadata}, {}) => {
+const updateSAML: MutationResolvers['updateSAML'] = async (_source, {orgId, metadata}, {authToken}) => {
   const r = await getRethink()
+  const viewerId = getUserId(authToken)
 
   // RESOLUTION
   const samlRecord = await r
@@ -15,11 +18,11 @@ const updateSAML: MutationResolvers['updateSAML'] = async (_source, {orgId, meta
     .run()
 
   if (!samlRecord) {
-    return {error: {message: 'SAML has not been created in Parabol yet.'}}
+    return standardError(new Error('SAML has not been created in Parabol yet'), {userId: viewerId})
   }
 
   const url = metadata ? getSignOnURL(metadata, samlRecord.id) : null
-  if (url instanceof Error) return {error: {message: url.message}}
+  if (url instanceof Error) return standardError(new Error(url.message), {userId: viewerId})
 
   await r
     .table('SAML')

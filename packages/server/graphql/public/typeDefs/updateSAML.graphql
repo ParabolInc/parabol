@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  Updates a SAML record based on the provided organization ID. Can also be used to enable or disable Single Sign-On (SSO) functionality.
   """
   updateSAML(
     """
@@ -22,7 +22,7 @@ union UpdateSAMLPayload = ErrorPayload | UpdateSAMLSuccess
 
 type UpdateSAMLSuccess {
   """
-  Describe the first return field here
+  True if the mutation was successfully executed
   """
   success: Boolean!
 }
