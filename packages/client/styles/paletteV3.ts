@@ -4,9 +4,9 @@
 //       We try to only use the limited palette, but weighted variants
 //       can help with subtle color changes in states like hover, or disabled.
 //       The limited palette is here:
-//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id:15%3A366
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A366
 //       The expanded palette is here:
-//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id:15%3A2184
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A2184
 
 import tailwindPreset from '../tailwind.preset.js'
 
@@ -30,7 +30,7 @@ export const PALETTE = {
   GRADIENT_TOMATO_700_ROSE_600: `linear-gradient(to right, ${colors.tomato[700]} 0, ${colors.rose[600]} 100%)`, // hover: TOMATO_700 to ROSE_600
   GRADIENT_TOMATO_400_ROSE_300: `linear-gradient(to right, ${colors.tomato[400]} 0, ${colors.rose[300]} 100%)`, // disabled: TOMATO_400 to ROSE_300
 
-  GRAPE_500_30: '#A06BD64D',
+  GRAPE_500_30: `${colors.grape[500]}4D`,
 
   GRAPE_500: colors.grape[500],
   GRAPE_600: colors.grape[600],
@@ -39,7 +39,7 @@ export const PALETTE = {
 
   GRASS_300: colors.grass[300],
 
-  JADE_400_30: '#66BC8C4D',
+  JADE_400_30: `${colors.jade[400]}4D`,
 
   JADE_500: colors.jade[500],
   JADE_400: colors.jade[400],
@@ -54,7 +54,7 @@ export const PALETTE = {
   SKY_500: colors.sky[500],
   SKY_600: colors.sky[600],
 
-  SKY_500_30: '#329AE54D',
+  SKY_500_30: `${colors.sky[500]}4D`,
 
   SLATE_100: colors.slate[100],
   SLATE_200: colors.slate[200],
@@ -66,9 +66,9 @@ export const PALETTE = {
   SLATE_800: colors.slate[800],
   SLATE_900: colors.slate[900],
 
-  SLATE_700_30: '#4442584D', // SLATE_700 at 30% opacity
-  SLATE_700_80: '#444258CD', // SLATE_700 at ~80% opacity
-  SLATE_900_32: '#1C1C2152', // SLATE_900 at 32% opacity
+  SLATE_700_30: `${colors.slate[700]}4D`, // SLATE_700 at 30% opacity
+  SLATE_700_80: `${colors.slate[700]}CD`, // SLATE_700 at ~80% opacity
+  SLATE_900_32: `${colors.slate[900]}52`, // SLATE_900 at 32% opacity
 
   TERRA_300: colors.terra[300],
   TERRA_500: colors.terra[500],
