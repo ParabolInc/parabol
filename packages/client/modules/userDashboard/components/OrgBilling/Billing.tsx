@@ -18,11 +18,7 @@ const StyledPanel = styled(Panel)({
 const StyledRow = styled(Row)({
   padding: '12px 16px',
   display: 'flex',
-  flex: 1,
   alignItems: 'flex-start',
-  ':first-of-type': {
-    paddingTop: 16
-  },
   ':nth-of-type(2)': {
     border: 'none'
   }
@@ -35,7 +31,6 @@ const Plan = styled('div')({
   textTransform: 'capitalize',
   textAlign: 'center',
   display: 'flex',
-  flex: 1,
   padding: '0px 16px 16px 16px',
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
@@ -64,7 +59,6 @@ const LineIcon = styled('div')({
 })
 
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
-  flexGrow: 1,
   background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
   color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
   boxShadow: 'none',
@@ -85,7 +79,7 @@ const Title = styled('div')({
   textAlign: 'center',
   display: 'flex',
   width: '100%',
-  paddingBottom: 8,
+  paddingBottom: 16,
   justifyContent: 'flex-start'
 })
 
@@ -103,7 +97,6 @@ const Subtitle = styled('div')({
 
 const Content = styled('div')({
   width: '100%'
-  // paddingTop: 16
 })
 
 const Form = styled('form')({
@@ -120,7 +113,7 @@ const StyledInput = styled('input')({
   color: PALETTE.SLATE_800,
   fontSize: 16,
   marginBottom: 16,
-  padding: 16,
+  padding: '12px 16px',
   outline: 0,
   '::placeholder': {
     color: PALETTE.SLATE_600
@@ -151,7 +144,6 @@ const InputWrapper = styled('div')({
   display: 'flex',
   width: '100%',
   flexWrap: 'nowrap',
-  flex: 1,
   justifyContent: 'space-between'
 })
 
@@ -163,7 +155,8 @@ const InputBlock = styled('div')({
 
 const TotalBlock = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
+  paddingTop: 16
 })
 
 const ActiveUserBlock = styled('div')({
@@ -174,7 +167,6 @@ const Error = styled('div')<{isError: boolean}>(({isError}) => ({
   alignItems: 'center',
   color: isError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
   display: isError ? 'flex' : 'none',
-  flex: 1,
   lineHeight: '24px'
 }))
 
@@ -323,8 +315,8 @@ const Billing = () => {
                 {'Active users are anyone who uses Parabol within a billing period'}
               </InfoText>
               <Subtitle>{'27'}</Subtitle>
-              <Divider />
             </ActiveUserBlock>
+            <Divider />
             <TotalBlock>
               <Subtitle>{'Total'}</Subtitle>
               <Subtitle>{'$162.00'}</Subtitle>
