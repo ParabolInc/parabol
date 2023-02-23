@@ -4,79 +4,84 @@
 //       We try to only use the limited palette, but weighted variants
 //       can help with subtle color changes in states like hover, or disabled.
 //       The limited palette is here:
-//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A366
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id:15%3A366
 //       The expanded palette is here:
-//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A2184
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id:15%3A2184
 
-export const enum PALETTE {
-  AQUA_400 = '#55C0CF',
+import tailwindPreset from '../tailwind.preset.js'
 
-  FOREST_400 = '#73A153',
+const {colors} = tailwindPreset.theme
 
-  FUSCIA_400 = '#DB70DB',
+export const PALETTE = {
+  AQUA_400: colors.aqua[400],
 
-  GOLD_100 = '#FAEBD3',
-  GOLD_200 = '#FADC9E',
-  GOLD_300 = '#FFCC63',
-  GOLD_500 = '#DE8E02',
-  GOLD_700 = '#855000',
-  GOLD_HIGHLIGHT = '#FBDA95',
+  FOREST_400: colors.forest[400],
 
-  GRADIENT_TOMATO_600_ROSE_500 = 'linear-gradient(to right, #F23B31 0, #ED4C86 100%)', // default: TOMATO_600 to ROSE_500
-  GRADIENT_TOMATO_700_ROSE_600 = 'linear-gradient(to right, #D5211A 0, #EB195F 100%)', // hover: TOMATO_700 to ROSE_600
-  GRADIENT_TOMATO_400_ROSE_300 = 'linear-gradient(to right, #FD7F77 0, #F099BF 100%)', // disabled: TOMATO_400 to ROSE_300
+  FUSCIA_400: colors.fuscia[400],
 
-  GRAPE_500_30 = '#A06BD64D',
+  GOLD_100: colors.gold[100],
+  GOLD_200: colors.gold[200],
+  GOLD_300: colors.gold[300],
+  GOLD_500: colors.gold[500],
+  GOLD_700: colors.gold[700],
+  GOLD_HIGHLIGHT: colors.gold[500],
 
-  GRAPE_500 = '#A06BD6',
-  GRAPE_600 = '#7340B5',
-  GRAPE_700 = '#493272',
-  GRAPE_800 = '#2D1D53',
+  GRADIENT_TOMATO_600_ROSE_500: `linear-gradient(to right, ${colors.tomato[600]} 0, ${colors.rose[500]} 100%)`, // default: TOMATO_600 to ROSE_500
+  GRADIENT_TOMATO_700_ROSE_600: `linear-gradient(to right, ${colors.tomato[700]} 0, ${colors.rose[600]} 100%)`, // hover: TOMATO_700 to ROSE_600
+  GRADIENT_TOMATO_400_ROSE_300: `linear-gradient(to right, ${colors.tomato[400]} 0, ${colors.rose[300]} 100%)`, // disabled: TOMATO_400 to ROSE_300
 
-  GRASS_300 = '#C4CF66',
+  GRAPE_500_30: '#A06BD64D',
 
-  JADE_400_30 = '#66BC8C4D',
+  GRAPE_500: colors.grape[500],
+  GRAPE_600: colors.grape[600],
+  GRAPE_700: colors.grape[700],
+  GRAPE_800: colors.grape[800],
 
-  JADE_500 = '#116931',
-  JADE_400 = '#66BC8C',
-  JADE_300 = '#91E8B7',
+  GRASS_300: colors.grass[300],
 
-  LILAC_500 = '#7272E5',
+  JADE_400_30: '#66BC8C4D',
 
-  ROSE_500 = '#ED4C86',
+  JADE_500: colors.jade[500],
+  JADE_400: colors.jade[400],
+  JADE_300: colors.jade[300],
 
-  SKY_300 = '#8EC7F1',
-  SKY_400 = '#61B1EB',
-  SKY_500_30 = '#329AE54D',
-  SKY_500 = '#329AE5',
-  SKY_600 = '#14649E',
+  LILAC_500: colors.lilac[500],
 
-  SLATE_100 = '#F8F7FC',
-  SLATE_200 = '#F1F0FA',
-  SLATE_300 = '#E0DDEC',
-  SLATE_400 = '#C3C0D8',
-  SLATE_500 = '#A7A3C2',
-  SLATE_600 = '#82809A',
-  SLATE_700 = '#444258',
-  SLATE_800 = '#2D2D39',
-  SLATE_900 = '#1C1C21',
+  ROSE_500: colors.rose[500],
 
-  SLATE_700_30 = '#4442584D', // SLATE_700 at 30% opacity
-  SLATE_700_80 = '#444258CD', // SLATE_700 at ~80% opacity
-  SLATE_900_32 = '#1C1C2152', // SLATE_900 at 32% opacity
+  SKY_300: colors.sky[300],
+  SKY_400: colors.sky[400],
+  SKY_500: colors.sky[500],
+  SKY_600: colors.sky[600],
 
-  TERRA_300 = '#FE975D',
-  TERRA_500 = '#D35D22',
+  SKY_500_30: '#329AE54D',
 
-  TOMATO_100 = '#FFE2E0',
-  TOMATO_200 = '#FFC1BD',
-  TOMATO_400 = '#FD7F77',
-  TOMATO_500 = '#FD6157',
-  TOMATO_600 = '#F23B31',
-  TOMATO_700 = '#D5211A',
-  TOMATO_800 = '#9F201E',
+  SLATE_100: colors.slate[100],
+  SLATE_200: colors.slate[200],
+  SLATE_300: colors.slate[300],
+  SLATE_400: colors.slate[400],
+  SLATE_500: colors.slate[500],
+  SLATE_600: colors.slate[600],
+  SLATE_700: colors.slate[700],
+  SLATE_800: colors.slate[800],
+  SLATE_900: colors.slate[900],
 
-  WHITE = '#FFFFFF',
+  SLATE_700_30: '#4442584D', // SLATE_700 at 30% opacity
+  SLATE_700_80: '#444258CD', // SLATE_700 at ~80% opacity
+  SLATE_900_32: '#1C1C2152', // SLATE_900 at 32% opacity
 
-  SUCCESS_LIGHT = '#2db553'
+  TERRA_300: colors.terra[300],
+  TERRA_500: colors.terra[500],
+
+  TOMATO_100: colors.tomato[100],
+  TOMATO_200: colors.tomato[200],
+  TOMATO_400: colors.tomato[400],
+  TOMATO_500: colors.tomato[500],
+  TOMATO_600: colors.tomato[600],
+  TOMATO_700: colors.tomato[700],
+  TOMATO_800: colors.tomato[800],
+
+  WHITE: colors.white,
+
+  SUCCESS_LIGHT: '#2db553'
 }

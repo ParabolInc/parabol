@@ -10,7 +10,7 @@ export const taskStatusLabels: Record<TaskStatus, TaskStatusLabel> = {
   [TaskStatus.PRIVATE]: TaskStatusLabel.PRIVATE
 } as const
 
-export const taskStatusColors: Record<TaskStatus, PALETTE> = {
+export const taskStatusColors: Record<TaskStatus, string> = {
   [TaskStatus.DONE]: PALETTE.GRAPE_600,
   [TaskStatus.ACTIVE]: PALETTE.JADE_400,
   [TaskStatus.STUCK]: PALETTE.TOMATO_500,
