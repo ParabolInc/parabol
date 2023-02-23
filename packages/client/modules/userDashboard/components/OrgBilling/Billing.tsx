@@ -38,7 +38,6 @@ const Plan = styled('div')({
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
   padding: '16px',
-  height: 400,
   borderRadius: 4,
   width: '50%',
   overflow: 'hidden'
@@ -68,6 +67,7 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
   color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
   boxShadow: 'none',
+  marginTop: 16,
   elevation: 0,
   '&:hover': {
     boxShadow: 'none',
@@ -141,10 +141,9 @@ const InputBlock = styled('div')({
 const Error = styled('div')<{isError: boolean}>(({isError}) => ({
   alignItems: 'center',
   color: isError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
-  display: 'flex',
+  display: isError ? 'flex' : 'none',
   flex: 1,
-  lineHeight: '24px',
-  minHeight: 24
+  lineHeight: '24px'
 }))
 
 const Message = styled('div')({
