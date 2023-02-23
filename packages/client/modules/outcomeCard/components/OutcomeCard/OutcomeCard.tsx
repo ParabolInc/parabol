@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {memo, RefObject} from 'react'
+import React, {memo, RefObject, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
@@ -9,10 +9,12 @@ import {LocalStorageKey} from '~/types/constEnums'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
+import IntegrationBanner from '../../../../components/TaskEditor/IntegrationBanner'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useIntegrationBanner from '../../../../hooks/useIntegrationBanner'
+import useIntegrationProviders, {Integration} from '../../../../hooks/useIntegrationProviders'
 import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -99,46 +101,62 @@ const OutcomeCard = memo((props: Props) => {
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
-  const atmosphere = useAtmosphere()
-  const hasGithubIntegration = integration?.__typename === 'GitHubIntegration'
-  const text = editorState.getCurrentContent().getPlainText()
-  const hasGithubLink = text.split(' ').some((word: string) => /github.com/.test(word))
+  const intergrationProviders = useIntegrationProviders(teamId)
+  const activeIntegration = useIntegrationBanner(editorState, intergrationProviders)
 
-  const showIntergrationBanner = !hasGithubIntegration && hasGithubLink
-  const dismissGitHubIntergration = window.localStorage.getItem(
-    LocalStorageKey.DISMISS_GITHUB_INTERGRATION
+  const dismissedIntergrations: string | null = localStorage.getItem(
+    LocalStorageKey.DISMISSED_INTERGRATIONS
   )
 
-  const [intergrationBanner, setIntergrationBanner] = React.useState<boolean>(() => {
-    if (dismissGitHubIntergration) {
-      const {
-        integration,
-        showIntergrationBanner: showIntergrationBannerFromStorage,
-        userId
-      } = JSON.parse(dismissGitHubIntergration)
-      if (integration === 'GitHubIntegration' && userId === atmosphere.viewerId) {
-        return showIntergrationBannerFromStorage
-      }
-    }
-    return showIntergrationBanner
-  })
+  const [showBanner, setShowBanner] = useState<boolean>(false)
 
-  const handleDismissIntergrationBanner = () => {
-    setIntergrationBanner((state) => !state)
-    window.localStorage.setItem(
-      LocalStorageKey.DISMISS_GITHUB_INTERGRATION,
-      JSON.stringify({
-        integration: 'GitHubIntegration',
-        showIntergrationBanner: false,
-        userId: atmosphere.viewerId
-      })
-    )
+  const handleOnDismiss = () => {
+    const defaultValue = {integrations: []}
+    const dismissedIntergrationsString = dismissedIntergrations ?? JSON.stringify(defaultValue)
+    const savedIntegrations = JSON.parse(dismissedIntergrationsString)
+
+    savedIntegrations.integrations.push(activeIntegration)
+
+    localStorage.setItem(LocalStorageKey.DISMISSED_INTERGRATIONS, JSON.stringify(savedIntegrations))
+
+    setShowBanner(false)
   }
 
-  const handleBannerVisbilityOnPaste = (action: boolean) => {
-    if (!dismissGitHubIntergration) {
-      setIntergrationBanner(action)
+  React.useEffect(() => {
+    setShowBanner(shouldShowBanner(dismissedIntergrations, activeIntegration))
+  }, [activeIntegration])
+
+  function shouldShowBanner(
+    dismissedIntegrations: string | null,
+    integrations?: Integration | null
+  ): boolean {
+    if (!dismissedIntegrations) {
+      return !activeIntegration?.connected
     }
+
+    const dismissedIntegrationsList = JSON.parse(dismissedIntegrations)
+
+    const isDismissed = dismissedIntegrationsList.integrations.some(
+      (dismissedIntegration: Integration) => {
+        return dismissedIntegration.name === integrations?.name
+      }
+    )
+
+    if (isDismissed) {
+      return false
+    }
+
+    return true
+  }
+
+  const renderIntegrationBanner = () => {
+    return showBanner && activeIntegration ? (
+      <IntegrationBanner
+        integration={activeIntegration}
+        onDismiss={handleOnDismiss}
+        teamId={teamId}
+      />
+    ) : null
   }
 
   return (
@@ -179,9 +197,7 @@ const OutcomeCard = memo((props: Props) => {
               setEditorState={setEditorState}
               teamId={teamId}
               useTaskChild={useTaskChild}
-              showIntergrationBanner={intergrationBanner}
-              handleDismissIntergrationBanner={handleDismissIntergrationBanner}
-              handleBannerVisbilityOnPaste={handleBannerVisbilityOnPaste}
+              renderIntegrationBanner={renderIntegrationBanner}
             />
           </TaskEditorWrapper>
         )}

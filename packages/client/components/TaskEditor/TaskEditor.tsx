@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {Close} from '@mui/icons-material'
 import {
   DraftEditorCommand,
   DraftHandleValue,
@@ -11,16 +10,12 @@ import {
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import completeEntity from '~/utils/draftjs/completeEntity'
 import linkify from '~/utils/linkify'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import useMutationProps, {MenuMutationProps} from '../../hooks/useMutationProps'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import {PALETTE} from '../../styles/paletteV3'
 import {AriaLabels, Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
-import GitHubClientManager from '../../utils/GitHubClientManager'
 import lazyPreload from '../../utils/lazyPreload'
 import blockStyleFn from './blockStyleFn'
 import './Draft.css'
@@ -35,34 +30,6 @@ const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined
     height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
   })
 )
-
-const SuggestIntergration = styled('div')({
-  display: 'flex',
-  flexDirection: 'row',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: '4px',
-  marginTop: '8px',
-  padding: '8px 6px'
-})
-
-const Link = styled('span')({
-  color: PALETTE.SLATE_800,
-  cursor: 'pointer',
-  textDecoration: 'underline',
-  fontWeight: 600,
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_600
-  }
-})
-
-const SuggestionContent = styled('div')({
-  padding: 0
-})
-
-const StyledIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer'
-})
 
 const AndroidEditorFallback = lazyPreload(
   () => import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
@@ -89,9 +56,7 @@ interface Props extends DraftProps {
   useTaskChild: UseTaskChild
   dataCy: string
   className?: string
-  showIntergrationBanner?: boolean
-  handleDismissIntergrationBanner?: () => void
-  handleBannerVisbilityOnPaste?: (action: boolean) => void
+  renderIntegrationBanner?: () => JSX.Element | null
 }
 
 const TaskEditor = (props: Props) => {
@@ -102,10 +67,7 @@ const TaskEditor = (props: Props) => {
     setEditorState,
     dataCy,
     className,
-    teamId,
-    showIntergrationBanner,
-    handleDismissIntergrationBanner,
-    handleBannerVisbilityOnPaste
+    renderIntegrationBanner
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
@@ -117,9 +79,6 @@ const TaskEditor = (props: Props) => {
     keyBindingFn,
     handleReturn
   } = useTaskPlugins({...props})
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
-  const atmosphere = useAtmosphere()
 
   useEffect(() => {
     if (!editorState.getCurrentContent().hasText()) {
@@ -219,8 +178,6 @@ const TaskEditor = (props: Props) => {
     const trimmedText = text.trim()
 
     if (url === trimmedText) {
-      handleBannerVisbilityOnPaste && handleBannerVisbilityOnPaste(/github.com/.test(url))
-
       const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
         keepSelection: true
       })
@@ -234,10 +191,6 @@ const TaskEditor = (props: Props) => {
   const placeholder = 'Describe what “Done” looks like'
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
-
-  const openOAuth = () => {
-    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
-  }
 
   return (
     <RootEditor
@@ -274,16 +227,7 @@ const TaskEditor = (props: Props) => {
           ref={editorRef as any}
         />
       )}
-      {showIntergrationBanner && (
-        <SuggestIntergration>
-          <SuggestionContent>
-            <Link onClick={openOAuth}>Connect Parabol to GitHub</Link> for a more streamlined
-            expreince.
-          </SuggestionContent>
-          <StyledIcon onClick={handleDismissIntergrationBanner} />
-        </SuggestIntergration>
-      )}
-
+      {renderIntegrationBanner && renderIntegrationBanner()}
       {renderModal && renderModal()}
     </RootEditor>
   )

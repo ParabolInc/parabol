@@ -200,7 +200,7 @@ export const enum LocalStorageKey {
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
   ERROR_PRONE_AT = 'errorProneAt',
-  DISMISS_GITHUB_INTERGRATION = 'dismissGithubIntergration'
+  DISMISSED_INTERGRATIONS = 'dismissedIntergrations'
 }
 
 export const enum LOCKED_MESSAGE {
@@ -298,6 +298,15 @@ export const enum Providers {
   AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol',
   MSTEAMS_NAME = 'Microsoft Teams',
   MSTEAMS_DESC = 'Push notifications to Microsoft Teams'
+}
+
+export const enum IntegrationProviders {
+  ATLASSIAN = 'Atlassian',
+  GITHUB = 'GitHub',
+  GITLAB = 'GitLab',
+  JIRA_SERVER = 'Jira Server',
+  SLACK = 'Slack',
+  AZURE_DEVOPS = 'Azure DevOps'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
