@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import {Error as ErrorIcon} from '@mui/icons-material'
+import {Divider} from '@mui/material'
 import React, {useEffect, useState} from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -18,6 +19,7 @@ const StyledRow = styled(Row)({
   padding: '12px 16px',
   display: 'flex',
   flex: 1,
+  alignItems: 'flex-start',
   ':first-of-type': {
     paddingTop: 16
   },
@@ -34,10 +36,9 @@ const Plan = styled('div')({
   textAlign: 'center',
   display: 'flex',
   flex: 1,
-  margin: '0 8px',
+  padding: '0px 16px 16px 16px',
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
-  padding: '16px',
   borderRadius: 4,
   width: '50%',
   overflow: 'hidden'
@@ -50,7 +51,7 @@ const Heading = styled('span')<{isBold?: boolean}>(({isBold}) => ({
 }))
 
 const HeadingBlock = styled('div')({
-  padding: '16px'
+  padding: '16px 16px 0px 16px'
 })
 
 const LineIcon = styled('div')({
@@ -88,15 +89,27 @@ const Title = styled('div')({
   justifyContent: 'flex-start'
 })
 
+const Subtitle = styled('div')({
+  color: PALETTE.SLATE_800,
+  fontSize: 16,
+  fontWeight: 600,
+  lineHeight: '30px',
+  textTransform: 'capitalize',
+  textAlign: 'center',
+  display: 'flex',
+  paddingBottom: 8,
+  justifyContent: 'flex-start'
+})
+
 const Content = styled('div')({
   width: '100%'
+  // paddingTop: 16
 })
 
 const Form = styled('form')({
   display: 'flex',
   flexDirection: 'column',
-  width: '100%',
-  paddingTop: 16
+  width: '100%'
 })
 
 const StyledInput = styled('input')({
@@ -124,6 +137,16 @@ const InputLabel = styled('span')({
   textTransform: 'uppercase'
 })
 
+const InfoText = styled('span')({
+  display: 'block',
+  fontSize: 12,
+  fontWeight: 600,
+  textAlign: 'left',
+  paddingBottom: 4,
+  color: PALETTE.SLATE_600,
+  textTransform: 'none'
+})
+
 const InputWrapper = styled('div')({
   display: 'flex',
   width: '100%',
@@ -136,6 +159,15 @@ const InputBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   width: '47%'
+})
+
+const TotalBlock = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between'
+})
+
+const ActiveUserBlock = styled('div')({
+  paddingTop: 16
 })
 
 const Error = styled('div')<{isError: boolean}>(({isError}) => ({
@@ -183,7 +215,6 @@ const Billing = () => {
     (expiry.dirty && expiry.error) ||
     (cvc.dirty && cvc.error)
   const canSubmit = !!(!error && cardName.value && cardNumber.value && expiry.value && cvc.value)
-  console.log('🚀 ~ canSubmit', {canSubmit, error, cardName, cardNumber, expiry, cvc})
 
   useEffect(() => {
     if (isStripeLoaded) {
@@ -212,8 +243,8 @@ const Billing = () => {
       </StyledRow>
       <StyledRow>
         <Plan>
+          <Title>{'Credit Card Details'}</Title>
           <Content>
-            <Title>{'Credit Card Details'}</Title>
             <Form>
               <InputLabel>{'Cardholder Name'}</InputLabel>
               <StyledInput
@@ -273,7 +304,6 @@ const Billing = () => {
               <UpgradeButton
                 size='medium'
                 onClick={handleSubmit}
-                // waiting={submitting}
                 isDisabled={!canSubmit}
                 type={'submit'}
               >
@@ -283,8 +313,23 @@ const Billing = () => {
           </Content>
         </Plan>
         <Plan>
+          <Title>{'Team Plan Pricing'}</Title>
           <Content>
-            <Title>{'Team Plan Pricing'}</Title>
+            <InputLabel>{'Billing Cycle'}</InputLabel>
+            <Subtitle>{'Monthly'}</Subtitle>
+            <ActiveUserBlock>
+              <InputLabel>{'Active Users'}</InputLabel>
+              <InfoText>
+                {'Active users are anyone who uses Parabol within a billing period'}
+              </InfoText>
+              <Subtitle>{'27'}</Subtitle>
+              <Divider />
+            </ActiveUserBlock>
+            <TotalBlock>
+              <Subtitle>{'Total'}</Subtitle>
+              <Subtitle>{'$162.00'}</Subtitle>
+            </TotalBlock>
+            <InfoText>{'All prices are in USD'}</InfoText>
           </Content>
         </Plan>
       </StyledRow>
