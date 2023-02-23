@@ -4,7 +4,7 @@ import TeamMember from '../../../../database/types/TeamMember'
 import {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 import {InputMaybe} from '../../resolverTypes'
-import {getTeamsByOrgIds} from '../Company'
+import {getTeamsByOrgIds} from './getTeamsByOrgIds'
 
 const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
 
