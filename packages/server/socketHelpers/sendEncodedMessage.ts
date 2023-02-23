@@ -1,4 +1,5 @@
 import {HttpResponse, WebSocket} from 'uWebSockets.js'
+import {SocketUserData} from '../socketHandlers/handleOpen'
 import sendSSEMessage from '../sse/sendSSEMessage'
 import ConnectionContext from './ConnectionContext'
 import isHttpResponse from './isHttpResponse'
@@ -12,7 +13,10 @@ const sendAndPushToReliableQueue = (context: ConnectionContext, mid: number, mes
   reliableQueue[mid] = message
 }
 
-const sendEncodedMessageBasedOnSocket = (socket: WebSocket | HttpResponse, message: string) => {
+const sendEncodedMessageBasedOnSocket = (
+  socket: WebSocket<SocketUserData> | HttpResponse,
+  message: string
+) => {
   isHttpResponse(socket)
     ? sendSSEMessage(socket as HttpResponse, message)
     : socket.send(message, false, message.length > ESTIMATED_MTU)
@@ -20,7 +24,7 @@ const sendEncodedMessageBasedOnSocket = (socket: WebSocket | HttpResponse, messa
 
 const sendEncodedMessage = (context: ConnectionContext, object: any, syn = false) => {
   const {socket} = context
-  if (socket.done) return
+  if (socket.getUserData().done) return
 
   if (syn) {
     const mid = context.getMid()

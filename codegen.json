@@ -40,6 +40,7 @@
           "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
           "UpdateFeatureFlagPayload": "./types/UpdateFeatureFlagPayload#UpdateFeatureFlagPayloadSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
+          "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
