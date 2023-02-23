@@ -4,6 +4,8 @@ import React from 'react'
 import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
@@ -154,6 +156,10 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
 }))
 
 const OrgPlans = () => {
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.LOWER_CENTER
+  )
+
   const plans = [
     {
       tier: 'starter',
@@ -201,10 +207,19 @@ const OrgPlans = () => {
                 {plan.tier === 'team' ? (
                   <>
                     <PlanSubtitle>
-                      {'$6 per active member '}
-                      <StyledIcon>{<Info />}</StyledIcon>
+                      {'$6 per active user '}
+                      <StyledIcon
+                        ref={originRef}
+                        onMouseOver={openTooltip}
+                        onMouseOut={closeTooltip}
+                      >
+                        {<Info />}
+                      </StyledIcon>
                     </PlanSubtitle>
                     <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                    {tooltipPortal(
+                      'Active users are anyone who uses Parabol within a billing period'
+                    )}
                   </>
                 ) : (
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
