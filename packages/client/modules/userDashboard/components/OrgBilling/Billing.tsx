@@ -121,7 +121,7 @@ const StyledInput = styled('input')({
   }
 })
 
-const CardNumberInput = styled(Cleave)({
+const CleaveInput = styled(Cleave)({
   appearance: 'none',
   background: PALETTE.SLATE_200,
   border: 'none',
@@ -151,7 +151,7 @@ const InfoText = styled('span')({
   fontSize: 12,
   fontWeight: 600,
   textAlign: 'left',
-  paddingBottom: 4,
+  paddingBottom: 8,
   color: PALETTE.SLATE_600,
   textTransform: 'none'
 })
@@ -257,7 +257,7 @@ const Billing = () => {
               <InputLabel>{'Cardholder Name'}</InputLabel>
               <StyledInput
                 autoFocus
-                maxLength={255}
+                maxLength={80}
                 placeholder='Full Name'
                 onBlur={() => setDirtyField('cardName')}
                 onChange={onChange}
@@ -267,7 +267,7 @@ const Billing = () => {
                 autoComplete='cc-name'
               />
               <InputLabel>{'Card Number'}</InputLabel>
-              <CardNumberInput
+              <CleaveInput
                 options={{creditCard: true}}
                 autoComplete='cc-number'
                 id='card-number'
@@ -280,9 +280,10 @@ const Billing = () => {
               <InputWrapper>
                 <InputBlock>
                   <InputLabel>{'Expiry Date'}</InputLabel>
-                  <StyledInput
+                  <CleaveInput
                     maxLength={5}
                     placeholder='MM/YY'
+                    options={{date: true, datePattern: ['m', 'd']}}
                     onChange={onChange}
                     onBlur={() => setDirtyField('expiry')}
                     id='expiry'
@@ -293,12 +294,16 @@ const Billing = () => {
                 </InputBlock>
                 <InputBlock>
                   <InputLabel>{'CVV'}</InputLabel>
-                  <StyledInput
+                  <CleaveInput
                     maxLength={5}
                     placeholder='123'
                     onBlur={() => setDirtyField('cvc')}
                     onChange={onChange}
                     id='cvv'
+                    options={{
+                      blocks: [4],
+                      numericOnly: true
+                    }}
                     name={'cvc'}
                     type='text'
                     autoComplete='cc-csc'
