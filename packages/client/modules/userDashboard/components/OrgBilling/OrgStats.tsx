@@ -26,8 +26,8 @@ const StatBlock = styled('div')({
 
 const StatBlockNumber = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: 40,
-  lineHeight: '60px'
+  fontSize: 48,
+  lineHeight: '72px'
 })
 
 const StatBlockLabel = styled('div')({
