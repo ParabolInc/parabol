@@ -11,6 +11,7 @@ enum UserFlagEnum {
   aiSummary
   noMeetingHistoryLimit
   checkoutFlow
+  retrosInDisguise
 }
 
 """
@@ -26,6 +27,7 @@ type UserFeatureFlags {
   aiSummary: Boolean!
   noMeetingHistoryLimit: Boolean!
   checkoutFlow: Boolean!
+  retrosInDisguise: Boolean!
 }
 
 extend type Mutation {
