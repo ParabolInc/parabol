@@ -5,6 +5,112 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.92.0 2023-Feb-15
+
+### Fixed
+
+- fix: show invoice coupons in parabol (#7711)
+- chore: fix case-sensitive (#7749)
+- fix: yarn dev remove graphiql from dll (#7750)
+- fix(recurrence): Don't restart meetings on archived teams (#7747)
+- fix: 'Updated time/Created time' is not instantaneous on task cards (#7254)
+- fix: Fix server error when joining a team by invitation link (#7775)
+
+### Added
+
+- chore(teams-limit): send locked & warning email (#7637)
+- feat(recurrence): Stable link for meeting series (#7707)
+- feat(teams-limit): add 7 days reminder notification and snackbar (#7677)
+- feat(recurrence): Recurrence-specific meeting card (#7716)
+- feat(recurrence): Added advanced recurrence settings (#7585)
+- feat(checkout-flow): left sidebar (#7733)
+- feat: add seasonal retros (#7760)
+- feat(standups): added options menu tooltip (#7768)
+
+### Changed
+
+- chore: Invert meetingHistoryLimit feature flag (#7725)
+- chore: prevent new rethinkdb migrations in the database/migrations
+- chore(teams-limit): avoid showing nagging snackbar if the limit is fixed
+- chore: Switch to review stats package (#7753)
+- chore(metrics): Do not call identify() on feature flag changes (#7752)
+- feat: create bundles without node_modules (#7402)
+- chore: remove user feature flag (#7765)
+- chore: removed beta badge from standups (#7767)
+- chore(teams-limit): Remove scheduled jobs
+- chore(ai-summary): track no stats in Slack summary (#7759)
+- chore(dx): add updateCache function to dataLoader (#7758)
+
+## 6.91.1 2023-Feb-14
+
+### Fixed
+
+- Sometimes meetings could not be closed (#7769)
+
+## 6.91.0 2023-Feb-08
+
+### Fixed
+
+- Bundle tutorial thumbnail (#7742)
+- fix(ai-summary): summary references "the text" (#7739)
+- chore(deps): bump webpack, undici (#7737)
+- chore(deps): bump ua-parser-js from 0.7.31 to 0.7.33 (#7683)
+- chore(deps): bump deps to fix vulns (#7730)
+- chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
+- fix: Profile name length should have the upper limit (#7425)
+
+### Added
+
+- chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
+- chore(checkout-flow): add checkout feature flag (#7709)
+
+### Changed
+
+- chore: update team invite email (#7710)
+- chore(ai-summary): update meeting summary url (#7705)
+
+## 6.90.0 2023-February-1
+
+### Fixed
+
+- Use stripe invoice.paid event instead of invoice.payment_succeeded (#7690)
+- Renamed 'next activity' to 'current activity' in ended meeting badge (#7691)
+- Line breaks in comments now work on Android (#7438)
+- Added missing prompts in starfish retro template (#7660)
+- Fixed prompt highlight color does not cover the full-height of the column (#7416)
+- Delete empty groups (#7673)
+- chore(metrics): Add isPatient0 property to sign_up events emitted by GA4 (#7680)
+- fix: Meetings with invalid facilitator stage can now be opened and closed (#7675)
+
+### Changed
+
+- **ai-summary**: limit access to AI summaries (#7658)
+- Renamed "Timeline" to "History" (#7670)
+- Cleanup private \_legacy.graphql types (#7689)
+
+### Added
+
+- **ai-summary**: add summary to end meeting notification (#7659)
+- **search**: add search ability to meeting view (#7676)
+- **standups**: Email Summaries (#7649)
+- **teams-limit**: lock organization if limit the is exceeded for 30 days (#7606)
+- **teams-limit**: Add snackbar to usage stats enabled notification (#7601)
+- **teams-limit**: implement organization locked modal (#7645)
+
+## 6.89.0 2023-January-18
+
+### Fixed
+
+- fix: update non-anonymous Reflect description (#7651)
+- fix(ai-summary): remove AI comment from comment count (#7648)
+- fix(ai-summary): update Parabol AI picture (#7657)
+
+### Changed
+
+- chore(metrics): emit sign_up events from GA4 client side (#7635)
+- perf: moved global style creation outside of the render cycle (#7598)
+- chore: sendToSentry if unable to create topic summary (#7665)
+
 ## 6.88.0 2023-January-12
 
 ### Fixed

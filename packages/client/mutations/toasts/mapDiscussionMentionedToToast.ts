@@ -3,9 +3,11 @@ import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import fromStageIdToUrl from '../../utils/meetings/fromStageIdToUrl'
 import {mapDiscussionMentionedToToast_notification} from '../../__generated__/mapDiscussionMentionedToToast_notification.graphql'
+import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapDiscussionMentionedToToast_notification on NotifyDiscussionMentioned {
+    id
     author {
       id
       preferredName
@@ -13,7 +15,6 @@ graphql`
     meeting {
       id
       name
-      facilitatorStageId
       ...fromStageIdToUrl_meeting
     }
     discussion {
@@ -36,21 +37,19 @@ const mapDiscussionMentionedToToast = (
   {history}: OnNextHistoryContext
 ): Snack | null => {
   if (!notification) return null
-  const {meeting, author, discussion} = notification
+  const {id: notificationId, meeting, author, discussion} = notification
   const {preferredName: authorName} = author
-  const {id: meetingId, name: meetingName, facilitatorStageId} = meeting
+  const {id: meetingId, name: meetingName} = meeting
   const {stage} = discussion
   const {id: stageId, response} = stage ?? {}
 
-  const directUrl = stageId
-    ? fromStageIdToUrl(stageId, meeting, facilitatorStageId)
-    : `/meet/${meetingId}`
+  const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
   // thread, and do nothing if we are.
 
   return {
-    key: `discussionMentioned:${discussion.id}:${author.id}`,
+    key: makeNotificationToastKey(notificationId),
     autoDismiss: 10,
     message: `${authorName} mentioned you in a discussion in ${meetingName}.`,
     action: {

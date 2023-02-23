@@ -1,8 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ValueOf} from '../../../../client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
+import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
+import ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -10,7 +11,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
-  {dataLoader}: {dataLoader: DataLoaderWorker}
+  dataLoader: DataLoaderWorker
 ) => {
   // get the meeting
   // get the facilitator
@@ -35,19 +36,22 @@ const processMeetingStageTimeLimits = async (
   })
 }
 
-const jobProcessors = {
-  MEETING_STAGE_TIME_LIMIT_END: processMeetingStageTimeLimits
-}
+export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
 
-export type ScheduledJobUnion = Parameters<ValueOf<typeof jobProcessors>>[0]
-
-const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
+const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
-  const processor = jobProcessors[job.type]
-  processor(job, {dataLoader}).catch(console.log)
+
+  if (job.type === 'MEETING_STAGE_TIME_LIMIT_END') {
+    return processMeetingStageTimeLimits(
+      job as ScheduledJobMeetingStageTimeLimit,
+      dataLoader
+    ).catch(console.error)
+  } else if (job.type === 'LOCK_ORGANIZATION' || job.type === 'WARN_ORGANIZATION') {
+    return processTeamsLimitsJob(job as ScheduledTeamLimitsJob, dataLoader).catch(console.error)
+  }
 }
 
 const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
@@ -69,7 +73,7 @@ const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
     const {runAt} = job
     const timeout = Math.max(0, runAt.getTime() - now.getTime())
     setTimeout(() => {
-      processJob(job, {dataLoader}).catch(console.log)
+      processJob(job, dataLoader).catch(console.error)
     }, timeout)
   })
 

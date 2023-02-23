@@ -1,0 +1,29 @@
+extend type Mutation {
+  """
+  Updates the recurrence settings for a meeting
+  1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
+  2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
+  3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
+  """
+  updateRecurrenceSettings(
+    """
+    ID of the meeting to update recurrence settings for
+    """
+    meetingId: ID!
+    recurrenceRule: RRule
+  ): UpdateRecurrenceSettingsPayload!
+}
+
+"""
+Return value for updateRecurrenceSettings, which could be an error
+"""
+union UpdateRecurrenceSettingsPayload = UpdateRecurrenceSettingsSuccess | ErrorPayload
+
+type UpdateRecurrenceSettingsSuccess {
+  """
+  The updated meeting
+  """
+  meeting: TeamPromptMeeting!
+}
+
+extend union TeamSubscriptionPayload = UpdateRecurrenceSettingsSuccess

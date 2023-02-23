@@ -57,7 +57,6 @@ import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
 import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
-import {StartTeamPromptSuccess} from './StartTeamPromptPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import {UpdateAzureDevOpsDimensionFieldSuccess} from './UpdateAzureDevOpsDimensionFieldPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
@@ -97,7 +96,6 @@ const types = [
   StartNewMeetingPayload,
   StartRetrospectiveSuccess,
   StartSprintPokerSuccess,
-  StartTeamPromptSuccess,
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,
   UpdateTeamNamePayload,

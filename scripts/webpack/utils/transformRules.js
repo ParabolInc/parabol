@@ -44,7 +44,7 @@ const transformRules = (projectRoot) => {
       ]
     },
     {
-      test: /\.tsx?/,
+      test: /\.(tsx?|js)$/,
       // things that don't need babel
       include: [SERVER_ROOT, GQL_ROOT, TOOLBOX_SRC],
       // things that need babel
@@ -52,7 +52,10 @@ const transformRules = (projectRoot) => {
       use: {
         loader: '@sucrase/webpack-loader',
         options: {
-          transforms: ['jsx', 'typescript']
+          // imports is needed for old JS RethinkDB migration files
+          // otherwise exports.up is ignored when an import statement is there
+          // can remove when they're gone
+          transforms: ['jsx', 'typescript', 'imports']
         }
       }
     },

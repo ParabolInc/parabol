@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useHistory} from 'react-router'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../styles/paletteV3'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import IconButton from './IconButton'
@@ -59,14 +61,21 @@ const UpgradeButton = styled(FlatPrimaryButton)({
 interface Props {
   onClick?: () => void
   orgId: string
+  meetingId: string
 }
 
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
-  const {onClick, orgId} = props
+  const {onClick, orgId, meetingId} = props
   const history = useHistory()
   const [closed, setClosed] = React.useState(false)
+  const atmosphere = useAtmosphere()
 
   const handleUpgradeClick = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'meetingSidebar',
+      orgId,
+      meetingId
+    })
     onClick?.()
     history.push(`/me/organizations/${orgId}`)
   }
@@ -74,6 +83,16 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
   const handleClose = () => {
     setClosed(true)
   }
+
+  useEffect(() => {
+    if (!closed) {
+      SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Viewed', {
+        upgradeCTALocation: 'meetingSidebar',
+        orgId,
+        meetingId
+      })
+    }
+  }, [closed])
 
   if (closed) {
     return null

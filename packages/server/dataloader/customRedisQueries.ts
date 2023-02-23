@@ -31,6 +31,7 @@ const customRedisQueries = {
     const publicTemplatesByType = await Promise.all(
       meetingTypes.map((type) => {
         const templateType = type === 'poker' ? 'poker' : 'retrospective'
+        // Will convert to PG by Mar 1, 2023
         return r
           .table('MeetingTemplate')
           .getAll('aGhostTeam', {index: 'teamId'})

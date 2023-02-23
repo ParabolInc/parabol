@@ -16,8 +16,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartTeamPromptMutation($teamId: ID!) {
-    startTeamPrompt(teamId: $teamId) {
+  mutation StartTeamPromptMutation($teamId: ID!, $recurrenceRule: RRule) {
+    startTeamPrompt(teamId: $teamId, recurrenceRule: $recurrenceRule) {
       ... on ErrorPayload {
         error {
           message
