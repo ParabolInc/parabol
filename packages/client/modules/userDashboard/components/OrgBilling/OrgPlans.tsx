@@ -8,11 +8,12 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {ElementWidth} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: 976,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   paddingBottom: 16
 })
 
