@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.92.0",
+  "version": "6.93.0-rc.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -85,6 +85,7 @@
     "@graphql-codegen/typescript-resolvers": "^2.7.1",
     "@graphql-tools/executor": "^0.0.11",
     "@sucrase/webpack-loader": "^2.0.0",
+    "@types/dotenv": "^6.1.1",
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
@@ -119,5 +120,9 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yarn-deduplicate": "^3.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "dotenv": "8.0.0",
+    "dotenv-expand": "5.1.0",
+    "rethinkdb-ts-migrate": "^0.3.6"
+  }
 }

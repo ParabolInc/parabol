@@ -56,7 +56,7 @@ jobs:
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
-      GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
+      GITHUB_REMOTE_STAGING: "dokku@action-staging-web-nyc1-03.parabol.co:web"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
@@ -182,7 +182,7 @@ jobs:
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
               git add queryMap.json build dist packages/client/__generated__ scripts/toolbox packages/server/postgres/queries/generated -f
-              git commit -m "build $ACTION_VERSION"
+              git commit -m "build $ACTION_VERSION" --no-verify
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
               ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
