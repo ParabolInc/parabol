@@ -5,13 +5,14 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {ElementWidth} from '../../../../types/constEnums'
 import {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 
 const Wrapper = styled('div')({
   display: 'flex',
   fontSize: 14,
   padding: '16px 0px',
-  width: '100%'
+  width: ElementWidth.PANEL_WIDTH
 })
 
 const StyledIcon = styled('div')({

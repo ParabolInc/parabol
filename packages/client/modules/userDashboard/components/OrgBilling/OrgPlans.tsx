@@ -226,11 +226,11 @@ const OrgPlans = () => {
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
                 )}
               </HeadingBlock>
-              {plan.details.map((detail) => (
-                <UL key={detail}>
-                  <LI>{detail}</LI>
-                </UL>
-              ))}
+              <UL>
+                {plan.details.map((detail) => (
+                  <LI key={detail}>{detail}</LI>
+                ))}
+              </UL>
             </Content>
             <ButtonBlock>
               <UpgradeButton buttonStyle={plan.buttonStyle} size='medium'>
