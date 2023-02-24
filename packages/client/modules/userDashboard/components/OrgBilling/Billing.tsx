@@ -26,16 +26,12 @@ const StyledRow = styled(Row)({
 })
 
 const Plan = styled('div')({
-  fontSize: 12,
-  fontWeight: 600,
   lineHeight: '16px',
   textTransform: 'capitalize',
   textAlign: 'center',
   display: 'flex',
   padding: '0px 16px 16px 16px',
   flexWrap: 'wrap',
-  justifyContent: 'flex-start',
-  borderRadius: 4,
   width: '50%',
   overflow: 'hidden'
 })
@@ -54,9 +50,7 @@ const LineIcon = styled('div')({
   svg: {
     fontSize: 19
   },
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
+  display: 'flex'
 })
 
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
@@ -77,11 +71,9 @@ const Title = styled('div')({
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
-  textAlign: 'center',
   display: 'flex',
   width: '100%',
-  paddingBottom: 16,
-  justifyContent: 'flex-start'
+  paddingBottom: 16
 })
 
 const Subtitle = styled('div')({
@@ -90,10 +82,8 @@ const Subtitle = styled('div')({
   fontWeight: 600,
   lineHeight: '30px',
   textTransform: 'capitalize',
-  textAlign: 'center',
   display: 'flex',
-  paddingBottom: 8,
-  justifyContent: 'flex-start'
+  paddingBottom: 8
 })
 
 const Content = styled('div')({
@@ -107,7 +97,6 @@ const Form = styled('form')({
 })
 
 const StyledInput = styled('input')({
-  appearance: 'none',
   background: PALETTE.SLATE_200,
   border: 'none',
   borderBottom: `1px solid ${PALETTE.SLATE_400}`,
@@ -122,7 +111,6 @@ const StyledInput = styled('input')({
 })
 
 const CleaveInput = styled(Cleave)({
-  appearance: 'none',
   background: PALETTE.SLATE_200,
   border: 'none',
   borderBottom: `1px solid ${PALETTE.SLATE_400}`,
@@ -166,7 +154,7 @@ const InputWrapper = styled('div')({
 const InputBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  width: '47%'
+  maxWidth: '47%'
 })
 
 const TotalBlock = styled('div')({
@@ -193,10 +181,10 @@ const Message = styled('div')({
 
 const Billing = () => {
   const [stripeClientManager] = useState(() => new StripeClientManager())
-  const {fields, onChange, setDirtyField, validateField} = useForm({
+  const {fields, onChange, setDirtyField} = useForm({
     cardName: {
       getDefault: () => '',
-      // normalize: stripeClientManager.normalizeCardName,
+      nomralize: stripeClientManager.normalizeCardName,
       validate: stripeClientManager.validateCardName
     },
     cardNumber: {
@@ -230,16 +218,18 @@ const Billing = () => {
     }
   }, [isStripeLoaded])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // if (submitting) return
-    // these 3 calls internally call dispatch (or setState), which are asynchronous in nature.
-    // To get the current value of `fields`, we have to wait for the component to rerender
-    // the useEffect hook above will continue the process if submitting === true
-    setDirtyField()
-    validateField()
-    // submitMutation()
-  }
+  // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   // if (submitting) return
+  //   // these 3 calls internally call dispatch (or setState), which are asynchronous in nature.
+  //   // To get the current value of `fields`, we have to wait for the component to rerender
+  //   // the useEffect hook above will continue the process if submitting === true
+
+  //   setDirtyField()
+  //   validateField()
+  //   submitMutation()
+  // }
 
   return (
     <StyledPanel label='Credit Card'>
@@ -257,7 +247,7 @@ const Billing = () => {
               <InputLabel>{'Cardholder Name'}</InputLabel>
               <StyledInput
                 autoFocus
-                maxLength={80}
+                maxLength={100}
                 placeholder='Full Name'
                 onBlur={() => setDirtyField('cardName')}
                 onChange={onChange}
@@ -316,7 +306,7 @@ const Billing = () => {
               </Error>
               <UpgradeButton
                 size='medium'
-                onClick={handleSubmit}
+                // onClick={handleSubmit}
                 isDisabled={!canSubmit}
                 type={'submit'}
               >
