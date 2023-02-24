@@ -2,12 +2,11 @@ import styled from '@emotion/styled'
 import {Error as ErrorIcon} from '@mui/icons-material'
 import {Divider} from '@mui/material'
 import Cleave from 'cleave.js/react'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import useForm from '../../../../hooks/useForm'
-import useScript from '../../../../hooks/useScript'
 import {PALETTE} from '../../../../styles/paletteV3'
 import StripeClientManager from '../../../../utils/StripeClientManager'
 
@@ -203,7 +202,6 @@ const Billing = () => {
       validate: stripeClientManager.validateExpiry
     }
   })
-  const isStripeLoaded = useScript('https://js.stripe.com/v2/')
   const {cardName, cardNumber, cvc, expiry} = fields
   const error =
     // serverError || //TODO: add server error when adding functionality: https://github.com/ParabolInc/parabol/issues/7693
@@ -211,12 +209,6 @@ const Billing = () => {
     (expiry.dirty && expiry.error) ||
     (cvc.dirty && cvc.error)
   const canSubmit = !!(!error && cardName.value && cardNumber.value && expiry.value && cvc.value)
-
-  useEffect(() => {
-    if (isStripeLoaded) {
-      stripeClientManager.init()
-    }
-  }, [isStripeLoaded])
 
   // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
   // const handleSubmit = async (e: React.FormEvent) => {
