@@ -42,8 +42,8 @@ const safetyPatchRes = (res: HttpResponse) => {
     if (res.done) {
       console.warn(`uWS: Called cork after done`)
     }
-    if (res.done || res.aborted) return
-    res._cork(cb)
+    if (res.done || res.aborted) return res
+    return res._cork(cb)
   }
 
   res._tryEnd = res.tryEnd

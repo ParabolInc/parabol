@@ -3,22 +3,12 @@ import {RDatum, RValue} from '../../../database/stricterR'
 import TeamMember from '../../../database/types/TeamMember'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
-import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {CompanyResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
+import {getTeamsByOrgIds} from './helpers/getTeamsByOrgIds'
 
 export type CompanySource = {id: string}
-
-export const getTeamsByOrgIds = async (
-  orgIds: string[],
-  dataLoader: DataLoaderWorker,
-  includeArchived: boolean
-) => {
-  const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(errorFilter)
-  const teams = teamsByOrgId.flat()
-  return includeArchived ? teams : teams.filter(({isArchived}) => !isArchived)
-}
 
 const Company: CompanyResolvers = {
   activeTeamCount: async ({id: domain}, {after}, {dataLoader}) => {

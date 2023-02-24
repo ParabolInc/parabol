@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw, EditorState} from 'draft-js'
 import React, {forwardRef, RefObject, useEffect, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
@@ -13,8 +13,8 @@ import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import {convertStateToRaw} from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {DiscussionThreadInput_discussion} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
-import {DiscussionThreadInput_viewer} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
+import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import {useBeforeUnload} from '../hooks/useBeforeUnload'
 import useInitialLocalState from '../hooks/useInitialLocalState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
@@ -74,8 +74,8 @@ interface Props {
   allowedThreadables: DiscussionThreadables[]
   editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
-  discussion: DiscussionThreadInput_discussion
-  viewer: DiscussionThreadInput_viewer
+  discussion: DiscussionThreadInput_discussion$key
+  viewer: DiscussionThreadInput_viewer$key
   onSubmitCommentSuccess?: () => void
   threadParentId?: string
   isReply?: boolean
@@ -91,19 +91,39 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     allowedThreadables,
     editorRef,
     getMaxSortOrder,
-    discussion,
+    discussion: discussionRef,
     onSubmitCommentSuccess,
     threadParentId,
     replyMention,
     setReplyMention,
     dataCy,
-    viewer,
+    viewer: viewerRef,
     isCreatingPoll
   } = props
+  const viewer = useFragment(
+    graphql`
+      fragment DiscussionThreadInput_viewer on User {
+        picture
+      }
+    `,
+    viewerRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment DiscussionThreadInput_discussion on Discussion {
+        id
+        meetingId
+        teamId
+        isAnonymousComment
+        discussionTopicType
+      }
+    `,
+    discussionRef
+  )
   const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: discussionId, meetingId, isAnonymousComment, teamId} = discussion
+  const {id: discussionId, meetingId, isAnonymousComment, teamId, discussionTopicType} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -289,6 +309,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             setEditorState={setEditorState}
             teamId={teamId}
             readOnly={!allowComments}
+            discussionId={discussion.id}
+            autofocus={discussionTopicType === 'teamPromptResponse'}
           />
         </EditorWrap>
         <SendCommentButton
@@ -319,18 +341,4 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default createFragmentContainer(DiscussionThreadInput, {
-  viewer: graphql`
-    fragment DiscussionThreadInput_viewer on User {
-      picture
-    }
-  `,
-  discussion: graphql`
-    fragment DiscussionThreadInput_discussion on Discussion {
-      id
-      meetingId
-      teamId
-      isAnonymousComment
-    }
-  `
-})
+export default DiscussionThreadInput

@@ -6,15 +6,17 @@ import {useFragment} from 'react-relay'
 import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Threshold} from '../../../../types/constEnums'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
+import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: 976,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   paddingBottom: 16
 })
 
@@ -192,6 +194,9 @@ const OrgPlans = (props: Props) => {
     `,
     organizationRef
   )
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.LOWER_CENTER
+  )
   const {tier} = organization
 
   const plans = [
@@ -251,20 +256,29 @@ const OrgPlans = (props: Props) => {
                 {plan.tier === 'team' ? (
                   <>
                     <PlanSubtitle>
-                      {'$6 per active member '}
-                      <StyledIcon>{<Info />}</StyledIcon>
+                      {'$6 per active user '}
+                      <StyledIcon
+                        ref={originRef}
+                        onMouseOver={openTooltip}
+                        onMouseOut={closeTooltip}
+                      >
+                        {<Info />}
+                      </StyledIcon>
                     </PlanSubtitle>
                     <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                    {tooltipPortal(
+                      'Active users are anyone who uses Parabol within a billing period'
+                    )}
                   </>
                 ) : (
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
                 )}
               </HeadingBlock>
-              {plan.details.map((detail) => (
-                <UL key={detail}>
-                  <LI>{detail}</LI>
-                </UL>
-              ))}
+              <UL>
+                {plan.details.map((detail) => (
+                  <LI key={detail}>{detail}</LI>
+                ))}
+              </UL>
             </Content>
             <ButtonBlock>
               {plan.buttonStyle && (
