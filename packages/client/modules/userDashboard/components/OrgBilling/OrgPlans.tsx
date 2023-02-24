@@ -10,13 +10,13 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Threshold} from '../../../../types/constEnums'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
+import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: 976,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   paddingBottom: 16
 })
 
@@ -274,11 +274,11 @@ const OrgPlans = (props: Props) => {
                   <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
                 )}
               </HeadingBlock>
-              {plan.details.map((detail) => (
-                <UL key={detail}>
-                  <LI>{detail}</LI>
-                </UL>
-              ))}
+              <UL>
+                {plan.details.map((detail) => (
+                  <LI key={detail}>{detail}</LI>
+                ))}
+              </UL>
             </Content>
             <ButtonBlock>
               {plan.buttonStyle && (

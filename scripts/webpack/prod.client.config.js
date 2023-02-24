@@ -11,6 +11,8 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const {InjectManifest} = require('workbox-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
 const getProjectRoot = require('./utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -87,6 +89,10 @@ module.exports = ({isDeploy, isStats}) => ({
     ]
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      // persist across builds, only emit 1 file per entry
+      filename: '[contenthash].css'
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -124,7 +130,9 @@ module.exports = ({isDeploy, isStats}) => ({
       // This build may be deployed to many different environments
     }),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[fullhash].js.map',
+      // exclude css sourcemaps
+      test: /\.(js|jsx|ts|tsx)($|\?)/i,
+      filename: '[file].map[query]',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({
@@ -213,7 +221,7 @@ module.exports = ({isDeploy, isStats}) => ({
       {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,

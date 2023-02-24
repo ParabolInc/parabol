@@ -2,8 +2,7 @@ version: "3.7"
 
 services:
   db:
-    platform: linux/x86_64
-    image: rethinkdb:latest
+    image: rethinkdb:2.3.7
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -40,8 +39,7 @@ services:
       - parabol-network
     restart: unless-stopped
   redis:
-    platform: linux/x86_64
-    image: redis:latest
+    image: redis:6
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -51,7 +49,7 @@ services:
       - parabol-network
   redis-commander:
     container_name: redis_commander
-    image: rediscommander/redis-commander:latest
+    image: ghcr.io/joeferner/redis-commander:latest
     hostname: redis-commander
     restart: unless-stopped
     environment:

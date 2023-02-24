@@ -5,6 +5,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {ElementWidth} from '../../../../types/constEnums'
 import {upperFirst} from '../../../../utils/upperFirst'
 import {OrgPlansAndBillingHeading_organization$key} from '../../../../__generated__/OrgPlansAndBillingHeading_organization.graphql'
 
@@ -15,7 +16,7 @@ const Wrapper = styled('div')({
   lineHeight: '24px',
   padding: '16px 0px',
   flexWrap: 'wrap',
-  maxWidth: 976, // same as usage stats to be consistent
+  width: ElementWidth.PANEL_WIDTH,
   position: 'relative'
 })
 
@@ -78,8 +79,8 @@ const OrgPlansAndBillingHeading = (props: Props) => {
     <Wrapper>
       <Title>{'Plans & Billing'}</Title>
       <SubtitleBlock>
-        <Subtitle isBold>{`${name}'s Org `}</Subtitle>
-        <Subtitle>{`is currently on the `}</Subtitle>
+        <Subtitle isBold>{name}</Subtitle>
+        <Subtitle>{` is currently on the `}</Subtitle>
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
       <StyledButton>

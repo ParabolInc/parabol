@@ -1,7 +1,9 @@
 import {useContext} from 'react'
 import * as rr from 'react-router'
 
-const useRouter = <T = Record<string, unknown>>(): rr.RouteComponentProps<T> => {
+const useRouter = <
+  T extends {[key: string]: any} = Record<string, unknown>
+>(): rr.RouteComponentProps<T> => {
   return useContext((rr as any).__RouterContext)
 }
 

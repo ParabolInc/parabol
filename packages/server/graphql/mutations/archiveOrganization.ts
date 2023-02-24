@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeTeamLimitsJobs from '../../billing/helpers/removeTeamLimitsJobs'
+import removeTeamsLimitObjects from '../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../database/rethinkDriver'
 import Team from '../../database/types/Team'
 import User from '../../database/types/User'
@@ -92,7 +92,7 @@ export default {
           removedAt: now
         })
         .run(),
-      removeTeamLimitsJobs(orgId)
+      removeTeamsLimitObjects(orgId, dataLoader)
     ])
 
     const data = {

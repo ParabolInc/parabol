@@ -9,7 +9,7 @@ export type InputDiscussions = DeepNonNullable<IInsertDiscussionsQueryParams['di
 
 const insertDiscussions = async (discussions: InputDiscussions) => {
   if (discussions.length === 0) return
-  insertDiscussionsQuery.run({discussions}, getPg())
+  insertDiscussionsQuery.run({discussions} as any, getPg())
 }
 
 export default insertDiscussions
