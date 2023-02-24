@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   db:
-    image: rethinkdb:2.3.7
+    image: rethinkdb:2.4.2
     restart: unless-stopped
     ports:
       - "8080:8080"
