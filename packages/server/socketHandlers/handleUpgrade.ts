@@ -6,7 +6,7 @@ import getQueryToken from '../utils/getQueryToken'
 import sendToSentry from '../utils/sendToSentry'
 import uwsGetIP from '../utils/uwsGetIP'
 
-const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) => {
+const handleUpgrade: WebSocketBehavior<void>['upgrade'] = async (res, req, context) => {
   const protocol = req.getHeader('sec-websocket-protocol')
   if (protocol !== 'trebuchet-ws') {
     sendToSentry(new Error(`WebSocket error: invalid protocol: ${protocol}`))

@@ -5,6 +5,7 @@ import {OnNextHistoryContext} from '../../types/relayMutations'
 import makeDateString from '../../utils/makeDateString'
 import {mapTeamsLimitReminderToToast_notification} from '../../__generated__/mapTeamsLimitReminderToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapTeamsLimitReminderToToast_notification on NotifyTeamsLimitReminder {
@@ -23,7 +24,7 @@ const mapTeamsLimitReminderToToast = (
 
   return {
     autoDismiss: 0,
-    key: `newNotification:${notificationId}`,
+    key: makeNotificationToastKey(notificationId),
     message: `"${orgName}" is over the limit of ${
       Threshold.MAX_STARTER_TIER_TEAMS
     } free teams. Your free access will end on ${makeDateString(scheduledLockAt)}`,

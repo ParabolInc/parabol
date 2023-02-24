@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   backup:
     docker:
-      - image: cimg/node:16.16.0
+      - image: cimg/node:18.13.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
@@ -38,7 +38,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` Backup done"}' $SLACK_DEVOPS_URL
   build:
     docker:
-      - image: cimg/node:16.16.0
+      - image: cimg/node:18.13.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:
