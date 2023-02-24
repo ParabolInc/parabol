@@ -5,7 +5,7 @@
     "checkJs": false,
     // composite is just not worth it. the savings come from persisting files (.d + maps) and it's buggy as heck
     // "composite": true,
-    "target": "ES2023",
+    "target": "es2019",
     "module": "commonjs",
     "jsx": "react",
     "importHelpers": true,

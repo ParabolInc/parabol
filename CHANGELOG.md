@@ -8,6 +8,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 6.93.0 2023-Feb-22
 
 ### Fixed
+
 - remove font-size 18px declaration on tasks editing status label (#7784)
 - **dashboard**: Meeting card shadow doesn't match card (#7782)
 - **standups**: Autofocus the input in the discussion drawer when opened (#7779)
@@ -16,11 +17,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - **emails**: Generate email summaries with facilitator auth (#7805)
 
 ### Added
+
 - **recurrence**: Copy meeting series permalink (#7777)
 - **SAML UI**: Create a verifyDomain mutation (#7686)
 - **SAML UI**: Add UI with disabled state (#7684)
 
 ### Changed
+
 - **deps**: bump undici from 5.18.0 to 5.19.1 (#7787)
 - **tiptap**: Upgrade tiptap to pull in bugfixes (#7790)
 - select best platform for the job (#7786)
@@ -80,19 +83,16 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore(deps): bump deps to fix vulns (#7730)
 - chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
 - fix: Profile name length should have the upper limit (#7425)
--
 
 ### Added
 
 - chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
 - chore(checkout-flow): add checkout feature flag (#7709)
--
 
 ### Changed
 
 - chore: update team invite email (#7710)
 - chore(ai-summary): update meeting summary url (#7705)
--
 
 ## 6.90.0 2023-February-1
 
