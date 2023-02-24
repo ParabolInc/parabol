@@ -25,10 +25,10 @@ const NavigateNextIcon = styled(NavigateNext)({
   color: PALETTE.SLATE_900
 })
 
-const NavItemLabel = styled('span')<{isBold?: boolean}>(({isBold}) => ({
-  fontWeight: isBold ? 600 : 400,
+const NavItemLabel = styled('span')<{isCurrent?: boolean}>(({isCurrent}) => ({
+  fontWeight: isCurrent ? 600 : 400,
   '&:hover': {
-    cursor: isBold ? 'default' : 'pointer'
+    cursor: isCurrent ? 'default' : 'pointer'
   }
 }))
 
@@ -59,7 +59,7 @@ const OrgNav = (props: Props) => {
       <StyledIcon>
         <NavigateNextIcon />
       </StyledIcon>
-      <NavItemLabel isBold>{`${name}'s Org`}</NavItemLabel>
+      <NavItemLabel isCurrent>{`${name}'s Org`}</NavItemLabel>
     </Wrapper>
   )
 }

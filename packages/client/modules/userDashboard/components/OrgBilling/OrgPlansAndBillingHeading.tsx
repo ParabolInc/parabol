@@ -79,8 +79,8 @@ const OrgPlansAndBillingHeading = (props: Props) => {
     <Wrapper>
       <Title>{'Plans & Billing'}</Title>
       <SubtitleBlock>
-        <Subtitle isBold>{`${name}'s Org `}</Subtitle>
-        <Subtitle>{`is currently on the `}</Subtitle>
+        <Subtitle isBold>{name}</Subtitle>
+        <Subtitle>{` is currently on the `}</Subtitle>
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
       <StyledButton>
