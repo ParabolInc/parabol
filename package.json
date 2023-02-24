@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.92.0",
+  "version": "6.93.0-rc.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -85,9 +85,11 @@
     "@graphql-codegen/typescript-resolvers": "^2.7.1",
     "@graphql-tools/executor": "^0.0.11",
     "@sucrase/webpack-loader": "^2.0.0",
+    "@types/dotenv": "^6.1.1",
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
+    "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "15.7.2",
@@ -95,17 +97,22 @@
     "husky": "^7.0.4",
     "jscodeshift": "^0.14.0",
     "lerna": "^6.4.1",
+    "mini-css-extract-plugin": "^2.7.2",
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
     "nx": "14.7.5",
     "pg-promise": "^11.2.0",
+    "postcss": "^8.4.21",
+    "postcss-loader": "^7.0.2",
     "prettier": "^2.6.1",
     "prettier-plugin-organize-imports": "^2.3.4",
+    "prettier-plugin-tailwindcss": "^0.2.1",
     "raw-loader": "^4.0.2",
     "relay-compiler": "^12.0.0",
     "relay-compiler-language-typescript": "^15.0.1",
     "relay-config": "^12.0.0",
     "sucrase": "^3.23.0",
+    "tailwindcss": "^3.2.7",
     "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "9.2.6",
     "vscode-apollo-relay": "^1.5.0",
@@ -114,5 +121,9 @@
     "workbox-webpack-plugin": "^6.5.4",
     "yarn-deduplicate": "^3.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "dotenv": "8.0.0",
+    "dotenv-expand": "5.1.0",
+    "rethinkdb-ts-migrate": "^0.3.6"
+  }
 }

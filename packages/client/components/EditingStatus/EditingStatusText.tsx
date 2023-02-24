@@ -8,7 +8,6 @@ import {TimestampType} from './EditingStatus'
 const StyledWrapper = styled('span')({
   display: 'block',
   overflow: 'visible',
-  fontSize: 18,
   overflowWrap: 'break-word'
 })
 

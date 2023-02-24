@@ -16,6 +16,7 @@ const Organization: OrganizationResolvers = {
     return {id: activeDomain}
   },
   featureFlags: ({featureFlags}) => {
+    if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   }
 }

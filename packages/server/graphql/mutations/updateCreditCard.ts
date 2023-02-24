@@ -37,7 +37,7 @@ export default {
     // RESOLUTION
     const viewer = (await dataLoader.get('users').load(viewerId))! // authenticated user
     try {
-      await upgradeToTeamTier(orgId, stripeToken, viewer.email)
+      await upgradeToTeamTier(orgId, stripeToken, viewer.email, dataLoader)
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e
