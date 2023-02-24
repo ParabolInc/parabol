@@ -2,7 +2,6 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
-import sendToSentry from '../utils/sendToSentry'
 import {getStripeManager} from '../utils/stripe'
 
 interface InvoiceEventCallBackArg {

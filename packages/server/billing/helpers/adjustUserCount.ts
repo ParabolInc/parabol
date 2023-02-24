@@ -136,7 +136,7 @@ export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
   type: InvoiceItemType,
-  dataLoader: DataLoaderWorker,
+  dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
@@ -156,5 +156,5 @@ export default async function adjustUserCount(
 
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
   // we can safely ignore errors here because we will double check the user count when creating the invoice
-  handleTeamOrgQuantityChanges(paidOrgs).catch(console.error)
+  handleTeamOrgQuantityChanges(paidOrgs, dataLoader).catch(console.error)
 }
