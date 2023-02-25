@@ -18,7 +18,7 @@ export async function up() {
   await connectRethinkDB()
   const pgp = pgpInit()
   const pg = pgp(getPgConfig())
-  const batchSize = 1000
+  const batchSize = 30
   // Create an index we can paginate on
   try {
     await r.table('MeetingTemplate').indexCreate('updatedAt').run()
@@ -48,13 +48,15 @@ export async function up() {
     const startAt = leftBoundCursor || r.minval
     const nextBatch = await r
       .table('MeetingTemplate')
+      // make sure leftBound is open so we don't get the same thing twice
+      // good for efficiency, but mostly because that could cause an infinite loop on the last batch
       .between(startAt, r.maxval, {index: 'updatedAt', leftBound: 'open'})
       .orderBy({index: 'updatedAt'})
       .limit(batchSize)
       .run()
-    console.log('got next batch', nextBatch.length)
     // this is the last one, we know the updatedAt bucket isn't split (i.e. we know no other pending items share the same updatedAt)
     if (nextBatch.length === 0) return null
+    // probably the 2nd to last batch. New updates may occur between now & the next time this gets called though!
     if (nextBatch.length < batchSize) return nextBatch
     // find the last complete bucket for updatedAt
     const lastItem = nextBatch.pop()
@@ -76,8 +78,17 @@ export async function up() {
     ) => {
       const nextData = await getNextData(leftBoundCursor)
       if (!nextData) return undefined
-      const insert = pgp.helpers.insert(nextData, columnSet) + ' ON CONFLICT DO NOTHING'
-      await task.none(insert)
+      const insert = pgp.helpers.insert(nextData, columnSet)
+      const update = ` ON CONFLICT(id) DO UPDATE SET
+          "isActive" = EXCLUDED."isActive",
+          "name" = EXCLUDED."name",
+          "teamId" = EXCLUDED."teamId",
+          "updatedAt" = EXCLUDED."updatedAt",
+          "scope" = EXCLUDED."scope",
+          "orgId" = EXCLUDED."orgId",
+          "lastUsedAt" = EXCLUDED."lastUsedAt"`
+      const upsert = insert + update
+      await task.none(upsert)
       return nextData.at(-1).updatedAt
     }
     return task.sequence(fetchAndProcess)
