@@ -8,7 +8,7 @@
 //       The expanded palette is here:
 //       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A2184
 
-import tailwindPreset from '../tailwind.preset.js'
+import tailwindPreset from '../tailwindTheme'
 
 const {colors} = tailwindPreset.theme
 
@@ -84,4 +84,4 @@ export const PALETTE = {
   WHITE: colors.white,
 
   SUCCESS_LIGHT: '#2db553'
-}
+} as const
