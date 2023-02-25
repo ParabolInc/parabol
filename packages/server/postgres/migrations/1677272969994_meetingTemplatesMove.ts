@@ -18,7 +18,7 @@ export async function up() {
   await connectRethinkDB()
   const pgp = pgpInit()
   const pg = pgp(getPgConfig())
-  const batchSize = 30
+  const batchSize = 1000
   // Create an index we can paginate on
   try {
     await r.table('MeetingTemplate').indexCreate('updatedAt').run()
