@@ -23,7 +23,7 @@ const StatBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  width: '33.33%',
+  width: '50%',
   padding: '14px 0px'
 })
 
@@ -71,13 +71,12 @@ const OrgStats = (props: Props) => {
         orgUserCount {
           activeUserCount
         }
-        totalMeetingCount
         activeTeamCount
       }
     `,
     organizationRef
   )
-  const {activeTeamCount, orgUserCount, totalMeetingCount} = organization
+  const {activeTeamCount, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {
     tooltipPortal: teamsPortal,
@@ -124,13 +123,6 @@ const OrgStats = (props: Props) => {
           </StyledIcon>
         </StatBlockLabel>
         {membersPortal(tooltipTextLookup.member)}
-      </StatBlock>
-      <StatBlock>
-        <StatBlockNumber>
-          {totalMeetingCount}
-          <IconBlock></IconBlock>
-        </StatBlockNumber>
-        <StatBlockLabel>{'Total Meetings'}</StatBlockLabel>
       </StatBlock>
     </StatBlocks>
   )
