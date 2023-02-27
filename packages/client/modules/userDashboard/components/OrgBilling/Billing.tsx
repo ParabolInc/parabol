@@ -1,14 +1,18 @@
 import styled from '@emotion/styled'
 import {Error as ErrorIcon} from '@mui/icons-material'
+import useScript from '../../../../hooks/useScript'
 import {Divider} from '@mui/material'
 import Cleave from 'cleave.js/react'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
+import BillingForm from './BillingForm'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import useForm from '../../../../hooks/useForm'
 import {PALETTE} from '../../../../styles/paletteV3'
 import StripeClientManager from '../../../../utils/StripeClientManager'
+import {loadStripe} from '@stripe/stripe-js'
+import {Elements} from '@stripe/react-stripe-js'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
@@ -178,6 +182,8 @@ const Message = styled('div')({
   paddingLeft: 4
 })
 
+const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
+
 const Billing = () => {
   const [stripeClientManager] = useState(() => new StripeClientManager())
   const {fields, onChange, setDirtyField} = useForm({
@@ -202,6 +208,33 @@ const Billing = () => {
       validate: stripeClientManager.validateExpiry
     }
   })
+
+  const [clientSecret, setClientSecret] = useState('')
+
+  const isStripeLoaded = useScript('https://js.stripe.com/v2/')
+
+  useEffect(() => {
+    // Create PaymentIntent as soon as the page loads
+    fetch('/create-payment-intent', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({items: [{id: 'xl-tshirt'}]})
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('DATA>>>>', data)
+        setClientSecret(data.clientSecret)
+      })
+  }, [])
+
+  const appearance = {
+    theme: 'stripe'
+  } as const
+  const options = {
+    // TODO: add this
+    clientSecret: appearance
+  }
+
   const {cardName, cardNumber, cvc, expiry} = fields
   const error =
     // serverError || //TODO: add server error when adding functionality: https://github.com/ParabolInc/parabol/issues/7693
@@ -235,7 +268,11 @@ const Billing = () => {
         <Plan>
           <Title>{'Credit Card Details'}</Title>
           <Content>
-            <Form>
+            <Elements options={options} stripe={stripePromise}>
+              <BillingForm />
+            </Elements>
+
+            {/* <Form>
               <InputLabel>{'Cardholder Name'}</InputLabel>
               <StyledInput
                 autoFocus
@@ -304,7 +341,7 @@ const Billing = () => {
               >
                 {'Upgrade'}
               </UpgradeButton>
-            </Form>
+            </Form> */}
           </Content>
         </Plan>
         <Plan>
