@@ -3,18 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {Breakpoint} from '../../../../types/constEnums'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organization.graphql'
 import OrgNav from '../Organization/OrgNav'
 
-const Container = styled('div')<{isWideScreen: boolean}>(({isWideScreen}) => ({
-  padding: '0px 48px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: isWideScreen ? 'center' : 'flex-start'
-}))
+const Container = styled('div')({
+  padding: '0px 48px'
+})
 
 const OrgPlansAndBilling = lazy(
   () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBilling')
@@ -30,7 +25,6 @@ type Props = {
 
 const OrgPage = (props: Props) => {
   const {organizationRef} = props
-  const isWideScreen = useBreakpoint(Breakpoint.DASH_BREAKPOINT_WIDEST)
   const organization = useFragment(
     graphql`
       fragment OrgPage_organization on Organization {
@@ -45,7 +39,7 @@ const OrgPage = (props: Props) => {
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
 
   return (
-    <Container isWideScreen={isWideScreen}>
+    <Container>
       <OrgNav organizationRef={organization} />
       <Switch>
         <Route
