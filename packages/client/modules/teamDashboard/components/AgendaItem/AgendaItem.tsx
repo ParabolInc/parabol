@@ -111,7 +111,6 @@ const AgendaItem = (props: Props) => {
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
-  const facilitatorUserId = meeting?.facilitatorUserId
   const facilitatorStageId = meeting?.facilitatorStageId
   const phases = meeting?.phases ?? null
   const {picture} = teamMember
@@ -146,16 +145,9 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
-    if (viewerId === facilitatorUserId && isFacilitatorStage) {
+    if (isFacilitatorStage) {
       // navigate to the next best stage. onward!
       const stageRes = findStageAfterId(phases as any, facilitatorStageId!)
-      if (gotoStageId && stageRes) {
-        gotoStageId(stageRes.stage.id)
-      }
-    }
-    if (viewerId !== facilitatorUserId && isFacilitatorStage) {
-      // navigate to the next best stage. onward!
-      const stageRes = findStageAfterId(phases, facilitatorStageId!)
       if (gotoStageId && stageRes) {
         gotoStageId(stageRes.stage.id)
       }
