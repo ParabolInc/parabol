@@ -297,7 +297,7 @@ const OrgPlans = (props: Props) => {
           ))}
         </StyledRow>
       </StyledPanel>
-      {modalPortal(<DowngradeModal />)}
+      {modalPortal(<DowngradeModal closeModal={closeModal} />)}
     </>
   )
 }

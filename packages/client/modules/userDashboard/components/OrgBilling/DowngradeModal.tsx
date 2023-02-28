@@ -30,10 +30,9 @@ const StyledDialogContent = styled(DialogContent)({
   paddingBottom: 16
 })
 
-const ButtonGroup = styled('div')({
+const LabelGroup = styled('div')({
   paddingTop: '32px',
   display: 'flex',
-  // justifyContent: 'flex-end',
   justifyContent: 'space-between',
   width: '100%'
 })
@@ -68,7 +67,13 @@ const LI = styled('li')({
   textAlign: 'left'
 })
 
-const DowngradeModal = () => {
+type Props = {
+  closeModal: () => void
+}
+
+const DowngradeModal = (props: Props) => {
+  const {closeModal} = props
+
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>Downgrade</StyledDialogTitle>
@@ -82,10 +87,10 @@ const DowngradeModal = () => {
             <LI>{benefit}</LI>
           ))}
         </UL>
-        <ButtonGroup>
+        <LabelGroup>
           <ActionLabel>{'Yes, downgrade'}</ActionLabel>
-          <ActionLabel>{'Keep my plan'}</ActionLabel>
-        </ButtonGroup>
+          <ActionLabel onClick={() => closeModal()}>{'Keep my plan'}</ActionLabel>
+        </LabelGroup>
       </StyledDialogContent>
     </StyledDialogContainer>
   )
