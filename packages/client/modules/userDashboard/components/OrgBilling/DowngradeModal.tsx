@@ -7,68 +7,84 @@ import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
+import {TeamBenefits} from '../../../../utils/constants'
 import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 
-const INVITE_DIALOG_BREAKPOINT = 864
-const INVITE_DIALOG_MEDIA_QUERY = `@media (min-width: ${INVITE_DIALOG_BREAKPOINT}px)`
-
 const StyledDialogContainer = styled(DialogContainer)({
-  width: 480
+  padding: 8
 })
 
 const StyledDialogTitle = styled(DialogTitle)({
-  [INVITE_DIALOG_MEDIA_QUERY]: {
-    fontSize: 24,
-    lineHeight: '32px',
-    marginBottom: 8,
-    paddingLeft: 32,
-    paddingTop: 24
-  }
+  fontSize: 24,
+  lineHeight: '32px'
 })
 
 const StyledDialogContent = styled(DialogContent)({
   display: 'flex',
   flexDirection: 'column',
-  [INVITE_DIALOG_MEDIA_QUERY]: {
-    padding: '16px 32px 32px'
-  }
+  paddingBottom: 16
 })
 
 const ButtonGroup = styled('div')({
-  marginTop: '24px',
+  paddingTop: '32px',
   display: 'flex',
-  justifyContent: 'flex-end'
+  // justifyContent: 'flex-end',
+  justifyContent: 'space-between',
+  width: '100%'
 })
 
 const Description = styled('div')({
   color: PALETTE.SLATE_700,
-  fontSize: 14,
+  fontSize: 16,
   lineHeight: 1.5,
-  paddingLeft: 24,
-  [INVITE_DIALOG_MEDIA_QUERY]: {
-    paddingLeft: 32
+  padding: '24px 24px 0px 24px'
+})
+
+const ActionLabel = styled('div')({
+  color: PALETTE.SKY_500,
+  fontSize: 16,
+  lineHeight: 1.5,
+  fontWeight: 600,
+  '&:hover': {
+    cursor: 'pointer'
   }
 })
 
+const UL = styled('ul')({
+  margin: 0
+})
+
+const LI = styled('li')({
+  fontSize: 16,
+  lineHeight: '32px',
+  color: PALETTE.SLATE_900,
+  textTransform: 'none',
+  fontWeight: 400,
+  textAlign: 'left'
+})
+
 const DowngradeModal = () => {
-  console.log('WE HERE')
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>Downgrade</StyledDialogTitle>
       <Description>
-        We're sorry to see you go! Please confirm that you are ready to let go of these features:
+        We're sorry to see you go! Please confirm that you're aware of the following features and
+        would still like to downgrade:
       </Description>
       <StyledDialogContent>
-        <BasicTextArea autoFocus onChange={() => {}} name='errorReport' value={'heyyy'} />
+        <UL>
+          {TeamBenefits.map((benefit) => (
+            <LI>{benefit}</LI>
+          ))}
+        </UL>
         <ButtonGroup>
-          {/* <PrimaryButton onClick={onSubmit} disabled={text.length === 0} size='medium'> */}
-          <PrimaryButton disabled={false} size='medium'>
-            {'Submit Report'}
-          </PrimaryButton>
+          <ActionLabel>{'Yes, downgrade'}</ActionLabel>
+          <ActionLabel>{'Keep my plan'}</ActionLabel>
         </ButtonGroup>
       </StyledDialogContent>
     </StyledDialogContainer>

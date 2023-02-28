@@ -17,6 +17,7 @@ import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
 import DowngradeModal from './DowngradeModal'
 import ReportErrorFeedback from '../../../../components/ReportErrorFeedback'
+import {TeamBenefits} from '../../../../utils/constants'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -83,7 +84,7 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
   padding: '16px 8px',
-  height: 400,
+  height: 440,
   borderRadius: 4,
   border: `2px solid transparent`,
   '&:hover': {
@@ -218,12 +219,7 @@ const OrgPlans = (props: Props) => {
     },
     {
       tier: 'team',
-      details: [
-        'Everything in Starter',
-        'Premium templates',
-        'Custom templates',
-        'Unlimited teams'
-      ],
+      details: ['Everything in Starter', ...TeamBenefits],
       buttonStyle: getButtonStyle(tier, 'team'),
       buttonLabel: getButtonLabel(tier, 'team')
     },
@@ -254,7 +250,6 @@ const OrgPlans = (props: Props) => {
           <OrgStats organizationRef={organization} />
         </StyledRow>
         <StyledRow>
-          {modalPortal(<DowngradeModal />)}
           {plans.map((plan) => (
             <Plan key={plan.tier} tier={plan.tier}>
               <Content>
@@ -302,6 +297,7 @@ const OrgPlans = (props: Props) => {
           ))}
         </StyledRow>
       </StyledPanel>
+      {modalPortal(<DowngradeModal />)}
     </>
   )
 }

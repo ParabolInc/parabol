@@ -158,3 +158,11 @@ export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
 
 export const PARABOL_AI_USER_ID = 'parabolAIUser'
+
+export const TeamBenefits = [
+  'Unlimited teams',
+  'Premium templates',
+  'Custom templates',
+  'Unlimited meeting history',
+  'Priority customer support'
+]
