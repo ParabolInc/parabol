@@ -1,8 +1,18 @@
 import getRethink from '../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {getStripeManager} from '../../utils/stripe'
+import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
+import sendToSentry from '../../utils/sendToSentry'
 
-const updateSubscriptionQuantity = async (orgId: string, dataLoader: DataLoaderWorker) => {
+/**
+ * Check and update if necessary the subscription quantity
+ * @param logMismatch Pass true if a quantity mismatch should be logged
+ */
+const updateSubscriptionQuantity = async (
+  orgId: string,
+  dataLoader: DataLoaderWorker,
+  logMismatch?: boolean
+) => {
   const r = await getRethink()
   const manager = getStripeManager()
 
@@ -22,8 +32,30 @@ const updateSubscriptionQuantity = async (orgId: string, dataLoader: DataLoaderW
   const subscription = await manager.retrieveSubscription(stripeSubscriptionId)
   const {id: subscriptionId} = subscription
   const teamSubscription = await manager.getSubscriptionItem(subscriptionId)
-  if (teamSubscription && teamSubscription.quantity !== orgUserCount) {
+  if (
+    teamSubscription &&
+    teamSubscription.quantity !== undefined &&
+    teamSubscription.quantity !== orgUserCount
+  ) {
     await manager.updateSubscriptionItemQuantity(teamSubscription.id, orgUserCount)
+    if (logMismatch) {
+      insertStripeQuantityMismatchLogging(
+        orgId,
+        null,
+        new Date(),
+        'invoice.created',
+        teamSubscription.quantity,
+        orgUserCount,
+        []
+      )
+      sendToSentry(new Error('Stripe Quantity Mismatch'), {
+        tags: {
+          quantity: orgUserCount,
+          subscriptionQuantity: teamSubscription.quantity,
+          stripeSubscriptionId
+        }
+      })
+    }
   }
 }
 

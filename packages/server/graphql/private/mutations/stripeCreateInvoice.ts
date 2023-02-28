@@ -26,7 +26,7 @@ const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
   } = await manager.retrieveCustomer(invoice.customer as string)
   if (!orgId) throw new Error(`orgId not found on metadata for invoice ${invoiceId}`)
 
-  await updateSubscriptionQuantity(orgId, dataLoader)
+  await updateSubscriptionQuantity(orgId, dataLoader, true)
 
   await Promise.all([
     generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader),
