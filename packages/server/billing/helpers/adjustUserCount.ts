@@ -155,6 +155,5 @@ export default async function adjustUserCount(
     .run()
 
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
-  // we can safely ignore errors here because we will double check the user count when creating the invoice
   handleTeamOrgQuantityChanges(paidOrgs, dataLoader).catch(console.error)
 }
