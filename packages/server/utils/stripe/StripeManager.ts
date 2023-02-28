@@ -57,6 +57,10 @@ export default class StripeManager {
       // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       proration_behavior: 'none',
+      // Use this for testing invoice.created hooks
+      // run `yarn ultrahook` and subscribe
+      // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
+      // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
       metadata: {
         orgId
       },
