@@ -3,14 +3,12 @@ import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapTeamsLimitExceededToToast_notification} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
+import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
   fragment mapTeamsLimitExceededToToast_notification on NotifyTeamsLimitExceeded {
     id
-    organization {
-      id
-      name
-    }
+    orgName
   }
 `
 
@@ -18,18 +16,21 @@ const mapTeamsLimitExceededToToast = (
   notification: mapTeamsLimitExceededToToast_notification,
   {history, atmosphere}: OnNextHistoryContext
 ): Snack => {
-  const {id: notificationId, organization} = notification
-  const {name: orgName} = organization
+  const {id: notificationId, orgName} = notification
 
   return {
     autoDismiss: 0,
-    key: `newNotification:${notificationId}`,
+    key: makeNotificationToastKey(notificationId),
     message: `Your account is on a roll! Check out "${orgName}"'s usage`,
+    onManualDismiss: () => {
+      SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
+        snackbarType: 'teamsLimitExceeded'
+      })
+    },
     action: {
       label: 'See Usage',
       callback: () => {
         history.push(`/usage`)
-        SendClientSegmentEventMutation(atmosphere, 'Clicked usage snackbar CTA')
       }
     }
   }

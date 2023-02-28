@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import React, {useCallback} from 'react'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import tutorialThumb from '../../../static/images/illustrations/tutorialThumb.jpg'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useModal from '../hooks/useModal'
@@ -97,8 +98,6 @@ const TopLine = styled('div')({
   display: 'flex'
 })
 
-const THUMBNAIL = 'http://i.ytimg.com/vi/X_i60AMxPBU/maxresdefault.jpg'
-
 const TutorialMeetingCard = () => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
@@ -118,7 +117,7 @@ const TutorialMeetingCard = () => {
         <MeetingImgWrapper>
           <MeetingImgBackground />
           <MeetingTypeLabel>Tutorial</MeetingTypeLabel>
-          <MeetingImg src={THUMBNAIL} alt='' />
+          <MeetingImg src={tutorialThumb} alt='' />
         </MeetingImgWrapper>
         <MeetingInfo>
           <TopLine>

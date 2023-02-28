@@ -3,7 +3,7 @@
     "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
-    "scalars": {"DateTime": "Date"}
+    "scalars": {"DateTime": "Date", "RRule": "RRule"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -17,6 +17,7 @@
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
+          "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
           "Organization": "../../database/types/Organization#default as Organization",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "ProcessRecurrenceSuccess": "./types/ProcessRecurrenceSuccess#ProcessRecurrenceSuccessSource",
@@ -24,7 +25,6 @@
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
-          "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
           "User": "../../postgres/types/IUser#default as IUser"
         }
       },
@@ -35,9 +35,11 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "RRule": "rrule#RRule",
           "AddApprovedOrganizationDomainsSuccess": "./types/AddApprovedOrganizationDomainsSuccess#AddApprovedOrganizationDomainsSuccessSource",
+          "UpdateFeatureFlagPayload": "./types/UpdateFeatureFlagPayload#UpdateFeatureFlagPayloadSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
-          "AddFeatureFlagPayload": "./types/AddFeatureFlagPayload#AddFeatureFlagPayloadSource",
+          "UpdatedNotification": "./types/AddedNotification#UpdatedNotificationSource",
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
@@ -52,16 +54,14 @@
           "NotifyKickedOut": "../../database/types/NotificationKickedOut#default",
           "NotifyPaymentRejected": "../../database/types/NotificationPaymentRejected#default",
           "NotifyPromoteToOrgLeader": "../../database/types/NotificationPromoteToBillingLeader#default",
-          "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
-          "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
           "NotifyResponseMentioned": "../../database/types/NotificationResponseMentioned#default as NotificationResponseMentionedDB",
           "NotifyResponseReplied": "../../database/types/NotifyResponseReplied#default as NotifyResponseRepliedDB",
+          "NotifyTaskInvolves": "../../database/types/NotificationTaskInvolves#default",
+          "NotifyTeamArchived": "../../database/types/NotificationTeamArchived#default",
           "Organization": "../../database/types/Organization#default as Organization",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
-          "StartRecurrenceSuccess": "./types/StartRecurrenceSuccess#StartRecurrenceSuccessSource",
-          "StopRecurrenceSuccess": "./types/StopRecurrenceSuccess#StopRecurrenceSuccessSource",
           "Team": "../../postgres/queries/getTeamsByIds#Team",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
@@ -70,6 +70,8 @@
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
           "UpdateGitLabDimensionFieldSuccess": "./types/UpdateGitLabDimensionFieldSuccess#UpdateGitLabDimensionFieldSuccessSource",
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
+          "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
+          "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser"
         }

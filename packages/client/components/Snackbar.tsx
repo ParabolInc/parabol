@@ -45,6 +45,7 @@ export interface Snack {
   noDismissOnClick?: boolean // clicking has no effect on the show state
   onDismiss?: () => void
   onManualDismiss?: () => void
+  onShow?: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
   showDismissButton?: boolean
@@ -92,6 +93,7 @@ const Snackbar = React.memo(() => {
       }, snack.autoDismiss * 1000)
     }
     forceUpdate()
+    snack.onShow?.()
   })
 
   const onMouseEnter = (snack: Snack) => () => {

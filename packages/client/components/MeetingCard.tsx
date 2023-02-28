@@ -30,9 +30,7 @@ const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean
   status: TransitionStatus
 }>(({maybeTabletPlus, status}) => ({
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW,
+  position: 'relative',
   flexShrink: 0,
   maxWidth: '100%',
   transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
@@ -40,11 +38,51 @@ const CardWrapper = styled('div')<{
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   margin: 8,
   width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
-  userSelect: 'none',
+  userSelect: 'none'
+}))
+
+const InnerCardWrapper = styled('div')({
+  position: 'relative',
   ':hover': {
     boxShadow: Elevation.CARD_SHADOW_HOVER
   }
+})
+
+const STACK_DEGREES = {
+  0: 1,
+  1: -2
+}
+
+const STACK_OFFSET_LEFT = {
+  0: 4,
+  1: 2
+}
+
+const STACK_OFFSET_TOP = {
+  0: 3,
+  1: 2
+}
+
+const StackedCard = styled('div')<{stackIndex: 0 | 1}>(({stackIndex}) => ({
+  content: '""',
+  display: 'block',
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  left: `${STACK_OFFSET_LEFT[stackIndex]}px`,
+  top: `${STACK_OFFSET_TOP[stackIndex]}px`,
+  transform: `rotate(${STACK_DEGREES[stackIndex]}deg)`,
+  background: Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: Elevation.CARD_SHADOW
 }))
+
+const InnerCard = styled('div')({
+  position: 'relative',
+  background: Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: Elevation.CARD_SHADOW
+})
 
 const MeetingInfo = styled('div')({
   // tighter padding for options, meta, avatars
@@ -89,6 +127,19 @@ const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_CO
     width: '100%'
   })
 )
+
+const RecurringLabel = styled.span({
+  color: PALETTE.JADE_500,
+  background: PALETTE.JADE_300,
+  fontSize: 11,
+  lineHeight: '12px',
+  fontWeight: 500,
+  position: 'absolute',
+  right: 8,
+  top: 8,
+  padding: '4px 8px 4px 8px',
+  borderRadius: '64px'
+})
 
 const MeetingImgWrapper = styled('div')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
@@ -155,7 +206,7 @@ const MEETING_TYPE_LABEL = {
 
 const MeetingCard = (props: Props) => {
   const {meeting, status, onTransitionEnd, displayIdx} = props
-  const {name, team, id: meetingId, meetingType, phases} = meeting
+  const {name, team, id: meetingId, meetingType, phases, meetingSeries} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
@@ -185,6 +236,9 @@ const MeetingCard = (props: Props) => {
   }
   const {id: teamId, name: teamName} = team
 
+  const isRecurring = !!(meetingSeries && !meetingSeries.cancelledAt)
+  const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
+
   return (
     <CardWrapper
       ref={ref}
@@ -192,38 +246,61 @@ const MeetingCard = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <MeetingImgWrapper>
-        <MeetingImgBackground meetingType={meetingType} />
-        <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
-        <Link to={`/meet/${meetingId}`}>
-          <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
-        </Link>
-      </MeetingImgWrapper>
-      <MeetingInfo>
-        <TopLine>
-          <Link to={`/meet/${meetingId}`}>
-            <Name>{name}</Name>
-          </Link>
-          <Options ref={originRef} onClick={togglePortal}>
-            <IconLabel ref={tooltipRef} icon='more_vert' />
-          </Options>
-        </TopLine>
-        <Link to={`/meet/${meetingId}`}>
-          <Meta>
-            {teamName} • {meetingPhaseLabel}
-          </Meta>
-        </Link>
-        <AvatarList users={connectedUsers} size={28} />
-      </MeetingInfo>
-      {menuPortal(
-        <MeetingCardOptionsMenuRoot
-          meetingId={meetingId}
-          teamId={teamId}
-          menuProps={menuProps}
-          popTooltip={popTooltip}
-        />
-      )}
-      {tooltipPortal('Copied!')}
+      <InnerCardWrapper>
+        {isRecurring && (
+          <>
+            <StackedCard stackIndex={0}>
+              <MeetingImgWrapper>
+                <MeetingImgBackground meetingType={meetingType} />
+                <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
+              </MeetingImgWrapper>
+            </StackedCard>
+            <StackedCard stackIndex={1}>
+              <MeetingImgWrapper>
+                <MeetingImgBackground meetingType={meetingType} />
+                <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
+              </MeetingImgWrapper>
+            </StackedCard>
+          </>
+        )}
+        <InnerCard>
+          <MeetingImgWrapper>
+            <MeetingImgBackground meetingType={meetingType} />
+            <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
+            {meetingType === 'teamPrompt' && isRecurring && (
+              <RecurringLabel>Recurring</RecurringLabel>
+            )}
+            <Link to={meetingLink}>
+              <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
+            </Link>
+          </MeetingImgWrapper>
+          <MeetingInfo>
+            <TopLine>
+              <Link to={meetingLink}>
+                <Name>{isRecurring ? meetingSeries.title : name}</Name>
+              </Link>
+              <Options ref={originRef} onClick={togglePortal}>
+                <IconLabel ref={tooltipRef} icon='more_vert' />
+              </Options>
+            </TopLine>
+            <Link to={meetingLink}>
+              <Meta>
+                {teamName} • {meetingPhaseLabel}
+              </Meta>
+            </Link>
+            <AvatarList users={connectedUsers} size={28} />
+          </MeetingInfo>
+          {menuPortal(
+            <MeetingCardOptionsMenuRoot
+              meetingId={meetingId}
+              teamId={teamId}
+              menuProps={menuProps}
+              popTooltip={popTooltip}
+            />
+          )}
+          {tooltipPortal('Copied!')}
+        </InnerCard>
+      </InnerCardWrapper>
     </CardWrapper>
   )
 }
@@ -248,6 +325,13 @@ export default createFragmentContainer(MeetingCard, {
       meetingMembers {
         user {
           ...AvatarListUser_user
+        }
+      }
+      ... on TeamPromptMeeting {
+        meetingSeries {
+          id
+          title
+          cancelledAt
         }
       }
     }

@@ -7,6 +7,7 @@ const S3Plugin = require('webpack-s3-plugin')
 const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -26,14 +27,16 @@ const getNormalizedWebpackPublicPath = () => {
   return normalizedPath
 }
 
-module.exports = ({isDeploy}) => ({
+module.exports = ({isDeploy, noDeps}) => ({
   mode: 'production',
   node: {
     __dirname: false
   },
   entry: {
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
-    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
+    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
+    postDeploy: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/postDeploy.ts')],
+    migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')]
   },
   output: {
     filename: '[name].js',
@@ -54,14 +57,41 @@ module.exports = ({isDeploy}) => ({
   },
   target: 'node',
   externals: [
-    nodeExternals({
+    !noDeps && nodeExternals({
       allowlist: [/parabol-client/, /parabol-server/]
     })
-  ],
+  ].filter(Boolean),
+  optimization: {
+    minimize: noDeps,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+        parallel: noDeps ? 2 : true,
+        terserOptions: {
+          output: {
+            comments: false,
+            ecma: 6
+          },
+          compress: {
+            ecma: 6
+          }
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        }
+      })
+    ]
+  },
   plugins: [
     new webpack.DefinePlugin({
-      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT)
+      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+      // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
+      'process.platform': JSON.stringify(process.platform),
+      'process.arch': JSON.stringify(process.arch),
+      'process.versions.modules': JSON.stringify(process.versions.modules)
     }),
+    // if we need canvas for SSR we can just install it to our own package.json
+    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    // native bindings might be faster, but abandonware & not currently used
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[fullhash].js.map',
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`

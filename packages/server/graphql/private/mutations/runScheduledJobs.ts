@@ -1,9 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {processLockOrganizationJob} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
+import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
-import ScheduledJobOrganizationLock from '../../../database/types/ScheduledJobOrganizationLock'
+import ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -36,7 +36,7 @@ const processMeetingStageTimeLimits = async (
   })
 }
 
-export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledJobOrganizationLock
+export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
 
 const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
@@ -49,10 +49,8 @@ const processJob = async (job: ScheduledJobUnion, dataLoader: DataLoaderWorker) 
       job as ScheduledJobMeetingStageTimeLimit,
       dataLoader
     ).catch(console.error)
-  } else if (job.type === 'LOCK_ORGANIZATION') {
-    return processLockOrganizationJob(job as ScheduledJobOrganizationLock, dataLoader).catch(
-      console.error
-    )
+  } else if (job.type === 'LOCK_ORGANIZATION' || job.type === 'WARN_ORGANIZATION') {
+    return processTeamsLimitsJob(job as ScheduledTeamLimitsJob, dataLoader).catch(console.error)
   }
 }
 
