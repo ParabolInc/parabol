@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
+import {Add, ExitToApp, Forum, Group, History, PlaylistAddCheck, Warning} from '@mui/icons-material'
 import React from 'react'
-import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint, NavSidebar} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
@@ -32,9 +31,10 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   }
 }))
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
+  height: 24,
+  width: 24,
   color: PALETTE.SLATE_700,
-  fontSize: ICON_SIZE.MD24,
   marginRight: 16,
   opacity: 0.5
 })
@@ -49,6 +49,7 @@ interface Props {
   onClick?: () => void
   label: string
   href: string
+  //FIXME 6062: change to React.ComponentType
   icon: string
 }
 
@@ -72,7 +73,19 @@ const LeftDashNavItem = (props: Props) => {
   }
   return (
     <NavItem className={className} onClick={handleClick} isActive={isActive}>
-      <StyledIcon>{icon}</StyledIcon>
+      <StyledIcon>
+        {
+          {
+            forum: <Forum />,
+            history: <History />,
+            playlist_add_check: <PlaylistAddCheck />,
+            add: <Add />,
+            exit_to_app: <ExitToApp />,
+            group: <Group />,
+            warning: <Warning />
+          }[icon]
+        }
+      </StyledIcon>
       <Label>{label}</Label>
     </NavItem>
   )

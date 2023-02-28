@@ -1,11 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import React, {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {FragmentRefs} from 'relay-runtime'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
+import useHotkey from '../hooks/useHotkey'
 import useInitialRender from '../hooks/useInitialRender'
 import useLeft from '../hooks/useLeft'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
@@ -31,6 +33,11 @@ interface Props {
   estimateAreaRef: RefObject<HTMLDivElement>
 }
 
+interface Card {
+  readonly label: string
+  readonly ' $fragmentRefs': FragmentRefs<'PokerCard_scaleValue'>
+}
+
 const swipe = {
   translateX: 0,
   lastX: 0, // last position during a move event
@@ -50,12 +57,11 @@ const PokerCardDeck = (props: Props) => {
   const {meeting, estimateAreaRef} = props
   const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
   const isSpectating = !!viewerMeetingMember?.isSpectating
-  const stageId = localStage.id!
-  const {dimensionRef} = localStage
-  const scores = localStage.scores!
-  const isVoting = localStage.isVoting!
-  const {scale} = dimensionRef!
-  const {values: cards} = scale
+  // fallbacks used here to test https://github.com/ParabolInc/parabol/issues/6247
+  const stageId = localStage.id ?? ''
+  const cards = localStage.dimensionRef?.scale.values ?? []
+  const scores = localStage.scores ?? []
+  const isVoting = localStage.isVoting ?? false
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [estimateAreaWidth, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
@@ -186,6 +192,29 @@ const PokerCardDeck = (props: Props) => {
     }
   }, [maxSlide, isCollapsed])
   // const transform = maxSlide > 0 && !isCollapsed ? `translateX(${swipe.translateX}px)` : undefined
+
+  const onKeyDown = (event: Event | KeyboardEvent) => {
+    if (cards.length <= 0) return
+
+    if ((event as KeyboardEvent).key === 'ArrowUp') {
+      if (typeof selectedIdx === 'undefined' || selectedIdx === cards.length - 1) {
+        vote((cards[0] as Card).label)
+      } else {
+        vote((cards[selectedIdx + 1] as Card).label)
+      }
+    }
+
+    if ((event as KeyboardEvent).key === 'ArrowDown') {
+      if (typeof selectedIdx === 'undefined' || selectedIdx === 0) {
+        vote((cards[cards.length - 1] as Card).label)
+      } else {
+        vote((cards[selectedIdx - 1] as Card).label)
+      }
+    }
+  }
+
+  useHotkey(['up', 'down'], onKeyDown)
+
   return (
     <Deck
       ref={deckRef}

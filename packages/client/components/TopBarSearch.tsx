@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -9,7 +10,6 @@ import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {TopBarSearch_viewer} from '~/__generated__/TopBarSearch_viewer.graphql'
 import Atmosphere from '../Atmosphere'
-import Icon from './Icon'
 
 const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
   const {pathname} = location
@@ -22,6 +22,11 @@ const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
     }) ||
     !!matchPath(pathname, {
       path: '/team/:teamId/archive',
+      exact: true,
+      strict: false
+    }) ||
+    !!matchPath(pathname, {
+      path: '/meetings',
       exact: true,
       strict: false
     })
@@ -56,10 +61,12 @@ const SearchInput = styled('input')({
   width: '100%'
 })
 
-const SearchIcon = styled(Icon)({
+const SearchIcon = styled('div')({
+  height: 24,
+  width: 24,
   color: '#fff',
   cursor: 'pointer',
-  padding: 12
+  margin: 12
 })
 
 const setSearch = (atmosphere: Atmosphere, value: string) => {
@@ -79,7 +86,7 @@ const TopBarSearch = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, e.target.value)
   }
-  const icon = dashSearch ? 'close' : 'search'
+  const Icon = dashSearch ? Close : Search
   const onClick = () => {
     setSearch(atmosphere, '')
     inputRef.current?.focus()
@@ -87,7 +94,9 @@ const TopBarSearch = (props: Props) => {
   return (
     <Wrapper location={location}>
       <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
-      <SearchIcon onClick={onClick}>{icon}</SearchIcon>
+      <SearchIcon onClick={onClick}>
+        <Icon />
+      </SearchIcon>
     </Wrapper>
   )
 }

@@ -27,7 +27,8 @@ const RetroReflectPhase = (props: Props) => {
   const [callbackRef, phaseRef] = useCallbackRef()
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const {localPhase, endedAt, showSidebar} = meeting
+  const {localPhase, endedAt, showSidebar, settings} = meeting
+  const {disableAnonymity} = settings
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
   const focusedPromptId = localPhase!.focusedPromptId
@@ -42,7 +43,7 @@ const RetroReflectPhase = (props: Props) => {
         >
           <PhaseHeaderTitle>{phaseLabelLookup.reflect}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
-            {'Add anonymous reflections for each prompt'}
+            {`Add ${disableAnonymity ? '' : 'anonymous'} reflections for each prompt`}
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
@@ -97,6 +98,9 @@ export default createFragmentContainer(RetroReflectPhase, {
         ...RetroReflectPhase_phase @relay(mask: false)
       }
       showSidebar
+      settings {
+        disableAnonymity
+      }
     }
   `
 })

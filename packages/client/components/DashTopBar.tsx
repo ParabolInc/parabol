@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -9,7 +10,7 @@ import {AppBar, Breakpoint, Layout, NavSidebar} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
-import Icon from './Icon'
+import PinnedSnackbarNotifications from './PinnedSnackbarNotifications'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarAvatar from './TopBarAvatar'
 import TopBarHelp from './TopBarHelp'
@@ -94,6 +95,7 @@ const DashTopBar = (props: Props) => {
     graphql`
       fragment DashTopBar_query on Query {
         ...TopBarNotifications_query
+        ...PinnedSnackbarNotifications_query
         viewer {
           ...TopBarAvatar_viewer
           ...TopBarSearch_viewer
@@ -111,7 +113,7 @@ const DashTopBar = (props: Props) => {
     <Wrapper>
       <LeftNavHeader>
         <LeftNavToggle onClick={toggle} aria-label='Toggle dashboard menu'>
-          <Icon>{'menu'}</Icon>
+          <Menu />
         </LeftNavToggle>
         <LogoWrapper onClick={gotoHome}>
           <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
@@ -121,7 +123,8 @@ const DashTopBar = (props: Props) => {
         <TopBarSearch viewer={data.viewer} />
         <TopBarIcons>
           <TopBarHelp />
-          <TopBarNotifications queryRef={data || null} />
+          <TopBarNotifications queryRef={data} />
+          <PinnedSnackbarNotifications queryRef={data} />
           <TopBarAvatar viewer={data.viewer || null} />
         </TopBarIcons>
       </TopBarMain>

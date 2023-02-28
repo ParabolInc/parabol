@@ -1,10 +1,13 @@
+import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {ReactableEnum} from '../../database/types/Reactable'
+import {Reactable} from '../../database/types/Reactable'
 import {TaskServiceEnum} from '../../database/types/Task'
+import {ReactableEnum} from '../../graphql/private/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
+import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
@@ -48,6 +51,12 @@ export type MeetingSettings = {
   disableAnonymity?: boolean
 }
 
+export type WebSocketProperties = {
+  socketCount: number
+  socketId: string
+  tms: string[]
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -66,6 +75,7 @@ export type AnalyticsEvent =
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
   // org
+  | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
   | 'Organization Downgraded'
   // task
@@ -74,6 +84,12 @@ export type AnalyticsEvent =
   | 'Task Estimate Set'
   // user
   | 'Account Created'
+  | 'Account Paused'
+  | 'Account Unpaused'
+  | 'Account Name Changed'
+  | 'User Removed From Org'
+  | 'Connect WebSocket'
+  | 'Disconnect WebSocket'
   | 'Summary Email Setting Changed'
 
 /**
@@ -210,16 +226,21 @@ class Analytics {
     userId: string,
     meetingId: string,
     meetingType: MeetingTypeEnum,
-    reactableId: string,
+    reactable: Reactable,
     reactableType: ReactableEnum,
+    reactji: string,
     isRemove: boolean
   ) => {
+    const isAIComment = 'createdBy' in reactable && reactable.createdBy === PARABOL_AI_USER_ID
+    const {id: reactableId} = reactable
     this.track(userId, 'Reactji Interacted', {
       meetingId,
       meetingType,
       reactableId,
       reactableType,
-      isRemove
+      reactji,
+      isRemove,
+      isAIComment
     })
   }
 
@@ -286,6 +307,10 @@ class Analytics {
   }
 
   //org
+  clickedUpgradeCTA = (userId: string, upgradeCTALocation: UpgradeCTALocationEnumType) => {
+    this.track(userId, 'Upgrade CTA Clicked', {upgradeCTALocation})
+  }
+
   organizationUpgraded = (userId: string, upgradeEventProperties: OrgTierChangeEventProperties) => {
     this.track(userId, 'Organization Upgraded', upgradeEventProperties)
   }
@@ -317,10 +342,7 @@ class Analytics {
     this.track(userId, 'Task Estimate Set', taskEstimateProperties)
   }
 
-  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
-    this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
-  }
-
+  // user
   accountCreated = (userId: string, isInvited: boolean, isPatient0: boolean) => {
     this.track(userId, 'Account Created', {
       isInvited,
@@ -328,6 +350,30 @@ class Analytics {
       category: 'All',
       label: isPatient0 ? 'isPatient0' : 'isNotPatient0'
     })
+  }
+
+  accountPaused = (userId: string) => this.track(userId, 'Account Paused')
+
+  accountUnpaused = (userId: string) => this.track(userId, 'Account Unpaused')
+
+  accountNameChanged = (userId: string, newName: string) =>
+    this.track(userId, 'Account Name Changed', {
+      newName
+    })
+
+  userRemovedFromOrg = (userId: string, orgId: string) =>
+    this.track(userId, 'User Removed From Org', {userId, orgId})
+
+  websocketConnected = (userId: string, websocketProperties: WebSocketProperties) => {
+    this.track(userId, 'Connect WebSocket', websocketProperties)
+  }
+
+  websocketDisconnected = (userId: string, websocketProperties: WebSocketProperties) => {
+    this.track(userId, 'Disconnect WebSocket', websocketProperties)
+  }
+
+  toggleSubToSummaryEmail = (userId: string, subscribeToSummaryEmail: boolean) => {
+    this.track(userId, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
   }
 
   private track = (userId: string, event: AnalyticsEvent, properties?: Record<string, any>) =>

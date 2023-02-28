@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
@@ -6,7 +7,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {AzureDevOpsScopingSearchInput_meeting} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
-import Icon from './Icon'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -25,10 +25,10 @@ const SearchInput = styled('input')({
   width: '100%'
 })
 
-const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
+const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
   color: PALETTE.SLATE_600,
   cursor: 'pointer',
-  padding: 12,
+  margin: 12,
   visibility: isEmpty ? 'hidden' : undefined
 }))
 
@@ -61,9 +61,7 @@ const AzureDevOpsScopingSearchInput = (props: Props) => {
   return (
     <Wrapper>
       <SearchInput value={queryString!} placeholder={placeholder} onChange={onChange} />
-      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
-        close
-      </ClearSearchIcon>
+      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch} />
     </Wrapper>
   )
 }

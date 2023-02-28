@@ -96,7 +96,6 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     }
     const options = {searchParams}
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`, options)
-    const urlLink = `https:/prbl.in/${meeting.id}`
     const card = new AdaptiveCards.AdaptiveCard()
     card.version = new AdaptiveCards.Version(1.2, 0)
 
@@ -111,23 +110,11 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingLinkColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
     const meetingLinkColumn = new AdaptiveCards.Column()
     meetingLinkColumn.width = 'stretch'
-    const meetingLinkHeaderTextBlock = new AdaptiveCards.TextBlock('Link: ')
-    meetingLinkHeaderTextBlock.wrap = true
-    meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-    const meetingLinkTextBlock = new AdaptiveCards.TextBlock(urlLink)
-    meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
-    meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
-    meetingLinkTextBlock.wrap = true
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
     const joinMeetingAction = MeetingActionLookup[meeting.meetingType](meetingUrl)
     joinMeetingActionSet.addAction(joinMeetingAction)
-
-    meetingLinkColumn.addItem(meetingLinkHeaderTextBlock)
-    meetingLinkColumn.addItem(meetingLinkTextBlock)
     meetingLinkColumn.addItem(joinMeetingActionSet)
-
     meetingLinkColumnSet.addColumn(meetingLinkColumn)
-
     card.addItem(meetingLinkColumnSet)
 
     const adaptiveCard = JSON.stringify(card.toJSON())
@@ -138,7 +125,7 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
   },
 
   async endMeeting(meeting, team) {
-    const {facilitatorUserId} = meeting
+    const {facilitatorUserId, summary} = meeting
     const {webhookUrl} = notificationChannel
     const searchParams = {
       utm_source: 'MS Teams meeting start',
@@ -175,6 +162,20 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     const meetingEndedReviewColumn = new AdaptiveCards.Column()
     meetingEndedReviewColumn.width = 'auto'
 
+    if (summary) {
+      const aiSummaryColumnSet = new AdaptiveCards.ColumnSet()
+      const aiSummaryColumn = new AdaptiveCards.Column()
+      aiSummaryColumn.width = 'stretch'
+      const aiSummaryTitle = new AdaptiveCards.TextBlock('AI Summary 🤖')
+      aiSummaryTitle.weight = AdaptiveCards.TextWeight.Bolder
+      const aiSummaryTextBlock = new AdaptiveCards.TextBlock(summary)
+      aiSummaryTextBlock.wrap = true
+      aiSummaryColumn.addItem(aiSummaryTitle)
+      aiSummaryColumn.addItem(aiSummaryTextBlock)
+      aiSummaryColumnSet.addColumn(aiSummaryColumn)
+      card.addItem(aiSummaryColumnSet)
+    }
+
     const meetingEndedDiscussionActionSet = new AdaptiveCards.ActionSet()
     const meetingEndedDiscussionAction = new AdaptiveCards.OpenUrlAction()
     meetingEndedDiscussionAction.title = 'See discussion'
@@ -208,7 +209,6 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     const {phases, facilitatorStageId, facilitatorUserId} = meeting
 
-    const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meeting.id}`)
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
 
     const stageRes = findStageById(phases, facilitatorStageId)
@@ -246,13 +246,6 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
     meetingLinkColumnSet.spacing = AdaptiveCards.Spacing.ExtraLarge
     const meetingLinkColumn = new AdaptiveCards.Column()
     meetingLinkColumn.width = 'stretch'
-    const meetingLinkHeaderTextBlock = new AdaptiveCards.TextBlock('Link: ')
-    meetingLinkHeaderTextBlock.wrap = true
-    meetingLinkHeaderTextBlock.weight = AdaptiveCards.TextWeight.Bolder
-    const meetingLinkTextBlock = new AdaptiveCards.TextBlock(maybeMeetingShortLink)
-    meetingLinkTextBlock.color = AdaptiveCards.TextColor.Accent
-    meetingLinkTextBlock.size = AdaptiveCards.TextSize.Small
-    meetingLinkTextBlock.wrap = true
     const joinMeetingActionSet = new AdaptiveCards.ActionSet()
     const joinMeetingAction = new AdaptiveCards.OpenUrlAction()
     joinMeetingAction.title = 'Open Meeting'
@@ -261,8 +254,6 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
 
     joinMeetingActionSet.addAction(joinMeetingAction)
 
-    meetingLinkColumn.addItem(meetingLinkHeaderTextBlock)
-    meetingLinkColumn.addItem(meetingLinkTextBlock)
     meetingLinkColumn.addItem(joinMeetingActionSet)
 
     meetingLinkColumnSet.addColumn(meetingLinkColumn)

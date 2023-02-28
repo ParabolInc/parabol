@@ -5,7 +5,7 @@ import {ACTION} from 'parabol-client/utils/constants'
 import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import lazyPreload from '~/utils/lazyPreload'
+import {CorsOptions} from '../../../../../types/cors'
 import ExportToCSV from '../ExportToCSV'
 import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
@@ -17,6 +17,8 @@ import RetroTopics from './RetroTopics'
 import SummaryHeader from './SummaryHeader'
 import SummaryPokerStories from './SummaryPokerStories'
 import SummarySheetCTA from './SummarySheetCTA'
+import TeamPromptResponseSummary from './TeamPromptResponseSummary'
+import WholeMeetingSummary from './WholeMeetingSummary'
 
 interface Props {
   emailCSVUrl: string
@@ -27,6 +29,7 @@ interface Props {
   referrerUrl?: string
   teamDashUrl: string
   urlAction?: 'csv'
+  corsOptions: CorsOptions
 }
 
 const sheetStyle = {
@@ -35,21 +38,16 @@ const sheetStyle = {
 }
 
 const SummarySheet = (props: Props) => {
-  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl, appOrigin} = props
+  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl, appOrigin, corsOptions} = props
   const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
-
-  // 'TeamPromptResponseSummary' includes client-side-only code that breaks SSR, so lazy-load it.
-  // :TODO: (jmtaber129): Change this to a normal import once 'TeamPromptResponseSummary' supports
-  // SSR.
-  const TeamPromptResponseSummary = lazyPreload(() => import('./TeamPromptResponseSummary'))
 
   return (
     <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
       <tbody>
         <tr>
           <td>
-            <SummaryHeader meeting={meeting} />
+            <SummaryHeader meeting={meeting} corsOptions={corsOptions} />
             <QuickStats meeting={meeting} />
           </td>
         </tr>
@@ -59,12 +57,14 @@ const SummarySheet = (props: Props) => {
           meetingId={meetingId}
           urlAction={urlAction}
           referrer={referrer}
+          corsOptions={corsOptions}
         />
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
         {meetingType === 'teamPrompt' ? (
           <TeamPromptResponseSummary meetingRef={meeting} />
         ) : (
           <>
+            <WholeMeetingSummary meetingRef={meeting} />
             <MeetingMembersWithTasks meeting={meeting} />
             <MeetingMembersWithoutTasks meeting={meeting} />
             <RetroTopics
@@ -86,7 +86,7 @@ const SummarySheet = (props: Props) => {
           prompt={`How’d your meeting go?`}
           tagline='We’re eager for your feedback!'
         />
-        <LogoFooter />
+        <LogoFooter corsOptions={corsOptions} />
       </tbody>
     </table>
   )
@@ -96,6 +96,7 @@ export default createFragmentContainer(SummarySheet, {
   meeting: graphql`
     fragment SummarySheet_meeting on NewMeeting {
       id
+      ...WholeMeetingSummary_meeting
       ...SummaryHeader_meeting
       ...QuickStats_meeting
       ...MeetingMembersWithTasks_meeting

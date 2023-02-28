@@ -1,0 +1,32 @@
+"""
+A flag to give an individual organization super powers
+"""
+enum OrganizationFeatureFlagsEnum {
+  teamsLimit
+}
+
+extend type Mutation {
+  """
+  Give some organizations advanced features in a flag
+  """
+  addFeatureFlagToOrg(
+    """
+    a list of organization ids
+    """
+    orgIds: [String!]!
+
+    """
+    the flag that you want to give to the organization
+    """
+    flag: OrganizationFeatureFlagsEnum!
+  ): AddFeatureFlagToOrgPayload!
+}
+
+union AddFeatureFlagToOrgPayload = ErrorPayload | AddFeatureFlagToOrgSuccess
+
+type AddFeatureFlagToOrgSuccess {
+  """
+  the organizations given the super power
+  """
+  updatedOrganizations: [Organization]
+}

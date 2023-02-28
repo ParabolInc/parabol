@@ -73,14 +73,17 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
 
   return useMemo(() => {
     const currentTChildren = [] as TransitionChild<T>[]
-    const {current: prevTChildren} = previousTransitionChildrenRef
+    const filteredPrevTChildren = previousTransitionChildrenRef.current.filter(
+      (prevTChild) => prevTChild.status !== TransitionStatus.EXITING
+    )
 
     let touched = false
     // add mounted nodes + update new orderings
     const updatedKeys = [] as Key[]
     children.forEach((nextChild, idxInNext) => {
-      const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)
-      const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev]!.status
+      const idxInPrev = filteredPrevTChildren.findIndex(({child}) => child.key === nextChild.key)
+      const status =
+        idxInPrev === -1 ? TransitionStatus.MOUNTED : filteredPrevTChildren[idxInPrev]!.status
       currentTChildren.push({
         status,
         child: nextChild,
@@ -97,7 +100,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     }
 
     // add exiting nodes
-    prevTChildren.forEach((prevTChild, i) => {
+    filteredPrevTChildren.forEach((prevTChild, i) => {
       const {child} = prevTChild
       const {key} = child
       const idxInNext = children.findIndex((child) => child.key === key)

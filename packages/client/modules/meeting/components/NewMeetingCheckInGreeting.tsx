@@ -9,7 +9,9 @@ import {NewMeetingCheckInGreeting_teamMember} from '../../../__generated__/NewMe
 
 const GreetingBlock = styled('div')({
   fontSize: '1.5rem',
-  textAlign: 'center'
+  textAlign: 'center',
+  overflowWrap: 'break-word',
+  width: 'auto'
 })
 
 const GreetingSpan = styled('span')({

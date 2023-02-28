@@ -35,7 +35,7 @@ const endTeamPrompt = {
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    return safeEndTeamPrompt({meeting, now, r, dataLoader, subOptions, viewerId})
+    return safeEndTeamPrompt({meeting, now, r, context, subOptions, viewerId})
   }
 }
 

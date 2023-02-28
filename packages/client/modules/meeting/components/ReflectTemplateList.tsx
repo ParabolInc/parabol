@@ -1,11 +1,15 @@
 import styled from '@emotion/styled'
+import {
+  Business as BusinessIcon,
+  Group as GroupIcon,
+  Public as PublicIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {SharingScopeEnum} from '~/__generated__/ReflectTemplateItem_template.graphql'
-import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import useBreakpoint from '../../../hooks/useBreakpoint'
@@ -13,6 +17,7 @@ import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
 import {ReflectTemplateList_settings$key} from '../../../__generated__/ReflectTemplateList_settings.graphql'
+import {ReflectTemplateList_viewer$key} from '../../../__generated__/ReflectTemplateList_viewer.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
 import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
@@ -65,7 +70,9 @@ const TabLabel = styled('div')({
   alignItems: 'center'
 })
 
-const TabIcon = styled(Icon)({
+const TabIcon = styled('div')({
+  width: 24,
+  height: 24,
   marginRight: 4
 })
 
@@ -74,7 +81,9 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
+  displayUpgradeDetails: () => void
   settingsRef: ReflectTemplateList_settings$key
+  viewerRef: ReflectTemplateList_viewer$key
 }
 
 const useReadyToSmoothScroll = (activeTemplateId: string) => {
@@ -94,7 +103,7 @@ export const templateIdxs = {
 } as const
 
 const ReflectTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settingsRef} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef, displayUpgradeDetails} = props
   const settings = useFragment(
     graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
@@ -102,6 +111,7 @@ const ReflectTemplateList = (props: Props) => {
         ...ReflectTemplateListTeam_settings
         id
         team {
+          ...AddNewReflectTemplate_team
           id
         }
         activeTemplate {
@@ -117,6 +127,15 @@ const ReflectTemplateList = (props: Props) => {
       }
     `,
     settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateList_viewer on User {
+        ...ReflectTemplateListTeam_viewer
+        ...AddNewReflectTemplate_viewer
+      }
+    `,
+    viewerRef
   )
   const {id: settingsId, team, teamTemplates} = settings
   const {id: teamId} = team
@@ -157,7 +176,10 @@ const ReflectTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'group'}</TabIcon> Team
+              <TabIcon>
+                <GroupIcon />
+              </TabIcon>{' '}
+              Team
             </TabLabel>
           }
           onClick={() => goToTab('TEAM')}
@@ -165,7 +187,10 @@ const ReflectTemplateList = (props: Props) => {
         <WideTab
           label={
             <TabLabel>
-              <TabIcon>{'business'}</TabIcon> Organization
+              <TabIcon>
+                <BusinessIcon />
+              </TabIcon>{' '}
+              Organization
             </TabLabel>
           }
           onClick={() => goToTab('ORGANIZATION')}
@@ -173,7 +198,10 @@ const ReflectTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Public
+              <TabIcon>
+                <PublicIcon />
+              </TabIcon>{' '}
+              Public
             </TabLabel>
           }
           onClick={() => goToTab('PUBLIC')}
@@ -185,8 +213,10 @@ const ReflectTemplateList = (props: Props) => {
         settingsRef={settings}
       />
       <AddNewReflectTemplate
-        teamId={teamId}
-        reflectTemplates={teamTemplates}
+        reflectTemplatesRef={teamTemplates}
+        teamRef={team}
+        displayUpgradeDetails={displayUpgradeDetails}
+        viewerRef={viewer}
         gotoTeamTemplates={() => goToTab('TEAM')}
       />
       <SwipeableViews
@@ -204,6 +234,7 @@ const ReflectTemplateList = (props: Props) => {
             settingsRef={settings}
             teamId={teamId}
             isActive={activeIdx === 0}
+            viewerRef={viewer}
           />
         </TabContents>
         <TabContents>

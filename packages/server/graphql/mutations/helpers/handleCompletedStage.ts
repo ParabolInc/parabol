@@ -3,12 +3,16 @@ import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhas
 import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
+import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
+import addSummariesToThreads from './addSummariesToThreads'
+import generateDiscussionSummary from './generateDiscussionSummary'
+import generateGroupSummaries from './generateGroupSummaries'
 import removeEmptyReflections from './removeEmptyReflections'
 
 /*
@@ -63,7 +67,7 @@ const handleCompletedRetrospectiveStage = async (
 
       data.reflectionGroups = sortedReflectionGroups
     } else if (stage.phaseType === GROUP) {
-      const {phases} = meeting
+      const {facilitatorUserId, phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
       await r
         .table('NewMeeting')
@@ -73,6 +77,8 @@ const handleCompletedRetrospectiveStage = async (
         })
         .run()
       data.meeting = meeting
+      // dont await for the OpenAI API response
+      generateGroupSummaries(meeting.id, teamId, dataLoader, facilitatorUserId)
     }
 
     return {[stage.phaseType]: data}
@@ -89,8 +95,15 @@ const handleCompletedRetrospectiveStage = async (
       discussionTopicType: 'reflectionGroup' as const,
       discussionTopicId: stage.reflectionGroupId
     }))
-    await insertDiscussions(discussions)
+    await Promise.all([
+      insertDiscussions(discussions),
+      addSummariesToThreads(discussPhaseStages, meetingId, teamId, dataLoader)
+    ])
     return {[VOTE]: data}
+  } else if (stage.phaseType === 'discuss') {
+    const {discussionId} = stage as DiscussStage
+    // dont await for the OpenAI API response
+    generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}
 }

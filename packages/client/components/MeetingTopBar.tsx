@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
+import {Comment} from '@mui/icons-material'
 import React, {ReactElement, ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
-import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import SidebarToggle from './SidebarToggle'
 
@@ -21,6 +20,7 @@ export const MeetingTopBarStyles = styled('div')({
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
+  overflowX: 'auto',
   paddingLeft: 16,
   paddingRight: 14, // compensate for overlapping block padding
   width: '100%',
@@ -125,15 +125,18 @@ const DiscussionButton = styled(PlainButton)({
   }
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled(Comment)({
   color: '#FFFF',
   transform: 'scaleX(-1)',
-  fontSize: ICON_SIZE.MD18,
+  height: 18,
+  width: 18,
   [meetingAvatarMediaQueries[0]]: {
-    fontSize: ICON_SIZE.MD24
+    height: 24,
+    width: 24
   },
   [meetingAvatarMediaQueries[1]]: {
-    fontSize: ICON_SIZE.MD36
+    height: 36,
+    width: 36
   }
 })
 
@@ -180,7 +183,7 @@ const MeetingTopBar = (props: Props) => {
               <BadgeDot isCommentUnread={isCommentUnread} />
             </Badge>
             <DiscussionButton onClick={toggleDrawer}>
-              <StyledIcon>comment</StyledIcon>
+              <StyledIcon />
             </DiscussionButton>
           </ButtonContainer>
         )}

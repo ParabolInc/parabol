@@ -110,7 +110,7 @@ const Organization = (props: Props) => {
   if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
-  const onlyShowMembers = !isBillingLeader && tier !== 'personal'
+  const onlyShowMembers = !isBillingLeader && tier !== 'starter'
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>

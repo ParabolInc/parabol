@@ -1,6 +1,5 @@
 import {PALETTE} from '~/styles/paletteV3'
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
-import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
@@ -92,6 +91,7 @@ class DemoJiraRemoteProject {
   key: string
   name: string
   avatar: string
+  service: 'jira'
   avatarUrls = {
     x16: '',
     x24: '',
@@ -110,6 +110,7 @@ class DemoJiraRemoteProject {
     this.key = projectKey
     this.name = name
     this.avatar = avatar
+    this.service = 'jira'
   }
 }
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
@@ -257,16 +258,16 @@ const initDemoTeamMember = (
       slack: initSlackAuth(userId)
     },
     repoIntegrations: {
-      hasMore: true,
+      hasMore: false,
       items: [
         new DemoJiraRemoteProject(JiraDemoProjectId),
         makeRepoIntegrationGitHub(GitHubDemoKey)
       ]
     },
-    allAvailableRepoIntegrations: [
-      new DemoJiraRemoteProject(JiraDemoProjectId),
-      new DemoJiraRemoteProject(JiraSecretProjectId)
-    ],
+    prevUsedRepoIntegrations: {
+      hasMore: false,
+      items: []
+    },
     teamId: demoTeamId,
     userId
   }
@@ -291,7 +292,7 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: 'pro',
+    tier: 'team',
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
@@ -316,7 +317,7 @@ const initDemoTeam = (
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: 'pro' as TierEnum,
+    tier: 'team',
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),

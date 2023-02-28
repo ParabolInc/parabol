@@ -1,16 +1,21 @@
 import styled from '@emotion/styled'
+import {
+  Business as BusinessIcon,
+  Group as GroupIcon,
+  Public as PublicIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
-import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import useBreakpoint from '../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV3'
 import {Breakpoint} from '../../../types/constEnums'
-import {PokerTemplateList_settings} from '../../../__generated__/PokerTemplateList_settings.graphql'
+import {PokerTemplateList_settings$key} from '../../../__generated__/PokerTemplateList_settings.graphql'
+import {PokerTemplateList_viewer$key} from '../../../__generated__/PokerTemplateList_viewer.graphql'
 import AddNewPokerTemplate from './AddNewPokerTemplate'
 import PokerTemplateListOrgRoot from './PokerTemplateListOrgRoot'
 import PokerTemplateListPublicRoot from './PokerTemplateListPublicRoot'
@@ -61,7 +66,9 @@ const TabLabel = styled('div')({
   alignItems: 'center'
 })
 
-const TabIcon = styled(Icon)({
+const TabIcon = styled('div')({
+  height: 24,
+  width: 24,
   marginRight: 4
 })
 
@@ -70,11 +77,44 @@ const innerStyle = {width: '100%', height: '100%'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
-  settings: PokerTemplateList_settings
+  settingsRef: PokerTemplateList_settings$key
+  viewerRef: PokerTemplateList_viewer$key
+  displayUpgradeDetails: () => void
 }
 
 const PokerTemplateList = (props: Props) => {
-  const {activeIdx, setActiveIdx, settings} = props
+  const {activeIdx, setActiveIdx, settingsRef, viewerRef, displayUpgradeDetails} = props
+  const settings = useFragment(
+    graphql`
+      fragment PokerTemplateList_settings on PokerMeetingSettings {
+        id
+        team {
+          ...PokerTemplateListTeam_team
+          ...AddNewPokerTemplate_team
+          id
+        }
+        activeTemplate {
+          ...getTemplateList_template
+          id
+        }
+        teamTemplates {
+          ...PokerTemplateListTeam_teamTemplates
+          ...AddNewPokerTemplate_pokerTemplates
+          id
+        }
+      }
+    `,
+    settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment PokerTemplateList_viewer on User {
+        ...PokerTemplateListTeam_viewer
+        ...AddNewPokerTemplate_viewer
+      }
+    `,
+    viewerRef
+  )
   const {team, teamTemplates} = settings
   const {id: teamId} = team
   const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
@@ -100,7 +140,10 @@ const PokerTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'group'}</TabIcon> Team
+              <TabIcon>
+                <GroupIcon />
+              </TabIcon>{' '}
+              Team
             </TabLabel>
           }
           onClick={gotoTeamTemplates}
@@ -108,7 +151,10 @@ const PokerTemplateList = (props: Props) => {
         <WideTab
           label={
             <TabLabel>
-              <TabIcon>{'business'}</TabIcon> Organization
+              <TabIcon>
+                <BusinessIcon />
+              </TabIcon>{' '}
+              Organization
             </TabLabel>
           }
           onClick={() => setActiveIdx(1)}
@@ -116,16 +162,21 @@ const PokerTemplateList = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Public
+              <TabIcon>
+                <PublicIcon />
+              </TabIcon>{' '}
+              Public
             </TabLabel>
           }
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
       <AddNewPokerTemplate
-        teamId={teamId}
-        pokerTemplates={teamTemplates}
+        teamRef={team}
+        pokerTemplatesRef={teamTemplates}
+        viewerRef={viewer}
         gotoTeamTemplates={gotoTeamTemplates}
+        displayUpgradeDetails={displayUpgradeDetails}
       />
       <SwipeableViews
         enableMouseEvents
@@ -138,9 +189,10 @@ const PokerTemplateList = (props: Props) => {
           <PokerTemplateListTeam
             activeTemplateId={activeTemplateId}
             showPublicTemplates={gotoPublicTemplates}
-            teamTemplates={teamTemplates}
-            teamId={teamId}
+            teamTemplatesRef={teamTemplates}
+            teamRef={team}
             isActive={activeIdx === 0}
+            viewerRef={viewer}
           />
         </TabContents>
         <TabContents>{activeIdx === 1 && <PokerTemplateListOrgRoot teamId={teamId} />}</TabContents>
@@ -153,24 +205,4 @@ const PokerTemplateList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerTemplateList, {
-  settings: graphql`
-    fragment PokerTemplateList_settings on PokerMeetingSettings {
-      id
-      team {
-        id
-      }
-      activeTemplate {
-        ...getTemplateList_template
-        id
-        teamId
-        orgId
-      }
-      teamTemplates {
-        ...PokerTemplateListTeam_teamTemplates
-        ...AddNewPokerTemplate_pokerTemplates
-        id
-      }
-    }
-  `
-})
+export default PokerTemplateList

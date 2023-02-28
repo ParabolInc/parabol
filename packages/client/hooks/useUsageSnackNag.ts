@@ -19,7 +19,7 @@ const getIsNaggingPath = (history: RouterProps['history']) => {
 
 const shouldNag = (tier: TierEnum, suggestedTier: TierEnum | null) => {
   if (!suggestedTier) return false
-  const suggestPro = suggestedTier === 'pro' && tier === 'personal'
+  const suggestPro = suggestedTier === 'team' && tier === 'starter'
   const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
   return suggestPro || suggestEnterprise
 }
@@ -60,14 +60,25 @@ const useUsageSnackNag = (insights: boolean) => {
           domains @include(if: $isUserNaggable) {
             tier
             suggestedTier
+            viewerOrganizations {
+              tierLimitExceededAt
+            }
           }
         }
       }
     `,
     {isUserNaggable}
   )
+
   const {domains} = viewer
-  const nag = domains?.find(({tier, suggestedTier}) => shouldNag(tier, suggestedTier))
+
+  // Do not use snack nag if the user has an organization with the limit exceeded, in this case we use a different warnings approach
+  const limitExceeded = domains?.find(({viewerOrganizations}) =>
+    viewerOrganizations.find(({tierLimitExceededAt}) => !!tierLimitExceededAt)
+  )
+
+  const nag =
+    !limitExceeded && domains?.find(({tier, suggestedTier}) => shouldNag(tier, suggestedTier))
   useEffect(() => {
     if (!nag) return
     emitNag(atmosphere, history)

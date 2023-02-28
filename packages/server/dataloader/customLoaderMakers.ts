@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
@@ -81,7 +82,9 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         r
           .table('Comment')
           .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-          .filter({isActive: true})
+          .filter((row: RDatum) =>
+            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
+          )
           .group('discussionId') as any
       )
         .count()
@@ -371,6 +374,7 @@ export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
       return Promise.all(
         keys.map((key) => {
           const {userId, orgId} = key
+          if (!userId || !orgId) return null
           return r
             .table('OrganizationUser')
             .getAll(userId, {index: 'userId'})
@@ -526,6 +530,7 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
             .table('NewMeeting')
             .getAll(key, {index: 'meetingSeriesId'})
             .filter({endedAt: null}, {default: true})
+            .orderBy(r.asc('createdAt'))
             .run()
         })
       )

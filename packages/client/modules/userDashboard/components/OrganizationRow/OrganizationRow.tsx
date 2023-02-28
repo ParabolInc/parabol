@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
+import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {OrganizationRow_organization} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton from '../../../../components/FlatButton'
-import Icon from '../../../../components/Icon'
 import Row from '../../../../components/Row/Row'
 import RowActions from '../../../../components/Row/RowActions'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -20,7 +20,7 @@ import useRouter from '../../../../hooks/useRouter'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import {Breakpoint, TierLabel} from '../../../../types/constEnums'
+import {Breakpoint} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
 
 const RowInner = styled('div')({
@@ -55,9 +55,13 @@ const StyledButton = styled(SecondaryButton)({
   width: 36
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   color: PALETTE.SLATE_600,
-  fontSize: 18
+  height: 18,
+  width: 18,
+  svg: {
+    fontSize: 18
+  }
 })
 
 const StyledRowInfo = styled(RowInfo)({
@@ -99,13 +103,7 @@ const OrganizationRow = (props: Props) => {
     history.push(`/me/organizations/${orgId}`)
   }
   const totalUsers = activeUserCount + inactiveUserCount
-  const showUpgradeCTA = tier === 'personal'
-  const upgradeCTALabel = (
-    <span>
-      {'Upgrade to '}
-      <b>{TierLabel.PRO}</b>
-    </span>
-  )
+  const showUpgradeCTA = tier === 'starter'
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -118,7 +116,7 @@ const OrganizationRow = (props: Props) => {
         <StyledRowInfo>
           <RowInfoHeader>
             <Name onClick={onRowClick}>{name}</Name>
-            {tier !== 'personal' && (
+            {tier !== 'starter' && (
               <StyledTagBlock>
                 <TierTag tier={tier} />
               </StyledTagBlock>
@@ -131,7 +129,7 @@ const OrganizationRow = (props: Props) => {
         <RowActions>
           {showUpgradeCTA && (
             <StyledFlatButton onClick={onRowClick} palette={'blue'}>
-              {upgradeCTALabel}
+              {'Upgrade'}
             </StyledFlatButton>
           )}
           <StyledButton
@@ -140,7 +138,9 @@ const OrganizationRow = (props: Props) => {
             onMouseLeave={closeTooltip}
             ref={originRef}
           >
-            <StyledIcon>settings</StyledIcon>
+            <StyledIcon>
+              <SettingsIcon />
+            </StyledIcon>
           </StyledButton>
           {tooltipPortal('Settings')}
         </RowActions>

@@ -86,7 +86,9 @@ const ResponseCardFooter = styled('div')({
 
 export const TeamMemberName = styled('h3')({
   padding: '0 8px',
-  margin: 0
+  margin: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
 })
 
 const StyledReactjis = styled(ReactjiSection)({
@@ -123,6 +125,7 @@ const TeamPromptResponseCard = (props: Props) => {
         meetingId
         meeting {
           ... on TeamPromptMeeting {
+            endedAt
             localStageId
             isRightDrawerOpen
           }
@@ -191,8 +194,11 @@ const TeamPromptResponseCard = (props: Props) => {
   const discussionEdges = discussion.thread.edges
   const replyCount = discussionEdges.length
 
-  const isCurrentViewer = userId === viewerId
-  const isEmptyResponse = !isCurrentViewer && !plaintextContent
+  const isMeetingEnded = !!meeting?.endedAt
+  const isViewerResponse = userId === viewerId
+  const isEmptyResponse = !isViewerResponse && !plaintextContent
+  const viewerEmptyResponsePlaceholder = isMeetingEnded ? 'No response' : 'Share your response...'
+  const nonViewerEmptyResponsePlaceholder = isMeetingEnded ? 'No response' : 'No response yet...'
 
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const handleSubmit = useEventCallback((editorState: EditorState) => {
@@ -249,16 +255,16 @@ const TeamPromptResponseCard = (props: Props) => {
         isHighlighted={meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id}
       >
         {isEmptyResponse ? (
-          'No response, yet...'
+          nonViewerEmptyResponsePlaceholder
         ) : (
           <>
             <PromptResponseEditor
               teamId={teamId}
-              autoFocus={isCurrentViewer}
+              autoFocus={isViewerResponse}
               handleSubmit={handleSubmit}
               content={contentJSON}
-              readOnly={!isCurrentViewer}
-              placeholder={'Share your response...'}
+              readOnly={!isViewerResponse || isMeetingEnded}
+              placeholder={viewerEmptyResponsePlaceholder}
             />
             {!!plaintextContent && (
               <ResponseCardFooter>

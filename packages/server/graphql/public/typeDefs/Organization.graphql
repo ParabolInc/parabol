@@ -73,6 +73,21 @@ type Organization {
   periodStart: DateTime
 
   """
+  Flag the organization as exceeding the tariff limits by setting a datetime
+  """
+  tierLimitExceededAt: DateTime
+
+  """
+  Schedule the organization to be locked at
+  """
+  scheduledLockAt: DateTime
+
+  """
+  Organization locked at
+  """
+  lockedAt: DateTime
+
+  """
   The total number of retroMeetings given to the team
   """
   retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
@@ -108,6 +123,11 @@ type Organization {
   updatedAt: DateTime
 
   """
+  The OrganizationUser of the viewer
+  """
+  viewerOrganizationUser: OrganizationUser
+
+  """
   The users that are apart of the organization
   """
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
@@ -126,6 +146,11 @@ type Organization {
   Minimal details about all teams in the organization
   """
   teamStats: [TeamStat!]!
+
+  """
+  Any super power given to the organization via a super user
+  """
+  featureFlags: OrganizationFeatureFlags!
 }
 
 type MeetingStat {
@@ -137,4 +162,11 @@ type MeetingStat {
 type TeamStat {
   id: ID!
   createdAt: DateTime!
+}
+
+"""
+The types of flags that give an individual organization super powers
+"""
+type OrganizationFeatureFlags {
+  teamsLimit: Boolean!
 }

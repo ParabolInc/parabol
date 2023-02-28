@@ -4,6 +4,7 @@ import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
+import ReactGA from 'react-ga4'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
@@ -16,6 +17,7 @@ const query = graphql`
   query AnalyticsPageQuery {
     viewer {
       id
+      segmentId
       email
       isWatched
     }
@@ -33,7 +35,13 @@ declare global {
   }
 }
 
-const {sentry: dsn, datadogClientToken, datadogApplicationId, datadogService} = window.__ACTION__
+const {
+  sentry: dsn,
+  datadogClientToken,
+  datadogApplicationId,
+  datadogService,
+  googleAnalytics: gaMeasurementId
+} = window.__ACTION__
 const ignoreErrors = [
   'Failed to update a ServiceWorker for scope',
   'ResizeObserver loop limit exceeded'
@@ -80,9 +88,42 @@ if (datadogEnabled) {
 const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
-  if (!__PRODUCTION__) {
-    return null
-  }
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    if (gaMeasurementId) {
+      ReactGA.initialize(gaMeasurementId, {
+        gtagOptions: {
+          send_page_view: true
+        }
+      })
+    }
+  }, [ReactGA.isInitialized, gaMeasurementId])
+
+  useEffect(() => {
+    const configGA = async () => {
+      if (!ReactGA.isInitialized || !isSegmentLoaded) {
+        return
+      }
+
+      const {viewerId} = atmosphere
+      if (viewerId) {
+        const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+        if (!res) return
+        const {viewer} = res
+        const {id, segmentId} = viewer
+        ReactGA.set({
+          userId: id,
+          clientId: segmentId ?? getAnonymousId()
+        })
+      } else {
+        ReactGA.set({
+          userId: null,
+          clientId: getAnonymousId()
+        })
+      }
+    }
+    configGA()
+  }, [ReactGA.isInitialized, atmosphere.viewerId])
 
   /* eslint-disable */
   const {href, pathname} = location
@@ -104,7 +145,6 @@ const AnalyticsPage = () => {
       crossOrigin: true
     }
   )
-  const atmosphere = useAtmosphere()
 
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return

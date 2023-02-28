@@ -1,0 +1,17 @@
+steps:
+- name: 'docker/compose:1.29.2'
+  args: ['up', '-d']
+  env:
+  - '_REDIS_VERSION=$_REDIS_VERSION'
+  - '_RETHINKDB_VERSION=$_RETHINKDB_VERSION'
+  - '_POSTGRES_VERSION=$_POSTGRES_VERSION'
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '--network=cloudbuild', '-t', 'gcr.io/prbl-prod/parabol/parabol-ubi:$_APP_VERSION', '-f', './dockerfiles/parabol.dockerfile', '--build-arg','_PARABOL_GIT_REF=$_PARABOL_GIT_REF', '--build-arg','_NODE_VERSION=$_NODE_VERSION', '.' ]
+  env:
+  - '_NODE_VERSION=$_NODE_VERSION'
+images:
+- 'gcr.io/prbl-prod/parabol/parabol-ubi:$_APP_VERSION'
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_32'
+timeout: 3600s

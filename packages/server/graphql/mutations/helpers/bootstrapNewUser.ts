@@ -18,16 +18,15 @@ import isPatientZero from './isPatientZero'
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
   const {id: userId, createdAt, preferredName, email, featureFlags, tier, segmentId} = newUser
   const domain = email.split('@')[1]
-  const isPatient0 = await isPatientZero(userId, domain)
+  const isPatient0 = await isPatientZero(domain)
   const r = await getRethink()
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   await Promise.all([
     r({
-      user: r.table('User').insert(newUser),
       event: r.table('TimelineEvent').insert(joinEvent)
     }).run(),
-    insertUser(newUser)
+    insertUser({...newUser, isPatient0})
   ])
 
   // Identify the user so user properties are set before any events are sent

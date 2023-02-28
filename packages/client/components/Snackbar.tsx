@@ -13,8 +13,8 @@ import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
 
-const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean}>(
-  ({isMeetingRoute, isDesktop}) => ({
+const Modal = styled('div')<{hasSidebar: boolean; isDesktop: boolean}>(
+  ({hasSidebar, isDesktop}) => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -22,10 +22,10 @@ const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean}>(
     justifyContent: 'flex-end',
     left: 0,
     padding: 8,
-    paddingBottom: isMeetingRoute ? 64 : 8,
+    paddingBottom: hasSidebar ? 64 : 8,
     position: 'fixed',
     top: 0,
-    width: isMeetingRoute && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
+    width: hasSidebar && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
     pointerEvents: 'none',
     zIndex: ZIndex.SNACKBAR
   })
@@ -44,6 +44,7 @@ export interface Snack {
   autoDismiss: number // seconds. 0 means never dismiss
   noDismissOnClick?: boolean // clicking has no effect on the show state
   onDismiss?: () => void
+  onManualDismiss?: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
   showDismissButton?: boolean
@@ -56,7 +57,8 @@ const Snackbar = React.memo(() => {
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
   const {location} = useRouter()
-  const isMeetingRoute = location.pathname.startsWith('/meet/')
+  const hasSidebar =
+    location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const transitionChildren = useTransition(activeSnacksRef.current)
   // used to ensure the snack isn't dismissed when the cursor is on it
@@ -153,11 +155,12 @@ const Snackbar = React.memo(() => {
   }, [showSnack, transitionChildren])
 
   return portal(
-    <Modal isMeetingRoute={isMeetingRoute} isDesktop={isDesktop}>
+    <Modal hasSidebar={hasSidebar} isDesktop={isDesktop}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
         const dismiss = () => {
           if (child.noDismissOnClick) return
           dismissSnack(child)
+          child.onManualDismiss?.()
         }
         return (
           <SnackbarMessage

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Flag, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -9,17 +10,19 @@ import useRouter from '~/hooks/useRouter'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import StartRecurrenceMutation from '~/mutations/StartRecurrenceMutation'
 import StopRecurrenceMutation from '~/mutations/StopRecurrenceMutation'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import {PALETTE} from '../../styles/paletteV3'
-import Icon from '../Icon'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
 import {MenuItemLabelStyle} from '../MenuItemLabel'
 
-const StyledIcon = styled(Icon)({
+const ReplayIcon = styled(Replay)({
   color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24,
+  marginRight: 8
+})
+
+const FlagIcon = styled(Flag)({
+  color: PALETTE.SLATE_600,
   marginRight: 8
 })
 
@@ -48,20 +51,12 @@ const TeamPromptOptionsMenu = (props: Props) => {
           }
         }
         endedAt
-        viewerMeetingMember {
-          user {
-            featureFlags {
-              recurrence
-            }
-          }
-        }
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId, meetingSeries, endedAt, viewerMeetingMember} = meeting
-  const recurrence = viewerMeetingMember?.user.featureFlags.recurrence
+  const {id: meetingId, meetingSeries, endedAt} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
@@ -76,37 +71,35 @@ const TeamPromptOptionsMenu = (props: Props) => {
 
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
-      {recurrence && (
-        <MenuItem
-          key='copy'
-          isDisabled={!canToggleRecurrence}
-          label={
-            <OptionMenuItem>
-              <StyledIcon>replay</StyledIcon>
-              {hasRecurrenceEnabled ? <span>{'Stop repeating'}</span> : <span>{'Repeat M-F'}</span>}
-            </OptionMenuItem>
-          }
-          onClick={() => {
-            menuProps.closePortal()
+      <MenuItem
+        key='copy'
+        isDisabled={!canToggleRecurrence}
+        label={
+          <OptionMenuItem>
+            <ReplayIcon />
+            {hasRecurrenceEnabled ? <span>{'Stop repeating'}</span> : <span>{'Repeat M-F'}</span>}
+          </OptionMenuItem>
+        }
+        onClick={() => {
+          menuProps.closePortal()
 
-            if (hasRecurrenceEnabled) {
-              StopRecurrenceMutation(
-                atmosphere,
-                {meetingSeriesId: meetingSeries.id},
-                {onCompleted, onError}
-              )
-            } else {
-              StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
-            }
-          }}
-        />
-      )}
+          if (hasRecurrenceEnabled) {
+            StopRecurrenceMutation(
+              atmosphere,
+              {meetingSeriesId: meetingSeries.id},
+              {onCompleted, onError}
+            )
+          } else {
+            StartRecurrenceMutation(atmosphere, {meetingId}, {onCompleted, onError})
+          }
+        }}
+      />
       <MenuItem
         key='end'
         isDisabled={isEnded}
         label={
           <OptionMenuItem>
-            <StyledIcon>flag</StyledIcon>
+            <FlagIcon />
             <span>{'End this activity'}</span>
           </OptionMenuItem>
         }

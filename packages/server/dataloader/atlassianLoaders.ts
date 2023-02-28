@@ -171,9 +171,14 @@ export const jiraRemoteProject = (
   )
 }
 
+type JiraIssueField = {
+  fieldId: string
+  fieldName: string
+  fieldType: 'string' | 'number'
+}
 export type JiraIssue = JiraGetIssueRes['fields'] & {
   issueType: string
-  possibleEstimationFieldNames: string[]
+  possibleEstimationFields: JiraIssueField[]
   descriptionHTML: string
   teamId: string
   userId: string
@@ -227,23 +232,36 @@ export const jiraIssue = (
               })
             )
 
-            const possibleEstimationFieldNames = [] as string[]
+            const possibleEstimationFields = [] as JiraIssueField[]
             Object.entries<{schema: {type: string}}>(issueRes.editmeta?.fields)?.forEach(
               ([fieldId, {schema}]) => {
-                if (isValidEstimationField(schema.type, issueRes.names[fieldId], fieldId)) {
-                  possibleEstimationFieldNames.push(issueRes.names[fieldId])
+                const fieldName = issueRes.names[fieldId] ?? fieldId
+                if (isValidEstimationField(schema.type, fieldName, fieldId)) {
+                  possibleEstimationFields.push({
+                    fieldId,
+                    fieldName,
+                    fieldType: schema.type as 'string' | 'number'
+                  })
                 }
                 if (schema.type === 'timetracking') {
-                  possibleEstimationFieldNames.push(issueRes.names['timeestimate'])
-                  possibleEstimationFieldNames.push(issueRes.names['timeoriginalestimate'])
+                  possibleEstimationFields.push({
+                    fieldId: 'timeestimate',
+                    fieldName: issueRes.names['timeestimate'],
+                    fieldType: 'string'
+                  })
+                  possibleEstimationFields.push({
+                    fieldId: 'timeoriginalestimate',
+                    fieldName: issueRes.names['timeoriginalestimate'],
+                    fieldType: 'string'
+                  })
                 }
               }
             )
-            possibleEstimationFieldNames.sort()
+            possibleEstimationFields.sort((a, b) => a.fieldName.localeCompare(b.fieldName))
 
             const simplified = !!issueRes.fields.project?.simplified
             const missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum | undefined =
-              hasDefaultEstimationField(possibleEstimationFieldNames)
+              hasDefaultEstimationField(possibleEstimationFields.map(({fieldName}) => fieldName))
                 ? undefined
                 : simplified
                 ? 'teamManagedStoryPoints'
@@ -252,7 +270,7 @@ export const jiraIssue = (
             return {
               ...fields,
               issueType: fields.issuetype.id,
-              possibleEstimationFieldNames,
+              possibleEstimationFields,
               missingEstimationFieldHint,
               descriptionHTML: updatedDescription,
               teamId,

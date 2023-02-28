@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
 import {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
 import StyledLink from './StyledLink'
@@ -34,6 +36,13 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
           responseCount
           taskCount
           commentCount
+          locked
+          organization {
+            id
+            viewerOrganizationUser {
+              id
+            }
+          }
         }
         team {
           id
@@ -49,12 +58,31 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     return null
   }
 
-  const {id: meetingId, name: meetingName, responseCount, commentCount, taskCount} = meeting
+  const {
+    id: meetingId,
+    name: meetingName,
+    responseCount,
+    commentCount,
+    taskCount,
+    locked,
+    organization
+  } = meeting
   const {name: teamName} = team
+  const {id: orgId, viewerOrganizationUser} = organization
+  const canUpgrade = !!viewerOrganizationUser
+
+  const atmosphere = useAtmosphere()
+  const onUpgrade = () => {
+    SendClientSegmentEventMutation(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'timelineHistoryLock',
+      upgradeTier: 'team',
+      meetingId
+    })
+  }
 
   return (
     <TimelineEventCard
-      iconName='group_work'
+      iconName={locked && canUpgrade ? 'lock' : 'group_work'}
       timelineEvent={timelineEvent}
       title={<TimelineEventTitle>{`${meetingName} with ${teamName}`}</TimelineEventTitle>}
     >
@@ -75,9 +103,22 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
         </CountItem>
         {'.'}
         <br />
-        <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
-        {' or '}
-        <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+        {locked ? (
+          canUpgrade && (
+            <>
+              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+                Upgrade now
+              </Link>{' '}
+              to see responses and discussion or review a summary
+            </>
+          )
+        ) : (
+          <>
+            <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
+            {' or '}
+            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+          </>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )

@@ -275,6 +275,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
+    TaskFooterIntegrateMenuListLocalQuery: () => {
+      const user = this.db.users[0]
+      return {
+        viewer: {
+          ...user
+        }
+      }
+    },
     NewMeetingSummaryQuery: () => {
       return {
         viewer: {
@@ -574,6 +582,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         promptId,
         reflections: [reflection],
         sortOrder,
+        summary: null,
         tasks: [],
         thread: makeReflectionGroupThread(),
         titleIsUserDefined: false,

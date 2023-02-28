@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
+import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldDimensionDropdown_stage$key} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
-import Icon from './Icon'
 import JiraFieldMenu from './JiraFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -34,8 +33,9 @@ const CurrentValue = styled('div')({
   fontSize: 14
 })
 
-const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  fontSize: ICON_SIZE.MD18,
+const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}) => ({
+  height: 18,
+  width: 18,
   display: isFacilitator ? undefined : 'none'
 }))
 
@@ -57,7 +57,10 @@ const JiraFieldDimensionDropdown = (props: Props) => {
         task {
           integration {
             ... on JiraIssue {
-              possibleEstimationFieldNames
+              possibleEstimationFields {
+                fieldId
+                fieldName
+              }
             }
           }
         }
@@ -67,7 +70,7 @@ const JiraFieldDimensionDropdown = (props: Props) => {
   )
 
   const {serviceField, task} = stage
-  const possibleEstimationFieldNames = task?.integration?.possibleEstimationFieldNames ?? []
+  const possibleEstimationFields = task?.integration?.possibleEstimationFields ?? []
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
@@ -85,7 +88,7 @@ const JiraFieldDimensionDropdown = (props: Props) => {
   const validFields = [
     SprintPokerDefaults.SERVICE_FIELD_COMMENT,
     SprintPokerDefaults.SERVICE_FIELD_NULL,
-    ...possibleEstimationFieldNames
+    ...possibleEstimationFields.map(({fieldName}) => fieldName)
   ]
   const lookupServiceFieldName = validFields.includes(serviceFieldName)
     ? serviceFieldName
@@ -97,7 +100,7 @@ const JiraFieldDimensionDropdown = (props: Props) => {
     <>
       <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
         <CurrentValue>{label}</CurrentValue>
-        <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
+        <StyledIcon isFacilitator={isFacilitator} />
       </Wrapper>
       {menuPortal(<JiraFieldMenu menuProps={menuProps} stage={stage} submitScore={submitScore} />)}
     </>

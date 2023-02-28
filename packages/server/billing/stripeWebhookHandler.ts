@@ -30,11 +30,11 @@ const eventLookup = {
         }
       `
     },
-    payment_succeeded: {
+    paid: {
       getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
-        mutation StripeSucceedPayment($invoiceId: ID!) {
-          stripeSucceedPayment(invoiceId: $invoiceId)
+        mutation StripeInvoicePaid($invoiceId: ID!) {
+          stripeInvoicePaid(invoiceId: $invoiceId)
         }
       `
     },
@@ -83,29 +83,49 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const stripeSignature = req.getHeader('stripe-signature')
   const parser = (buffer: Buffer) => buffer.toString()
   const str = (await parseBody({res, parser})) as string | null
-  res.end()
 
-  if (!str) return
+  if (!str) {
+    res.writeStatus('400').end()
+    return
+  }
+
   const manager = getStripeManager()
   const verifiedBody = manager.constructEvent(str, stripeSignature)
-  if (!verifiedBody) return
+  if (!verifiedBody) {
+    res.writeStatus('401').end()
+    return
+  }
 
   const {data, type} = verifiedBody
   const {object: payload} = data
   const {event, subEvent, action} = splitType(type)
 
   const parentHandler = eventLookup[event as keyof typeof eventLookup]
-  if (!parentHandler) return
+  if (!parentHandler) {
+    res.writeStatus('404').end()
+    return
+  }
 
   const eventHandler = subEvent ? (parentHandler as any)[subEvent] : parentHandler
-  if (!eventHandler) return
+  if (!eventHandler) {
+    res.writeStatus('404').end()
+    return
+  }
 
   const actionHandler = eventHandler[action]
-  if (!actionHandler) return
+  if (!actionHandler) {
+    res.writeStatus('404').end()
+    return
+  }
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  publishWebhookGQL(query, variables)
+  const result = await publishWebhookGQL(query, variables)
+  if (result?.data) {
+    res.writeStatus('200').end()
+  } else {
+    res.writeStatus('500').end()
+  }
 })
 
 export default stripeWebhookHandler

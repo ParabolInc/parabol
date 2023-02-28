@@ -75,7 +75,7 @@ const getItemProps = (
   const agendaItemsPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
   const localStageId = (localStage && localStage.id) || ''
   const {phaseType} = localPhase
-  const {stages} = phaseType === 'agendaitems' ? localPhase : agendaItemsPhase
+  const {stages} = (phaseType === 'agendaitems' ? localPhase : agendaItemsPhase) ?? {}
   if (!stages) return fallback
   const agendaItemStage = stages.find((stage) => stage.agendaItem?.id === agendaItemId)
   if (!agendaItemStage) return fallback

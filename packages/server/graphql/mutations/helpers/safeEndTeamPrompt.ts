@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
@@ -6,23 +7,26 @@ import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTe
 import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {DataLoaderWorker} from '../../graphql'
+import {GQLContext} from '../../graphql'
+import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 
 const safeEndTeamPrompt = async ({
   meeting,
   now,
   viewerId,
   r,
-  dataLoader,
+  context,
   subOptions
 }: {
   meeting: MeetingTeamPrompt
   now: Date
   viewerId?: string
   r: ParabolR
-  dataLoader: DataLoaderWorker
+  context: GQLContext
   subOptions: SubOptions
 }) => {
+  const {dataLoader} = context
+
   const {endedAt, id: meetingId, teamId} = meeting
 
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -64,12 +68,10 @@ const safeEndTeamPrompt = async ({
   )
   const timelineEventId = events[0]!.id
   await r.table('TimelineEvent').insert(events).run()
-  // Due to a reference to 'window' deep in the current summary hierarchy, we're not currently
-  // able to render the summary view on the server-side for emails.
-  // :TODO: (jmtaber129): Refactor the prompt response editor such that we're able to render
-  // TipTap-formatted responses on the server-side.
-  // sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
+  sendNewMeetingSummary(completedTeamPrompt, context).catch(console.log)
+  checkTeamsLimit(team.orgId, dataLoader)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses)
+  dataLoader.get('newMeetings').clear(meetingId)
 
   const data = {
     meetingId,

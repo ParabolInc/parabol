@@ -2,15 +2,7 @@ import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 
-const phaseTypes = [
-  'reflect',
-  'group',
-  'vote',
-  'firstcall',
-  'lastcall',
-  'SCOPE',
-  'RESPONSES'
-] as const
+const phaseTypes = ['reflect', 'group', 'vote', 'firstcall', 'lastcall', 'SCOPE'] as const
 
 const GenericMeetingStage = new GraphQLObjectType<any, GQLContext>({
   name: 'GenericMeetingStage',

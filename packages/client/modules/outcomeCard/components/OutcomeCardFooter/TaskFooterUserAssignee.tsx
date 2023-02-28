@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
+import {AssignmentInd as AssignmentIndIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import BaseButton from '../../../../components/BaseButton'
-import Icon from '../../../../components/Icon'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
@@ -73,20 +73,26 @@ const AvatarLabel = styled('div')({
   ...label,
   color: PALETTE.SLATE_600,
   flex: 1,
-  minWidth: 0
+  minWidth: 0,
+  overflowWrap: 'break-word'
 })
 
 const TooltipToggle = styled('div')({
-  display: 'inline-flex'
+  display: 'inline-flex',
+  width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
+const StyledIcon = styled('div')({
   alignContent: 'center',
   alignItems: 'center',
   color: PALETTE.WHITE,
   cursor: 'pointer',
   display: 'flex',
-  fontSize: 22,
+  svg: {
+    fontSize: 22
+  },
+  height: 22,
+  width: 22,
   justifyContent: 'center',
   position: 'relative',
   top: 1
@@ -137,7 +143,9 @@ const TaskFooterUserAssignee = (props: Props) => {
             {user ? (
               <AvatarImage alt={preferredName} src={userImage} />
             ) : (
-              <StyledIcon>{'assignment_ind'}</StyledIcon>
+              <StyledIcon>
+                <AssignmentIndIcon />
+              </StyledIcon>
             )}
           </Avatar>
           <AvatarLabel>{preferredName}</AvatarLabel>

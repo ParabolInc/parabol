@@ -16,6 +16,7 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {
+  Field,
   makeFieldsAttachment,
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
@@ -178,37 +179,42 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
   },
 
   async endMeeting(meeting, team) {
-    const {facilitatorUserId} = meeting
+    const {facilitatorUserId, summary} = meeting
     const {webhookUrl} = notificationChannel
 
     const summaryText = getSummaryText(meeting)
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
+    const fields: Field[] = [
+      {
+        short: true,
+        title: 'Team',
+        value: team.name
+      },
+      {
+        short: true,
+        title: 'Meeting',
+        value: meeting.name
+      },
+      {
+        short: false,
+        title: 'Stats',
+        value: summaryText
+      }
+    ]
+    if (summary) {
+      fields.push({
+        short: false,
+        title: 'AI Summary 🤖',
+        value: summary
+      })
+    }
+    fields.push(...makeEndMeetingButtons(meeting))
     const attachments = [
-      makeFieldsAttachment(
-        [
-          {
-            short: true,
-            title: 'Team',
-            value: team.name
-          },
-          {
-            short: true,
-            title: 'Meeting',
-            value: meeting.name
-          },
-          {
-            short: false,
-            title: 'Summary',
-            value: summaryText
-          },
-          ...makeEndMeetingButtons(meeting)
-        ],
-        {
-          fallback: `Meeting completed, join: ${meetingUrl}`,
-          title: 'Meeting completed 🎉',
-          title_link: meetingUrl
-        }
-      )
+      makeFieldsAttachment(fields, {
+        fallback: `Meeting completed, join: ${meetingUrl}`,
+        title: 'Meeting completed 🎉',
+        title_link: meetingUrl
+      })
     ]
     return notifyMattermost('meetingEnd', webhookUrl, facilitatorUserId, team.id, attachments)
   },
@@ -220,10 +226,6 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
     const {name: teamName} = team
     const stageRes = findStageById(phases, facilitatorStageId)
     const {stage} = stageRes!
-    const maybeMeetingShortLink = makeAppURL(
-      process.env.INVITATION_SHORTLINK || appOrigin,
-      `${meeting.id}`
-    )
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const {phaseType} = stage
     const phaseLabel = phaseLabelLookup[phaseType as keyof typeof phaseLabelLookup]
@@ -252,11 +254,6 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
           {
             short: false,
             value: constraint
-          },
-          {
-            short: false,
-            title: 'Link',
-            value: `[${maybeMeetingShortLink}](${meetingUrl})`
           },
           {
             short: false,

@@ -26,20 +26,16 @@ graphql`
 
 const mutation = graphql`
   mutation UpdateJiraDimensionFieldMutation(
+    $taskId: ID!
     $dimensionName: String!
-    $fieldName: String!
+    $fieldId: ID!
     $meetingId: ID!
-    $cloudId: ID!
-    $projectKey: ID!
-    $issueType: ID!
   ) {
     updateJiraDimensionField(
+      taskId: $taskId
       dimensionName: $dimensionName
-      fieldName: $fieldName
+      fieldId: $fieldId
       meetingId: $meetingId
-      cloudId: $cloudId
-      projectKey: $projectKey
-      issueType: $issueType
     ) {
       ... on ErrorPayload {
         error {
@@ -60,7 +56,7 @@ const UpdateJiraDimensionFieldMutation: StandardMutation<TUpdateJiraDimensionFie
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, cloudId, dimensionName, fieldName} = variables
+      const {meetingId, dimensionName, fieldId} = variables
       const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) return
       // handle meeting records
@@ -75,9 +71,13 @@ const UpdateJiraDimensionFieldMutation: StandardMutation<TUpdateJiraDimensionFie
         const _integration = task.getLinkedRecord('integration')
         if (_integration.getValue('__typename') !== 'JiraIssue') return
         const integration = _integration as DiscriminateProxy<typeof _integration, 'JiraIssue'>
-        if (integration.getValue('cloudId') !== cloudId) return
+        const possibleEstimationFields = integration.getValue('possibleEstimationFields')
+        const selectedField = possibleEstimationFields.find((field) => field.fieldId === fieldId)
+        if (!selectedField) {
+          return
+        }
         const nextServiceField = createProxyRecord(store, 'ServiceField', {
-          name: fieldName,
+          name: selectedField.fieldName,
           // the type being a number is just a guess
           type: 'number'
         })
