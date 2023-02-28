@@ -45,8 +45,8 @@ const AndroidEditorFallback = lazyPreload(
 
 const EditorFallback = styled(AndroidEditorFallback)({
   padding: 0,
-  fontSize: 24, // font size 24 is assigned to match the default editor font size.
-  lineHeight: 34 // line height 34 is assigned to match the default editor line height.
+  fontSize: 24,
+  lineHeight: '32px'
 })
 
 const EditorInputWrapper = (props: Props) => {
