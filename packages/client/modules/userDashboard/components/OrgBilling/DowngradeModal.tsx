@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -73,25 +73,40 @@ type Props = {
 
 const DowngradeModal = (props: Props) => {
   const {closeModal} = props
+  const [hasConfirmedDowngrade, setHasConfirmedDowngrade] = useState(false)
+
+  const handleConfirm = () => {
+    setHasConfirmedDowngrade(true)
+  }
+
+  const handleClose = () => {
+    closeModal()
+  }
 
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>Downgrade</StyledDialogTitle>
-      <Description>
-        We're sorry to see you go! Please confirm that you're aware of the following features and
-        would still like to downgrade:
-      </Description>
-      <StyledDialogContent>
-        <UL>
-          {TeamBenefits.map((benefit) => (
-            <LI>{benefit}</LI>
-          ))}
-        </UL>
-        <LabelGroup>
-          <ActionLabel>{'Yes, downgrade'}</ActionLabel>
-          <ActionLabel onClick={() => closeModal()}>{'Keep my plan'}</ActionLabel>
-        </LabelGroup>
-      </StyledDialogContent>
+      {hasConfirmedDowngrade ? (
+        <Description>Why did you choose to go? Choose all that apply</Description>
+      ) : (
+        <>
+          <Description>
+            We're sorry to see you go! Please confirm that you're aware of the following features
+            and would still like to downgrade:
+          </Description>
+          <StyledDialogContent>
+            <UL>
+              {TeamBenefits.map((benefit) => (
+                <LI>{benefit}</LI>
+              ))}
+            </UL>
+            <LabelGroup>
+              <ActionLabel onClick={handleConfirm}>{'Yes, downgrade'}</ActionLabel>
+              <ActionLabel onClick={handleClose}>{'Keep my plan'}</ActionLabel>
+            </LabelGroup>
+          </StyledDialogContent>
+        </>
+      )}
     </StyledDialogContainer>
   )
 }
