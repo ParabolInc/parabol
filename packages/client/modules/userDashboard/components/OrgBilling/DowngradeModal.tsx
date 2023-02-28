@@ -13,6 +13,8 @@ import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarter
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   padding: 8
@@ -96,7 +98,7 @@ const CloseIcon = styled(Close)({
   }
 })
 
-const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
+const StyledCheckbox = styled(Checkbox)({
   svg: {
     fontSize: 28
   },
@@ -104,11 +106,11 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   height: 28,
   textAlign: 'center',
   userSelect: 'none'
-}))
+})
 
 type Props = {
   closeModal: () => void
-  organizationRef: any
+  organizationRef: DowngradeModal_organization$key
 }
 
 const reasonsToLeave = [
@@ -141,6 +143,9 @@ const DowngradeModal = (props: Props) => {
 
   const handleConfirm = () => {
     setHasConfirmedDowngrade(true)
+    SendClientSegmentEventMutation(atmosphere, 'Downgrade Continue Clicked', {
+      orgId
+    })
   }
 
   const handleClose = () => {
@@ -167,8 +172,8 @@ const DowngradeModal = (props: Props) => {
           <Description>Why did you choose to go? Choose all that apply</Description>
           <StyledDialogContent>
             {reasonsToLeave.map((reason) => (
-              <ButtonRow onClick={() => handleCheck(reason)}>
-                <StyledCheckbox active={selectedReasons.includes(reason)} />
+              <ButtonRow key={reason} onClick={() => handleCheck(reason)}>
+                <StyledCheckbox checked={selectedReasons.includes(reason)} />
                 <Label>{reason}</Label>
               </ButtonRow>
             ))}
@@ -186,7 +191,7 @@ const DowngradeModal = (props: Props) => {
           <StyledDialogContent>
             <UL>
               {TeamBenefits.map((benefit) => (
-                <LI>{benefit}</LI>
+                <LI key={benefit}>{benefit}</LI>
               ))}
             </UL>
             <LabelGroup>

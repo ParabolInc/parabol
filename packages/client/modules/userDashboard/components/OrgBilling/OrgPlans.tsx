@@ -17,6 +17,8 @@ import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
 import DowngradeModal from './DowngradeModal'
 import {TeamBenefits} from '../../../../utils/constants'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -193,6 +195,7 @@ const OrgPlans = (props: Props) => {
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
         ...DowngradeModal_organization
+        id
         tier
       }
     `,
@@ -201,8 +204,9 @@ const OrgPlans = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
-  const {togglePortal: toggleModal, closePortal: closeModal, openPortal, modalPortal} = useModal()
-  const {tier} = organization
+  const {closePortal: closeModal, openPortal, modalPortal} = useModal()
+  const atmosphere = useAtmosphere()
+  const {id: orgId, tier} = organization
 
   const plans = [
     {
@@ -238,8 +242,11 @@ const OrgPlans = (props: Props) => {
     } else if (label === 'Select Plan') {
       // TODO: handle select plan when billing is implemented
     } else if (label === 'Downgrade') {
-      // TODO: handle in https://github.com/ParabolInc/parabol/issues/7697
       openPortal()
+      SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
+        orgId,
+        downgradeCTALocation: 'billing'
+      })
     }
   }
 
