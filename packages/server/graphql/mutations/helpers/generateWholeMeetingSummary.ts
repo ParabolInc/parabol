@@ -3,20 +3,25 @@ import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateWholeMeetingSummary = async (
   discussionIds: string[],
   meetingId: string,
+  teamId: string,
   facilitatorUserId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [facilitator, commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([
+  const [facilitator, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!canAccessAISummary(team, facilitator.featureFlags)) return
+  const [commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
     dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  if (!facilitator.featureFlags.includes('aiSummary')) return
   const manager = new OpenAIServerManager()
   const reflectionsContent = reflections.map((reflection) => reflection.plaintextContent)
   const commentsContent = commentsByDiscussions
@@ -33,7 +38,10 @@ const generateWholeMeetingSummary = async (
   if (contentToSummarize.length <= 1) return
   const [r, summary] = await Promise.all([getRethink(), manager.getSummary(contentToSummarize)])
   if (!summary) return
-  await r.table('NewMeeting').get(meetingId).update({summary}).run()
+  await Promise.all([
+    dataLoader.get('newMeetings').updateCache(meetingId, {summary}),
+    r.table('NewMeeting').get(meetingId).update({summary}).run()
+  ])
 }
 
 export default generateWholeMeetingSummary

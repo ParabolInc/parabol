@@ -779,7 +779,7 @@ type User {
   """
   all the notifications for a single user
   """
-  notifications(first: Int!, after: DateTime): NotificationConnection!
+  notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
 
   """
   get a single organization
@@ -1499,16 +1499,6 @@ type AtlassianIntegration {
   A list of projects accessible by this team member. empty if viewer is not the user
   """
   projects: [JiraRemoteProject!]!
-
-  """
-  The list of field names that can be used as a
-  """
-  jiraFields(
-    """
-    Filter the fields to single cloudId
-    """
-    cloudId: ID!
-  ): [String!]!
 
   """
   the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
@@ -3426,6 +3416,11 @@ type Discussion {
     """
     after: String
   ): ThreadableConnection!
+
+  """
+  The stage where the discussion is
+  """
+  stage: NewMeetingStage
 }
 
 """
@@ -3554,6 +3549,7 @@ enum NotificationStatusEnum {
 The kind of notification
 """
 enum NotificationEnum {
+  DISCUSSION_MENTIONED
   KICKED_OUT
   PAYMENT_REJECTED
   PROMOTE_TO_BILLING_LEADER
@@ -3564,6 +3560,7 @@ enum NotificationEnum {
   RESPONSE_MENTIONED
   RESPONSE_REPLIED
   TEAMS_LIMIT_EXCEEDED
+  TEAMS_LIMIT_REMINDER
 }
 
 """

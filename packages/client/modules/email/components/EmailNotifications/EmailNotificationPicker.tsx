@@ -3,6 +3,7 @@ import {ValueOf} from 'parabol-client/types/generics'
 import {EmailNotificationPicker_notification$key} from 'parabol-client/__generated__/EmailNotificationPicker_notification.graphql'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import EmailDiscussionMentioned from './EmailDiscussionMentioned'
 import EmailKickedOut from './EmailKickedOut'
 import EmailMeetingStageTimeLimitEnd from './EmailMeetingStageTimeLimitEnd'
 import EmailPaymentRejected from './EmailPaymentRejected'
@@ -14,6 +15,7 @@ import EmailTeamArchived from './EmailTeamArchived'
 import EmailTeamInvitation from './EmailTeamInvitation'
 
 export const NOTIFICATION_TEMPLATE_TYPE = {
+  DISCUSSION_MENTIONED: EmailDiscussionMentioned,
   KICKED_OUT: EmailKickedOut,
   PAYMENT_REJECTED: EmailPaymentRejected,
   TASK_INVOLVES: EmailTaskInvolves,
@@ -37,6 +39,7 @@ const EmailNotificationPicker = (props: Props) => {
       fragment EmailNotificationPicker_notification on Notification {
         type
         id
+        ...EmailDiscussionMentioned_notification
         ...EmailKickedOut_notification
         ...EmailPaymentRejected_notification
         ...EmailTaskInvolves_notification

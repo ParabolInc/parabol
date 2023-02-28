@@ -6,12 +6,21 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {AGENDA_ITEMS, DISCUSS} from 'parabol-client/utils/constants'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
+import {
+  isAgendaItemsPhase,
+  isDiscussPhase,
+  isEstimatePhase,
+  isTeamPromptResponsesPhase
+} from '../meetingTypePredicates'
+import {augmentDBStage} from '../resolvers'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import NewMeetingStage from './NewMeetingStage'
 import {ThreadableConnection} from './Threadable'
 import User from './User'
 
@@ -41,6 +50,62 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(DiscussionTopicTypeEnum),
       description:
         'The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue'
+    },
+    stage: {
+      type: NewMeetingStage,
+      description: 'The stage that the discussion is located',
+      resolve: async (
+        {discussionTopicId, discussionTopicType, meetingId},
+        _args: unknown,
+        {dataLoader}
+      ) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const {phases, teamId} = meeting
+        switch (discussionTopicType) {
+          case 'agendaItem': {
+            const phase = phases.find(isAgendaItemsPhase)
+            if (!phase) {
+              return null
+            }
+            const {stages} = phase
+            const dbStage = stages.find((stage) => stage.agendaItemId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, AGENDA_ITEMS, teamId) : null
+          }
+          case 'teamPromptResponse': {
+            const phase = phases.find(isTeamPromptResponsesPhase)
+            if (!phase) {
+              return null
+            }
+            const {stages} = phase
+            const dbStage = stages.find((stage) => stage.teamMemberId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, 'RESPONSES', teamId) : null
+          }
+          case 'reflectionGroup': {
+            const phase = phases.find(isDiscussPhase)
+            if (!phase) {
+              return null
+            }
+            const {stages} = phase
+            const dbStage = stages.find((stage) => stage.reflectionGroupId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, DISCUSS, teamId) : null
+          }
+          case 'task': {
+            const phase = phases.find(isEstimatePhase)
+            if (!phase) {
+              return null
+            }
+            const {stages} = phase
+            const dbStage = stages.find((stage) => stage.taskId === discussionTopicId)
+
+            return dbStage ? augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId) : null
+          }
+        }
+
+        return null
+      }
     },
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),

@@ -87,19 +87,19 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
               .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
           ])
           if (!jiraIssue) return NULL_FIELD
-          const {issueType, possibleEstimationFieldNames} = jiraIssue
+          const {issueType, possibleEstimationFields} = jiraIssue
 
           const dimensionFields = await dataLoader
             .get('jiraDimensionFieldMap')
             .load({teamId, cloudId, projectKey, issueType, dimensionName})
 
-          const validFields = [
+          const validFieldIds = [
             SprintPokerDefaults.SERVICE_FIELD_COMMENT,
             SprintPokerDefaults.SERVICE_FIELD_NULL,
-            ...possibleEstimationFieldNames
+            ...possibleEstimationFields.map(({fieldId}) => fieldId)
           ]
-          const dimensionField = dimensionFields.find(({fieldName}) =>
-            validFields.includes(fieldName)
+          const dimensionField = dimensionFields.find(({fieldId}) =>
+            validFieldIds.includes(fieldId)
           )
           if (dimensionField) {
             return {

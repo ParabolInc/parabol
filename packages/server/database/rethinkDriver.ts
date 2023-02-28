@@ -149,7 +149,7 @@ export type RethinkSchema = {
   }
   SAML: {
     type: SAML
-    index: 'domains'
+    index: 'domains' | 'orgId'
   }
   ScheduledJob: {
     type: ScheduledJobUnion

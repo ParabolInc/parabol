@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
-import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
 import Legitity from '../validation/Legitity'
@@ -16,7 +15,7 @@ const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) 
   fontWeight: 'inherit',
   lineHeight: 'inherit',
   outline: disabled ? 'none' : undefined,
-  width: '40vw',
+  width: '100%',
   ':hover': {
     opacity: disabled ? undefined : 0.5
   }
@@ -27,12 +26,7 @@ const Placeholder = styled('div')({
 })
 
 const StaticValue = styled('div')({
-  color: PALETTE.SLATE_700,
-  paddingTop: '10px',
-  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
-    maxWidth: '150px',
-    lineHeight: '24px'
-  }
+  color: PALETTE.SLATE_700
 })
 
 const Error = styled('div')({
@@ -44,8 +38,7 @@ const StyledIcon = styled(Edit)({
   color: PALETTE.SLATE_600,
   height: 18,
   width: 18,
-  marginLeft: 8,
-  margineTop: 8
+  marginLeft: 8
 })
 
 const Input = styled('input')({
@@ -72,10 +65,7 @@ const TextArea = styled(TextAreaAutoSize)({
   outline: 'none',
   padding: 0,
   resize: 'none',
-  width: '100%',
-  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
-    marginTop: '10px'
-  }
+  width: '100%'
 })
 
 const Form = styled('form')({

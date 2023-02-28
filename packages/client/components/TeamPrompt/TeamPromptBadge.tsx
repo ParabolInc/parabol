@@ -11,5 +11,6 @@ export const TeamPromptBadge = styled('div')({
   backgroundColor: PALETTE.WHITE,
   color: PALETTE.SLATE_700,
   borderRadius: '100vmax',
-  minHeight: 34
+  minHeight: 34,
+  userSelect: 'none'
 })

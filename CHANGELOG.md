@@ -5,6 +5,203 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.93.0 2023-Feb-22
+
+### Fixed
+- remove font-size 18px declaration on tasks editing status label (#7784)
+- **dashboard**: Meeting card shadow doesn't match card (#7782)
+- **standups**: Autofocus the input in the discussion drawer when opened (#7779)
+- **teams-limit**: fix teams limit check query fails with an error on non-local environment (#7795)
+- **emails**: Upgrade mailgun to 7.0.4 (#7804)
+- **emails**: Generate email summaries with facilitator auth (#7805)
+
+### Added
+- **recurrence**: Copy meeting series permalink (#7777)
+- **SAML UI**: Create a verifyDomain mutation (#7686)
+- **SAML UI**: Add UI with disabled state (#7684)
+
+### Changed
+- **deps**: bump undici from 5.18.0 to 5.19.1 (#7787)
+- **tiptap**: Upgrade tiptap to pull in bugfixes (#7790)
+- select best platform for the job (#7786)
+- bump node, rethinkdb-ts, typescript, uWS (#7780)
+- **teams-limit**: remove teams limit notifications after upgrade or removing a team (#7781)
+
+## 6.92.0 2023-Feb-15
+
+### Fixed
+
+- fix: show invoice coupons in parabol (#7711)
+- chore: fix case-sensitive (#7749)
+- fix: yarn dev remove graphiql from dll (#7750)
+- fix(recurrence): Don't restart meetings on archived teams (#7747)
+- fix: 'Updated time/Created time' is not instantaneous on task cards (#7254)
+- fix: Fix server error when joining a team by invitation link (#7775)
+
+### Added
+
+- chore(teams-limit): send locked & warning email (#7637)
+- feat(recurrence): Stable link for meeting series (#7707)
+- feat(teams-limit): add 7 days reminder notification and snackbar (#7677)
+- feat(recurrence): Recurrence-specific meeting card (#7716)
+- feat(recurrence): Added advanced recurrence settings (#7585)
+- feat(checkout-flow): left sidebar (#7733)
+- feat: add seasonal retros (#7760)
+- feat(standups): added options menu tooltip (#7768)
+
+### Changed
+
+- chore: Invert meetingHistoryLimit feature flag (#7725)
+- chore: prevent new rethinkdb migrations in the database/migrations
+- chore(teams-limit): avoid showing nagging snackbar if the limit is fixed
+- chore: Switch to review stats package (#7753)
+- chore(metrics): Do not call identify() on feature flag changes (#7752)
+- feat: create bundles without node_modules (#7402)
+- chore: remove user feature flag (#7765)
+- chore: removed beta badge from standups (#7767)
+- chore(teams-limit): Remove scheduled jobs
+- chore(ai-summary): track no stats in Slack summary (#7759)
+- chore(dx): add updateCache function to dataLoader (#7758)
+
+## 6.91.1 2023-Feb-14
+
+### Fixed
+
+- Sometimes meetings could not be closed (#7769)
+
+## 6.91.0 2023-Feb-08
+
+### Fixed
+
+- Bundle tutorial thumbnail (#7742)
+- fix(ai-summary): summary references "the text" (#7739)
+- chore(deps): bump webpack, undici (#7737)
+- chore(deps): bump ua-parser-js from 0.7.31 to 0.7.33 (#7683)
+- chore(deps): bump deps to fix vulns (#7730)
+- chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
+- fix: Profile name length should have the upper limit (#7425)
+
+### Added
+
+- chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
+- chore(checkout-flow): add checkout feature flag (#7709)
+
+### Changed
+
+- chore: update team invite email (#7710)
+- chore(ai-summary): update meeting summary url (#7705)
+
+## 6.90.0 2023-February-1
+
+### Fixed
+
+- Use stripe invoice.paid event instead of invoice.payment_succeeded (#7690)
+- Renamed 'next activity' to 'current activity' in ended meeting badge (#7691)
+- Line breaks in comments now work on Android (#7438)
+- Added missing prompts in starfish retro template (#7660)
+- Fixed prompt highlight color does not cover the full-height of the column (#7416)
+- Delete empty groups (#7673)
+- chore(metrics): Add isPatient0 property to sign_up events emitted by GA4 (#7680)
+- fix: Meetings with invalid facilitator stage can now be opened and closed (#7675)
+
+### Changed
+
+- **ai-summary**: limit access to AI summaries (#7658)
+- Renamed "Timeline" to "History" (#7670)
+- Cleanup private \_legacy.graphql types (#7689)
+
+### Added
+
+- **ai-summary**: add summary to end meeting notification (#7659)
+- **search**: add search ability to meeting view (#7676)
+- **standups**: Email Summaries (#7649)
+- **teams-limit**: lock organization if limit the is exceeded for 30 days (#7606)
+- **teams-limit**: Add snackbar to usage stats enabled notification (#7601)
+- **teams-limit**: implement organization locked modal (#7645)
+
+## 6.89.0 2023-January-18
+
+### Fixed
+
+- fix: update non-anonymous Reflect description (#7651)
+- fix(ai-summary): remove AI comment from comment count (#7648)
+- fix(ai-summary): update Parabol AI picture (#7657)
+
+### Changed
+
+- chore(metrics): emit sign_up events from GA4 client side (#7635)
+- perf: moved global style creation outside of the render cycle (#7598)
+- chore: sendToSentry if unable to create topic summary (#7665)
+
+## 6.88.0 2023-January-12
+
+### Fixed
+
+- emails landing in spam (#7618)
+- select dropdown can't be scrolled with keyboard (#7426)
+- server error undefined template (#7633)
+
+### Added
+
+- **standups/notifications**: Generalized notification toasts + new toasts (#7603)
+- **notifications**: Discussion Mention notifications (#7596)
+- slack uses oatuh2 redirect (#7628)
+- removed recurrence feature flag (#7636)
+
+### Changed
+
+- **teams-limit**: usage stats warning (#7587)
+- **teams-limit**: prevent new team creation (#7591)
+- **DX**: Show a warning on switching branch with migrations (#7616)
+- **deps**: bump fast-json-patch from 3.1.0 to 3.1.1 (#7614)
+- **deps**: bump jsonwebtoken from 8.5.1 to 9.0.0 (#7613)
+- **ai-summary**: improve prompt (#7646)
+- **ai-summary**: track when the summaries are viewed (#7619)
+- Add reviewer for PRs and assignee for issues on mention (#7620)
+- Add client unit tests to CircleCi (#7626)
+
+## 6.87.1 2023-January-05
+
+### Fixed
+
+- **Check-in**: could not move, pin or unpin agenda items (#7622)
+
+## 6.87.0 2023-January-03
+
+### Fixed
+
+- Task highlight sticks when adding a due date (#7395)
+- Add graphql-tools/executor dev dependency
+- Broken summary pages (#7604)
+- Emoji length check (#7578)
+- Access custom template (#7600)
+- Organization Image is on top of default (#7429)
+- New meetings were locked with the history limit (#7581)
+- Bump sanitize-svg version (#7584)
+- **Jira**: fix Sprint Poker voting for projects with duplicate fields (#7607)
+- **notifications**: Remove bad shortlinks + dead code (#7574)
+
+### Added
+
+- Change tier to starter & team (#7505)
+- Add current facilitator to facilitator candidates (#7548)
+- **ai-summary**: auto update meeting summary (#7572)
+- **ai-summary**: ai explainer (#7571)
+- **teams-limit**: enable usage stats when teams limit exceeded (#7563)
+- **teams-limit**: add upgrade CTA to the meeting sidebar if teams limit is exceeded (#7520)
+- **teams-limit**: flag an organization when it has exceeded teams limit (#7517)
+- **teams-limit**: add addFeatureFlagToOrg mutation and support teams limit feature flag (#7526)
+- **parabl-ubi**: add parabol-ubi and host-st to public repo (#7588)
+- **recurrence**: Added current meeting link to ended meeting badge in standups (#7542)
+- **standups**: Standup response replied-to notification (#7547)
+
+### Changed
+
+- Add data team as reviewers for analytics changes (#7595)
+- Add comments to rootSchema (#7576)
+- Fix missing public types on private schema (#7580)
+- **metrics**: change upgrade CTA events to standard definitions (#7594)
+
 ## 6.86.1 2022-December-19
 
 ### Fixed

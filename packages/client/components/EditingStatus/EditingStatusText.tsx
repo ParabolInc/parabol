@@ -1,8 +1,15 @@
+import styled from '@emotion/styled'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
 import Ellipsis from '../Ellipsis/Ellipsis'
 import {TimestampType} from './EditingStatus'
+
+const StyledWrapper = styled('span')({
+  display: 'block',
+  overflow: 'visible',
+  overflowWrap: 'break-word'
+})
 
 interface Props {
   editors: {preferredName: string}[]
@@ -27,6 +34,11 @@ const useTimeFrom = (timestamp: string) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [makeTimeFrom, timeFrom, timestamp])
+  // to update on toggle
+  useEffect(() => {
+    setTimeFrom(makeTimeFrom())
+  }, [timestamp, makeTimeFrom])
+
   return timeFrom
 }
 
@@ -53,12 +65,12 @@ const EditingStatusText = (props: Props) => {
   if (editors.length === 1) {
     const editor = editorNames[0]
     return (
-      <span>
+      <StyledWrapper>
         {editor}
         {' is editing'}
         {isEditing ? ' too' : ''}
         <Ellipsis />
-      </span>
+      </StyledWrapper>
     )
   }
   if (editors.length === 2) {

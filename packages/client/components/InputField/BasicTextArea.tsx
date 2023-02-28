@@ -4,12 +4,13 @@ import makeFieldColorPalette from '../../styles/helpers/makeFieldColorPalette'
 import ui from '../../styles/ui'
 import StyledError from '../StyledError'
 
-const TextArea = styled('textarea')({
+const TextArea = styled('textarea')<{disabled?: boolean}>(({disabled}) => ({
   ...ui.fieldBaseStyles,
   ...ui.fieldSizeStyles.medium,
-  ...makeFieldColorPalette('white'),
-  minHeight: '5.75rem'
-})
+  ...makeFieldColorPalette('white', !disabled),
+  minHeight: '5.75rem',
+  ...(disabled && {...ui.fieldDisabled})
+}))
 
 interface Props {
   autoFocus?: boolean

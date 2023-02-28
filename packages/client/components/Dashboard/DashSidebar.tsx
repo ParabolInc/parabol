@@ -1,18 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
+import {useRouteMatch} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
-import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
+import {BILLING_PAGE, MEMBERS_PAGE} from '../../utils/constants'
+import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
-
-interface Props {
-  isOpen: boolean
-  viewer: DashSidebar_viewer | null
-}
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   // 78px is total height of 'Add meeting' block
@@ -57,8 +54,74 @@ const Wrapper = styled('div')({
   flexDirection: 'column'
 })
 
+const OrgName = styled('div')({
+  paddingTop: 8,
+  fontWeight: 600,
+  fontSize: 12,
+  lineHeight: '24px',
+  color: PALETTE.SLATE_500,
+  paddingLeft: 16
+})
+
+interface Props {
+  isOpen: boolean
+  viewerRef: DashSidebar_viewer$key | null
+}
+
 const DashSidebar = (props: Props) => {
-  const {isOpen, viewer} = props
+  const {isOpen, viewerRef} = props
+  const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
+
+  const viewer = useFragment(
+    graphql`
+      fragment DashSidebar_viewer on User {
+        ...StandardHub_viewer
+        ...DashNavList_viewer
+        featureFlags {
+          checkoutFlow
+        }
+        organizations {
+          id
+          name
+        }
+      }
+    `,
+    viewerRef
+  )
+
+  if (!viewer) return null
+  const {featureFlags, organizations} = viewer
+  const showOrgSidebar = featureFlags.checkoutFlow && match
+
+  if (showOrgSidebar) {
+    const {orgId: orgIdFromParams} = match.params
+    const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
+    const {id: orgId, name} = currentOrg ?? {}
+    return (
+      <Wrapper>
+        <SideBarStartMeetingButton isOpen={isOpen} />
+        <Nav isOpen={isOpen}>
+          <Contents>
+            <NavItemsWrap>
+              <NavItem icon={'arrowBack'} href={'/me/organizations'} label={'Organizations'} />
+              <OrgName>{name}</OrgName>
+              <NavItem
+                icon={'creditScore'}
+                href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
+                label={'Plans & Billing'}
+              />
+              <NavItem
+                icon={'group'}
+                href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
+                label={'Members'}
+              />
+            </NavItemsWrap>
+          </Contents>
+        </Nav>
+      </Wrapper>
+    )
+  }
+
   return (
     <Wrapper>
       <SideBarStartMeetingButton isOpen={isOpen} />
@@ -66,7 +129,7 @@ const DashSidebar = (props: Props) => {
         <Contents>
           <NavItemsWrap>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
+            <NavItem icon={'history'} href={'/me'} label={'History'} />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
           </NavItemsWrap>
           <DashHR />
@@ -83,11 +146,4 @@ const DashSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DashSidebar, {
-  viewer: graphql`
-    fragment DashSidebar_viewer on User {
-      ...StandardHub_viewer
-      ...DashNavList_viewer
-    }
-  `
-})
+export default DashSidebar

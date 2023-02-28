@@ -1,55 +1,29 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import MeetingPoker from '../../../database/types/MeetingPoker'
-import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {JiraIssue} from '../../../dataloader/atlassianLoaders'
 import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import sendToSentry from '../../../utils/sendToSentry'
 import {MutationResolvers} from '../resolverTypes'
 
-const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
+const getJiraField = async (jiraIssue: JiraIssue, fieldId: string) => {
   // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled
   // differently and can't be found on Jira fields list
   const customFields = [
     SprintPokerDefaults.SERVICE_FIELD_COMMENT,
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ]
-  if (customFields.includes(fieldName as any)) {
-    return {fieldId: fieldName, type: 'string' as const}
+  if (customFields.includes(fieldId as any)) {
+    return {fieldId, fieldName: fieldId, fieldType: 'string' as const}
   }
   // a regular Jira field
-  const {accessToken} = auth
-  const manager = new AtlassianServerManager(accessToken)
-  const fields = await manager.getFields(cloudId)
-  if (fields instanceof Error || fields instanceof RateLimitError) return null
-  const matchingFields = fields.filter((field) => field.name === fieldName)
-  if (matchingFields.length > 1) {
-    const {userId, teamId} = auth
-    sendToSentry(
-      new Error(
-        'Jira updateJiraDimensionField found multiple matching field ids for the given dimension field name'
-      ),
-      {
-        tags: {
-          userId,
-          teamId,
-          fieldName,
-          fieldIds: JSON.stringify(matchingFields.map(({id}) => id))
-        }
-      }
-    )
-  }
-  const selectedField = matchingFields[0]
-  if (!selectedField) return null
-  const {id: fieldId, schema} = selectedField
-  return {fieldId, type: schema.type as 'string' | 'number'}
+  return jiraIssue.possibleEstimationFields.find((field) => field.fieldId === fieldId)
 }
 
 const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = async (
   _source,
-  {meetingId, cloudId, projectKey, issueType, dimensionName, fieldName},
+  {meetingId, taskId, dimensionName, fieldId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -57,7 +31,10 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   const subOptions = {mutatorId, operationId}
 
   // VALIDATION
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const [task, meeting] = await Promise.all([
+    dataLoader.get('tasks').load(taskId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
   if (!meeting) {
     return {error: {message: 'Invalid meetingId'}}
   }
@@ -71,28 +48,48 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   if (!matchingDimension) {
     return {error: {message: 'Invalid dimension name'}}
   }
+  if (!task) {
+    return {error: {message: 'Task not found'}}
+  }
+  const {integration} = task
+  const service = integration?.service
+  if (service !== 'jira') {
+    return {error: {message: 'Not a Jira task'}}
+  }
 
   // RESOLUTION
   const data = {teamId, meetingId}
+  const {accessUserId, cloudId, issueKey} = integration
+  const projectKey = JiraProjectKeyId.join(issueKey)
+
+  const [auth, jiraIssue] = await Promise.all([
+    dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
+    dataLoader.get('jiraIssue').load({teamId, cloudId, viewerId, userId: accessUserId, issueKey})
+  ])
+
+  if (!auth) {
+    return {error: {message: 'User no longer has access to Atlassian'}}
+  }
+  if (!jiraIssue) {
+    return {error: {message: 'Issue not found'}}
+  }
+  const {issueType} = jiraIssue
+
   const dimensionFields = await dataLoader
     .get('jiraDimensionFieldMap')
     .load({teamId, cloudId, projectKey, issueType, dimensionName})
+
   const existingDimensionField = dimensionFields[0]
   if (
-    existingDimensionField?.fieldName === fieldName &&
+    existingDimensionField?.fieldId === fieldId &&
     existingDimensionField.issueType === issueType
   ) {
     return data
   }
 
-  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
-  if (!auth) {
-    return {error: {message: 'Not authenticated with Jira'}}
-  }
-
-  const selectedField = await getJiraField(fieldName, cloudId, auth)
+  const selectedField = await getJiraField(jiraIssue, fieldId)
   if (!selectedField) return {error: {message: 'Invalid field name'}}
-  const {fieldId, type: fieldType} = selectedField
+  const {fieldName, fieldType} = selectedField
 
   const newField = {
     teamId,
