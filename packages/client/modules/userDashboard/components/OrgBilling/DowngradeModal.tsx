@@ -81,6 +81,7 @@ const ButtonRow = styled(PlainButton)({
 const Label = styled('div')({
   paddingLeft: 8,
   fontSize: 16,
+  lineHeight: '32px',
   color: PALETTE.SLATE_900,
   width: '100%'
 })
@@ -146,6 +147,8 @@ const DowngradeModal = (props: Props) => {
     setSelectedReasons(newReasons)
   }
 
+  const handleSubmit = () => {}
+
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>Downgrade</StyledDialogTitle>
@@ -162,6 +165,9 @@ const DowngradeModal = (props: Props) => {
                 <Label>{reason}</Label>
               </ButtonRow>
             ))}
+            <LabelGroup>
+              <ActionLabel onClick={handleSubmit}>{'Submit'}</ActionLabel>
+            </LabelGroup>
           </StyledDialogContent>
         </>
       ) : (
