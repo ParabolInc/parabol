@@ -14,6 +14,9 @@ import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_orga
 import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
+import useModal from '../../../../hooks/useModal'
+import DowngradeModal from './DowngradeModal'
+import ReportErrorFeedback from '../../../../components/ReportErrorFeedback'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -197,6 +200,7 @@ const OrgPlans = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
+  const {togglePortal: toggleModal, closePortal: closeModal, openPortal, modalPortal} = useModal()
   const {tier} = organization
 
   const plans = [
@@ -239,62 +243,66 @@ const OrgPlans = (props: Props) => {
       // TODO: handle select plan when billing is implemented
     } else if (label === 'Downgrade') {
       // TODO: handle in https://github.com/ParabolInc/parabol/issues/7697
+      openPortal()
     }
   }
 
   return (
-    <StyledPanel label='Plans'>
-      <StyledRow>
-        <OrgStats organizationRef={organization} />
-      </StyledRow>
-      <StyledRow>
-        {plans.map((plan) => (
-          <Plan key={plan.tier} tier={plan.tier}>
-            <Content>
-              <HeadingBlock>
-                <PlanTitle>{plan.tier}</PlanTitle>
-                {plan.tier === 'team' ? (
-                  <>
-                    <PlanSubtitle>
-                      {'$6 per active user '}
-                      <StyledIcon
-                        ref={originRef}
-                        onMouseOver={openTooltip}
-                        onMouseOut={closeTooltip}
-                      >
-                        {<Info />}
-                      </StyledIcon>
-                    </PlanSubtitle>
-                    <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-                    {tooltipPortal(
-                      'Active users are anyone who uses Parabol within a billing period'
-                    )}
-                  </>
-                ) : (
-                  <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
+    <>
+      <StyledPanel label='Plans'>
+        <StyledRow>
+          <OrgStats organizationRef={organization} />
+        </StyledRow>
+        <StyledRow>
+          {modalPortal(<DowngradeModal />)}
+          {plans.map((plan) => (
+            <Plan key={plan.tier} tier={plan.tier}>
+              <Content>
+                <HeadingBlock>
+                  <PlanTitle>{plan.tier}</PlanTitle>
+                  {plan.tier === 'team' ? (
+                    <>
+                      <PlanSubtitle>
+                        {'$6 per active user '}
+                        <StyledIcon
+                          ref={originRef}
+                          onMouseOver={openTooltip}
+                          onMouseOut={closeTooltip}
+                        >
+                          {<Info />}
+                        </StyledIcon>
+                      </PlanSubtitle>
+                      <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                      {tooltipPortal(
+                        'Active users are anyone who uses Parabol within a billing period'
+                      )}
+                    </>
+                  ) : (
+                    <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
+                  )}
+                </HeadingBlock>
+                <UL>
+                  {plan.details.map((detail) => (
+                    <LI key={detail}>{detail}</LI>
+                  ))}
+                </UL>
+              </Content>
+              <ButtonBlock>
+                {plan.buttonStyle && (
+                  <UpgradeButton
+                    onClick={() => handleClick(plan.buttonLabel)}
+                    buttonStyle={plan.buttonStyle}
+                    size='medium'
+                  >
+                    {plan.buttonLabel}
+                  </UpgradeButton>
                 )}
-              </HeadingBlock>
-              <UL>
-                {plan.details.map((detail) => (
-                  <LI key={detail}>{detail}</LI>
-                ))}
-              </UL>
-            </Content>
-            <ButtonBlock>
-              {plan.buttonStyle && (
-                <UpgradeButton
-                  onClick={() => handleClick(plan.buttonLabel)}
-                  buttonStyle={plan.buttonStyle}
-                  size='medium'
-                >
-                  {plan.buttonLabel}
-                </UpgradeButton>
-              )}
-            </ButtonBlock>
-          </Plan>
-        ))}
-      </StyledRow>
-    </StyledPanel>
+              </ButtonBlock>
+            </Plan>
+          ))}
+        </StyledRow>
+      </StyledPanel>
+    </>
   )
 }
 
