@@ -1,22 +1,18 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import {Checkbox} from '@mui/material'
-import React, {useEffect, useState} from 'react'
-import DashModal from '../../../../components/Dashboard/DashModal'
+import React, {useState} from 'react'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
-import IconLabel from '../../../../components/IconLabel'
-import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ExternalLinks, Threshold} from '../../../../types/constEnums'
 import {TeamBenefits} from '../../../../utils/constants'
-import {UpgradeCTALocationEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
-import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
+import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarterMutation'
+import {useFragment} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
 const StyledDialogContainer = styled(DialogContainer)({
   padding: 8
@@ -31,7 +27,6 @@ const StyledDialogContent = styled(DialogContent)({
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 16
-  // border: '2px solid green'
 })
 
 const LabelGroup = styled('div')({
@@ -114,6 +109,7 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 
 type Props = {
   closeModal: () => void
+  organizationRef: any
 }
 
 const reasonsToLeave = [
@@ -129,10 +125,20 @@ type Reason = typeof reasonsToLeave[number]
 type SelectedReasons = Reason[]
 
 const DowngradeModal = (props: Props) => {
-  const {closeModal} = props
+  const {closeModal, organizationRef} = props
   const [hasConfirmedDowngrade, setHasConfirmedDowngrade] = useState(false)
-  // const [selectedReasons, setSelectedReasons] = useState('')
   const [selectedReasons, setSelectedReasons] = useState<SelectedReasons>([])
+  const atmosphere = useAtmosphere()
+  const organization = useFragment(
+    graphql`
+      fragment DowngradeModal_organization on Organization {
+        id
+      }
+    `,
+    organizationRef
+  )
+  const {onError, onCompleted} = useMutationProps()
+  const {id: orgId} = organization ?? {}
 
   const handleConfirm = () => {
     setHasConfirmedDowngrade(true)
@@ -148,7 +154,7 @@ const DowngradeModal = (props: Props) => {
   }
 
   const handleSubmit = () => {
-    // DowngradeToStarterMurtar
+    DowngradeToStarterMutation(atmosphere, {orgId}, {onError, onCompleted})
   }
 
   return (

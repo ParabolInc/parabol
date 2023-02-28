@@ -16,7 +16,6 @@ import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation
 import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
 import DowngradeModal from './DowngradeModal'
-import ReportErrorFeedback from '../../../../components/ReportErrorFeedback'
 import {TeamBenefits} from '../../../../utils/constants'
 
 const StyledPanel = styled(Panel)({
@@ -193,6 +192,7 @@ const OrgPlans = (props: Props) => {
     graphql`
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
+        ...DowngradeModal_organization
         tier
       }
     `,
@@ -297,7 +297,7 @@ const OrgPlans = (props: Props) => {
           ))}
         </StyledRow>
       </StyledPanel>
-      {modalPortal(<DowngradeModal closeModal={closeModal} />)}
+      {modalPortal(<DowngradeModal closeModal={closeModal} organizationRef={organization} />)}
     </>
   )
 }
