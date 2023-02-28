@@ -147,7 +147,9 @@ const DowngradeModal = (props: Props) => {
     setSelectedReasons(newReasons)
   }
 
-  const handleSubmit = () => {}
+  const handleSubmit = () => {
+    // DowngradeToStarterMurtar
+  }
 
   return (
     <StyledDialogContainer>
