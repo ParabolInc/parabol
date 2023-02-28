@@ -75,7 +75,7 @@ const ButtonRow = styled(PlainButton)({
   width: '100%',
   display: 'flex',
   flexWrap: 'nowrap',
-  alignContent: 'center'
+  alignItems: 'center'
 })
 
 const Label = styled('div')({
@@ -115,9 +115,23 @@ type Props = {
   closeModal: () => void
 }
 
+const reasonsToLeave = [
+  'Parabol is too expensive',
+  'Budget changes',
+  'Missing key features',
+  `Not using Parabol's paid features`,
+  'Moving to another tool (please specify)'
+] as const
+
+type Reason = typeof reasonsToLeave[number]
+
+type SelectedReasons = Reason[]
+
 const DowngradeModal = (props: Props) => {
   const {closeModal} = props
   const [hasConfirmedDowngrade, setHasConfirmedDowngrade] = useState(false)
+  // const [selectedReasons, setSelectedReasons] = useState('')
+  const [selectedReasons, setSelectedReasons] = useState<SelectedReasons>([])
 
   const handleConfirm = () => {
     setHasConfirmedDowngrade(true)
@@ -127,13 +141,10 @@ const DowngradeModal = (props: Props) => {
     closeModal()
   }
 
-  const reasonsToLeave = [
-    'Parabol is too expensive',
-    'Budget changes',
-    'Missing key features',
-    `Not using Parabol's paid features`,
-    'Moving to another tool (please specify)'
-  ]
+  const handleCheck = (reason: Reason) => {
+    const newReasons = [...selectedReasons, reason]
+    setSelectedReasons(newReasons)
+  }
 
   return (
     <StyledDialogContainer>
@@ -145,9 +156,8 @@ const DowngradeModal = (props: Props) => {
         <>
           <Description>Why did you choose to go? Choose all that apply</Description>
           <StyledDialogContent>
-            {/* <UL> */}
             {reasonsToLeave.map((reason) => (
-              <ButtonRow>
+              <ButtonRow onClick={() => handleCheck(reason)}>
                 <StyledCheckbox active={false} />
                 <Label>{reason}</Label>
               </ButtonRow>
