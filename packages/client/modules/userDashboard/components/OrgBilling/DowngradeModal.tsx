@@ -1,4 +1,6 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
+import {Checkbox} from '@mui/material'
 import React, {useEffect, useState} from 'react'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContainer from '../../../../components/DialogContainer'
@@ -6,6 +8,7 @@ import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -28,6 +31,7 @@ const StyledDialogContent = styled(DialogContent)({
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 16
+  // border: '2px solid green'
 })
 
 const LabelGroup = styled('div')({
@@ -67,6 +71,46 @@ const LI = styled('li')({
   textAlign: 'left'
 })
 
+const ButtonRow = styled(PlainButton)({
+  width: '100%',
+  display: 'flex',
+  flexWrap: 'nowrap',
+  alignContent: 'center'
+})
+
+const Label = styled('div')({
+  paddingLeft: 8,
+  fontSize: 16,
+  color: PALETTE.SLATE_900,
+  width: '100%'
+})
+
+const StyledCloseButton = styled(PlainButton)({
+  height: 24,
+  position: 'absolute',
+  right: 16,
+  top: 16
+})
+
+const CloseIcon = styled(Close)({
+  color: PALETTE.SLATE_600,
+  cursor: 'pointer',
+  '&:hover,:focus': {
+    color: PALETTE.SLATE_800
+  }
+})
+
+const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
+  color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
+  svg: {
+    fontSize: 28
+  },
+  width: 28,
+  height: 28,
+  textAlign: 'center',
+  userSelect: 'none'
+}))
+
 type Props = {
   closeModal: () => void
 }
@@ -83,11 +127,33 @@ const DowngradeModal = (props: Props) => {
     closeModal()
   }
 
+  const reasonsToLeave = [
+    'Parabol is too expensive',
+    'Budget changes',
+    'Missing key features',
+    `Not using Parabol's paid features`,
+    'Moving to another tool (please specify)'
+  ]
+
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>Downgrade</StyledDialogTitle>
+      <StyledCloseButton onClick={handleClose}>
+        <CloseIcon />
+      </StyledCloseButton>
       {hasConfirmedDowngrade ? (
-        <Description>Why did you choose to go? Choose all that apply</Description>
+        <>
+          <Description>Why did you choose to go? Choose all that apply</Description>
+          <StyledDialogContent>
+            {/* <UL> */}
+            {reasonsToLeave.map((reason) => (
+              <ButtonRow>
+                <StyledCheckbox active={false} />
+                <Label>{reason}</Label>
+              </ButtonRow>
+            ))}
+          </StyledDialogContent>
+        </>
       ) : (
         <>
           <Description>
