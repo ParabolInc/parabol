@@ -7,6 +7,8 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
+import {analytics} from '../../utils/analytics/analytics'
+import sendToSentry from '../../utils/sendToSentry'
 
 export default {
   type: DowngradeToStarterPayload,
@@ -42,6 +44,28 @@ export default {
     }
 
     // RESOLUTION
+    if (!isSuperUser) {
+      const [organizationUsers, organization] = await Promise.all([
+        dataLoader.get('organizationUsersByOrgId').load(orgId),
+        dataLoader.get('organizations').load(orgId)
+      ])
+      const billingLeaderUserId = organizationUsers
+        .filter((organizationUser) => organizationUser.role === 'BILLING_LEADER')
+        .find(({userId}) => userId)!.id
+      const billingLeaderUser = await dataLoader.get('users').load(billingLeaderUserId)
+      if (!billingLeaderUser) {
+        const error = new Error('Unable to find billing leader')
+        sendToSentry(error, {userId: viewerId})
+        return
+      }
+      analytics.organizationDowngraded(viewerId, {
+        orgId,
+        oldTier: tier,
+        newTier: 'starter',
+        billingLeaderEmail: billingLeaderUser.email,
+        orgName: organization.name
+      })
+    }
     // if they downgrade & are re-upgrading, they'll already have a stripeId
     await resolveDowngradeToStarter(orgId, stripeSubscriptionId!, viewerId)
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)

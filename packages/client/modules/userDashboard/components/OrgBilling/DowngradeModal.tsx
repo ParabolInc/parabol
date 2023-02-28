@@ -97,7 +97,6 @@ const CloseIcon = styled(Close)({
 })
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
-  color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
   svg: {
     fontSize: 28
   },
@@ -169,7 +168,7 @@ const DowngradeModal = (props: Props) => {
           <StyledDialogContent>
             {reasonsToLeave.map((reason) => (
               <ButtonRow onClick={() => handleCheck(reason)}>
-                <StyledCheckbox active={false} />
+                <StyledCheckbox active={selectedReasons.includes(reason)} />
                 <Label>{reason}</Label>
               </ButtonRow>
             ))}

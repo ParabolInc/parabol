@@ -79,7 +79,10 @@ export type AnalyticsEvent =
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
+  | 'Downgrade Clicked'
+  | 'Downgrade Continue Clicked'
   | 'Organization Downgraded'
+
   // task
   | 'Task Created'
   | 'Task Published'
