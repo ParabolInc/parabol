@@ -28,6 +28,19 @@ graphql`
       reflectionCount
       taskCount
       topicCount
+      reflectionGroups(sortBy: voteCount) {
+        summary
+      }
+      phases {
+        phaseType
+        ... on DiscussPhase {
+          stages {
+            discussion {
+              summary
+            }
+          }
+        }
+      }
     }
     team {
       id
@@ -82,7 +95,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -95,7 +108,17 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else {
-      history.push(`/new-summary/${meetingId}`)
+      const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
+      const {stages} = discussPhase ?? {}
+      const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+      const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
+      const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
+      const pathname = `/new-summary/${meetingId}`
+      const search = hasOpenAISummary ? '?ai=true' : ''
+      history.push({
+        pathname,
+        search
+      })
     }
   }
 }

@@ -56,6 +56,17 @@ graphql`
         id
       }
     }
+    meeting {
+      id
+      ... on TeamPromptMeeting {
+        meetingSeries {
+          id
+          mostRecentMeeting {
+            id
+          }
+        }
+      }
+    }
     teamMember {
       ...DashboardAvatar_teamMember
     }
@@ -104,6 +115,11 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
   const activeMeetings = team.getLinkedRecords('activeMeetings')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (viewer) {
+    const requestedMeeting = payload.getLinkedRecord('meeting')
+    if (requestedMeeting) {
+      const requestedMeetingId = requestedMeeting.getValue('id')
+      viewer.setLinkedRecord(requestedMeeting, 'meeting', {meetingId: requestedMeetingId})
+    }
     activeMeetings.forEach((activeMeeting) => {
       const meetingId = activeMeeting.getValue('id')
       viewer.setLinkedRecord(activeMeeting, 'meeting', {meetingId})

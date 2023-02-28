@@ -1,0 +1,33 @@
+extend type Mutation {
+  """
+  Starts a new team prompt meeting
+  """
+  startTeamPrompt(
+    """
+    Id of the team starting the meeting
+    """
+    teamId: ID!
+    """
+    The recurrence rule for the meeting series
+    """
+    recurrenceRule: RRule
+  ): StartTeamPromptPayload!
+}
+
+"""
+Return value for updateRecurrenceSettings, which could be an error
+"""
+union StartTeamPromptPayload = StartTeamPromptSuccess | ErrorPayload
+
+type StartTeamPromptSuccess {
+  """
+  The started meeting
+  """
+  meeting: TeamPromptMeeting!
+  """
+  The team that started the meeting
+  """
+  team: Team!
+}
+
+extend union TeamSubscriptionPayload = StartTeamPromptSuccess

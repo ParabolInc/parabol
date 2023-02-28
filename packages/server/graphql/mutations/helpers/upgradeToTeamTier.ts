@@ -1,12 +1,19 @@
+import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
+import {DataLoaderWorker} from '../../graphql'
 import getCCFromCustomer from './getCCFromCustomer'
 
-const upgradeToTeamTier = async (orgId: string, source: string, email: string) => {
+const upgradeToTeamTier = async (
+  orgId: string,
+  source: string,
+  email: string,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   const now = new Date()
 
@@ -58,7 +65,8 @@ const upgradeToTeamTier = async (orgId: string, source: string, email: string) =
         tier: 'team'
       },
       orgId
-    )
+    ),
+    removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])

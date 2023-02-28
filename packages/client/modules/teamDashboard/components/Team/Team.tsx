@@ -60,16 +60,17 @@ const Team = (props: Props) => {
   const {children, isSettings, team} = props
   const teamId = team?.id
   if (!team || !teamId) return null
-  const {isPaid} = team
+  const {isPaid, organization} = team
+  const {lockedAt} = organization
 
   const goToTeamDashboard = () => {
     history.push(`/team/${teamId}/`)
   }
 
-  const hasOverlay = !isPaid
+  const isLocked = !isPaid || !!lockedAt
   return (
     <>
-      <Suspense fallback={''}>{!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}</Suspense>
+      <Suspense fallback={''}>{isLocked && <UnpaidTeamModalRoot teamId={teamId} />}</Suspense>
       {isSettings && (
         <SettingsHeader>
           <TeamDashHeaderInner>
@@ -82,7 +83,7 @@ const Team = (props: Props) => {
           </TeamDashHeaderInner>
         </SettingsHeader>
       )}
-      <DashContent hasOverlay={hasOverlay}>{children}</DashContent>
+      <DashContent hasOverlay={isLocked}>{children}</DashContent>
     </>
   )
 }
@@ -92,6 +93,9 @@ export default createFragmentContainer(Team, {
     fragment Team_team on Team {
       id
       isPaid
+      organization {
+        lockedAt
+      }
       ...EditableTeamName_team
     }
   `

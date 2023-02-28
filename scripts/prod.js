@@ -20,18 +20,20 @@ const compile = (config, isSilent) => {
   })
 }
 
-const prod = async (isDeploy) => {
+const prod = async (isDeploy, noDeps) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   await generateGraphQLArtifacts()
-  const serversConfig = makeServersConfig({isDeploy})
-  const clientConfig = makeClientConfig({isDeploy})
+  const serversConfig = makeServersConfig({isDeploy, noDeps})
+  const clientConfig = makeClientConfig({isDeploy, noDeps})
   await Promise.all([compile(serversConfig), compile(clientConfig)])
-  if (!isDeploy) {
+  if (!isDeploy && !noDeps) {
+    // run in development
     require('./toolbox/postDeploy.js')
   }
 }
 
 if (require.main === module) {
   const isDeploy = process.argv[2] === '--deploy'
-  prod(isDeploy)
+  const noDeps = process.argv[2] === '--no-deps'
+  prod(isDeploy, noDeps)
 }

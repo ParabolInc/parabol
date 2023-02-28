@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   backup:
     docker:
-      - image: cimg/node:16.16.0
+      - image: cimg/node:18.13.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
@@ -38,7 +38,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` Backup done"}' $SLACK_DEVOPS_URL
   build:
     docker:
-      - image: cimg/node:16.16.0
+      - image: cimg/node:18.13.0
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:
@@ -56,7 +56,7 @@ jobs:
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
-      GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
+      GITHUB_REMOTE_STAGING: "dokku@action-staging-web-nyc1-03.parabol.co:web"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
@@ -137,6 +137,15 @@ jobs:
       - store_artifacts:
           path: ./packages/server/reports/junit
       - run:
+          name: Run client tests
+          command: yarn test:client -- --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./reports/junit
+      - store_test_results:
+          path: ./packages/client/reports/junit/
+      - store_artifacts:
+          path: ./packages/client/reports/junit
+      - run:
           name: Install Playwright system dependencies
           command: yarn workspace integration-tests playwright install-deps
       - run:
@@ -173,7 +182,7 @@ jobs:
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
               git add queryMap.json build dist packages/client/__generated__ scripts/toolbox packages/server/postgres/queries/generated -f
-              git commit -m "build $ACTION_VERSION"
+              git commit -m "build $ACTION_VERSION" --no-verify
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
               ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null

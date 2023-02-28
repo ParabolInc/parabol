@@ -125,7 +125,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
-  const isKill = meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType)
+  const isKill = !!(meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType))
   if (!isKill) await clearAgendaItems(teamId)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
@@ -186,13 +186,12 @@ export default {
 
     // RESOLUTION
     const currentStageRes = findStageById(phases, facilitatorStageId)
-    if (!currentStageRes) {
-      return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
+    if (currentStageRes) {
+      const {stage} = currentStageRes
+      stage.isComplete = true
+      stage.endAt = now
     }
-    const {stage} = currentStageRes
     const phase = getMeetingPhase(phases)
-    stage.isComplete = true
-    stage.endAt = now
 
     const completedCheckIn = (await r
       .table('NewMeeting')
@@ -264,7 +263,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
+      isKill: !!(phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)),
       updatedTaskIds,
       removedTaskIds,
       timelineEventId

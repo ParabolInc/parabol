@@ -62,13 +62,12 @@ export default {
       redis.del(...redisKeys)
     }
     const currentStageRes = findStageById(phases, facilitatorStageId)
-    if (!currentStageRes) {
-      return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
+    if (currentStageRes) {
+      const {stage} = currentStageRes
+      stage.isComplete = true
+      stage.endAt = now
     }
-    const {stage} = currentStageRes
     const phase = getMeetingPhase(phases)
-    stage.isComplete = true
-    stage.endAt = now
     const storyCount = new Set(
       estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
     ).size
@@ -108,7 +107,7 @@ export default {
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template)
-    const isKill = phase && phase.phaseType !== 'ESTIMATE'
+    const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
       checkTeamsLimit(team.orgId, dataLoader)

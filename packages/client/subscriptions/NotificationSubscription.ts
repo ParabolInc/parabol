@@ -25,6 +25,8 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from '../mutations/RemoveOrgUserMutation'
+import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
+import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
@@ -87,6 +89,15 @@ const subscription = graphql`
         }
       }
 
+      ... on UpdatedNotification {
+        updatedNotification {
+          ...NotificationPicker_notification @relay(mask: false)
+        }
+      }
+
+      ...popNotificationToast_notification @relay(mask: false)
+      ...updateNotificationToast_notification @relay(mask: false)
+
       ... on AuthTokenPayload {
         id
       }
@@ -111,7 +122,7 @@ const subscription = graphql`
       }
 
       # Feature flags
-      ... on AddFeatureFlagPayload {
+      ... on UpdateFeatureFlagPayload {
         user {
           id
           # add flag here
@@ -232,7 +243,9 @@ const onNextHandlers = {
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
-  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext
+  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext,
+  AddedNotification: popNotificationToastOnNext,
+  UpdatedNotification: updateNotificationToastOnNext
 } as const
 
 const NotificationSubscription = (
@@ -252,7 +265,7 @@ const NotificationSubscription = (
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationNotificationUpdater(payload, context)
           break
-        case 'AddFeatureFlagPayload':
+        case 'UpdateFeatureFlagPayload':
           break
         case 'AddNewFeaturePayload':
           addNewFeatureNotificationUpdater(payload, context)

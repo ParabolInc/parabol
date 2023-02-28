@@ -779,7 +779,7 @@ type User {
   """
   all the notifications for a single user
   """
-  notifications(first: Int!, after: DateTime): NotificationConnection!
+  notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
 
   """
   get a single organization
@@ -3416,6 +3416,11 @@ type Discussion {
     """
     after: String
   ): ThreadableConnection!
+
+  """
+  The stage where the discussion is
+  """
+  stage: NewMeetingStage
 }
 
 """
@@ -3544,6 +3549,7 @@ enum NotificationStatusEnum {
 The kind of notification
 """
 enum NotificationEnum {
+  DISCUSSION_MENTIONED
   KICKED_OUT
   PAYMENT_REJECTED
   PROMOTE_TO_BILLING_LEADER
@@ -3554,6 +3560,7 @@ enum NotificationEnum {
   RESPONSE_MENTIONED
   RESPONSE_REPLIED
   TEAMS_LIMIT_EXCEEDED
+  TEAMS_LIMIT_REMINDER
 }
 
 """

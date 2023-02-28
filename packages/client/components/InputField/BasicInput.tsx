@@ -32,6 +32,7 @@ interface Props {
   spellCheck?: boolean
   type?: string
   value: string
+  readOnly?: boolean
 }
 
 const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
@@ -47,11 +48,13 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
     placeholder,
     spellCheck,
     type = 'text',
-    value
+    value,
+    readOnly
   } = props
   return (
     <React.Fragment>
       <Input
+        readOnly={readOnly}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
         className={className}

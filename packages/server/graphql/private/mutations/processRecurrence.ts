@@ -33,15 +33,13 @@ const startRecurringTeamPrompt = async (
     day: 'numeric'
   })
 
+  const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+  const nextMeetingStartDate = rrule.after(startTime)
   const meeting = await safeCreateTeamPrompt(teamId, facilitatorId, r, dataLoader, {
     name: `${meetingSeries.title} - ${formattedDate}`,
-    scheduledEndTime: new Date(startTime.getTime() + ms(`${meetingSeries.duration}m`)),
+    scheduledEndTime: nextMeetingStartDate,
     meetingSeriesId: meetingSeries.id
   })
-
-  meeting.name = `${meetingSeries.title} - ${formattedDate}`
-  meeting.scheduledEndTime = new Date(startTime.getTime() + ms(`${meetingSeries.duration}m`))
-  meeting.meetingSeriesId = meetingSeries.id
 
   await r.table('NewMeeting').insert(meeting).run()
 
@@ -51,11 +49,8 @@ const startRecurringTeamPrompt = async (
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
 }
 
-const processRecurrence: MutationResolvers['processRecurrence'] = async (
-  _source,
-  {},
-  {dataLoader, socketId: mutatorId}
-) => {
+const processRecurrence: MutationResolvers['processRecurrence'] = async (_source, {}, context) => {
+  const {dataLoader, socketId: mutatorId} = context
   const r = await getRethink()
   const now = new Date()
   const operationId = dataLoader.share()
@@ -71,7 +66,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
 
   const res = await Promise.all(
     teamPromptMeetingsToEnd.map(async (meeting) => {
-      return await safeEndTeamPrompt({meeting, now, dataLoader, r, subOptions})
+      return await safeEndTeamPrompt({meeting, now, context, r, subOptions})
     })
   )
 
@@ -84,6 +79,16 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
   const activeMeetingSeries = await getActiveMeetingSeries()
   await Promise.all(
     activeMeetingSeries.map(async (meetingSeries) => {
+      const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
+      if (seriesTeam.isArchived || !seriesTeam.isPaid) {
+        return
+      }
+
+      const seriesOrg = await dataLoader.get('organizations').load(seriesTeam.orgId)
+      if (seriesOrg.lockedAt) {
+        return
+      }
+
       const lastMeeting = await r
         .table('NewMeeting')
         .getAll(meetingSeries.id, {index: 'meetingSeriesId'})

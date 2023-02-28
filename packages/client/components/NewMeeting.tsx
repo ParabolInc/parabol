@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {RRule} from 'rrule'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useUsageSnackNag from '~/hooks/useUsageSnackNag'
@@ -20,6 +21,7 @@ import FlatButton from './FlatButton'
 import IconLabel from './IconLabel'
 import NewMeetingActions from './NewMeetingActions'
 import NewMeetingCarousel from './NewMeetingCarousel'
+import {NewMeetingRecurrenceSettings} from './NewMeetingRecurrenceSettings'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
 
@@ -132,6 +134,7 @@ const NewMeeting = (props: Props) => {
     'poker',
     'action'
   ])
+  const [recurrenceRule, setRecurrenceRule] = useState<RRule | null>(null)
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
@@ -169,7 +172,11 @@ const NewMeeting = (props: Props) => {
     } else if (meetingType === 'retrospective') {
       StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     } else if (meetingType === 'teamPrompt') {
-      StartTeamPromptMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+      StartTeamPromptMutation(
+        atmosphere,
+        {teamId, recurrenceRule: recurrenceRule?.toString()},
+        {history, onError, onCompleted}
+      )
     }
   }
   if (!teamId || !selectedTeam) return null
@@ -198,6 +205,12 @@ const NewMeeting = (props: Props) => {
               meetingType={meetingType}
               viewerRef={viewer}
             />
+            {meetingType === 'teamPrompt' && (
+              <NewMeetingRecurrenceSettings
+                onRecurrenceRuleUpdated={setRecurrenceRule}
+                recurrenceRule={recurrenceRule}
+              />
+            )}
           </SettingsRow>
         </TeamAndSettings>
       </NewMeetingInner>
