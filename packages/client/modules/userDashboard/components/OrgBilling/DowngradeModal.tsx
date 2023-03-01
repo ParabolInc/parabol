@@ -164,6 +164,7 @@ const DowngradeModal = (props: Props) => {
   }
 
   const handleSubmit = () => {
+    closeModal()
     DowngradeToStarterMutation(
       atmosphere,
       {orgId, reasonsForLeaving: selectedReasons},
