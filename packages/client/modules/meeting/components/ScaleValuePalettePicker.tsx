@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import Menu from '~/components/Menu'
 import PaletteColor from '~/components/PaletteColor/PaletteColor'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
@@ -9,10 +9,10 @@ import palettePickerOptions from '~/styles/palettePickerOptions'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
-import {ScaleValuePalettePicker_scale} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
+import {ScaleValuePalettePicker_scale$key} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
 
 interface Props {
-  scale: ScaleValuePalettePicker_scale
+  scale: ScaleValuePalettePicker_scale$key
   scaleValueLabel: string
   scaleValueColor: string
   menuProps: MenuProps
@@ -35,7 +35,19 @@ const ScaleValuePaletteList = styled('ul')({
 })
 
 const ScaleValuePalettePicker = (props: Props) => {
-  const {scaleValueLabel, scaleValueColor, scale, menuProps, setScaleValueColor} = props
+  const {scaleValueLabel, scaleValueColor, scale: scaleRef, menuProps, setScaleValueColor} = props
+  const scale = useFragment(
+    graphql`
+      fragment ScaleValuePalettePicker_scale on TemplateScale {
+        id
+        values {
+          label
+          color
+        }
+      }
+    `,
+    scaleRef
+  )
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {closePortal} = menuProps
   const atmosphere = useAtmosphere()
@@ -79,14 +91,4 @@ const ScaleValuePalettePicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ScaleValuePalettePicker, {
-  scale: graphql`
-    fragment ScaleValuePalettePicker_scale on TemplateScale {
-      id
-      values {
-        label
-        color
-      }
-    }
-  `
-})
+export default ScaleValuePalettePicker
