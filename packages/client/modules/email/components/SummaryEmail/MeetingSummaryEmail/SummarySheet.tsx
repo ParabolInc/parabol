@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
 import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
-import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
+import {SummarySheet_meeting$key} from 'parabol-client/__generated__/SummarySheet_meeting.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {CorsOptions} from '../../../../../types/cors'
 import ExportToCSV from '../ExportToCSV'
 import ContactUsFooter from './ContactUsFooter'
@@ -23,7 +23,7 @@ import WholeMeetingSummary from './WholeMeetingSummary'
 interface Props {
   emailCSVUrl: string
   isDemo?: boolean
-  meeting: SummarySheet_meeting
+  meeting: SummarySheet_meeting$key
   appOrigin: string
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
@@ -38,7 +38,33 @@ const sheetStyle = {
 }
 
 const SummarySheet = (props: Props) => {
-  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl, appOrigin, corsOptions} = props
+  const {
+    emailCSVUrl,
+    urlAction,
+    meeting: meetingRef,
+    referrer,
+    teamDashUrl,
+    appOrigin,
+    corsOptions
+  } = props
+  const meeting = useFragment(
+    graphql`
+      fragment SummarySheet_meeting on NewMeeting {
+        id
+        ...WholeMeetingSummary_meeting
+        ...SummaryHeader_meeting
+        ...QuickStats_meeting
+        ...MeetingMembersWithTasks_meeting
+        ...MeetingMembersWithoutTasks_meeting
+        ...RetroTopics_meeting
+        ...SummaryPokerStories_meeting
+        ...TeamPromptResponseSummary_meeting
+        meetingType
+        name
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
 
@@ -92,20 +118,4 @@ const SummarySheet = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SummarySheet, {
-  meeting: graphql`
-    fragment SummarySheet_meeting on NewMeeting {
-      id
-      ...WholeMeetingSummary_meeting
-      ...SummaryHeader_meeting
-      ...QuickStats_meeting
-      ...MeetingMembersWithTasks_meeting
-      ...MeetingMembersWithoutTasks_meeting
-      ...RetroTopics_meeting
-      ...SummaryPokerStories_meeting
-      ...TeamPromptResponseSummary_meeting
-      meetingType
-      name
-    }
-  `
-})
+export default SummarySheet
