@@ -9,7 +9,6 @@ import {
 } from 'graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import isValid from '../isValid'
 import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'
@@ -52,16 +51,6 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
       resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         return isUserBillingLeader(viewerId, orgId, dataLoader)
-      }
-    },
-    totalMeetingCount: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The number of meetings that have occurred in the org',
-      resolve: async ({id: orgId}, _args: unknown, {dataLoader}) => {
-        const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-        const teamIds = allTeamsOnOrg.map(({id}) => id)
-        const allMeetings = await dataLoader.get('allMeetingsByTeamId').loadMany(teamIds)
-        return allMeetings.filter(isValid).flatMap((meetings) => meetings).length
       }
     },
     name: {
