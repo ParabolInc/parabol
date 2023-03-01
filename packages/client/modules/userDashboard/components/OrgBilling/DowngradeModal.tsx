@@ -39,7 +39,7 @@ const LabelGroup = styled('div')({
 })
 
 const Description = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: PALETTE.SLATE_900,
   fontSize: 16,
   lineHeight: 1.5,
   padding: '24px 24px 0px 24px'
