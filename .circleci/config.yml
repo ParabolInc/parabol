@@ -55,7 +55,7 @@ jobs:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
-      GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
+      GITHUB_REMOTE_PRODUCTION: "dokku@action-production-web-nyc1-03.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging-web-nyc1-03.parabol.co:web"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
