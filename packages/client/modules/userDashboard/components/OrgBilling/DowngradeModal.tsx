@@ -153,12 +153,22 @@ const DowngradeModal = (props: Props) => {
   }
 
   const handleCheck = (reason: Reason) => {
-    const newReasons = [...selectedReasons, reason]
-    setSelectedReasons(newReasons)
+    const isSelected = selectedReasons.includes(reason)
+    if (isSelected) {
+      const filteredReasons = selectedReasons.filter((selectedReason) => selectedReason !== reason)
+      setSelectedReasons(filteredReasons)
+    } else {
+      const newReasons = [...selectedReasons, reason]
+      setSelectedReasons(newReasons)
+    }
   }
 
   const handleSubmit = () => {
-    DowngradeToStarterMutation(atmosphere, {orgId}, {onError, onCompleted})
+    DowngradeToStarterMutation(
+      atmosphere,
+      {orgId, reasonsForLeaving: selectedReasons},
+      {onError, onCompleted}
+    )
   }
 
   return (

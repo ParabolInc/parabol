@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
@@ -17,11 +17,15 @@ export default {
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'the org requesting the upgrade'
+    },
+    reasonsForLeaving: {
+      type: new GraphQLList(GraphQLString),
+      description: 'the reasons the user is leaving'
     }
   },
   async resolve(
     _source: unknown,
-    {orgId}: {orgId: string},
+    {orgId, reasonsForLeaving}: {orgId: string; reasonsForLeaving?: string[]},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -63,7 +67,8 @@ export default {
         oldTier: tier,
         newTier: 'starter',
         billingLeaderEmail: billingLeaderUser.email,
-        orgName: organization.name
+        orgName: organization.name,
+        reasonsForLeaving
       })
     }
     // if they downgrade & are re-upgrading, they'll already have a stripeId

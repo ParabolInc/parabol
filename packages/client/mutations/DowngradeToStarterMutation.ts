@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-// import {DowngradeToStarterMutation as TDowngradeToStarterMutation} from '../__generated__/DowngradeToStarterMutation.graphql'
+import {DowngradeToStarterMutation as TDowngradeToStarterMutation} from '../__generated__/DowngradeToStarterMutation.graphql'
 
 graphql`
   fragment DowngradeToStarterMutation_organization on DowngradeToStarterPayload {
@@ -12,8 +12,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DowngradeToStarterMutation($orgId: ID!) {
-    downgradeToStarter(orgId: $orgId) {
+  mutation DowngradeToStarterMutation($orgId: ID!, $reasonsForLeaving: [String!]) {
+    downgradeToStarter(orgId: $orgId, reasonsForLeaving: $reasonsForLeaving) {
       error {
         message
       }
@@ -22,7 +22,7 @@ const mutation = graphql`
   }
 `
 
-const DowngradeToStarterMutation: StandardMutation<any> = (
+const DowngradeToStarterMutation: StandardMutation<TDowngradeToStarterMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}

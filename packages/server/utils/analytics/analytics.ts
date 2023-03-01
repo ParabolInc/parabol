@@ -28,6 +28,7 @@ export type OrgTierChangeEventProperties = {
   oldTier: string
   newTier: string
   billingLeaderEmail: string
+  reasonsForLeaving?: string[]
 }
 
 export type TaskProperties = {
