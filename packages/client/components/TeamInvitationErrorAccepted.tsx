@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import {TeamInvitationErrorAccepted_verifiedInvitation} from '../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
+import {TeamInvitationErrorAccepted_verifiedInvitation$key} from '../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
@@ -11,7 +11,7 @@ import InviteDialog from './InviteDialog'
 import StyledLink from './StyledLink'
 
 interface Props {
-  verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation
+  verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation$key
 }
 
 const InlineCopy = styled(InvitationDialogCopy)({
@@ -19,7 +19,20 @@ const InlineCopy = styled(InvitationDialogCopy)({
 })
 
 const TeamInvitationErrorAccepted = (props: Props) => {
-  const {verifiedInvitation} = props
+  const {verifiedInvitation: verifiedInvitationRef} = props
+  const verifiedInvitation = useFragment(
+    graphql`
+      fragment TeamInvitationErrorAccepted_verifiedInvitation on VerifiedInvitationPayload {
+        meetingId
+        meetingName
+        teamName
+        teamInvitation {
+          teamId
+        }
+      }
+    `,
+    verifiedInvitationRef
+  )
   const {meetingId, meetingName, teamInvitation, teamName} = verifiedInvitation
   useDocumentTitle(`Token already accepted | Team Invitation`, 'Team Invitation')
   if (!teamInvitation || teamName === null) return null
@@ -51,15 +64,4 @@ const TeamInvitationErrorAccepted = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamInvitationErrorAccepted, {
-  verifiedInvitation: graphql`
-    fragment TeamInvitationErrorAccepted_verifiedInvitation on VerifiedInvitationPayload {
-      meetingId
-      meetingName
-      teamName
-      teamInvitation {
-        teamId
-      }
-    }
-  `
-})
+export default TeamInvitationErrorAccepted

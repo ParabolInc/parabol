@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState} from 'draft-js'
 import React, {ReactNode, useEffect, useRef, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -11,9 +11,9 @@ import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutati
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import isTempId from '~/utils/relay/isTempId'
-import {ThreadedCommentBase_comment} from '~/__generated__/ThreadedCommentBase_comment.graphql'
-import {ThreadedCommentBase_discussion} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
-import {ThreadedCommentBase_viewer} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
+import {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
+import {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
+import {ThreadedCommentBase_viewer$key} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
@@ -41,27 +41,73 @@ const EditorWrapper = styled('div')({
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
-  comment: ThreadedCommentBase_comment
+  comment: ThreadedCommentBase_comment$key
   children?: ReactNode // the replies, listed here to avoid a circular reference
-  discussion: ThreadedCommentBase_discussion
+  discussion: ThreadedCommentBase_discussion$key
   isReply?: boolean // this comment is a reply & should be indented
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
-  viewer: ThreadedCommentBase_viewer
+  viewer: ThreadedCommentBase_viewer$key
 }
 
 const ThreadedCommentBase = (props: Props) => {
   const {
     allowedThreadables,
     children,
-    comment,
+    comment: commentRef,
     replyMention,
     setReplyMention,
-    discussion,
+    discussion: discussionRef,
     dataCy,
-    viewer
+    viewer: viewerRef
   } = props
+  const viewer = useFragment(
+    graphql`
+      fragment ThreadedCommentBase_viewer on User {
+        ...ThreadedItemReply_viewer
+        tier
+      }
+    `,
+    viewerRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment ThreadedCommentBase_discussion on Discussion {
+        ...DiscussionThreadInput_discussion
+        ...ThreadedItemReply_discussion
+        id
+        meetingId
+        replyingToCommentId
+        teamId
+        discussionTopicId
+      }
+    `,
+    discussionRef
+  )
+  const comment = useFragment(
+    graphql`
+      fragment ThreadedCommentBase_comment on Comment {
+        ...ThreadedCommentHeader_comment
+        ...ThreadedItemReply_threadable
+        id
+        isActive
+        content
+        createdByUserNullable: createdByUser {
+          id
+          preferredName
+          picture
+        }
+        reactjis {
+          ...ThreadedCommentFooter_reactjis
+          id
+          isViewerReactji
+        }
+        threadParentId
+      }
+    `,
+    commentRef
+  )
   const isReply = !!props.isReply
   const {id: discussionId, meetingId, replyingToCommentId, teamId, discussionTopicId} = discussion
   const {
@@ -221,42 +267,4 @@ const ThreadedCommentBase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ThreadedCommentBase, {
-  viewer: graphql`
-    fragment ThreadedCommentBase_viewer on User {
-      ...ThreadedItemReply_viewer
-      tier
-    }
-  `,
-  discussion: graphql`
-    fragment ThreadedCommentBase_discussion on Discussion {
-      ...DiscussionThreadInput_discussion
-      ...ThreadedItemReply_discussion
-      id
-      meetingId
-      replyingToCommentId
-      teamId
-      discussionTopicId
-    }
-  `,
-  comment: graphql`
-    fragment ThreadedCommentBase_comment on Comment {
-      ...ThreadedCommentHeader_comment
-      ...ThreadedItemReply_threadable
-      id
-      isActive
-      content
-      createdByUserNullable: createdByUser {
-        id
-        preferredName
-        picture
-      }
-      reactjis {
-        ...ThreadedCommentFooter_reactjis
-        id
-        isViewerReactji
-      }
-      threadParentId
-    }
-  `
-})
+export default ThreadedCommentBase

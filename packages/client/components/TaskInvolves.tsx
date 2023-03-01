@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import {cardShadow} from '~/styles/elevation'
@@ -13,7 +13,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
-import {TaskInvolves_notification} from '../__generated__/TaskInvolves_notification.graphql'
+import {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
 
 const involvementWord = {
@@ -55,7 +55,7 @@ const OwnerAvatar = styled('img')({
 })
 
 interface Props {
-  notification: TaskInvolves_notification
+  notification: TaskInvolves_notification$key
 }
 
 const deletedTask = {
@@ -69,7 +69,36 @@ const deletedTask = {
 } as const
 
 const TaskInvolves = (props: Props) => {
-  const {notification} = props
+  const {notification: notificationRef} = props
+  const notification = useFragment(
+    graphql`
+      fragment TaskInvolves_notification on NotifyTaskInvolves {
+        ...NotificationTemplate_notification
+        id
+        changeAuthor {
+          picture
+          preferredName
+        }
+        involvement
+        status
+        team {
+          id
+          name
+        }
+        task {
+          id
+          content
+          status
+          tags
+          user {
+            picture
+            preferredName
+          }
+        }
+      }
+    `,
+    notificationRef
+  )
   const {id: notificationId, task, team, involvement, changeAuthor} = notification
   const {content, status, tags, user} = task || deletedTask
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
@@ -121,31 +150,4 @@ const TaskInvolves = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskInvolves, {
-  notification: graphql`
-    fragment TaskInvolves_notification on NotifyTaskInvolves {
-      ...NotificationTemplate_notification
-      id
-      changeAuthor {
-        picture
-        preferredName
-      }
-      involvement
-      status
-      team {
-        id
-        name
-      }
-      task {
-        id
-        content
-        status
-        tags
-        user {
-          picture
-          preferredName
-        }
-      }
-    }
-  `
-})
+export default TaskInvolves
