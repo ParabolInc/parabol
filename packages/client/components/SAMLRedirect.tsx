@@ -17,9 +17,8 @@ const SAMLRedirect = () => {
     const token = params.get('token')
     const error = params.get('error')
     const isNewUser = params.get('isNewUser') === 'true'
-    const isPatient0 = params.get('isPatient0') === 'true'
     if (isNewUser && !error) {
-      ReactGA.event('sign_up', {isPatient0})
+      ReactGA.event('sign_up')
     }
     let isSameOriginPopup = false
     if (window.opener) {
