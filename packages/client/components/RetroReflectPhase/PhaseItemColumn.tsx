@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
+import {useFragment} from 'react-relay'
+import {PhaseItemColumn_prompt$key} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
 import useForceUpdate from '../../hooks/useForceUpdate'
@@ -13,7 +13,7 @@ import {DECELERATE} from '../../styles/animation'
 import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ElementWidth, Gutters} from '../../types/constEnums'
 import getNextSortOrder from '../../utils/getNextSortOrder'
-import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting$key} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import RetroPrompt from '../RetroPrompt'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
@@ -134,13 +134,73 @@ export interface ReflectColumnCardInFlight {
 interface Props {
   idx: number
   isDesktop: boolean
-  meeting: PhaseItemColumn_meeting
+  meeting: PhaseItemColumn_meeting$key
   phaseRef: RefObject<HTMLDivElement>
-  prompt: PhaseItemColumn_prompt
+  prompt: PhaseItemColumn_prompt$key
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {idx, meeting, phaseRef, prompt, isDesktop} = props
+  const {idx, meeting: meetingRef, phaseRef, prompt: promptRef, isDesktop} = props
+  const prompt = useFragment(
+    graphql`
+      fragment PhaseItemColumn_prompt on ReflectPrompt {
+        id
+        description
+        editorIds
+        groupColor
+        question
+      }
+    `,
+    promptRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
+        ...ReflectionStack_meeting
+        ...PhaseItemEditor_meeting
+        facilitatorUserId
+        id
+        endedAt
+        localPhase {
+          id
+          phaseType
+          ... on ReflectPhase {
+            focusedPromptId
+          }
+        }
+        localStage {
+          isComplete
+        }
+        phases {
+          id
+          phaseType
+          stages {
+            isComplete
+          }
+          ... on ReflectPhase {
+            focusedPromptId
+          }
+        }
+        reflectionGroups {
+          id
+          ...ReflectionGroup_reflectionGroup
+          sortOrder
+          reflections {
+            ...ReflectionCard_reflection
+            ...DraggableReflectionCard_reflection
+            ...DraggableReflectionCard_staticReflections
+            content
+            id
+            isEditing
+            isViewerCreator
+            promptId
+            sortOrder
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups, endedAt} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
@@ -258,59 +318,4 @@ const PhaseItemColumn = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PhaseItemColumn, {
-  prompt: graphql`
-    fragment PhaseItemColumn_prompt on ReflectPrompt {
-      id
-      description
-      editorIds
-      groupColor
-      question
-    }
-  `,
-  meeting: graphql`
-    fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
-      ...ReflectionStack_meeting
-      ...PhaseItemEditor_meeting
-      facilitatorUserId
-      id
-      endedAt
-      localPhase {
-        id
-        phaseType
-        ... on ReflectPhase {
-          focusedPromptId
-        }
-      }
-      localStage {
-        isComplete
-      }
-      phases {
-        id
-        phaseType
-        stages {
-          isComplete
-        }
-        ... on ReflectPhase {
-          focusedPromptId
-        }
-      }
-      reflectionGroups {
-        id
-        ...ReflectionGroup_reflectionGroup
-        sortOrder
-        reflections {
-          ...ReflectionCard_reflection
-          ...DraggableReflectionCard_reflection
-          ...DraggableReflectionCard_staticReflections
-          content
-          id
-          isEditing
-          isViewerCreator
-          promptId
-          sortOrder
-        }
-      }
-    }
-  `
-})
+export default PhaseItemColumn
