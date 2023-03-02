@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import {Divider} from '@mui/material'
-import React, {useEffect, useLayoutEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import BillingForm from './BillingForm'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import useForm from '../../../../hooks/useForm'
 import {PALETTE} from '../../../../styles/paletteV3'
-import StripeClientManager from '../../../../utils/StripeClientManager'
 import {loadStripe} from '@stripe/stripe-js'
 import {Elements} from '@stripe/react-stripe-js'
 import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import {CreatePaymentIntentMutationResponse} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
+import {CompletedHandler} from '../../../../types/relayMutations'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976
@@ -95,23 +95,20 @@ const ActiveUserBlock = styled('div')({
 const stripePromise = loadStripe('pk_test_MNoKbCzQX0lhktuxxI7M14wd')
 
 const Billing = () => {
-  const [stripeClientManager] = useState(() => new StripeClientManager())
-
   const [clientSecret, setClientSecret] = useState('')
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
+  const {onError} = useMutationProps()
 
   useEffect(() => {
-    const myOnComplete = (res, errors) => {
-      if (errors) {
-        onError(errors)
-        return
-      }
+    const handleCompleted: CompletedHandler<CreatePaymentIntentMutationResponse> = (res) => {
       const {createPaymentIntent} = res
       const {clientSecret} = createPaymentIntent
-      setClientSecret(clientSecret)
+      if (clientSecret) {
+        setClientSecret(clientSecret)
+      }
     }
-    CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: myOnComplete})
+
+    CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
   }, [])
 
   const appearance = {
