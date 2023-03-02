@@ -1,24 +1,27 @@
+const CONTENT_GROUP_PREFIX = `App |`
 export default function getContentGroup(pathname: string) {
+  let contentGroup
   // ^action\.parabol\.co/(meet|new-meeting|retro)(/|$|\?)
   if (pathname.match(/^\/(meet|meetings|new-meeting|retro)(\/|$\?)/)) {
-    return 'Meetings'
+    contentGroup = 'Meetings'
   } else if (pathname.match(/^\/(team|new-summary)(\/|$|\?)/)) {
-    return 'Team'
+    contentGroup = 'Team'
   } else if (pathname.match(/^\/retrospective-demo/)) {
-    return 'Demo'
+    contentGroup = 'Demo'
   } else if (pathname.match(/^\/(invitation-link|team-invitation)\//)) {
-    return 'Invitations'
+    contentGroup = 'Invitations'
   } else if (pathname.match(/^\/(me(\/tasks)?($|\?))/)) {
-    return 'Personal'
+    contentGroup = 'Personal'
   } else if (pathname.match(/^\/(me\/(profile|organizations)|newteam)(\/|$|\?)/)) {
-    return 'Settings'
+    contentGroup = 'Settings'
   } else if (
     pathname.match(
       /^\/($|\?|(auth|signin|signout|(reset|forgot)-password|create-account|saml-redirect|invitation-required)(\/|$|\?))/
     )
   ) {
-    return 'Account'
+    contentGroup = 'Account'
   } else {
     return undefined
   }
+  return `${CONTENT_GROUP_PREFIX} ${contentGroup}`
 }
