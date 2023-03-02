@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
 import {PokerCards} from '../types/constEnums'
-import {DeckActivityAvatars_stage} from '../__generated__/DeckActivityAvatars_stage.graphql'
+import {DeckActivityAvatars_stage$key} from '../__generated__/DeckActivityAvatars_stage.graphql'
 import AvatarListUser from './AvatarListUser'
 
 const DeckActivityPanel = styled('div')({
@@ -30,12 +30,28 @@ const PeekingAvatar = styled(AvatarListUser)<{status?: TransitionStatus}>(({stat
 }))
 
 interface Props {
-  stage: DeckActivityAvatars_stage
+  stage: DeckActivityAvatars_stage$key
 }
 
 const MAX_PEEKERS = 5
 const DeckActivityAvatars = (props: Props) => {
-  const {stage} = props
+  const {stage: stageRef} = props
+  const stage = useFragment(
+    graphql`
+      fragment DeckActivityAvatars_stage on EstimateStage {
+        id
+        hoveringUsers {
+          ...AvatarListUser_user
+          id
+          picture
+        }
+        scores {
+          userId
+        }
+      }
+    `,
+    stageRef
+  )
   const {hoveringUsers, scores} = stage
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -78,18 +94,4 @@ const DeckActivityAvatars = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DeckActivityAvatars, {
-  stage: graphql`
-    fragment DeckActivityAvatars_stage on EstimateStage {
-      id
-      hoveringUsers {
-        ...AvatarListUser_user
-        id
-        picture
-      }
-      scores {
-        userId
-      }
-    }
-  `
-})
+export default DeckActivityAvatars

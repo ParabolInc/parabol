@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import {captureException} from '@sentry/minimal'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
+import {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -19,7 +19,7 @@ import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import SpotlightModal from './SpotlightModal'
 
 interface Props {
-  meeting: GroupingKanban_meeting
+  meeting: GroupingKanban_meeting$key
   phaseRef: RefObject<HTMLDivElement>
 }
 
@@ -37,7 +37,57 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
-  const {meeting, phaseRef} = props
+  const {meeting: meetingRef, phaseRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment GroupingKanban_meeting on RetrospectiveMeeting {
+        ...GroupingKanbanColumn_meeting
+        ...ReflectionGroup_meeting
+        ...SpotlightModal_meeting
+        id
+        teamId
+        localPhase {
+          phaseType
+        }
+        localStage {
+          isComplete
+        }
+        meetingMembers {
+          id
+        }
+        meetingNumber
+        phases {
+          ... on ReflectPhase {
+            phaseType
+            reflectPrompts {
+              ...GroupingKanbanColumn_prompt
+              id
+            }
+          }
+        }
+        reflectionGroups {
+          ...GroupingKanbanColumn_reflectionGroups
+          id
+          promptId
+          reflections {
+            id
+            isViewerDragging
+            isEditing
+          }
+        }
+        spotlightReflectionId
+        spotlightGroup {
+          ...ReflectionGroup_reflectionGroup
+          id
+          reflections {
+            id
+          }
+        }
+        spotlightSearchQuery
+      }
+    `,
+    meetingRef
+  )
   const {
     reflectionGroups,
     phases,
@@ -178,52 +228,4 @@ const GroupingKanban = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(GroupingKanban, {
-  meeting: graphql`
-    fragment GroupingKanban_meeting on RetrospectiveMeeting {
-      ...GroupingKanbanColumn_meeting
-      ...ReflectionGroup_meeting
-      ...SpotlightModal_meeting
-      id
-      teamId
-      localPhase {
-        phaseType
-      }
-      localStage {
-        isComplete
-      }
-      meetingMembers {
-        id
-      }
-      meetingNumber
-      phases {
-        ... on ReflectPhase {
-          phaseType
-          reflectPrompts {
-            ...GroupingKanbanColumn_prompt
-            id
-          }
-        }
-      }
-      reflectionGroups {
-        ...GroupingKanbanColumn_reflectionGroups
-        id
-        promptId
-        reflections {
-          id
-          isViewerDragging
-          isEditing
-        }
-      }
-      spotlightReflectionId
-      spotlightGroup {
-        ...ReflectionGroup_reflectionGroup
-        id
-        reflections {
-          id
-        }
-      }
-      spotlightSearchQuery
-    }
-  `
-})
+export default GroupingKanban

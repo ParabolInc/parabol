@@ -2,21 +2,21 @@ import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, Ref, RefObject} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PortalStatus} from '../hooks/usePortal'
 import {PALETTE} from '../styles/paletteV3'
 import {ElementWidth, Gutters} from '../types/constEnums'
 import {GROUP, VOTE} from '../utils/constants'
 import plural from '../utils/plural'
-import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
-import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
+import {ReflectionGroupHeader_meeting$key} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
+import {ReflectionGroupHeader_reflectionGroup$key} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
 import ReflectionGroupVoting from './ReflectionGroupVoting'
 import BaseTag from './Tag/BaseTag'
 
 interface Props {
-  meeting: ReflectionGroupHeader_meeting
-  reflectionGroup: ReflectionGroupHeader_reflectionGroup
+  meeting: ReflectionGroupHeader_meeting$key
+  reflectionGroup: ReflectionGroupHeader_reflectionGroup$key
   isExpanded?: boolean
   portalStatus: PortalStatus
   titleInputRef: RefObject<HTMLInputElement>
@@ -67,7 +67,40 @@ const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => (
 }))
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {meeting, reflectionGroup, titleInputRef, portalStatus, dataCy} = props
+  const {
+    meeting: meetingRef,
+    reflectionGroup: reflectionGroupRef,
+    titleInputRef,
+    portalStatus,
+    dataCy
+  } = props
+  const meeting = useFragment(
+    graphql`
+      fragment ReflectionGroupHeader_meeting on RetrospectiveMeeting {
+        localStage {
+          isComplete
+        }
+        localPhase {
+          phaseType
+        }
+        ...ReflectionGroupTitleEditor_meeting
+        ...ReflectionGroupVoting_meeting
+      }
+    `,
+    meetingRef
+  )
+  const reflectionGroup = useFragment(
+    graphql`
+      fragment ReflectionGroupHeader_reflectionGroup on RetroReflectionGroup {
+        ...ReflectionGroupTitleEditor_reflectionGroup
+        ...ReflectionGroupVoting_reflectionGroup
+        reflections {
+          id
+        }
+      }
+    `,
+    reflectionGroupRef
+  )
   const isExpanded = !!props.isExpanded
   const {
     localStage,
@@ -109,26 +142,4 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
   )
 })
 
-export default createFragmentContainer(ReflectionGroupHeader, {
-  meeting: graphql`
-    fragment ReflectionGroupHeader_meeting on RetrospectiveMeeting {
-      localStage {
-        isComplete
-      }
-      localPhase {
-        phaseType
-      }
-      ...ReflectionGroupTitleEditor_meeting
-      ...ReflectionGroupVoting_meeting
-    }
-  `,
-  reflectionGroup: graphql`
-    fragment ReflectionGroupHeader_reflectionGroup on RetroReflectionGroup {
-      ...ReflectionGroupTitleEditor_reflectionGroup
-      ...ReflectionGroupVoting_reflectionGroup
-      reflections {
-        id
-      }
-    }
-  `
-})
+export default ReflectionGroupHeader

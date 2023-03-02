@@ -1,10 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import {AzureDevOpsScopingSearchFilterMenu_meeting} from '../__generated__/AzureDevOpsScopingSearchFilterMenu_meeting.graphql'
+import {
+  AzureDevOpsScopingSearchFilterMenu_meeting$key,
+  AzureDevOpsScopingSearchFilterMenu_meeting
+} from '../__generated__/AzureDevOpsScopingSearchFilterMenu_meeting.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
@@ -30,7 +33,7 @@ const UseWIQLLabel = styled('span')({
 
 interface Props {
   menuProps: MenuProps
-  meeting: AzureDevOpsScopingSearchFilterMenu_meeting
+  meeting: AzureDevOpsScopingSearchFilterMenu_meeting$key
 }
 
 type AzureDevOpsSearchQuery = NonNullable<
@@ -38,7 +41,31 @@ type AzureDevOpsSearchQuery = NonNullable<
 >
 
 const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
-  const {meeting, menuProps} = props
+  const {meeting: meetingRef, menuProps} = props
+  const meeting = useFragment(
+    graphql`
+      fragment AzureDevOpsScopingSearchFilterMenu_meeting on PokerMeeting {
+        id
+        azureDevOpsSearchQuery {
+          projectKeyFilters
+          isWIQL
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              azureDevOps {
+                projects {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {portalStatus, isDropdown} = menuProps
   const {viewerMeetingMember, azureDevOpsSearchQuery, id: meetingId} = meeting
   const {isWIQL, projectKeyFilters} = azureDevOpsSearchQuery
@@ -112,26 +139,4 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AzureDevOpsScopingSearchFilterMenu, {
-  meeting: graphql`
-    fragment AzureDevOpsScopingSearchFilterMenu_meeting on PokerMeeting {
-      id
-      azureDevOpsSearchQuery {
-        projectKeyFilters
-        isWIQL
-      }
-      viewerMeetingMember {
-        teamMember {
-          integrations {
-            azureDevOps {
-              projects {
-                id
-                name
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default AzureDevOpsScopingSearchFilterMenu

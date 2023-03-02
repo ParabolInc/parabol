@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Dispatch, MutableRefObject, SetStateAction, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
+import {PokerDimensionValueControl_stage$key} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScorePicker from './PokerDimensionFinalScorePicker'
@@ -69,7 +69,7 @@ const StyledLinkButton = styled(LinkButton)({
 interface Props {
   isFacilitator: boolean
   placeholder: string
-  stage: PokerDimensionValueControl_stage
+  stage: PokerDimensionValueControl_stage$key
   error?: {message: string | null}
   onCompleted: () => void
   onError: (error: Error) => void
@@ -84,7 +84,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const {
     isFacilitator,
     placeholder,
-    stage,
+    stage: stageRef,
     onSubmitScore,
     error,
     onCompleted,
@@ -94,6 +94,37 @@ const PokerDimensionValueControl = (props: Props) => {
     setCardScore,
     cardScore
   } = props
+  const stage = useFragment(
+    graphql`
+      fragment PokerDimensionValueControl_stage on EstimateStage {
+        ...PokerDimensionFinalScorePicker_stage
+        id
+        meetingId
+        teamId
+        finalScore
+        serviceField {
+          name
+          type
+        }
+        taskId
+        task {
+          integration {
+            __typename
+          }
+        }
+        dimensionRef {
+          name
+          scale {
+            values {
+              label
+              color
+            }
+          }
+        }
+      }
+    `,
+    stageRef
+  )
   const {dimensionRef, serviceField, task} = stage
   const finalScore = stage.finalScore || ''
   const {type: serviceFieldType} = serviceField
@@ -191,33 +222,4 @@ const PokerDimensionValueControl = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerDimensionValueControl, {
-  stage: graphql`
-    fragment PokerDimensionValueControl_stage on EstimateStage {
-      ...PokerDimensionFinalScorePicker_stage
-      id
-      meetingId
-      teamId
-      finalScore
-      serviceField {
-        name
-        type
-      }
-      taskId
-      task {
-        integration {
-          __typename
-        }
-      }
-      dimensionRef {
-        name
-        scale {
-          values {
-            label
-            color
-          }
-        }
-      }
-    }
-  `
-})
+export default PokerDimensionValueControl

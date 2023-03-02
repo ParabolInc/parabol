@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import ActionMeetingUpdatesPromptTeamHelpText from '../modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
-import {ActionMeetingUpdatesPrompt_meeting} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
+import {ActionMeetingUpdatesPrompt_meeting$key} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
 import Avatar from './Avatar/Avatar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 
 interface Props {
-  meeting: ActionMeetingUpdatesPrompt_meeting
+  meeting: ActionMeetingUpdatesPrompt_meeting$key
 }
 
 const StyledPrompt = styled('div')({
@@ -40,7 +40,43 @@ const getQuestion = (isConnected: boolean | null, taskCount: number, preferredNa
 }
 
 const ActionMeetingUpdatesPrompt = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ActionMeetingUpdatesPrompt_meeting on ActionMeeting {
+        team {
+          tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+        meetingMembers {
+          ...ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
+          user {
+            isConnected
+          }
+          teamMember {
+            id
+            isSelf
+            picture
+            preferredName
+          }
+        }
+        phases {
+          stages {
+            ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
+          }
+        }
+        localStage {
+          ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
+        }
+      }
+    `,
+    meetingRef
+  )
   const {localStage, team, meetingMembers} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
@@ -80,38 +116,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(ActionMeetingUpdatesPrompt, {
-  meeting: graphql`
-    fragment ActionMeetingUpdatesPrompt_meeting on ActionMeeting {
-      team {
-        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-          edges {
-            node {
-              id
-            }
-          }
-        }
-      }
-      meetingMembers {
-        ...ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
-        user {
-          isConnected
-        }
-        teamMember {
-          id
-          isSelf
-          picture
-          preferredName
-        }
-      }
-      phases {
-        stages {
-          ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
-        }
-      }
-      localStage {
-        ...ActionMeetingUpdatesPromptLocalStage @relay(mask: false)
-      }
-    }
-  `
-})
+export default ActionMeetingUpdatesPrompt

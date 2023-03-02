@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {FragmentRefs} from 'relay-runtime'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
@@ -14,7 +14,7 @@ import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
 import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
 import {BezierCurve, PokerCards} from '../types/constEnums'
-import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
+import {PokerCardDeck_meeting$key} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
 
 const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpectating}) => ({
@@ -29,7 +29,7 @@ const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpec
 }))
 
 interface Props {
-  meeting: PokerCardDeck_meeting
+  meeting: PokerCardDeck_meeting$key
   estimateAreaRef: RefObject<HTMLDivElement>
 }
 
@@ -54,7 +54,30 @@ const RADIUS_B = 435 // y-intercept of radius
 const PokerCardDeck = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting, estimateAreaRef} = props
+  const {meeting: meetingRef, estimateAreaRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment PokerCardDeck_meeting on PokerMeeting {
+        id
+        isRightDrawerOpen
+        showSidebar
+        phases {
+          ... on EstimatePhase {
+            stages {
+              ...PokerCardDeckStage @relay(mask: false)
+            }
+          }
+        }
+        localStage {
+          ...PokerCardDeckStage @relay(mask: false)
+        }
+        viewerMeetingMember {
+          isSpectating
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
   const isSpectating = !!viewerMeetingMember?.isSpectating
   // fallbacks used here to test https://github.com/ParabolInc/parabol/issues/6247
@@ -286,25 +309,4 @@ graphql`
     }
   }
 `
-export default createFragmentContainer(PokerCardDeck, {
-  meeting: graphql`
-    fragment PokerCardDeck_meeting on PokerMeeting {
-      id
-      isRightDrawerOpen
-      showSidebar
-      phases {
-        ... on EstimatePhase {
-          stages {
-            ...PokerCardDeckStage @relay(mask: false)
-          }
-        }
-      }
-      localStage {
-        ...PokerCardDeckStage @relay(mask: false)
-      }
-      viewerMeetingMember {
-        isSpectating
-      }
-    }
-  `
-})
+export default PokerCardDeck

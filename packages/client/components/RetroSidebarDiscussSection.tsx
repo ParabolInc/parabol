@@ -3,11 +3,14 @@ import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {DeepNonNullable} from '~/types/generics'
-import {RetroSidebarDiscussSection_meeting} from '~/__generated__/RetroSidebarDiscussSection_meeting.graphql'
+import {
+  RetroSidebarDiscussSection_meeting$key,
+  RetroSidebarDiscussSection_meeting
+} from '~/__generated__/RetroSidebarDiscussSection_meeting.graphql'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -22,7 +25,7 @@ const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  meeting: RetroSidebarDiscussSection_meeting
+  meeting: RetroSidebarDiscussSection_meeting$key
 }
 
 const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
@@ -60,7 +63,27 @@ type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting['phases']
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {gotoStageId, handleMenuClick, meeting} = props
+  const {gotoStageId, handleMenuClick, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroSidebarDiscussSection_meeting on RetrospectiveMeeting {
+        id
+        endedAt
+        localStage {
+          id
+        }
+        facilitatorStageId
+        # load up the localPhase
+        phases {
+          ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
+        }
+        localStage {
+          id
+        }
+      }
+    `,
+    meetingRef
+  )
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
   const discussPhase = phases.find(({phaseType}) => phaseType === 'discuss')
   // assert that the discuss phase and its stages are non-null
@@ -185,22 +208,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(RetroSidebarDiscussSection, {
-  meeting: graphql`
-    fragment RetroSidebarDiscussSection_meeting on RetrospectiveMeeting {
-      id
-      endedAt
-      localStage {
-        id
-      }
-      facilitatorStageId
-      # load up the localPhase
-      phases {
-        ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
-      }
-      localStage {
-        id
-      }
-    }
-  `
-})
+export default RetroSidebarDiscussSection
