@@ -1,10 +1,13 @@
 import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {tooltipTextLookup} from '../../../../components/InsightsDomainPanel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {OrgStats_organization$key} from '../../../../__generated__/OrgStats_organization.graphql'
 
 const StatBlocks = styled('div')({
   display: 'flex',
@@ -20,7 +23,7 @@ const StatBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  width: '33.33%',
+  width: '50%',
   padding: '14px 0px'
 })
 
@@ -56,7 +59,25 @@ const IconBlock = styled('div')({
   display: 'flex'
 })
 
-const OrgStats = () => {
+type Props = {
+  organizationRef: OrgStats_organization$key
+}
+
+const OrgStats = (props: Props) => {
+  const {organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgStats_organization on Organization {
+        orgUserCount {
+          activeUserCount
+        }
+        activeTeamCount
+      }
+    `,
+    organizationRef
+  )
+  const {activeTeamCount, orgUserCount} = organization
+  const {activeUserCount} = orgUserCount
   const {
     tooltipPortal: teamsPortal,
     openTooltip: teamsOpenTooltip,
@@ -75,7 +96,7 @@ const OrgStats = () => {
     <StatBlocks>
       <StatBlock>
         <StatBlockNumber>
-          {'18'}
+          {activeTeamCount}
           <IconBlock ref={teamsRef}></IconBlock>
         </StatBlockNumber>
         <StatBlockLabel>
@@ -88,7 +109,7 @@ const OrgStats = () => {
       </StatBlock>
       <StatBlock>
         <StatBlockNumber>
-          {'18'}
+          {activeUserCount}
           <IconBlock></IconBlock>
         </StatBlockNumber>
         <StatBlockLabel>
@@ -102,13 +123,6 @@ const OrgStats = () => {
           </StyledIcon>
         </StatBlockLabel>
         {membersPortal(tooltipTextLookup.member)}
-      </StatBlock>
-      <StatBlock>
-        <StatBlockNumber>
-          {'18'}
-          <IconBlock></IconBlock>
-        </StatBlockNumber>
-        <StatBlockLabel>{'Total Meetings'}</StatBlockLabel>
       </StatBlock>
     </StatBlocks>
   )
