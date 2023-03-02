@@ -281,15 +281,13 @@ const OrgPlans = (props: Props) => {
               </UL>
             </Content>
             <ButtonBlock>
-              {plan.buttonStyle && (
-                <UpgradeButton
-                  onClick={() => handleClick(plan.buttonLabel)}
-                  buttonStyle={plan.buttonStyle}
-                  size='medium'
-                >
-                  {plan.buttonLabel}
-                </UpgradeButton>
-              )}
+              <UpgradeButton
+                onClick={() => handleClick(plan.buttonLabel)}
+                buttonStyle={plan.buttonStyle}
+                size='medium'
+              >
+                {plan.buttonLabel}
+              </UpgradeButton>
             </ButtonBlock>
           </Plan>
         ))}
