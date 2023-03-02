@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
-import {EditingStatus_task} from '~/__generated__/EditingStatus_task.graphql'
+import {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {PALETTE} from '../../styles/paletteV3'
@@ -38,13 +38,27 @@ export type TimestampType = 'createdAt' | 'updatedAt'
 interface Props {
   children: ReactNode
   isTaskHovered: boolean
-  task: EditingStatus_task
+  task: EditingStatus_task$key
   useTaskChild: UseTaskChild
   isArchived?: boolean
 }
 
 const EditingStatus = (props: Props) => {
-  const {children, isTaskHovered, task, useTaskChild, isArchived} = props
+  const {children, isTaskHovered, task: taskRef, useTaskChild, isArchived} = props
+  const task = useFragment(
+    graphql`
+      fragment EditingStatus_task on Task {
+        createdAt
+        updatedAt
+        editors {
+          userId
+          preferredName
+        }
+        ...DueDateToggle_task
+      }
+    `,
+    taskRef
+  )
   const {createdAt, updatedAt, editors} = task
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -94,16 +108,4 @@ const EditingStatus = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditingStatus, {
-  task: graphql`
-    fragment EditingStatus_task on Task {
-      createdAt
-      updatedAt
-      editors {
-        userId
-        preferredName
-      }
-      ...DueDateToggle_task
-    }
-  `
-})
+export default EditingStatus

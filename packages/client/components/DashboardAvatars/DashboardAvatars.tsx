@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -9,7 +9,10 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
+import {
+  DashboardAvatars_team$key,
+  DashboardAvatars_team
+} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
 import PlainButton from '../PlainButton/PlainButton'
 import DashboardAvatar from './DashboardAvatar'
@@ -68,13 +71,30 @@ const StyledButton = styled(PlainButton)({
 })
 
 interface Props {
-  team: DashboardAvatars_team
+  team: DashboardAvatars_team$key
 }
 
 type Avatar = DashboardAvatars_team['teamMembers'][0]
 
 const DashboardAvatars = (props: Props) => {
-  const {team} = props
+  const {team: teamRef} = props
+  const team = useFragment(
+    graphql`
+      fragment DashboardAvatars_team on Team {
+        id
+        teamMembers(sortBy: "preferredName") {
+          ...AddTeamMemberAvatarButton_teamMembers
+          ...DashboardAvatar_teamMember
+          id
+          preferredName
+          user {
+            isConnected
+          }
+        }
+      }
+    `,
+    teamRef
+  )
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const atmosphere = useAtmosphere()
@@ -141,19 +161,4 @@ const DashboardAvatars = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DashboardAvatars, {
-  team: graphql`
-    fragment DashboardAvatars_team on Team {
-      id
-      teamMembers(sortBy: "preferredName") {
-        ...AddTeamMemberAvatarButton_teamMembers
-        ...DashboardAvatar_teamMember
-        id
-        preferredName
-        user {
-          isConnected
-        }
-      }
-    }
-  `
-})
+export default DashboardAvatars

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Error as ErrorIcon, Warning} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
@@ -12,7 +12,7 @@ import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import {CompletedHandler} from '../types/relayMutations'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
-import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
+import {AddTeamMemberModal_teamMembers$key} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -24,7 +24,7 @@ import PrimaryButton from './PrimaryButton'
 interface Props {
   closePortal: () => void
   meetingId?: string | undefined
-  teamMembers: AddTeamMemberModal_teamMembers
+  teamMembers: AddTeamMemberModal_teamMembers$key
   teamId: string
 }
 
@@ -122,7 +122,15 @@ const IllustrationBlock = () => {
 }
 
 const AddTeamMemberModal = (props: Props) => {
-  const {closePortal, meetingId, teamMembers, teamId} = props
+  const {closePortal, meetingId, teamMembers: teamMembersRef, teamId} = props
+  const teamMembers = useFragment(
+    graphql`
+      fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
+        email
+      }
+    `,
+    teamMembersRef
+  )
   const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
   const [successfulInvitations, setSuccessfulInvitations] = useState<string[] | null>(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -262,10 +270,4 @@ const AddTeamMemberModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AddTeamMemberModal, {
-  teamMembers: graphql`
-    fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
-      email
-    }
-  `
-})
+export default AddTeamMemberModal
