@@ -45,7 +45,7 @@ const Title = styled('div')({
   textTransform: 'capitalize',
   display: 'flex',
   width: '100%',
-  paddingBottom: 16
+  padding: '8px 0px 16px 0px'
 })
 
 const Subtitle = styled('div')({
@@ -127,7 +127,7 @@ const Billing = () => {
   const options = {
     clientSecret,
     appearance,
-    loader: 'never',
+    loader: 'never' as const,
     fonts: [
       {
         family: 'IBM Plex Sans',

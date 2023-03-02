@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
-import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
