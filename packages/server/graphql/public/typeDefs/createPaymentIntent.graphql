@@ -1,0 +1,18 @@
+extend type Mutation {
+  """
+  Describe the mutation here
+  """
+  createPaymentIntent: CreatePaymentIntentPayload!
+}
+
+"""
+Return value for createPaymentIntent, which could be an error
+"""
+union CreatePaymentIntentPayload = ErrorPayload | CreatePaymentIntentSuccess
+
+type CreatePaymentIntentSuccess {
+  """
+  Describe the first return field here
+  """
+  clientSecret: String!
+}

@@ -20,7 +20,7 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
   boxShadow: 'none',
   marginTop: 16,
-  width: '80%',
+  width: '100%',
   elevation: 0,
   '&:hover': {
     boxShadow: 'none',
@@ -28,7 +28,9 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   }
 }))
 
-export default function CheckoutForm() {
+type Props = {}
+
+export default function CheckoutForm(props: Props) {
   const stripe = useStripe()
   const elements = useElements()
 
@@ -36,36 +38,39 @@ export default function CheckoutForm() {
   const [message, setMessage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    if (!stripe) {
-      return
-    }
+  // useEffect(() => {
+  //   if (!stripe) {
+  //     return
+  //   }
 
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      'payment_intent_client_secret'
-    )
+  //   if (!clientSecret) {
+  //     return
+  //   }
 
-    if (!clientSecret) {
-      return
-    }
+  //   const checkIntent = async () => {
+  //     const testa = await stripe.retrievePaymentIntent(clientSecret)
+  //     console.log('🚀 ~ testa:', testa)
+  //   }
 
-    //   stripe.retrievePaymentIntent(clientSecret).then(({paymentIntent}) => {
-    //     switch (paymentIntent.status) {
-    //       case 'succeeded':
-    //         setMessage('Payment succeeded!')
-    //         break
-    //       case 'processing':
-    //         setMessage('Your payment is processing.')
-    //         break
-    //       case 'requires_payment_method':
-    //         setMessage('Your payment was not successful, please try again.')
-    //         break
-    //       default:
-    //         setMessage('Something went wrong.')
-    //         break
-    //     }
-    //   })
-  }, [stripe])
+  //   checkIntent()
+
+  //   stripe.retrievePaymentIntent(clientSecret).then(({paymentIntent}) => {
+  //     switch (paymentIntent?.status) {
+  //       case 'succeeded':
+  //         setMessage('Payment succeeded!')
+  //         break
+  //       case 'processing':
+  //         setMessage('Your payment is processing.')
+  //         break
+  //       case 'requires_payment_method':
+  //         setMessage('Your payment was not successful, please try again.')
+  //         break
+  //       default:
+  //         setMessage('Something went wrong.')
+  //         break
+  //     }
+  //   })
+  // }, [stripe])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -113,6 +118,7 @@ export default function CheckoutForm() {
       <PaymentElement
         id='payment-element'
         options={{
+          layout: 'tabs',
           fields: {
             billingDetails: {
               address: 'never'

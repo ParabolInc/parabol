@@ -13,6 +13,9 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import StripeClientManager from '../../../../utils/StripeClientManager'
 import {loadStripe} from '@stripe/stripe-js'
 import {Elements} from '@stripe/react-stripe-js'
+import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
 const StyledPanel = styled(Panel)({
   maxWidth: 976,
@@ -182,7 +185,7 @@ const Message = styled('div')({
   paddingLeft: 4
 })
 
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
+const stripePromise = loadStripe('pk_test_MNoKbCzQX0lhktuxxI7M14wd')
 
 const Billing = () => {
   const [stripeClientManager] = useState(() => new StripeClientManager())
@@ -210,21 +213,22 @@ const Billing = () => {
   })
 
   const [clientSecret, setClientSecret] = useState('')
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
 
   const isStripeLoaded = useScript('https://js.stripe.com/v2/')
 
   useEffect(() => {
-    // Create PaymentIntent as soon as the page loads
-    fetch('/create-payment-intent', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({items: [{id: 'xl-tshirt'}]})
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('DATA>>>>', data)
-        setClientSecret(data.clientSecret)
-      })
+    const myOnComplete = (res, errors) => {
+      if (errors) {
+        onError(errors)
+        return
+      }
+      const {createPaymentIntent} = res
+      const {clientSecret} = createPaymentIntent
+      setClientSecret(clientSecret)
+    }
+    CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: myOnComplete})
   }, [])
 
   const appearance = {
@@ -232,7 +236,15 @@ const Billing = () => {
   } as const
   const options = {
     // TODO: add this
-    clientSecret: appearance
+    clientSecret,
+    appearance,
+    fonts: [
+      {
+        family: 'IBM Plex Sans',
+        src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
+        weight: '400'
+      }
+    ]
   }
 
   const {cardName, cardNumber, cvc, expiry} = fields
@@ -255,6 +267,8 @@ const Billing = () => {
   //   validateField()
   //   submitMutation()
   // }
+
+  if (!clientSecret.length) return null
 
   return (
     <StyledPanel label='Credit Card'>
