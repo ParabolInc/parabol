@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  Describe the mutation here
+  This creates a payment intent so that we're able to use Stripe Elements in the client
   """
   createPaymentIntent: CreatePaymentIntentPayload!
 }
@@ -12,7 +12,7 @@ union CreatePaymentIntentPayload = ErrorPayload | CreatePaymentIntentSuccess
 
 type CreatePaymentIntentSuccess {
   """
-  Describe the first return field here
+  The client secret required to confirm the payment intent
   """
   clientSecret: String!
 }

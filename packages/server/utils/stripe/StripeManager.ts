@@ -51,15 +51,13 @@ export default class StripeManager {
   }
 
   async createPaymentIntent(amount: number) {
-    const testa = await this.stripe.paymentIntents.create({
+    return this.stripe.paymentIntents.create({
       amount,
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true
       }
     })
-    console.log('🚀 ~ testa:', testa)
-    return testa
   }
 
   async createProSubscription(customerId: string, orgId: string, quantity: number) {

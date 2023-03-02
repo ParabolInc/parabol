@@ -5,10 +5,7 @@ export type CreatePaymentIntentSuccessSource = {
 }
 
 const CreatePaymentIntentSuccess: CreatePaymentIntentSuccessResolvers = {
-  clientSecret: async ({clientSecret}, _args, {dataLoader}) => {
-    console.log('🚀 ~ clientSecret:', clientSecret)
-    return clientSecret
-  }
+  clientSecret: async ({clientSecret}) => clientSecret
 }
 
 export default CreatePaymentIntentSuccess

@@ -10,16 +10,13 @@ const createPaymentIntent: MutationResolvers['createPaymentIntent'] = async (
   const viewerId = getUserId(authToken)
   const now = new Date()
 
-  // VALIDATION
-
   // RESOLUTION
   const manager = getStripeManager()
 
   // TODO: get the amount from the client. Do this is in: https://github.com/ParabolInc/parabol/issues/7693
   const paymentIntent = await manager.createPaymentIntent(1000)
-  console.log('🚀 ~ paymentIntent:', paymentIntent)
 
-  const {id, client_secret: clientSecret} = paymentIntent
+  const {client_secret: clientSecret} = paymentIntent
   const data = {clientSecret}
   return data
 }
