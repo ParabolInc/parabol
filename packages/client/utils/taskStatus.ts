@@ -1,5 +1,6 @@
 import {PALETTE} from '../styles/paletteV3'
 import {TaskStatus, TaskStatusLabel} from '../types/constEnums'
+import {ValueOf} from '../types/generics'
 
 export const taskStatusLabels: Record<TaskStatus, TaskStatusLabel> = {
   [TaskStatus.DONE]: TaskStatusLabel.DONE,
@@ -10,7 +11,7 @@ export const taskStatusLabels: Record<TaskStatus, TaskStatusLabel> = {
   [TaskStatus.PRIVATE]: TaskStatusLabel.PRIVATE
 } as const
 
-export const taskStatusColors: Record<TaskStatus, PALETTE> = {
+export const taskStatusColors: Record<TaskStatus, ValueOf<typeof PALETTE>> = {
   [TaskStatus.DONE]: PALETTE.GRAPE_600,
   [TaskStatus.ACTIVE]: PALETTE.JADE_400,
   [TaskStatus.STUCK]: PALETTE.TOMATO_500,
