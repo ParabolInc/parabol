@@ -10,6 +10,12 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import {UserResolvers} from '../resolverTypes'
+import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import getScoredTemplates from '../../queries/helpers/getScoredTemplates'
+import isValid from '../../isValid'
+import MeetingTemplate from '../../../database/types/MeetingTemplate'
+import db from '../../../db'
+import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 
 const User: UserResolvers = {
   company: async ({email}, _args, {authToken}) => {
@@ -57,6 +63,57 @@ const User: UserResolvers = {
     const stripeLineItems = await fetchAllLines(invoiceId)
     const invoice = await manager.retrieveInvoice(invoiceId)
     return generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader)
+  },
+  availableTemplates: async ({id: userId}, {first, after}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const user = (await dataLoader.get('users').load(userId))!
+    const teamIds =
+      viewerId === userId || isSuperUser(authToken)
+        ? user.tms
+        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+
+    const teamTemplatesResult = await dataLoader
+      .get('meetingTemplatesByType')
+      .loadMany([
+        ...teamIds.map((teamId) => ({teamId, meetingType: 'poker' as MeetingTypeEnum})),
+        ...teamIds.map((teamId) => ({teamId, meetingType: 'retrospective' as MeetingTypeEnum}))
+      ])
+    const teamTemplates = teamTemplatesResult.filter(isValid).flat()
+    const scoredTeamTemplates = await getScoredTemplates(teamTemplates, 0.9)
+
+    const teams = await dataLoader.get('teams').loadMany(teamIds)
+    const orgIds = [...new Set(teams.filter(isValid).map((team) => team.orgId))]
+    const orgTemplatesResult = await dataLoader.get('meetingTemplatesByOrgId').loadMany(orgIds)
+    const organizationTemplates = orgTemplatesResult
+      .filter(isValid)
+      .flat()
+      .filter(
+        (template: MeetingTemplate) =>
+          template.scope !== 'TEAM' && !teamIds.includes(template.teamId)
+      )
+    const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, 0.8)
+
+    const publicRetroTemplates = await db.read('publicTemplates', 'retrospective')
+    publicRetroTemplates.sort((a, b) => {
+      if (a.isFree && !b.isFree) return -1
+      if (!a.isFree && b.isFree) return 1
+      return 0
+    })
+    const publicPokerTemplates = await db.read('publicTemplates', 'poker')
+    publicPokerTemplates.sort((a, b) => {
+      if (a.isFree && !b.isFree) return -1
+      if (!a.isFree && b.isFree) return 1
+      return 0
+    })
+
+    const templates = [
+      ...scoredTeamTemplates,
+      ...scoredOrgTemplates,
+      ...publicRetroTemplates,
+      ...publicPokerTemplates
+    ]
+
+    return connectionFromTemplateArray(templates, first, after)
   }
 }
 
