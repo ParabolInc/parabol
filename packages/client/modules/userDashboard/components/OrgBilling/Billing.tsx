@@ -199,12 +199,6 @@ const Billing = () => {
   return (
     <StyledPanel label='Credit Card'>
       <StyledRow>
-        <HeadingBlock>
-          <Heading>{'Your next payment is due on '}</Heading>
-          <Heading isBold>{' November 17, 2023.'}</Heading>
-        </HeadingBlock>
-      </StyledRow>
-      <StyledRow>
         <Plan>
           <Title>{'Credit Card Details'}</Title>
           <Content>

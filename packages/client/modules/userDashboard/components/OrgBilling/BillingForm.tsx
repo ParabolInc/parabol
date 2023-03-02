@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from '@emotion/styled'
-import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
+import {PaymentElement, useStripe, useElements, CardElement} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 
