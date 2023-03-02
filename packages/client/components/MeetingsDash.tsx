@@ -43,25 +43,25 @@ const MeetingsDash = (props: Props) => {
   const {teams = [], preferredName = '', dashSearch, activeMeetings: meetings} = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const sortedMeetings = meetings
-      .filter(Boolean)
-      .sort((a, b) => {
-        const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
-        const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
-        if (aRecurring && !bRecurring) {
-          return -1
-        }
-        if (bRecurring && !aRecurring) {
-          return 1
-        }
+      ? meetings.filter(Boolean).sort((a, b) => {
+          const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
+          const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
+          if (aRecurring && !bRecurring) {
+            return -1
+          }
+          if (bRecurring && !aRecurring) {
+            return 1
+          }
 
-        if (aRecurring && bRecurring) {
-          // When ordering recurring meetings, sort based on when the series was created to maintain
-          // consistency when meetings are restarted.
-          return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
-        }
+          if (aRecurring && bRecurring) {
+            // When ordering recurring meetings, sort based on when the series was created to maintain
+            // consistency when meetings are restarted.
+            return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
+          }
 
-        return a.createdAt > b.createdAt ? -1 : 1
-      })
+          return a.createdAt > b.createdAt ? -1 : 1
+        })
+      : []
     const filteredMeetings = dashSearch
       ? sortedMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
       : sortedMeetings
@@ -163,6 +163,12 @@ export default createFragmentContainer(MeetingsDash, {
           user {
             isConnected
             lastSeenAtURLs
+          }
+        }
+        ... on TeamPromptMeeting {
+          meetingSeries {
+            createdAt
+            cancelledAt
           }
         }
       }
