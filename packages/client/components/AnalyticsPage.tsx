@@ -100,7 +100,6 @@ const AnalyticsPage = () => {
     }
   }, [ReactGA.isInitialized, gaMeasurementId])
 
-  const {href, pathname} = location
   useEffect(() => {
     const configGA = async () => {
       if (!ReactGA.isInitialized || !isSegmentLoaded) {
@@ -108,9 +107,6 @@ const AnalyticsPage = () => {
       }
 
       const {viewerId} = atmosphere
-      ReactGA.set({
-        content_group: getContentGroup(pathname)
-      })
       if (viewerId) {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
         if (!res) return
@@ -128,9 +124,10 @@ const AnalyticsPage = () => {
       }
     }
     configGA()
-  }, [ReactGA.isInitialized, atmosphere.viewerId, pathname])
+  }, [ReactGA.isInitialized, atmosphere.viewerId])
 
   /* eslint-disable */
+  const {href, pathname} = location
   const pathnameRef = useRef(pathname)
   const segmentKey = window.__ACTION__.segment
   useEffect(() => {
