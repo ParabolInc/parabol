@@ -26,6 +26,7 @@ import {useFragment} from 'react-relay'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
+import {ElementWidth} from '../types/constEnums'
 import {
   InsightsCharts_domain$key,
   MeetingTypeEnum
@@ -71,7 +72,7 @@ const HalfChartWrapper = styled('div')({
 
 const FullChartWrapper = styled(HalfChartWrapper)({
   maxHeight: 312,
-  maxWidth: 976,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   width: '100%'
 })
 

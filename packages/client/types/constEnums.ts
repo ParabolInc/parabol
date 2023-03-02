@@ -107,7 +107,8 @@ export const enum ElementWidth {
   MEETING_CARD = 320,
   MEETING_CARD_MARGIN = 16,
   MEETING_CARD_LARGE_MARGIN = 40,
-  MEETING_CARD_WITH_MARGIN = 336
+  MEETING_CARD_WITH_MARGIN = 336,
+  PANEL_WIDTH = 976
 }
 
 export const enum ElementHeight {

@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import {FilterList} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
-import {AzureDevOpsScopingSearchFilterToggle_meeting} from '../__generated__/AzureDevOpsScopingSearchFilterToggle_meeting.graphql'
+import {AzureDevOpsScopingSearchFilterToggle_meeting$key} from '../__generated__/AzureDevOpsScopingSearchFilterToggle_meeting.graphql'
 import AzureDevOpsScopingSearchFilterMenu from './AzureDevOpsScopingSearchFilterMenu'
 import FlatButton from './FlatButton'
 
@@ -28,11 +28,20 @@ const FilterIcon = styled(FilterList)({
 })
 
 interface Props {
-  meeting: AzureDevOpsScopingSearchFilterToggle_meeting
+  meeting: AzureDevOpsScopingSearchFilterToggle_meeting$key
 }
 
 const AzureDevOpsScopingSearchFilterToggle = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment AzureDevOpsScopingSearchFilterToggle_meeting on PokerMeeting {
+        id
+        ...AzureDevOpsScopingSearchFilterMenu_meeting
+      }
+    `,
+    meetingRef
+  )
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     loadingWidth: 200,
     noClose: true
@@ -47,11 +56,4 @@ const AzureDevOpsScopingSearchFilterToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AzureDevOpsScopingSearchFilterToggle, {
-  meeting: graphql`
-    fragment AzureDevOpsScopingSearchFilterToggle_meeting on PokerMeeting {
-      id
-      ...AzureDevOpsScopingSearchFilterMenu_meeting
-    }
-  `
-})
+export default AzureDevOpsScopingSearchFilterToggle

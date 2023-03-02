@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
-import {PokerSidebarEstimateSection_meeting} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
+import {PokerSidebarEstimateSection_meeting$key} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
@@ -18,7 +18,7 @@ import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  meeting: PokerSidebarEstimateSection_meeting
+  meeting: PokerSidebarEstimateSection_meeting$key
 }
 
 const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
@@ -49,7 +49,38 @@ const Subtitle = styled('div')({
 })
 
 const PokerSidebarEstimateSection = (props: Props) => {
-  const {gotoStageId, handleMenuClick, meeting} = props
+  const {gotoStageId, handleMenuClick, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment PokerSidebarEstimateSection_meeting on PokerMeeting {
+        id
+        endedAt
+        localStage {
+          id
+        }
+        facilitatorStageId
+        # load up the localPhase
+        phases {
+          ...useMakeStageSummaries_phase
+          ... on EstimatePhase {
+            stages {
+              scores {
+                userId
+              }
+            }
+          }
+          phaseType
+          stages {
+            id
+          }
+        }
+        localStage {
+          id
+        }
+      }
+    `,
+    meetingRef
+  )
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -158,33 +189,4 @@ const PokerSidebarEstimateSection = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerSidebarEstimateSection, {
-  meeting: graphql`
-    fragment PokerSidebarEstimateSection_meeting on PokerMeeting {
-      id
-      endedAt
-      localStage {
-        id
-      }
-      facilitatorStageId
-      # load up the localPhase
-      phases {
-        ...useMakeStageSummaries_phase
-        ... on EstimatePhase {
-          stages {
-            scores {
-              userId
-            }
-          }
-        }
-        phaseType
-        stages {
-          id
-        }
-      }
-      localStage {
-        id
-      }
-    }
-  `
-})
+export default PokerSidebarEstimateSection

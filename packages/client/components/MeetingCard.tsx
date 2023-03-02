@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
@@ -20,7 +20,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import {MeetingCard_meeting} from '../__generated__/MeetingCard_meeting.graphql'
+import {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
@@ -186,7 +186,7 @@ const Options = styled(CardButton)({
 
 interface Props {
   onTransitionEnd: () => void
-  meeting: MeetingCard_meeting
+  meeting: MeetingCard_meeting$key
   status: TransitionStatus
   displayIdx: number
 }
@@ -205,7 +205,40 @@ const MEETING_TYPE_LABEL = {
 }
 
 const MeetingCard = (props: Props) => {
-  const {meeting, status, onTransitionEnd, displayIdx} = props
+  const {meeting: meetingRef, status, onTransitionEnd, displayIdx} = props
+  const meeting = useFragment(
+    graphql`
+      fragment MeetingCard_meeting on NewMeeting {
+        ...useMeetingMemberAvatars_meeting
+        id
+        name
+        meetingType
+        phases {
+          phaseType
+          stages {
+            isComplete
+          }
+        }
+        team {
+          id
+          name
+        }
+        meetingMembers {
+          user {
+            ...AvatarListUser_user
+          }
+        }
+        ... on TeamPromptMeeting {
+          meetingSeries {
+            id
+            title
+            cancelledAt
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {name, team, id: meetingId, meetingType, phases, meetingSeries} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const meetingPhase = getMeetingPhase(phases)
@@ -305,35 +338,4 @@ const MeetingCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(MeetingCard, {
-  meeting: graphql`
-    fragment MeetingCard_meeting on NewMeeting {
-      ...useMeetingMemberAvatars_meeting
-      id
-      name
-      meetingType
-      phases {
-        phaseType
-        stages {
-          isComplete
-        }
-      }
-      team {
-        id
-        name
-      }
-      meetingMembers {
-        user {
-          ...AvatarListUser_user
-        }
-      }
-      ... on TeamPromptMeeting {
-        meetingSeries {
-          id
-          title
-          cancelledAt
-        }
-      }
-    }
-  `
-})
+export default MeetingCard

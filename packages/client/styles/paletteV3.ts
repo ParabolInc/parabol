@@ -18,7 +18,6 @@ export const PALETTE = {
   FOREST_400: colors.forest[400],
 
   FUSCIA_400: colors.fuscia[400],
-
   GOLD_100: colors.gold[100],
   GOLD_200: colors.gold[200],
   GOLD_300: colors.gold[300],
@@ -83,5 +82,9 @@ export const PALETTE = {
 
   WHITE: colors.white,
 
-  SUCCESS_LIGHT: '#2db553'
+  SUCCESS_LIGHT: '#2db553',
+
+  STARTER: '#F2E1F7',
+  TEAM: '#CBECF0',
+  ENTERPRISE: '#FFE2E0'
 } as const

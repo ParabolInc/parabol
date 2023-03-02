@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useLayoutEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useResizeObserver from '~/hooks/useResizeObserver'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
 import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
-import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
+import {AvatarList_users$key} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
 
@@ -36,7 +36,7 @@ const sizeToHeightBump = {
 }
 
 interface Props {
-  users: AvatarList_users
+  users: AvatarList_users$key
   onUserClick?: (userId: string) => void
   onOverflowClick?: () => void
   size: 28 | 46
@@ -47,7 +47,24 @@ interface Props {
 }
 
 const AvatarList = (props: Props) => {
-  const {users, onUserClick, onOverflowClick, size, emptyEl, isAnimated, borderColor} = props
+  const {
+    users: usersRef,
+    onUserClick,
+    onOverflowClick,
+    size,
+    emptyEl,
+    isAnimated,
+    borderColor
+  } = props
+  const users = useFragment(
+    graphql`
+      fragment AvatarList_users on User @relay(plural: true) {
+        id
+        ...AvatarListUser_user
+      }
+    `,
+    usersRef
+  )
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
@@ -109,11 +126,4 @@ const AvatarList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AvatarList, {
-  users: graphql`
-    fragment AvatarList_users on User @relay(plural: true) {
-      id
-      ...AvatarListUser_user
-    }
-  `
-})
+export default AvatarList

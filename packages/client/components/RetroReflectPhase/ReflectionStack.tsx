@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ReflectionStack_meeting} from '~/__generated__/ReflectionStack_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {ReflectionStack_meeting$key} from '~/__generated__/ReflectionStack_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {
   Breakpoint,
@@ -17,7 +17,7 @@ import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
 
 interface Props {
   idx: number
-  meeting: ReflectionStack_meeting
+  meeting: ReflectionStack_meeting$key
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   dataCy: string
@@ -59,7 +59,17 @@ const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
 })
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meeting, reflectionStack, stackTopRef, dataCy} = props
+  const {phaseRef, idx, meeting: meetingRef, reflectionStack, stackTopRef, dataCy} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ReflectionStack_meeting on RetrospectiveMeeting {
+        ...DraggableReflectionCard_meeting
+        ...ReflectionCard_meeting
+        id
+      }
+    `,
+    meetingRef
+  )
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
     stackRef,
@@ -111,12 +121,4 @@ const ReflectionStack = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectionStack, {
-  meeting: graphql`
-    fragment ReflectionStack_meeting on RetrospectiveMeeting {
-      ...DraggableReflectionCard_meeting
-      ...ReflectionCard_meeting
-      id
-    }
-  `
-})
+export default ReflectionStack

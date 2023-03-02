@@ -94,7 +94,7 @@ interface Props {
   domainRef: InsightsDomainPanel_domain$key
 }
 
-const tooltipTextLookup = {
+export const tooltipTextLookup = {
   org: 'Organizations associated with this domain that have at least 2 active members',
   team: 'Teams that met within the last 30 days and have at least 2 active members',
   member: 'Users who have logged in within the last 30 days',
