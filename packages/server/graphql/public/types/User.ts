@@ -72,15 +72,16 @@ const User: UserResolvers = {
         ? user.tms
         : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
 
-    const teamTemplatesResult = await dataLoader
+    // Get the team templates.
+    const teamTemplates = await dataLoader
       .get('meetingTemplatesByType')
       .loadMany([
         ...teamIds.map((teamId) => ({teamId, meetingType: 'poker' as MeetingTypeEnum})),
         ...teamIds.map((teamId) => ({teamId, meetingType: 'retrospective' as MeetingTypeEnum}))
       ])
-    const teamTemplates = teamTemplatesResult.filter(isValid).flat()
-    const scoredTeamTemplates = await getScoredTemplates(teamTemplates, 0.9)
+    const scoredTeamTemplates = await getScoredTemplates(teamTemplates.filter(isValid).flat(), 0.9)
 
+    // Get the org templates.
     const teams = await dataLoader.get('teams').loadMany(teamIds)
     const orgIds = [...new Set(teams.filter(isValid).map((team) => team.orgId))]
     const orgTemplatesResult = await dataLoader.get('meetingTemplatesByOrgId').loadMany(orgIds)
@@ -93,25 +94,17 @@ const User: UserResolvers = {
       )
     const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, 0.8)
 
+    // Get the public templates.
     const publicRetroTemplates = await db.read('publicTemplates', 'retrospective')
-    publicRetroTemplates.sort((a, b) => {
-      if (a.isFree && !b.isFree) return -1
-      if (!a.isFree && b.isFree) return 1
-      return 0
-    })
     const publicPokerTemplates = await db.read('publicTemplates', 'poker')
-    publicPokerTemplates.sort((a, b) => {
+    const publicTemplates = [...publicRetroTemplates, ...publicPokerTemplates]
+    publicTemplates.sort((a, b) => {
       if (a.isFree && !b.isFree) return -1
       if (!a.isFree && b.isFree) return 1
       return 0
     })
 
-    const templates = [
-      ...scoredTeamTemplates,
-      ...scoredOrgTemplates,
-      ...publicRetroTemplates,
-      ...publicPokerTemplates
-    ]
+    const templates = [...scoredTeamTemplates, ...scoredOrgTemplates, ...publicTemplates]
 
     return connectionFromTemplateArray(templates, first, after)
   }
