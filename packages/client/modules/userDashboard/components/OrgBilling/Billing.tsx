@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Divider} from '@mui/material'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import BillingForm from './BillingForm'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
@@ -14,8 +14,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: 976,
-  paddingBottom: 16
+  maxWidth: 976
 })
 
 const StyledRow = styled(Row)({
@@ -36,16 +35,6 @@ const Plan = styled('div')({
   flexWrap: 'wrap',
   width: '50%',
   overflow: 'hidden'
-})
-
-const Heading = styled('span')<{isBold?: boolean}>(({isBold}) => ({
-  fontWeight: isBold ? 600 : 400,
-  fontSize: 16,
-  textAlign: 'left'
-}))
-
-const HeadingBlock = styled('div')({
-  padding: '16px 16px 0px 16px'
 })
 
 const Title = styled('div')({
@@ -107,28 +96,6 @@ const stripePromise = loadStripe('pk_test_MNoKbCzQX0lhktuxxI7M14wd')
 
 const Billing = () => {
   const [stripeClientManager] = useState(() => new StripeClientManager())
-  const {fields, onChange, setDirtyField} = useForm({
-    cardName: {
-      getDefault: () => '',
-      nomralize: stripeClientManager.normalizeCardName,
-      validate: stripeClientManager.validateCardName
-    },
-    cardNumber: {
-      getDefault: () => '',
-      normalize: stripeClientManager.normalizeCardNumber,
-      validate: stripeClientManager.validateCardNumber
-    },
-    cvc: {
-      getDefault: () => '',
-      normalize: stripeClientManager.normalizeCVC,
-      validate: stripeClientManager.validateCVC
-    },
-    expiry: {
-      getDefault: () => '',
-      normalize: stripeClientManager.normalizeExpiry,
-      validate: stripeClientManager.validateExpiry
-    }
-  })
 
   const [clientSecret, setClientSecret] = useState('')
   const atmosphere = useAtmosphere()
@@ -149,7 +116,6 @@ const Billing = () => {
 
   const appearance = {
     theme: 'stripe',
-
     variables: {
       colorBackground: PALETTE.SLATE_200,
       border: 'none',
@@ -164,6 +130,7 @@ const Billing = () => {
   const options = {
     clientSecret,
     appearance,
+    loader: 'never',
     fonts: [
       {
         family: 'IBM Plex Sans',
@@ -172,14 +139,6 @@ const Billing = () => {
       }
     ]
   }
-
-  const {cardName, cardNumber, cvc, expiry} = fields
-  const error =
-    // serverError || //TODO: add server error when adding functionality: https://github.com/ParabolInc/parabol/issues/7693
-    (cardNumber.dirty && cardNumber.error) ||
-    (expiry.dirty && expiry.error) ||
-    (cvc.dirty && cvc.error)
-  const canSubmit = !!(!error && cardName.value && cardNumber.value && expiry.value && cvc.value)
 
   // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
   // const handleSubmit = async (e: React.FormEvent) => {
