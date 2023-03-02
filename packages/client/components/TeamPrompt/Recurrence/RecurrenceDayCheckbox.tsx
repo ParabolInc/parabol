@@ -23,8 +23,8 @@ export type Day = {
 
 export const CheckboxRoot = styled('div')({
   position: 'relative',
-  width: 42,
-  height: 42
+  width: 46,
+  height: 46
 })
 
 export const StyledCheckbox = styled('input')({
@@ -35,14 +35,14 @@ export const StyledCheckbox = styled('input')({
   left: 0,
   right: 0,
   bottom: 0,
-  border: `2px solid ${PALETTE.SLATE_200}`,
+  border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: 8,
   '&:checked': {
-    border: `2px solid ${PALETTE.SKY_500}`,
+    border: `1px solid ${PALETTE.SKY_500}`,
     backgroundColor: PALETTE.SKY_500
   },
   ':hover, :focus, :focus-visible, :active': {
-    outline: `2px solid ${PALETTE.SKY_500}`,
+    outline: `1px solid ${PALETTE.SLATE_500}`,
     borderRadius: 4
   }
 })

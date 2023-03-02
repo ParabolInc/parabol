@@ -16,7 +16,7 @@ const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, recurrenceRule},
+  {teamId, recurrenceSettings},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
@@ -40,7 +40,9 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     })
   }
 
-  const meeting = await safeCreateTeamPrompt(teamId, viewerId, r, dataLoader)
+  const meeting = await safeCreateTeamPrompt(teamId, viewerId, r, dataLoader, {
+    name: recurrenceSettings?.name
+  })
 
   await Promise.all([
     r.table('NewMeeting').insert(meeting).run(),
@@ -52,13 +54,14 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     )
   ])
 
-  if (recurrenceRule) {
+  if (recurrenceSettings && recurrenceSettings.rrule) {
     const meetingSeries = await startNewMeetingSeries(
       viewerId,
       teamId,
       meeting.id,
       meeting.name,
-      recurrenceRule
+      recurrenceSettings.rrule,
+      recurrenceSettings.name
     )
     analytics.recurrenceStarted(viewerId, meetingSeries)
   }

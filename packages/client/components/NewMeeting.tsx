@@ -135,6 +135,7 @@ const NewMeeting = (props: Props) => {
     'action'
   ])
   const [recurrenceRule, setRecurrenceRule] = useState<RRule | null>(null)
+  const [meetingSeriesName, setMeetingSeriesName] = useState<string>('')
 
   const {history, location} = useRouter()
   const [idx, setIdx] = useState(0)
@@ -174,7 +175,7 @@ const NewMeeting = (props: Props) => {
     } else if (meetingType === 'teamPrompt') {
       StartTeamPromptMutation(
         atmosphere,
-        {teamId, recurrenceRule: recurrenceRule?.toString()},
+        {teamId, recurrenceSettings: {rrule: recurrenceRule?.toString(), name: meetingSeriesName}},
         {history, onError, onCompleted}
       )
     }
@@ -209,6 +210,8 @@ const NewMeeting = (props: Props) => {
               <NewMeetingRecurrenceSettings
                 onRecurrenceRuleUpdated={setRecurrenceRule}
                 recurrenceRule={recurrenceRule}
+                meetingSeriesName={meetingSeriesName}
+                onMeetingSeriesNameUpdated={setMeetingSeriesName}
               />
             )}
           </SettingsRow>

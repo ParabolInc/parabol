@@ -8,9 +8,9 @@ extend type Mutation {
     """
     teamId: ID!
     """
-    The recurrence rule for the meeting series
+    The recurrence settings of the meeting
     """
-    recurrenceRule: RRule
+    recurrenceSettings: RecurrenceSettingsInput
   ): StartTeamPromptPayload!
 }
 

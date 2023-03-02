@@ -1,12 +1,11 @@
-import styled from '@emotion/styled'
+import clsx from 'clsx'
 import dayjs from 'dayjs'
 import utcPlugin from 'dayjs/plugin/utc'
-import React, {useEffect} from 'react'
+import React, {PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PortalId} from '../../../hooks/usePortal'
-import {PALETTE} from '../../../styles/paletteV3'
 import plural from '../../../utils/plural'
 import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -73,78 +72,72 @@ export const ALL_DAYS: Day[] = [
   }
 ]
 
-const RecurrenceFrequencyPickerRoot = styled('div')({
-  display: 'flex',
-  justifyContent: 'start',
-  alignItems: 'center',
-  gap: 8,
-  margin: '16px 0'
-})
+const Label = ({
+  className,
+  children,
+  ...rest
+}: PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) => {
+  return (
+    <label className={clsx('text-sm font-semibold text-slate-800', className)} {...rest}>
+      {children}
+    </label>
+  )
+}
 
-const RecurrenceIntervalInput = styled('input')({
-  height: 36,
-  maxWidth: 120,
-  flex: 1,
-  padding: 8,
-  border: 'solid',
-  borderWidth: 1,
-  borderRadius: 4,
-  borderColor: PALETTE.SLATE_500,
-  '&:hover, :focus, :focus-visible, :active': {
-    outline: `1px solid ${PALETTE.SLATE_600}`,
-    borderColor: PALETTE.SLATE_600,
-    borderRadius: 4
-  }
-})
+const Input = ({
+  children,
+  className,
+  label,
+  ...rest
+}: PropsWithChildren<{label?: React.ReactNode} & React.InputHTMLAttributes<HTMLInputElement>>) => {
+  const focusStyles = 'focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
+  const activeStyles =
+    'active:border-slate-600 active:outline active:outline-slate-600 active:outline-1'
+  const baseStyles =
+    'form-input text-base font-sans p-2 border border-solid border-slate-500 rounded hover:border-slate-600'
 
-const RecurrenceSettingsRoot = styled('div')({
-  padding: 16,
-  fontSize: 14
-})
+  const hasLabel = !!label
+  if (!hasLabel)
+    return <input className={clsx(className, baseStyles, focusStyles, activeStyles)} {...rest} />
 
-const RecurrenceSettingsTitle = styled('div')({
-  fontSize: 18,
-  fontWeight: 600
-})
+  return (
+    <div>
+      {label}
+      <input className={clsx('mt-1', className, baseStyles, focusStyles, activeStyles)} {...rest}>
+        {children}
+      </input>
+    </div>
+  )
+}
 
-const HumanReadableRecurrenceRule = styled('div')({
-  fontSize: 14,
-  maxWidth: 360,
-  overflow: 'hidden'
-})
-
-const RecurrenceDayPickerRoot = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: 8,
-  marginTop: 16,
-  marginBottom: 8
-})
-
-const StartTimeDropdownToggle = styled(DropdownMenuToggle)({
-  fontSize: 14,
-  width: '100%',
-  marginTop: 8,
-  '&:hover, :focus, :focus-visible, :active': {
-    outline: `1px solid ${PALETTE.SLATE_600}`,
-    borderColor: PALETTE.SLATE_600,
-    borderRadius: 4
-  }
-})
-
-const StartTimeSection = styled('div')({
-  marginTop: 16
-})
+const Description = ({
+  className,
+  children,
+  ...rest
+}: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
+  return (
+    <div className={clsx('max-w-xs text-sm italic text-slate-600', className)} {...rest}>
+      {children}
+    </div>
+  )
+}
 
 interface Props {
   parentId: PortalId
   onRecurrenceRuleUpdated: (rrule: RRule | null) => void
   recurrenceRule: RRule | null
+  meetingSeriesName?: string
+  onMeetingSeriesNameUpdated: (name: string) => void
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {parentId, onRecurrenceRuleUpdated, recurrenceRule} = props
+  const {
+    parentId,
+    onRecurrenceRuleUpdated,
+    recurrenceRule,
+    meetingSeriesName,
+    onMeetingSeriesNameUpdated
+  } = props
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
   )
@@ -194,6 +187,10 @@ export const RecurrenceSettings = (props: Props) => {
     }
   }
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onMeetingSeriesNameUpdated(e.target.value)
+  }
+
   useEffect(() => {
     const rrule =
       recurrenceDays.length > 0
@@ -211,47 +208,78 @@ export const RecurrenceSettings = (props: Props) => {
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
 
   return (
-    <RecurrenceSettingsRoot>
-      <RecurrenceSettingsTitle>Recurrence</RecurrenceSettingsTitle>
-      <RecurrenceFrequencyPickerRoot>
-        <span>Repeats every</span>
-        <RecurrenceIntervalInput
-          type='number'
-          onChange={handleIntervalChange}
-          value={recurrenceInterval}
-          min={1}
-          max={52}
-        />
-        <div>{plural(recurrenceInterval, 'week')}</div>
-      </RecurrenceFrequencyPickerRoot>
-      <RecurrenceDayPickerRoot>
-        {ALL_DAYS.map((day) => {
-          const isSelected = recurrenceDays.some(
-            (recurrenceDay) => recurrenceDay.intVal === day.intVal
-          )
+    <div className='space-y-4 p-4'>
+      <div className='text-lg font-semibold leading-none'>Recurrence</div>
+      <div className='space-y-1'>
+        <div className='flex items-center gap-2'>
+          <Input
+            className='h-[34px] w-[210px]'
+            id='series-title'
+            type='text'
+            placeholder='Standup'
+            value={meetingSeriesName}
+            onChange={handleNameChange}
+            label={
+              <Label className='block ' htmlFor='series-title'>
+                Series title
+              </Label>
+            }
+          />
+          <Input
+            className='h-[34px] w-[100px]'
+            id='series-interval'
+            type='number'
+            label={
+              <Label className='block' htmlFor='series-interval'>
+                Restarts every
+              </Label>
+            }
+            onChange={handleIntervalChange}
+            value={recurrenceInterval}
+            min={1}
+            max={52}
+          />
+          <div className='self-end py-2 text-sm'>{plural(recurrenceInterval, 'week')}</div>
+        </div>
+        <Description>
+          The next meeting in this series will be called{' '}
+          <span className='font-semibold'>
+            "{meetingSeriesName || 'Standup'} - {dayjs(recurrenceStartTime).format('MMM DD')}"
+          </span>
+        </Description>
+      </div>
 
-          return (
-            <RecurrenceDayCheckbox
-              key={day.intVal}
-              day={day}
-              onToggle={handleDayChange}
-              isChecked={isSelected}
-            />
-          )
-        })}
-      </RecurrenceDayPickerRoot>
-      <HumanReadableRecurrenceRule>
-        Your meeting{' '}
-        <strong>
-          {recurrenceRule
-            ? `will restart ${toHumanReadable(recurrenceRule, {isPartOfSentence: true})}`
-            : // `will restart ${recurrenceRule.toText()}`
-              'will not restart'}
-        </strong>
-      </HumanReadableRecurrenceRule>
-      <StartTimeSection>
-        <div>Each instance starts at</div>
-        <StartTimeDropdownToggle
+      <div className='space-y-1'>
+        <Label>Repeats on</Label>
+        <div className='flex items-center justify-between'>
+          {ALL_DAYS.map((day) => {
+            const isSelected = recurrenceDays.some(
+              (recurrenceDay) => recurrenceDay.intVal === day.intVal
+            )
+
+            return (
+              <RecurrenceDayCheckbox
+                key={day.intVal}
+                day={day}
+                onToggle={handleDayChange}
+                isChecked={isSelected}
+              />
+            )
+          })}
+        </div>
+        <Description>
+          Your meeting{' '}
+          <span className='font-semibold'>
+            {recurrenceRule
+              ? `will restart ${toHumanReadable(recurrenceRule, {isPartOfSentence: true})}`
+              : 'will not restart'}
+          </span>
+        </Description>
+      </div>
+      <div className='space-y-1'>
+        <Label>Each instance starts at</Label>
+        <DropdownMenuToggle
+          className='w-full text-sm'
           defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
           onClick={togglePortal}
           ref={originRef}
@@ -260,7 +288,7 @@ export const RecurrenceSettings = (props: Props) => {
         {menuPortal(
           <RecurrenceTimePicker menuProps={menuProps} onClick={setRecurrenceStartTime} />
         )}
-      </StartTimeSection>
-    </RecurrenceSettingsRoot>
+      </div>
+    </div>
   )
 }
