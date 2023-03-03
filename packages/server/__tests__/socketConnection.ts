@@ -1,9 +1,9 @@
 //@ts-ignore
 import WebSocket from 'ws'
-import PROD from '../PROD'
+//import PROD from '../PROD'
 
 const HOST = process.env.HOST || 'localhost'
-const PORT = PROD ? process.env.PORT : process.env.SOCKET_PORT
+const PORT = 3000 //PROD ? process.env.PORT : process.env.SOCKET_PORT
 
 interface PromiseResolver<T> {
   resolve: (valut: T) => void
