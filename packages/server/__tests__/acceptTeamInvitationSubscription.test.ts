@@ -10,7 +10,7 @@ export const signUp = async (invitationToken?: string) => {
   return signUpWithEmail(email, invitationToken)
 }
 
-const main = async () => {
+test('TeamSubscription sends update on joining team', async () => {
   const {authToken} = await signUp()
 
   const connection = await socketConnection(authToken)
@@ -116,6 +116,4 @@ const main = async () => {
       }
     })
   }
-}
-
-test('TeamSubscription sends update on joining team', main)
+})

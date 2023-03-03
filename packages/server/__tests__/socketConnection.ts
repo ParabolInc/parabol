@@ -1,7 +1,9 @@
 //@ts-ignore
 import WebSocket from 'ws'
+import PROD from '../PROD'
 
-const HOST = 'localhost:3001'
+const HOST = process.env.HOST || 'localhost'
+const PORT = PROD ? process.env.PORT : process.env.SOCKET_PORT
 
 interface PromiseResolver<T> {
   resolve: (valut: T) => void
@@ -29,7 +31,7 @@ export const socketConnection = async (authToken: string) => {
   const responsePromises = new Map<number, PromiseResolver<IteratorResult<GraphQLPayload>>>()
 
   const socket = await new Promise<WebSocket>((resolve, reject) => {
-    const ws = new WebSocket(`ws://${HOST}/?token=${authToken}`, ['trebuchet-ws'])
+    const ws = new WebSocket(`ws://${HOST}:${PORT}/?token=${authToken}`, ['trebuchet-ws'])
     ws.addListener('message', (event) => {
       const message = event.toString()
       // ping pong
