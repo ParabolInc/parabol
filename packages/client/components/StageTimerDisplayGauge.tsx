@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect, useRef} from 'react'
+import sound from '../../../static/sounds/tic-tac.mp3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'
 import {DECELERATE, fadeIn} from '../styles/animation'
@@ -30,11 +31,33 @@ const Gauge = styled('div')<{isTimeUp: boolean; isDesktop: boolean}>(({isTimeUp,
   userSelect: 'none'
 }))
 
+const useSoundEffect = (isTimeUp: boolean) => {
+  // avoids playing when navigating to
+  // a page when the timer is already up.
+  const hasPlayed = useRef(false)
+
+  useEffect(() => {
+    hasPlayed.current = isTimeUp
+  }, [])
+
+  useEffect(() => {
+    if (isTimeUp && !hasPlayed.current) {
+      new Audio(sound).play()
+      hasPlayed.current = true
+    }
+    if (!isTimeUp) {
+      hasPlayed.current = false
+    }
+  }, [isTimeUp])
+}
+
 const StageTimerDisplayGauge = (props: Props) => {
   const {endTime} = props
   useRefreshInterval(1000)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const timeLeft = endTime && countdown(endTime)
+  useSoundEffect(!timeLeft)
+
   const fromNow = timeLeft || 'Time’s Up!'
   return (
     <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
