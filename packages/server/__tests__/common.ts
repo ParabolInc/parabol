@@ -78,7 +78,7 @@ export async function sendPublic(req: {
   return body.payload
 }
 
-export const SIGNUP_WITH_PASSWORD_MUTATION = `
+const SIGNUP_WITH_PASSWORD_MUTATION = `
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
@@ -116,7 +116,7 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
   }
 `
 
-export const signUpWithEmail = async (emailInput: string) => {
+export const signUpWithEmail = async (emailInput: string, invitationToken?: string) => {
   //FIXME #1402 email addresses are case sensitive
   const email = emailInput.toLowerCase()
 
@@ -126,7 +126,8 @@ export const signUpWithEmail = async (emailInput: string) => {
     variables: {
       email,
       password,
-      segmentId: null
+      segmentId: null,
+      invitationToken
     }
   })
 
