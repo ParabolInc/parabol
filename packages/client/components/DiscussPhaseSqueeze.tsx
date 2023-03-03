@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {DiscussPhaseSqueeze_meeting} from '~/__generated__/DiscussPhaseSqueeze_meeting.graphql'
-import {DiscussPhaseSqueeze_organization} from '~/__generated__/DiscussPhaseSqueeze_organization.graphql'
+import {useFragment} from 'react-relay'
+import {DiscussPhaseSqueeze_meeting$key} from '~/__generated__/DiscussPhaseSqueeze_meeting.graphql'
+import {DiscussPhaseSqueeze_organization$key} from '~/__generated__/DiscussPhaseSqueeze_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
@@ -10,12 +10,36 @@ import {PALETTE} from '../styles/paletteV3'
 import WaitingForFacilitatorToPay from './WaitingForFacilitatorToPay'
 
 interface Props {
-  meeting: DiscussPhaseSqueeze_meeting
-  organization: DiscussPhaseSqueeze_organization
+  meeting: DiscussPhaseSqueeze_meeting$key
+  organization: DiscussPhaseSqueeze_organization$key
 }
 
 const DiscussPhaseSqueeze = (props: Props) => {
-  const {organization, meeting} = props
+  const {organization: organizationRef, meeting: meetingRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment DiscussPhaseSqueeze_organization on Organization {
+        id
+        orgUserCount {
+          activeUserCount
+        }
+      }
+    `,
+    organizationRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment DiscussPhaseSqueeze_meeting on RetrospectiveMeeting {
+        id
+        facilitatorUserId
+        facilitator {
+          preferredName
+        }
+        showConversionModal
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, facilitatorUserId, facilitator, showConversionModal} = meeting
   const {id: orgId, orgUserCount} = organization
   const {preferredName: facilitatorName} = facilitator
@@ -50,23 +74,4 @@ const DiscussPhaseSqueeze = (props: Props) => {
   return modalPortal(<WaitingForFacilitatorToPay facilitatorName={facilitatorName} />)
 }
 
-export default createFragmentContainer(DiscussPhaseSqueeze, {
-  organization: graphql`
-    fragment DiscussPhaseSqueeze_organization on Organization {
-      id
-      orgUserCount {
-        activeUserCount
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment DiscussPhaseSqueeze_meeting on RetrospectiveMeeting {
-      id
-      facilitatorUserId
-      facilitator {
-        preferredName
-      }
-      showConversionModal
-    }
-  `
-})
+export default DiscussPhaseSqueeze

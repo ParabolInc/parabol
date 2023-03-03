@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
@@ -11,7 +11,10 @@ import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTempl
 import palettePickerOptions from '../../../styles/palettePickerOptions'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import Legitity from '../../../validation/Legitity'
-import {NewTemplateScaleValueLabelInput_scale} from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'
+import {
+  NewTemplateScaleValueLabelInput_scale$key,
+  NewTemplateScaleValueLabelInput_scale
+} from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 
 const Form = styled('form')({
@@ -78,13 +81,28 @@ const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values'
 }
 interface Props {
   closeAdding: () => void
-  scale: NewTemplateScaleValueLabelInput_scale
+  scale: NewTemplateScaleValueLabelInput_scale$key
 }
 
 const NewTemplateScaleValueLabelInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {error, onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {closeAdding, scale} = props
+  const {closeAdding, scale: scaleRef} = props
+  const scale = useFragment(
+    graphql`
+      fragment NewTemplateScaleValueLabelInput_scale on TemplateScale {
+        ...EditableTemplateScaleValueColor_scale
+        id
+        values {
+          id
+          label
+          color
+          sortOrder
+        }
+      }
+    `,
+    scaleRef
+  )
   const {id: scaleId, values} = scale
   const [newScaleValueLabel, setNewScaleValueLabel] = useState('')
   const [scaleValueColor, setScaleValueColor] = useState('')
@@ -190,17 +208,4 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewTemplateScaleValueLabelInput, {
-  scale: graphql`
-    fragment NewTemplateScaleValueLabelInput_scale on TemplateScale {
-      ...EditableTemplateScaleValueColor_scale
-      id
-      values {
-        id
-        label
-        color
-        sortOrder
-      }
-    }
-  `
-})
+export default NewTemplateScaleValueLabelInput

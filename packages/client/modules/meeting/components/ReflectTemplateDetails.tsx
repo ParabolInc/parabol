@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import aChristmasCarolRetrospectiveTemplate from '../../../../../static/images/illustrations/aChristmasCarolRetrospectiveTemplate.png'
 import alwaysBeLearningRetrospectiveTemplate from '../../../../../static/images/illustrations/alwaysBeLearningRetrospectiveTemplate.png'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
@@ -44,10 +44,10 @@ import teamCharterTemplate from '../../../../../static/images/illustrations/team
 import teamRetreatPlanningTemplate from '../../../../../static/images/illustrations/teamRetreatPlanningTemplate.png'
 import thanksgivingRetrospectiveTemplate from '../../../../../static/images/illustrations/thanksgivingRetrospectiveTemplate.png'
 import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.png'
+import wRAPTemplate from '../../../../../static/images/illustrations/wRAPTemplate.png'
 import whatWentWellTemplate from '../../../../../static/images/illustrations/whatWentWellTemplate.png'
 import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.png'
 import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.png'
-import wRAPTemplate from '../../../../../static/images/illustrations/wRAPTemplate.png'
 import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.png'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -56,8 +56,8 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
-import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
+import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
+import {ReflectTemplateDetails_viewer$key} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -119,12 +119,53 @@ interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
   closePortal: () => void
-  settings: ReflectTemplateDetails_settings
-  viewer: ReflectTemplateDetails_viewer
+  settings: ReflectTemplateDetails_settings$key
+  viewer: ReflectTemplateDetails_viewer$key
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {
+    gotoTeamTemplates,
+    gotoPublicTemplates,
+    closePortal,
+    settings: settingsRef,
+    viewer: viewerRef
+  } = props
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+        activeTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        selectedTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        teamTemplates {
+          ...EditableTemplateName_teamTemplates
+          ...RemoveTemplate_teamTemplates
+        }
+        team {
+          id
+          orgId
+          tier
+        }
+      }
+    `,
+    settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateDetails_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef
+  )
   const {featureFlags} = viewer
   const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
@@ -259,34 +300,4 @@ graphql`
     teamId
   }
 `
-export default createFragmentContainer(ReflectTemplateDetails, {
-  settings: graphql`
-    fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
-      activeTemplate {
-        ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      selectedTemplate {
-        ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      teamTemplates {
-        ...EditableTemplateName_teamTemplates
-        ...RemoveTemplate_teamTemplates
-      }
-      team {
-        id
-        orgId
-        tier
-      }
-    }
-  `,
-  viewer: graphql`
-    fragment ReflectTemplateDetails_viewer on User {
-      featureFlags {
-        templateLimit
-      }
-      ...makeTemplateDescription_viewer
-    }
-  `
-})
+export default ReflectTemplateDetails

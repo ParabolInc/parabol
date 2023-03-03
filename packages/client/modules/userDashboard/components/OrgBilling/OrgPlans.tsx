@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
@@ -8,7 +10,8 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ElementWidth} from '../../../../types/constEnums'
+import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
+import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
 
@@ -156,23 +159,58 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
   }
 }))
 
-const OrgPlans = () => {
+const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
+  if (tier === 'starter') {
+    return plan === 'starter' ? 'disabled' : plan === 'team' ? 'primary' : 'secondary'
+  } else if (tier === 'team') {
+    return plan === 'team' ? 'disabled' : 'secondary'
+  } else {
+    return plan === 'enterprise' ? 'disabled' : 'secondary'
+  }
+}
+
+const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
+  if (tier === 'starter') {
+    return plan === 'starter' ? 'Current Plan' : plan === 'team' ? 'Select Plan' : 'Contact'
+  } else if (tier === 'team') {
+    return plan === 'team' ? 'Current Plan' : plan === 'starter' ? 'Downgrade' : 'Contact'
+  } else {
+    return plan === 'enterprise' ? 'Current Plan' : 'Contact'
+  }
+}
+
+type Props = {
+  organizationRef: OrgPlans_organization$key
+}
+
+const OrgPlans = (props: Props) => {
+  const {organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgPlans_organization on Organization {
+        ...OrgStats_organization
+        tier
+      }
+    `,
+    organizationRef
+  )
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
+  const {tier} = organization
 
   const plans = [
     {
       tier: 'starter',
       subtitle: 'Free',
       details: [
-        '2 teams',
+        `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
         'Essential templates',
         'Retrospectives, Sprint Poker, Standups, Check-Ins',
         'Unlimited team members'
       ],
-      buttonStyle: 'disabled',
-      buttonLabel: 'Current Plan'
+      buttonStyle: getButtonStyle(tier, 'starter'),
+      buttonLabel: getButtonLabel(tier, 'starter')
     },
     {
       tier: 'team',
@@ -182,22 +220,32 @@ const OrgPlans = () => {
         'Custom templates',
         'Unlimited teams'
       ],
-      buttonStyle: 'primary',
-      buttonLabel: 'Select Plan'
+      buttonStyle: getButtonStyle(tier, 'team'),
+      buttonLabel: getButtonLabel(tier, 'team')
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', 'SSO'],
-      buttonStyle: 'secondary',
-      buttonLabel: 'Contact'
+      buttonStyle: getButtonStyle(tier, 'enterprise'),
+      buttonLabel: getButtonLabel(tier, 'enterprise')
     }
   ] as const
+
+  const handleClick = (label: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan') => {
+    if (label === 'Contact') {
+      window.open('mailto:love@parabol.co', '_blank')
+    } else if (label === 'Select Plan') {
+      // TODO: handle select plan when billing is implemented
+    } else if (label === 'Downgrade') {
+      // TODO: handle in https://github.com/ParabolInc/parabol/issues/7697
+    }
+  }
 
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
-        <OrgStats />
+        <OrgStats organizationRef={organization} />
       </StyledRow>
       <StyledRow>
         {plans.map((plan) => (
@@ -233,7 +281,11 @@ const OrgPlans = () => {
               </UL>
             </Content>
             <ButtonBlock>
-              <UpgradeButton buttonStyle={plan.buttonStyle} size='medium'>
+              <UpgradeButton
+                onClick={() => handleClick(plan.buttonLabel)}
+                buttonStyle={plan.buttonStyle}
+                size='medium'
+              >
                 {plan.buttonLabel}
               </UpgradeButton>
             </ButtonBlock>

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import filterTeamMember from '../utils/relay/filterTeamMember'
-import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
+import {TeamDashTeamMemberMenu_team$key} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -14,12 +14,27 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  team: TeamDashTeamMemberMenu_team
+  team: TeamDashTeamMemberMenu_team$key
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {menuProps, team} = props
+  const {menuProps, team: teamRef} = props
+  const team = useFragment(
+    graphql`
+      fragment TeamDashTeamMemberMenu_team on Team {
+        id
+        teamMemberFilter {
+          id
+        }
+        teamMembers(sortBy: "preferredName") {
+          id
+          preferredName
+        }
+      }
+    `,
+    teamRef
+  )
   const {id: teamId, teamMembers, teamMemberFilter} = team
   const teamMemberFilterId = teamMemberFilter && teamMemberFilter.id
   const defaultActiveIdx =
@@ -65,17 +80,4 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamDashTeamMemberMenu, {
-  team: graphql`
-    fragment TeamDashTeamMemberMenu_team on Team {
-      id
-      teamMemberFilter {
-        id
-      }
-      teamMembers(sortBy: "preferredName") {
-        id
-        preferredName
-      }
-    }
-  `
-})
+export default TeamDashTeamMemberMenu

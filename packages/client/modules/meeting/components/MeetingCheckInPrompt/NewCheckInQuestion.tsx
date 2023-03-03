@@ -3,8 +3,8 @@ import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState, SelectionState} from 'draft-js'
 import React, {useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NewCheckInQuestion_meeting} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import '../../../../components/TaskEditor/Draft.css'
@@ -49,13 +49,33 @@ const QuestionBlock = styled('div')({
 })
 
 interface Props {
-  meeting: NewCheckInQuestion_meeting
+  meeting: NewCheckInQuestion_meeting$key
 }
 
 const NewCheckInQuestion = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>()
   const atmosphere = useAtmosphere()
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment NewCheckInQuestion_meeting on NewMeeting {
+        id
+        facilitatorUserId
+        localPhase {
+          ... on CheckInPhase {
+            checkInQuestion
+          }
+        }
+        # request question from server to use locally (above)
+        phases {
+          ... on CheckInPhase {
+            checkInQuestion
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, localPhase, facilitatorUserId} = meeting
   const {checkInQuestion} = localPhase
@@ -143,22 +163,4 @@ const NewCheckInQuestion = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewCheckInQuestion, {
-  meeting: graphql`
-    fragment NewCheckInQuestion_meeting on NewMeeting {
-      id
-      facilitatorUserId
-      localPhase {
-        ... on CheckInPhase {
-          checkInQuestion
-        }
-      }
-      # request question from server to use locally (above)
-      phases {
-        ... on CheckInPhase {
-          checkInQuestion
-        }
-      }
-    }
-  `
-})
+export default NewCheckInQuestion

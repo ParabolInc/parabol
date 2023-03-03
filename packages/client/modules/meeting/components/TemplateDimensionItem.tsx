@@ -3,21 +3,21 @@ import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
-import {TemplateDimensionItem_dimensions} from '~/__generated__/TemplateDimensionItem_dimensions.graphql'
+import {TemplateDimensionItem_dimensions$key} from '~/__generated__/TemplateDimensionItem_dimensions.graphql'
 import {PALETTE} from '../../../styles/paletteV3'
-import {TemplateDimensionItem_dimension} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
+import {TemplateDimensionItem_dimension$key} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
 import PokerTemplateScalePicker from './PokerTemplateScalePicker'
 
 interface Props {
   isOwner: boolean
   isDragging: boolean
-  dimension: TemplateDimensionItem_dimension
-  dimensions: TemplateDimensionItem_dimensions
+  dimension: TemplateDimensionItem_dimension$key
+  dimensions: TemplateDimensionItem_dimensions$key
   dragProvided: DraggableProvided
 }
 
@@ -65,7 +65,32 @@ const DimensionAndDescription = styled('div')({
 })
 
 const TemplateDimensionItem = (props: Props) => {
-  const {dragProvided, isDragging, isOwner, dimension, dimensions} = props
+  const {
+    dragProvided,
+    isDragging,
+    isOwner,
+    dimension: dimensionRef,
+    dimensions: dimensionsRef
+  } = props
+  const dimensions = useFragment(
+    graphql`
+      fragment TemplateDimensionItem_dimensions on TemplateDimension @relay(plural: true) {
+        ...EditableTemplateDimension_dimensions
+      }
+    `,
+    dimensionsRef
+  )
+  const dimension = useFragment(
+    graphql`
+      fragment TemplateDimensionItem_dimension on TemplateDimension {
+        ...PokerTemplateScalePicker_dimension
+        id
+        name
+        description
+      }
+    `,
+    dimensionRef
+  )
   const {id: dimensionId, name: dimensionName} = dimension
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
@@ -116,18 +141,4 @@ const TemplateDimensionItem = (props: Props) => {
     </DimensionItem>
   )
 }
-export default createFragmentContainer(TemplateDimensionItem, {
-  dimensions: graphql`
-    fragment TemplateDimensionItem_dimensions on TemplateDimension @relay(plural: true) {
-      ...EditableTemplateDimension_dimensions
-    }
-  `,
-  dimension: graphql`
-    fragment TemplateDimensionItem_dimension on TemplateDimension {
-      ...PokerTemplateScalePicker_dimension
-      id
-      name
-      description
-    }
-  `
-})
+export default TemplateDimensionItem

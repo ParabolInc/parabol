@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {StageTimerControl_meeting} from '~/__generated__/StageTimerControl_meeting.graphql'
+import {StageTimerControl_meeting$key} from '~/__generated__/StageTimerControl_meeting.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {MeetingLabels} from '../types/constEnums'
@@ -13,7 +13,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 interface Props {
   cancelConfirm: (() => void) | undefined
   defaultTimeLimit: number
-  meeting: StageTimerControl_meeting
+  meeting: StageTimerControl_meeting$key
   onTransitionEnd: () => void
   status: TransitionStatus
 }
@@ -23,7 +23,31 @@ const StageTimerModal = lazyPreload(
 )
 
 const StageTimerControl = (props: Props) => {
-  const {cancelConfirm, defaultTimeLimit, meeting, status, onTransitionEnd} = props
+  const {cancelConfirm, defaultTimeLimit, meeting: meetingRef, status, onTransitionEnd} = props
+  const meeting = useFragment(
+    graphql`
+      fragment StageTimerControl_meeting on NewMeeting {
+        id
+        meetingMembers {
+          user {
+            isConnected
+          }
+        }
+        localStage {
+          ...StageTimerControlStage @relay(mask: false)
+        }
+        phases {
+          stages {
+            ...StageTimerControlStage @relay(mask: false)
+          }
+        }
+        facilitator {
+          ...StageTimerModal_facilitator
+        }
+      }
+    `,
+    meetingRef
+  )
   const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
   const {isAsync} = localStage
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
@@ -70,26 +94,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(StageTimerControl, {
-  meeting: graphql`
-    fragment StageTimerControl_meeting on NewMeeting {
-      id
-      meetingMembers {
-        user {
-          isConnected
-        }
-      }
-      localStage {
-        ...StageTimerControlStage @relay(mask: false)
-      }
-      phases {
-        stages {
-          ...StageTimerControlStage @relay(mask: false)
-        }
-      }
-      facilitator {
-        ...StageTimerModal_facilitator
-      }
-    }
-  `
-})
+export default StageTimerControl

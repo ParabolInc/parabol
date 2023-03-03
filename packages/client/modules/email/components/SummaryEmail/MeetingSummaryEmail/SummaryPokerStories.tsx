@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
+import {SummaryPokerStories_meeting$key} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -41,11 +41,48 @@ const scoreStyle = (isLast: boolean) => ({
 interface Props {
   appOrigin: string
   isEmail: boolean
-  meeting: SummaryPokerStories_meeting
+  meeting: SummaryPokerStories_meeting$key
 }
 
 const SummaryPokerStories = (props: Props) => {
-  const {appOrigin, isEmail, meeting} = props
+  const {appOrigin, isEmail, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SummaryPokerStories_meeting on NewMeeting {
+        id
+        ... on PokerMeeting {
+          __typename
+          phases {
+            phaseType
+            ... on EstimatePhase {
+              __typename
+              stages {
+                id
+                finalScore
+                taskId
+                task {
+                  title
+                  integration {
+                    ... on JiraIssue {
+                      __typename
+                      summary
+                      issueKey
+                    }
+                    ... on _xGitHubIssue {
+                      __typename
+                      number
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, phases} = meeting
   if (meeting.__typename !== 'PokerMeeting') return null
   const estimatePhase = phases?.find((phase) => phase?.__typename === 'EstimatePhase')
@@ -102,39 +139,4 @@ const SummaryPokerStories = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SummaryPokerStories, {
-  meeting: graphql`
-    fragment SummaryPokerStories_meeting on NewMeeting {
-      id
-      ... on PokerMeeting {
-        __typename
-        phases {
-          phaseType
-          ... on EstimatePhase {
-            __typename
-            stages {
-              id
-              finalScore
-              taskId
-              task {
-                title
-                integration {
-                  ... on JiraIssue {
-                    __typename
-                    summary
-                    issueKey
-                  }
-                  ... on _xGitHubIssue {
-                    __typename
-                    number
-                    title
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default SummaryPokerStories
