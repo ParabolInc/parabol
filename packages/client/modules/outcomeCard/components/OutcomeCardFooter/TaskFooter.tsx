@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -15,7 +15,7 @@ import {USER_DASH} from '../../../../utils/constants'
 import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
-import {TaskFooter_task} from '../../../../__generated__/TaskFooter_task.graphql'
+import {TaskFooter_task$key} from '../../../../__generated__/TaskFooter_task.graphql'
 import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
 import TaskFooterIntegrateToggle from './TaskFooterIntegrateToggle'
 import TaskFooterTagMenuToggle from './TaskFooterTagMenuToggle'
@@ -54,13 +54,35 @@ interface Props {
   cardIsActive: boolean
   editorState: EditorState
   isAgenda: boolean
-  task: TaskFooter_task
+  task: TaskFooter_task$key
   useTaskChild: UseTaskChild
   dataCy: string
 }
 
 const TaskFooter = (props: Props) => {
-  const {area, cardIsActive, editorState, isAgenda, task, useTaskChild, dataCy} = props
+  const {area, cardIsActive, editorState, isAgenda, task: taskRef, useTaskChild, dataCy} = props
+  const task = useFragment(
+    graphql`
+      fragment TaskFooter_task on Task {
+        id
+        content
+        error
+        integration {
+          __typename
+        }
+        tags
+        team {
+          id
+        }
+        userId
+        ...TaskFooterTeamAssignee_task
+        ...TaskFooterUserAssignee_task
+        ...TaskFooterTagMenu_task
+        ...TaskFooterIntegrateMenuRoot_task
+      }
+    `,
+    taskRef
+  )
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const handleError = (err: Error) => {
     onError(err)
@@ -142,24 +164,4 @@ const TaskFooter = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskFooter, {
-  task: graphql`
-    fragment TaskFooter_task on Task {
-      id
-      content
-      error
-      integration {
-        __typename
-      }
-      tags
-      team {
-        id
-      }
-      userId
-      ...TaskFooterTeamAssignee_task
-      ...TaskFooterUserAssignee_task
-      ...TaskFooterTagMenu_task
-      ...TaskFooterIntegrateMenuRoot_task
-    }
-  `
-})
+export default TaskFooter

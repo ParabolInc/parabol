@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import {CreditCard} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {OrgBillingCreditCardInfo_organization} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
+import {useFragment} from 'react-relay'
+import {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useModal from '../../../../hooks/useModal'
@@ -62,11 +62,27 @@ const CreditCardModal = lazyPreload(
 )
 
 interface Props {
-  organization: OrgBillingCreditCardInfo_organization
+  organization: OrgBillingCreditCardInfo_organization$key
 }
 
 const OrgBillingCreditCardInfo = (props: Props) => {
-  const {organization} = props
+  const {organization: organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgBillingCreditCardInfo_organization on Organization {
+        id
+        orgUserCount {
+          activeUserCount
+        }
+        creditCard {
+          brand
+          expiry
+          last4
+        }
+      }
+    `,
+    organizationRef
+  )
   const {creditCard, id: orgId, orgUserCount} = organization
   const {modalPortal, closePortal, togglePortal} = useModal()
   if (!creditCard) return null
@@ -107,18 +123,4 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(OrgBillingCreditCardInfo, {
-  organization: graphql`
-    fragment OrgBillingCreditCardInfo_organization on Organization {
-      id
-      orgUserCount {
-        activeUserCount
-      }
-      creditCard {
-        brand
-        expiry
-        last4
-      }
-    }
-  `
-})
+export default OrgBillingCreditCardInfo
