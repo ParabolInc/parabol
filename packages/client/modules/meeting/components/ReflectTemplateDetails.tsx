@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import dropAddKeepImproveDAKITemplate from '../../../../../static/images/illustrations/dakiTemplate.png'
 import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.png'
@@ -23,8 +23,8 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
-import {ReflectTemplateDetails_viewer} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
+import {ReflectTemplateDetails_settings$key} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
+import {ReflectTemplateDetails_viewer$key} from '../../../__generated__/ReflectTemplateDetails_viewer.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -86,12 +86,53 @@ interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
   closePortal: () => void
-  settings: ReflectTemplateDetails_settings
-  viewer: ReflectTemplateDetails_viewer
+  settings: ReflectTemplateDetails_settings$key
+  viewer: ReflectTemplateDetails_viewer$key
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings, viewer} = props
+  const {
+    gotoTeamTemplates,
+    gotoPublicTemplates,
+    closePortal,
+    settings: settingsRef,
+    viewer: viewerRef
+  } = props
+  const settings = useFragment(
+    graphql`
+      fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+        activeTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        selectedTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
+          ...SelectTemplate_template
+        }
+        teamTemplates {
+          ...EditableTemplateName_teamTemplates
+          ...RemoveTemplate_teamTemplates
+        }
+        team {
+          id
+          orgId
+          tier
+        }
+      }
+    `,
+    settingsRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateDetails_viewer on User {
+        featureFlags {
+          templateLimit
+        }
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef
+  )
   const {featureFlags} = viewer
   const {templateLimit: templateLimitFlag} = featureFlags
   const {teamTemplates, team} = settings
@@ -193,34 +234,4 @@ graphql`
     teamId
   }
 `
-export default createFragmentContainer(ReflectTemplateDetails, {
-  settings: graphql`
-    fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
-      activeTemplate {
-        ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      selectedTemplate {
-        ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        ...SelectTemplate_template
-      }
-      teamTemplates {
-        ...EditableTemplateName_teamTemplates
-        ...RemoveTemplate_teamTemplates
-      }
-      team {
-        id
-        orgId
-        tier
-      }
-    }
-  `,
-  viewer: graphql`
-    fragment ReflectTemplateDetails_viewer on User {
-      featureFlags {
-        templateLimit
-      }
-      ...makeTemplateDescription_viewer
-    }
-  `
-})
+export default ReflectTemplateDetails

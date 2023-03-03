@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {BezierCurve} from '~/types/constEnums'
-import {EditableTemplatePromptColor_prompt} from '~/__generated__/EditableTemplatePromptColor_prompt.graphql'
-import {EditableTemplatePromptColor_prompts} from '~/__generated__/EditableTemplatePromptColor_prompts.graphql'
+import {EditableTemplatePromptColor_prompt$key} from '~/__generated__/EditableTemplatePromptColor_prompt.graphql'
+import {EditableTemplatePromptColor_prompts$key} from '~/__generated__/EditableTemplatePromptColor_prompts.graphql'
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
@@ -14,8 +14,8 @@ import {PALETTE} from '../../../styles/paletteV3'
 
 interface Props {
   isOwner: boolean
-  prompt: EditableTemplatePromptColor_prompt
-  prompts: EditableTemplatePromptColor_prompts
+  prompt: EditableTemplatePromptColor_prompt$key
+  prompts: EditableTemplatePromptColor_prompts$key
 }
 
 const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
@@ -57,7 +57,24 @@ const DropdownIcon = styled('div')({
 })
 
 const EditableTemplatePromptColor = (props: Props) => {
-  const {isOwner, prompt, prompts} = props
+  const {isOwner, prompt: promptRef, prompts: promptsRef} = props
+  const prompts = useFragment(
+    graphql`
+      fragment EditableTemplatePromptColor_prompts on ReflectPrompt @relay(plural: true) {
+        ...PalettePicker_prompts
+      }
+    `,
+    promptsRef
+  )
+  const prompt = useFragment(
+    graphql`
+      fragment EditableTemplatePromptColor_prompt on ReflectPrompt {
+        ...PalettePicker_prompt
+        groupColor
+      }
+    `,
+    promptRef
+  )
   const {groupColor} = prompt
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
@@ -74,16 +91,4 @@ const EditableTemplatePromptColor = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EditableTemplatePromptColor, {
-  prompts: graphql`
-    fragment EditableTemplatePromptColor_prompts on ReflectPrompt @relay(plural: true) {
-      ...PalettePicker_prompts
-    }
-  `,
-  prompt: graphql`
-    fragment EditableTemplatePromptColor_prompt on ReflectPrompt {
-      ...PalettePicker_prompt
-      groupColor
-    }
-  `
-})
+export default EditableTemplatePromptColor

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Public} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV3'
 import {FONT_FAMILY} from '~/styles/typographyV2'
@@ -10,15 +10,15 @@ import MenuItem from '../../../components/MenuItem'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import UpdatePokerTemplateDimensionScaleMutation from '../../../mutations/UpdatePokerTemplateDimensionScaleMutation'
-import {ScaleDropdownMenuItem_dimension} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
-import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
+import {ScaleDropdownMenuItem_dimension$key} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
+import {ScaleDropdownMenuItem_scale$key} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 import ScaleActions from './ScaleActions'
 import scaleValueString from './scaleValueString'
 
 interface Props {
-  scale: ScaleDropdownMenuItem_scale
+  scale: ScaleDropdownMenuItem_scale$key
   scaleCount: number
-  dimension: ScaleDropdownMenuItem_dimension
+  dimension: ScaleDropdownMenuItem_dimension$key
   closePortal: () => void
 }
 
@@ -71,7 +71,36 @@ const StarterIcon = styled(Public)({
 })
 
 const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
-  const {scale, dimension, closePortal, scaleCount} = props
+  const {scale: scaleRef, dimension: dimensionRef, closePortal, scaleCount} = props
+  const dimension = useFragment(
+    graphql`
+      fragment ScaleDropdownMenuItem_dimension on TemplateDimension {
+        id
+        selectedScale {
+          id
+        }
+        team {
+          id
+        }
+      }
+    `,
+    dimensionRef
+  )
+  const scale = useFragment(
+    graphql`
+      fragment ScaleDropdownMenuItem_scale on TemplateScale {
+        ...ScaleActions_scale
+        id
+        name
+        isStarter
+        teamId
+        values {
+          label
+        }
+      }
+    `,
+    scaleRef
+  )
   const {id: scaleId, isStarter, name: scaleName, values} = scale
   const {id: dimensionId, selectedScale} = dimension
   const {id: selectedScaleId} = selectedScale
@@ -111,28 +140,4 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
   )
 })
 
-export default createFragmentContainer(ScaleDropdownMenuItem, {
-  dimension: graphql`
-    fragment ScaleDropdownMenuItem_dimension on TemplateDimension {
-      id
-      selectedScale {
-        id
-      }
-      team {
-        id
-      }
-    }
-  `,
-  scale: graphql`
-    fragment ScaleDropdownMenuItem_scale on TemplateScale {
-      ...ScaleActions_scale
-      id
-      name
-      isStarter
-      teamId
-      values {
-        label
-      }
-    }
-  `
-})
+export default ScaleDropdownMenuItem
