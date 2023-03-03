@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {PALETTE} from '~/styles/paletteV3'
-import {ThreadedTaskBase_discussion} from '~/__generated__/ThreadedTaskBase_discussion.graphql'
-import {ThreadedTaskBase_task} from '~/__generated__/ThreadedTaskBase_task.graphql'
-import {ThreadedTaskBase_viewer} from '~/__generated__/ThreadedTaskBase_viewer.graphql'
+import {ThreadedTaskBase_discussion$key} from '~/__generated__/ThreadedTaskBase_discussion.graphql'
+import {ThreadedTaskBase_task$key} from '~/__generated__/ThreadedTaskBase_task.graphql'
+import {ThreadedTaskBase_viewer$key} from '~/__generated__/ThreadedTaskBase_viewer.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import NullableTask from './NullableTask/NullableTask'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
@@ -34,27 +34,61 @@ const StyledNullableTask = styled(NullableTask)({})
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
-  task: ThreadedTaskBase_task
+  task: ThreadedTaskBase_task$key
   children?: ReactNode
-  discussion: ThreadedTaskBase_discussion
+  discussion: ThreadedTaskBase_discussion$key
   isReply?: boolean // this comment is a reply & should be indented
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
-  viewer: ThreadedTaskBase_viewer
+  viewer: ThreadedTaskBase_viewer$key
 }
 
 const ThreadedTaskBase = (props: Props) => {
   const {
     allowedThreadables,
     children,
-    discussion,
+    discussion: discussionRef,
     setReplyMention,
     replyMention,
-    task,
+    task: taskRef,
     dataCy,
-    viewer
+    viewer: viewerRef
   } = props
+  const viewer = useFragment(
+    graphql`
+      fragment ThreadedTaskBase_viewer on User {
+        ...ThreadedItemReply_viewer
+      }
+    `,
+    viewerRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment ThreadedTaskBase_discussion on Discussion {
+        ...ThreadedItemReply_discussion
+        id
+        replyingToCommentId
+      }
+    `,
+    discussionRef
+  )
+  const task = useFragment(
+    graphql`
+      fragment ThreadedTaskBase_task on Task {
+        ...NullableTask_task
+        ...ThreadedItemReply_threadable
+        id
+        content
+        createdByUser {
+          picture
+          preferredName
+        }
+        threadParentId
+      }
+    `,
+    taskRef
+  )
   const isReply = !!props.isReply
   const {id: discussionId, replyingToCommentId} = discussion
   const {id: taskId, createdByUser, threadParentId} = task
@@ -95,30 +129,4 @@ const ThreadedTaskBase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ThreadedTaskBase, {
-  viewer: graphql`
-    fragment ThreadedTaskBase_viewer on User {
-      ...ThreadedItemReply_viewer
-    }
-  `,
-  discussion: graphql`
-    fragment ThreadedTaskBase_discussion on Discussion {
-      ...ThreadedItemReply_discussion
-      id
-      replyingToCommentId
-    }
-  `,
-  task: graphql`
-    fragment ThreadedTaskBase_task on Task {
-      ...NullableTask_task
-      ...ThreadedItemReply_threadable
-      id
-      content
-      createdByUser {
-        picture
-        preferredName
-      }
-      threadParentId
-    }
-  `
-})
+export default ThreadedTaskBase

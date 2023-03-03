@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
-import {TeamInvitationGoogleSignin_verifiedInvitation} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
+import {TeamInvitationGoogleSignin_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
@@ -13,7 +13,7 @@ import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
 
 interface Props {
-  verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation
+  verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation$key
 }
 
 const TeamName = styled('span')({
@@ -25,7 +25,20 @@ const TeamInvitationGoogleSignin = (props: Props) => {
   const {match} = useRouter<{token: string}>()
   const {params} = match
   const {token: invitationToken} = params
-  const {verifiedInvitation} = props
+  const {verifiedInvitation: verifiedInvitationRef} = props
+  const verifiedInvitation = useFragment(
+    graphql`
+      fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
+        meetingName
+        user {
+          email
+          preferredName
+        }
+        teamName
+      }
+    `,
+    verifiedInvitationRef
+  )
   const {meetingName, user, teamName} = verifiedInvitation
   useDocumentTitle(`Sign in with Google | Team Invitation`, 'Sign in')
 
@@ -49,15 +62,4 @@ const TeamInvitationGoogleSignin = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamInvitationGoogleSignin, {
-  verifiedInvitation: graphql`
-    fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
-      meetingName
-      user {
-        email
-        preferredName
-      }
-      teamName
-    }
-  `
-})
+export default TeamInvitationGoogleSignin
