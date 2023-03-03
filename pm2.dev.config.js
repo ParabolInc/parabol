@@ -34,39 +34,39 @@ module.exports = {
       name: 'Dev Server',
       script: 'scripts/hmrServer.js'
     },
-    {
-      name: 'DB Migrations',
-      script: 'scripts/runMigrations.js',
-      // once this completes, it will exit
-      autorestart: false
-    },
-    {
-      name: 'GraphQL Schema Updater',
-      script: 'scripts/runSchemaUpdater.js',
-      watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
-    },
+    // {
+    //   name: 'DB Migrations',
+    //   // script: 'scripts/runMigrations.js',
+    //   // once this completes, it will exit
+    //   autorestart: false
+    // },
+    // {
+    //   name: 'GraphQL Schema Updater'
+    //   // script: 'scripts/runSchemaUpdater.js',
+    //   // watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
+    // },
     {
       name: 'Relay Compiler',
-      script: 'scripts/compileRelay.js',
+      script: 'yarn relay-compiler',
       args: '--watch',
       watch: [
         'packages/server/graphql/public/schema.graphql',
         'packages/client/clientSchema.graphql'
       ]
-    },
-    {
-      name: 'GraphQL Codegen',
-      script: 'scripts/codegenGraphQL.js',
-      args: '--watch',
-      autorestart: false,
-      // SIGINT won't kill this process in fork mode >:-(
-      // instances: 1 forces cluster mode
-      instances: 1
-    },
-    {
-      name: 'PG Typed',
-      script: 'yarn pg:build -w'
     }
+    // {
+    //   name: 'GraphQL Codegen',
+    //   // script: 'scripts/codegenGraphQL.js',
+    //   args: '--watch',
+    //   autorestart: false,
+    //   // SIGINT won't kill this process in fork mode >:-(
+    //   // instances: 1 forces cluster mode
+    //   instances: 1
+    // },
+    // {
+    //   name: 'PG Typed'
+    //   // script: 'yarn pg:build -w'
+    // }
   ].map((app) => ({
     env_production: {
       NODE_ENV: 'development'

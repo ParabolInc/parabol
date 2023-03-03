@@ -38,7 +38,8 @@ const compileRelay = async (isWatch) => {
     safeConfig.watch = true
     safeConfig.watchman = true
   }
-  const {relayCompiler} = require('relay-compiler')
+  // const relayCompilerPath = require('relay-compiler')
+  const relayCompiler = require('relay-compiler/macos-arm64/relay')
   const isFirstTime = isWatch && isRelayCompilerFirstTime()
   try {
     await relayCompiler(safeConfig)

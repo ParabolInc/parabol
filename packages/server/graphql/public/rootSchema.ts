@@ -5,7 +5,7 @@
  *  - GitHub and GitLab schemas
  */
 import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
-import {GraphQLSchema} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../../utils/githubSchema.graphql'
@@ -97,6 +97,10 @@ const addRequestors = (schema: GraphQLSchema) => {
 }
 
 const rootSchema = addRequestors(resolveTypesForMutationPayloads(parabolWithNestedResolversSchema))
+const issue = rootSchema.getType('_xGitHubIssue') as GraphQLObjectType
+const fields = issue.getFields()
+const urlField = fields['url']!
+urlField.type = new GraphQLNonNull(GraphQLString)
 
 export type RootSchema = typeof rootSchema
 export default rootSchema
