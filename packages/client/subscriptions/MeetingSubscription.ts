@@ -24,11 +24,7 @@ import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeeti
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 
-const subscription = graphql`
-  subscription MeetingSubscription($meetingId: ID!) {
-    meetingSubscription(meetingId: $meetingId) {
-      __typename
-      ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
+/*       ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
       ...SetTaskEstimateMutation_meeting @relay(mask: false)
       ...SetPokerSpectateMutation_team @relay(mask: false)
       ...JoinMeetingMutation_meeting @relay(mask: false)
@@ -62,7 +58,11 @@ const subscription = graphql`
       ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
       ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
-      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
+      ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false) */
+const subscription = graphql`
+  subscription MeetingSubscription($meetingId: ID!) {
+    meetingSubscription(meetingId: $meetingId) {
+      __typename
     }
   }
 `

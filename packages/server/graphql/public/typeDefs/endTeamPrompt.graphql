@@ -1,0 +1,10 @@
+type EndTeamPromptSuccess {
+  meeting: TeamPromptMeeting!
+  meetingId: ID!
+  team: Team!
+
+  """
+  An event that is important to the viewer, e.g. an ended meeting
+  """
+  timelineEvent: TimelineEvent!
+}

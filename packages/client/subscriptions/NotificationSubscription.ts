@@ -63,12 +63,7 @@ graphql`
     }
   }
 `
-
-const subscription = graphql`
-  subscription NotificationSubscription {
-    notificationSubscription {
-      __typename
-      ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
+/*       ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
       ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)
@@ -81,40 +76,44 @@ const subscription = graphql`
       ...RemoveOrgUserMutation_notification @relay(mask: false)
       ...InvalidateSessionsMutation_notification @relay(mask: false)
       ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
-      ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
-
-      ... on AddedNotification {
+      ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false) */
+const subscription = graphql`
+  subscription NotificationSubscription {
+    notificationSubscription {
+      __typename
+      AddedNotification {
         addedNotification {
           ...NotificationPicker_notification @relay(mask: false)
         }
+        ...popNotificationToast_notification @relay(mask: false)
       }
-
-      ... on UpdatedNotification {
+      UpdatedNotification {
         updatedNotification {
           ...NotificationPicker_notification @relay(mask: false)
         }
+        ...updateNotificationToast_notification @relay(mask: false)
       }
-
-      ...popNotificationToast_notification @relay(mask: false)
-      ...updateNotificationToast_notification @relay(mask: false)
-
-      ... on AuthTokenPayload {
+      AuthTokenPayload {
         id
       }
+      MeetingStageTimeLimitPayload {
+        # ScheduledJob Result
+        ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
+      }
 
-      # ScheduledJob Result
-      ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
-      ...NotificationSubscription_paymentRejected @relay(mask: false)
+      StripeFailPaymentPayload {
+        ...NotificationSubscription_paymentRejected @relay(mask: false)
+      }
 
       # ConnectSocket
-      ... on User {
+      User {
         id
         isConnected
         lastSeenAt
       }
 
       # DisconnectSocket
-      ... on DisconnectSocketPayload {
+      DisconnectSocketPayload {
         user {
           id
           isConnected
@@ -122,7 +121,7 @@ const subscription = graphql`
       }
 
       # Feature flags
-      ... on UpdateFeatureFlagPayload {
+      UpdateFeatureFlagPayload {
         user {
           id
           # add flag here
@@ -130,7 +129,7 @@ const subscription = graphql`
       }
 
       # New Feature Broadcasts
-      ... on AddNewFeaturePayload {
+      AddNewFeaturePayload {
         newFeature {
           id
           actionButtonCopy
@@ -139,7 +138,7 @@ const subscription = graphql`
         }
       }
 
-      ... on JiraIssue {
+      JiraIssue {
         id
         summary
         descriptionHTML

@@ -128,5 +128,3 @@ type JiraIssueEdge {
   node: JiraIssue!
   cursor: DateTime
 }
-
-extend union NotificationSubscriptionPayload = JiraIssue

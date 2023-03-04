@@ -25,7 +25,10 @@ const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       __typename
-      ...AddOrgMutation_organization @relay(mask: false)
+    }
+  }
+`
+/*       ...AddOrgMutation_organization @relay(mask: false)
       ...ArchiveOrganizationMutation_organization @relay(mask: false)
       ...PayLaterMutation_organization @relay(mask: false)
       ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
@@ -34,11 +37,7 @@ const subscription = graphql`
       ...UpdateOrgMutation_organization @relay(mask: false)
       ...UpgradeToTeamTierMutation_organization @relay(mask: false)
       ...RemoveOrgUserMutation_organization @relay(mask: false)
-      ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
-    }
-  }
-`
-
+      ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false) */
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,

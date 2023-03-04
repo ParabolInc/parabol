@@ -50,9 +50,6 @@ type AcceptTeamInvitationPayload {
   teamLead: User
 }
 
-extend union NotificationSubscriptionPayload = AcceptTeamInvitationPayload
-extend union TeamSubscriptionPayload = AcceptTeamInvitationPayload
-
 """
 The reason the invitation failed
 """

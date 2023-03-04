@@ -1,8 +1,6 @@
-type UpdateDimensionFieldSuccess {
+type UpdateAzureDevOpsDimensionFieldSuccess {
   teamId: ID!
-
   meetingId: ID
-
   team: Team!
 
   """
@@ -10,5 +8,3 @@ type UpdateDimensionFieldSuccess {
   """
   meeting: PokerMeeting
 }
-
-union UpdateDimensionFieldPayload = UpdateDimensionFieldSuccess | ErrorPayload

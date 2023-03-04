@@ -17,7 +17,10 @@ const subscription = graphql`
   subscription TaskSubscription {
     taskSubscription {
       __typename
-      ...RemoveTeamMemberMutation_task @relay(mask: false)
+    }
+  }
+`
+/*       ...RemoveTeamMemberMutation_task @relay(mask: false)
       ...ChangeTaskTeamMutation_task @relay(mask: false)
       ...CreateTaskIntegrationMutation_task @relay(mask: false)
       ...CreateTaskMutation_task @relay(mask: false)
@@ -25,11 +28,7 @@ const subscription = graphql`
       ...EditTaskMutation_task @relay(mask: false)
       ...RemoveOrgUserMutation_task @relay(mask: false)
       ...UpdateTaskMutation_task @relay(mask: false)
-      ...UpdateTaskDueDateMutation_task @relay(mask: false)
-    }
-  }
-`
-
+      ...UpdateTaskDueDateMutation_task @relay(mask: false) */
 const onNextHandlers = {
   UpdateTaskPayload: updateTaskTaskOnNext
 } as const

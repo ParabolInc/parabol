@@ -15,8 +15,8 @@ const publish = <T>(
   subOptions: SubOptions = {}
 ) => {
   const subName = `${topic}Subscription`
-  const data = {...payload, type}
-  const rootValue = {[subName]: data}
+  // const data = {...payload, type}
+  const rootValue = {[subName]: {[type]: payload}}
   getPubSub()
     .publish(`${topic}.${channel}`, {rootValue, executorServerId: SERVER_ID!, ...subOptions})
     .catch(console.error)
