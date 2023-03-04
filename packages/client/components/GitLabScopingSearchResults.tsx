@@ -44,9 +44,9 @@ const GitLabScopingSearchResults = (props: Props) => {
       query GitLabScopingSearchResultsQuery(
         $teamId: ID!
         $queryString: String!
-        $selectedProjectsIds: [ID!]
-        $sort: _xGitLabIssueSort!
-        $state: _xGitLabIssuableState!
+        $selectedProjectsIds: [String!]
+        $sort: String!
+        $state: String!
       ) {
         ...GitLabScopingSearchResults_query
         viewer {

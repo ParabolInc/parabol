@@ -8,7 +8,7 @@ import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirec
 const mutation = graphql`
   mutation VerifyEmailMutation(
     $verificationToken: ID!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $isInvitation: Boolean!
   ) {
     verifyEmail(verificationToken: $verificationToken) {

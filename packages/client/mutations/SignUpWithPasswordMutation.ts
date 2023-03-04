@@ -11,7 +11,7 @@ const mutation = graphql`
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $segmentId: ID
     $isInvitation: Boolean!
   ) {
