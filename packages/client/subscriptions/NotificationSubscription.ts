@@ -63,20 +63,7 @@ graphql`
     }
   }
 `
-/*       ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
-      ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
-      ...AddOrgMutation_notification @relay(mask: false)
-      ...AddTeamMutation_notification @relay(mask: false)
-      ...ArchiveTimelineEventMutation_notification @relay(mask: false)
-      ...SetNotificationStatusMutation_notification @relay(mask: false)
-      ...CreateTaskMutation_notification @relay(mask: false)
-      ...EndCheckInMutation_notification @relay(mask: false)
-      ...EndRetrospectiveMutation_notification @relay(mask: false)
-      ...InviteToTeamMutation_notification @relay(mask: false)
-      ...RemoveOrgUserMutation_notification @relay(mask: false)
-      ...InvalidateSessionsMutation_notification @relay(mask: false)
-      ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
-      ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false) */
+
 const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
@@ -93,6 +80,50 @@ const subscription = graphql`
         }
         ...updateNotificationToast_notification @relay(mask: false)
       }
+
+      RemoveIntegrationSearchQuerySuccess {
+        ...RemoveJiraServerSearchQueryMutation_notification @relay(mask: false)
+      }
+      PersistGitHubSearchQuerySuccess {
+        ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
+      }
+      AddOrgPayload {
+        ...AddOrgMutation_notification @relay(mask: false)
+      }
+      AddTeamPayload {
+        ...AddTeamMutation_notification @relay(mask: false)
+      }
+      ArchiveTimelineEventSuccess {
+        ...ArchiveTimelineEventMutation_notification @relay(mask: false)
+      }
+      SetNotificationStatusPayload {
+        ...SetNotificationStatusMutation_notification @relay(mask: false)
+      }
+      CreateTaskPayload {
+        ...CreateTaskMutation_notification @relay(mask: false)
+      }
+      EndCheckInSuccess {
+        ...EndCheckInMutation_notification @relay(mask: false)
+      }
+      EndRetrospectiveSuccess {
+        ...EndRetrospectiveMutation_notification @relay(mask: false)
+      }
+      InviteToTeamPayload {
+        ...InviteToTeamMutation_notification @relay(mask: false)
+      }
+      RemoveOrgUserPayload {
+        ...RemoveOrgUserMutation_notification @relay(mask: false)
+      }
+      InvalidateSessionsPayload {
+        ...InvalidateSessionsMutation_notification @relay(mask: false)
+      }
+      PersistJiraSearchQuerySuccess {
+        ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
+      }
+      PersistIntegrationSearchQuerySuccess {
+        ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
+      }
+
       AuthTokenPayload {
         id
       }
@@ -315,10 +346,11 @@ const NotificationSubscription = (
     onNext: (result) => {
       if (!result) return
       const {notificationSubscription} = result
-      const {__typename: type} = notificationSubscription
+      const type = notificationSubscription.__typename as keyof typeof notificationSubscription
       const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(notificationSubscription as any, {...router, atmosphere})
+      const data = notificationSubscription[type]
+      if (data && handler) {
+        handler(data as any, {...router, atmosphere})
       }
     },
     onCompleted: () => {
