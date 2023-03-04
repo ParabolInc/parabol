@@ -17,18 +17,37 @@ const subscription = graphql`
   subscription TaskSubscription {
     taskSubscription {
       __typename
+      RemoveTeamMemberPayload {
+        ...RemoveTeamMemberMutation_task @relay(mask: false)
+      }
+      ChangeTaskTeamPayload {
+        ...ChangeTaskTeamMutation_task @relay(mask: false)
+      }
+      CreateTaskIntegrationPayload {
+        ...CreateTaskIntegrationMutation_task @relay(mask: false)
+      }
+      CreateTaskPayload {
+        ...CreateTaskMutation_task @relay(mask: false)
+      }
+      DeleteTaskPayload {
+        ...DeleteTaskMutation_task @relay(mask: false)
+      }
+      EditTaskPayload {
+        ...EditTaskMutation_task @relay(mask: false)
+      }
+      RemoveOrgUserPayload {
+        ...RemoveOrgUserMutation_task @relay(mask: false)
+      }
+      UpdateTaskPayload {
+        ...UpdateTaskMutation_task @relay(mask: false)
+      }
+      UpdateTaskDueDatePayload {
+        ...UpdateTaskDueDateMutation_task @relay(mask: false)
+      }
     }
   }
 `
-/*       ...RemoveTeamMemberMutation_task @relay(mask: false)
-      ...ChangeTaskTeamMutation_task @relay(mask: false)
-      ...CreateTaskIntegrationMutation_task @relay(mask: false)
-      ...CreateTaskMutation_task @relay(mask: false)
-      ...DeleteTaskMutation_task @relay(mask: false)
-      ...EditTaskMutation_task @relay(mask: false)
-      ...RemoveOrgUserMutation_task @relay(mask: false)
-      ...UpdateTaskMutation_task @relay(mask: false)
-      ...UpdateTaskDueDateMutation_task @relay(mask: false) */
+
 const onNextHandlers = {
   UpdateTaskPayload: updateTaskTaskOnNext
 } as const
@@ -56,15 +75,15 @@ const TaskSubscription = (
       const type = payload.getValue('__typename') as keyof typeof updateHandlers
       const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
       const updater = updateHandlers[type]
-      updater?.(payload, context)
+      updater?.(payload[type], context)
     },
     onNext: (result) => {
       if (!result) return
       const {taskSubscription} = result
-      const {__typename: type} = taskSubscription
+      const type = taskSubscription.__typename as keyof typeof taskSubscription
       const handler = onNextHandlers[type as keyof typeof onNextHandlers]
       if (handler) {
-        handler(taskSubscription as any, {...router, atmosphere})
+        handler(taskSubscription[type] as any, {...router, atmosphere})
       }
     },
     onCompleted: () => {
