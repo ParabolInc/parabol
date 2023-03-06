@@ -57,7 +57,7 @@ export default class MeetingTeamPrompt extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'teamPrompt',
-      name: createTeamPromptTitle(name ?? 'Standup', new Date(), 'UTC'),
+      name: createTeamPromptTitle(name || 'Standup', new Date(), 'UTC'),
       meetingSeriesId,
       scheduledEndTime
     })

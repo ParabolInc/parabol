@@ -1,5 +1,4 @@
 import React from 'react'
-import {RRule} from 'rrule'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
@@ -8,15 +7,12 @@ import {toHumanReadable} from './TeamPrompt/Recurrence/HumanReadableRecurrenceRu
 import {RecurrenceSettings} from './TeamPrompt/Recurrence/RecurrenceSettings'
 
 interface Props {
-  onRecurrenceRuleUpdated: (rrule: RRule | null) => void
-  recurrenceRule: RRule | null
-  meetingSeriesName?: string
-  onMeetingSeriesNameUpdated: (name: string) => void
+  onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
+  recurrenceSettings: RecurrenceSettings
 }
 
 export const NewMeetingRecurrenceSettings = (props: Props) => {
-  const {onRecurrenceRuleUpdated, recurrenceRule, meetingSeriesName, onMeetingSeriesNameUpdated} =
-    props
+  const {onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {togglePortal, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
@@ -33,8 +29,8 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
     <>
       <NewMeetingDropdown
         label={
-          recurrenceRule
-            ? toHumanReadable(recurrenceRule, {useShortNames: true, shortDayNameAfter: 1})
+          recurrenceSettings.rrule
+            ? toHumanReadable(recurrenceSettings.rrule, {useShortNames: true, shortDayNameAfter: 1})
             : 'Does not restart'
         }
         title={'Recurrence'}
@@ -45,10 +41,8 @@ export const NewMeetingRecurrenceSettings = (props: Props) => {
       {menuPortal(
         <RecurrenceSettings
           parentId='newMeetingRecurrenceSettings'
-          onRecurrenceRuleUpdated={onRecurrenceRuleUpdated}
-          recurrenceRule={recurrenceRule}
-          meetingSeriesName={meetingSeriesName}
-          onMeetingSeriesNameUpdated={onMeetingSeriesNameUpdated}
+          onRecurrenceSettingsUpdated={onRecurrenceSettingsUpdated}
+          recurrenceSettings={recurrenceSettings}
         />
       )}
     </>

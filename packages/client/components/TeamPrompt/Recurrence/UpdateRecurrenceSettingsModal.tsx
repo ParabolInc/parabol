@@ -82,12 +82,11 @@ const ErrorContainer = styled('div')({
 
 interface Props {
   meeting: UpdateRecurrenceSettingsModal_meeting$key
-  recurrenceRule?: string
   closeModal: () => void
 }
 
 export const UpdateRecurrenceSettingsModal = (props: Props) => {
-  const {recurrenceRule: recurrenceRuleString, closeModal, meeting: meetingRef} = props
+  const {closeModal, meeting: meetingRef} = props
 
   const meeting = useFragment(
     graphql`
@@ -96,17 +95,25 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         meetingSeries {
           id
           title
+          recurrenceRule
+          cancelledAt
         }
       }
     `,
     meetingRef
   )
 
+  const currentRecurrenceRule = meeting.meetingSeries?.recurrenceRule
   const atmosphere = useAtmosphere()
-  const [recurrenceRule, setRecurrenceRule] = useState<RRule | null>(() =>
-    recurrenceRuleString ? RRule.fromString(recurrenceRuleString) : null
-  )
-  const [meetingSeriesName, setMeetingSeriesName] = useState(meeting.meetingSeries?.title || '')
+  const isMeetingSeriesActive = meeting.meetingSeries?.cancelledAt === null
+  const [newRecurrenceSettings, setNewRecurrenceSettings] = useState<RecurrenceSettings>(() => ({
+    name: meeting.meetingSeries?.title || '',
+    rrule:
+      isMeetingSeriesActive && currentRecurrenceRule
+        ? RRule.fromString(currentRecurrenceRule)
+        : null
+  }))
+
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const onRecurrenceSettingsUpdated: CompletedHandler<UpdateRecurrenceSettingsMutationResponse> = (
     res,
@@ -135,7 +142,10 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
       atmosphere,
       {
         meetingId: meeting.id,
-        recurrenceSettings: {rrule: recurrenceRule?.toString(), name: meetingSeriesName}
+        recurrenceSettings: {
+          rrule: newRecurrenceSettings.rrule?.toString(),
+          name: newRecurrenceSettings.name
+        }
       },
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
@@ -153,19 +163,18 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   }
 
   const canUpdate = useMemo(() => {
-    if (meeting.meetingSeries?.title !== meetingSeriesName) return true
-    if (recurrenceRuleString !== recurrenceRule?.toString()) return true
+    if (!isMeetingSeriesActive && !newRecurrenceSettings.rrule) return false
+    if (currentRecurrenceRule !== newRecurrenceSettings.rrule?.toString()) return true
+    if (meeting.meetingSeries?.title !== newRecurrenceSettings.name) return true
     return false
-  }, [meeting, meetingSeriesName, recurrenceRule, recurrenceRuleString])
+  }, [meeting, newRecurrenceSettings, currentRecurrenceRule])
 
   return (
     <UpdateRecurrenceSettingsModalRoot>
       <RecurrenceSettings
         parentId='updateRecurrenceSettingsModal'
-        recurrenceRule={recurrenceRule}
-        onRecurrenceRuleUpdated={setRecurrenceRule}
-        meetingSeriesName={meetingSeriesName}
-        onMeetingSeriesNameUpdated={setMeetingSeriesName}
+        recurrenceSettings={newRecurrenceSettings}
+        onRecurrenceSettingsUpdated={setNewRecurrenceSettings}
       />
       <StyledCloseButton onClick={closeModal}>
         <CloseIcon />

@@ -122,22 +122,21 @@ const Description = ({
   )
 }
 
+export interface RecurrenceSettings {
+  name: string
+  rrule: RRule | null
+}
+
 interface Props {
   parentId: PortalId
-  onRecurrenceRuleUpdated: (rrule: RRule | null) => void
-  recurrenceRule: RRule | null
-  meetingSeriesName?: string
-  onMeetingSeriesNameUpdated: (name: string) => void
+  onRecurrenceSettingsUpdated: (recurrenceSettings: RecurrenceSettings) => void
+  recurrenceSettings: RecurrenceSettings
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {
-    parentId,
-    onRecurrenceRuleUpdated,
-    recurrenceRule,
-    meetingSeriesName,
-    onMeetingSeriesNameUpdated
-  } = props
+  const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
+  const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
+  const [name, setName] = React.useState(meetingSeriesName)
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
   )
@@ -188,7 +187,7 @@ export const RecurrenceSettings = (props: Props) => {
   }
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onMeetingSeriesNameUpdated(e.target.value)
+    setName(e.target.value)
   }
 
   useEffect(() => {
@@ -199,13 +198,12 @@ export const RecurrenceSettings = (props: Props) => {
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
             dtstart: dayjs(recurrenceStartTime).utc().toDate(),
-            //TODO: this causes rrule to provide 'Invalid Date' for the next occurrences - see https://github.com/jakubroztocil/rrule/pull/547
             tzid: timeZone
           })
         : null
 
-    onRecurrenceRuleUpdated(rrule)
-  }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
+    onRecurrenceSettingsUpdated({name, rrule})
+  }, [recurrenceDays, recurrenceInterval, recurrenceStartTime, name])
 
   return (
     <div className='space-y-4 p-4'>

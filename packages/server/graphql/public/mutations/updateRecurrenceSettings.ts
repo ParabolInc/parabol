@@ -24,7 +24,7 @@ export const startNewMeetingSeries = async (
 
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
-    title: meetingSeriesName ?? meetingName.split('-')[0].trim(), // if no name is provided, we use the name of the first meeting without the date
+    title: meetingSeriesName || meetingName.split('-')[0].trim(), // if no name is provided, we use the name of the first meeting without the date
     recurrenceRule: recurrenceRule.toString(),
     // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
     duration: 0,
