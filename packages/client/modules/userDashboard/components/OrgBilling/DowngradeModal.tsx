@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Error as ErrorIcon} from '@mui/icons-material'
 import {Close} from '@mui/icons-material'
 import {Checkbox} from '@mui/material'
 import React, {useState} from 'react'
@@ -55,6 +56,13 @@ const ActionLabel = styled('div')({
   }
 })
 
+const LineIcon = styled('div')({
+  svg: {
+    fontSize: 19
+  },
+  display: 'flex'
+})
+
 const UL = styled('ul')({
   margin: 0
 })
@@ -108,6 +116,32 @@ const StyledCheckbox = styled(Checkbox)({
   userSelect: 'none'
 })
 
+const StyledInput = styled('textarea')({
+  background: PALETTE.SLATE_200,
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  color: PALETTE.SLATE_800,
+  fontSize: 16,
+  font: 'inherit',
+  marginTop: 16,
+  padding: '12px 16px',
+  outline: 0,
+  '::placeholder': {
+    color: PALETTE.SLATE_600
+  }
+})
+
+const Message = styled('div')({
+  fontSize: 15,
+  paddingLeft: 4
+})
+
+const Error = styled('div')<{isError: boolean}>(({isError}) => ({
+  alignItems: 'center',
+  color: isError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
+  display: isError ? 'flex' : 'none',
+  lineHeight: '24px'
+}))
+
 type Props = {
   closeModal: () => void
   organizationRef: DowngradeModal_organization$key
@@ -129,6 +163,8 @@ const DowngradeModal = (props: Props) => {
   const {closeModal, organizationRef} = props
   const [hasConfirmedDowngrade, setHasConfirmedDowngrade] = useState(false)
   const [selectedReasons, setSelectedReasons] = useState<SelectedReasons>([])
+  const [otherTool, setOtherTool] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const atmosphere = useAtmosphere()
   const organization = useFragment(
     graphql`
@@ -138,6 +174,7 @@ const DowngradeModal = (props: Props) => {
     `,
     organizationRef
   )
+  const showInput = selectedReasons.includes('Moving to another tool (please specify)')
   const {onError, onCompleted} = useMutationProps()
   const {id: orgId} = organization ?? {}
 
@@ -164,6 +201,10 @@ const DowngradeModal = (props: Props) => {
   }
 
   const handleSubmit = () => {
+    if (showInput && !otherTool) {
+      setErrorMsg('Please specify the tool you are moving to')
+      return
+    }
     closeModal()
     DowngradeToStarterMutation(
       atmosphere,
@@ -188,6 +229,20 @@ const DowngradeModal = (props: Props) => {
                 <Label>{reason}</Label>
               </ButtonRow>
             ))}
+            {showInput && (
+              <>
+                <StyledInput
+                  onChange={(e) => setOtherTool(e.target.value)}
+                  placeholder='Please enter the name of the tool'
+                  rows={2}
+                  value={otherTool ?? ''}
+                />
+                <Error isError={!!errorMsg}>
+                  <LineIcon>{<ErrorIcon />}</LineIcon>
+                  <Message>{errorMsg}</Message>
+                </Error>
+              </>
+            )}
             <LabelGroup>
               <ActionLabel onClick={handleSubmit}>{'Submit'}</ActionLabel>
             </LabelGroup>
