@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
 import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
-import {PokerCard_scaleValue} from '../__generated__/PokerCard_scaleValue.graphql'
+import {PokerCard_scaleValue$key} from '../__generated__/PokerCard_scaleValue.graphql'
 
 const COLLAPSE_DUR = 700
 const EXPAND_DUR = 300
@@ -108,7 +108,7 @@ const Pass = styled('img')({
 })
 
 interface Props {
-  scaleValue: PokerCard_scaleValue
+  scaleValue: PokerCard_scaleValue$key
   deckRef: RefObject<HTMLDivElement>
   idx: number
   isCollapsed: boolean
@@ -126,7 +126,7 @@ interface Props {
 
 const PokerCard = (props: Props) => {
   const {
-    scaleValue,
+    scaleValue: scaleValueRef,
     showTransition,
     isCollapsed,
     yOffset,
@@ -138,6 +138,15 @@ const PokerCard = (props: Props) => {
     rotation,
     radius
   } = props
+  const scaleValue = useFragment(
+    graphql`
+      fragment PokerCard_scaleValue on TemplateScaleValue {
+        color
+        label
+      }
+    `,
+    scaleValueRef
+  )
   const {color, label} = scaleValue
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -173,11 +182,4 @@ const PokerCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerCard, {
-  scaleValue: graphql`
-    fragment PokerCard_scaleValue on TemplateScaleValue {
-      color
-      label
-    }
-  `
-})
+export default PokerCard

@@ -33,7 +33,8 @@ export const NextMeetingCountdown = (props: NextMeetingCountdownProps) => {
 const TeamPromptEndedBadgeRoot = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'start'
+  // alignItems: 'start'
+  alignItems: 'center'
 })
 
 const StyledLink = styled(Link)({
@@ -42,11 +43,13 @@ const StyledLink = styled(Link)({
 })
 
 const EmojiContainer = styled('span')({
-  paddingRight: 8
+  paddingRight: 8,
+  paddingBottom: 2
 })
 
 const TeamPromptEndedTextContainer = styled('span')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: 'inline-block',
+  // display: 'inline-block',
+  display: 'flex',
   width: isDesktop ? undefined : 220,
   overflow: 'hidden',
   overflowWrap: 'break-word'

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -9,7 +9,7 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {JiraScopingSelectAllIssues_issues} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
+import {JiraScopingSelectAllIssues_issues$key} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -34,12 +34,23 @@ const ErrorMessage = styled('div')({
 })
 interface Props {
   meetingId: string
-  issues: JiraScopingSelectAllIssues_issues
+  issues: JiraScopingSelectAllIssues_issues$key
   usedServiceTaskIds: Set<string>
 }
 
 const JiraScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issues} = props
+  const {meetingId, usedServiceTaskIds, issues: issuesRef} = props
+  const issues = useFragment(
+    graphql`
+      fragment JiraScopingSelectAllIssues_issues on JiraIssueEdge @relay(plural: true) {
+        node {
+          id
+          summary
+        }
+      }
+    `,
+    issuesRef
+  )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, error} = useMutationProps()
   const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
@@ -90,13 +101,4 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSelectAllIssues, {
-  issues: graphql`
-    fragment JiraScopingSelectAllIssues_issues on JiraIssueEdge @relay(plural: true) {
-      node {
-        id
-        summary
-      }
-    }
-  `
-})
+export default JiraScopingSelectAllIssues

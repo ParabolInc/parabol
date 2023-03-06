@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useIsInitializing from '../hooks/useIsInitializing'
@@ -9,8 +9,8 @@ import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
 import SetPokerSpectateMutation from '../mutations/SetPokerSpectateMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
-import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
+import {EstimateDimensionColumn_meeting$key} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
+import {EstimateDimensionColumn_stage$key} from '../__generated__/EstimateDimensionColumn_stage.graphql'
 import DeckActivityAvatars from './DeckActivityAvatars'
 import LinkButton from './LinkButton'
 import PokerActiveVoting from './PokerActiveVoting'
@@ -50,14 +50,44 @@ const StyledError = styled('div')({
 })
 
 interface Props {
-  stage: EstimateDimensionColumn_stage
-  meeting: EstimateDimensionColumn_meeting
+  stage: EstimateDimensionColumn_stage$key
+  meeting: EstimateDimensionColumn_meeting$key
 }
 
 const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting, stage} = props
+  const {meeting: meetingRef, stage: stageRef} = props
+  const stage = useFragment(
+    graphql`
+      fragment EstimateDimensionColumn_stage on EstimateStage {
+        ...PokerActiveVoting_stage
+        ...PokerDiscussVoting_stage
+        ...DeckActivityAvatars_stage
+        id
+        isVoting
+        dimensionRef {
+          name
+        }
+      }
+    `,
+    stageRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment EstimateDimensionColumn_meeting on PokerMeeting {
+        ...PokerActiveVoting_meeting
+        ...PokerDiscussVoting_meeting
+        facilitatorUserId
+        id
+        endedAt
+        viewerMeetingMember {
+          isSpectating
+        }
+      }
+    `,
+    meetingRef
+  )
   const {endedAt, facilitatorUserId, id: meetingId, viewerMeetingMember} = meeting
   const isSpectating = viewerMeetingMember?.isSpectating
   const isFacilitator = viewerId === facilitatorUserId
@@ -118,29 +148,4 @@ const EstimateDimensionColumn = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(EstimateDimensionColumn, {
-  stage: graphql`
-    fragment EstimateDimensionColumn_stage on EstimateStage {
-      ...PokerActiveVoting_stage
-      ...PokerDiscussVoting_stage
-      ...DeckActivityAvatars_stage
-      id
-      isVoting
-      dimensionRef {
-        name
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment EstimateDimensionColumn_meeting on PokerMeeting {
-      ...PokerActiveVoting_meeting
-      ...PokerDiscussVoting_meeting
-      facilitatorUserId
-      id
-      endedAt
-      viewerMeetingMember {
-        isSpectating
-      }
-    }
-  `
-})
+export default EstimateDimensionColumn

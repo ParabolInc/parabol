@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
 import React, {useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useEditorState from '~/hooks/useEditorState'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
@@ -13,7 +13,7 @@ import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
-import {PokerEstimateHeaderCardParabol_task} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
+import {PokerEstimateHeaderCardParabol_task$key} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import TaskEditor from './TaskEditor/TaskEditor'
@@ -65,11 +65,23 @@ const Content = styled('div')({
 })
 
 interface Props {
-  task: PokerEstimateHeaderCardParabol_task
+  task: PokerEstimateHeaderCardParabol_task$key
 }
 
 const PokerEstimateHeaderCardParabol = (props: Props) => {
-  const {task} = props
+  const {task: taskRef} = props
+  const task = useFragment(
+    graphql`
+      fragment PokerEstimateHeaderCardParabol_task on Task {
+        id
+        title
+        plaintextContent
+        content
+        teamId
+      }
+    `,
+    taskRef
+  )
   const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(true)
@@ -135,14 +147,4 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerEstimateHeaderCardParabol, {
-  task: graphql`
-    fragment PokerEstimateHeaderCardParabol_task on Task {
-      id
-      title
-      plaintextContent
-      content
-      teamId
-    }
-  `
-})
+export default PokerEstimateHeaderCardParabol

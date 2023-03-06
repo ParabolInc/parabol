@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw} from 'draft-js'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
-import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
+import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
 import NullCard from '../NullCard/NullCard'
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
   className?: string
   isAgenda?: boolean
   isDraggingOver?: TaskStatusEnum
-  task: NullableTask_task
+  task: NullableTask_task$key
   dataCy: string
   isViewerMeetingSection?: boolean
   meetingId?: string
@@ -25,12 +25,31 @@ const NullableTask = (props: Props) => {
     area,
     className,
     isAgenda,
-    task,
+    task: taskRef,
     isDraggingOver,
     dataCy,
     isViewerMeetingSection,
     meetingId
   } = props
+  const task = useFragment(
+    graphql`
+      # from this place upward the tree, the task components are also used outside of meetings, thus we default to null here
+      fragment NullableTask_task on Task
+      @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
+        content
+        createdBy
+        createdByUser {
+          preferredName
+        }
+        integration {
+          __typename
+        }
+        status
+        ...OutcomeCardContainer_task @arguments(meetingId: $meetingId)
+      }
+    `,
+    taskRef
+  )
   const {content, createdBy, createdByUser, integration} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -61,21 +80,4 @@ const NullableTask = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NullableTask, {
-  task: graphql`
-    # from this place upward the tree, the task components are also used outside of meetings, thus we default to null here
-    fragment NullableTask_task on Task
-    @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
-      content
-      createdBy
-      createdByUser {
-        preferredName
-      }
-      integration {
-        __typename
-      }
-      status
-      ...OutcomeCardContainer_task @arguments(meetingId: $meetingId)
-    }
-  `
-})
+export default NullableTask
