@@ -16,6 +16,7 @@ import isValid from '../../isValid'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import db from '../../../db'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
 
 const User: UserResolvers = {
   company: async ({email}, _args, {authToken}) => {
@@ -79,7 +80,10 @@ const User: UserResolvers = {
         ...teamIds.map((teamId) => ({teamId, meetingType: 'poker' as MeetingTypeEnum})),
         ...teamIds.map((teamId) => ({teamId, meetingType: 'retrospective' as MeetingTypeEnum}))
       ])
-    const scoredTeamTemplates = await getScoredTemplates(teamTemplates.filter(isValid).flat(), 0.9)
+    const scoredTeamTemplates = await getScoredTemplates(
+      teamTemplates.filter(isValid).flat(),
+      TEAM_HOTNESS_FACTOR
+    )
 
     // Get the org templates.
     const teams = await dataLoader.get('teams').loadMany(teamIds)
@@ -92,7 +96,7 @@ const User: UserResolvers = {
         (template: MeetingTemplate) =>
           template.scope !== 'TEAM' && !teamIds.includes(template.teamId)
       )
-    const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, 0.8)
+    const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, ORG_HOTNESS_FACTOR)
 
     // Get the public templates.
     const publicRetroTemplates = await db.read('publicTemplates', 'retrospective')

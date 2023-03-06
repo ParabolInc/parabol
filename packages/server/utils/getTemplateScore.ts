@@ -12,6 +12,10 @@ const SATURTION = 1 // max score, we want a score that is 0-1
 const MIDPOINT = 45 // after this many days, the score will be SATURATION / 2
 const GROWTH_INTERVAL = 30 // 80% of the decline happens in this many days
 
+// Default hotness factors for ranking templates
+export const ORG_HOTNESS_FACTOR = 0.8
+export const TEAM_HOTNESS_FACTOR = 0.9
+
 const getAgeScore = (age: number) => {
   return SATURTION / (1 + Math.exp((Math.log(81) / GROWTH_INTERVAL) * (age - MIDPOINT)))
 }

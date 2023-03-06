@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
-import {ActivityLibraryQuery, MeetingTypeEnum} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import ActivityLibrarySideBar from './ActivityLibrarySideBar'
 import ActivityLibraryCard from './ActivityLibraryCard'
 
@@ -51,12 +51,7 @@ export const ActivityLibrary = (props: Props) => {
     {id: 'action', type: 'action', name: 'Check-in', team: {name: 'Parabol'}},
     {id: 'teamPrompt', type: 'teamPrompt', name: 'Standup', team: {name: 'Parabol'}},
     ...availableTemplates.edges.map((edge) => edge.node)
-  ] as {
-    id: string
-    name: string
-    type: MeetingTypeEnum
-    team: {name: string}
-  }[]
+  ]
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
