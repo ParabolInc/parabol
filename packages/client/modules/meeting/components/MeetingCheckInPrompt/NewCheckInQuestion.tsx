@@ -14,6 +14,7 @@ import useEditorState from '../../../../hooks/useEditorState'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
@@ -35,7 +36,7 @@ const QuestionBlock = styled('div')({
   fontSize: 24,
   lineHeight: 1.25,
   padding: '16px 0',
-  '.DraftEditor-root': {
+  '.DraftEditor-root, textarea': {
     flexGrow: 1,
     padding: '16px',
     borderRadius: '4px',
@@ -47,7 +48,6 @@ const QuestionBlock = styled('div')({
     }
   }
 })
-
 interface Props {
   meeting: NewCheckInQuestion_meeting$key
 }
@@ -98,6 +98,17 @@ const NewCheckInQuestion = (props: Props) => {
     setEditorState(nextEditorState)
   }
 
+  // Handles question update for android devices.
+  const updateQuestionAndroidFallback = () => {
+    const currentText = editorRef.current?.value
+    const nextCheckInQuestion = convertToTaskContent(currentText || '')
+    if (nextCheckInQuestion === checkInQuestion) return
+    UpdateNewCheckInQuestionMutation(atmosphere, {
+      meetingId,
+      checkInQuestion: nextCheckInQuestion
+    })
+  }
+
   const focusQuestion = () => {
     closeTooltip()
     editorRef.current && editorRef.current.focus()
@@ -137,6 +148,7 @@ const NewCheckInQuestion = (props: Props) => {
         readOnly={!isFacilitating}
         placeholder='e.g. How are you?'
         editorRef={editorRef}
+        setEditorStateFallback={updateQuestionAndroidFallback}
       />
       {isFacilitating && (
         <>
