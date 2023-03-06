@@ -45,11 +45,11 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError, isNewUser} = loginWithGoogle
+      const {error: uiError, isNewUser, user} = loginWithGoogle
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         if (isNewUser) {
-          ReactGA.event('sign_up')
+          ReactGA.event('sign_up', {isPatient0: user!.isPatient0})
         }
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken
