@@ -47,21 +47,20 @@ const ActionButton = styled(PlainButton)({
   height: 36,
   padding: '0px 16px',
   textAlign: 'center',
-  borderRadius: 32,
-  cursor: 'pointer'
+  borderRadius: 32
 })
 
-const UpdateButton = styled(ActionButton)({
+const UpdateButton = styled(ActionButton)<{disabled: boolean}>(({disabled}) => ({
   backgroundColor: PALETTE.SKY_500,
   color: PALETTE.WHITE,
   '&:hover': {
-    backgroundColor: PALETTE.SKY_600
+    backgroundColor: disabled ? undefined : PALETTE.SKY_600
   },
   ':focus, :focus-visible, :active': {
     outline: `1px solid ${PALETTE.SKY_600}`,
     outlineOffset: 1
   }
-})
+}))
 
 const StopButton = styled(ActionButton)({
   color: PALETTE.SKY_500,
@@ -159,7 +158,9 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         {recurrenceRuleString && (
           <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
         )}
-        <UpdateButton onClick={onUpdateRecurrenceClicked}>Update</UpdateButton>
+        <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!recurrenceRule}>
+          Update
+        </UpdateButton>
       </ActionsContainer>
       {error && <ErrorContainer>{error.message}</ErrorContainer>}
     </UpdateRecurrenceSettingsModalRoot>
