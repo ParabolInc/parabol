@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
@@ -23,11 +23,20 @@ export default {
     reasonsForLeaving: {
       type: new GraphQLList(ReasonToDowngradeEnum),
       description: 'the reasons the user is leaving'
+    },
+    otherTool: {
+      type: GraphQLString,
+      description:
+        'the name of the tool they are moving to. only required if anotherTool is selected'
     }
   },
   async resolve(
     _source: unknown,
-    {orgId, reasonsForLeaving}: {orgId: string; reasonsForLeaving?: TReasonToDowngradeEnum[]},
+    {
+      orgId,
+      reasonsForLeaving,
+      otherTool
+    }: {orgId: string; reasonsForLeaving?: TReasonToDowngradeEnum[]; otherTool?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -70,7 +79,8 @@ export default {
         newTier: 'starter',
         billingLeaderEmail: billingLeaderUser.email,
         orgName: organization.name,
-        reasonsForLeaving
+        reasonsForLeaving,
+        otherTool
       })
     }
     // if they downgrade & are re-upgrading, they'll already have a stripeId
