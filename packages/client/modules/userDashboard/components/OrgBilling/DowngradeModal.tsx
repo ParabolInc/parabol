@@ -9,13 +9,18 @@ import DialogTitle from '../../../../components/DialogTitle'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {TeamBenefits} from '../../../../utils/constants'
+import {
+  readableReasonsToDowngrade,
+  reasonsToDowngradeLookup,
+  TeamBenefits
+} from '../../../../utils/constants'
 import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarterMutation'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
+import {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
 
 const StyledDialogContainer = styled(DialogContainer)({
   padding: 8
@@ -147,22 +152,10 @@ type Props = {
   organizationRef: DowngradeModal_organization$key
 }
 
-const reasonsToLeave = [
-  'Parabol is too expensive',
-  'Budget changes',
-  'Missing key features',
-  `Not using Parabol's paid features`,
-  'Moving to another tool (please specify)'
-] as const
-
-type Reason = typeof reasonsToLeave[number]
-
-type SelectedReasons = Reason[]
-
 const DowngradeModal = (props: Props) => {
   const {closeModal, organizationRef} = props
   const [hasConfirmedDowngrade, setHasConfirmedDowngrade] = useState(false)
-  const [selectedReasons, setSelectedReasons] = useState<SelectedReasons>([])
+  const [selectedReasons, setSelectedReasons] = useState<ReadableReasonToDowngradeEnum[]>([])
   const [otherTool, setOtherTool] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const atmosphere = useAtmosphere()
@@ -174,6 +167,7 @@ const DowngradeModal = (props: Props) => {
     `,
     organizationRef
   )
+
   const showInput = selectedReasons.includes('Moving to another tool (please specify)')
   const {onError, onCompleted} = useMutationProps()
   const {id: orgId} = organization ?? {}
@@ -189,7 +183,7 @@ const DowngradeModal = (props: Props) => {
     closeModal()
   }
 
-  const handleCheck = (reason: Reason) => {
+  const handleCheck = (reason: ReadableReasonToDowngradeEnum) => {
     const isSelected = selectedReasons.includes(reason)
     if (isSelected) {
       const filteredReasons = selectedReasons.filter((selectedReason) => selectedReason !== reason)
@@ -206,11 +200,8 @@ const DowngradeModal = (props: Props) => {
       return
     }
     closeModal()
-    DowngradeToStarterMutation(
-      atmosphere,
-      {orgId, reasonsForLeaving: selectedReasons},
-      {onError, onCompleted}
-    )
+    const reasonsForLeaving = selectedReasons.map((reason) => reasonsToDowngradeLookup[reason])
+    DowngradeToStarterMutation(atmosphere, {orgId, reasonsForLeaving}, {onError, onCompleted})
   }
 
   return (
@@ -223,7 +214,7 @@ const DowngradeModal = (props: Props) => {
         <>
           <Description>Why did you choose to go? Choose all that apply</Description>
           <StyledDialogContent>
-            {reasonsToLeave.map((reason) => (
+            {readableReasonsToDowngrade.map((reason) => (
               <ButtonRow key={reason} onClick={() => handleCheck(reason)}>
                 <StyledCheckbox checked={selectedReasons.includes(reason)} />
                 <Label>{reason}</Label>

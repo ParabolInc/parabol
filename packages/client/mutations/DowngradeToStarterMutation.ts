@@ -12,7 +12,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DowngradeToStarterMutation($orgId: ID!, $reasonsForLeaving: [String!]) {
+  mutation DowngradeToStarterMutation($orgId: ID!, $reasonsForLeaving: [ReasonToDowngradeEnum!]) {
     downgradeToStarter(orgId: $orgId, reasonsForLeaving: $reasonsForLeaving) {
       error {
         message

@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
@@ -6,9 +6,11 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
-import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
 import {analytics} from '../../utils/analytics/analytics'
 import sendToSentry from '../../utils/sendToSentry'
+import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
+import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
 
 export default {
   type: DowngradeToStarterPayload,
@@ -19,13 +21,13 @@ export default {
       description: 'the org requesting the upgrade'
     },
     reasonsForLeaving: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(ReasonToDowngradeEnum),
       description: 'the reasons the user is leaving'
     }
   },
   async resolve(
     _source: unknown,
-    {orgId, reasonsForLeaving}: {orgId: string; reasonsForLeaving?: string[]},
+    {orgId, reasonsForLeaving}: {orgId: string; reasonsForLeaving?: TReasonToDowngradeEnum[]},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

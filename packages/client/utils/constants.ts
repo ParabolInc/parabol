@@ -6,6 +6,8 @@
  - Is the variable a string? Create a string union & pass in a plain string to get type safety
 */
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
+import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
 
 /**
  * Big stuff:
@@ -166,3 +168,19 @@ export const TeamBenefits = [
   'Unlimited meeting history',
   'Priority customer support'
 ]
+
+export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [
+  'Parabol is too expensive',
+  'Budget changes',
+  'Missing key features',
+  `Not using Parabol's paid features`,
+  'Moving to another tool (please specify)'
+]
+
+export const reasonsToDowngradeLookup = {
+  'Parabol is too expensive': 'tooExpensive',
+  'Budget changes': 'budgetChanges',
+  'Missing key features': 'missingKeyFeatures',
+  "Not using Parabol's paid features": 'notUsingPaidFeatures',
+  'Moving to another tool (please specify)': 'anotherTool'
+} as Record<ReadableReasonToDowngradeEnum, ReasonToDowngradeEnum>
