@@ -11,6 +11,7 @@ import sendToSentry from '../../utils/sendToSentry'
 import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
 import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
+import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 
 export default {
   type: DowngradeToStarterPayload,
@@ -60,15 +61,11 @@ export default {
 
     // RESOLUTION
     if (!isSuperUser) {
-      const [organizationUsers, organization] = await Promise.all([
-        dataLoader.get('organizationUsersByOrgId').load(orgId),
+      const [billingLeaders, organization] = await Promise.all([
+        getBillingLeadersByOrgId(orgId, dataLoader),
         dataLoader.get('organizations').load(orgId)
       ])
-      const billingLeaderUserId = organizationUsers
-        .filter((organizationUser) => organizationUser.role === 'BILLING_LEADER')
-        .find(({userId}) => userId)!.id
-      const billingLeaderUser = await dataLoader.get('users').load(billingLeaderUserId)
-      if (!billingLeaderUser) {
+      if (!billingLeaders[0]) {
         const error = new Error('Unable to find billing leader')
         sendToSentry(error, {userId: viewerId})
         return
@@ -77,7 +74,7 @@ export default {
         orgId,
         oldTier: tier,
         newTier: 'starter',
-        billingLeaderEmail: billingLeaderUser.email,
+        billingLeaderEmail: billingLeaders[0].email,
         orgName: organization.name,
         reasonsForLeaving,
         otherTool
