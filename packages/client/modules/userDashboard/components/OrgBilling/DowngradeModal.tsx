@@ -124,6 +124,7 @@ const StyledCheckbox = styled(Checkbox)({
 const StyledInput = styled('textarea')({
   background: PALETTE.SLATE_200,
   border: `1px solid ${PALETTE.SLATE_400}`,
+  borderRadius: 4,
   color: PALETTE.SLATE_800,
   fontSize: 16,
   font: 'inherit',
