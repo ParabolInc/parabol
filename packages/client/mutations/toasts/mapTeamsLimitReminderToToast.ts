@@ -24,6 +24,7 @@ const mapTeamsLimitReminderToToast = (
 
   return {
     autoDismiss: 0,
+    showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
     message: `"${orgName}" is over the limit of ${
       Threshold.MAX_STARTER_TIER_TEAMS
