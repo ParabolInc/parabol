@@ -115,10 +115,8 @@ const Billing = () => {
     theme: 'stripe',
     rules: {
       '.Input': {
-        background: PALETTE.SLATE_200,
         border: 'none',
-        borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-        color: PALETTE.SLATE_800
+        borderBottom: `1px solid ${PALETTE.SLATE_400}`
       }
     },
     variables: {
