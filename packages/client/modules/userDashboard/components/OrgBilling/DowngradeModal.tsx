@@ -203,7 +203,6 @@ const DowngradeModal = (props: Props) => {
     closeModal()
     const reasonsForLeaving = selectedReasons.map((reason) => reasonsToDowngradeLookup[reason])
     const variables = otherTool ? {otherTool, orgId, reasonsForLeaving} : {orgId, reasonsForLeaving}
-    console.log('🚀 ~ variables:', variables)
     DowngradeToStarterMutation(atmosphere, variables, {onError, onCompleted})
   }
 

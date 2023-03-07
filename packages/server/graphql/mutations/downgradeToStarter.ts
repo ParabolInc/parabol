@@ -28,7 +28,7 @@ export default {
     otherTool: {
       type: GraphQLString,
       description:
-        'the name of the tool they are moving to. only required if anotherTool is selected'
+        'the name of the tool they are moving to. only required if anotherTool is selected as a reason to downgrade'
     }
   },
   async resolve(
@@ -60,7 +60,7 @@ export default {
     }
 
     // RESOLUTION
-    if (!isSuperUser) {
+    if (!isSuperUser(authToken)) {
       const [billingLeaders, organization] = await Promise.all([
         getBillingLeadersByOrgId(orgId, dataLoader),
         dataLoader.get('organizations').load(orgId)
