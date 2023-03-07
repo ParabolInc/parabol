@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.94.0 2023-Mar-03
+
+### Fixed
+- align search bar with meeting cards (#7819) 
+
+### Added
+- **checkout-flow**: plans UI (#7793) 
+- **checkout-flow**: plans functionality (#7799) 
+- Add additional retrospective template illustrations (#7849) 
+
+### Changed
+- Added Tailwind CSS (#7597) 
+- add css extract (#7808) 
+- **retros-in-disguise**: Added retros in disguise feature flag and empty route (#7807)
+- **docker**: Redis and RethinkDB dataversions fixed for the development environment. (#7810)
+- **docker-compose**: RethinkDB fixed to v2.4.2
+- **relay**: Fix convertToUseFragment bug (#7839)
+- **relay**: createFragmentContainer -> useFragment 2/N (#7841)
+- **relay**: createFragmentContainer -> useFragment 1/N (#7840)
+- **github**: Don't auto-assign at-mentioned users (#7846) 
+- Added a tailwind preset file (#7809) 
+- **relay**: createFragmentContainer -> useFragment 3/N (#7842)
+- **relay**: createFragmentContainer -> useFragment 4/N (#7844)
+- **relay**: createFragmentContainer -> useFragment 5/N (#7845)
+
 ## 6.93.0 2023-Feb-22
 
 ### Fixed
