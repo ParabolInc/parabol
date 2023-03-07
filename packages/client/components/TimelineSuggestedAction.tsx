@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ValueOf} from '../types/generics'
-import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
+import {TimelineSuggestedAction_viewer$key} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import DelayUnmount from './DelayUnmount'
 
 interface Props {
-  viewer: TimelineSuggestedAction_viewer
+  viewer: TimelineSuggestedAction_viewer$key
 }
 
 const lookup = {
@@ -45,7 +45,17 @@ const Wrapper = styled('div')({
 })
 
 function TimelineSuggestedAction(props: Props) {
-  const {viewer} = props
+  const {viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment TimelineSuggestedAction_viewer on User {
+        suggestedActions {
+          ...TimelineSuggestedAction_suggestedAction @relay(mask: false)
+        }
+      }
+    `,
+    viewerRef
+  )
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions
   let AsyncComponent: ValueOf<typeof lookup> | undefined
@@ -74,12 +84,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(TimelineSuggestedAction, {
-  viewer: graphql`
-    fragment TimelineSuggestedAction_viewer on User {
-      suggestedActions {
-        ...TimelineSuggestedAction_suggestedAction @relay(mask: false)
-      }
-    }
-  `
-})
+export default TimelineSuggestedAction
