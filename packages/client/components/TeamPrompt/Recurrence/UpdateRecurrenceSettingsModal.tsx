@@ -180,7 +180,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         <CloseIcon />
       </StyledCloseButton>
       <ActionsContainer>
-        {recurrenceRuleString && (
+        {isMeetingSeriesActive && (
           <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
         )}
         <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!canUpdate}>
