@@ -412,7 +412,7 @@ workflows:
                 - staging
       - staging_postgresql_restore:
           requires:
-            - approve-for-staging-postgresql-backup
+            - approve-for-staging-postgresql-restore
           filters:
             branches:
               only:
