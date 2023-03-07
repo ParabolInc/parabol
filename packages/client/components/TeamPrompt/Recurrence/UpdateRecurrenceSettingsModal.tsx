@@ -50,17 +50,17 @@ const ActionButton = styled(PlainButton)({
   borderRadius: 32
 })
 
-const UpdateButton = styled(ActionButton)<{disabled: boolean}>(({disabled}) => ({
+const UpdateButton = styled(ActionButton)({
   backgroundColor: PALETTE.SKY_500,
   color: PALETTE.WHITE,
   '&:hover': {
-    backgroundColor: disabled ? undefined : PALETTE.SKY_600
+    backgroundColor: PALETTE.SKY_600
   },
   ':focus, :focus-visible, :active': {
     outline: `1px solid ${PALETTE.SKY_600}`,
     outlineOffset: 1
   }
-}))
+})
 
 const StopButton = styled(ActionButton)({
   color: PALETTE.SKY_500,
