@@ -28,7 +28,8 @@ jobs:
           name: Backup
           no_output_timeout: 55m
           command: |
-            . $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
+            ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
+            $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
       - run:
           name: Slack completion
           command: |
@@ -62,7 +63,8 @@ jobs:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            . $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
+            $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
       - run:
           name: Slack completion
           command: |
