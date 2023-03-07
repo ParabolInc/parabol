@@ -19,7 +19,6 @@ const WholeMeetingSummary = (props: Props) => {
           __typename
           id
           summary
-          sentimentScore
           reflectionGroups(sortBy: voteCount) {
             summary
           }
@@ -39,12 +38,12 @@ const WholeMeetingSummary = (props: Props) => {
     meetingRef
   )
   if (meeting.__typename !== 'RetrospectiveMeeting') return null
-  const {summary: wholeMeetingSummary, sentimentScore, reflectionGroups, phases} = meeting
+  const {summary: wholeMeetingSummary, reflectionGroups, phases} = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
   const {stages} = discussPhase ?? {}
   const hasTopicSummary = reflectionGroups.some((group) => group.summary)
   const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
-  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary || sentimentScore
+  const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
   if (!hasOpenAISummary) return null
   if (hasOpenAISummary && !wholeMeetingSummary) return <WholeMeetingSummaryLoading />
   return <WholeMeetingSummaryResult meetingRef={meeting} />
