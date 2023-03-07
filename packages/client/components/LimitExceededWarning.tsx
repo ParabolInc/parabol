@@ -2,25 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import useModal from '../hooks/useModal'
-import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
-import {InsightsDomainNudge_domain$key} from '../__generated__/InsightsDomainNudge_domain.graphql'
-import PrimaryButton from './PrimaryButton'
-
-const NudgeBlock = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  flexDirection: 'column',
-  borderTop: `1px solid ${PALETTE.SLATE_400}`,
-  padding: 16,
-  width: '100%'
-})
+import {LimitExceededWarning_organization$key} from '../__generated__/LimitExceededWarning_organization.graphql'
 
 const WarningMsg = styled('div')({
   background: PALETTE.GOLD_100,
@@ -46,18 +31,8 @@ const OverLimitBlock = styled('div')({
   flexWrap: 'wrap'
 })
 
-const CTA = styled(PrimaryButton)({
-  lineHeight: '24px',
-  padding: '8px 32px',
-  width: 'fit-content'
-})
-
-const ButtonBlock = styled('div')({
-  paddingTop: 16
-})
-
 interface Props {
-  organizationRef: any // InsightsDomainNudge_domain$key
+  organizationRef: LimitExceededWarning_organization$key
   domainId?: string
 }
 
