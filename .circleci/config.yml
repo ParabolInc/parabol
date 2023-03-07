@@ -1,16 +1,15 @@
 version: 2.0
 jobs:
-  backup:
+  production_postgresql_backup:
     docker:
       - image: cimg/node:18.13.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
       PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
-      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
-      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
     working_directory: ~/action
-    resource_class: large
+    resource_class: medium
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -18,12 +17,70 @@ jobs:
       - run:
           name: Slack setup
           command: |
-            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` Backing up..."}' $SLACK_DEVOPS_URL
-      - checkout
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Production` PostgreSQL backup..."}' $SLACK_DEVOPS_URL
       - run:
           name: DevOps checkout
           command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
+      - run:
+          name: Backup
+          no_output_timeout: 55m
+          command: |
+            . $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
+      - run:
+          name: Slack completion
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` PostgreSQL backup pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
+  staging_postgresql_restore:
+    docker:
+      - image: cimg/node:18.13.0
+    environment:
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO_TAG: "v0.2.0"
+      DEVOPS_WORKDIR: "~/action-devops"
+      STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
+      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
+    working_directory: ~/action
+    resource_class: medium
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+      - run:
+          name: Slack setup
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Staging` PostgreSQL wipe out and restore..."}' $SLACK_DEVOPS_URL
+      - run:
+          name: DevOps checkout
+          command: |
+            git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
+      - run:
+          name: Restore to Staging
+          no_output_timeout: 55m
+          command: |
+            . $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
+      - run:
+          name: Slack completion
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` PostgreSQL data restoration pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
+  production_rethinkdb_backup:
+    docker:
+      - image: cimg/node:18.13.0
+    environment:
+      DEVOPS_WORKDIR: "~/action-devops"
+      PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
+      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
+      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
+    working_directory: ~/action
+    resource_class: medium
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+      - run:
+          name: Slack setup
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Production` RethinkDB back up..."}' $SLACK_DEVOPS_URL
       - run:
           name: Backup
           no_output_timeout: 55m
@@ -31,11 +88,44 @@ jobs:
             ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
             $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
               -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}" \
-              -b "${S3_DB_BACKUPS_BUCKET}" -p "${CIRCLE_BRANCH}"
+              -b "${S3_DB_BACKUPS_BUCKET}" -p production
       - run:
           name: Slack completion
           command: |
-            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` Backup done"}' $SLACK_DEVOPS_URL
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` RethinkDB backup done"}' $SLACK_DEVOPS_URL
+  staging_rethinkdb_restore:
+    docker:
+      - image: cimg/node:18.13.0
+    environment:
+      DEVOPS_WORKDIR: "~/action-devops"
+      STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
+      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
+    working_directory: ~/action
+    resource_class: medium
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+      - run:
+          name: Slack setup
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Staging` RethinkDB wipe out and restore..."}' $SLACK_DEVOPS_URL
+      - run:
+          name: Fetch last Production backup
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
+            mkdir -p /tmp/rdb-tmp-backups/ && rm -rf /tmp/rdb-tmp-backups/last_backup.tar.gz && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz
+      - run:
+          name: Restore to Staging
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
+            mkdir -p /tmp/rdb-tmp-backups/ && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s root@${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -rf /tmp/rdb-tmp-backups/last_backup.tar.gz
+      - run:
+          name: Slack completion
+          command: |
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` RethinkDB data restoration done."}' $SLACK_DEVOPS_URL
   build:
     docker:
       - image: cimg/node:18.13.0
@@ -94,7 +184,7 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            git clone --depth 1 $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Build Databases
           # Use the test env so the ports match up (NODE_ENV=testing)
@@ -240,40 +330,109 @@ jobs:
 
 workflows:
   version: 2
-  build-and-deploy:
+  ################################################################
+  # Default pipeline for all branches but staging and production #
+  ################################################################
+  01_build-and-deploy:
     jobs:
       - build:
           filters:
             branches:
               ignore:
                 - production
-  production-build-and-deploy:
+                - staging
+
+  ############################################
+  # Main pipeline for Staging and Production #
+  ############################################
+  #
+  # Step 1 - RethinkDB backup. Not mandatory and controlled by a manual approval.
+  01_rethinkdb-1-backup:
     jobs:
-      - approve-for-deploy:
+      - approve-for-production-rethinkdb-backup:
           type: approval
           filters:
             branches:
               only:
                 - production
+                - staging
+      - production_rethinkdb_backup:
+          requires:
+            - approve-for-production-rethinkdb-backup
+          filters:
+            branches:
+              only:
+                - production
+                - staging
+  #
+  # Step 1 - Second sub-step, optional and only for Staging, to wipe the current database and restore it to the production data. Controlled by a manual approval.
+  01_rethinkdb-2-restore:
+    jobs:
+      - approve-for-staging-rethinkdb-restore:
+          type: approval
+          filters:
+            branches:
+              only:
+                - staging
+      - staging_rethinkdb_restore:
+          requires:
+            - approve-for-staging-rethinkdb-restore
+          filters:
+            branches:
+              only:
+                - staging
+  #
+  # Step 2 - TODO - PostgreSQL backups. Not mandatory and controlled by a manual approval.
+  02_postgresql-1-backup:
+    jobs:
+      - approve-for-production-postgresql-backup:
+          type: approval
+          filters:
+            branches:
+              only:
+                - production
+                - staging
+      - production_postgresql_backup:
+          requires:
+            - approve-for-production-postgresql-backup
+          filters:
+            branches:
+              only:
+                - production
+                - staging
+  #
+  # Step 2 - Second sub-step, optional and only for Staging, to wipe the current database and restore it to the production data. Controlled by a manual approval.
+  02_postgresql-2-restore:
+    jobs:
+      - approve-for-staging-postgresql-restore:
+          type: approval
+          filters:
+            branches:
+              only:
+                - staging
+      - staging_postgresql_restore:
+          requires:
+            - approve-for-staging-postgresql-backup
+          filters:
+            branches:
+              only:
+                - staging
+  #
+  # Step 3 - Deployment. Last stage of the process, only for Production and Staging. It builds and deploys
+  03_build-and-deploy:
+    jobs:
+      - approve-for-build-and-deploy:
+          type: approval
+          filters:
+            branches:
+              only:
+                - production
+                - staging
       - build:
           requires:
-            - approve-for-deploy
+            - approve-for-build-and-deploy
           filters:
             branches:
               only:
                 - production
-  backup:
-    jobs:
-      - approve-for-backup:
-          type: approval
-          filters:
-            branches:
-              only:
-                - production
-      - backup:
-          requires:
-            - approve-for-backup
-          filters:
-            branches:
-              only:
-                - production
+                - staging
