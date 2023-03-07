@@ -114,6 +114,13 @@ const InsightsDomainNudge = (props: Props) => {
     }
   }
   const {togglePortal, closePortal, modalPortal} = useModal()
+
+  const scheduledLockAt = toBeLockedOrg?.scheduledLockAt
+
+  const isLocked = scheduledLockAt
+    ? new Date(scheduledLockAt).getTime() <= new Date().getTime()
+    : false
+
   return (
     <>
       {modalPortal(
@@ -132,12 +139,13 @@ const InsightsDomainNudge = (props: Props) => {
               <BoldText>{domainId}</BoldText>
               {` is over the limit of `}
               <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams`}</BoldText>
-              {toBeLockedOrg?.scheduledLockAt && (
+              {scheduledLockAt && !isLocked && (
                 <>
                   {`. Your free access will end in `}
-                  <BoldText>{`${relativeDate(toBeLockedOrg?.scheduledLockAt)}.`}</BoldText>
+                  <BoldText>{`${relativeDate(scheduledLockAt)}.`}</BoldText>
                 </>
               )}
+              {isLocked && `. Please upgrade to continue using Parabol.`}
             </WarningMsg>
           </OverLimitBlock>
           <ButtonBlock>
