@@ -11,6 +11,8 @@ jobs:
     working_directory: ~/action
     resource_class: medium
     steps:
+      - setup_remote_docker:
+          version: 20.10.14
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -28,7 +30,6 @@ jobs:
           name: Backup
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
             $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
       - run:
           name: Slack completion
@@ -46,6 +47,8 @@ jobs:
     working_directory: ~/action
     resource_class: medium
     steps:
+      - setup_remote_docker:
+          version: 20.10.14
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -63,7 +66,6 @@ jobs:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
             $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
       - run:
           name: Slack completion
