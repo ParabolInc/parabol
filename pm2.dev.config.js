@@ -46,9 +46,13 @@ module.exports = {
     //   // watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
     // },
     {
+      name: 'Relay query persistor',
+      script: 'yarn relay:persist',
+      watch: ['relayLocalPersist.js']
+    },
+    {
       name: 'Relay Compiler',
-      script: 'yarn relay-compiler',
-      args: '--watch',
+      script: 'yarn relay-compiler --watch',
       watch: [
         'packages/server/graphql/public/schema.graphql',
         'packages/client/clientSchema.graphql'
