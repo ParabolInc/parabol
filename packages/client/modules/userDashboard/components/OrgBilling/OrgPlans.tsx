@@ -3,7 +3,6 @@ import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -11,7 +10,7 @@ import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
-import {ElementWidth, Threshold} from '../../../../types/constEnums'
+import {ElementWidth, Radius, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
 import useModal from '../../../../hooks/useModal'
@@ -19,6 +18,7 @@ import DowngradeModal from './DowngradeModal'
 import {TeamBenefits} from '../../../../utils/constants'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import BaseButton from '../../../../components/BaseButton'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -133,13 +133,15 @@ const ButtonBlock = styled('div')({
   position: 'relative'
 })
 
-const UpgradeButton = styled(FlatPrimaryButton)<{
+const CTAButton = styled(BaseButton)<{
   buttonStyle: 'disabled' | 'primary' | 'secondary'
 }>(({buttonStyle}) => ({
   width: '80%',
   boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
   position: 'absolute',
   bottom: 0,
+  fontWeight: 600,
+  borderRadius: Radius.BUTTON_PILL,
   background:
     buttonStyle === 'primary'
       ? PALETTE.GRADIENT_TOMATO_600_ROSE_500
@@ -290,15 +292,13 @@ const OrgPlans = (props: Props) => {
                 </UL>
               </Content>
               <ButtonBlock>
-                {plan.buttonStyle && (
-                  <UpgradeButton
-                    onClick={() => handleClick(plan.buttonLabel)}
-                    buttonStyle={plan.buttonStyle}
-                    size='medium'
-                  >
-                    {plan.buttonLabel}
-                  </UpgradeButton>
-                )}
+                <CTAButton
+                  onClick={() => handleClick(plan.buttonLabel)}
+                  buttonStyle={plan.buttonStyle}
+                  size='medium'
+                >
+                  {plan.buttonLabel}
+                </CTAButton>
               </ButtonBlock>
             </Plan>
           ))}

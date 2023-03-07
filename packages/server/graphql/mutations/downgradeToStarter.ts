@@ -6,12 +6,9 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
-import {analytics} from '../../utils/analytics/analytics'
-import sendToSentry from '../../utils/sendToSentry'
 import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
-import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
-import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 
 export default {
   type: DowngradeToStarterPayload,
@@ -53,6 +50,10 @@ export default {
     }
 
     // VALIDATION
+    if (otherTool && otherTool?.length > 100) {
+      return standardError(new Error('Other tool name is too long'), {userId: viewerId})
+    }
+
     const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId).run()
 
     if (tier === 'starter') {
@@ -60,28 +61,14 @@ export default {
     }
 
     // RESOLUTION
-    if (!isSuperUser(authToken)) {
-      const [billingLeaders, organization] = await Promise.all([
-        getBillingLeadersByOrgId(orgId, dataLoader),
-        dataLoader.get('organizations').load(orgId)
-      ])
-      if (!billingLeaders[0]) {
-        const error = new Error('Unable to find billing leader')
-        sendToSentry(error, {userId: viewerId})
-        return
-      }
-      analytics.organizationDowngraded(viewerId, {
-        orgId,
-        oldTier: tier,
-        newTier: 'starter',
-        billingLeaderEmail: billingLeaders[0].email,
-        orgName: organization.name,
-        reasonsForLeaving,
-        otherTool
-      })
-    }
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    await resolveDowngradeToStarter(orgId, stripeSubscriptionId!, viewerId)
+    await resolveDowngradeToStarter(
+      orgId,
+      stripeSubscriptionId!,
+      viewerId,
+      reasonsForLeaving,
+      otherTool
+    )
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const data = {orgId, teamIds}

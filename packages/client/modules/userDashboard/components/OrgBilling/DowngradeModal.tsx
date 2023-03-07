@@ -202,7 +202,10 @@ const DowngradeModal = (props: Props) => {
     }
     closeModal()
     const reasonsForLeaving = selectedReasons.map((reason) => reasonsToDowngradeLookup[reason])
-    const variables = otherTool ? {otherTool, orgId, reasonsForLeaving} : {orgId, reasonsForLeaving}
+    const trimmedOtherTool = otherTool?.trim()
+    const variables = trimmedOtherTool
+      ? {otherTool: trimmedOtherTool, orgId, reasonsForLeaving}
+      : {orgId, reasonsForLeaving}
     DowngradeToStarterMutation(atmosphere, variables, {onError, onCompleted})
   }
 
@@ -226,6 +229,8 @@ const DowngradeModal = (props: Props) => {
               <>
                 <StyledInput
                   onChange={(e) => setOtherTool(e.target.value)}
+                  maxLength={100}
+                  name='otherToolInput'
                   placeholder='Please enter the name of the tool'
                   rows={2}
                   value={otherTool ?? ''}
