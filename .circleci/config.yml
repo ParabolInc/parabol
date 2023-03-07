@@ -5,6 +5,7 @@ jobs:
       - image: cimg/node:18.13.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
       PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
     working_directory: ~/action
@@ -20,7 +21,7 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
           no_output_timeout: 55m
@@ -35,6 +36,7 @@ jobs:
       - image: cimg/node:18.13.0
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
       STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
@@ -51,7 +53,7 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Restore to Staging
           no_output_timeout: 55m
@@ -65,7 +67,6 @@ jobs:
     docker:
       - image: cimg/node:18.13.0
     environment:
-      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
       PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
@@ -96,7 +97,6 @@ jobs:
     docker:
       - image: cimg/node:18.13.0
     environment:
-      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
       STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
@@ -184,7 +184,7 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
-            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            git clone --depth 1 $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Build Databases
           # Use the test env so the ports match up (NODE_ENV=testing)
