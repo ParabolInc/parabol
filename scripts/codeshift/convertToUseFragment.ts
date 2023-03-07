@@ -29,24 +29,26 @@ const transform: Transform = (fileInfo, api, options) => {
 
   const replacementExport = functionExpression.arguments[0]
 
+  let componentName
+  if (replacementExport.type !== 'Identifier') {
+    const replacementComponent = functionExpressions
+      .find(j.CallExpression)
+      .filter((path) => path.value.arguments[0].type === 'Identifier')
+
+    if (replacementComponent.size() !== 1) {
+      throw new Error('trying to convert component with non-trivial HOC wrapping')
+    }
+
+    componentName = replacementComponent.get().value.arguments[0].name
+  } else {
+    componentName = replacementExport.name
+  }
   // Replace the call to 'createFragmentContainer' with just a reference to the component we're
   // wrapping:
   //   createFragmentContainer(MyComponent, {myProp: graphql``})
   // to
   //   MyComponent
   functionExpressions.replaceWith(replacementExport)
-
-  if (replacementExport.type !== 'Identifier') {
-    // We need to get the component idetifier from the HOC call site, so if the export looks like:
-    //   createFragmentContainer(withOtherHoc(Component), {myProp: <fragment>})
-    // It's less trivial to get the identifier.
-    // :TODO: (jmtaber129): Support files that look like this, either by traversing down the tree of
-    // call expressions until we hit the identifier, or by taking in the component name from the
-    // command line or file name.
-    throw new Error('trying to convert component with non-trivial HOC wrapping')
-  }
-
-  const componentName = replacementExport.name
 
   // Build a map of propName -> graphql fragment.
   const fragmentProps = functionExpression.arguments[1]
@@ -62,7 +64,12 @@ const transform: Transform = (fileInfo, api, options) => {
   })
 
   // Find the declaration of the component we're changing
-  const componentDeclaration = root.find(j.VariableDeclarator, {id: {name: componentName}})
+  const componentVarDeclaration = root.find(j.VariableDeclarator, {id: {name: componentName}})
+  const componentDeclaration =
+    componentVarDeclaration.size() === 1
+      ? componentVarDeclaration
+      : root.find(j.FunctionDeclaration, {id: {name: componentName}})
+
   if (componentDeclaration.size() !== 1) {
     throw new Error("can't find component!")
   }
