@@ -154,15 +154,41 @@ const transform: Transform = (fileInfo, api, options) => {
       .forEach((p) => {
         if (
           p.value.typeAnnotation?.type !== 'TSTypeAnnotation' ||
-          p.value.typeAnnotation.typeAnnotation.type !== 'TSTypeReference' ||
-          p.value.typeAnnotation.typeAnnotation.typeName.type !== 'Identifier'
+          !(
+            // Must either look like:
+            // myProp: myPropType_foo
+            // or
+            // myProp: myPropType_foo | null
+            (
+              (p.value.typeAnnotation.typeAnnotation.type === 'TSTypeReference' &&
+                p.value.typeAnnotation.typeAnnotation.typeName.type === 'Identifier') ||
+              (p.value.typeAnnotation.typeAnnotation.type === 'TSUnionType' &&
+                p.value.typeAnnotation.typeAnnotation.types[0].type === 'TSTypeReference' &&
+                p.value.typeAnnotation.typeAnnotation.types[0].typeName.type === 'Identifier' &&
+                p.value.typeAnnotation.typeAnnotation.types[1].type === 'TSNullKeyword')
+            )
+          )
         ) {
           throw new Error(
             `invalid type for prop: ${(p.value.key as any).name}, ${p.value.initializer?.type}`
           )
         }
 
-        const name = p.value.typeAnnotation.typeAnnotation.typeName.name
+        let name
+
+        if (
+          p.value.typeAnnotation.typeAnnotation.type === 'TSTypeReference' &&
+          p.value.typeAnnotation.typeAnnotation.typeName.type === 'Identifier'
+        ) {
+          name = p.value.typeAnnotation.typeAnnotation.typeName.name
+        } else if (
+          p.value.typeAnnotation.typeAnnotation.type === 'TSUnionType' &&
+          p.value.typeAnnotation.typeAnnotation.types[0].type === 'TSTypeReference' &&
+          p.value.typeAnnotation.typeAnnotation.types[0].typeName.type === 'Identifier' &&
+          p.value.typeAnnotation.typeAnnotation.types[1].type === 'TSNullKeyword'
+        ) {
+          name = p.value.typeAnnotation.typeAnnotation.types[0].typeName.name
+        }
 
         // Rename all identifiers with this name to also update the import.
         root.find(j.Identifier, {name}).replaceWith(j.identifier(name + '$key'))
