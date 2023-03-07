@@ -12,6 +12,7 @@ import {Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
 import {InsightsDomainNudge_domain$key} from '../__generated__/InsightsDomainNudge_domain.graphql'
 import PrimaryButton from './PrimaryButton'
+import LimitExceededWarning from './LimitExceededWarning'
 
 const NudgeBlock = styled('div')({
   display: 'flex',
@@ -69,6 +70,7 @@ const InsightsDomainNudge = (props: Props) => {
         suggestedTier
         tier
         viewerOrganizations {
+          ...LimitExceededWarning_organization
           id
           name
           scheduledLockAt
@@ -134,7 +136,8 @@ const InsightsDomainNudge = (props: Props) => {
       )}
       {showNudge && (
         <NudgeBlock>
-          <OverLimitBlock>
+          <LimitExceededWarning organizationRef={biggestOrganization} domainId={domainId} />
+          {/* <OverLimitBlock>
             <WarningMsg>
               <BoldText>{domainId}</BoldText>
               {` is over the limit of `}
@@ -147,7 +150,7 @@ const InsightsDomainNudge = (props: Props) => {
               )}
               {isLocked && `. Please upgrade to continue using Parabol.`}
             </WarningMsg>
-          </OverLimitBlock>
+          </OverLimitBlock> */}
           <ButtonBlock>
             <CTA size={'large'} onClick={onClickCTA}>
               {CTACopy}

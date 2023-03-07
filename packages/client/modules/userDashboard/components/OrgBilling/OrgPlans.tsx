@@ -14,6 +14,7 @@ import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_orga
 import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
+import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -189,6 +190,7 @@ const OrgPlans = (props: Props) => {
     graphql`
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
+        ...LimitExceededWarning_organization
         tier
       }
     `,
@@ -245,6 +247,7 @@ const OrgPlans = (props: Props) => {
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
+        <LimitExceededWarning organizationRef={organization} />
         <OrgStats organizationRef={organization} />
       </StyledRow>
       <StyledRow>
