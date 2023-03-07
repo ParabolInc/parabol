@@ -145,7 +145,7 @@ const InsightsDomainNudge = (props: Props) => {
                   <BoldText>{`${relativeDate(scheduledLockAt)}.`}</BoldText>
                 </>
               )}
-              {isLocked && `. Please upgrade to continue using Parabol`}
+              {isLocked && `. Please upgrade to continue using Parabol.`}
             </WarningMsg>
           </OverLimitBlock>
           <ButtonBlock>
