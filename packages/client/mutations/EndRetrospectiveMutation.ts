@@ -16,7 +16,6 @@ import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__genera
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
-import sendToSentry from '../../server/utils/sendToSentry'
 
 graphql`
   fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
@@ -30,11 +29,7 @@ graphql`
       taskCount
       topicCount
       reflectionGroups(sortBy: voteCount) {
-        id
         summary
-        reflections {
-          id
-        }
       }
       phases {
         phaseType
@@ -118,18 +113,6 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       const hasTopicSummary = reflectionGroups.some((group) => group.summary)
       const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
       const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
-      const groupsWithMissingTopicSummaries =
-        hasTopicSummary &&
-        reflectionGroups.filter((group) => group.reflections.length > 1 && !group.summary)
-      if (groupsWithMissingTopicSummaries && groupsWithMissingTopicSummaries.length) {
-        const {viewerId} = atmosphere
-        const error = new Error('Missing AI topic summary')
-        const missingGroupIds = groupsWithMissingTopicSummaries.map((group) => group.id).join(', ')
-        sendToSentry(error, {
-          userId: viewerId,
-          tags: {missingGroupIds, meetingId}
-        })
-      }
       const pathname = `/new-summary/${meetingId}`
       const search = hasOpenAISummary ? '?ai=true' : ''
       history.push({
