@@ -12,7 +12,7 @@ const generateGroupSummaries = async (
 ) => {
   const [facilitator, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
-    dataLoader.get('teams').load(teamId)
+    dataLoader.get('teams').loadNonNull(teamId)
   ])
   if (!canAccessAISummary(team, facilitator.featureFlags)) return
   const [reflections, reflectionGroups] = await Promise.all([
