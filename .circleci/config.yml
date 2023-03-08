@@ -138,22 +138,22 @@ jobs:
           name: Assure folder for temporary backups exists
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c 'mkdir -p /tmp/rdb-tmp-backups/'
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"mkdir -p /tmp/rdb-tmp-backups/\"
       - run:
           name: Clean up previous backups
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c 'rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz'
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz\"
       - run:
           name: Fetch last Production backup
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c '$DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz'
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"$DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz\"
       - run:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c '$DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s ${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz'
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"$DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s ${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz\"
       - run:
           name: Slack completion
           command: |
