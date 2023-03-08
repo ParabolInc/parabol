@@ -131,7 +131,6 @@ import updateUserProfile from './mutations/updateUserProfile'
 import upgradeToTeamTier from './mutations/upgradeToTeamTier'
 import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
-import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -252,7 +251,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       upgradeToTeamTier,
       uploadOrgImage,
       uploadUserImage,
-      verifyEmail,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,

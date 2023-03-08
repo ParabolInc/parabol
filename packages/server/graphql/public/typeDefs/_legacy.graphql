@@ -7918,8 +7918,8 @@ type Mutation {
     """
     The 48-byte url-safe base64 encoded verification token
     """
-    verificationToken: ID
-  ): VerifyEmailPayload!
+    verificationToken: ID!
+  ): UserLogInPayload!
 
   """
   Cast your vote for a reflection group
@@ -10034,17 +10034,6 @@ type UpgradeToTeamTierPayload {
 }
 
 scalar File
-
-type VerifyEmailPayload {
-  error: StandardMutationError
-
-  """
-  The new auth token sent to the mutator
-  """
-  authToken: ID
-  userId: ID
-  user: User
-}
 
 type VoteForReflectionGroupPayload {
   error: StandardMutationError
