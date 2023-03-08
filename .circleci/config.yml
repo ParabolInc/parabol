@@ -135,17 +135,29 @@ jobs:
             echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
+          name: Assure folder for temporary backups exists
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
+            mkdir -p /tmp/rdb-tmp-backups/
+      - run:
+          name: Clean up previous backups
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
+            rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz
+      - run:
           name: Fetch last Production backup
           no_output_timeout: 55m
           command: |
             ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            "mkdir -p /tmp/rdb-tmp-backups/ && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz"
+            $DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz
       - run:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
             ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            mkdir -p /tmp/rdb-tmp-backups/ && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s ${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz
+            $DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s ${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz
       - run:
           name: Slack completion
           command: |
