@@ -46,6 +46,7 @@
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "JiraRemoteProject": "../types/JiraRemoteProject#JiraRemoteProjectSource",
           "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
+          "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
           "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "NotificationMeetingStageTimeLimitEnd": "../../database/types/NotificationMeetingStageTimeLimitEnd#default as NotificationMeetingStageTimeLimitEndDB",
