@@ -95,7 +95,6 @@ const TeamPromptTopBar = (props: Props) => {
         facilitatorUserId
         meetingSeries {
           id
-          title
           cancelledAt
           recurrenceRule
         }

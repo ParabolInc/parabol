@@ -57,6 +57,7 @@ export default class MeetingTeamPrompt extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'teamPrompt',
+      //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
       name: createTeamPromptTitle(name || 'Standup', new Date(), 'UTC'),
       meetingSeriesId,
       scheduledEndTime
