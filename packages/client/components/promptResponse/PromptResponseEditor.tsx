@@ -107,8 +107,7 @@ const StyledEditor = styled('div')`
     }
   }
 
-  p {
-    padding-inline-start: 16px;
+  .ProseMirror p {
     margin-block-start: 4px;
     margin-block-end: 4px;
   }
