@@ -27,7 +27,7 @@ graphql`
           summary
           descriptionHTML
           projectKey
-          aProject: project {
+          project {
             name
           }
         }

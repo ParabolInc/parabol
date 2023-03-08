@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import fs from 'fs'
 import http, {RequestListener} from 'http'
 import path from 'path'
+import config from './relay.config'
 
 const queryMap = {}
 const makeHash = (text: string) => {
@@ -38,7 +39,7 @@ const requestListener: RequestListener = async (req, res) => {
     return
   }
   const id = makeHash(text)
-  queryMap[id] = text
+  queryMap[id] = text.replace(/\n|\r|\W/g, '')
   fs.writeFileSync(path.join(__dirname, './queryMap.json'), JSON.stringify(queryMap))
   res.writeHead(200, {
     'Content-Type': 'application/json'
@@ -49,3 +50,13 @@ const requestListener: RequestListener = async (req, res) => {
 const PORT = 2999
 const server = http.createServer(requestListener)
 server.listen(PORT)
+
+const {artifactDirectory} = config
+if (!fs.existsSync(artifactDirectory)) {
+  fs.mkdirSync(artifactDirectory)
+}
+
+process.on('SIGTERM', () => {
+  console.log('GOT SIGTERM')
+})
+console.log(`persist server ready on ${PORT}`)

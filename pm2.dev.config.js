@@ -40,11 +40,11 @@ module.exports = {
     //   // once this completes, it will exit
     //   autorestart: false
     // },
-    // {
-    //   name: 'GraphQL Schema Updater'
-    //   // script: 'scripts/runSchemaUpdater.js',
-    //   // watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
-    // },
+    {
+      name: 'GraphQL Schema Updater',
+      script: 'scripts/runSchemaUpdater.js',
+      watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
+    },
     {
       name: 'Relay query persistor',
       script: 'yarn relay:persist',
@@ -52,7 +52,7 @@ module.exports = {
     },
     {
       name: 'Relay Compiler',
-      script: 'yarn relay-compiler --watch',
+      script: '[ -f packages/server/graphql/public/schema.graphql ] && yarn relay-compiler --watch',
       watch: [
         'packages/server/graphql/public/schema.graphql',
         'packages/client/clientSchema.graphql'

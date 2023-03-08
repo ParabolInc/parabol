@@ -6,6 +6,7 @@
 const {promisify} = require('util')
 const pm2 = require('pm2')
 const isRelayCompilerFirstTime = require('./isRelayCompilerFirstTime')
+const config = require('../relay.config')
 
 const notifyOtherPm2Processes = async () => {
   const connect = promisify(pm2.connect.bind(pm2))
@@ -30,17 +31,12 @@ const notifyOtherPm2Processes = async () => {
     })
 }
 
-const compileRelay = async (isWatch) => {
+const compileRelay = async () => {
   const relayConfig = require('relay-config')
   const config = relayConfig.loadConfig()
   const safeConfig = JSON.parse(JSON.stringify(config))
-  if (isWatch) {
-    safeConfig.watch = true
-    safeConfig.watchman = true
-  }
-  // const relayCompilerPath = require('relay-compiler')
-  const relayCompiler = require('relay-compiler/macos-arm64/relay')
-  const isFirstTime = isWatch && isRelayCompilerFirstTime()
+  const relayCompilerPath = require('relay-compiler')
+  const isFirstTime = isRelayCompilerFirstTime()
   try {
     await relayCompiler(safeConfig)
   } catch (e) {
@@ -52,11 +48,6 @@ const compileRelay = async (isWatch) => {
   if (isFirstTime) {
     notifyOtherPm2Processes()
   }
-}
-
-if (require.main === module) {
-  const isWatch = process.argv.find((arg) => arg === '--watch')
-  compileRelay(isWatch)
 }
 
 module.exports = compileRelay

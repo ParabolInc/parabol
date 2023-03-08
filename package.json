@@ -38,7 +38,6 @@
     "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
     "lint": "nx run-many --target=lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
-    "relay": "node scripts/compileRelay.js",
     "typecheck": "nx run-many --target=typecheck",
     "lintcheck": "nx run-many --target=lint:check",
     "stylecheck": "nx run-many --target=prettier:check",
