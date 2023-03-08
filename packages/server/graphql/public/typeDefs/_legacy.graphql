@@ -7624,7 +7624,7 @@ type Mutation {
     used to determine what suggested actions to create
     """
     invitationToken: ID
-  ): SignUpWithPasswordPayload!
+  ): UserLogInPayload!
 
   """
   Broadcast that the viewer started dragging a reflection
@@ -9613,21 +9613,6 @@ type SetSlackNotificationPayload {
 
   """
   The user with updated slack notifications
-  """
-  user: User
-}
-
-type SignUpWithPasswordPayload {
-  error: StandardMutationError
-
-  """
-  The new auth token
-  """
-  authToken: ID
-  userId: ID
-
-  """
-  the newly created user
   """
   user: User
 }

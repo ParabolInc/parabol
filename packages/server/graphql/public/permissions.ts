@@ -33,6 +33,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
+    signUpWithPassword: and(
+      not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
+      rateLimit({perMinute: 50, perHour: 500})
+    ),
     addApprovedOrganizationDomains: or(
       isSuperUser,
       and(isViewerBillingLeader, isOrgTier('enterprise'))

@@ -103,7 +103,6 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
-import signUpWithPassword from './mutations/signUpWithPassword'
 import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
@@ -228,7 +227,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setPhaseFocus,
       setStageTimer,
       setSlackNotification,
-      signUpWithPassword,
       startDraggingReflection,
       startCheckIn,
       startRetrospective,
