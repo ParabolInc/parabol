@@ -116,7 +116,7 @@ jobs:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
-      STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
+      STAGING_BACKUP_LOCATION: "dokku@backups.action-staging.parabol.co"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
     working_directory: ~/action
     resource_class: medium
@@ -145,7 +145,7 @@ jobs:
           no_output_timeout: 55m
           command: |
             ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            mkdir -p /tmp/rdb-tmp-backups/ && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s root@${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz
+            mkdir -p /tmp/rdb-tmp-backups/ && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s ${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz
       - run:
           name: Slack completion
           command: |
