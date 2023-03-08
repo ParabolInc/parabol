@@ -12,7 +12,7 @@ jobs:
     resource_class: medium
     steps:
       - setup_remote_docker:
-          version: 20.10.14
+          version: 20.10.18
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -48,7 +48,7 @@ jobs:
     resource_class: medium
     steps:
       - setup_remote_docker:
-          version: 20.10.14
+          version: 20.10.18
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -121,6 +121,8 @@ jobs:
     working_directory: ~/action
     resource_class: medium
     steps:
+      - setup_remote_docker:
+          version: 20.10.18
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
