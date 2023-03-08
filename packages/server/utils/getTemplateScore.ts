@@ -17,7 +17,8 @@ export const ORG_HOTNESS_FACTOR = 0.8
 export const TEAM_HOTNESS_FACTOR = 0.9
 
 const getAgeScore = (age: number) => {
-  return SATURTION / (1 + Math.exp((Math.log(81) / GROWTH_INTERVAL) * (age - MIDPOINT)))
+  const ageDays = age / 1000 / 60 / 60 / 24
+  return SATURTION / (1 + Math.exp((Math.log(81) / GROWTH_INTERVAL) * (ageDays - MIDPOINT)))
 }
 
 // weightCreatedAt: 0-1, how important is age vs. the number of meetings run

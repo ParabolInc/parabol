@@ -67,36 +67,33 @@ const User: UserResolvers = {
   },
   availableTemplates: async ({id: userId}, {first, after}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const user = (await dataLoader.get('users').load(userId))!
+    const user = await dataLoader.get('users').loadNonNull(userId)
     const teamIds =
       viewerId === userId || isSuperUser(authToken)
         ? user.tms
         : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
 
-    // Get the team templates.
-    const teamTemplates = await dataLoader
-      .get('meetingTemplatesByType')
-      .loadMany([
-        ...teamIds.map((teamId) => ({teamId, meetingType: 'poker' as MeetingTypeEnum})),
-        ...teamIds.map((teamId) => ({teamId, meetingType: 'retrospective' as MeetingTypeEnum}))
-      ])
-    const scoredTeamTemplates = await getScoredTemplates(
-      teamTemplates.filter(isValid).flat(),
-      TEAM_HOTNESS_FACTOR
-    )
-
-    // Get the org templates.
+    // Get the templates in the user's teams + orgs.
     const teams = await dataLoader.get('teams').loadMany(teamIds)
     const orgIds = [...new Set(teams.filter(isValid).map((team) => team.orgId))]
     const orgTemplatesResult = await dataLoader.get('meetingTemplatesByOrgId').loadMany(orgIds)
+
     const organizationTemplates = orgTemplatesResult
       .filter(isValid)
       .flat()
       .filter(
         (template: MeetingTemplate) =>
-          template.scope !== 'TEAM' && !teamIds.includes(template.teamId)
+          template.scope !== 'TEAM' || teamIds.includes(template.teamId)
       )
-    const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, ORG_HOTNESS_FACTOR)
+    const scoredOrgTemplates = await getScoredTemplates(organizationTemplates, TEAM_HOTNESS_FACTOR)
+    scoredOrgTemplates.sort((a, b) => {
+      if (teamIds.includes(a.teamId) && !teamIds.includes(b.teamId)) {
+        return -1
+      } else if (!teamIds.includes(a.teamId) && teamIds.includes(b.teamId)) {
+        return 1
+      }
+      return 0
+    })
 
     // Get the public templates.
     const publicRetroTemplates = await db.read('publicTemplates', 'retrospective')
@@ -108,7 +105,7 @@ const User: UserResolvers = {
       return 0
     })
 
-    const templates = [...scoredTeamTemplates, ...scoredOrgTemplates, ...publicTemplates]
+    const templates = [...scoredOrgTemplates, ...publicTemplates]
 
     return connectionFromTemplateArray(templates, first, after)
   }
