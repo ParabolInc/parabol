@@ -92,6 +92,7 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
+// Stripe's publishable key which can be publically-accessible from the client: https://stripe.com/docs/keys?locale=en-GB#obtain-api-keys
 const stripePromise = loadStripe('pk_test_MNoKbCzQX0lhktuxxI7M14wd')
 
 const Billing = () => {

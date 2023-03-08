@@ -55,6 +55,7 @@ export default class StripeManager {
       amount,
       currency: 'usd',
       automatic_payment_methods: {
+        // TODO: change this when we're handling webhooks for selected payments
         enabled: true
       }
     })
