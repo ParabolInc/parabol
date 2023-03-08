@@ -106,6 +106,12 @@ const StyledEditor = styled('div')`
       cursor: pointer;
     }
   }
+
+  p {
+    padding-inline-start: 16px;
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+  }
 `
 
 interface Props {
