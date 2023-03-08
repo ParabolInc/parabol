@@ -139,7 +139,7 @@ jobs:
           no_output_timeout: 55m
           command: |
             ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            mkdir -p /tmp/rdb-tmp-backups/ && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz
+            "mkdir -p /tmp/rdb-tmp-backups/ && rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz"
       - run:
           name: Restore to Staging
           no_output_timeout: 55m
