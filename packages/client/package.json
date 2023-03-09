@@ -83,6 +83,8 @@
     "@tiptap/react": "^2.0.0-beta.218",
     "@tiptap/starter-kit": "^2.0.0-beta.218",
     "@tiptap/suggestion": "^2.0.0-beta.218",
+    "@stripe/react-stripe-js": "^1.16.5",
+    "@stripe/stripe-js": "^1.47.0",
     "chart.js": "^3.8.0",
     "chartjs-adapter-dayjs-3": "^1.2.3",
     "cleave.js": "^1.6.0",
