@@ -93,33 +93,35 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
-const stripeAppearanceSettings = {
-  theme: 'stripe',
-  rules: {
-    '.Input': {
+const stripeElementOptions = {
+  appearance: {
+    theme: 'stripe',
+    rules: {
+      '.Input': {
+        border: 'none',
+        borderBottom: `1px solid ${PALETTE.SLATE_400}`
+      }
+    },
+    variables: {
+      colorBackground: PALETTE.SLATE_200,
       border: 'none',
-      borderBottom: `1px solid ${PALETTE.SLATE_400}`
+      borderBottom: `1px solid ${PALETTE.SLATE_400}`,
+      color: PALETTE.SLATE_800,
+      fontSize: 16,
+      marginBottom: 16,
+      padding: '12px 16px',
+      outline: 0
     }
-  },
-  variables: {
-    colorBackground: PALETTE.SLATE_200,
-    border: 'none',
-    borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-    color: PALETTE.SLATE_800,
-    fontSize: 16,
-    marginBottom: 16,
-    padding: '12px 16px',
-    outline: 0
-  }
-} as const
-
-const stripeFonts = [
-  {
-    family: 'IBM Plex Sans',
-    src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
-    weight: '400'
-  }
-]
+  } as const,
+  loader: 'never' as const,
+  fonts: [
+    {
+      family: 'IBM Plex Sans',
+      src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
+      weight: '400'
+    }
+  ]
+}
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
@@ -164,9 +166,7 @@ const Billing = () => {
             <Elements
               options={{
                 clientSecret,
-                appearance: stripeAppearanceSettings,
-                loader: 'never' as const,
-                fonts: stripeFonts
+                ...stripeElementOptions
               }}
               stripe={stripePromise}
             >
