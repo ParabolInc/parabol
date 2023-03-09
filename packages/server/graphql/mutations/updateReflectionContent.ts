@@ -12,7 +12,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
-import {getReflectionEntities, getReflectionSentimentScore} from './helpers/getReflectionEntities'
+import getReflectionEntities from './helpers/getReflectionEntities'
+import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
 
 export default {

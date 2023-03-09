@@ -16,7 +16,8 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
-import {getReflectionEntities, getReflectionSentimentScore} from './helpers/getReflectionEntities'
+import getReflectionEntities from './helpers/getReflectionEntities'
+import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 
 export default {
   type: CreateReflectionPayload,
@@ -57,8 +58,10 @@ export default {
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
-    const entities = await getReflectionEntities(plaintextContent)
-    const sentimentScore = await getReflectionSentimentScore(plaintextContent)
+    const [entities, sentimentScore] = await Promise.all([
+      getReflectionEntities(plaintextContent),
+      getReflectionSentimentScore(plaintextContent)
+    ])
     const reflectionGroupId = generateUID()
 
     const reflection = new Reflection({

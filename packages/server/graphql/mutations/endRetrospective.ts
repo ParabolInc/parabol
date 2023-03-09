@@ -28,20 +28,16 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
-  const [reflectionGroups, reflections] = await Promise.all([
+  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    generateWholeMeetingSentimentScore(meetingId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-  const sentimentScore = await generateWholeMeetingSentimentScore(
-    meetingId,
-    facilitatorUserId,
-    dataLoader
-  )
 
   await Promise.all([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
