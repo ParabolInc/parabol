@@ -22,6 +22,11 @@ const updateSubscriptionQuantity = async (
   const {stripeSubscriptionId} = org
   if (!stripeSubscriptionId) return
 
+  // Hold the lock for 5s max and try to acquire the lock for 10s.
+  // If there are lots of changes for the same orgId, then this can result in some of the updates timing out.
+  // Because each locked section reads the lates org user count and the latest stripe subscription quantity, this should not result in a wrong final result.
+  // If we have 50 changes for the given organization and the last update times out after 10s,
+  // this means at least one update ran after the last change to the organization was done and thus read the latest data.
   const redisLock = new RedisLockQueue(`updateSubscriptionQuantity:${orgId}`, 5000)
   try {
     await redisLock.lock(10000)
