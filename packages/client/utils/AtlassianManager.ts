@@ -708,6 +708,7 @@ export default abstract class AtlassianManager {
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
       payload
     )
+    // Temporary added for debugging #7896
     console.log(
       'updateStoryPoints',
       {
