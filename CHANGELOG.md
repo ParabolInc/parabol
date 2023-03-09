@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.95.1 2023-Mar-09
+
+### Fixed
+
+- Handle SSE and socket done checks (#7903)
+
 ## 6.95.0 2023-Mar-07
 
 ### Added
