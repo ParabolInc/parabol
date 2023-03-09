@@ -7198,7 +7198,7 @@ type Mutation {
   """
   Login using an email address and password
   """
-  loginWithPassword(email: ID!, password: String!): LoginWithPasswordPayload!
+  loginWithPassword(email: ID!, password: String!): UserLogInPayload!
 
   """
   Move a template dimension

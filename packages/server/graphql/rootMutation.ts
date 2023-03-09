@@ -49,7 +49,6 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
-import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
@@ -183,7 +182,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       flagReadyToAdvance,
       invalidateSessions,
       inviteToTeam,
-      loginWithPassword,
       movePokerTemplateDimension,
       moveReflectTemplatePrompt,
       moveTeamToOrg,
