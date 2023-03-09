@@ -11,6 +11,8 @@ jobs:
     working_directory: ~/action
     resource_class: medium
     steps:
+      - setup_remote_docker:
+          version: 20.10.18
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -21,12 +23,14 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
+            mkdir -p ~/.ssh
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
           no_output_timeout: 55m
           command: |
-            . $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
+            $DEVOPS_WORKDIR/postgres/postgres-backup.sh -s production
       - run:
           name: Slack completion
           command: |
@@ -43,6 +47,8 @@ jobs:
     working_directory: ~/action
     resource_class: medium
     steps:
+      - setup_remote_docker:
+          version: 20.10.18
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -53,12 +59,14 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
+            mkdir -p ~/.ssh
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
             git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            . $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
+            $DEVOPS_WORKDIR/postgres/postgres-restore.sh -s production -u staging -d parabol-saas -y
       - run:
           name: Slack completion
           command: |
@@ -67,6 +75,8 @@ jobs:
     docker:
       - image: cimg/node:18.14.2
     environment:
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
       PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
@@ -81,6 +91,12 @@ jobs:
           name: Slack setup
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Production` RethinkDB back up..."}' $SLACK_DEVOPS_URL
+      - run:
+          name: DevOps checkout
+          command: |
+            mkdir -p ~/.ssh
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Backup
           no_output_timeout: 55m
@@ -97,8 +113,10 @@ jobs:
     docker:
       - image: cimg/node:18.14.2
     environment:
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO_TAG: "v0.2.0"
       DEVOPS_WORKDIR: "~/action-devops"
-      STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
+      STAGING_BACKUP_LOCATION: "dokku@backups.action-staging.parabol.co"
       S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
     working_directory: ~/action
     resource_class: medium
@@ -111,17 +129,36 @@ jobs:
           command: |
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `Staging` RethinkDB wipe out and restore..."}' $SLACK_DEVOPS_URL
       - run:
+          name: DevOps checkout
+          command: |
+            mkdir -p ~/.ssh
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+            git clone --depth 1 --branch $DEVOPS_REPO_TAG $DEVOPS_REPO $DEVOPS_WORKDIR
+      - run:
+          name: Assure folder for temporary backups exists
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"mkdir -p /tmp/rdb-tmp-backups/\"
+      - run:
+          name: Clean up previous backups
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz\"
+      - run:
           name: Fetch last Production backup
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            mkdir -p /tmp/rdb-tmp-backups/ && rm -rf /tmp/rdb-tmp-backups/last_backup.tar.gz && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"$DEVOPS_WORKDIR/rethinkdb/rethinkdb-fetch-latest-backup.sh -b db-backups.parabol.co -p production -o /tmp/rdb-tmp-backups/last_backup.tar.gz\"
       - run:
           name: Restore to Staging
           no_output_timeout: 55m
           command: |
-            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" -T >/dev/null
-            mkdir -p /tmp/rdb-tmp-backups/ && $DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s root@${STAGING_BACKUP_LOCATION} -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y && rm -rf /tmp/rdb-tmp-backups/last_backup.tar.gz
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"$DEVOPS_WORKDIR/rethinkdb/rethinkdb-restore.sh -s dokku@backups.action-staging.parabol.co -i /tmp/rdb-tmp-backups/last_backup.tar.gz -y\"
+      - run:
+          name: Clean up last backup
+          no_output_timeout: 55m
+          command: |
+            ssh -o StrictHostKeyChecking=no "${STAGING_BACKUP_LOCATION}" bash -c \"rm -f /tmp/rdb-tmp-backups/last_backup.tar.gz\"
       - run:
           name: Slack completion
           command: |
@@ -184,6 +221,8 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
+            mkdir -p ~/.ssh
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
             git clone --depth 1 $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
           name: Build Databases
