@@ -1,5 +1,4 @@
 import React, {ChangeEvent} from 'react'
-
 import {Search as SearchIcon} from '@mui/icons-material'
 
 interface Props {
@@ -14,6 +13,7 @@ const SearchBar = (props: Props) => {
       <SearchIcon className='text-slate-600' />
       <input
         className='ml-2 w-full border-none bg-transparent text-xl text-slate-700 placeholder-slate-600 outline-none'
+        autoFocus
         autoComplete='off'
         name='search'
         placeholder='Search Activities'
