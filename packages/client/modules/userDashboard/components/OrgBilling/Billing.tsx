@@ -12,9 +12,10 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {CreatePaymentIntentMutationResponse} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
 import {CompletedHandler} from '../../../../types/relayMutations'
+import {ElementWidth} from '../../../../types/constEnums'
 
 const StyledPanel = styled(Panel)({
-  maxWidth: 976
+  maxWidth: ElementWidth.PANEL_WIDTH
 })
 
 const StyledRow = styled(Row)({
@@ -92,6 +93,34 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
+const stripeAppearanceSettings = {
+  theme: 'stripe',
+  rules: {
+    '.Input': {
+      border: 'none',
+      borderBottom: `1px solid ${PALETTE.SLATE_400}`
+    }
+  },
+  variables: {
+    colorBackground: PALETTE.SLATE_200,
+    border: 'none',
+    borderBottom: `1px solid ${PALETTE.SLATE_400}`,
+    color: PALETTE.SLATE_800,
+    fontSize: 16,
+    marginBottom: 16,
+    padding: '12px 16px',
+    outline: 0
+  }
+} as const
+
+const stripeFonts = [
+  {
+    family: 'IBM Plex Sans',
+    src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
+    weight: '400'
+  }
+]
+
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 const Billing = () => {
@@ -110,38 +139,6 @@ const Billing = () => {
 
     CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
   }, [])
-
-  const appearance = {
-    theme: 'stripe',
-    rules: {
-      '.Input': {
-        border: 'none',
-        borderBottom: `1px solid ${PALETTE.SLATE_400}`
-      }
-    },
-    variables: {
-      colorBackground: PALETTE.SLATE_200,
-      border: 'none',
-      borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-      color: PALETTE.SLATE_800,
-      fontSize: 16,
-      marginBottom: 16,
-      padding: '12px 16px',
-      outline: 0
-    }
-  } as const
-  const options = {
-    clientSecret,
-    appearance,
-    loader: 'never' as const,
-    fonts: [
-      {
-        family: 'IBM Plex Sans',
-        src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
-        weight: '400'
-      }
-    ]
-  }
 
   // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
   // const handleSubmit = async (e: React.FormEvent) => {
@@ -164,7 +161,15 @@ const Billing = () => {
         <Plan>
           <Title>{'Credit Card Details'}</Title>
           <Content>
-            <Elements options={options} stripe={stripePromise}>
+            <Elements
+              options={{
+                clientSecret,
+                appearance: stripeAppearanceSettings,
+                loader: 'never' as const,
+                fonts: stripeFonts
+              }}
+              stripe={stripePromise}
+            >
               <BillingForm />
             </Elements>
           </Content>
