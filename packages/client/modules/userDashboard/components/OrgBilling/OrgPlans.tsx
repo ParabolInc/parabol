@@ -192,6 +192,8 @@ const OrgPlans = (props: Props) => {
         ...OrgStats_organization
         ...LimitExceededWarning_organization
         tier
+        scheduledLockAt
+        lockedAt
       }
     `,
     organizationRef
@@ -199,7 +201,8 @@ const OrgPlans = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
-  const {tier} = organization
+  const {tier, scheduledLockAt, lockedAt} = organization
+  const showNudge = scheduledLockAt || lockedAt
 
   const plans = [
     {
@@ -247,7 +250,7 @@ const OrgPlans = (props: Props) => {
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
-        <LimitExceededWarning organizationRef={organization} />
+        {showNudge && <LimitExceededWarning organizationRef={organization} />}
         <OrgStats organizationRef={organization} />
       </StyledRow>
       <StyledRow>
