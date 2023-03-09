@@ -106,6 +106,11 @@ const StyledEditor = styled('div')`
       cursor: pointer;
     }
   }
+
+  .ProseMirror p {
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+  }
 `
 
 interface Props {

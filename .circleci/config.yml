@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   production_postgresql_backup:
     docker:
-      - image: cimg/node:18.13.0
+      - image: cimg/node:18.14.2
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -33,7 +33,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` PostgreSQL backup pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
   staging_postgresql_restore:
     docker:
-      - image: cimg/node:18.13.0
+      - image: cimg/node:18.14.2
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_REPO_TAG: "v0.2.0"
@@ -65,7 +65,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` PostgreSQL data restoration pipeline done. Please, check its status in Gitlab."}' $SLACK_DEVOPS_URL
   production_rethinkdb_backup:
     docker:
-      - image: cimg/node:18.13.0
+      - image: cimg/node:18.14.2
     environment:
       DEVOPS_WORKDIR: "~/action-devops"
       PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
@@ -95,7 +95,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Production` RethinkDB backup done"}' $SLACK_DEVOPS_URL
   staging_rethinkdb_restore:
     docker:
-      - image: cimg/node:18.13.0
+      - image: cimg/node:18.14.2
     environment:
       DEVOPS_WORKDIR: "~/action-devops"
       STAGING_BACKUP_LOCATION: "backups.action-staging.parabol.co"
@@ -128,7 +128,7 @@ jobs:
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`Staging` RethinkDB data restoration done."}' $SLACK_DEVOPS_URL
   build:
     docker:
-      - image: cimg/node:18.13.0
+      - image: cimg/node:18.14.2
       - image: rethinkdb:2.4.0
       - image: cimg/postgres:12.9 # TODO: update to 12.10 when https://github.com/CircleCI-Public/cimg-postgres/pull/42 is merged
         environment:

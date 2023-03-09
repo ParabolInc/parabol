@@ -14,6 +14,7 @@ import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_orga
 import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
+import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -189,7 +190,10 @@ const OrgPlans = (props: Props) => {
     graphql`
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
+        ...LimitExceededWarning_organization
         tier
+        scheduledLockAt
+        lockedAt
       }
     `,
     organizationRef
@@ -197,7 +201,8 @@ const OrgPlans = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
-  const {tier} = organization
+  const {tier, scheduledLockAt, lockedAt} = organization
+  const showNudge = scheduledLockAt || lockedAt
 
   const plans = [
     {
@@ -245,6 +250,7 @@ const OrgPlans = (props: Props) => {
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
+        {showNudge && <LimitExceededWarning organizationRef={organization} />}
         <OrgStats organizationRef={organization} />
       </StyledRow>
       <StyledRow>
