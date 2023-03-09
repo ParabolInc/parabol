@@ -708,6 +708,15 @@ export default abstract class AtlassianManager {
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
       payload
     )
+    console.log(
+      'updateStoryPoints',
+      {
+        cloudId,
+        fieldId,
+        storyPoints
+      },
+      res
+    )
     if (res === null) return
     if (res.message.includes('The app is not installed on this instance')) {
       throw new Error(
