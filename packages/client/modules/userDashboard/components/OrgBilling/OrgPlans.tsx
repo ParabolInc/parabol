@@ -160,17 +160,19 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
 }))
 
 const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === plan) return 'disabled'
-  else if (tier === 'starter') {
+  if (tier === plan) {
+    return 'disabled'
+  } else if (tier === 'starter') {
     return plan === 'team' ? 'primary' : 'secondary'
   } else {
     return 'secondary'
   }
 }
+
 const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
   if (tier === plan) {
     return 'Current Plan'
-  } else if (plan === 'enterprise') {
+  } else if (tier === 'enterprise' || plan === 'enterprise') {
     return 'Contact'
   } else if (plan === 'starter') {
     return 'Downgrade'
