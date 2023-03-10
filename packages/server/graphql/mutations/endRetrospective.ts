@@ -31,7 +31,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    generateWholeMeetingSentimentScore(meetingId, dataLoader)
+    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
