@@ -2,8 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
+import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
-import ActivityLibrarySideBar from './ActivityLibrarySideBar'
+import {ActivityLibraryHeader} from './ActivityLibraryHeader'
+import {ActivityLibraryMobileHeader} from './ActivityLibraryMobileHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
@@ -76,26 +78,38 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col'>
-      <ActivityLibrarySideBar />
-      <div className='h-full w-full overflow-auto'>
-        <div className='mx-auto grid w-fit grid-cols-2 gap-4 p-4 md:grid-cols-3 lg:grid-cols-4'>
-          {templates.map((template) => {
-            const templateIllustration =
-              activityIllustrations[template.id as keyof typeof activityIllustrations]
-            const activityIllustration = templateIllustration ?? customTemplateIllustration
+      <ActivityLibraryHeader className='hidden sm:flex' />
+      <ActivityLibraryMobileHeader className='flex sm:hidden' />
 
-            return (
-              <ActivityLibraryCard key={template.id} type={template.type}>
-                <ActivityLibraryCard.Image src={activityIllustration} />
-                <ActivityLibraryCard.Title as={Link} to={'/'}>
-                  {template.name}
-                </ActivityLibraryCard.Title>
-                {!template.isFree && <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>}
-              </ActivityLibraryCard>
-            )
-          })}
-        </div>
-      </div>
+      <ScrollArea.Root className='h-full w-full overflow-hidden'>
+        <ScrollArea.Viewport className='flex h-full md:mx-[15%]'>
+          <div className='mx-auto grid w-fit grid-cols-2 gap-4 p-4 lg:grid-cols-3 2xl:grid-cols-4'>
+            {templates.map((template) => {
+              const templateIllustration =
+                activityIllustrations[template.id as keyof typeof activityIllustrations]
+              const activityIllustration = templateIllustration ?? customTemplateIllustration
+
+              return (
+                <ActivityLibraryCard key={template.id} type={template.type}>
+                  <ActivityLibraryCard.Image src={activityIllustration} />
+                  <ActivityLibraryCard.Title as={Link} to={`/activity-library/${template.id}`}>
+                    {template.name}
+                  </ActivityLibraryCard.Title>
+                  {!template.isFree && (
+                    <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>
+                  )}
+                </ActivityLibraryCard>
+              )
+            })}
+          </div>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar
+          orientation='vertical'
+          className='flex h-full w-2.5 touch-none select-none border-l border-l-transparent p-[1px] transition-colors'
+        >
+          <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-slate-600`} />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
     </div>
   )
 }

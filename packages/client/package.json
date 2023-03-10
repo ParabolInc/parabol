@@ -85,6 +85,7 @@
     "@tiptap/suggestion": "^2.0.0-beta.218",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^1.47.0",
+    "@radix-ui/react-scroll-area": "^1.0.3",
     "chart.js": "^3.8.0",
     "chartjs-adapter-dayjs-3": "^1.2.3",
     "cleave.js": "^1.6.0",
