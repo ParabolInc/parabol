@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
 import plural from '../utils/plural'
-import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
+import {TimelineEventCompletedRetroMeeting_timelineEvent$key} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
 interface Props {
-  timelineEvent: TimelineEventCompletedRetroMeeting_timelineEvent
+  timelineEvent: TimelineEventCompletedRetroMeeting_timelineEvent$key
 }
 
 const CountItem = styled('span')({
@@ -24,7 +24,35 @@ const Link = styled(StyledLink)({
 })
 
 const TimelineEventCompletedRetroMeeting = (props: Props) => {
-  const {timelineEvent} = props
+  const {timelineEvent: timelineEventRef} = props
+  const timelineEvent = useFragment(
+    graphql`
+      fragment TimelineEventCompletedRetroMeeting_timelineEvent on TimelineEventCompletedRetroMeeting {
+        ...TimelineEventCard_timelineEvent
+        id
+        meeting {
+          id
+          commentCount
+          name
+          reflectionCount
+          taskCount
+          topicCount
+          locked
+          organization {
+            id
+            viewerOrganizationUser {
+              id
+            }
+          }
+        }
+        team {
+          id
+          name
+        }
+      }
+    `,
+    timelineEventRef
+  )
   const {meeting, team} = timelineEvent
   const {
     id: meetingId,
@@ -97,30 +125,4 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TimelineEventCompletedRetroMeeting, {
-  timelineEvent: graphql`
-    fragment TimelineEventCompletedRetroMeeting_timelineEvent on TimelineEventCompletedRetroMeeting {
-      ...TimelineEventCard_timelineEvent
-      id
-      meeting {
-        id
-        commentCount
-        name
-        reflectionCount
-        taskCount
-        topicCount
-        locked
-        organization {
-          id
-          viewerOrganizationUser {
-            id
-          }
-        }
-      }
-      team {
-        id
-        name
-      }
-    }
-  `
-})
+export default TimelineEventCompletedRetroMeeting

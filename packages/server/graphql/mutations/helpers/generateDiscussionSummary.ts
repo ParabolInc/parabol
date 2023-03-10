@@ -15,7 +15,7 @@ const generateDiscussionSummary = async (
   const {id: meetingId, endedAt, facilitatorUserId, teamId} = meeting
   const [facilitator, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
-    dataLoader.get('teams').load(teamId)
+    dataLoader.get('teams').loadNonNull(teamId)
   ])
   if (!canAccessAISummary(team, facilitator.featureFlags)) return
   const [comments, tasks] = await Promise.all([

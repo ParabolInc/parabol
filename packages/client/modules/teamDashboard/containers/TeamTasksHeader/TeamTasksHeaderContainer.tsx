@@ -1,17 +1,26 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import filterTeamMember from '~/utils/relay/filterTeamMember'
-import {TeamTasksHeaderContainer_team} from '~/__generated__/TeamTasksHeaderContainer_team.graphql'
+import {TeamTasksHeaderContainer_team$key} from '~/__generated__/TeamTasksHeaderContainer_team.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
 
 interface Props {
-  team: TeamTasksHeaderContainer_team
+  team: TeamTasksHeaderContainer_team$key
 }
 
 const TeamTasksHeaderContainer = (props: Props) => {
-  const {team} = props
+  const {team: teamRef} = props
+  const team = useFragment(
+    graphql`
+      fragment TeamTasksHeaderContainer_team on Team {
+        id
+        ...TeamTasksHeader_team
+      }
+    `,
+    teamRef
+  )
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
   useEffect(() => {
@@ -21,11 +30,4 @@ const TeamTasksHeaderContainer = (props: Props) => {
   return <TeamTasksHeader team={team} />
 }
 
-export default createFragmentContainer(TeamTasksHeaderContainer, {
-  team: graphql`
-    fragment TeamTasksHeaderContainer_team on Team {
-      id
-      ...TeamTasksHeader_team
-    }
-  `
-})
+export default TeamTasksHeaderContainer

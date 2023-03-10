@@ -3,7 +3,7 @@ import {Whatshot} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import DraggableTask from '../containers/TaskCard/DraggableTask'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
@@ -12,11 +12,11 @@ import {PALETTE} from '../styles/paletteV3'
 import {DroppableType} from '../types/constEnums'
 import {ACTIVE, ACTIVE_TASK, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
-import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
+import {TimelinePriorityTasks_viewer$key} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
 import TimelineNoTasks from './TimelineNoTasks'
 
 interface Props {
-  viewer: TimelinePriorityTasks_viewer
+  viewer: TimelinePriorityTasks_viewer$key
 }
 
 const PriorityTasksHeader = styled('div')({
@@ -46,7 +46,30 @@ const PriorityTaskBody = styled('div')({
 })
 
 const TimelinePriorityTasks = (props: Props) => {
-  const {viewer} = props
+  const {viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment TimelinePriorityTasks_viewer on User {
+        tasks(first: 1000, userIds: $userIds) @connection(key: "UserColumnsContainer_tasks") {
+          __typename
+          edges {
+            node {
+              id
+              content
+              plaintextContent
+              status
+              sortOrder
+              team {
+                id
+              }
+              ...DraggableTask_task
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {tasks} = viewer
   const atmosphere = useAtmosphere()
   const activeTasks = useMemo(() => {
@@ -103,25 +126,4 @@ const TimelinePriorityTasks = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TimelinePriorityTasks, {
-  viewer: graphql`
-    fragment TimelinePriorityTasks_viewer on User {
-      tasks(first: 1000, userIds: $userIds) @connection(key: "UserColumnsContainer_tasks") {
-        __typename
-        edges {
-          node {
-            id
-            content
-            plaintextContent
-            status
-            sortOrder
-            team {
-              id
-            }
-            ...DraggableTask_task
-          }
-        }
-      }
-    }
-  `
-})
+export default TimelinePriorityTasks

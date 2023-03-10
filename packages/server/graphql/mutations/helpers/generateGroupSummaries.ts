@@ -12,7 +12,7 @@ const generateGroupSummaries = async (
 ) => {
   const [facilitator, team] = await Promise.all([
     dataLoader.get('users').loadNonNull(facilitatorUserId),
-    dataLoader.get('teams').load(teamId)
+    dataLoader.get('teams').loadNonNull(teamId)
   ])
   if (!canAccessAISummary(team, facilitator.featureFlags)) return
   const [reflections, reflectionGroups] = await Promise.all([
@@ -36,15 +36,7 @@ const generateGroupSummaries = async (
         ({plaintextContent}) => plaintextContent
       )
       const summary = await manager.getSummary(reflectionTextByGroupId)
-      if (!summary) {
-        const error = new Error('Failed to create the AI topic summary')
-        const summaryText = JSON.stringify(reflectionTextByGroupId)
-        sendToSentry(error, {
-          userId: facilitator.id,
-          tags: {summaryText, reflectionGroupId: group.id, meetingId}
-        })
-        return
-      }
+      if (!summary) return
       return r.table('RetroReflectionGroup').get(group.id).update({summary}).run()
     })
   )

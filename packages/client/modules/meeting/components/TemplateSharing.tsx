@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV3'
 import lazyPreload from '../../../utils/lazyPreload'
-import {TemplateSharing_template} from '../../../__generated__/TemplateSharing_template.graphql'
+import {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 
 const SelectSharingScopeDropdown = lazyPreload(
   () =>
@@ -69,11 +69,29 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
 
 interface Props {
   teamId: string
-  template: TemplateSharing_template
+  template: TemplateSharing_template$key
 }
 
 const TemplateSharing = (props: Props) => {
-  const {template, teamId} = props
+  const {template: templateRef, teamId} = props
+  const template = useFragment(
+    graphql`
+      fragment TemplateSharing_template on MeetingTemplate {
+        ...SelectSharingScopeDropdown_template
+        id
+        scope
+        teamId
+        team {
+          isLead
+          name
+          organization {
+            name
+          }
+        }
+      }
+    `,
+    templateRef
+  )
   const {scope, team} = template
   const {name: teamName, organization, isLead} = team
   const {name: orgName} = organization
@@ -129,20 +147,4 @@ const TemplateSharing = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TemplateSharing, {
-  template: graphql`
-    fragment TemplateSharing_template on MeetingTemplate {
-      ...SelectSharingScopeDropdown_template
-      id
-      scope
-      teamId
-      team {
-        isLead
-        name
-        organization {
-          name
-        }
-      }
-    }
-  `
-})
+export default TemplateSharing

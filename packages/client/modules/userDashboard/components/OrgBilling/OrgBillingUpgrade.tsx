@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {OrgBillingUpgrade_organization} from '~/__generated__/OrgBillingUpgrade_organization.graphql'
+import {useFragment} from 'react-relay'
+import {OrgBillingUpgrade_organization$key} from '~/__generated__/OrgBillingUpgrade_organization.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -37,12 +37,24 @@ const StyledPrimaryButton = styled(PrimaryButton)({
 })
 
 interface Props {
-  organization: OrgBillingUpgrade_organization
+  organization: OrgBillingUpgrade_organization$key
   invoiceListRefetch?: ({orgId, first}: {orgId: string; first: number}) => void
 }
 
 const OrgBillingUpgrade = (props: Props) => {
-  const {organization, invoiceListRefetch} = props
+  const {organization: organizationRef, invoiceListRefetch} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgBillingUpgrade_organization on Organization {
+        id
+        tier
+        orgUserCount {
+          activeUserCount
+        }
+      }
+    `,
+    organizationRef
+  )
   const {id: orgId, tier, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {togglePortal, closePortal, modalPortal} = useModal()
@@ -74,14 +86,4 @@ const OrgBillingUpgrade = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(OrgBillingUpgrade, {
-  organization: graphql`
-    fragment OrgBillingUpgrade_organization on Organization {
-      id
-      tier
-      orgUserCount {
-        activeUserCount
-      }
-    }
-  `
-})
+export default OrgBillingUpgrade

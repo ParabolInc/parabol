@@ -1,8 +1,8 @@
 import db from '../../../db'
 import getTemplateScore from '../../../utils/getTemplateScore'
 
-const getScoredTemplates = async (
-  templates: {createdAt: Date; id: string}[],
+const getScoredTemplates = async <T extends {createdAt: Date; id: string}>(
+  templates: T[],
   newHotnessFactor: number
 ) => {
   const sharedTemplateIds = templates.map(({id}) => id)
