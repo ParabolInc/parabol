@@ -20,7 +20,7 @@ const query = graphql`
       id
       segmentId
       email
-      isWatched
+      isPatient0
     }
   }
 `
@@ -111,10 +111,13 @@ const AnalyticsPage = () => {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
         if (!res) return
         const {viewer} = res
-        const {id, segmentId} = viewer
+        const {id, segmentId, isPatient0} = viewer
         ReactGA.set({
           userId: id,
-          clientId: segmentId ?? getAnonymousId()
+          clientId: segmentId ?? getAnonymousId(),
+          user_properties: {
+            is_patient_0: !!isPatient0
+          }
         })
       } else {
         ReactGA.set({
