@@ -49,7 +49,11 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         if (isNewUser) {
-          ReactGA.event('sign_up', {isPatient0: user!.isPatient0})
+          ReactGA.event('sign_up', {
+            user_properties: {
+              is_patient_0: user!.isPatient0
+            }
+          })
         }
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken

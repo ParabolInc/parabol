@@ -937,6 +937,15 @@ type User {
     """
     userId: ID!
   ): User
+
+  availableTemplates(
+    first: Int!
+
+    """
+    The cursor, which is the templateId
+    """
+    after: ID
+  ): MeetingTemplateConnection!
 }
 
 """
@@ -5232,6 +5241,36 @@ type PokerMeetingSettings implements TeamMeetingSettings {
     """
     after: ID
   ): PokerTemplateConnection!
+}
+
+"""
+A connection to a list of items.
+"""
+type MeetingTemplateConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [MeetingTemplateEdge!]!
+}
+
+"""
+An edge in a connection.
+"""
+type MeetingTemplateEdge {
+  """
+  The item at the end of the edge
+  """
+  node: MeetingTemplate!
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
 }
 
 """

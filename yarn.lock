@@ -5187,6 +5187,18 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@stripe/react-stripe-js@^1.16.5":
+  version "1.16.5"
+  resolved "https://registry.yarnpkg.com/@stripe/react-stripe-js/-/react-stripe-js-1.16.5.tgz#51cf862b50ca91ae6193c77a5bec889e81047f10"
+  integrity sha512-lVPW3IfwdacyS22pP+nBB6/GNFRRhT/4jfgAK6T2guQmtzPwJV1DogiGGaBNhiKtSY18+yS8KlHSu+PvZNclvQ==
+  dependencies:
+    prop-types "^15.7.2"
+
+"@stripe/stripe-js@^1.47.0":
+  version "1.47.0"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-1.47.0.tgz#48626a2e43302330aa826ce498a2d9761db4053d"
+  integrity sha512-jKSClqEIKS2MbPCXlSsseDSZyJ3dVrfUrYMz5LBY1o9iS2tfKbpTZACt8r2g+xyQozI+uHr76pVTyFsmBKA4Mg==
+
 "@sucrase/webpack-loader@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@sucrase/webpack-loader/-/webpack-loader-2.0.0.tgz#b8a70b8d3df3eeb570e6a3315e1a9c6b723e4a37"
