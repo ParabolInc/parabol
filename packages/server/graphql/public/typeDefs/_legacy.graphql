@@ -7235,11 +7235,6 @@ type Mutation {
   ): InviteToTeamPayload!
 
   """
-  Login using an email address and password
-  """
-  loginWithPassword(email: ID!, password: String!): UserLogInPayload!
-
-  """
   Move a template dimension
   """
   movePokerTemplateDimension(
@@ -7648,24 +7643,6 @@ type Mutation {
   ): SetSlackNotificationPayload!
 
   """
-  Sign up using an email address and password
-  """
-  signUpWithPassword(
-    email: ID!
-    password: String!
-
-    """
-    optional segment id created before they were a user
-    """
-    segmentId: ID
-
-    """
-    used to determine what suggested actions to create
-    """
-    invitationToken: ID
-  ): UserLogInPayload!
-
-  """
   Broadcast that the viewer started dragging a reflection
   """
   startDraggingReflection(
@@ -7949,16 +7926,6 @@ type Mutation {
     """
     file: File!
   ): UpdateUserProfilePayload
-
-  """
-  Verify an email address and sign in if not already a user
-  """
-  verifyEmail(
-    """
-    The 48-byte url-safe base64 encoded verification token
-    """
-    verificationToken: ID!
-  ): UserLogInPayload!
 
   """
   Cast your vote for a reflection group
@@ -9097,21 +9064,6 @@ type InviteToTeamPayload {
   the `invite your team` suggested action that was removed, if any
   """
   removedSuggestedActionId: ID
-}
-
-type LoginWithPasswordPayload {
-  error: StandardMutationError
-
-  """
-  The new auth token
-  """
-  authToken: ID
-  userId: ID
-
-  """
-  the newly created user
-  """
-  user: User
 }
 
 type MovePokerTemplateDimensionPayload {
