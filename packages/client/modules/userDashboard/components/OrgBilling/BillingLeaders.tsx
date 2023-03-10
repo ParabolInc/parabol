@@ -27,7 +27,7 @@ const StyledRow = styled(Row)({
 
 const InfoText = styled('span')({
   fontSize: 16,
-  padding: '8px 0px',
+  paddingTop: 8,
   color: PALETTE.SLATE_900
 })
 
@@ -41,7 +41,8 @@ const StyledButton = styled(FlatButton)({
 })
 
 const BillingLeaderLabel = styled(RowInfoHeading)({
-  color: 'inherit'
+  color: 'inherit',
+  fontWeight: 400
 })
 
 const ButtonWrapper = styled('div')({
