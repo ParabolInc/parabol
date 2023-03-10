@@ -18,6 +18,7 @@ const OrgPlansAndBilling = (props: Props) => {
       fragment OrgPlansAndBilling_organization on Organization {
         ...OrgPlansAndBillingHeading_organization
         ...OrgPlans_organization
+        ...BillingLeaders_organization
       }
     `,
     organizationRef
@@ -28,7 +29,7 @@ const OrgPlansAndBilling = (props: Props) => {
       <OrgPlansAndBillingHeading organizationRef={organization} />
       <OrgPlans organizationRef={organization} />
       <PaymentDetails />
-      <BillingLeaders />
+      <BillingLeaders organizationRef={organization} />
     </Suspense>
   )
 }

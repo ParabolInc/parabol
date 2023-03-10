@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
+import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import graphql from 'babel-plugin-relay/macro'
-import {Avatar, Divider} from '@mui/material'
+import {Divider} from '@mui/material'
+import Avatar from '../../../../components/Avatar/Avatar'
 import React, {useEffect, useState} from 'react'
-import BillingLeader from './BillingLeader'
+import {BillingLeader_user$key} from '../../../../__generated__/BillingLeader_user.graphql'
+import BillingForm from './BillingForm'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -22,7 +25,6 @@ import RowActions from '../../../../components/Row/RowActions'
 import FlatButton from '../../../../components/FlatButton'
 import RowInfo from '../../../../components/Row/RowInfo'
 import {useFragment} from 'react-relay'
-import {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -31,7 +33,7 @@ const StyledPanel = styled(Panel)({
 const StyledRow = styled(Row)({
   padding: '12px 16px',
   display: 'flex',
-  alignItems: 'flex-start',
+  alignItems: 'center',
   ':nth-of-type(2)': {
     border: 'none'
   }
@@ -103,20 +105,7 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
-const AvatarBlock = styled('div')({
-  display: 'none',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    display: 'block',
-    marginRight: 16
-  }
-})
-
-// const StyledRow = styled(Row)({
-//   padding: '12px 8px 12px 16px',
-//   [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-//     padding: '16px 8px 16px 16px'
-//   }
-// })
+const AvatarBlock = styled('div')({})
 
 const StyledRowInfo = styled(RowInfo)({
   paddingLeft: 0
@@ -139,10 +128,8 @@ const MenuToggleBlock = styled('div')({
 //   organization: OrgMemberRow_organization
 // }
 
-const StyledButton = styled(FlatButton)({
-  paddingLeft: 0,
-  paddingRight: 0,
-  width: '100%'
+const StyledHeading = styled(RowInfoHeading)({
+  paddingLeft: 16
 })
 
 const StyledFlatButton = styled(FlatButton)({
@@ -153,41 +140,92 @@ const StyledFlatButton = styled(FlatButton)({
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
-  organizationRef: BillingLeaders_organization$key
+  billingLeaderRef: BillingLeader_user$key
 }
 
-const BillingLeaders = (props: Props) => {
-  const {organizationRef} = props
-  const organization = useFragment(
+const BillingLeader = (props: Props) => {
+  const {billingLeaderRef} = props
+  const billingLeader = useFragment(
     graphql`
-      fragment BillingLeaders_organization on Organization {
-        billingLeaders {
-          ... on User {
-            id
-            ...BillingLeader_user
-          }
-        }
+      fragment BillingLeader_user on User {
+        preferredName
+        picture
       }
     `,
-    organizationRef
+    billingLeaderRef
   )
-  const {billingLeaders} = organization
+  console.log('🚀 ~ child.........:', billingLeader)
+
+  const {preferredName, picture} = billingLeader
+  // const {billingLeaders} = organization
   const [clientSecret, setClientSecret] = useState('')
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
 
   return (
-    <StyledPanel label='Billing Leaders'>
-      <InfoText>
-        {
-          'All billing leaders are able to see and update credit card information, change plans, and view invoices.'
-        }
-      </InfoText>
-      {billingLeaders.map((billingLeader) => (
-        <BillingLeader billingLeaderRef={billingLeader} />
-      ))}
-    </StyledPanel>
+    <StyledRow>
+      <Avatar hasBadge={false} picture={picture} size={44} />
+      <StyledRowInfo>
+        <RowInfoHeader>
+          <StyledHeading>{preferredName}</StyledHeading>
+          {/* {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>} */}
+          {/* <RoleTag>{'Billing Leader'}</RoleTag> */}
+          {/* {inactive && !isBillingLeader && <InactiveTag>{'Inactive'}</InactiveTag>} */}
+          {/* {new Date(newUserUntil) > new Date() && <EmphasisTag>{'New'}</EmphasisTag>} */}
+        </RowInfoHeader>
+        {/* <RowInfoLink href={`mailto:${email}`} title='Send an email'> */}
+        {/* <RowInfoLink title='Send an email'>{preferredName}</RowInfoLink> */}
+      </StyledRowInfo>
+      <RowActions>
+        <ActionsBlock>
+          {/* {!isBillingLeader && viewerId === userId && ( */}
+          {/* // <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}> */}
+          <StyledFlatButton>Leave Organization</StyledFlatButton>
+          {/* )} */}
+          {/* {isViewerLastBillingLeader && userId === viewerId && (
+            <MenuToggleBlock
+              onClick={closeTooltip}
+              onMouseOver={openTooltip}
+              onMouseOut={closeTooltip}
+              ref={tooltipRef}
+            >
+              {tooltipPortal(
+                <div>
+                  {'You need to promote another Billing Leader'}
+                  <br />
+                  {'before you can leave this role or Organization.'}
+                </div>
+              )}
+              <MenuButton disabled />
+            </MenuToggleBlock>
+          )} */}
+          {/* {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
+            <MenuToggleBlock>
+              <MenuButton
+                onClick={togglePortal}
+                onMouseEnter={BillingLeaderActionMenu.preload}
+                ref={originRef}
+              />
+            </MenuToggleBlock>
+          )} */}
+          {/* {menuPortal(
+            <BillingLeaderActionMenu
+              menuProps={menuProps}
+              isViewerLastBillingLeader={isViewerLastBillingLeader}
+              organizationUser={organizationUser}
+              organization={organization}
+              toggleLeave={toggleLeave}
+              toggleRemove={toggleRemove}
+            />
+          )}
+          {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+          {removeModal(
+            <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
+          )} */}
+        </ActionsBlock>
+      </RowActions>
+    </StyledRow>
   )
 }
 
-export default BillingLeaders
+export default BillingLeader
