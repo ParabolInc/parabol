@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Divider} from '@mui/material'
+import {Avatar, Divider} from '@mui/material'
 import React, {useEffect, useState} from 'react'
 import BillingForm from './BillingForm'
 import Panel from '../../../../components/Panel/Panel'
@@ -12,7 +12,14 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {CreatePaymentIntentMutationResponse} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
 import {CompletedHandler} from '../../../../types/relayMutations'
-import {ElementWidth} from '../../../../types/constEnums'
+import {Breakpoint, ElementWidth} from '../../../../types/constEnums'
+import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
+import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
+import RoleTag from '../../../../components/Tag/RoleTag'
+import RowInfoLink from '../../../../components/Row/RowInfoLink'
+import RowActions from '../../../../components/Row/RowActions'
+import FlatButton from '../../../../components/FlatButton'
+import RowInfo from '../../../../components/Row/RowInfo'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -93,35 +100,52 @@ const ActiveUserBlock = styled('div')({
   paddingTop: 16
 })
 
-const stripeElementOptions = {
-  appearance: {
-    theme: 'stripe',
-    rules: {
-      '.Input': {
-        border: 'none',
-        borderBottom: `1px solid ${PALETTE.SLATE_400}`
-      }
-    },
-    variables: {
-      colorBackground: PALETTE.SLATE_200,
-      border: 'none',
-      borderBottom: `1px solid ${PALETTE.SLATE_400}`,
-      color: PALETTE.SLATE_800,
-      fontSize: 16,
-      marginBottom: 16,
-      padding: '12px 16px',
-      outline: 0
-    }
-  } as const,
-  loader: 'never' as const,
-  fonts: [
-    {
-      family: 'IBM Plex Sans',
-      src: `url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2')`,
-      weight: '400'
-    }
-  ]
-}
+const AvatarBlock = styled('div')({
+  display: 'none',
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    display: 'block',
+    marginRight: 16
+  }
+})
+
+// const StyledRow = styled(Row)({
+//   padding: '12px 8px 12px 16px',
+//   [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+//     padding: '16px 8px 16px 16px'
+//   }
+// })
+
+const StyledRowInfo = styled(RowInfo)({
+  paddingLeft: 0
+})
+
+const ActionsBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'flex-end'
+})
+
+const MenuToggleBlock = styled('div')({
+  marginLeft: 8,
+  width: '2rem'
+})
+
+// interface Props extends WithMutationProps {
+//   billingLeaderCount: number
+//   organizationUser: OrgMemberRow_organizationUser
+//   organization: OrgMemberRow_organization
+// }
+
+const StyledButton = styled(FlatButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
+})
+
+const StyledFlatButton = styled(FlatButton)({
+  paddingLeft: 16,
+  paddingRight: 16
+})
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
@@ -159,40 +183,78 @@ const BillingLeaders = () => {
 
   return (
     <StyledPanel label='Billing Leaders'>
+      <InfoText>
+        {
+          'All billing leaders are able to see and update credit card information, change plans, and view invoices.'
+        }
+      </InfoText>
       <StyledRow>
-        <Plan>
-          <Content>
-            <Elements
-              options={{
-                clientSecret,
-                ...stripeElementOptions
-              }}
-              stripe={stripePromise}
+        <AvatarBlock>
+          {/* {picture ? (
+            <Avatar hasBadge={false} picture={picture} size={44} />
+          ) : (
+            <img alt='' src={defaultUserAvatar} />
+          )} */}
+        </AvatarBlock>
+        <StyledRowInfo>
+          <RowInfoHeader>
+            <RowInfoHeading>{'dave'}</RowInfoHeading>
+            {/* {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>} */}
+            <RoleTag>{'Billing Leader'}</RoleTag>
+            {/* {inactive && !isBillingLeader && <InactiveTag>{'Inactive'}</InactiveTag>} */}
+            {/* {new Date(newUserUntil) > new Date() && <EmphasisTag>{'New'}</EmphasisTag>} */}
+          </RowInfoHeader>
+          {/* <RowInfoLink href={`mailto:${email}`} title='Send an email'> */}
+          <RowInfoLink title='Send an email'>{'heyy'}</RowInfoLink>
+        </StyledRowInfo>
+        <RowActions>
+          <ActionsBlock>
+            {/* {!isBillingLeader && viewerId === userId && ( */}
+            {/* // <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}> */}
+            <StyledFlatButton>Leave Organization</StyledFlatButton>
+            {/* )} */}
+            {/* {isViewerLastBillingLeader && userId === viewerId && (
+            <MenuToggleBlock
+              onClick={closeTooltip}
+              onMouseOver={openTooltip}
+              onMouseOut={closeTooltip}
+              ref={tooltipRef}
             >
-              <BillingForm />
-            </Elements>
-          </Content>
-        </Plan>
-        <Plan>
-          <Title>{'Team Plan Pricing'}</Title>
-          <Content>
-            <InputLabel>{'Billing Cycle'}</InputLabel>
-            <Subtitle>{'Monthly'}</Subtitle>
-            <ActiveUserBlock>
-              <InputLabel>{'Active Users'}</InputLabel>
-              <InfoText>
-                {'Active users are anyone who uses Parabol within a billing period'}
-              </InfoText>
-              <Subtitle>{'27'}</Subtitle>
-            </ActiveUserBlock>
-            <Divider />
-            <TotalBlock>
-              <Subtitle>{'Total'}</Subtitle>
-              <Subtitle>{'$162.00'}</Subtitle>
-            </TotalBlock>
-            <InfoText>{'All prices are in USD'}</InfoText>
-          </Content>
-        </Plan>
+              {tooltipPortal(
+                <div>
+                  {'You need to promote another Billing Leader'}
+                  <br />
+                  {'before you can leave this role or Organization.'}
+                </div>
+              )}
+              <MenuButton disabled />
+            </MenuToggleBlock>
+          )} */}
+            {/* {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
+            <MenuToggleBlock>
+              <MenuButton
+                onClick={togglePortal}
+                onMouseEnter={BillingLeaderActionMenu.preload}
+                ref={originRef}
+              />
+            </MenuToggleBlock>
+          )} */}
+            {/* {menuPortal(
+            <BillingLeaderActionMenu
+              menuProps={menuProps}
+              isViewerLastBillingLeader={isViewerLastBillingLeader}
+              organizationUser={organizationUser}
+              organization={organization}
+              toggleLeave={toggleLeave}
+              toggleRemove={toggleRemove}
+            />
+          )}
+          {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+          {removeModal(
+            <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
+          )} */}
+          </ActionsBlock>
+        </RowActions>
       </StyledRow>
     </StyledPanel>
   )
