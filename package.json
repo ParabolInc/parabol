@@ -75,7 +75,6 @@
     "parse-url": "^8.1.0",
     "rethinkdb-ts": "2.5.1",
     "loader-utils": "3.2.1",
-    "minimatch": "7.4.2",
     "jsdom": "21.1.0"
   },
   "devDependencies": {
