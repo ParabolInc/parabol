@@ -13,6 +13,7 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import {useFragment} from 'react-relay'
 import {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
 import IconLabel from '../../../../components/IconLabel'
+import plural from '../../../../utils/plural'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -73,7 +74,7 @@ const BillingLeaders = (props: Props) => {
   const {billingLeaders} = organization
 
   return (
-    <StyledPanel label='Billing Leaders'>
+    <StyledPanel label={plural(billingLeaders.length, 'Billing Leader')}>
       <StyledRow>
         <InfoText>
           {
