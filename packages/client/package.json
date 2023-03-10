@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.93.0",
+  "version": "6.95.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -83,9 +83,12 @@
     "@tiptap/react": "^2.0.0-beta.218",
     "@tiptap/starter-kit": "^2.0.0-beta.218",
     "@tiptap/suggestion": "^2.0.0-beta.218",
+    "@stripe/react-stripe-js": "^1.16.5",
+    "@stripe/stripe-js": "^1.47.0",
     "chart.js": "^3.8.0",
     "chartjs-adapter-dayjs-3": "^1.2.3",
     "cleave.js": "^1.6.0",
+    "clsx": "^1.2.1",
     "core-js": "3.8.1",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.3",
@@ -132,7 +135,6 @@
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^2.4.0",
-    "unicode-substring": "^1.0.0",
-    "clsx": "^1.2.1"
+    "unicode-substring": "^1.0.0"
   }
 }

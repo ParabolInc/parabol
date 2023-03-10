@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
-import {OrgBillingDangerZone_organization} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
+import {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
@@ -44,10 +44,20 @@ const Unsubscribe = styled('div')({
 })
 
 interface Props {
-  organization: OrgBillingDangerZone_organization
+  organization: OrgBillingDangerZone_organization$key
 }
 const OrgBillingDangerZone = (props: Props) => {
-  const {organization} = props
+  const {organization: organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrgBillingDangerZone_organization on Organization {
+        ...ArchiveOrganization_organization
+        isBillingLeader
+        tier
+      }
+    `,
+    organizationRef
+  )
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
   const isStarter = tier === 'starter'
@@ -75,12 +85,4 @@ const OrgBillingDangerZone = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(OrgBillingDangerZone, {
-  organization: graphql`
-    fragment OrgBillingDangerZone_organization on Organization {
-      ...ArchiveOrganization_organization
-      isBillingLeader
-      tier
-    }
-  `
-})
+export default OrgBillingDangerZone

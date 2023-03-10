@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -11,13 +11,13 @@ import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutation
 import {AuthToken} from '../../../../types/AuthToken'
 import {Providers} from '../../../../types/constEnums'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
-import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
+import {AtlassianProviderRow_viewer$key} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import ProviderRow from './ProviderRow'
 
 interface Props {
   teamId: string
   retry: () => void
-  viewer: AtlassianProviderRow_viewer
+  viewer: AtlassianProviderRow_viewer$key
 }
 
 const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
@@ -36,7 +36,21 @@ const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
 }
 
 const AtlassianProviderRow = (props: Props) => {
-  const {retry, viewer, teamId} = props
+  const {retry, viewer: viewerRef, teamId} = props
+  const viewer = useFragment(
+    graphql`
+      fragment AtlassianProviderRow_viewer on User {
+        teamMember(teamId: $teamId) {
+          integrations {
+            atlassian {
+              ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
@@ -77,16 +91,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(AtlassianProviderRow, {
-  viewer: graphql`
-    fragment AtlassianProviderRow_viewer on User {
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
-          }
-        }
-      }
-    }
-  `
-})
+export default AtlassianProviderRow

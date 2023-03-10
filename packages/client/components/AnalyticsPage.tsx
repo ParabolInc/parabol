@@ -11,6 +11,7 @@ import safeIdentify from '~/utils/safeIdentify'
 import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
+import getContentGroup from '../utils/getContentGroup'
 import makeHref from '../utils/makeHref'
 
 const query = graphql`
@@ -93,7 +94,7 @@ const AnalyticsPage = () => {
     if (gaMeasurementId) {
       ReactGA.initialize(gaMeasurementId, {
         gtagOptions: {
-          send_page_view: true
+          debug_mode: !__PRODUCTION__
         }
       })
     }
@@ -192,6 +193,7 @@ const AnalyticsPage = () => {
         // See: segmentIo.ts:28 for more information on the next line
         {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
       )
+      ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
 

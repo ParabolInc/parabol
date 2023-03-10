@@ -19,6 +19,7 @@ import {TeamBenefits} from '../../../../utils/constants'
 import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import BaseButton from '../../../../components/BaseButton'
+import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -167,22 +168,24 @@ const CTAButton = styled(BaseButton)<{
 }))
 
 const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === 'starter') {
-    return plan === 'starter' ? 'disabled' : plan === 'team' ? 'primary' : 'secondary'
-  } else if (tier === 'team') {
-    return plan === 'team' ? 'disabled' : 'secondary'
+  if (tier === plan) {
+    return 'disabled'
+  } else if (tier === 'starter') {
+    return plan === 'team' ? 'primary' : 'secondary'
   } else {
-    return plan === 'enterprise' ? 'disabled' : 'secondary'
+    return 'secondary'
   }
 }
 
 const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === 'starter') {
-    return plan === 'starter' ? 'Current Plan' : plan === 'team' ? 'Select Plan' : 'Contact'
-  } else if (tier === 'team') {
-    return plan === 'team' ? 'Current Plan' : plan === 'starter' ? 'Downgrade' : 'Contact'
+  if (tier === plan) {
+    return 'Current Plan'
+  } else if (tier === 'enterprise' || plan === 'enterprise') {
+    return 'Contact'
+  } else if (plan === 'starter') {
+    return 'Downgrade'
   } else {
-    return plan === 'enterprise' ? 'Current Plan' : 'Contact'
+    return 'Select Plan'
   }
 }
 
@@ -197,8 +200,11 @@ const OrgPlans = (props: Props) => {
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
         ...DowngradeModal_organization
+        ...LimitExceededWarning_organization
         id
         tier
+        scheduledLockAt
+        lockedAt
       }
     `,
     organizationRef
@@ -208,7 +214,8 @@ const OrgPlans = (props: Props) => {
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, tier} = organization
+  const {id: orgId, tier, scheduledLockAt, lockedAt} = organization
+  const showNudge = scheduledLockAt || lockedAt
 
   const plans = [
     {
@@ -256,6 +263,7 @@ const OrgPlans = (props: Props) => {
     <>
       <StyledPanel label='Plans'>
         <StyledRow>
+          {showNudge && <LimitExceededWarning organizationRef={organization} />}
           <OrgStats organizationRef={organization} />
         </StyledRow>
         <StyledRow>

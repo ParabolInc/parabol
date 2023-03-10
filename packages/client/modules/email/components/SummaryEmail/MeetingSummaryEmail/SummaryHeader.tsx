@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import makeDateString from 'parabol-client/utils/makeDateString'
-import {SummaryHeader_meeting} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
+import {SummaryHeader_meeting$key} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {CorsOptions} from '../../../../../types/cors'
 
@@ -35,13 +35,25 @@ const dateLabel = {
 } as React.CSSProperties
 
 interface Props {
-  meeting: SummaryHeader_meeting
+  meeting: SummaryHeader_meeting$key
   isDemo?: boolean
   corsOptions: CorsOptions
 }
 
 const SummaryHeader = (props: Props) => {
-  const {meeting, isDemo, corsOptions} = props
+  const {meeting: meetingRef, isDemo, corsOptions} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SummaryHeader_meeting on NewMeeting {
+        createdAt
+        name
+        team {
+          name
+        }
+      }
+    `,
+    meetingRef
+  )
   const {createdAt, name: meetingName, team} = meeting
   const {name: teamName} = team
   const meetingDate = makeDateString(createdAt, {showDay: true})
@@ -79,14 +91,4 @@ const SummaryHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SummaryHeader, {
-  meeting: graphql`
-    fragment SummaryHeader_meeting on NewMeeting {
-      createdAt
-      name
-      team {
-        name
-      }
-    }
-  `
-})
+export default SummaryHeader

@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
-import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueList_scale.graphql'
+import {useFragment} from 'react-relay'
+import {TemplateScaleValueList_scale$key} from '~/__generated__/TemplateScaleValueList_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
@@ -14,7 +14,7 @@ import TemplateScaleValueItem from './TemplateScaleValueItem'
 
 interface Props {
   isOwner: boolean
-  scale: TemplateScaleValueList_scale
+  scale: TemplateScaleValueList_scale$key
 }
 
 const ScaleList = styled('div')({
@@ -25,7 +25,22 @@ const ScaleList = styled('div')({
 })
 
 const TemplateScaleValueList = (props: Props) => {
-  const {isOwner, scale} = props
+  const {isOwner, scale: scaleRef} = props
+  const scale = useFragment(
+    graphql`
+      fragment TemplateScaleValueList_scale on TemplateScale {
+        ...TemplateScaleValueItem_scale
+        ...AddScaleValueButtonInput_scale
+        id
+        values {
+          id
+          label
+          ...TemplateScaleValueItem_scaleValue
+        }
+      }
+    `,
+    scaleRef
+  )
   const {values} = scale
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -98,17 +113,4 @@ const TemplateScaleValueList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TemplateScaleValueList, {
-  scale: graphql`
-    fragment TemplateScaleValueList_scale on TemplateScale {
-      ...TemplateScaleValueItem_scale
-      ...AddScaleValueButtonInput_scale
-      id
-      values {
-        id
-        label
-        ...TemplateScaleValueItem_scaleValue
-      }
-    }
-  `
-})
+export default TemplateScaleValueList

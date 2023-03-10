@@ -43,7 +43,7 @@ const Wrapper = styled('div')<{location: any}>(({location}) => ({
   display: 'flex',
   flex: 1,
   height: 40,
-  margin: '8px 16px',
+  margin: 8,
   maxWidth: 480,
   visibility: getShowSearch(location) ? undefined : 'hidden'
 }))

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import TypeAheadLabel from '~/components/TypeAheadLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
@@ -11,8 +11,8 @@ import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
-import {ReflectTemplateItem_viewer} from '../../../__generated__/ReflectTemplateItem_viewer.graphql'
+import {ReflectTemplateItem_template$key} from '../../../__generated__/ReflectTemplateItem_template.graphql'
+import {ReflectTemplateItem_viewer$key} from '../../../__generated__/ReflectTemplateItem_viewer.graphql'
 import {TierEnum} from '../../../__generated__/SendClientSegmentEventMutation.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -56,15 +56,46 @@ const TemplateItemAction = styled('div')({})
 interface Props {
   isActive: boolean
   teamId: string
-  template: ReflectTemplateItem_template
+  template: ReflectTemplateItem_template$key
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
   templateSearchQuery: string
   tier?: TierEnum
-  viewer?: ReflectTemplateItem_viewer
+  viewer?: ReflectTemplateItem_viewer$key
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, template, templateSearchQuery, tier, viewer} = props
+  const {
+    lowestScope,
+    isActive,
+    teamId,
+    template: templateRef,
+    templateSearchQuery,
+    tier,
+    viewer: viewerRef
+  } = props
+  const template = useFragment(
+    graphql`
+      fragment ReflectTemplateItem_template on ReflectTemplate {
+        #get the details here so we can show them in the details view
+        ...ReflectTemplateDetailsTemplate
+        ...makeTemplateDescription_template
+        id
+        name
+        lastUsedAt
+        scope
+        isFree
+      }
+    `,
+    templateRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment ReflectTemplateItem_viewer on User {
+        ...makeTemplateDescription_viewer
+      }
+    `,
+    viewerRef ?? null
+  )
   const {id: templateId, name: templateName, scope, isFree} = template
   const description = makeTemplateDescription(lowestScope, template, viewer, tier)
   const atmosphere = useAtmosphere()
@@ -95,22 +126,4 @@ const ReflectTemplateItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectTemplateItem, {
-  template: graphql`
-    fragment ReflectTemplateItem_template on ReflectTemplate {
-      #get the details here so we can show them in the details view
-      ...ReflectTemplateDetailsTemplate
-      ...makeTemplateDescription_template
-      id
-      name
-      lastUsedAt
-      scope
-      isFree
-    }
-  `,
-  viewer: graphql`
-    fragment ReflectTemplateItem_viewer on User {
-      ...makeTemplateDescription_viewer
-    }
-  `
-})
+export default ReflectTemplateItem
