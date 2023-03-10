@@ -2,7 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
-import Billing from './Billing'
+import PaymentDetails from './PaymentDetails'
+import BillingLeaders from './BillingLeaders'
 import OrgPlans from './OrgPlans'
 import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
 
@@ -26,7 +27,8 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <OrgPlansAndBillingHeading organizationRef={organization} />
       <OrgPlans organizationRef={organization} />
-      <Billing />
+      <PaymentDetails />
+      <BillingLeaders />
     </Suspense>
   )
 }
