@@ -29,12 +29,7 @@ const StyledPanel = styled(Panel)({
 })
 
 const StyledRow = styled(Row)({
-  padding: '12px 16px',
-  display: 'flex',
-  alignItems: 'flex-start',
-  ':nth-of-type(2)': {
-    border: 'none'
-  }
+  padding: '12px 16px'
 })
 
 const Plan = styled('div')({
@@ -85,12 +80,13 @@ const InputLabel = styled('span')({
 
 const InfoText = styled('span')({
   display: 'block',
-  fontSize: 12,
-  fontWeight: 600,
-  textAlign: 'left',
-  paddingBottom: 8,
-  color: PALETTE.SLATE_600,
-  textTransform: 'none'
+  fontSize: 16,
+  padding: '8px 0px',
+  // fontWeight: 600,
+  // textAlign: 'left',
+  // paddingBottom: 8,
+  color: PALETTE.SLATE_900
+  // textTransform: 'none'
 })
 
 const TotalBlock = styled('div')({
@@ -178,13 +174,19 @@ const BillingLeaders = (props: Props) => {
 
   return (
     <StyledPanel label='Billing Leaders'>
-      <InfoText>
-        {
-          'All billing leaders are able to see and update credit card information, change plans, and view invoices.'
-        }
-      </InfoText>
-      {billingLeaders.map((billingLeader) => (
-        <BillingLeader billingLeaderRef={billingLeader} />
+      <StyledRow>
+        <InfoText>
+          {
+            'All billing leaders are able to see and update credit card information, change plans, and view invoices.'
+          }
+        </InfoText>
+      </StyledRow>
+      {billingLeaders.map((billingLeader, idx) => (
+        <BillingLeader
+          key={billingLeader.id}
+          billingLeaderRef={billingLeader}
+          isFirstRow={idx === 0}
+        />
       ))}
     </StyledPanel>
   )

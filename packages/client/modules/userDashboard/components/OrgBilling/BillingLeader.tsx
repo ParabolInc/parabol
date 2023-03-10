@@ -31,14 +31,12 @@ const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
 })
 
-const StyledRow = styled(Row)({
+const StyledRow = styled(Row)<{isFirstRow: boolean}>(({isFirstRow}) => ({
   padding: '12px 16px',
   display: 'flex',
   alignItems: 'center',
-  ':nth-of-type(2)': {
-    border: 'none'
-  }
-})
+  border: isFirstRow ? 'none' : undefined
+}))
 
 const Plan = styled('div')({
   lineHeight: '16px',
@@ -148,10 +146,11 @@ const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
   billingLeaderRef: BillingLeader_user$key
+  isFirstRow: boolean
 }
 
 const BillingLeader = (props: Props) => {
-  const {billingLeaderRef} = props
+  const {billingLeaderRef, isFirstRow} = props
   const billingLeader = useFragment(
     graphql`
       fragment BillingLeader_user on User {
@@ -161,7 +160,7 @@ const BillingLeader = (props: Props) => {
     `,
     billingLeaderRef
   )
-  console.log('🚀 ~ child.........:', billingLeader)
+  console.log('🚀 ~ child.........:', {billingLeader, isFirstRow})
 
   const {preferredName, picture} = billingLeader
   // const {billingLeaders} = organization
@@ -170,7 +169,7 @@ const BillingLeader = (props: Props) => {
   const {onError} = useMutationProps()
 
   return (
-    <StyledRow>
+    <StyledRow isFirstRow={isFirstRow}>
       <Avatar hasBadge={false} picture={picture} size={44} />
       <StyledRowInfo>
         <RowInfoHeader>
