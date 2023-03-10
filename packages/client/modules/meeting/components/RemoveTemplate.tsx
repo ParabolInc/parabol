@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MeetingTypeEnum} from '~/__generated__/NewMeetingQuery.graphql'
 import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -9,18 +9,27 @@ import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateM
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
 import {SprintPokerDefaults} from '../../../types/constEnums'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
-import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
+import {RemoveTemplate_teamTemplates$key} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
 
 interface Props {
   gotoPublicTemplates: () => void
-  teamTemplates: RemoveTemplate_teamTemplates
+  teamTemplates: RemoveTemplate_teamTemplates$key
   templateId: string
   teamId: string
   type: MeetingTypeEnum
 }
 
 const RemoveTemplate = (props: Props) => {
-  const {gotoPublicTemplates, templateId, teamId, teamTemplates, type} = props
+  const {gotoPublicTemplates, templateId, teamId, teamTemplates: teamTemplatesRef, type} = props
+  const teamTemplates = useFragment(
+    graphql`
+      fragment RemoveTemplate_teamTemplates on MeetingTemplate @relay(plural: true) {
+        id
+        type
+      }
+    `,
+    teamTemplatesRef
+  )
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
 
@@ -50,11 +59,4 @@ const RemoveTemplate = (props: Props) => {
 
   return <DetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
 }
-export default createFragmentContainer(RemoveTemplate, {
-  teamTemplates: graphql`
-    fragment RemoveTemplate_teamTemplates on MeetingTemplate @relay(plural: true) {
-      id
-      type
-    }
-  `
-})
+export default RemoveTemplate

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {
   NewMeetingPhaseTypeEnum,
-  RetroMeetingSidebar_meeting
+  RetroMeetingSidebar_meeting$key
 } from '~/__generated__/RetroMeetingSidebar_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
@@ -21,7 +21,7 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   toggleSidebar: () => void
-  meeting: RetroMeetingSidebar_meeting
+  meeting: RetroMeetingSidebar_meeting$key
 }
 
 const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'discuss']
@@ -30,7 +30,43 @@ const RetroMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {viewerId} = atmosphere
-  const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
+  const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroMeetingSidebar_meeting on RetrospectiveMeeting {
+        ...RetroSidebarPhaseListItemChildren_meeting
+        ...NewMeetingSidebar_meeting
+        showSidebar
+        settings {
+          phaseTypes
+        }
+        id
+        endedAt
+        facilitatorUserId
+        facilitatorStageId
+        localPhase {
+          phaseType
+        }
+        localStage {
+          id
+        }
+        meetingMembers {
+          id
+        }
+        phases {
+          phaseType
+          stages {
+            id
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+            readyCount
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {
     id: meetingId,
     endedAt,
@@ -142,38 +178,4 @@ const RetroMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(RetroMeetingSidebar, {
-  meeting: graphql`
-    fragment RetroMeetingSidebar_meeting on RetrospectiveMeeting {
-      ...RetroSidebarPhaseListItemChildren_meeting
-      ...NewMeetingSidebar_meeting
-      showSidebar
-      settings {
-        phaseTypes
-      }
-      id
-      endedAt
-      facilitatorUserId
-      facilitatorStageId
-      localPhase {
-        phaseType
-      }
-      localStage {
-        id
-      }
-      meetingMembers {
-        id
-      }
-      phases {
-        phaseType
-        stages {
-          id
-          isComplete
-          isNavigable
-          isNavigableByFacilitator
-          readyCount
-        }
-      }
-    }
-  `
-})
+export default RetroMeetingSidebar

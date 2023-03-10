@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
-import {NewMeetingCheckInGreeting_checkInGreeting} from '../../../__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
-import {NewMeetingCheckInGreeting_teamMember} from '../../../__generated__/NewMeetingCheckInGreeting_teamMember.graphql'
+import {NewMeetingCheckInGreeting_checkInGreeting$key} from '../../../__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
+import {NewMeetingCheckInGreeting_teamMember$key} from '../../../__generated__/NewMeetingCheckInGreeting_teamMember.graphql'
 
 const GreetingBlock = styled('div')({
   fontSize: '1.5rem',
@@ -22,11 +22,28 @@ const GreetingSpan = styled('span')({
 })
 
 interface Props {
-  teamMember: NewMeetingCheckInGreeting_teamMember
-  checkInGreeting: NewMeetingCheckInGreeting_checkInGreeting
+  teamMember: NewMeetingCheckInGreeting_teamMember$key
+  checkInGreeting: NewMeetingCheckInGreeting_checkInGreeting$key
 }
 const NewMeetingCheckInGreeting = (props: Props) => {
-  const {teamMember, checkInGreeting} = props
+  const {teamMember: teamMemberRef, checkInGreeting: checkInGreetingRef} = props
+  const teamMember = useFragment(
+    graphql`
+      fragment NewMeetingCheckInGreeting_teamMember on TeamMember {
+        preferredName
+      }
+    `,
+    teamMemberRef
+  )
+  const checkInGreeting = useFragment(
+    graphql`
+      fragment NewMeetingCheckInGreeting_checkInGreeting on MeetingGreeting {
+        content
+        language
+      }
+    `,
+    checkInGreetingRef
+  )
   const {content, language} = checkInGreeting
   const {preferredName} = teamMember
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
@@ -44,16 +61,4 @@ const NewMeetingCheckInGreeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewMeetingCheckInGreeting, {
-  teamMember: graphql`
-    fragment NewMeetingCheckInGreeting_teamMember on TeamMember {
-      preferredName
-    }
-  `,
-  checkInGreeting: graphql`
-    fragment NewMeetingCheckInGreeting_checkInGreeting on MeetingGreeting {
-      content
-      language
-    }
-  `
-})
+export default NewMeetingCheckInGreeting

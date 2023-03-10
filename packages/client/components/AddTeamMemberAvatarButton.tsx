@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useModal from '../hooks/useModal'
@@ -10,13 +10,13 @@ import useTooltip from '../hooks/useTooltip'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import isDemoRoute from '../utils/isDemoRoute'
 import lazyPreload from '../utils/lazyPreload'
-import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
+import {AddTeamMemberAvatarButton_teamMembers$key} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import OutlinedButton from './OutlinedButton'
 
 interface Props {
   meetingId?: string
   teamId: string
-  teamMembers: AddTeamMemberAvatarButton_teamMembers
+  teamMembers: AddTeamMemberAvatarButton_teamMembers$key
 }
 
 const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
@@ -84,7 +84,15 @@ const AddTeamMemberModalDemo = lazyPreload(
 )
 
 const AddTeamMemberAvatarButton = (props: Props) => {
-  const {meetingId, teamId, teamMembers} = props
+  const {meetingId, teamId, teamMembers: teamMembersRef} = props
+  const teamMembers = useFragment(
+    graphql`
+      fragment AddTeamMemberAvatarButton_teamMembers on TeamMember @relay(plural: true) {
+        ...AddTeamMemberModal_teamMembers
+      }
+    `,
+    teamMembersRef
+  )
   const isMeeting = !!meetingId
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
@@ -118,10 +126,4 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AddTeamMemberAvatarButton, {
-  teamMembers: graphql`
-    fragment AddTeamMemberAvatarButton_teamMembers on TeamMember @relay(plural: true) {
-      ...AddTeamMemberModal_teamMembers
-    }
-  `
-})
+export default AddTeamMemberAvatarButton

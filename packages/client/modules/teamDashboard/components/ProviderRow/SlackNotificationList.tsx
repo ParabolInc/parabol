@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
@@ -15,7 +15,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import {
   SlackNotificationEventEnum,
-  SlackNotificationList_viewer
+  SlackNotificationList_viewer$key
 } from '../../../../__generated__/SlackNotificationList_viewer.graphql'
 import SlackChannelPicker from './SlackChannelPicker'
 import SlackNotificationRow from './SlackNotificationRow'
@@ -27,7 +27,7 @@ const SlackNotificationListStyles = styled('div')({
 
 interface Props {
   teamId: string
-  viewer: SlackNotificationList_viewer
+  viewer: SlackNotificationList_viewer$key
 }
 
 const TeamGroup = styled('div')({
@@ -52,7 +52,30 @@ const TEAM_EVENTS = [
 const USER_EVENTS = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEventEnum[]
 
 const SlackNotificationList = (props: Props) => {
-  const {teamId, viewer} = props
+  const {teamId, viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment SlackNotificationList_viewer on User {
+        ...SlackNotificationRow_viewer
+        teamMember(teamId: $teamId) {
+          integrations {
+            slack {
+              botAccessToken
+              isActive
+              slackUserId
+              defaultTeamChannelId
+              notifications {
+                channelId
+                event
+                eventType
+              }
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {slack} = integrations
@@ -142,25 +165,4 @@ const SlackNotificationList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SlackNotificationList, {
-  viewer: graphql`
-    fragment SlackNotificationList_viewer on User {
-      ...SlackNotificationRow_viewer
-      teamMember(teamId: $teamId) {
-        integrations {
-          slack {
-            botAccessToken
-            isActive
-            slackUserId
-            defaultTeamChannelId
-            notifications {
-              channelId
-              event
-              eventType
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default SlackNotificationList

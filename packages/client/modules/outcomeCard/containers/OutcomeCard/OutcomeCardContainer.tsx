@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw} from 'draft-js'
 import React, {memo, useEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
-import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
+import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEditorState from '../../../../hooks/useEditorState'
@@ -27,7 +27,7 @@ interface Props {
   className?: string
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
-  task: OutcomeCardContainer_task
+  task: OutcomeCardContainer_task$key
   clearIsCreatingNewTask?: () => void
   dataCy: string
   isViewerMeetingSection?: boolean
@@ -39,13 +39,26 @@ const OutcomeCardContainer = memo((props: Props) => {
     contentState,
     className,
     isDraggingOver,
-    task,
+    task: taskRef,
     area,
     isAgenda,
     dataCy,
     isViewerMeetingSection,
     meetingId
   } = props
+  const task = useFragment(
+    graphql`
+      fragment OutcomeCardContainer_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+        editors {
+          userId
+        }
+        content
+        id
+        ...OutcomeCard_task @arguments(meetingId: $meetingId)
+      }
+    `,
+    taskRef
+  )
   const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
@@ -130,15 +143,4 @@ const OutcomeCardContainer = memo((props: Props) => {
   )
 })
 
-export default createFragmentContainer(OutcomeCardContainer, {
-  task: graphql`
-    fragment OutcomeCardContainer_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
-      editors {
-        userId
-      }
-      content
-      id
-      ...OutcomeCard_task @arguments(meetingId: $meetingId)
-    }
-  `
-})
+export default OutcomeCardContainer

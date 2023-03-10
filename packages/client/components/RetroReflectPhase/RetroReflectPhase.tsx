@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import {RetroReflectPhase_meeting} from '~/__generated__/RetroReflectPhase_meeting.graphql'
+import {RetroReflectPhase_meeting$key} from '~/__generated__/RetroReflectPhase_meeting.graphql'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
@@ -19,11 +19,35 @@ import ReflectWrapperMobile from './ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './ReflectWrapperDesktop'
 
 interface Props extends RetroMeetingPhaseProps {
-  meeting: RetroReflectPhase_meeting
+  meeting: RetroReflectPhase_meeting$key
 }
 
 const RetroReflectPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroReflectPhase_meeting on RetrospectiveMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
+        ...PhaseItemColumn_meeting
+        endedAt
+        localPhase {
+          ...RetroReflectPhase_phase @relay(mask: false)
+        }
+        localStage {
+          isComplete
+        }
+        phases {
+          ...RetroReflectPhase_phase @relay(mask: false)
+        }
+        showSidebar
+        settings {
+          disableAnonymity
+        }
+      }
+    `,
+    meetingRef
+  )
   const [callbackRef, phaseRef] = useCallbackRef()
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -81,26 +105,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(RetroReflectPhase, {
-  meeting: graphql`
-    fragment RetroReflectPhase_meeting on RetrospectiveMeeting {
-      ...StageTimerDisplay_meeting
-      ...StageTimerControl_meeting
-      ...PhaseItemColumn_meeting
-      endedAt
-      localPhase {
-        ...RetroReflectPhase_phase @relay(mask: false)
-      }
-      localStage {
-        isComplete
-      }
-      phases {
-        ...RetroReflectPhase_phase @relay(mask: false)
-      }
-      showSidebar
-      settings {
-        disableAnonymity
-      }
-    }
-  `
-})
+export default RetroReflectPhase

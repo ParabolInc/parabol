@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -11,7 +11,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {AzureDevOpsScopingSelectAllIssues_workItems} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
+import {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -36,13 +36,26 @@ const ErrorMessage = styled('div')({
 })
 interface Props {
   meetingId: string
-  workItems: AzureDevOpsScopingSelectAllIssues_workItems
+  workItems: AzureDevOpsScopingSelectAllIssues_workItems$key
   usedServiceTaskIds: Set<string>
   providerId: string
 }
 
 const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, workItems, providerId} = props
+  const {meetingId, usedServiceTaskIds, workItems: workItemsRef, providerId} = props
+  const workItems = useFragment(
+    graphql`
+      fragment AzureDevOpsScopingSelectAllIssues_workItems on AzureDevOpsWorkItemEdge
+      @relay(plural: true) {
+        node {
+          id
+          title
+          url
+        }
+      }
+    `,
+    workItemsRef
+  )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const getProjectId = (url: URL) => {
@@ -104,15 +117,4 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AzureDevOpsScopingSelectAllIssues, {
-  workItems: graphql`
-    fragment AzureDevOpsScopingSelectAllIssues_workItems on AzureDevOpsWorkItemEdge
-    @relay(plural: true) {
-      node {
-        id
-        title
-        url
-      }
-    }
-  `
-})
+export default AzureDevOpsScopingSelectAllIssues

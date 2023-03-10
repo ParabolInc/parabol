@@ -9,6 +9,7 @@ import {
 } from 'graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import getActiveTeamCountByOrgIds from '../public/types/helpers/getActiveTeamCountByOrgIds'
 import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -59,6 +60,14 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     picture: {
       type: GraphQLURLType,
       description: 'The org avatar'
+    },
+    activeTeamCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description:
+        'The number of teams with at least 2 team members who have logged in within the last 30 days & within an active organization that has had a meeting that has a max(createdAt, endedAt) newer than 30 days ago',
+      resolve: async ({id: orgId}, _args: unknown, {dataLoader}) => {
+        return getActiveTeamCountByOrgIds(orgId, dataLoader)
+      }
     },
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),

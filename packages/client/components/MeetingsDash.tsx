@@ -33,7 +33,7 @@ const EmptyContainer = styled('div')({
   flexDirection: 'column',
   height: '100%',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
-  padding: 16,
+  padding: '16px 8px',
   position: 'relative'
 })
 
