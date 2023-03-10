@@ -128,7 +128,7 @@ const MenuToggleBlock = styled('div')({
 // }
 
 const StyledHeading = styled(RowInfoHeading)({
-  paddingLeft: 16
+  // paddingLeft: 16
 })
 
 const StyledFlatButton = styled(FlatButton)({
@@ -141,8 +141,6 @@ const StyledButton = styled(FlatButton)({
   paddingRight: 0,
   width: '100%'
 })
-
-const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
   billingLeaderRef: BillingLeader_user$key
@@ -170,8 +168,8 @@ const BillingLeader = (props: Props) => {
 
   return (
     <StyledRow isFirstRow={isFirstRow}>
-      <Avatar hasBadge={false} picture={picture} size={44} />
-      <StyledRowInfo>
+      <Avatar hasBadge={false} picture={picture} size={ElementWidth.BILLING_AVATAR} />
+      <RowInfo>
         <RowInfoHeader>
           <StyledHeading>{preferredName}</StyledHeading>
           {/* {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>} */}
@@ -181,7 +179,7 @@ const BillingLeader = (props: Props) => {
         </RowInfoHeader>
         {/* <RowInfoLink href={`mailto:${email}`} title='Send an email'> */}
         {/* <RowInfoLink title='Send an email'>{preferredName}</RowInfoLink> */}
-      </StyledRowInfo>
+      </RowInfo>
       <RowActions>
         <ActionsBlock>
           {/* {!isBillingLeader && viewerId === userId && ( */}
