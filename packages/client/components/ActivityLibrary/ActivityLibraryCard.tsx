@@ -13,7 +13,7 @@ const Image = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement
   )
 }
 
-type TitleProps<T extends ElementType> = {
+interface TitleProps<T extends ElementType> {
   as?: T
   children: ReactNode
 }

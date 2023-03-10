@@ -14,7 +14,7 @@ export const MeetingThemes: Record<MeetingTypeEnum, CardTheme> = {
   teamPrompt: {primary: 'bg-aqua-400', secondary: 'bg-[#CBECF0]'}
 }
 
-export interface Props {
+interface Props {
   className?: string
   type: MeetingTypeEnum
   children: React.ReactNode
