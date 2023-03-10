@@ -8,7 +8,7 @@ const Image = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement
 
   return (
     <div className='absolute inset-0 top-5 flex'>
-      <img className={clsx('m-auto h-[86px] w-auto object-cover', className)} src={src} />
+      <img className={clsx('m-auto h-[86px] w-auto object-contain', className)} src={src} />
     </div>
   )
 }
