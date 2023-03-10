@@ -8,7 +8,12 @@ const CloseButton = (props: PropsWithChildren<React.ButtonHTMLAttributes<HTMLBut
   const {className, ...rest} = props
 
   return (
-    <button className={clsx('flex h-10 w-10 rounded-full hover:bg-slate-300')} {...rest}>
+    <button
+      className={clsx(
+        'flex h-10 w-10 cursor-pointer rounded-full bg-transparent hover:bg-slate-300'
+      )}
+      {...rest}
+    >
       <Close className='m-auto h-8 w-8' />
     </button>
   )
