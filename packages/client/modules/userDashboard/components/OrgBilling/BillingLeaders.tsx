@@ -21,20 +21,16 @@ const StyledPanel = styled(Panel)({
 const StyledRow = styled(Row)({
   padding: '12px 16px',
   display: 'flex',
-  alignItems: 'center',
-  flexWrap: 'nowrap'
+  alignItems: 'center'
 })
 
 const InfoText = styled('span')({
-  display: 'block',
   fontSize: 16,
   padding: '8px 0px',
   color: PALETTE.SLATE_900
 })
 
 const StyledButton = styled(FlatButton)({
-  paddingLeft: 0,
-  paddingRight: 0,
   width: ElementWidth.BILLING_AVATAR,
   height: ElementWidth.BILLING_AVATAR,
   color: 'inherit',
@@ -51,10 +47,6 @@ const ButtonWrapper = styled('div')({
   color: PALETTE.SKY_500,
   flexDirection: 'row',
   display: 'flex',
-  justifyContent: 'flex-start',
-  alignContent: 'flex-start',
-  flexWrap: 'nowrap',
-  width: '100%',
   ':hover': {
     color: PALETTE.SKY_600,
     cursor: 'pointer'

@@ -27,8 +27,7 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: 8,
-  width: '2rem'
+  width: 32
 })
 
 const StyledButton = styled(FlatButton)({
