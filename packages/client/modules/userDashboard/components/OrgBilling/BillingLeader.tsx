@@ -25,6 +25,7 @@ import RowActions from '../../../../components/Row/RowActions'
 import FlatButton from '../../../../components/FlatButton'
 import RowInfo from '../../../../components/Row/RowInfo'
 import {useFragment} from 'react-relay'
+import IconLabel from '../../../../components/IconLabel'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -137,6 +138,12 @@ const StyledFlatButton = styled(FlatButton)({
   paddingRight: 16
 })
 
+const StyledButton = styled(FlatButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
+})
+
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
 type Props = {
@@ -180,7 +187,7 @@ const BillingLeader = (props: Props) => {
         <ActionsBlock>
           {/* {!isBillingLeader && viewerId === userId && ( */}
           {/* // <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}> */}
-          <StyledFlatButton>Leave Organization</StyledFlatButton>
+          {/* <StyledFlatButton>Leave Organization</StyledFlatButton> */}
           {/* )} */}
           {/* {isViewerLastBillingLeader && userId === viewerId && (
             <MenuToggleBlock
@@ -199,15 +206,16 @@ const BillingLeader = (props: Props) => {
               <MenuButton disabled />
             </MenuToggleBlock>
           )} */}
-          {/* {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
-            <MenuToggleBlock>
-              <MenuButton
-                onClick={togglePortal}
-                onMouseEnter={BillingLeaderActionMenu.preload}
-                ref={originRef}
-              />
-            </MenuToggleBlock>
-          )} */}
+          <MenuToggleBlock>
+            {/* <MenuButton
+              onClick={togglePortal}
+              onMouseEnter={BillingLeaderActionMenu.preload}
+              ref={originRef}
+            /> */}
+            <StyledButton>
+              <IconLabel icon='more_vert' />
+            </StyledButton>
+          </MenuToggleBlock>
           {/* {menuPortal(
             <BillingLeaderActionMenu
               menuProps={menuProps}
