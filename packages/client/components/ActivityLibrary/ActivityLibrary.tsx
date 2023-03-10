@@ -87,7 +87,7 @@ export const ActivityLibrary = (props: Props) => {
       <ActivityLibraryMobileHeader className='flex sm:hidden' onClose={handleCloseCLick} />
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full px-1 md:mx-[15%]'>
+        <ScrollArea.Viewport className='flex h-full md:px-[15%]'>
           <div className='mx-auto grid w-fit grid-cols-2 gap-4 p-4 lg:grid-cols-3 2xl:grid-cols-4'>
             {templates.map((template) => {
               const templateIllustration =

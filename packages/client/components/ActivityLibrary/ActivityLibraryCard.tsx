@@ -27,7 +27,7 @@ const Title = <T extends ElementType = 'div'>(
   return (
     <Component
       className={clsx(
-        'block pr-6 text-sm font-semibold leading-5 text-slate-800 focus:outline-none sm:text-base',
+        'z-10 block pr-6 text-sm font-semibold leading-5 text-slate-800 focus:outline-none sm:text-base',
         className
       )}
       {...rest}
