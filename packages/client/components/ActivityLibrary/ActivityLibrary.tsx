@@ -4,13 +4,13 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
-import {ActivityLibraryHeader} from './ActivityLibraryHeader'
-import {ActivityLibraryMobileHeader} from './ActivityLibraryMobileHeader'
+import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
 import {ActivityLibraryCard} from './ActivityLibraryCard'
 
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import {activityIllustrations} from './ActivityIllustrations'
 import {Link} from 'react-router-dom'
+import useRouter from '../../hooks/useRouter'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -51,8 +51,13 @@ export const ActivityLibrary = (props: Props) => {
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
+  const {history} = useRouter()
   const {viewer} = data
   const {featureFlags, availableTemplates} = viewer
+
+  const handleCloseCLick = () => {
+    history.goBack()
+  }
 
   const templates = [
     {
@@ -78,11 +83,11 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col'>
-      <ActivityLibraryHeader className='hidden sm:flex' />
-      <ActivityLibraryMobileHeader className='flex sm:hidden' />
+      <ActivityLibraryHeader className='hidden sm:flex' onClose={handleCloseCLick} />
+      <ActivityLibraryMobileHeader className='flex sm:hidden' onClose={handleCloseCLick} />
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full md:mx-[15%]'>
+        <ScrollArea.Viewport className='flex h-full px-1 md:mx-[15%]'>
           <div className='mx-auto grid w-fit grid-cols-2 gap-4 p-4 lg:grid-cols-3 2xl:grid-cols-4'>
             {templates.map((template) => {
               const templateIllustration =
