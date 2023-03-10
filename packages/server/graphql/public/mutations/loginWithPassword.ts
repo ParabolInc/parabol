@@ -8,9 +8,6 @@ const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   {email, password},
   context
 ) => {
-  if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
-    return {error: {message: 'Log in with password is disabled'}}
-  }
   const loginAttempt = await attemptLogin(email, password, context.ip)
   if (loginAttempt.userId) {
     context.authToken = loginAttempt.authToken
