@@ -74,10 +74,10 @@
     "undici": "^5.8.2",
     "parse-url": "^8.1.0",
     "rethinkdb-ts": "2.5.1",
+    "loader-utils": "3.2.1",
     "json5": "2.2.3",
     "minimatch": "7.4.2",
-    "terser": "5.16.6",
-    "jsdom": "21.1.0"
+    "terser": "5.16.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
