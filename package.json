@@ -41,14 +41,14 @@
     "typecheck": "nx run-many --target=typecheck",
     "lintcheck": "nx run-many --target=lint:check",
     "stylecheck": "nx run-many --target=prettier:check",
-    "update-schema": "node scripts/runSchemaUpdater.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "precommit": "nx run-many --target=precommit --parallel=1",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
+    "relay:build": "node scripts/generateGraphQLArtifacts.js",
+    "relay:watch": "node scripts/relayWatch.js",
     "test:client": "yarn workspace parabol-client test",
-    "test:server": "yarn workspace parabol-server test",
-    "relay:persist": "yarn sucrase-node relayLocalPersisting.ts"
+    "test:server": "yarn workspace parabol-server test"
   },
   "resolutions": {
     "typescript": "4.9.5",

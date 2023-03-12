@@ -4,20 +4,18 @@
   The toolbox also includes other helpful CLIs.
   They are included in the build to minimize the number of webpack builds we perform
 */
-const webpack = require('webpack')
-const isRelayCompilerFirstTime = require('./isRelayCompilerFirstTime')
+import webpack from 'webpack'
 
-const compileToolbox = async () => {
-  const isFirstTime = isRelayCompilerFirstTime()
-  return new Promise((resolve) => {
+const compileToolbox = async (ignoreErrors: boolean) => {
+  return new Promise<void>((resolve) => {
     const config = require('./webpack/toolbox.config')
     const compiler = webpack(config)
     compiler.run((err, stats) => {
       if (err) {
         console.log('Webpack error:', err)
       }
-      const {errors} = stats.compilation
-      if (!isFirstTime && errors.length > 0) {
+      const errors = stats?.compilation?.errors ?? []
+      if (!ignoreErrors && errors.length > 0) {
         console.log('COMPILATION ERRORS:', errors)
       }
       resolve()
@@ -29,13 +27,9 @@ const updateGraphQLSchema = async () => {
   return require('./toolbox/updateSchema').default()
 }
 
-const runSchemaUpdater = async () => {
-  await compileToolbox()
+const runSchemaUpdater = async (ignoreErrors: boolean) => {
+  await compileToolbox(ignoreErrors)
   return updateGraphQLSchema()
 }
 
-if (require.main === module) {
-  runSchemaUpdater()
-}
-
-module.exports = runSchemaUpdater
+export default runSchemaUpdater
