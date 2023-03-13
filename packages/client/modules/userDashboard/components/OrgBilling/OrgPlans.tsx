@@ -14,6 +14,7 @@ import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_orga
 import {ElementWidth, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
+import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -160,22 +161,24 @@ const UpgradeButton = styled(FlatPrimaryButton)<{
 }))
 
 const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === 'starter') {
-    return plan === 'starter' ? 'disabled' : plan === 'team' ? 'primary' : 'secondary'
-  } else if (tier === 'team') {
-    return plan === 'team' ? 'disabled' : 'secondary'
+  if (tier === plan) {
+    return 'disabled'
+  } else if (tier === 'starter') {
+    return plan === 'team' ? 'primary' : 'secondary'
   } else {
-    return plan === 'enterprise' ? 'disabled' : 'secondary'
+    return 'secondary'
   }
 }
 
 const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === 'starter') {
-    return plan === 'starter' ? 'Current Plan' : plan === 'team' ? 'Select Plan' : 'Contact'
-  } else if (tier === 'team') {
-    return plan === 'team' ? 'Current Plan' : plan === 'starter' ? 'Downgrade' : 'Contact'
+  if (tier === plan) {
+    return 'Current Plan'
+  } else if (tier === 'enterprise' || plan === 'enterprise') {
+    return 'Contact'
+  } else if (plan === 'starter') {
+    return 'Downgrade'
   } else {
-    return plan === 'enterprise' ? 'Current Plan' : 'Contact'
+    return 'Select Plan'
   }
 }
 
@@ -189,7 +192,10 @@ const OrgPlans = (props: Props) => {
     graphql`
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
+        ...LimitExceededWarning_organization
         tier
+        scheduledLockAt
+        lockedAt
       }
     `,
     organizationRef
@@ -197,7 +203,8 @@ const OrgPlans = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
-  const {tier} = organization
+  const {tier, scheduledLockAt, lockedAt} = organization
+  const showNudge = scheduledLockAt || lockedAt
 
   const plans = [
     {
@@ -245,6 +252,7 @@ const OrgPlans = (props: Props) => {
   return (
     <StyledPanel label='Plans'>
       <StyledRow>
+        {showNudge && <LimitExceededWarning organizationRef={organization} />}
         <OrgStats organizationRef={organization} />
       </StyledRow>
       <StyledRow>

@@ -49,7 +49,6 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
-import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
@@ -103,7 +102,6 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
-import signUpWithPassword from './mutations/signUpWithPassword'
 import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
@@ -132,7 +130,6 @@ import updateUserProfile from './mutations/updateUserProfile'
 import upgradeToTeamTier from './mutations/upgradeToTeamTier'
 import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
-import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -185,7 +182,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       flagReadyToAdvance,
       invalidateSessions,
       inviteToTeam,
-      loginWithPassword,
       movePokerTemplateDimension,
       moveReflectTemplatePrompt,
       moveTeamToOrg,
@@ -228,7 +224,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setPhaseFocus,
       setStageTimer,
       setSlackNotification,
-      signUpWithPassword,
       startDraggingReflection,
       startCheckIn,
       startRetrospective,
@@ -254,7 +249,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       upgradeToTeamTier,
       uploadOrgImage,
       uploadUserImage,
-      verifyEmail,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,

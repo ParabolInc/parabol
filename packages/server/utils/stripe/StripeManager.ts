@@ -50,6 +50,17 @@ export default class StripeManager {
     })
   }
 
+  async createPaymentIntent(amount: number) {
+    return this.stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
+      automatic_payment_methods: {
+        // TODO: change this when we're handling webhooks for selected payments
+        enabled: true
+      }
+    })
+  }
+
   async createProSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
