@@ -9,6 +9,7 @@ import {PortalStatus} from '../hooks/usePortal'
 import NewMeetingDropdown from './NewMeetingDropdown'
 import NewMeetingSettingsToggleAnonymity from './NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleTranscription from './NewMeetingSettingsToggleTranscription'
 
 const NewMeetingSettingsToggleCheckInMenuEntry = styled(NewMeetingSettingsToggleCheckIn)({
   background: 'none',
@@ -39,6 +40,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       fragment NewMeetingSettingsRetrospectiveSettings_settings on TeamMeetingSettings {
         ...NewMeetingSettingsToggleCheckIn_settings
         ...NewMeetingSettingsToggleAnonymity_settings
+        ...NewMeetingSettingsToggleTranscription_settings
       }
     `,
     settingsRef
@@ -57,6 +59,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
+          <NewMeetingSettingsToggleTranscription settingsRef={settings} />
         </div>
       )}
     </>
