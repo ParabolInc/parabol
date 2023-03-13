@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import ReactGA from 'react-ga4'
 import {commitMutation} from 'react-relay'
 import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
@@ -18,13 +17,7 @@ const mutation = graphql`
       error {
         message
       }
-      authToken
-      isNewUser
-      user {
-        tms
-        isPatient0
-        ...UserAnalyticsFrag @relay(mask: false)
-      }
+      ...GA4Frag @relay(mask: false)
     }
     # Validation occurs statically https://github.com/graphql/graphql-js/issues/1334
     # A default value is necessary even in the case of @include(if: false)
@@ -45,16 +38,9 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError, isNewUser, user} = loginWithGoogle
+      const {error: uiError} = loginWithGoogle
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
-        if (isNewUser) {
-          ReactGA.event('sign_up', {
-            user_properties: {
-              is_patient_0: user!.isPatient0
-            }
-          })
-        }
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken
         atmosphere.setAuthToken(authToken)

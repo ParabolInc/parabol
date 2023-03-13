@@ -15,12 +15,7 @@ const mutation = graphql`
       error {
         message
       }
-      authToken
-      user {
-        email
-        tms
-        ...UserAnalyticsFrag @relay(mask: false)
-      }
+      ...GA4Frag @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)

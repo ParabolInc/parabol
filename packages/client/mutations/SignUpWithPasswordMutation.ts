@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import ReactGA from 'react-ga4'
 import {commitMutation} from 'react-relay'
 import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
@@ -24,12 +23,7 @@ const mutation = graphql`
       error {
         message
       }
-      authToken
-      user {
-        tms
-        isPatient0
-        ...UserAnalyticsFrag @relay(mask: false)
-      }
+      ...GA4Frag @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)
@@ -46,15 +40,10 @@ const SignUpWithPasswordMutation: StandardMutation<
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, signUpWithPassword} = res
-      const {error: uiError, user} = signUpWithPassword
+      const {error: uiError} = signUpWithPassword
       onCompleted({signUpWithPassword}, errors)
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
-        ReactGA.event('sign_up', {
-          user_properties: {
-            is_patient_0: user!.isPatient0
-          }
-        })
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken ?? signUpWithPassword.authToken
         atmosphere.setAuthToken(authToken)

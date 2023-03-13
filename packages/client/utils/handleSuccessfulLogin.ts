@@ -1,12 +1,9 @@
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from './safeIdentify'
+import {GA4Frag} from '../__generated__/GA4Frag.graphql'
+import ReactGA from 'react-ga4'
 
-interface Payload {
-  user?: {
-    id?: string | null
-    email?: string | null
-  } | null
-}
+type Payload = Omit<GA4Frag, ' $refType'>
 
 const handleSuccessfulLogin = (payload: Payload) => {
   const email = payload?.user?.email
@@ -14,6 +11,14 @@ const handleSuccessfulLogin = (payload: Payload) => {
   if (!email || !userId) return
   window.localStorage.setItem(LocalStorageKey.EMAIL, email)
   safeIdentify(userId, email)
+  if (payload.isNewUser) {
+    ReactGA.event('sign_up', {
+      userId: userId,
+      user_properties: {
+        is_patient_0: payload.user.isPatient0
+      }
+    })
+  }
 }
 
 export default handleSuccessfulLogin
