@@ -2,7 +2,6 @@ extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
-  showTranscription: Boolean!
 }
 
 extend type ActionMeeting {
@@ -39,6 +38,7 @@ extend type RetrospectiveMeeting {
   spotlightGroup: RetroReflectionGroup
   spotlightReflectionId: String
   spotlightSearchQuery: String
+  showTranscription: Boolean!
 }
 
 extend type TeamPromptMeeting {

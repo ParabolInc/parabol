@@ -3,11 +3,12 @@ import {FiberNew as NewIcon, ThumbUp} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -181,7 +182,9 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
+        id
         endedAt
+        showTranscription
         organization {
           ...DiscussPhaseSqueeze_organization
         }
@@ -199,11 +202,22 @@ const RetroDiscussPhase = (props: Props) => {
     meetingRef
   )
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {endedAt, localStage, showSidebar, organization} = meeting
+  const atmosphere = useAtmosphere()
+  const {id: meetingId, endedAt, localStage, showSidebar, organization, showTranscription} = meeting
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
+
+  const handleHeaderClick = (header: 'discussion' | 'transcription') => {
+    if (showTranscription && header === 'transcription') return
+    if (!showTranscription && header === 'discussion') return
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+      meeting.setValue(!showTranscription, 'showTranscription')
+    })
+  }
 
   // Uncomment below code to enable Easter Egg:
   // bugs shown on screen when the discussion group title contains "bug"
@@ -276,8 +290,16 @@ const RetroDiscussPhase = (props: Props) => {
                   discussionId={discussionId!}
                   header={
                     <HeaderWrapper>
-                      <ButtonHeader isActive>{'Discussion & Tasks'}</ButtonHeader>
-                      <ButtonHeader>
+                      <ButtonHeader
+                        onClick={() => handleHeaderClick('discussion')}
+                        isActive={!showTranscription}
+                      >
+                        {'Discussion & Tasks'}
+                      </ButtonHeader>
+                      <ButtonHeader
+                        onClick={() => handleHeaderClick('transcription')}
+                        isActive={showTranscription}
+                      >
                         {'Transcription'}
                         <Badge>
                           <NewIcon />
