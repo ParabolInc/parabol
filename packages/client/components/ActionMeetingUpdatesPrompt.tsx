@@ -26,8 +26,7 @@ const PromptText = styled('div')({
 
 const StyledHeader = styled(PhaseHeaderTitle)({
   fontSize: 18,
-  overflowWrap: 'break-word',
-  width: '55vw'
+  overflowWrap: 'break-word'
 })
 
 const getQuestion = (isConnected: boolean | null, taskCount: number, preferredName: string) => {
@@ -92,7 +91,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
     <StyledPrompt>
       <Avatar picture={picture || defaultUserAvatar} size={64} />
       <PromptText>
-        <StyledHeader>
+        <StyledHeader className='max-w-full'>
           {prefix}
           <i>{getQuestion(isConnected, taskCount, preferredName)}</i>
         </StyledHeader>
