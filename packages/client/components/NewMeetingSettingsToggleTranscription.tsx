@@ -49,14 +49,17 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
 
 const NewIssueInput = styled('input')({
   appearance: 'none',
-  // background: 'transparent',
+  background: 'inherit',
   border: 'none',
   color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
   padding: '0px 8px 0px 0px',
   outline: 0,
-  width: '100%'
+  width: '100%',
+  ':focus': {
+    outline: 'none'
+  }
 })
 
 interface Props {
@@ -92,13 +95,16 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
   }
   return (
     <>
-      <ButtonRow onClick={toggleCheckIn} className={className}>
-        <Label>{'Include Zoom Transcription'}</Label>
-        <StyledCheckbox active={isChecked} />
-      </ButtonRow>
+      {!isChecked && (
+        <ButtonRow onClick={toggleCheckIn} className={className}>
+          <Label>{'Include Zoom Transcription'}</Label>
+          <StyledCheckbox active={isChecked} />
+        </ButtonRow>
+      )}
       {isChecked && (
-        <ButtonRow isInput>
+        <ButtonRow>
           <NewIssueInput placeholder='Enter your meeting id' />
+          <StyledCheckbox active={isChecked} />
         </ButtonRow>
       )}
     </>
