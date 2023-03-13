@@ -183,7 +183,9 @@ const makeOptions = (title: string, subtitle: string) => {
       x: {
         type: 'time',
         time: {
+          minUnit: 'day',
           displayFormats: {
+            day: 'MMM DD',
             month: 'MMM'
           },
           round: 'day',
@@ -198,6 +200,9 @@ const makeOptions = (title: string, subtitle: string) => {
         grid: {
           display: false,
           drawBorder: false
+        },
+        ticks: {
+          precision: 0
         }
       }
     },
