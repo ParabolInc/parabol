@@ -36,6 +36,24 @@ const Message = styled('div')({
   margin: '24 0'
 })
 
+const Wrapper = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1
+})
+
+const StyledInput = styled('input')({
+  appearance: 'none',
+  borderRadius: 4,
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  marginTop: 16,
+  padding: 12,
+  outline: 0,
+  backgroundColor: 'transparent',
+  width: '100%'
+})
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
@@ -44,7 +62,7 @@ interface Props {
 
 const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription?: boolean) => {
   if (showTranscription) {
-    return 'Start the conversation to capture next steps.'
+    return 'Paste your Zoom Meeting ID below to transcribe the meeting'
   }
   if (isReadOnly) {
     return allowTasks ? 'No comments or tasks were added here' : 'No comments were added here'
@@ -63,6 +81,11 @@ const DiscussionThreadListEmptyState = (props: Props) => {
         <EmptyDiscussionImage src={EmptyDiscussionIllustration} />
       </EmptyDiscussionContainer>
       <Message>{message}</Message>
+      {showTranscription && (
+        <Wrapper>
+          <StyledInput autoFocus placeholder='Enter your meeting id here...' />
+        </Wrapper>
+      )}
     </DiscussionThreadEmptyStateRoot>
   )
 }

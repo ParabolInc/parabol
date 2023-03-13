@@ -47,7 +47,7 @@ const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   userSelect: 'none'
 }))
 
-const NewIssueInput = styled('input')({
+const StyledInput = styled('input')({
   appearance: 'none',
   background: 'inherit',
   border: 'none',
@@ -103,7 +103,7 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
       )}
       {isChecked && (
         <ButtonRow>
-          <NewIssueInput placeholder='Enter your meeting id' />
+          <StyledInput placeholder='Enter your meeting id' />
           <StyledCheckbox active={isChecked} />
         </ButtonRow>
       )}
