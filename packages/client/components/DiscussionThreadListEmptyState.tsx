@@ -39,23 +39,30 @@ const Message = styled('div')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
+  showTranscription?: boolean
+}
+
+const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription?: boolean) => {
+  if (showTranscription) {
+    return 'Start the conversation to capture next steps.'
+  }
+  if (isReadOnly) {
+    return allowTasks ? 'No comments or tasks were added here' : 'No comments were added here'
+  }
+  return allowTasks
+    ? 'Start the conversation or add takeaway task cards to capture next steps.'
+    : 'Start the conversation to capture next steps.'
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks} = props
-  const readOnlyMessage = allowTasks
-    ? 'No comments or tasks were added here'
-    : 'No comments were added here'
-  const message = `Start the conversation${
-    allowTasks ? ' or add takeaway task cards' : ''
-  } to capture next steps.`
-
+  const {isReadOnly, allowTasks, showTranscription} = props
+  const message = getMessage(allowTasks, isReadOnly, showTranscription)
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>
         <EmptyDiscussionImage src={EmptyDiscussionIllustration} />
       </EmptyDiscussionContainer>
-      <Message>{isReadOnly ? readOnlyMessage : message}</Message>
+      <Message>{message}</Message>
     </DiscussionThreadEmptyStateRoot>
   )
 }
