@@ -27,7 +27,7 @@ export default class Reflection {
   content: string
   plaintextContent: string
   entities: GoogleAnalyzedEntity[]
-  sentimentScore: number
+  sentimentScore?: number
   isActive: boolean
   meetingId: string
   reactjis: Reactji[]
@@ -58,7 +58,7 @@ export default class Reflection {
     this.content = content
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.entities = entities
-    this.sentimentScore = sentimentScore || 0.0
+    this.sentimentScore = sentimentScore
     this.isActive = true
     this.meetingId = meetingId
     this.reactjis = reactjis || []

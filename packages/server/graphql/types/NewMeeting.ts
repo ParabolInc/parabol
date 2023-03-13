@@ -157,7 +157,7 @@ export const newMeetingFields = () => ({
   },
   sentimentScore: {
     type: GraphQLFloat,
-    description: `The overall sentiment score for the meeting. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
+    description: `The overall sentiment score (range from -1.0 to 1.0) for the meeting. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
   },
   summarySentAt: {
     type: GraphQLISO8601Type,
