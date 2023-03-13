@@ -95,9 +95,9 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const authToken = await bootstrapNewUser(tempUser, !isInvited)
   const newUser = await dataLoader.get('users').loadNonNull(userId)
   return {
+    userId,
     authToken: encodeAuthToken(authToken),
-    isNewUser: true,
-    isPatient0: newUser.isPatient0
+    isNewUser: true
   }
 }
 

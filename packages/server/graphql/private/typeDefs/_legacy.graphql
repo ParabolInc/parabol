@@ -348,21 +348,6 @@ type Mutation {
   ): Boolean!
 
   """
-  Log in using SAML single sign on (SSO)
-  """
-  loginSAML(
-    """
-    The querystring provided by the IdP including SAMLResponse and RelayState
-    """
-    queryString: String!
-
-    """
-    The name of the SAML identifier. The slug used in the redirect URL
-    """
-    samlName: ID!
-  ): LoginSAMLPayload!
-
-  """
   Send a message to all authorised Slack users
   """
   messageAllSlackUsers(
@@ -2048,25 +2033,6 @@ type FlagConversionModalPayload {
 
 type DeleteUserPayload {
   error: StandardMutationError
-}
-
-type LoginSAMLPayload {
-  error: StandardMutationError
-
-  """
-  The new JWT
-  """
-  authToken: ID
-
-  """
-  if a new user is created
-  """
-  isNewUser: Boolean
-
-  """
-  if the user is patient 0
-  """
-  isPatient0: Boolean
 }
 
 type ErrorPayload {

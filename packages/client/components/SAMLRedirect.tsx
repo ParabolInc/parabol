@@ -16,10 +16,12 @@ const SAMLRedirect = () => {
     const params = new URLSearchParams(location.search)
     const token = params.get('token')
     const error = params.get('error')
+    const userId = params.get('userId')
     const isNewUser = params.get('isNewUser') === 'true'
     const isPatient0 = params.get('isPatient0') === 'true'
     if (isNewUser && !error) {
       ReactGA.event('sign_up', {
+        userId,
         user_properties: {
           is_patient0: isPatient0
         }

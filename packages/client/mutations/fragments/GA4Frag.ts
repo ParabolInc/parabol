@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment GA4Frag on UserLogInPayload {
+    userId
     authToken
     isNewUser
     user {

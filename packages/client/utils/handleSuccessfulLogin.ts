@@ -13,7 +13,7 @@ const handleSuccessfulLogin = (payload: Payload) => {
   safeIdentify(userId, email)
   if (payload.isNewUser) {
     ReactGA.event('sign_up', {
-      userId: userId,
+      userId,
       user_properties: {
         is_patient_0: payload.user.isPatient0
       }
