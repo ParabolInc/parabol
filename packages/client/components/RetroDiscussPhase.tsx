@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {FiberNew, ThumbUp} from '@mui/icons-material'
+import {FiberNew as NewIcon, ThumbUp} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
@@ -12,7 +12,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
-import {DiscussionThreadables, Header as DiscussionThreadHeader} from './DiscussionThreadList'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
@@ -25,7 +25,6 @@ import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import PlainButton from './PlainButton/PlainButton'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
@@ -150,10 +149,10 @@ const Badge = styled('div')({
   color: PALETTE.SUCCESS_LIGHT
 })
 
-const ButtonHeader = styled(FlatButton)({
+const ButtonHeader = styled(FlatButton)<{isActive?: boolean}>(({isActive}) => ({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   margin: '0 0 8px',
-  padding: '6px 12px 12px',
+  padding: '12px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -161,16 +160,16 @@ const ButtonHeader = styled(FlatButton)({
   textTransform: 'none',
   color: PALETTE.SLATE_600,
   fontSize: 12,
-  fontWeight: 600,
-  letterSpacing: '.03em',
-  lineHeight: '16px',
+  fontWeight: isActive ? 600 : 400,
+  lineHeight: '18px',
   userSelect: 'none',
   width: '50%',
+  textDecoration: isActive ? 'underline' : 'none',
   borderRadius: 0,
   ':first-child': {
     borderRight: `1px solid ${PALETTE.SLATE_300}`
   }
-})
+}))
 
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
@@ -277,12 +276,11 @@ const RetroDiscussPhase = (props: Props) => {
                   discussionId={discussionId!}
                   header={
                     <HeaderWrapper>
-                      <ButtonHeader>{'Discussion & Tasks'}</ButtonHeader>
+                      <ButtonHeader isActive>{'Discussion & Tasks'}</ButtonHeader>
                       <ButtonHeader>
                         {'Transcription'}
                         <Badge>
-                          {/* <BadgeDot isConnected={true} /> */}
-                          <FiberNew />
+                          <NewIcon />
                         </Badge>
                       </ButtonHeader>
                     </HeaderWrapper>

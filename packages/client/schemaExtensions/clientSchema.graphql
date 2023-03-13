@@ -2,6 +2,7 @@ extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  showTranscription: Boolean!
 }
 
 extend type ActionMeeting {
