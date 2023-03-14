@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
-import {TaskColumns_teams} from '~/__generated__/TaskColumns_teams.graphql'
+import {useFragment} from 'react-relay'
+import {TaskColumns_teams$key} from '~/__generated__/TaskColumns_teams.graphql'
 import EditorHelpModalContainer from '../../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -14,7 +14,7 @@ import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/c
 import dndNoise from '../../utils/dndNoise'
 import makeTasksByStatus from '../../utils/makeTasksByStatus'
 import {TaskStatusEnum} from '../../__generated__/CreateTaskMutation.graphql'
-import {TaskColumns_tasks} from '../../__generated__/TaskColumns_tasks.graphql'
+import {TaskColumns_tasks$key} from '../../__generated__/TaskColumns_tasks.graphql'
 import {AreaEnum} from '../../__generated__/UpdateTaskMutation.graphql'
 
 const ColumnsBlock = styled('div')({
@@ -33,9 +33,9 @@ interface Props {
   isViewerMeetingSection?: boolean
   meetingId?: string
   myTeamMemberId?: string
-  tasks: TaskColumns_tasks
+  tasks: TaskColumns_tasks$key
   teamMemberFilterId?: string | null
-  teams: TaskColumns_teams | null
+  teams: TaskColumns_teams$key | null
 }
 
 const TaskColumns = (props: Props) => {
@@ -45,9 +45,29 @@ const TaskColumns = (props: Props) => {
     meetingId,
     myTeamMemberId,
     teamMemberFilterId,
-    teams,
-    tasks
+    teams: teamsRef,
+    tasks: tasksRef
   } = props
+  const tasks = useFragment(
+    graphql`
+      fragment TaskColumns_tasks on Task
+      @relay(plural: true)
+      @argumentDefinitions(meetingId: {type: "ID"}) {
+        ...TaskColumn_tasks @arguments(meetingId: $meetingId)
+        status
+        sortOrder
+      }
+    `,
+    tasksRef
+  )
+  const teams = useFragment(
+    graphql`
+      fragment TaskColumns_teams on Team @relay(plural: true) {
+        ...TaskColumn_teams
+      }
+    `,
+    teamsRef
+  )
   const atmosphere = useAtmosphere()
   const groupedTasks = useMemo(() => {
     return makeTasksByStatus(tasks)
@@ -106,19 +126,4 @@ const TaskColumns = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskColumns, {
-  tasks: graphql`
-    fragment TaskColumns_tasks on Task
-    @relay(plural: true)
-    @argumentDefinitions(meetingId: {type: "ID"}) {
-      ...TaskColumn_tasks @arguments(meetingId: $meetingId)
-      status
-      sortOrder
-    }
-  `,
-  teams: graphql`
-    fragment TaskColumns_teams on Team @relay(plural: true) {
-      ...TaskColumn_teams
-    }
-  `
-})
+export default TaskColumns

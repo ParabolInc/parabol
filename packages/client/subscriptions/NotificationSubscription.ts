@@ -297,6 +297,8 @@ const NotificationSubscription = (
           break
         case 'UpdateFeatureFlagPayload':
           break
+        case 'AuthTokenPayload':
+          break
         case 'AddNewFeaturePayload':
           addNewFeatureNotificationUpdater(payload, context)
           break

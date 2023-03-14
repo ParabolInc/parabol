@@ -111,8 +111,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
       }
     `,
-    {teamId, networkOnly, first},
-    {UNSTABLE_renderPolicy: 'full'}
+    {teamId, networkOnly, first}
   )
   const items = viewer?.teamMember?.repoIntegrations.items ?? []
   const {

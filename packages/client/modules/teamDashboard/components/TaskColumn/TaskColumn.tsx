@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
-import {TaskColumn_teams} from '~/__generated__/TaskColumn_teams.graphql'
+import {useFragment} from 'react-relay'
+import {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
-import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
 
@@ -62,10 +62,10 @@ interface Props {
   isViewerMeetingSection?: boolean
   meetingId?: string
   myTeamMemberId?: string
-  tasks: TaskColumn_tasks
+  tasks: TaskColumn_tasks$key
   status: TaskStatusEnum
   teamMemberFilterId?: string | null
-  teams: TaskColumn_teams | null
+  teams: TaskColumn_teams$key | null
 }
 
 const TaskColumn = (props: Props) => {
@@ -76,9 +76,29 @@ const TaskColumn = (props: Props) => {
     myTeamMemberId,
     teamMemberFilterId,
     status,
-    tasks,
-    teams
+    tasks: tasksRef,
+    teams: teamsRef
   } = props
+  const tasks = useFragment(
+    graphql`
+      fragment TaskColumn_tasks on Task
+      @relay(plural: true)
+      @argumentDefinitions(meetingId: {type: "ID"}) {
+        ...TaskColumnAddTask_tasks
+        ...TaskColumnInner_tasks @arguments(meetingId: $meetingId)
+        id
+      }
+    `,
+    tasksRef
+  )
+  const teams = useFragment(
+    graphql`
+      fragment TaskColumn_teams on Team @relay(plural: true) {
+        ...TaskColumnAddTask_teams
+      }
+    `,
+    teamsRef
+  )
   const label = taskStatusLabels[status]
   const userCanAdd = area === TEAM_DASH || area === USER_DASH || isViewerMeetingSection
   return (
@@ -116,19 +136,4 @@ const TaskColumn = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskColumn, {
-  tasks: graphql`
-    fragment TaskColumn_tasks on Task
-    @relay(plural: true)
-    @argumentDefinitions(meetingId: {type: "ID"}) {
-      ...TaskColumnAddTask_tasks
-      ...TaskColumnInner_tasks @arguments(meetingId: $meetingId)
-      id
-    }
-  `,
-  teams: graphql`
-    fragment TaskColumn_teams on Team @relay(plural: true) {
-      ...TaskColumnAddTask_teams
-    }
-  `
-})
+export default TaskColumn

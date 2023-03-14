@@ -8,7 +8,7 @@ import {OrgPage_organization$key} from '../../../../__generated__/OrgPage_organi
 import OrgNav from '../Organization/OrgNav'
 
 const Container = styled('div')({
-  padding: '0px 48px'
+  padding: '0px 48px 24px 48px'
 })
 
 const OrgPlansAndBilling = lazy(

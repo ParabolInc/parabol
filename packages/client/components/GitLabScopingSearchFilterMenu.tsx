@@ -91,8 +91,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
 
   const nullableEdges =

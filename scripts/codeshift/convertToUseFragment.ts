@@ -1,6 +1,10 @@
 /*
  Usage: jscodeshift --extensions=tsx --parser=tsx -t ./scripts/codeshift/convertToUseFragment.ts ./packages/client/components/TeamArchived.tsx
  This codemod converts a component using 'createFragmentContainer' to use 'useFragment'.
+
+ As of March 14, 2023, the migration from 'createFragmentContainer' to use 'useFragment' is
+ complete, so this codemod should no longer be used except as an example for future HOC to hook
+ migrations.
 */
 
 import {Transform} from 'jscodeshift/src/core'
@@ -29,24 +33,26 @@ const transform: Transform = (fileInfo, api, options) => {
 
   const replacementExport = functionExpression.arguments[0]
 
+  let componentName
+  if (replacementExport.type !== 'Identifier') {
+    const replacementComponent = functionExpressions
+      .find(j.CallExpression)
+      .filter((path) => path.value.arguments[0].type === 'Identifier')
+
+    if (replacementComponent.size() !== 1) {
+      throw new Error('trying to convert component with non-trivial HOC wrapping')
+    }
+
+    componentName = replacementComponent.get().value.arguments[0].name
+  } else {
+    componentName = replacementExport.name
+  }
   // Replace the call to 'createFragmentContainer' with just a reference to the component we're
   // wrapping:
   //   createFragmentContainer(MyComponent, {myProp: graphql``})
   // to
   //   MyComponent
   functionExpressions.replaceWith(replacementExport)
-
-  if (replacementExport.type !== 'Identifier') {
-    // We need to get the component idetifier from the HOC call site, so if the export looks like:
-    //   createFragmentContainer(withOtherHoc(Component), {myProp: <fragment>})
-    // It's less trivial to get the identifier.
-    // :TODO: (jmtaber129): Support files that look like this, either by traversing down the tree of
-    // call expressions until we hit the identifier, or by taking in the component name from the
-    // command line or file name.
-    throw new Error('trying to convert component with non-trivial HOC wrapping')
-  }
-
-  const componentName = replacementExport.name
 
   // Build a map of propName -> graphql fragment.
   const fragmentProps = functionExpression.arguments[1]
@@ -62,7 +68,12 @@ const transform: Transform = (fileInfo, api, options) => {
   })
 
   // Find the declaration of the component we're changing
-  const componentDeclaration = root.find(j.VariableDeclarator, {id: {name: componentName}})
+  const componentVarDeclaration = root.find(j.VariableDeclarator, {id: {name: componentName}})
+  const componentDeclaration =
+    componentVarDeclaration.size() === 1
+      ? componentVarDeclaration
+      : root.find(j.FunctionDeclaration, {id: {name: componentName}})
+
   if (componentDeclaration.size() !== 1) {
     throw new Error("can't find component!")
   }
@@ -154,15 +165,41 @@ const transform: Transform = (fileInfo, api, options) => {
       .forEach((p) => {
         if (
           p.value.typeAnnotation?.type !== 'TSTypeAnnotation' ||
-          p.value.typeAnnotation.typeAnnotation.type !== 'TSTypeReference' ||
-          p.value.typeAnnotation.typeAnnotation.typeName.type !== 'Identifier'
+          !(
+            // Must either look like:
+            // myProp: myPropType_foo
+            // or
+            // myProp: myPropType_foo | null
+            (
+              (p.value.typeAnnotation.typeAnnotation.type === 'TSTypeReference' &&
+                p.value.typeAnnotation.typeAnnotation.typeName.type === 'Identifier') ||
+              (p.value.typeAnnotation.typeAnnotation.type === 'TSUnionType' &&
+                p.value.typeAnnotation.typeAnnotation.types[0].type === 'TSTypeReference' &&
+                p.value.typeAnnotation.typeAnnotation.types[0].typeName.type === 'Identifier' &&
+                p.value.typeAnnotation.typeAnnotation.types[1].type === 'TSNullKeyword')
+            )
+          )
         ) {
           throw new Error(
             `invalid type for prop: ${(p.value.key as any).name}, ${p.value.initializer?.type}`
           )
         }
 
-        const name = p.value.typeAnnotation.typeAnnotation.typeName.name
+        let name
+
+        if (
+          p.value.typeAnnotation.typeAnnotation.type === 'TSTypeReference' &&
+          p.value.typeAnnotation.typeAnnotation.typeName.type === 'Identifier'
+        ) {
+          name = p.value.typeAnnotation.typeAnnotation.typeName.name
+        } else if (
+          p.value.typeAnnotation.typeAnnotation.type === 'TSUnionType' &&
+          p.value.typeAnnotation.typeAnnotation.types[0].type === 'TSTypeReference' &&
+          p.value.typeAnnotation.typeAnnotation.types[0].typeName.type === 'Identifier' &&
+          p.value.typeAnnotation.typeAnnotation.types[1].type === 'TSNullKeyword'
+        ) {
+          name = p.value.typeAnnotation.typeAnnotation.types[0].typeName.name
+        }
 
         // Rename all identifiers with this name to also update the import.
         root.find(j.Identifier, {name}).replaceWith(j.identifier(name + '$key'))

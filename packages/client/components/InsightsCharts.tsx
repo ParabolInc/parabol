@@ -101,6 +101,7 @@ const meetingOptions: ChartOptions<'bar'> = {
       stacked: true,
       type: 'time',
       time: {
+        unit: 'month',
         displayFormats: {
           month: 'MMM'
         },
@@ -114,6 +115,9 @@ const meetingOptions: ChartOptions<'bar'> = {
     },
     y: {
       stacked: true,
+      ticks: {
+        precision: 0
+      },
       grid: {
         display: false,
         drawBorder: false
@@ -179,7 +183,9 @@ const makeOptions = (title: string, subtitle: string) => {
       x: {
         type: 'time',
         time: {
+          minUnit: 'day',
           displayFormats: {
+            day: 'MMM DD',
             month: 'MMM'
           },
           round: 'day',
@@ -194,6 +200,9 @@ const makeOptions = (title: string, subtitle: string) => {
         grid: {
           display: false,
           drawBorder: false
+        },
+        ticks: {
+          precision: 0
         }
       }
     },
@@ -293,6 +302,15 @@ const meetingMeta: MeetingMeta[] = [
   }
 ]
 
+const makeLastDateOfTheMonth = (date: Date) => {
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+  lastDay.setHours(23)
+  lastDay.setMinutes(59)
+  lastDay.setSeconds(59)
+
+  return lastDay
+}
+
 const makeMeetingData = (flatMeetingStats: {createdAt: string; meetingType: MeetingTypeEnum}[]) => {
   const stats = flatMeetingStats
     .sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
@@ -300,10 +318,10 @@ const makeMeetingData = (flatMeetingStats: {createdAt: string; meetingType: Meet
   const firstStat = stats[0]
   if (!firstStat) return {datasets: []}
   const curDate = new Date(firstStat.createdAt)
-  const maxDate = Date.now()
+  const maxDate = makeLastDateOfTheMonth(new Date()).getTime()
   const dateBins = [] as number[]
-  while (curDate.getTime() < maxDate) {
-    dateBins.push(curDate.getTime())
+  while (curDate.getTime() <= maxDate) {
+    dateBins.push(makeLastDateOfTheMonth(curDate).getTime())
     curDate.setMonth(curDate.getMonth() + 1)
   }
   const datasets: ChartDataset<'bar'>[] = meetingMeta.map((meta) => {
@@ -312,7 +330,7 @@ const makeMeetingData = (flatMeetingStats: {createdAt: string; meetingType: Meet
     const data = dateBins.map((dateBin) => {
       return {
         x: dateBin,
-        y: statsForMeetingType.filter((stat) => stat.createdAt < dateBin).length
+        y: statsForMeetingType.filter((stat) => stat.createdAt <= dateBin).length
         //  the types for chartjs are wrong, casting to a primitive array
       } as unknown as number
     })
