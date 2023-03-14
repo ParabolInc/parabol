@@ -29,11 +29,11 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
   const joinEvent = new TimelineEventJoinedParabol({userId})
 
   // TODO: remove the following after templateLimit experiment is complete: https://github.com/ParabolInc/parabol/issues/7712
-  const hideTemplateLimitsP0Experiment = process.env.hideTemplateLimitsP0Experiment
+  const stopTemplateLimitsP0Experiment = !!process.env.STOP_TEMPLATE_LIMITS_P0_EXPERIMENT
   const domainUserHasFlag = usersWithDomain.some((user) =>
     user.featureFlags.includes('templateLimit')
   )
-  const addTemplateFlag = !hideTemplateLimitsP0Experiment && (isPatient0 || domainUserHasFlag)
+  const addTemplateFlag = !stopTemplateLimitsP0Experiment && (isPatient0 || domainUserHasFlag)
   const experimentalFlags = addTemplateFlag ? [...featureFlags, 'templateLimit'] : featureFlags
 
   await Promise.all([
