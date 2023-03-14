@@ -43,9 +43,7 @@ const query = graphql`
 `
 
 const UserProfile = ({queryRef}: Props) => {
-  const data = usePreloadedQuery<UserProfileQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<UserProfileQuery>(query, queryRef)
   const {viewer} = data
   const {identities} = viewer
   const isLocal = identities?.find((identity) => identity?.type === AuthIdentityTypeEnum.LOCAL)

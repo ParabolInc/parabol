@@ -84,9 +84,7 @@ const query = graphql`
 
 const MeetingCardOptionsMenu = (props: Props) => {
   const {menuProps, popTooltip, queryRef} = props
-  const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
   const {id: viewerId, team, meeting} = viewer
   const {massInvitation} = team!

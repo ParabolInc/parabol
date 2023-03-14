@@ -65,8 +65,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
 
   const repoContributions = useGetRepoContributions(query.viewer.teamMember!)

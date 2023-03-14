@@ -55,9 +55,7 @@ const query = graphql`
 
 const MassInvitationTokenLink = (props: Props) => {
   const {meetingId, queryRef} = props
-  const data = usePreloadedQuery<MassInvitationTokenLinkQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<MassInvitationTokenLinkQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
   const {id: teamId, massInvitation} = team!

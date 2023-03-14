@@ -80,9 +80,7 @@ const query = graphql`
 
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {menuProps, mutationProps, task: taskRef, queryRef} = props
-  const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<TaskFooterIntegrateMenuQuery>(query, queryRef)
   const {viewer} = data
   const task = useFragment(
     graphql`
