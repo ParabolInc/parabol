@@ -8,11 +8,12 @@ import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import SendClientSegmentEventMutation from '../../../mutations/SendClientSegmentEventMutation'
 import {PALETTE} from '../../../styles/paletteV3'
-import {
-  ReflectTemplateListTeam_settings,
-  ReflectTemplateListTeam_settings$key
-} from '../../../__generated__/ReflectTemplateListTeam_settings.graphql'
 import {ReflectTemplateListTeam_viewer$key} from '../../../__generated__/ReflectTemplateListTeam_viewer.graphql'
+import {
+  ReflectTemplateListTeam_teamTemplates$key,
+  ReflectTemplateListTeam_teamTemplates
+} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
+import {ReflectTemplateListTeam_team$key} from '../../../__generated__/ReflectTemplateListTeam_team.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
 const TemplateList = styled('ul')({
@@ -45,33 +46,35 @@ interface Props {
   isActive: boolean
   activeTemplateId: string
   showPublicTemplates: () => void
-  teamId: string
-  settingsRef: ReflectTemplateListTeam_settings$key
+  teamTemplatesRef: ReflectTemplateListTeam_teamTemplates$key
+  teamRef: ReflectTemplateListTeam_team$key
   viewerRef: ReflectTemplateListTeam_viewer$key
+  templateSearchQuery: string
 }
 
-const getValue = (item: ReflectTemplateListTeam_settings['teamTemplates'][0]) => {
+const getValue = (item: ReflectTemplateListTeam_teamTemplates[0]) => {
   return item.name.toLowerCase()
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {isActive, activeTemplateId, showPublicTemplates, teamId, settingsRef, viewerRef} = props
-  const settings = useFragment(
+  const {
+    isActive,
+    activeTemplateId,
+    showPublicTemplates,
+    templateSearchQuery,
+    teamTemplatesRef,
+    teamRef,
+    viewerRef
+  } = props
+  const teamTemplates = useFragment(
     graphql`
-      fragment ReflectTemplateListTeam_settings on RetrospectiveMeetingSettings {
-        templateSearchQuery
-        teamTemplates {
-          ...ReflectTemplateItem_template
-          id
-          name
-        }
-        team {
-          orgId
-          tier
-        }
+      fragment ReflectTemplateListTeam_teamTemplates on ReflectTemplate @relay(plural: true) {
+        id
+        name
+        ...ReflectTemplateItem_template
       }
     `,
-    settingsRef
+    teamTemplatesRef
   )
   const {featureFlags} = useFragment(
     graphql`
@@ -83,10 +86,19 @@ const ReflectTemplateListTeam = (props: Props) => {
     `,
     viewerRef
   )
+  const team = useFragment(
+    graphql`
+      fragment ReflectTemplateListTeam_team on Team {
+        id
+        orgId
+        tier
+      }
+    `,
+    teamRef
+  )
   const history = useHistory()
   const atmosphere = useAtmosphere()
-  const {teamTemplates, templateSearchQuery, team} = settings
-  const {orgId, tier} = team
+  const {orgId, tier, id: teamId} = team
   const searchQuery = templateSearchQuery ?? ''
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
   useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, 'retrospective')
@@ -119,7 +131,7 @@ const ReflectTemplateListTeam = (props: Props) => {
   }
   return (
     <TemplateList>
-      {filteredTemplates.map((template) => {
+      {teamTemplates.map((template) => {
         return (
           <ReflectTemplateItem
             key={template.id}
