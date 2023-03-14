@@ -95,16 +95,16 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col'>
-      <ActivityLibraryHeader className='hidden sm:flex' onClose={handleCloseCLick}>
+      <ActivityLibraryHeader className='hidden md:flex' onClose={handleCloseCLick}>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryHeader>
-      <ActivityLibraryMobileHeader className='flex sm:hidden' onClose={handleCloseCLick}>
+      <ActivityLibraryMobileHeader className='flex md:hidden' onClose={handleCloseCLick}>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full md:px-[15%]'>
-          <div className='mx-auto grid w-fit grid-cols-2 gap-4 p-4 lg:grid-cols-3 2xl:grid-cols-4'>
+        <ScrollArea.Viewport className='flex h-full sm:px-[5%] lg:px-[15%]'>
+          <div className='mx-auto grid max-w-xl grid-cols-2 gap-4 p-4 sm:max-w-6xl sm:grid-cols-3 2xl:grid-cols-4'>
             {filteredTemplates.length === 0 ? (
               <div className='ml-2 mt-2 flex text-slate-700'>
                 <img className='max-w-[128px]' src={halloweenRetrospectiveTemplate} />

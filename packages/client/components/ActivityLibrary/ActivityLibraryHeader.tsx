@@ -32,7 +32,9 @@ export const ActivityLibraryHeader = (props: Props) => {
     <div className={clsx('mx-1', className)}>
       <div className='flex basis-[15%] items-center justify-start'>
         <LogoBlock className='shrink-0' />
-        <div className='hidden shrink-0 pr-2 text-xl font-semibold lg:block'>Start Activity</div>
+        <div className='hidden shrink-0 pr-2 text-lg font-semibold lg:block xl:text-xl'>
+          Start Activity
+        </div>
       </div>
 
       <div className='flex flex-1 items-center md:px-4'>{children}</div>

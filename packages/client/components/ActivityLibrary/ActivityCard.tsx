@@ -25,7 +25,7 @@ export const ActivityCard = (props: Props) => {
   return (
     <div
       className={clsx(
-        'relative flex aspect-[156/120] max-h-[180px] w-auto flex-col overflow-hidden rounded-lg py-2 px-3 md:aspect-[256/160]',
+        'relative flex aspect-[156/120] w-auto flex-col overflow-hidden rounded-lg py-2 px-3 md:aspect-[256/160]',
         MeetingThemes[type].secondary,
         className
       )}
