@@ -1,6 +1,10 @@
 /*
  Usage: jscodeshift --extensions=tsx --parser=tsx -t ./scripts/codeshift/convertToUseFragment.ts ./packages/client/components/TeamArchived.tsx
  This codemod converts a component using 'createFragmentContainer' to use 'useFragment'.
+
+ As of March 14, 2023, the migration from 'createFragmentContainer' to use 'useFragment' is
+ complete, so this codemod should no longer be used except as an example for future HOC to hook
+ migrations.
 */
 
 import {Transform} from 'jscodeshift/src/core'
