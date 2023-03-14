@@ -20,7 +20,8 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 //   MAX_STARTER_TIER_TEAMS = 0,
 //   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
 //   MIN_STICKY_TEAM_MEETINGS = 1,
-//   STARTER_TIER_LOCK_AFTER_DAYS = 0
+//   STARTER_TIER_LOCK_AFTER_DAYS = 0,
+//   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
 // }
 
 const getBillingLeaderIds = async (orgId: string) => {
@@ -109,6 +110,20 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
         .group('teamId')
         .ungroup()
         .filter((row) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
+        .filter((row) => {
+          const meetingIds = row('reduction')('meetingId')
+          return r
+            .table('NewMeeting')
+            .getAll(r.args(meetingIds))
+            .filter((meeting: RValue) => {
+              return meeting('endedAt').during(
+                r.now().sub(Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME),
+                r.now()
+              )
+            })
+            .count()
+            .gt(0)
+        })
         .count()
         .gt(Threshold.MAX_STARTER_TIER_TEAMS)
     })
