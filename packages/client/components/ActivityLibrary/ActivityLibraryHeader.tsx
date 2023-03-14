@@ -37,7 +37,9 @@ export const ActivityLibraryHeader = (props: Props) => {
         </div>
       </div>
 
-      <div className='flex flex-1 items-center md:px-4'>{children}</div>
+      <div className='flex flex-1 items-center'>
+        <div className='mx-auto w-full max-w-7xl md:px-4'>{children}</div>
+      </div>
 
       <div className='flex basis-[15%] items-center justify-end'>
         <CloseButton className='shrink-0' onClick={onClose} />
