@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {InvoiceLineItemDetails_details} from '~/__generated__/InvoiceLineItemDetails_details.graphql'
+import {useFragment} from 'react-relay'
+import {
+  InvoiceLineItemDetails_details$key,
+  InvoiceLineItemDetails_details
+} from '~/__generated__/InvoiceLineItemDetails_details.graphql'
 import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
@@ -62,12 +65,24 @@ const DetailsFill = styled('div')({
 })
 
 interface Props {
-  details: InvoiceLineItemDetails_details | null
+  details: InvoiceLineItemDetails_details$key | null
   type: Exclude<InvoiceLineItemEnum, 'OTHER_ADJUSTMENTS'>
 }
 
 const InvoiceLineItemDetails = (props: Props) => {
-  const {details, type} = props
+  const {details: detailsRef, type} = props
+  const details = useFragment(
+    graphql`
+      fragment InvoiceLineItemDetails_details on InvoiceLineItemDetails @relay(plural: true) {
+        id
+        amount
+        email
+        endAt
+        startAt
+      }
+    `,
+    detailsRef
+  )
   const [isOpen, setIsOpen] = useState(false)
   const toggleDetails = () => {
     setIsOpen(!isOpen)
@@ -94,14 +109,4 @@ const InvoiceLineItemDetails = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(InvoiceLineItemDetails, {
-  details: graphql`
-    fragment InvoiceLineItemDetails_details on InvoiceLineItemDetails @relay(plural: true) {
-      id
-      amount
-      email
-      endAt
-      startAt
-    }
-  `
-})
+export default InvoiceLineItemDetails

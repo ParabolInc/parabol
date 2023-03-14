@@ -1,11 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Fragment, useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
+import {
+  DashNavList_viewer$key,
+  DashNavList_viewer
+} from '../../__generated__/DashNavList_viewer.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
 const DashNavListStyles = styled('div')({
@@ -39,14 +42,24 @@ const DashHR = styled('div')({
 
 interface Props {
   className?: string
-  viewer: DashNavList_viewer | null
+  viewer: DashNavList_viewer$key | null
   onClick?: () => void
 }
 
 type Team = DashNavList_viewer['teams'][0]
 
 const DashNavList = (props: Props) => {
-  const {className, onClick, viewer} = props
+  const {className, onClick, viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment DashNavList_viewer on User {
+        teams {
+          ...DashNavListTeam @relay(mask: false)
+        }
+      }
+    `,
+    viewerRef
+  )
   const teams = viewer?.teams
 
   const teamsByOrgKey = useMemo(() => {
@@ -125,12 +138,4 @@ graphql`
     }
   }
 `
-export default createFragmentContainer(DashNavList, {
-  viewer: graphql`
-    fragment DashNavList_viewer on User {
-      teams {
-        ...DashNavListTeam @relay(mask: false)
-      }
-    }
-  `
-})
+export default DashNavList

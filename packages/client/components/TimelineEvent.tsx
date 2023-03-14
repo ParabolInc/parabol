@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ValueOf} from '../types/generics'
-import {TimelineEvent_timelineEvent} from '../__generated__/TimelineEvent_timelineEvent.graphql'
+import {TimelineEvent_timelineEvent$key} from '../__generated__/TimelineEvent_timelineEvent.graphql'
 import DelayUnmount from './DelayUnmount'
 import TimelineEventMock from './TimelineEventMock'
 
 interface Props {
-  timelineEvent: TimelineEvent_timelineEvent
+  timelineEvent: TimelineEvent_timelineEvent$key
 }
 
 const lookup = {
@@ -43,7 +43,21 @@ const lookup = {
 } as const
 
 function TimelineEvent(props: Props) {
-  const {timelineEvent} = props
+  const {timelineEvent: timelineEventRef} = props
+  const timelineEvent = useFragment(
+    graphql`
+      fragment TimelineEvent_timelineEvent on TimelineEvent {
+        ...TimelineEventJoinedParabol_timelineEvent
+        ...TimelineEventTeamCreated_timelineEvent
+        ...TimelineEventCompletedRetroMeeting_timelineEvent
+        ...TimelineEventCompletedActionMeeting_timelineEvent
+        ...TimelineEventPokerComplete_timelineEvent
+        ...TimelineEventTeamPromptComplete_timelineEvent
+        __typename
+      }
+    `,
+    timelineEventRef
+  )
   let AsyncComponent: undefined | ValueOf<typeof lookup>
   if (timelineEvent) {
     const {__typename} = timelineEvent
@@ -58,16 +72,4 @@ function TimelineEvent(props: Props) {
   )
 }
 
-export default createFragmentContainer(TimelineEvent, {
-  timelineEvent: graphql`
-    fragment TimelineEvent_timelineEvent on TimelineEvent {
-      ...TimelineEventJoinedParabol_timelineEvent
-      ...TimelineEventTeamCreated_timelineEvent
-      ...TimelineEventCompletedRetroMeeting_timelineEvent
-      ...TimelineEventCompletedActionMeeting_timelineEvent
-      ...TimelineEventPokerComplete_timelineEvent
-      ...TimelineEventTeamPromptComplete_timelineEvent
-      __typename
-    }
-  `
-})
+export default TimelineEvent

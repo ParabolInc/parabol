@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {
+  AgendaItem_meeting$key,
+  AgendaItem_meeting
+} from '~/__generated__/AgendaItem_meeting.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
@@ -17,7 +20,7 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
-import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import {AgendaItem_agendaItem$key} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -100,14 +103,52 @@ const getItemProps = (
 }
 
 interface Props {
-  agendaItem: AgendaItem_agendaItem
+  agendaItem: AgendaItem_agendaItem$key
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
-  meeting: AgendaItem_meeting | null
+  meeting: AgendaItem_meeting$key | null
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, gotoStageId, isDragging, meeting} = props
+  const {agendaItem: agendaItemRef, gotoStageId, isDragging, meeting: meetingRef} = props
+  const agendaItem = useFragment(
+    graphql`
+      fragment AgendaItem_agendaItem on AgendaItem {
+        id
+        content
+        pinned
+        teamMember {
+          picture
+        }
+      }
+    `,
+    agendaItemRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment AgendaItem_meeting on ActionMeeting {
+        id
+        endedAt
+        facilitatorStageId
+        facilitatorUserId
+        phases {
+          phaseType
+          stages {
+            id
+          }
+          ...AgendaItemPhase @relay(mask: false)
+        }
+        localPhase {
+          phaseType
+          ...AgendaItemPhase @relay(mask: false)
+        }
+        localStage {
+          id
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
@@ -217,37 +258,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(AgendaItem, {
-  agendaItem: graphql`
-    fragment AgendaItem_agendaItem on AgendaItem {
-      id
-      content
-      pinned
-      teamMember {
-        picture
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment AgendaItem_meeting on ActionMeeting {
-      id
-      endedAt
-      facilitatorStageId
-      facilitatorUserId
-      phases {
-        phaseType
-        stages {
-          id
-        }
-        ...AgendaItemPhase @relay(mask: false)
-      }
-      localPhase {
-        phaseType
-        ...AgendaItemPhase @relay(mask: false)
-      }
-      localStage {
-        id
-      }
-    }
-  `
-})
+export default AgendaItem

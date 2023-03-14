@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {matchPath, RouteProps} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
-import {TopBarSearch_viewer} from '~/__generated__/TopBarSearch_viewer.graphql'
+import {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
 import Atmosphere from '../Atmosphere'
 
 const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
@@ -33,7 +33,7 @@ const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
   )
 }
 interface Props {
-  viewer: TopBarSearch_viewer | null
+  viewer: TopBarSearch_viewer$key | null
 }
 
 const Wrapper = styled('div')<{location: any}>(({location}) => ({
@@ -78,7 +78,15 @@ const setSearch = (atmosphere: Atmosphere, value: string) => {
 }
 
 const TopBarSearch = (props: Props) => {
-  const {viewer} = props
+  const {viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment TopBarSearch_viewer on User {
+        dashSearch
+      }
+    `,
+    viewerRef
+  )
   const dashSearch = viewer?.dashSearch ?? ''
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
@@ -101,10 +109,4 @@ const TopBarSearch = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TopBarSearch, {
-  viewer: graphql`
-    fragment TopBarSearch_viewer on User {
-      dashSearch
-    }
-  `
-})
+export default TopBarSearch

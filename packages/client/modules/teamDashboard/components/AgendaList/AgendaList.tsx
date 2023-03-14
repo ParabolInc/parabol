@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
-import {AgendaList_agendaItems} from '~/__generated__/AgendaList_agendaItems.graphql'
-import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
+import {useFragment} from 'react-relay'
+import {AgendaList_agendaItems$key} from '~/__generated__/AgendaList_agendaItems.graphql'
+import {AgendaList_meeting$key} from '~/__generated__/AgendaList_meeting.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
@@ -30,15 +30,36 @@ const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) 
 }))
 
 interface Props {
-  agendaItems: AgendaList_agendaItems
+  agendaItems: AgendaList_agendaItems$key
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  meeting: AgendaList_meeting | null
+  meeting: AgendaList_meeting$key | null
 }
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {agendaItems, meeting, dashSearch, gotoStageId} = props
+  const {agendaItems: agendaItemsRef, meeting: meetingRef, dashSearch, gotoStageId} = props
+  const meeting = useFragment(
+    graphql`
+      fragment AgendaList_meeting on ActionMeeting {
+        id
+        endedAt
+        ...AgendaItem_meeting
+      }
+    `,
+    meetingRef
+  )
+  const agendaItems = useFragment(
+    graphql`
+      fragment AgendaList_agendaItems on AgendaItem @relay(plural: true) {
+        id
+        content
+        sortOrder
+        ...AgendaItem_agendaItem
+      }
+    `,
+    agendaItemsRef
+  )
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
   const filteredAgendaItems = useMemo(() => {
@@ -128,20 +149,4 @@ const AgendaList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AgendaList, {
-  meeting: graphql`
-    fragment AgendaList_meeting on ActionMeeting {
-      id
-      endedAt
-      ...AgendaItem_meeting
-    }
-  `,
-  agendaItems: graphql`
-    fragment AgendaList_agendaItems on AgendaItem @relay(plural: true) {
-      id
-      content
-      sortOrder
-      ...AgendaItem_agendaItem
-    }
-  `
-})
+export default AgendaList

@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
 import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
-import {OrganizationPage_organization} from '../../../../__generated__/OrganizationPage_organization.graphql'
+import {OrganizationPage_organization$key} from '../../../../__generated__/OrganizationPage_organization.graphql'
 
 interface Props extends RouteComponentProps<{orgId: string}> {
-  organization: OrganizationPage_organization
+  organization: OrganizationPage_organization$key
 }
 
 const OrgBilling = lazy(
@@ -27,7 +27,21 @@ const OrgAuthentication = lazy(
 )
 
 const OrganizationPage = (props: Props) => {
-  const {match, organization} = props
+  const {match, organization: organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrganizationPage_organization on Organization {
+        ...OrgBillingRoot_organization
+        id
+        isBillingLeader
+        tier
+        featureFlags {
+          SAMLUI
+        }
+      }
+    `,
+    organizationRef
+  )
   const {isBillingLeader, tier, featureFlags} = organization
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
   const SAMLUI = featureFlags?.SAMLUI
@@ -68,16 +82,4 @@ const OrganizationPage = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withRouter(OrganizationPage), {
-  organization: graphql`
-    fragment OrganizationPage_organization on Organization {
-      ...OrgBillingRoot_organization
-      id
-      isBillingLeader
-      tier
-      featureFlags {
-        SAMLUI
-      }
-    }
-  `
-})
+export default withRouter(OrganizationPage)

@@ -2,14 +2,14 @@ import graphql from 'babel-plugin-relay/macro'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {TaskSummarySection_tasks} from 'parabol-client/__generated__/TaskSummarySection_tasks.graphql'
+import {TaskSummarySection_tasks$key} from 'parabol-client/__generated__/TaskSummarySection_tasks.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import EmailTaskCard from './EmailTaskCard'
 
 interface Props {
   label: string
-  tasks: TaskSummarySection_tasks | null
+  tasks: TaskSummarySection_tasks$key | null
 }
 
 const taskTypeStyle = {
@@ -22,7 +22,15 @@ const taskTypeStyle = {
 }
 
 const TaskSummarySection = (props: Props) => {
-  const {label, tasks} = props
+  const {label, tasks: tasksRef} = props
+  const tasks = useFragment(
+    graphql`
+      fragment TaskSummarySection_tasks on Task @relay(plural: true) {
+        ...EmailTaskCard_task
+      }
+    `,
+    tasksRef
+  )
   const grid = useEmailItemGrid(tasks || [], 3, 2)
   if (!tasks || !tasks.length) return null
   return (
@@ -43,10 +51,4 @@ const TaskSummarySection = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskSummarySection, {
-  tasks: graphql`
-    fragment TaskSummarySection_tasks on Task @relay(plural: true) {
-      ...EmailTaskCard_task
-    }
-  `
-})
+export default TaskSummarySection
