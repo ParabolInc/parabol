@@ -181,7 +181,6 @@ jobs:
     environment:
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
-      GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production-web-nyc1-03.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging-web-nyc1-03.parabol.co:web"
       SENTRY_ORG: "parabol"
@@ -200,8 +199,6 @@ jobs:
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `staging` CI and Deployment..."}' $SLACK_DEVOPS_URL
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `development` CI and Deployment..."}' $SLACK_DEVOPS_URL
             fi
       - checkout
       - restore_cache:
@@ -236,11 +233,11 @@ jobs:
           name: Build Assets
           # Use the staging env to run webpack (NODE_ENV=production)
           command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
               cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
               yarn build --deploy
             else
-              cp $DEVOPS_WORKDIR/environments/development .env
+              cp $DEVOPS_WORKDIR/environments/local .env
               yarn build --deploy
             fi
       - run:
@@ -299,9 +296,6 @@ jobs:
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
               export DEPLOY_ENV="staging"
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
-              export DEPLOY_ENV="development"
             else
               export DEPLOY_ENV="local"
             fi
@@ -326,8 +320,6 @@ jobs:
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`staging` CI and Deployment complete"}' $SLACK_DEVOPS_URL
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`development` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             fi
       - store_artifacts:
           path: ~/action/build
@@ -421,7 +413,7 @@ workflows:
               only:
                 - staging
   #
-  # Step 2 - TODO - PostgreSQL backups. Not mandatory and controlled by a manual approval.
+  # Step 2 - PostgreSQL backups. Not mandatory and controlled by a manual approval.
   02_postgresql-1-backup:
     jobs:
       - approve-for-production-postgresql-backup:
