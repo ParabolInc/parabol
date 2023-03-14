@@ -1,6 +1,6 @@
-import {LoginWithGooglePayloadResolvers} from '../resolverTypes'
+import {UserLogInPayloadResolvers} from '../resolverTypes'
 
-export type LoginWithGooglePayloadSource =
+export type UserLogInPayloadSource =
   | {
       userId: string
       authToken: string
@@ -8,7 +8,7 @@ export type LoginWithGooglePayloadSource =
     }
   | {error: {message: string}}
 
-const LoginWithGooglePayload: LoginWithGooglePayloadResolvers = {
+const UserLogInPayload: UserLogInPayloadResolvers = {
   user: (source, _args, {dataLoader}) => {
     if ('error' in source) return null
     const {userId} = source
@@ -16,4 +16,4 @@ const LoginWithGooglePayload: LoginWithGooglePayloadResolvers = {
   }
 }
 
-export default LoginWithGooglePayload
+export default UserLogInPayload

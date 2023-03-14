@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
@@ -11,6 +11,9 @@ import customTemplateIllustration from '../../../../static/images/illustrations/
 import {activityIllustrations} from './ActivityIllustrations'
 import {Link} from 'react-router-dom'
 import useRouter from '../../hooks/useRouter'
+import SearchBar from './SearchBar'
+import useSearchFilter from '../../hooks/useSearchFilter'
+import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -46,11 +49,11 @@ interface Props {
   queryRef: PreloadedQuery<ActivityLibraryQuery>
 }
 
+const getTemplateValue = (template: {name: string}) => template.name
+
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {history} = useRouter()
   const {viewer} = data
   const {featureFlags, availableTemplates} = viewer
@@ -59,23 +62,32 @@ export const ActivityLibrary = (props: Props) => {
     history.goBack()
   }
 
-  const templates = [
-    {
-      id: 'action',
-      type: 'action',
-      name: 'Check-in',
-      team: {name: 'Parabol'},
-      isFree: true
-    } as const,
-    {
-      id: 'teamPrompt',
-      type: 'teamPrompt',
-      name: 'Standup',
-      team: {name: 'Parabol'},
-      isFree: true
-    } as const,
-    ...availableTemplates.edges.map((edge) => edge.node)
-  ]
+  const templates = useMemo(
+    () => [
+      {
+        id: 'action',
+        type: 'action',
+        name: 'Check-in',
+        team: {name: 'Parabol'},
+        isFree: true
+      } as const,
+      {
+        id: 'teamPrompt',
+        type: 'teamPrompt',
+        name: 'Standup',
+        team: {name: 'Parabol'},
+        isFree: true
+      } as const,
+      ...availableTemplates.edges.map((edge) => edge.node)
+    ],
+    [availableTemplates]
+  )
+
+  const {
+    query: searchQuery,
+    filteredItems: filteredTemplates,
+    onQueryChange
+  } = useSearchFilter(templates, getTemplateValue)
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
@@ -83,29 +95,48 @@ export const ActivityLibrary = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col'>
-      <ActivityLibraryHeader className='hidden sm:flex' onClose={handleCloseCLick} />
-      <ActivityLibraryMobileHeader className='flex sm:hidden' onClose={handleCloseCLick} />
+      <ActivityLibraryHeader className='hidden sm:flex' onClose={handleCloseCLick}>
+        <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+      </ActivityLibraryHeader>
+      <ActivityLibraryMobileHeader className='flex sm:hidden' onClose={handleCloseCLick}>
+        <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+      </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full md:px-[15%]'>
           <div className='mx-auto grid w-fit grid-cols-2 gap-4 p-4 lg:grid-cols-3 2xl:grid-cols-4'>
-            {templates.map((template) => {
-              const templateIllustration =
-                activityIllustrations[template.id as keyof typeof activityIllustrations]
-              const activityIllustration = templateIllustration ?? customTemplateIllustration
+            {filteredTemplates.length === 0 ? (
+              <div className='ml-2 mt-2 flex text-slate-700'>
+                <img className='max-w-[128px]' src={halloweenRetrospectiveTemplate} />
+                <div className='ml-10'>
+                  <div className='mb-4 text-xl font-semibold'>No results found!</div>
+                  <div className='mb-6 max-w-[360px]'>
+                    Try tapping a category above, using a different search, or creating exactly what
+                    you have in mind.
+                  </div>
+                  {/* :TODO: (jmtaber129): Add the "create custom activity" card */}
+                  <div className='mt-0.5'>TODO: create custom activity</div>
+                </div>
+              </div>
+            ) : (
+              filteredTemplates.map((template) => {
+                const templateIllustration =
+                  activityIllustrations[template.id as keyof typeof activityIllustrations]
+                const activityIllustration = templateIllustration ?? customTemplateIllustration
 
-              return (
-                <ActivityLibraryCard key={template.id} type={template.type}>
-                  <ActivityLibraryCard.Image src={activityIllustration} />
-                  <ActivityLibraryCard.Title as={Link} to={`/activity-library/${template.id}`}>
-                    {template.name}
-                  </ActivityLibraryCard.Title>
-                  {!template.isFree && (
-                    <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>
-                  )}
-                </ActivityLibraryCard>
-              )
-            })}
+                return (
+                  <ActivityLibraryCard key={template.id} type={template.type}>
+                    <ActivityLibraryCard.Image src={activityIllustration} />
+                    <ActivityLibraryCard.Title as={Link} to={`/activity-library/${template.id}`}>
+                      {template.name}
+                    </ActivityLibraryCard.Title>
+                    {!template.isFree && (
+                      <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>
+                    )}
+                  </ActivityLibraryCard>
+                )
+              })
+            )}
           </div>
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
