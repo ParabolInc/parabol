@@ -5306,6 +5306,11 @@
     magic-string "^0.25.0"
     string.prototype.matchall "^4.0.6"
 
+"@tailwindcss/container-queries@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/container-queries/-/container-queries-0.1.0.tgz#f3f0409893774f046ab2da1efd8a13105d21ec01"
+  integrity sha512-t1GeJ9P8ual160BvKy6Y1sG7bjChArMaK6iRXm3ZYjZGN2FTzmqb5ztsTDb9AsTSJD4NMHtsnaI2ielrXEk+hw==
+
 "@tiptap/core@^2.0.0-beta.218":
   version "2.0.0-beta.218"
   resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-2.0.0-beta.218.tgz#010f82931586a2c1e3ad3c123cf96f39b099d8c3"

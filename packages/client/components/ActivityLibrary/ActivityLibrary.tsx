@@ -103,23 +103,23 @@ export const ActivityLibrary = (props: Props) => {
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full sm:px-[5%] lg:px-[15%]'>
-          <div className='mx-auto grid max-w-xl grid-cols-2 gap-4 p-4 sm:max-w-6xl sm:grid-cols-3 2xl:grid-cols-4'>
-            {filteredTemplates.length === 0 ? (
-              <div className='ml-2 mt-2 flex text-slate-700'>
-                <img className='max-w-[128px]' src={halloweenRetrospectiveTemplate} />
-                <div className='ml-10'>
-                  <div className='mb-4 text-xl font-semibold'>No results found!</div>
-                  <div className='mb-6 max-w-[360px]'>
-                    Try tapping a category above, using a different search, or creating exactly what
-                    you have in mind.
-                  </div>
-                  {/* :TODO: (jmtaber129): Add the "create custom activity" card */}
-                  <div className='mt-0.5'>TODO: create custom activity</div>
+        <ScrollArea.Viewport className='flex h-full @container lg:mx-[15%]'>
+          {filteredTemplates.length === 0 ? (
+            <div className='ml-2 mt-2 flex text-slate-700'>
+              <img className='max-w-[128px]' src={halloweenRetrospectiveTemplate} />
+              <div className='ml-10'>
+                <div className='mb-4 text-xl font-semibold'>No results found!</div>
+                <div className='mb-6 max-w-[360px]'>
+                  Try tapping a category above, using a different search, or creating exactly what
+                  you have in mind.
                 </div>
+                {/* :TODO: (jmtaber129): Add the "create custom activity" card */}
+                <div className='mt-0.5'>TODO: create custom activity</div>
               </div>
-            ) : (
-              filteredTemplates.map((template) => {
+            </div>
+          ) : (
+            <div className='mx-auto grid grid-cols-2 gap-4 p-4 @2xl:grid-cols-3 @4xl:grid-cols-4 @6xl:grid-cols-5'>
+              {filteredTemplates.map((template) => {
                 const templateIllustration =
                   activityIllustrations[template.id as keyof typeof activityIllustrations]
                 const activityIllustration = templateIllustration ?? customTemplateIllustration
@@ -135,9 +135,9 @@ export const ActivityLibrary = (props: Props) => {
                     )}
                   </ActivityLibraryCard>
                 )
-              })
-            )}
-          </div>
+              })}
+            </div>
+          )}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation='vertical'
