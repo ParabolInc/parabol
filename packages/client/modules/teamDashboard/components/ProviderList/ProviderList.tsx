@@ -111,9 +111,7 @@ const query = graphql`
 
 const ProviderList = (props: Props) => {
   const {queryRef, retry, teamId} = props
-  const data = usePreloadedQuery<ProviderListQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<ProviderListQuery>(query, queryRef)
   const {viewer} = data
   const {
     featureFlags: {azureDevOps: allowAzureDevOps, msTeams: allowMSTeams}
