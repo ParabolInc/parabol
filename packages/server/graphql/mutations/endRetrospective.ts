@@ -56,7 +56,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
     }
   }
 
-  await Promise.all([
+  await Promise.allSettled([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     r
       .table('NewMeeting')
