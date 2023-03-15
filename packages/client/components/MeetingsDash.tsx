@@ -40,37 +40,41 @@ const EmptyContainer = styled('div')({
 
 const MeetingsDash = (props: Props) => {
   const {meetingsDashRef, viewer} = props
-  const {teams = [], preferredName = '', dashSearch, activeMeetings: meetings} = viewer ?? {}
+  const {teams = [], preferredName = '', dashSearch, teamFilter} = viewer ?? {}
   const activeMeetings = useMemo(() => {
-    const sortedMeetings = meetings
-      ? meetings.filter(Boolean).sort((a, b) => {
-          const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
-          const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
-          if (aRecurring && !bRecurring) {
-            return -1
-          }
-          if (bRecurring && !aRecurring) {
-            return 1
-          }
+    const sortedMeetings = teams
+      .flatMap((team) => team.activeMeetings)
+      .filter(Boolean)
+      .sort((a, b) => {
+        const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
+        const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
+        if (aRecurring && !bRecurring) {
+          return -1
+        }
+        if (bRecurring && !aRecurring) {
+          return 1
+        }
 
-          if (aRecurring && bRecurring) {
-            // When ordering recurring meetings, sort based on when the series was created to maintain
-            // consistency when meetings are restarted.
-            return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
-          }
+        if (aRecurring && bRecurring) {
+          // When ordering recurring meetings, sort based on when the series was created to maintain
+          // consistency when meetings are restarted.
+          return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
+        }
 
-          return a.createdAt > b.createdAt ? -1 : 1
-        })
-      : []
-    const filteredMeetings = dashSearch
+        return a.createdAt > b.createdAt ? -1 : 1
+      })
+    const searchedMeetings = dashSearch
       ? sortedMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
       : sortedMeetings
+    const filteredMeetings = teamFilter
+      ? searchedMeetings.filter(({teamId}) => teamId === teamFilter.id)
+      : searchedMeetings
     return filteredMeetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
       displayIdx
     }))
-  }, [teams, dashSearch])
+  }, [teams, dashSearch, teamFilter])
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
@@ -102,7 +106,7 @@ const MeetingsDash = (props: Props) => {
           <MeetingsDashEmpty
             name={preferredName}
             message={
-              dashSearch
+              dashSearch || teamFilter
                 ? EmptyMeetingViewMessage.NO_SEARCH_RESULTS
                 : EmptyMeetingViewMessage.NO_ACTIVE_MEETINGS
             }
@@ -124,6 +128,7 @@ graphql`
       ...MeetingCard_meeting
       ...useSnacksForNewMeetings_meetings
       id
+      teamId
       name
       createdAt
       meetingMembers {
@@ -147,6 +152,9 @@ export default createFragmentContainer(MeetingsDash, {
     fragment MeetingsDash_viewer on User {
       id
       dashSearch
+      teamFilter {
+        id
+      }
       preferredName
       teams {
         id
