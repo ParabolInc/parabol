@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
@@ -57,6 +59,7 @@ const StyledInput = styled('input')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
+  settingsRef?: any
   showTranscription?: boolean
 }
 
@@ -73,8 +76,19 @@ const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks, showTranscription} = props
+  const {isReadOnly, allowTasks, settingsRef, showTranscription} = props
+  useFragment(
+    graphql`
+      fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
+        videoMeetingURL
+      }
+    `,
+    settingsRef
+  )
+  // const {videoMeetingURL} = settings
+  // TODO: if there is a videoMeetingURL, show the transcription or let the user update the URL
   const message = getMessage(allowTasks, isReadOnly, showTranscription)
+
   return (
     <DiscussionThreadEmptyStateRoot>
       <EmptyDiscussionContainer>

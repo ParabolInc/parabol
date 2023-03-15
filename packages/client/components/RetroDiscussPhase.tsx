@@ -197,13 +197,24 @@ const RetroDiscussPhase = (props: Props) => {
         localStage {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
+        settings {
+          ...DiscussionThreadListEmptyState_settings
+        }
       }
     `,
     meetingRef
   )
   const [callbackRef, phaseRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
-  const {id: meetingId, endedAt, localStage, showSidebar, organization, showTranscription} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    localStage,
+    showSidebar,
+    organization,
+    showTranscription,
+    settings
+  } = meeting
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
@@ -311,7 +322,8 @@ const RetroDiscussPhase = (props: Props) => {
                     <DiscussionThreadListEmptyState
                       allowTasks={true}
                       isReadOnly={allowedThreadables.length === 0}
-                      showTranscription={showTranscription}
+                      settingsRef={settings}
+                      showTranscription
                     />
                   }
                 />
