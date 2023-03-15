@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ChangeTaskTeamMutation_task} from '~/__generated__/ChangeTaskTeamMutation_task.graphql'
+import {ChangeTaskTeamMutation_task$data} from '~/__generated__/ChangeTaskTeamMutation_task.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeRemoveNodeFromUnknownConn from '../utils/relay/safeRemoveNodeFromUnknownConn'
@@ -37,7 +37,7 @@ const mutation = graphql`
 
 type Task = NonNullable<NonNullable<ChangeTaskTeamMutationResponse['changeTaskTeam']>['task']>
 
-export const changeTaskTeamTaskUpdater: SharedUpdater<ChangeTaskTeamMutation_task> = (
+export const changeTaskTeamTaskUpdater: SharedUpdater<ChangeTaskTeamMutation_task$data> = (
   payload,
   {store}
 ) => {

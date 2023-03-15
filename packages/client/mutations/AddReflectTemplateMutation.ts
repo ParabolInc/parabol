@@ -4,7 +4,7 @@ import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
-import {AddReflectTemplateMutation_team} from '../__generated__/AddReflectTemplateMutation_team.graphql'
+import {AddReflectTemplateMutation_team$data} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
 
 graphql`
@@ -26,7 +26,7 @@ const mutation = graphql`
   }
 `
 
-export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMutation_team> = (
+export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMutation_team$data> = (
   payload,
   {store}
 ) => {

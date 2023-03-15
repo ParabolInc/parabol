@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {DragDiscussionTopicMutation_meeting} from '~/__generated__/DragDiscussionTopicMutation_meeting.graphql'
+import {DragDiscussionTopicMutation_meeting$data} from '~/__generated__/DragDiscussionTopicMutation_meeting.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DISCUSS} from '../utils/constants'
 import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
@@ -27,7 +27,7 @@ const mutation = graphql`
 `
 
 export const dragDiscussionTopicMeetingUpdater: SharedUpdater<
-  DragDiscussionTopicMutation_meeting
+  DragDiscussionTopicMutation_meeting$data
 > = (payload, {store}) => {
   const meetingId = payload.getLinkedRecord('meeting').getValue('id')
   handleUpdateStageSort(store, meetingId, DISCUSS)

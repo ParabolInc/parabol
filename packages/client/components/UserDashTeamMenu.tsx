@@ -8,8 +8,8 @@ import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {
-  UserDashTeamMenu_viewer$key,
-  UserDashTeamMenu_viewer
+  UserDashTeamMenu_viewer$data,
+  UserDashTeamMenu_viewer$key
 } from '~/__generated__/UserDashTeamMenu_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -42,7 +42,7 @@ const UserDashTeamMenu = (props: Props) => {
     `,
     viewerRef
   )
-  const oldTeamsRef = useRef<UserDashTeamMenu_viewer['teams']>([])
+  const oldTeamsRef = useRef<UserDashTeamMenu_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
