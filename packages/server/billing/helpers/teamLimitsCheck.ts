@@ -6,7 +6,6 @@ import NotificationTeamsLimitExceeded from '../../database/types/NotificationTea
 import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
-import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
 import getPg from '../../postgres/getPg'
@@ -14,6 +13,7 @@ import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appe
 import sendToSentry from '../../utils/sendToSentry'
 import removeTeamsLimitObjects from './removeTeamsLimitObjects'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
+import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 
 // Uncomment for easier testing
 // const enum Threshold {
@@ -23,21 +23,6 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 //   STARTER_TIER_LOCK_AFTER_DAYS = 0,
 //   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
 // }
-
-const getBillingLeaderIds = async (orgId: string) => {
-  return r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, role: 'BILLING_LEADER'})
-    .coerceTo('array')('userId')
-    .run()
-}
-
-const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const billingLeaderIds = (await getBillingLeaderIds(orgId)) as unknown as string[]
-
-  return (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
-}
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
   await r
@@ -139,7 +124,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    const billingLeadersIds = await getBillingLeaderIds(orgId)
+    const billingLeadersIds = await dataLoader.get('billingLeadersIdsByOrgId').load(orgId)
     await Promise.all([
       r
         .table('Organization')
@@ -201,7 +186,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
     .run()
   dataLoader.get('organizations').clear(orgId)
 
-  const billingLeaders = await getBillingLeaders(orgId, dataLoader)
+  const billingLeaders = await getBillingLeadersByOrgId(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
   // wait for usage stats to be enabled as we dont want to send notifications before it's available
