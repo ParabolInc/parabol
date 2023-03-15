@@ -4,6 +4,7 @@ import {OnNextHistoryContext} from '../../types/relayMutations'
 import {mapTeamsLimitExceededToToast_notification} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
+import {Threshold} from '../../types/constEnums'
 
 graphql`
   fragment mapTeamsLimitExceededToToast_notification on NotifyTeamsLimitExceeded {
@@ -20,8 +21,9 @@ const mapTeamsLimitExceededToToast = (
 
   return {
     autoDismiss: 0,
+    showDismissButton: true,
     key: makeNotificationToastKey(notificationId),
-    message: `Your account is on a roll! Check out "${orgName}"'s usage`,
+    message: `"${orgName}" is over the limit of ${Threshold.MAX_STARTER_TIER_TEAMS} free teams. Action is needed.`,
     onManualDismiss: () => {
       SendClientSegmentEventMutation(atmosphere, 'Snackbar Clicked', {
         snackbarType: 'teamsLimitExceeded'
