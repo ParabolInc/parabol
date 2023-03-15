@@ -71,8 +71,7 @@ export default {
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType})) as MeetingSettingsRetrospective
-    const {totalVotes, maxVotesPerGroup, selectedTemplateId, disableAnonymity, videoMeetingURL} =
-      meetingSettings
+    const {totalVotes, maxVotesPerGroup, selectedTemplateId, disableAnonymity} = meetingSettings
     const meeting = new MeetingRetrospective({
       id: meetingId,
       teamId,

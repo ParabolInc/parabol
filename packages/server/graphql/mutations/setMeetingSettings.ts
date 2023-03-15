@@ -6,6 +6,7 @@ import {RValue} from '../../database/stricterR'
 import {analytics, MeetingSettings} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import RecallAIServerManager from '../../utils/RecallAIServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SetMeetingSettingsPayload from '../types/SetMeetingSettingsPayload'
@@ -87,6 +88,10 @@ const setMeetingSettings = {
       })
       .run()
 
+    if (videoMeetingURL) {
+      const manager = new RecallAIServerManager()
+      manager.createBot(videoMeetingURL)
+    }
     const data = {settingsId}
     analytics.meetingSettingsChanged(viewerId, teamId, meetingType, meetingSettings)
     publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
