@@ -1,6 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
 import Organization from '../../../database/types/Organization'
-import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
@@ -24,9 +23,8 @@ const resolveDowngradeToStarter = async (
     console.log(e)
   }
 
-  const [org, user] = await Promise.all([
+  const [org] = await Promise.all([
     r.table('Organization').get(orgId).run() as unknown as Organization,
-    getUserById(userId),
     r({
       orgUpdate: r.table('Organization').get(orgId).update({
         tier: 'starter',
@@ -43,7 +41,6 @@ const resolveDowngradeToStarter = async (
       orgId
     )
   ])
-  if (!user) throw new Error('User not found')
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   analytics.organizationDowngraded(userId, {
@@ -52,7 +49,6 @@ const resolveDowngradeToStarter = async (
     orgName: org.name,
     oldTier: 'team',
     newTier: 'starter',
-    billingLeaderEmail: user.email,
     reasonsForLeaving,
     otherTool
   })

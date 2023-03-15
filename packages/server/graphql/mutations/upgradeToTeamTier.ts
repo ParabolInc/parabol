@@ -77,8 +77,7 @@ export default {
       domain,
       orgName,
       oldTier: 'starter',
-      newTier: 'team',
-      billingLeaderEmail: viewer!.email
+      newTier: 'team'
     })
     const data = {orgId, teamIds, meetingIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierPayload', data, subOptions)

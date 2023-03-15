@@ -177,10 +177,13 @@ export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [
   'Moving to another tool (please specify)'
 ]
 
-export const reasonsToDowngradeLookup = {
+export const reasonsToDowngradeLookup: Record<
+  ReadableReasonToDowngradeEnum,
+  ReasonToDowngradeEnum
+> = {
   'Parabol is too expensive': 'tooExpensive',
   'Budget changes': 'budgetChanges',
   'Missing key features': 'missingKeyFeatures',
   "Not using Parabol's paid features": 'notUsingPaidFeatures',
   'Moving to another tool (please specify)': 'anotherTool'
-} as Record<ReadableReasonToDowngradeEnum, ReasonToDowngradeEnum>
+}
