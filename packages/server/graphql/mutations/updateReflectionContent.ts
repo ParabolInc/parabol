@@ -44,7 +44,12 @@ export default {
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
-    const {creatorId, meetingId, reflectionGroupId} = reflection
+    const {creatorId, meetingId, reflectionGroupId, promptId} = reflection
+    const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+    if (!reflectPrompt) {
+      return standardError(new Error('Category not found'), {userId: viewerId})
+    }
+    const {question} = reflectPrompt
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -69,7 +74,7 @@ export default {
       ? await getReflectionEntities(plaintextContent)
       : reflection.entities
     const sentimentScore = isVeryDifferent
-      ? await getReflectionSentimentScore(plaintextContent)
+      ? await getReflectionSentimentScore(question, plaintextContent)
       : reflection.sentimentScore
     await r
       .table('RetroReflection')

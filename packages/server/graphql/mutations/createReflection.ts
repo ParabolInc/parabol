@@ -43,6 +43,7 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
+    const {question} = reflectPrompt
     const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
@@ -60,7 +61,7 @@ export default {
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
-      getReflectionSentimentScore(plaintextContent)
+      getReflectionSentimentScore(question, plaintextContent)
     ])
     const reflectionGroupId = generateUID()
 
