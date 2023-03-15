@@ -55,6 +55,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const {tier} = team
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
@@ -73,9 +75,12 @@ export default {
     const entities = isVeryDifferent
       ? await getReflectionEntities(plaintextContent)
       : reflection.entities
-    const sentimentScore = isVeryDifferent
-      ? await getReflectionSentimentScore(question, plaintextContent)
-      : reflection.sentimentScore
+    const sentimentScore =
+      tier !== 'starter'
+        ? isVeryDifferent
+          ? await getReflectionSentimentScore(question, plaintextContent)
+          : reflection.sentimentScore
+        : undefined
     await r
       .table('RetroReflection')
       .get(reflectionId)
