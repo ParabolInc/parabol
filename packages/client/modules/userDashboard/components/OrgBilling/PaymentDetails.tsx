@@ -125,7 +125,7 @@ const stripeElementOptions = {
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
-const Billing = () => {
+const PaymentDetails = () => {
   const [clientSecret, setClientSecret] = useState('')
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
@@ -156,7 +156,6 @@ const Billing = () => {
   // }
 
   if (!clientSecret.length) return null
-
   return (
     <StyledPanel label='Credit Card'>
       <StyledRow>
@@ -199,4 +198,4 @@ const Billing = () => {
   )
 }
 
-export default Billing
+export default PaymentDetails
