@@ -4,9 +4,9 @@ import {requestSubscription} from 'relay-runtime'
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
-import {InvalidateSessionsMutation_notification} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
-import {NotificationSubscription_meetingStageTimeLimitEnd} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
-import {NotificationSubscription_paymentRejected} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
+import {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
+import {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
+import {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
 import Atmosphere from '../Atmosphere'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
@@ -185,7 +185,7 @@ type NextHandler = OnNextHandler<
 >
 
 const stripeFailPaymentNotificationOnNext: OnNextHandler<
-  NotificationSubscription_paymentRejected,
+  NotificationSubscription_paymentRejected$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
@@ -208,7 +208,7 @@ const stripeFailPaymentNotificationOnNext: OnNextHandler<
 
 // there's a bug in relay compiler that only shows part of the discriminated union
 const meetingStageTimeLimitOnNext: OnNextHandler<
-  NotificationSubscription_meetingStageTimeLimitEnd,
+  NotificationSubscription_meetingStageTimeLimitEnd$data,
   OnNextHistoryContext
 > = (payload: any, {atmosphere, history}) => {
   if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
@@ -252,7 +252,7 @@ const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
 }
 
 const invalidateSessionsNotificationOnNext: OnNextHandler<
-  InvalidateSessionsMutation_notification,
+  InvalidateSessionsMutation_notification$data,
   OnNextHistoryContext
 > = (_payload, {atmosphere, history}) => {
   window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

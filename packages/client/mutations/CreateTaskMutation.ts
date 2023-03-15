@@ -17,8 +17,8 @@ import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
-import {CreateTaskMutation_notification} from '../__generated__/CreateTaskMutation_notification.graphql'
-import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
+import {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
+import {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAzureCreateIssue from './handlers/handleAzureCreateIssue'
 import handleEditTask from './handlers/handleEditTask'
@@ -100,7 +100,10 @@ const mutation = graphql`
   }
 `
 
-export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (payload, {store}) => {
+export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> = (
+  payload,
+  {store}
+) => {
   const task = payload.getLinkedRecord('task')
   if (!task) return
   const taskId = task.getValue('id')
@@ -118,14 +121,14 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
-  CreateTaskMutation_notification,
+  CreateTaskMutation_notification$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload || !payload.involvementNotification) return
   popInvolvementToast(payload.involvementNotification, {atmosphere, history})
 }
 
-export const createTaskNotificationUpdater: SharedUpdater<CreateTaskMutation_notification> = (
+export const createTaskNotificationUpdater: SharedUpdater<CreateTaskMutation_notification$data> = (
   payload,
   {store}
 ) => {

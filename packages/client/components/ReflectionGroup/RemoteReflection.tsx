@@ -14,7 +14,7 @@ import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
 import {
   RemoteReflection_reflection$key,
-  RemoteReflection_reflection
+  RemoteReflection_reflection$data
 } from '../../__generated__/RemoteReflection_reflection.graphql'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
@@ -80,7 +80,7 @@ const windowDims = {
 
 const OFFSCREEN_PADDING = 16
 const getCoords = (
-  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
+  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection$data['remoteDrag']>>
 ) => {
   const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} =
     remoteDrag
@@ -134,7 +134,7 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
   and in the styled component depending on situation
 */
 const getStyle = (
-  remoteDrag: RemoteReflection_reflection['remoteDrag'],
+  remoteDrag: RemoteReflection_reflection$data['remoteDrag'],
   isDropping: boolean | null,
   isSpotlight: boolean,
   style: React.CSSProperties
@@ -209,7 +209,7 @@ const RemoteReflection = (props: Props) => {
   const {id: reflectionId, content, isDropping, reflectionGroupId, creator} = reflection
   const {meetingMembers, localPhase, disableAnonymity} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
-    RemoteReflection_reflection['remoteDrag']
+    RemoteReflection_reflection$data['remoteDrag']
   >
   const ref = useRef<HTMLDivElement>(null)
   const [editorState] = useEditorState(content)

@@ -7,7 +7,7 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import {SetOrgUserRoleMutation as TSetOrgUserRoleMutation} from '../__generated__/SetOrgUserRoleMutation.graphql'
-import {SetOrgUserRoleMutationAdded_organization} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
+import {SetOrgUserRoleMutationAdded_organization$data} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 
@@ -58,7 +58,7 @@ const mutation = graphql`
 `
 
 export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
-  SetOrgUserRoleMutationAdded_organization,
+  SetOrgUserRoleMutationAdded_organization$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload || !payload.organization) return
@@ -77,7 +77,7 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
 }
 
 export const setOrgUserRoleAddedOrganizationUpdater: SharedUpdater<
-  SetOrgUserRoleMutationAdded_organization
+  SetOrgUserRoleMutationAdded_organization$data
 > = (payload, {atmosphere, store}) => {
   const {viewerId} = atmosphere
   const promotedUserId = payload

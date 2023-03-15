@@ -4,7 +4,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
   AgendaItem_meeting$key,
-  AgendaItem_meeting
+  AgendaItem_meeting$data
 } from '~/__generated__/AgendaItem_meeting.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
@@ -63,7 +63,7 @@ const getItemProps = (
   agendaItemId: string,
   viewerId: string,
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined,
-  meeting: AgendaItem_meeting | null
+  meeting: AgendaItem_meeting$data | null
 ) => {
   const fallback = {
     isDisabled: false,

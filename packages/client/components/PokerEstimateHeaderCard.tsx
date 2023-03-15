@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {
-  PokerEstimateHeaderCard_stage,
+  PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardContent, {
@@ -15,7 +15,7 @@ interface Props {
   stage: PokerEstimateHeaderCard_stage$key
 }
 
-type Integration = NonNullable<PokerEstimateHeaderCard_stage['task']>['integration']
+type Integration = NonNullable<PokerEstimateHeaderCard_stage$data['task']>['integration']
 
 const getHeaderFields = (
   integration: Integration | null

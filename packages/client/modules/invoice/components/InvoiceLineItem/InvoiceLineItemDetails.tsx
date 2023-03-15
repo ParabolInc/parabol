@@ -4,7 +4,7 @@ import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
   InvoiceLineItemDetails_details$key,
-  InvoiceLineItemDetails_details
+  InvoiceLineItemDetails_details$data
 } from '~/__generated__/InvoiceLineItemDetails_details.graphql'
 import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -13,11 +13,11 @@ import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 
 const detailDescriptionMaker = {
-  ADDED_USERS: (detail: InvoiceLineItemDetails_details[0]) =>
+  ADDED_USERS: (detail: InvoiceLineItemDetails_details$data[0]) =>
     `${detail.email} joined ${makeDateString(detail.startAt)}`,
-  REMOVED_USERS: (detail: InvoiceLineItemDetails_details[0]) =>
+  REMOVED_USERS: (detail: InvoiceLineItemDetails_details$data[0]) =>
     `${detail.email} left ${makeDateString(detail.startAt)}`,
-  INACTIVITY_ADJUSTMENTS: (detail: InvoiceLineItemDetails_details[0]) => {
+  INACTIVITY_ADJUSTMENTS: (detail: InvoiceLineItemDetails_details$data[0]) => {
     if (!detail.endAt) {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`
     } else if (!detail.startAt) {

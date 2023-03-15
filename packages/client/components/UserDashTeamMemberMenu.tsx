@@ -10,7 +10,7 @@ import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {MenuProps} from '../hooks/useMenu'
 import {
   UserDashTeamMemberMenu_viewer$key,
-  UserDashTeamMemberMenu_viewer
+  UserDashTeamMemberMenu_viewer$data
 } from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -47,7 +47,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
-  const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer['teams']>([])
+  const oldTeamsRef = useRef<UserDashTeamMemberMenu_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams

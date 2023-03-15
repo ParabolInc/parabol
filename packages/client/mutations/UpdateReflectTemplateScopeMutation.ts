@@ -12,7 +12,7 @@ import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {UpdateReflectTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateReflectTemplateScopeMutation.graphql'
 import {
   SharingScopeEnum,
-  UpdateReflectTemplateScopeMutation_organization
+  UpdateReflectTemplateScopeMutation_organization$data
 } from '../__generated__/UpdateReflectTemplateScopeMutation_organization.graphql'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
@@ -130,7 +130,7 @@ const handleUpdateTemplateScope = (
 }
 
 export const updateTemplateScopeOrganizationUpdater: SharedUpdater<
-  UpdateReflectTemplateScopeMutation_organization
+  UpdateReflectTemplateScopeMutation_organization$data
 > = (payload: any, {store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return

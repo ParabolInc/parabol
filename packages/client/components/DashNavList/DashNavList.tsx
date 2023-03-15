@@ -7,7 +7,7 @@ import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {
   DashNavList_viewer$key,
-  DashNavList_viewer
+  DashNavList_viewer$data
 } from '../../__generated__/DashNavList_viewer.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
@@ -46,7 +46,7 @@ interface Props {
   onClick?: () => void
 }
 
-type Team = DashNavList_viewer['teams'][0]
+type Team = DashNavList_viewer$data['teams'][0]
 
 const DashNavList = (props: Props) => {
   const {className, onClick, viewer: viewerRef} = props

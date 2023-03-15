@@ -13,7 +13,7 @@ import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import Legitity from '../../../validation/Legitity'
 import {
   NewTemplateScaleValueLabelInput_scale$key,
-  NewTemplateScaleValueLabelInput_scale
+  NewTemplateScaleValueLabelInput_scale$data
 } from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 
@@ -67,7 +67,7 @@ const RemoveScaleValueIcon = styled('div')({
   padding: 0
 })
 
-const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values']) => {
+const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale$data['values']) => {
   const existingLabels = values
     .map(({label}) => label)
     .filter((label) => !isSpecialPokerLabel(label))

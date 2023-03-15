@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import {mapTeamsLimitExceededToToast_notification} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
+import {mapTeamsLimitExceededToToast_notification$data} from '../../__generated__/mapTeamsLimitExceededToToast_notification.graphql'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
 import makeNotificationToastKey from './makeNotificationToastKey'
 import {Threshold} from '../../types/constEnums'
@@ -14,7 +14,7 @@ graphql`
 `
 
 const mapTeamsLimitExceededToToast = (
-  notification: mapTeamsLimitExceededToToast_notification,
+  notification: mapTeamsLimitExceededToToast_notification$data,
   {history, atmosphere}: OnNextHistoryContext
 ): Snack => {
   const {id: notificationId, orgName} = notification

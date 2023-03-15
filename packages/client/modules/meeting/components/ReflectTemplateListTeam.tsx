@@ -11,7 +11,7 @@ import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateListTeam_viewer$key} from '../../../__generated__/ReflectTemplateListTeam_viewer.graphql'
 import {
   ReflectTemplateListTeam_teamTemplates$key,
-  ReflectTemplateListTeam_teamTemplates
+  ReflectTemplateListTeam_teamTemplates$data
 } from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
 import {ReflectTemplateListTeam_team$key} from '../../../__generated__/ReflectTemplateListTeam_team.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -52,7 +52,7 @@ interface Props {
   templateSearchQuery: string
 }
 
-const getValue = (item: ReflectTemplateListTeam_teamTemplates[0]) => {
+const getValue = (item: ReflectTemplateListTeam_teamTemplates$data[0]) => {
   return item.name.toLowerCase()
 }
 
