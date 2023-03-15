@@ -19,6 +19,7 @@ import OrgUserCount from './OrgUserCount'
 import Team from './Team'
 import TierEnum from './TierEnum'
 import User from './User'
+import OrganizationFeatureFlags from '../public/types/OrganizationFeatureFlags'
 
 const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'Organization',

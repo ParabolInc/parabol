@@ -3,7 +3,7 @@ import StyledError from './StyledError'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
-// import {NewMeetingSettingsToggleTranscription_settings$key} from '~/__generated__/NewMeetingSettingsToggleTranscription_settings.graphql'
+import {NewMeetingSettingsToggleTranscription_settings$key} from '~/__generated__/NewMeetingSettingsToggleTranscription_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
@@ -78,7 +78,7 @@ const StyledInput = styled('input')({
 })
 
 interface Props {
-  settingsRef: any // NewMeetingSettingsToggleTranscription_settings$key
+  settingsRef: NewMeetingSettingsToggleTranscription_settings$key
   className?: string
 }
 

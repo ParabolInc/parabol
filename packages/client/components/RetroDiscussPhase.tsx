@@ -187,6 +187,7 @@ const RetroDiscussPhase = (props: Props) => {
         showTranscription
         organization {
           ...DiscussPhaseSqueeze_organization
+          ...DiscussionThreadListEmptyState_organization
         }
         showSidebar
         phases {
@@ -323,7 +324,8 @@ const RetroDiscussPhase = (props: Props) => {
                       allowTasks={true}
                       isReadOnly={allowedThreadables.length === 0}
                       settingsRef={settings}
-                      showTranscription
+                      showTranscription={showTranscription}
+                      organizationRef={organization}
                     />
                   }
                 />

@@ -13,6 +13,8 @@ import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
 import FlatButton from './FlatButton'
 import StyledError from './StyledError'
+import {DiscussionThreadListEmptyState_settings$key} from '~/__generated__/DiscussionThreadListEmptyState_settings.graphql'
+import {DiscussionThreadListEmptyState_organization$key} from '~/__generated__/DiscussionThreadListEmptyState_organization.graphql'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -79,7 +81,8 @@ const StyledInput = styled('input')({
 interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
-  settingsRef?: any
+  settingsRef?: DiscussionThreadListEmptyState_settings$key
+  organizationRef?: DiscussionThreadListEmptyState_organization$key
   showTranscription?: boolean
 }
 
@@ -96,18 +99,30 @@ const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks, settingsRef, showTranscription} = props
+  const {isReadOnly, allowTasks, settingsRef, showTranscription, organizationRef} = props
   const settings = useFragment(
     graphql`
       fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
         id
       }
     `,
-    settingsRef
+    settingsRef ?? null
   )
+  const organization = useFragment(
+    graphql`
+      fragment DiscussionThreadListEmptyState_organization on Organization {
+        featureFlags {
+          zoomTranscription
+        }
+      }
+    `,
+    organizationRef ?? null
+  )
+  const zoomTranscription = organization?.featureFlags.zoomTranscription ?? false
+  console.log('🚀 ~ zoomTranscription:', zoomTranscription)
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {id: settingsId} = settings
+  const settingsId = settings?.id
   // const {videoMeetingURL} = settings
   // TODO: check if there is already a videoMeetingURL, show the transcription or let the user update the URL
   const message = getMessage(allowTasks, isReadOnly, showTranscription)
@@ -126,7 +141,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const {error: fieldError, value: urlValue} = fields.url
 
   const handleSubmit = () => {
-    if (submitting) return
+    if (submitting || !settingsId) return
     const {url} = validateField()
     if (url.error) return
     submitMutation()

@@ -23,10 +23,11 @@ const NewMeetingSettingsToggleAnonymityMenuEntry = styled(NewMeetingSettingsTogg
 
 interface Props {
   settingsRef: NewMeetingSettingsRetrospectiveSettings_settings$key
+  organizationRef: any // NewMeetingSettingsRetrospectiveSettings_organization$key
 }
 
 const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
-  const {settingsRef} = props
+  const {settingsRef, organizationRef} = props
   const {togglePortal, menuPortal, originRef, menuProps, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
     {
@@ -46,6 +47,19 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     settingsRef
   )
 
+  const organization = useFragment(
+    graphql`
+      fragment NewMeetingSettingsRetrospectiveSettings_organization on Organization {
+        featureFlags {
+          zoomTranscription
+        }
+      }
+    `,
+    organizationRef
+  )
+  const {zoomTranscription} = organization.featureFlags
+  console.log('🚀 ~ organization.featureFlags:', organization.featureFlags)
+
   return (
     <>
       <NewMeetingDropdown
@@ -59,7 +73,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
-          <NewMeetingSettingsToggleTranscription settingsRef={settings} />
+          {zoomTranscription && <NewMeetingSettingsToggleTranscription settingsRef={settings} />}
         </div>
       )}
     </>

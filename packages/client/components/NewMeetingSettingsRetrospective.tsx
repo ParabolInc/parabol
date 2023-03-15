@@ -20,10 +20,14 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
           ...RetroTemplatePicker_settings
           ...NewMeetingSettingsRetrospectiveSettings_settings
         }
+        organization {
+          ...NewMeetingSettingsRetrospectiveSettings_organization
+        }
       }
     `,
     teamRef
   )
+  const {organization} = team
   const viewer = useFragment(
     graphql`
       fragment NewMeetingSettingsRetrospective_viewer on User {
@@ -36,7 +40,10 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
   return (
     <>
       <RetroTemplatePicker settingsRef={retroSettings} viewerRef={viewer} />
-      <NewMeetingSettingsRetrospectiveSettings settingsRef={retroSettings} />
+      <NewMeetingSettingsRetrospectiveSettings
+        settingsRef={retroSettings}
+        organizationRef={organization}
+      />
     </>
   )
 }
