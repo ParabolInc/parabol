@@ -11,7 +11,7 @@ import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import {ArchiveOrganizationMutation as TArchiveOrganizationMutation} from '../__generated__/ArchiveOrganizationMutation.graphql'
-import {ArchiveOrganizationMutation_organization} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
+import {ArchiveOrganizationMutation_organization$data} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
@@ -40,7 +40,7 @@ const mutation = graphql`
 `
 
 const popOrgArchivedToast: OnNextHandler<
-  ArchiveOrganizationMutation_organization,
+  ArchiveOrganizationMutation_organization$data,
   OnNextHistoryContext
 > = (payload, {history, atmosphere}) => {
   if (!payload) return
@@ -64,7 +64,7 @@ const popOrgArchivedToast: OnNextHandler<
 }
 
 export const archiveOrganizationOrganizationUpdater: SharedUpdater<
-  ArchiveOrganizationMutation_organization
+  ArchiveOrganizationMutation_organization$data
 > = (payload, {store}) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
   const teams = payload.getLinkedRecords('teams')
@@ -82,7 +82,7 @@ export const archiveOrganizationOrganizationUpdater: SharedUpdater<
 }
 
 export const archiveOrganizationOrganizationOnNext: OnNextHandler<
-  ArchiveOrganizationMutation_organization,
+  ArchiveOrganizationMutation_organization$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   popOrgArchivedToast(payload, {atmosphere, history})

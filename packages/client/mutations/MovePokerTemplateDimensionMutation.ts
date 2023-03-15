@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {MovePokerTemplateDimensionMutation as TMovePokerTemplateDimensionMutation} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import {MovePokerTemplateDimensionMutation_team} from '../__generated__/MovePokerTemplateDimensionMutation_team.graphql'
+import {MovePokerTemplateDimensionMutation_team$data} from '../__generated__/MovePokerTemplateDimensionMutation_team.graphql'
 import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
 
 graphql`
@@ -26,7 +26,7 @@ const mutation = graphql`
 `
 
 export const movePokerTemplateDimensionTeamUpdater: SharedUpdater<
-  MovePokerTemplateDimensionMutation_team
+  MovePokerTemplateDimensionMutation_team$data
 > = (payload, {store}) => {
   if (!payload) return
   const templateId = payload.getLinkedRecord('dimension').getValue('templateId')

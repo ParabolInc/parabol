@@ -6,7 +6,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import relativeDate from '~/utils/date/relativeDate'
 import {
   ThreadedCommentHeader_comment$key,
-  ThreadedCommentHeader_comment
+  ThreadedCommentHeader_comment$data
 } from '~/__generated__/ThreadedCommentHeader_comment.graphql'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
@@ -34,7 +34,7 @@ interface Props {
   meetingId: string
 }
 
-const getName = (comment: ThreadedCommentHeader_comment) => {
+const getName = (comment: ThreadedCommentHeader_comment$data) => {
   const {isActive, createdByUserNullable, isViewerComment} = comment
   if (!isActive) return 'Message Deleted'
   if (createdByUserNullable?.preferredName) return createdByUserNullable.preferredName
