@@ -80,7 +80,6 @@ const MeetingsDash = (props: Props) => {
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
-
   if (!viewer || !cardsPerRow) return null
   return (
     <>
@@ -157,28 +156,7 @@ export default createFragmentContainer(MeetingsDash, {
       }
       preferredName
       teams {
-        id
-        name
         ...MeetingsDashActiveMeetings @relay(mask: false)
-      }
-      activeMeetings(teamIds: $teamIds) {
-        ...MeetingCard_meeting
-        ...useSnacksForNewMeetings_meetings
-        id
-        name
-        createdAt
-        meetingMembers {
-          user {
-            isConnected
-            lastSeenAtURLs
-          }
-        }
-        ... on TeamPromptMeeting {
-          meetingSeries {
-            createdAt
-            cancelledAt
-          }
-        }
       }
       ...MeetingsDashHeader_viewer
     }

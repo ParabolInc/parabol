@@ -37,7 +37,6 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import MeetingMember from './MeetingMember'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
-import NewMeeting from './NewMeeting'
 import Organization from './Organization'
 import OrganizationUser from './OrganizationUser'
 import RetroReflectionGroup from './RetroReflectionGroup'
@@ -143,35 +142,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         return meetingMembers.length
-      }
-    },
-    activeMeetings: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
-      description: 'a list of meetings that are currently in progress for the filtered teams',
-      args: {
-        teamIds: {
-          type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
-          description: 'a list of team Ids'
-        }
-      },
-      resolve: async (
-        {id: userId}: {id: string},
-        {teamIds: filteredTeamIds},
-        {authToken, dataLoader}: GQLContext
-      ) => {
-        const viewerId = getUserId(authToken)
-        const user = (await dataLoader.get('users').load(userId))!
-        const userTeamIds =
-          viewerId === userId || isSuperUser(authToken)
-            ? user.tms
-            : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
-        const teamIds = filteredTeamIds
-          ? userTeamIds.filter((userTeamId) => filteredTeamIds.includes(userTeamId))
-          : userTeamIds
-        const meetings = (await dataLoader.get('activeMeetingsByTeamId').loadMany(teamIds))
-          .filter(isValid)
-          .flat()
-        return meetings
       }
     },
     monthlyStreakMax: {
