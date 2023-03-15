@@ -9,6 +9,7 @@ graphql`
       phaseTypes
       ... on RetrospectiveMeetingSettings {
         disableAnonymity
+        videoMeetingURL
       }
     }
   }

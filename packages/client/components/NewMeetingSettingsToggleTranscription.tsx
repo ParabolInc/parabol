@@ -96,7 +96,7 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
   const [isChecked, setIsChecked] = useState(false)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
-  const {validateField, setDirtyField, onChange, fields} = useForm({
+  const {validateField, onChange, fields} = useForm({
     url: {
       getDefault: () => '',
       validate: (rawInput: string) => {
@@ -116,6 +116,8 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
 
   const handleSubmit = () => {
     if (submitting) return
+    const {url} = validateField()
+    if (url.error) return
     submitMutation()
     SetMeetingSettingsMutation(
       atmosphere,
@@ -141,7 +143,7 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
             value={urlValue}
           />
           <StyledButton onClick={handleSubmit} size='medium'>
-            Update
+            Submit
           </StyledButton>
         </ButtonRow>
       )}

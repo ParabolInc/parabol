@@ -5,6 +5,14 @@ import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useForm from '../hooks/useForm'
+import useMutationProps from '../hooks/useMutationProps'
+import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
+import linkify from '../utils/linkify'
+import Legitity from '../validation/Legitity'
+import FlatButton from './FlatButton'
+import StyledError from './StyledError'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -38,9 +46,21 @@ const Message = styled('div')({
   margin: '24 0'
 })
 
+const StyledButton = styled(FlatButton)({
+  background: PALETTE.SKY_500,
+  borderColor: PALETTE.SLATE_400,
+  color: PALETTE.WHITE,
+  fontSize: 12,
+  fontWeight: 600,
+  minWidth: 36,
+  marginTop: 24,
+  width: '100%'
+})
+
 const Wrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  flexWrap: 'wrap',
   flex: 1
 })
 
@@ -77,17 +97,45 @@ const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription
 
 const DiscussionThreadListEmptyState = (props: Props) => {
   const {isReadOnly, allowTasks, settingsRef, showTranscription} = props
-  useFragment(
+  const settings = useFragment(
     graphql`
       fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
-        videoMeetingURL
+        id
       }
     `,
     settingsRef
   )
+  const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const {id: settingsId} = settings
   // const {videoMeetingURL} = settings
-  // TODO: if there is a videoMeetingURL, show the transcription or let the user update the URL
+  // TODO: check if there is already a videoMeetingURL, show the transcription or let the user update the URL
   const message = getMessage(allowTasks, isReadOnly, showTranscription)
+  const {validateField, onChange, fields} = useForm({
+    url: {
+      getDefault: () => '',
+      validate: (rawInput: string) => {
+        return new Legitity(rawInput).test((maybeUrl) => {
+          if (!maybeUrl) return 'No link provided'
+          const links = linkify.match(maybeUrl)
+          return !links ? 'Not looking too linky' : ''
+        })
+      }
+    }
+  })
+  const {error: fieldError, value: urlValue} = fields.url
+
+  const handleSubmit = () => {
+    if (submitting) return
+    const {url} = validateField()
+    if (url.error) return
+    submitMutation()
+    SetMeetingSettingsMutation(
+      atmosphere,
+      {videoMeetingURL: urlValue, settingsId},
+      {onError, onCompleted}
+    )
+  }
 
   return (
     <DiscussionThreadEmptyStateRoot>
@@ -97,7 +145,17 @@ const DiscussionThreadListEmptyState = (props: Props) => {
       <Message>{message}</Message>
       {showTranscription && (
         <Wrapper>
-          <StyledInput autoFocus placeholder='Enter your meeting id here...' />
+          <StyledInput
+            autoFocus
+            placeholder='Paste your Zoom meeting URL'
+            onChange={onChange}
+            name='url'
+            value={urlValue}
+          />
+          <StyledButton onClick={handleSubmit} size='medium'>
+            Submit
+          </StyledButton>
+          {fieldError && <StyledError>{fieldError}</StyledError>}
         </Wrapper>
       )}
     </DiscussionThreadEmptyStateRoot>
