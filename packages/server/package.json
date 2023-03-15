@@ -42,7 +42,7 @@
     "@types/node": "^16.11.62",
     "@types/node-fetch": "^2.6.2",
     "@types/nodemailer": "^6.4.4",
-    "@types/relay-runtime": "^11.0.4",
+    "@types/relay-runtime": "^14.1.9",
     "@types/sharp": "^0.30.1",
     "@types/string-similarity": "^3.0.0",
     "@types/stripe": "^6.32.0",

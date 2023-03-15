@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
-import {RecordSourceSelectorProxy, requestSubscription} from 'relay-runtime'
+import {requestSubscription} from 'relay-runtime'
 import {
   TaskSubscription as TTaskSubscription,
-  TaskSubscriptionVariables
+  TaskSubscription$variables
 } from '~/__generated__/TaskSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
@@ -12,11 +12,13 @@ import {deleteTaskTaskUpdater} from '../mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from '../mutations/EditTaskMutation'
 import {removeOrgUserTaskUpdater} from '../mutations/RemoveOrgUserMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription TaskSubscription {
     taskSubscription {
-      __typename
+      fieldName
       RemoveTeamMemberPayload {
         ...RemoveTeamMemberMutation_task @relay(mask: false)
       }
@@ -63,29 +65,15 @@ const updateHandlers = {
 
 const TaskSubscription = (
   atmosphere: Atmosphere,
-  variables: TaskSubscriptionVariables,
+  variables: TaskSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TTaskSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('taskSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as keyof typeof updateHandlers
-      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
-      const updater = updateHandlers[type]
-      updater?.(payload[type], context)
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {taskSubscription} = result
-      const type = taskSubscription.__typename as keyof typeof taskSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(taskSubscription[type] as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('taskSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('taskSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(TaskSubscription.name, variables)
     }

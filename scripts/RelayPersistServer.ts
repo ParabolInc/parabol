@@ -7,11 +7,17 @@ import config from '../relay.config'
 
 export default class RelayPersistServer {
   server: Server
-  queryMap = {} as Record<string, string>
+  queryMapPath = path.join(__dirname, '../queryMap.json')
+  queryMap: Record<string, string>
   constructor(port = 2999) {
     this.server = http.createServer(this.requestListener)
     this.server.listen(port)
     this.prepareArtifactDirectory()
+    try {
+      this.queryMap = JSON.parse(fs.readFileSync(this.queryMapPath, 'utf-8'))
+    } catch {
+      this.queryMap = {}
+    }
   }
 
   close() {
@@ -51,7 +57,7 @@ export default class RelayPersistServer {
     }
     const id = this.makeHash(text)
     this.queryMap[id] = text.replace(/\n|\r/g, '').replace(/\s{2,}/g, ' ')
-    fs.writeFileSync(path.join(__dirname, '../queryMap.json'), JSON.stringify(this.queryMap))
+    fs.writeFileSync(this.queryMapPath, JSON.stringify(this.queryMap))
     res.writeHead(200, {
       'Content-Type': 'application/json'
     })

@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
-import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
@@ -31,9 +30,11 @@ import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {
   NotificationSubscription as TNotificationSubscription,
-  NotificationSubscriptionResponse,
-  NotificationSubscriptionVariables
+  NotificationSubscription$variables,
+  NotificationSubscriptionResponse
 } from '../__generated__/NotificationSubscription.graphql'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -67,7 +68,7 @@ graphql`
 const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
-      __typename
+      fieldName
       AddedNotification {
         addedNotification {
           ...NotificationPicker_notification @relay(mask: false)
@@ -266,6 +267,28 @@ const invalidateSessionsNotificationOnNext: OnNextHandler<
   })
 }
 
+const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {
+  const notification = payload.getLinkedRecord('addedNotification')
+  if (!notification) return
+  handleAddNotifications(notification, context.store)
+}
+
+const updateHandlers = {
+  AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
+  AddNewFeaturePayload: addNewFeatureNotificationUpdater,
+  AddOrgPayload: addOrgMutationNotificationUpdater,
+  AddTeamPayload: addTeamMutationNotificationUpdater,
+  AddedNotification: addedNotificationUpdater,
+  CreateTaskPayload: createTaskNotificationUpdater,
+  EndCheckInSuccess: endCheckInNotificationUpdater,
+  EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
+  InviteToTeamPayload: inviteToTeamNotificationUpdater,
+  MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
+  RemoveOrgUserPayload: removeOrgUserNotificationUpdater,
+  StripeFailPaymentPayload: stripeFailPaymentNotificationUpdater,
+  ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater
+} as const
+
 const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
@@ -280,81 +303,15 @@ const onNextHandlers = {
 
 const NotificationSubscription = (
   atmosphere: Atmosphere,
-  variables: NotificationSubscriptionVariables,
+  variables: NotificationSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TNotificationSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('notificationSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename')
-      const context = {store: store as RecordSourceSelectorProxy<any>, atmosphere}
-      switch (type as string) {
-        case 'AcceptTeamInvitationPayload':
-          acceptTeamInvitationNotificationUpdater(payload, context)
-          break
-        case 'UpdateFeatureFlagPayload':
-          break
-        case 'AuthTokenPayload':
-          break
-        case 'AddNewFeaturePayload':
-          addNewFeatureNotificationUpdater(payload, context)
-          break
-        case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, context)
-          break
-        case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, context)
-          break
-        case 'CreateTaskPayload':
-          createTaskNotificationUpdater(payload as any, context)
-          break
-        case 'DisconnectSocketPayload':
-          break
-        case 'EndCheckInSuccess':
-          endCheckInNotificationUpdater(payload, context)
-          break
-        case 'EndRetrospectiveSuccess':
-          endRetrospectiveNotificationUpdater(payload, context)
-          break
-        case 'InviteToTeamPayload':
-          inviteToTeamNotificationUpdater(payload, context)
-          break
-        case 'User':
-          break
-        case 'MeetingStageTimeLimitPayload':
-          meetingStageTimeLimitUpdater(payload, context)
-          break
-        case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, context)
-          break
-        case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, context)
-          break
-        case 'ArchiveTimelineEventSuccess':
-          archiveTimelineEventNotificationUpdater(payload, context)
-          break
-        case 'AddedNotification':
-          const notification = payload.getLinkedRecord('addedNotification' as any)
-          if (!notification) break
-          handleAddNotifications(notification, context.store)
-          break
-        default:
-          console.error('NotificationSubscription case fail', type)
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {notificationSubscription} = result
-      const type = notificationSubscription.__typename as keyof typeof notificationSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      const data = notificationSubscription[type]
-      if (data && handler) {
-        handler(data as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('notificationSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('notificationSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(NotificationSubscription.name, variables)
     }

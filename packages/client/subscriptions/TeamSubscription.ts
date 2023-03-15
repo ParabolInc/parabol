@@ -35,13 +35,15 @@ import {
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {
   TeamSubscription as TTeamSubscription,
-  TeamSubscriptionVariables
+  TeamSubscription$variables
 } from '../__generated__/TeamSubscription.graphql'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
-      __typename
+      fieldName
       UpdateRecurrenceSettingsSuccess {
         ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
       }
@@ -209,30 +211,15 @@ const updateHandlers = {
 
 const TeamSubscription = (
   atmosphere: Atmosphere,
-  variables: TeamSubscriptionVariables,
+  variables: TeamSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TTeamSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('teamSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as string
-      const handler = updateHandlers[type as keyof typeof updateHandlers]
-      if (handler) {
-        handler(payload[type], {atmosphere, store})
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {teamSubscription} = result
-      const type = teamSubscription.__typename as keyof typeof teamSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(teamSubscription[type] as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('teamSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('teamSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(TeamSubscription.name, variables)
     }

@@ -7,6 +7,7 @@ type Subscription {
 }
 
 type MeetingSubscriptionPayload {
+  fieldName: String!
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
@@ -50,6 +51,7 @@ type MeetingSubscriptionPayload {
 }
 
 type NotificationSubscriptionPayload {
+  fieldName: String!
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload
   AddNewFeaturePayload: AddNewFeaturePayload
   AddOrgPayload: AddOrgPayload
@@ -81,6 +83,7 @@ type NotificationSubscriptionPayload {
 }
 
 type OrganizationSubscriptionPayload {
+  fieldName: String!
   AddOrgPayload: AddOrgPayload
   ArchiveOrganizationPayload: ArchiveOrganizationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload
@@ -95,6 +98,7 @@ type OrganizationSubscriptionPayload {
 }
 
 type TaskSubscriptionPayload {
+  fieldName: String!
   ChangeTaskTeamPayload: ChangeTaskTeamPayload
   CreateTaskIntegrationPayload: CreateTaskIntegrationPayload
   CreateTaskPayload: CreateTaskPayload
@@ -107,6 +111,7 @@ type TaskSubscriptionPayload {
 }
 
 type TeamSubscriptionPayload {
+  fieldName: String!
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload
   AddAgendaItemPayload: AddAgendaItemPayload
   AddAtlassianAuthPayload: AddAtlassianAuthPayload

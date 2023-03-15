@@ -5941,10 +5941,10 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
-"@types/react-relay@^11.0.2":
-  version "11.0.3"
-  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-11.0.3.tgz#95097049203f2f814e1330453d037841a2a310e5"
-  integrity sha512-hgKmTCswmZclKOqju/3pcVgJG3FtNrwfLLq4wtpZuQ/UJAyVeQ90SS6GiGZBr6hDZmcxNMIQCNyJ0YK5eE9Ceg==
+"@types/react-relay@^14.1.3":
+  version "14.1.3"
+  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-14.1.3.tgz#d8a64e816c255910be7c94170e20472cafe5a51f"
+  integrity sha512-tsu+3jN0zeOYKV485fwUy3yMEZWkDVzC2JG0tJgEH6p9tcPQkBAUoXqEZFwSBtHtNo1etfa1Eityg3fC55qDvQ==
   dependencies:
     "@types/react" "*"
     "@types/relay-runtime" "*"
@@ -6003,15 +6003,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*", "@types/relay-runtime@^12.0.0":
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-12.0.1.tgz#a25a9755f7925a202a7ec3a49857de46943ecf02"
-  integrity sha512-zYhQjy7FtTb6cgGuwBT09NLL308GIlo/tcnsfmZ095l/135TD8VladcOkowK/3o8jDAbQ2uLsMJ4No2tcxRenA==
-
-"@types/relay-runtime@^11.0.4":
-  version "11.0.4"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-11.0.4.tgz#b22ac549b1c6790fb71b20acf3949d97c0cadf7e"
-  integrity sha512-dz3IuWmiIzrwQCbBeap1ispL8mvr6noRjQDeL7LLc4Y/kDJQWhfnwCIOkIt+ABNnrAtWZb8jK3b/oV6RGKXcfw==
+"@types/relay-runtime@*", "@types/relay-runtime@^14.1.9":
+  version "14.1.9"
+  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-14.1.9.tgz#bb0e2d6574f058f8da90992166b1364fff09e2dc"
+  integrity sha512-zMZnZPPawAC15zHygMk6lfHhT11xgkx2jLhXqJpgFKpV86MnQcMEs/dVTADKuUIBLBzf6Og6wK4n5PMsJ0OjVw==
 
 "@types/resolve@1.17.1":
   version "1.17.1"

@@ -7,7 +7,7 @@ import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
 import {
   MeetingSubscription as TMeetingSubscription,
-  MeetingSubscriptionVariables
+  MeetingSubscription$variables
 } from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
@@ -23,11 +23,13 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
-      __typename
+      fieldName
       UpdateMeetingPromptSuccess {
         ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
       }
@@ -160,30 +162,15 @@ const updateHandlers = {
 
 const MeetingSubscription = (
   atmosphere: Atmosphere,
-  variables: MeetingSubscriptionVariables,
+  variables: MeetingSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TMeetingSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('meetingSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as keyof typeof updateHandlers
-      const handler = updateHandlers[type]
-      if (handler) {
-        handler(payload[type], {atmosphere, store})
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {meetingSubscription} = result
-      const type = meetingSubscription.__typename as keyof typeof meetingSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(meetingSubscription[type] as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('meetingSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('meetingSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(MeetingSubscription.name, variables)
     }

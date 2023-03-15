@@ -7,7 +7,7 @@ import {
 } from '~/mutations/ArchiveOrganizationMutation'
 import {
   OrganizationSubscription as TOrganizationSubscription,
-  OrganizationSubscriptionVariables
+  OrganizationSubscription$variables
 } from '~/__generated__/OrganizationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
@@ -20,11 +20,13 @@ import {
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
+import subscriptionOnNext from './subscriptionOnNext'
+import subscriptionUpdater from './subscriptionUpdater'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
-      __typename
+      fieldName
       AddOrgPayload {
         ...AddOrgMutation_organization @relay(mask: false)
       }
@@ -75,30 +77,15 @@ const updateHandlers = {
 
 const OrganizationSubscription = (
   atmosphere: Atmosphere,
-  variables: OrganizationSubscriptionVariables,
+  variables: OrganizationSubscription$variables,
   router: {history: RouterProps['history']}
 ) => {
+  atmosphere.registerSubscription(subscription)
   return requestSubscription<TOrganizationSubscription>(atmosphere, {
     subscription,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('organizationSubscription') as any
-      if (!payload) return
-      const type = payload.getValue('__typename') as keyof typeof updateHandlers
-      const handler = updateHandlers[type]
-      if (handler) {
-        handler(payload[type], {atmosphere, store})
-      }
-    },
-    onNext: (result) => {
-      if (!result) return
-      const {organizationSubscription} = result
-      const type = organizationSubscription.__typename as keyof typeof organizationSubscription
-      const handler = onNextHandlers[type as keyof typeof onNextHandlers]
-      if (handler) {
-        handler(organizationSubscription[type] as any, {...router, atmosphere})
-      }
-    },
+    updater: subscriptionUpdater('organizationSubscription', updateHandlers, atmosphere),
+    onNext: subscriptionOnNext('organizationSubscription', onNextHandlers, atmosphere, router),
     onCompleted: () => {
       atmosphere.unregisterSub(OrganizationSubscription.name, variables)
     }

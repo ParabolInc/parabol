@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {
-  PokerEstimateHeaderCard_stage$key,
-  PokerEstimateHeaderCard_stage
+  PokerEstimateHeaderCard_stage,
+  PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardContent, {
   PokerEstimateHeaderCardContentProps
@@ -35,11 +35,11 @@ const getHeaderFields = (
         linkText: issueKey
       }
     case '_xGitHubIssue':
-      const {number, title: githubTitle, bodyHTML, url} = integration
+      const {number, title: githubTitle, bodyHTML, ghUrl} = integration
       return {
         cardTitle: githubTitle,
         descriptionHTML: bodyHTML,
-        url,
+        url: ghUrl,
         linkTitle: `GitHub Issue #${number}`,
         linkText: `#${number}`
       }
@@ -108,7 +108,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
               number
               title
               bodyHTML
-              url
+              ghUrl: url
             }
             ... on _xGitLabIssue {
               __typename
