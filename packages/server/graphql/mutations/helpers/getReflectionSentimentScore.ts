@@ -7,7 +7,7 @@ const getReflectionSentimentScore = async (question: string, response: string) =
   const document = `${question} ${response}`
   const res = await manager.analyzeSentiment(document)
   const reflectionSentiment = manageGoogleNLPErrorResponse(res)
-  return reflectionSentiment?.documentSentiment.score ?? undefined
+  return reflectionSentiment?.documentSentiment.score
 }
 
 export default getReflectionSentimentScore
