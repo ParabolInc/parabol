@@ -23,7 +23,7 @@ const SAMLRedirect = () => {
       ReactGA.event('sign_up', {
         userId,
         user_properties: {
-          is_patient0: isPatient0
+          is_patient_0: isPatient0
         }
       })
     }

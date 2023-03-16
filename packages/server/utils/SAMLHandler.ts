@@ -38,7 +38,7 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     return
   }
   const {loginSAML} = data
-  const {error, userId, authToken, isNewUser} = loginSAML
+  const {error, userId, authToken, isNewUser, isPatient0} = loginSAML
   if (!authToken) {
     const message = error?.message || GENERIC_ERROR
     redirectOnError(res, message)
@@ -49,7 +49,7 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
       .writeStatus('302')
       .writeHeader(
         'location',
-        `/saml-redirect?userId=${userId}&token=${authToken}&isNewUser=${isNewUser}`
+        `/saml-redirect?userId=${userId}&token=${authToken}&isNewUser=${isNewUser}&isPatient0=${isPatient0}`
       )
       .end()
   })
