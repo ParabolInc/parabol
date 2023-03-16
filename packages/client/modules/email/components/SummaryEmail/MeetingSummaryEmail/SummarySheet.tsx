@@ -19,6 +19,7 @@ import SummaryPokerStories from './SummaryPokerStories'
 import SummarySheetCTA from './SummarySheetCTA'
 import TeamPromptResponseSummary from './TeamPromptResponseSummary'
 import WholeMeetingSummary from './WholeMeetingSummary'
+import ExportAllTasks from './ExportAllTasks'
 
 interface Props {
   emailCSVUrl: string
@@ -51,6 +52,15 @@ const SummarySheet = (props: Props) => {
     graphql`
       fragment SummarySheet_meeting on NewMeeting {
         id
+        ... on RetrospectiveMeeting {
+          taskCount
+        }
+        ... on ActionMeeting {
+          taskCount
+        }
+        ... on TeamPromptMeeting {
+          taskCount
+        }
         ...WholeMeetingSummary_meeting
         ...SummaryHeader_meeting
         ...QuickStats_meeting
@@ -59,13 +69,14 @@ const SummarySheet = (props: Props) => {
         ...RetroTopics_meeting
         ...SummaryPokerStories_meeting
         ...TeamPromptResponseSummary_meeting
+        ...ExportAllTasks_meeting
         meetingType
         name
       }
     `,
     meetingRef
   )
-  const {id: meetingId, meetingType} = meeting
+  const {id: meetingId, meetingType, taskCount} = meeting
   const isDemo = !!props.isDemo
 
   return (
@@ -78,6 +89,19 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
+        {referrer === 'meeting' && taskCount && taskCount > 0 && (
+          <tr>
+            <td
+              style={{
+                paddingTop: 44
+              }}
+              align='center'
+              width='100%'
+            >
+              <ExportAllTasks meetingRef={meeting} />
+            </td>
+          </tr>
+        )}
         <ExportToCSV
           emailCSVUrl={emailCSVUrl}
           meetingId={meetingId}

@@ -7,6 +7,9 @@ import {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrate
 import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
+import {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   menuProps: MenuProps
@@ -82,13 +85,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const task = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenu_task on Task {
-        ...TaskFooterIntegrateMenuList_task
+        id
         teamId
         userId
       }
     `,
     taskRef
   )
+  const atmosphere = useAtmosphere()
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   if (!assigneeTeamMember || !viewerTeamMember) return null
@@ -98,22 +102,37 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     preferredName: assigneeName,
     prevUsedRepoIntegrations
   } = assigneeTeamMember
-  const {teamId, userId} = task
+  const {teamId, userId, id: taskId} = task
   const isViewerAssignee = viewerId === userId
   const isViewerIntegrated = isIntegrated(viewerIntegrations)
   const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
   const showAssigneeIntegrations = !!(
     isAssigneeIntegrated && prevUsedRepoIntegrations.items?.length
   )
+  const {submitMutation, onError, onCompleted} = mutationProps
+
+  const handlePushToIntegration = (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum
+  ) => {
+    const variables = {
+      integrationRepoId,
+      taskId: taskId,
+      integrationProviderService: integrationProviderService
+    }
+    submitMutation()
+    CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+  }
+
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(isViewerIntegrated)
     const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
         menuProps={menuProps}
-        mutationProps={mutationProps}
         placeholder={placeholder}
-        task={task}
+        teamId={task.teamId}
+        onPushToIntegration={handlePushToIntegration}
         label={label}
       />
     )
@@ -125,9 +144,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     return (
       <TaskFooterIntegrateMenuList
         menuProps={menuProps}
-        mutationProps={mutationProps}
         placeholder={placeholder}
-        task={task}
+        teamId={task.teamId}
+        onPushToIntegration={handlePushToIntegration}
         label={label}
       />
     )

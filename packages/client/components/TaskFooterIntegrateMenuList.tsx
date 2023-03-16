@@ -1,16 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
-import {useFragment, useLazyLoadQuery} from 'react-relay'
+import {useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import {
+  IntegrationProviderServiceEnum,
+  TaskFooterIntegrateMenuListLocalQuery
+} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
@@ -19,10 +18,13 @@ import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  mutationProps: MenuMutationProps
   placeholder: string
-  task: TaskFooterIntegrateMenuList_task$key
+  teamId: string
   label?: string
+  onPushToIntegration: (
+    integrationRepoId: string,
+    integrationProviderService: IntegrationProviderServiceEnum
+  ) => void
 }
 
 const Label = styled('div')({
@@ -47,7 +49,7 @@ const getValue = (item: Item) => {
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {mutationProps, menuProps, placeholder, task: taskRef, label} = props
+  const {menuProps, onPushToIntegration, placeholder, teamId, label} = props
 
   graphql`
     fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
@@ -76,16 +78,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     }
   `
 
-  const task = useFragment(
-    graphql`
-      fragment TaskFooterIntegrateMenuList_task on Task {
-        id
-        teamId
-      }
-    `,
-    taskRef
-  )
-  const {id: taskId, teamId} = task
   const [networkOnly, setNetworkOnly] = useState(false)
   const [keepParentFocus, setKeepParentFocus] = useState(true)
   const [first, setFirst] = useState(50)
@@ -116,7 +108,6 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     filteredItems: filteredIntegrations,
     onQueryChange
   } = useSearchFilter(items, getValue)
-  const atmosphere = useAtmosphere()
 
   useEffect(() => {
     // if searching for a repoIntegration that doesnt exist in the cache, it could be stale so use the network
@@ -149,111 +140,65 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         null}
       {filteredIntegrations.slice(0, 10).map((repoIntegration) => {
         const {id: integrationRepoId, service} = repoIntegration
-        const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira' && repoIntegration.name) {
-          const onClick = () => {
-            const variables = {
-              integrationRepoId,
-              taskId,
-              integrationProviderService: 'jira' as const
-            }
-            submitMutation()
-            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
-          }
           return (
             <TaskIntegrationMenuItem
               key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
-              onClick={onClick}
+              onClick={() => onPushToIntegration(integrationRepoId, 'jira')}
               service='jira'
             />
           )
         }
         if (service === 'jiraServer' && repoIntegration.name) {
-          const onClick = () => {
-            const variables = {
-              integrationRepoId,
-              taskId,
-              integrationProviderService: 'jiraServer' as const
-            }
-            submitMutation()
-            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
-          }
           return (
             <TaskIntegrationMenuItem
               key={integrationRepoId}
               query={query}
               label={repoIntegration.name}
-              onClick={onClick}
+              onClick={() => onPushToIntegration(integrationRepoId, 'jiraServer')}
               service='jiraServer'
             />
           )
         }
         if (service === 'github' && repoIntegration.nameWithOwner) {
           const {nameWithOwner} = repoIntegration
-          const onClick = () => {
-            const variables = {
-              integrationRepoId: nameWithOwner,
-              taskId,
-              integrationProviderService: 'github' as const
-            }
-            submitMutation()
-            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
-          }
           return (
             <TaskIntegrationMenuItem
               key={integrationRepoId}
               query={query}
               label={repoIntegration.nameWithOwner}
-              onClick={onClick}
+              onClick={() => onPushToIntegration(nameWithOwner, 'github')}
               service='github'
             />
           )
         }
         if (service === 'gitlab' && repoIntegration.fullPath) {
           const {fullPath} = repoIntegration
-          const onClick = () => {
-            const variables = {
-              integrationRepoId: fullPath,
-              taskId,
-              integrationProviderService: 'gitlab' as const
-            }
-            submitMutation()
-            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
-          }
           return (
             <TaskIntegrationMenuItem
               key={integrationRepoId}
               query={query}
               label={fullPath}
-              onClick={onClick}
+              onClick={() => onPushToIntegration(fullPath, 'gitlab')}
               service='gitlab'
             />
           )
         }
         if (service === 'azureDevOps' && repoIntegration.name) {
           const {name, id: projectId, instanceId} = repoIntegration
-          const onClick = () => {
-            const integrationRepoId = IntegrationRepoId.join({
-              instanceId: instanceId!,
-              projectId,
-              service: 'azureDevOps'
-            })
-            const variables = {
-              integrationRepoId,
-              taskId,
-              integrationProviderService: 'azureDevOps' as const
-            }
-            submitMutation()
-            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
-          }
+          const integrationRepoId = IntegrationRepoId.join({
+            instanceId: instanceId!,
+            projectId,
+            service: 'azureDevOps'
+          })
           return (
             <TaskIntegrationMenuItem
               key={integrationRepoId}
               query={query}
               label={name}
-              onClick={onClick}
+              onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps')}
               service='azureDevOps'
             />
           )
