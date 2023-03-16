@@ -28,11 +28,7 @@ import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToa
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import {
-  NotificationSubscription as TNotificationSubscription,
-  NotificationSubscription$variables,
-  NotificationSubscriptionResponse
-} from '../__generated__/NotificationSubscription.graphql'
+import {NotificationSubscription as TNotificationSubscription} from '../__generated__/NotificationSubscription.graphql'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -180,7 +176,7 @@ const subscription = graphql`
 `
 
 type NextHandler = OnNextHandler<
-  NotificationSubscriptionResponse['notificationSubscription'],
+  TNotificationSubscription['response']['notificationSubscription'],
   OnNextHistoryContext
 >
 
@@ -303,7 +299,7 @@ const onNextHandlers = {
 
 const NotificationSubscription = (
   atmosphere: Atmosphere,
-  variables: NotificationSubscription$variables,
+  variables: TNotificationSubscription['variables'],
   router: {history: RouterProps['history']}
 ) => {
   atmosphere.registerSubscription(subscription)

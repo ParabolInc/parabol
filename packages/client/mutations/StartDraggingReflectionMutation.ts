@@ -6,10 +6,7 @@ import {StartDraggingReflectionMutation_meeting$data} from '~/__generated__/Star
 import Atmosphere from '../Atmosphere'
 import {ClientRetroReflection} from '../types/clientSchema'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
-import {
-  StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
-  StartDraggingReflectionMutationVariables
-} from '../__generated__/StartDraggingReflectionMutation.graphql'
+import {StartDraggingReflectionMutation as TStartDraggingReflectionMutation} from '../__generated__/StartDraggingReflectionMutation.graphql'
 
 graphql`
   fragment StartDraggingReflectionMutation_meeting on StartDraggingReflectionPayload {
@@ -110,7 +107,7 @@ export const startDraggingReflectionMeetingUpdater: SharedUpdater<
 
 const StartDraggingReflectionMutation = (
   atmosphere: Atmosphere,
-  variables: StartDraggingReflectionMutationVariables,
+  variables: TStartDraggingReflectionMutation['variables'],
   {onError, onCompleted}: LocalHandlers = {}
 ): Disposable => {
   return commitMutation<TStartDraggingReflectionMutation>(atmosphere, {

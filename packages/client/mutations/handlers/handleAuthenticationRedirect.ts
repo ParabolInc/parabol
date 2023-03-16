@@ -1,4 +1,4 @@
-import {AcceptTeamInvitationMutationReply} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
+import {AcceptTeamInvitationMutationReply$data} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import getValidRedirectParam from '../../utils/getValidRedirectParam'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
@@ -8,7 +8,7 @@ interface OnNextMeetingId extends OnNextHistoryContext {
 }
 
 const handleAuthenticationRedirect: OnNextHandler<
-  AcceptTeamInvitationMutationReply | undefined,
+  AcceptTeamInvitationMutationReply$data | undefined,
   OnNextMeetingId
 > = (acceptTeamInvitation, {meetingId: locallyRequestedMeetingId, history, atmosphere}) => {
   SendClientSegmentEventMutation(atmosphere, 'User Login')
