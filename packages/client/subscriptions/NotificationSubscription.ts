@@ -176,7 +176,7 @@ const subscription = graphql`
 `
 
 type NextHandler = OnNextHandler<
-  TNotificationSubscription['response']['notificationSubscription'],
+  TNotificationSubscription['response']['notificationSubscription']['AuthTokenPayload'],
   OnNextHistoryContext
 >
 
