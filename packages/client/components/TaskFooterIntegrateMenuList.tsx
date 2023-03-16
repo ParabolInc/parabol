@@ -9,10 +9,7 @@ import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {
-  TaskFooterIntegrateMenuListLocalQuery,
-  TaskFooterIntegrateMenuListLocalQueryResponse
-} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {TaskFooterIntegrateMenuList_task$key} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -36,7 +33,7 @@ const Label = styled('div')({
 
 type Item = NonNullable<
   NonNullable<
-    TaskFooterIntegrateMenuListLocalQueryResponse['viewer']['teamMember']
+    TaskFooterIntegrateMenuListLocalQuery['response']['viewer']['teamMember']
   >['repoIntegrations']['items']
 >[0]
 

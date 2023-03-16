@@ -2,10 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {SimpleMutation} from '../types/relayMutations'
-import {
-  SetTaskHighlightMutation as TSetTaskHighlightMutation,
-  SetTaskHighlightMutationVariables
-} from '../__generated__/SetTaskHighlightMutation.graphql'
+import {SetTaskHighlightMutation as TSetTaskHighlightMutation} from '../__generated__/SetTaskHighlightMutation.graphql'
 
 graphql`
   fragment SetTaskHighlightMutation_meeting on SetTaskHighlightSuccess {
@@ -27,7 +24,7 @@ const mutation = graphql`
 
 const SetTaskHighlightMutation: SimpleMutation<TSetTaskHighlightMutation> = (
   atmosphere: Atmosphere,
-  variables: SetTaskHighlightMutationVariables
+  variables: TSetTaskHighlightMutation['variables']
 ) =>
   commitMutation<TSetTaskHighlightMutation>(atmosphere, {
     mutation,
