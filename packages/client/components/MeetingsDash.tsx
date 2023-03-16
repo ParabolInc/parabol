@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
+import {useFragment} from 'react-relay'
+import {MeetingsDash_viewer$key} from '~/__generated__/MeetingsDash_viewer.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
@@ -18,7 +18,7 @@ import TutorialMeetingCard from './TutorialMeetingCard'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
-  viewer: MeetingsDash_viewer | null
+  viewer: MeetingsDash_viewer$key | null
 }
 
 const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
@@ -39,7 +39,24 @@ const EmptyContainer = styled('div')({
 })
 
 const MeetingsDash = (props: Props) => {
-  const {meetingsDashRef, viewer} = props
+  const {meetingsDashRef, viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment MeetingsDash_viewer on User {
+        id
+        dashSearch
+        teamFilter {
+          id
+        }
+        preferredName
+        teams {
+          ...MeetingsDashActiveMeetings @relay(mask: false)
+        }
+        ...MeetingsDashHeader_viewer
+      }
+    `,
+    viewerRef
+  )
   const {teams = [], preferredName = '', dashSearch, teamFilter} = viewer ?? {}
   const activeMeetings = useMemo(() => {
     const sortedMeetings = teams
@@ -146,19 +163,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(MeetingsDash, {
-  viewer: graphql`
-    fragment MeetingsDash_viewer on User {
-      id
-      dashSearch
-      teamFilter {
-        id
-      }
-      preferredName
-      teams {
-        ...MeetingsDashActiveMeetings @relay(mask: false)
-      }
-      ...MeetingsDashHeader_viewer
-    }
-  `
-})
+export default MeetingsDash

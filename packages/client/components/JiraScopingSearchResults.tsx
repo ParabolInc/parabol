@@ -87,9 +87,7 @@ const JiraScopingSearchResults = (props: Props) => {
     `,
     meetingRef
   )
-  const data = usePreloadedQuery<JiraScopingSearchResultsQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<JiraScopingSearchResultsQuery>(query, queryRef)
   const {viewer} = data
   const atlassian = viewer?.teamMember!.integrations.atlassian ?? null
   const issues = atlassian?.issues ?? null

@@ -17,7 +17,7 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {CompletedHandler} from '../types/relayMutations'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
-import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
+import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import NewGitLabIssueMenu from './NewGitLabIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
@@ -202,7 +202,7 @@ const NewGitLabIssueInput = (props: Props) => {
         serviceProjectHash: selectedFullPath
       }
     }
-    const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
+    const handleCompleted: CompletedHandler<TCreateTaskMutation['response']> = (res) => {
       const integrationHash = res.createTask?.task?.integrationHash ?? null
       if (!integrationHash) return
       const pokerScopeVariables = {

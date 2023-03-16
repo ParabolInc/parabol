@@ -50,10 +50,7 @@ const MyDashboardTimeline = (props: Props) => {
         ...TimelineFeedList_query
       }
     `,
-    queryRef,
-    {
-      UNSTABLE_renderPolicy: 'full'
-    }
+    queryRef
   )
   const {viewer} = data
   useNewFeatureSnackbar(viewer)

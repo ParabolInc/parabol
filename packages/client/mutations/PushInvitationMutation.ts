@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {PushInvitationMutation as TPushInvitationMutation} from '../__generated__/PushInvitationMutation.graphql'
-import {PushInvitationMutation_team} from '../__generated__/PushInvitationMutation_team.graphql'
+import {PushInvitationMutation_team$data} from '../__generated__/PushInvitationMutation_team.graphql'
 import DenyPushInvitationMutation from './DenyPushInvitationMutation'
 import InviteToTeamMutation from './InviteToTeamMutation'
 
@@ -32,7 +32,7 @@ const mutation = graphql`
   }
 `
 
-export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team> = (
+export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team$data> = (
   payload,
   {atmosphere}
 ) => {

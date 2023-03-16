@@ -11,7 +11,7 @@ import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {
   DashboardAvatars_team$key,
-  DashboardAvatars_team
+  DashboardAvatars_team$data
 } from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
 import PlainButton from '../PlainButton/PlainButton'
@@ -74,7 +74,7 @@ interface Props {
   team: DashboardAvatars_team$key
 }
 
-type Avatar = DashboardAvatars_team['teamMembers'][0]
+type Avatar = DashboardAvatars_team$data['teamMembers'][0]
 
 const DashboardAvatars = (props: Props) => {
   const {team: teamRef} = props

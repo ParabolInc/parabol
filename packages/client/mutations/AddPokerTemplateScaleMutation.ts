@@ -5,7 +5,7 @@ import {PokerCards} from '../types/constEnums'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddPokerTemplateScaleMutation as TAddPokerTemplateScaleMutation} from '../__generated__/AddPokerTemplateScaleMutation.graphql'
-import {AddPokerTemplateScaleMutation_scale} from '../__generated__/AddPokerTemplateScaleMutation_scale.graphql'
+import {AddPokerTemplateScaleMutation_scale$data} from '../__generated__/AddPokerTemplateScaleMutation_scale.graphql'
 import handleAddPokerTemplateScale from './handlers/handleAddPokerTemplateScale'
 
 graphql`
@@ -31,7 +31,7 @@ const mutation = graphql`
 `
 
 export const addPokerTemplateScaleTeamUpdater: SharedUpdater<
-  AddPokerTemplateScaleMutation_scale
+  AddPokerTemplateScaleMutation_scale$data
 > = (payload, {store}) => {
   const scale = payload.getLinkedRecord('scale')
   if (!scale) return

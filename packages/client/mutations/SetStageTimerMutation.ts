@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetStageTimerMutation_meeting} from '~/__generated__/SetStageTimerMutation_meeting.graphql'
+import {SetStageTimerMutation_meeting$data} from '~/__generated__/SetStageTimerMutation_meeting.graphql'
 import {RelayDateHack, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import LocalTimeHandler from '../utils/relay/LocalTimeHandler'
 import {SetStageTimerMutation as _SetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
@@ -34,7 +34,7 @@ const mutation = graphql`
   }
 `
 
-export const setStageTimerMeetingUpdater: SharedUpdater<SetStageTimerMutation_meeting> = (
+export const setStageTimerMeetingUpdater: SharedUpdater<SetStageTimerMutation_meeting$data> = (
   payload,
   {store}
 ) => {
@@ -50,7 +50,7 @@ export const setStageTimerMeetingUpdater: SharedUpdater<SetStageTimerMutation_me
   })
 }
 
-type Stage = NonNullable<SetStageTimerMutation_meeting['stage']>
+type Stage = NonNullable<SetStageTimerMutation_meeting$data['stage']>
 type TSetStageTimerMutation = RelayDateHack<
   _SetStageTimerMutation,
   {scheduledEndTime?: Date | null}

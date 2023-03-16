@@ -6,7 +6,10 @@ const defaultColors = require('tailwindcss/colors')
 export default {
   theme: {
     colors: {
-      ...defaultColors,
+      transparent: 'transparent',
+      current: 'currentColor',
+      black: defaultColors.black,
+      white: defaultColors.white,
       primary: '#493272',
       tomato: {
         '100': '#FFE2E0',

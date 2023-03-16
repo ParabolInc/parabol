@@ -1,11 +1,11 @@
 import {RefObject, useEffect, useState} from 'react'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
 import {ElementWidth} from '../types/constEnums'
-import {SpotlightResultsQueryResponse} from './../__generated__/SpotlightResultsQuery.graphql'
+import {SpotlightResultsQuery} from './../__generated__/SpotlightResultsQuery.graphql'
 import useInitialRender from './useInitialRender'
 import useResizeObserver from './useResizeObserver'
 
-type Group = SpotlightResultsQueryResponse['viewer']['similarReflectionGroups'][0]
+type Group = SpotlightResultsQuery['response']['viewer']['similarReflectionGroups'][0]
 
 const useGroupMatrix = (
   resultsGroups: readonly Group[],

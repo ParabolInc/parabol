@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
 import {Divider} from '@mui/material'
+import {Elements} from '@stripe/react-stripe-js'
+import {loadStripe} from '@stripe/stripe-js'
 import React, {useEffect, useState} from 'react'
-import BillingForm from './BillingForm'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {loadStripe} from '@stripe/stripe-js'
-import {Elements} from '@stripe/react-stripe-js'
-import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import {CreatePaymentIntentMutationResponse} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
-import {CompletedHandler} from '../../../../types/relayMutations'
+import CreatePaymentIntentMutation from '../../../../mutations/CreatePaymentIntentMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
+import {CompletedHandler} from '../../../../types/relayMutations'
+import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
+import BillingForm from './BillingForm'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -131,7 +131,7 @@ const PaymentDetails = () => {
   const {onError} = useMutationProps()
 
   useEffect(() => {
-    const handleCompleted: CompletedHandler<CreatePaymentIntentMutationResponse> = (res) => {
+    const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
       const {createPaymentIntent} = res
       const {clientSecret} = createPaymentIntent
       if (clientSecret) {

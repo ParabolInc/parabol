@@ -29,10 +29,7 @@ const OrgMembers = (props: Props) => {
         ...OrgMembers_viewer
       }
     `,
-    queryRef,
-    {
-      UNSTABLE_renderPolicy: 'full'
-    }
+    queryRef
   )
   const paginationRes = usePaginationFragment<OrgMembersPaginationQuery, OrgMembers_viewer$key>(
     graphql`

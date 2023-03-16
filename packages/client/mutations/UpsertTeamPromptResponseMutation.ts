@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import clientTempId from '~/utils/relay/clientTempId'
-import {UpsertTeamPromptResponseMutation_meeting} from '~/__generated__/UpsertTeamPromptResponseMutation_meeting.graphql'
+import {UpsertTeamPromptResponseMutation_meeting$data} from '~/__generated__/UpsertTeamPromptResponseMutation_meeting.graphql'
 import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {UpsertTeamPromptResponseMutation as TUpsertTeamPromptResponseMutation} from '../__generated__/UpsertTeamPromptResponseMutation.graphql'
 
@@ -41,7 +41,7 @@ const mutation = graphql`
 `
 
 export const upsertTeamPromptResponseUpdater: SharedUpdater<
-  UpsertTeamPromptResponseMutation_meeting
+  UpsertTeamPromptResponseMutation_meeting$data
 > = (payload, {store}) => {
   const newResponse = payload.getLinkedRecord('teamPromptResponse')
   const newResponseCreatorId = newResponse.getValue('userId')
