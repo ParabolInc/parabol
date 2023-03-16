@@ -91,6 +91,7 @@
     "@typescript-eslint/parser": "5.17.0",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
+    "copy-webpack-plugin": "^11.0.0",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "15.7.2",
     "html-webpack-plugin": "^5.5.0",
