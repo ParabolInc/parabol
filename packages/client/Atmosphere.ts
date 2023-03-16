@@ -304,6 +304,22 @@ export default class Atmosphere extends Environment {
       if (!data) console.error('QueryMap is incomplete. Run `yarn clean`')
     }
     const transport = uploadables ? this.baseHTTPTransport : this.transport
+    const errorCheckerSink: Sink<any> | undefined = sink
+      ? {
+          next: (value) => {
+            if (value.errors) {
+              throw new Error(value.errors[0]?.message)
+            }
+            return sink.next(value)
+          },
+          error: (error: Error, isUncaughtThrownError?: boolean) =>
+            sink.error(error, isUncaughtThrownError),
+          complete: () => sink.complete(),
+          get closed() {
+            return sink.closed
+          }
+        }
+      : undefined
     return transport.fetch(
       {
         [field]: data,
@@ -312,7 +328,7 @@ export default class Atmosphere extends Environment {
         uploadables: uploadables || undefined
       },
       // if sink is nully, then the server doesn't send a response
-      sink
+      errorCheckerSink
     )
   }
 
