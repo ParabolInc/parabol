@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
+import {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
@@ -35,7 +35,7 @@ const windowDims = {
 
 // Adds the remotely dragged card substitute, does not hide the local card or collapse anything
 const useRemotelyDraggedCard = (
-  meeting: DraggableReflectionCard_meeting,
+  meeting: DraggableReflectionCard_meeting$data,
   reflection: DraggableReflectionCard_reflection$data,
   drag: ReflectionDragState,
   staticIdx: number
@@ -232,7 +232,7 @@ const useDragAndDrop = (
   drag: ReflectionDragState,
   reflection: DraggableReflectionCard_reflection$data,
   staticIdx: number,
-  meeting: DraggableReflectionCard_meeting,
+  meeting: DraggableReflectionCard_meeting$data,
   teamId: string,
   reflectionCount: number,
   swipeColumn?: SwipeColumn
@@ -437,7 +437,7 @@ const useCollapsePlaceholder = (
 }
 
 const useDraggableReflectionCard = (
-  meeting: DraggableReflectionCard_meeting,
+  meeting: DraggableReflectionCard_meeting$data,
   reflection: DraggableReflectionCard_reflection$data,
   drag: ReflectionDragState,
   staticIdx: number,

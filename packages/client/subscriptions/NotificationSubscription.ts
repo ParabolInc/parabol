@@ -29,11 +29,7 @@ import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToa
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import {
-  NotificationSubscription as TNotificationSubscription,
-  NotificationSubscriptionResponse,
-  NotificationSubscriptionVariables
-} from '../__generated__/NotificationSubscription.graphql'
+import {NotificationSubscription as TNotificationSubscription} from '../__generated__/NotificationSubscription.graphql'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -149,7 +145,7 @@ const subscription = graphql`
 `
 
 type NextHandler = OnNextHandler<
-  NotificationSubscriptionResponse['notificationSubscription'],
+  TNotificationSubscription['response']['notificationSubscription'],
   OnNextHistoryContext
 >
 
@@ -250,7 +246,7 @@ const onNextHandlers = {
 
 const NotificationSubscription = (
   atmosphere: Atmosphere,
-  variables: NotificationSubscriptionVariables,
+  variables: TNotificationSubscription['variables'],
   router: {history: RouterProps['history']}
 ) => {
   return requestSubscription<TNotificationSubscription>(atmosphere, {
