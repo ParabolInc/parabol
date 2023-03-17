@@ -102,6 +102,7 @@
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
     "nx": "14.7.5",
+    "pg-promise": "^11.2.0",
     "postcss": "^8.4.21",
     "postcss-loader": "^7.0.2",
     "prettier": "^2.6.1",
