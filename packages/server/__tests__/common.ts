@@ -135,7 +135,8 @@ export const signUpWithEmail = async (emailInput: string) => {
     variables: {
       email,
       password,
-      segmentId: null
+      segmentId: null,
+      invitationToken: ''
     }
   })
 
