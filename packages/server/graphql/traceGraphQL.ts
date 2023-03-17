@@ -77,7 +77,7 @@ export function tracedCompileQuery(tracer: Tracer, config: Config) {
       const operation = getOperation(document, operationName)!
       const type = operation.operation
       const name = operation.name?.value
-      wrapCompiledQuery(tracer, config, query, name, type, config.excludeArgs)
+      wrapCompiledQuery(tracer, config, query, name, type)
     }
     return query
   }
@@ -89,17 +89,16 @@ type PatchedMarker = {
 
 function addVariableTags(
   variables: {[key: string]: any} | null | undefined,
-  operationName: string | undefined,
+  fieldName: string | undefined,
   excludeArgs: Config['excludeArgs']
 ) {
   if (!variables) return
-  const tags = {} as Record<string, any>
-  Object.keys(variables).map((key) => {
-    if (!excludeArgs || !excludeArgs[operationName!]?.includes(key)) {
-      tags[`graphql.variables.${key}`] = variables[key]
-    }
-  })
-  return tags
+  return Object.fromEntries(
+    Object.keys(variables).map((key) => {
+      const sanitizedValue = excludeArgs?.[fieldName!]?.includes(key) ? '******' : variables[key]
+      return [`graphql.variables.${key}`, sanitizedValue]
+    })
+  )
 }
 
 /**
@@ -111,8 +110,7 @@ function wrapCompiledQuery(
   config: Config,
   compiledQuery: CompiledQuery,
   operationName?: string,
-  operationType?: string,
-  excludeArgs?: Config['excludeArgs']
+  operationType?: string
 ) {
   const query = compiledQuery.query
   if ((query as PatchedMarker)._datadog_patched) return
@@ -123,12 +121,10 @@ function wrapCompiledQuery(
     context: PatchedContext,
     variables: {[key: string]: any} | null | undefined
   ): Promise<ExecutionResult> => {
-    const variableTags = addVariableTags(variables, operationName, excludeArgs)
     return tracer.trace(
       'graphql',
       {
         tags: {
-          ...variableTags,
           'graphql.operation.name': operationName,
           'graphql.operation.type': operationType
         },
@@ -244,7 +240,8 @@ function wrappedResolve(
     }
 
     const field = assertField(tracer, context, info, path)
-
+    const tags = addVariableTags(args, info.fieldName, config.excludeArgs)
+    if (tags) field.span.addTags(tags)
     const scope = (field.span.tracer() as Tracer).scope()
     try {
       const result = await scope.activate(field.span, () => resolve(source, args, context, info))
