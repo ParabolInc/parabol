@@ -166,7 +166,7 @@ const EditableText = forwardRef((props: Props, ref: any) => {
     const inProps = {
       autoFocus: true,
       ref: inputRef as any,
-      maxLength,
+      maxLength: maxLength + 1,
       onBlur: onSubmit,
       onChange: onChange,
       onFocus: onFocus,
