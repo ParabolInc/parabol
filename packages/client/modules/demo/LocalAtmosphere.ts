@@ -1,11 +1,13 @@
 import EventEmitter from 'eventemitter3'
 import {stringify} from 'flatted'
 import {
+  ConcreteRequest,
   Environment,
   FetchFunction,
   fetchQuery,
   GraphQLTaggedNode,
   Network,
+  NormalizationLinkedField,
   Observable,
   OperationType,
   RecordSource,
@@ -30,6 +32,8 @@ export default class LocalAtmosphere extends Environment {
   viewerId = 'demoUser'
   _network: typeof Network
   retries = new Set<() => void>()
+  subscriptionInterfaces = {} as Record<string, Record<string, null>>
+
   constructor() {
     super({
       store,
@@ -37,6 +41,13 @@ export default class LocalAtmosphere extends Environment {
       network: Network.create(noop)
     })
     this._network = Network.create(this.fetchLocal, this.subscribeLocal) as any
+  }
+  registerSubscription(subscriptionRequest: GraphQLTaggedNode) {
+    const request: ConcreteRequest = (subscriptionRequest as any).default ?? subscriptionRequest
+    const payload = request.operation.selections[0] as NormalizationLinkedField
+    const {selections, name} = payload
+    const nullObj = Object.fromEntries(selections.map(({name}: any) => [name, null]))
+    this.subscriptionInterfaces[name] = nullObj
   }
 
   registerQuery: Atmosphere['registerQuery'] = async (
@@ -107,9 +118,14 @@ export default class LocalAtmosphere extends Environment {
             this.clientGraphQLServer.db._updatedAt = new Date()
             window.localStorage.setItem('retroDemo', stringify(this.clientGraphQLServer.db))
           }
+          const nullObj = this.subscriptionInterfaces[fields.dataField]
           sink.next({
             data: {
-              [fields.dataField]: data
+              [fields.dataField]: {
+                ...nullObj,
+                fieldName: data.__typename,
+                [data.__typename]: data
+              }
             }
           })
         })
