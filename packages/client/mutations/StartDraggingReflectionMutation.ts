@@ -2,14 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {matchPath} from 'react-router-dom'
 import {Disposable, RecordSourceProxy} from 'relay-runtime'
-import {StartDraggingReflectionMutation_meeting} from '~/__generated__/StartDraggingReflectionMutation_meeting.graphql'
+import {StartDraggingReflectionMutation_meeting$data} from '~/__generated__/StartDraggingReflectionMutation_meeting.graphql'
 import Atmosphere from '../Atmosphere'
 import {ClientRetroReflection} from '../types/clientSchema'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
-import {
-  StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
-  StartDraggingReflectionMutationVariables
-} from '../__generated__/StartDraggingReflectionMutation.graphql'
+import {StartDraggingReflectionMutation as TStartDraggingReflectionMutation} from '../__generated__/StartDraggingReflectionMutation.graphql'
 
 graphql`
   fragment StartDraggingReflectionMutation_meeting on StartDraggingReflectionPayload {
@@ -48,7 +45,7 @@ interface UpdaterOptions {
 
 // used only by subscription
 export const startDraggingReflectionMeetingUpdater: SharedUpdater<
-  StartDraggingReflectionMutation_meeting
+  StartDraggingReflectionMutation_meeting$data
 > = (payload, {atmosphere, store}: UpdaterOptions) => {
   const meetingId = payload.getValue('meetingId')
   const {pathname} = window.location
@@ -110,7 +107,7 @@ export const startDraggingReflectionMeetingUpdater: SharedUpdater<
 
 const StartDraggingReflectionMutation = (
   atmosphere: Atmosphere,
-  variables: StartDraggingReflectionMutationVariables,
+  variables: TStartDraggingReflectionMutation['variables'],
   {onError, onCompleted}: LocalHandlers = {}
 ): Disposable => {
   return commitMutation<TStartDraggingReflectionMutation>(atmosphere, {

@@ -27,9 +27,9 @@ const Button = styled(PlainButton)({
 
 const Badge = styled('div')({
   borderRadius: 10,
-  top: 15,
+  top: 5,
   position: 'absolute',
-  left: 22,
+  left: 18,
   background: PALETTE.ROSE_500,
   border: `1px solid ${PALETTE.GRAPE_700}`,
   // +1 for borders

@@ -6,7 +6,7 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
-import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
 import Ellipsis from './Ellipsis/Ellipsis'
 
@@ -78,7 +78,7 @@ const ScopingSearchResultItem = (props: Props) => {
           action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
-    } as UpdatePokerScopeMutationVariables
+    } as TUpdatePokerScopeMutation['variables']
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [summary]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it

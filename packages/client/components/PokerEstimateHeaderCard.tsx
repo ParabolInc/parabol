@@ -1,7 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
+import {useFragment} from 'react-relay'
+import {
+  PokerEstimateHeaderCard_stage$key,
+  PokerEstimateHeaderCard_stage$data
+} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardContent, {
   PokerEstimateHeaderCardContentProps
 } from './PokerEstimateHeaderCardContent'
@@ -9,10 +12,10 @@ import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
 interface Props {
-  stage: PokerEstimateHeaderCard_stage
+  stage: PokerEstimateHeaderCard_stage$key
 }
 
-type Integration = NonNullable<PokerEstimateHeaderCard_stage['task']>['integration']
+type Integration = NonNullable<PokerEstimateHeaderCard_stage$data['task']>['integration']
 
 const getHeaderFields = (
   integration: Integration | null
@@ -68,7 +71,58 @@ const getHeaderFields = (
 }
 
 const PokerEstimateHeaderCard = (props: Props) => {
-  const {stage} = props
+  const {stage: stageRef} = props
+  const stage = useFragment(
+    graphql`
+      fragment PokerEstimateHeaderCard_stage on EstimateStage {
+        task {
+          ...PokerEstimateHeaderCardParabol_task
+          integrationHash
+          integration {
+            ... on AzureDevOpsWorkItem {
+              __typename
+              id
+              title
+              teamProject
+              type
+              state
+              url
+              descriptionHTML
+            }
+            ... on JiraIssue {
+              __typename
+              issueKey
+              summary
+              descriptionHTML
+              jiraUrl: url
+            }
+            ... on JiraServerIssue {
+              __typename
+              issueKey
+              summary
+              descriptionHTML
+              jiraUrl: url
+            }
+            ... on _xGitHubIssue {
+              __typename
+              number
+              title
+              bodyHTML
+              url
+            }
+            ... on _xGitLabIssue {
+              __typename
+              descriptionHtml
+              title
+              webUrl
+              iid
+            }
+          }
+        }
+      }
+    `,
+    stageRef
+  )
   const {task} = stage
   if (!task) {
     return <PokerEstimateHeaderCardError />
@@ -87,53 +141,4 @@ const PokerEstimateHeaderCard = (props: Props) => {
   return <PokerEstimateHeaderCardContent {...headerFields} />
 }
 
-export default createFragmentContainer(PokerEstimateHeaderCard, {
-  stage: graphql`
-    fragment PokerEstimateHeaderCard_stage on EstimateStage {
-      task {
-        ...PokerEstimateHeaderCardParabol_task
-        integrationHash
-        integration {
-          ... on AzureDevOpsWorkItem {
-            __typename
-            id
-            title
-            teamProject
-            type
-            state
-            url
-            descriptionHTML
-          }
-          ... on JiraIssue {
-            __typename
-            issueKey
-            summary
-            descriptionHTML
-            jiraUrl: url
-          }
-          ... on JiraServerIssue {
-            __typename
-            issueKey
-            summary
-            descriptionHTML
-            jiraUrl: url
-          }
-          ... on _xGitHubIssue {
-            __typename
-            number
-            title
-            bodyHTML
-            url
-          }
-          ... on _xGitLabIssue {
-            __typename
-            descriptionHtml
-            title
-            webUrl
-            iid
-          }
-        }
-      }
-    }
-  `
-})
+export default PokerEstimateHeaderCard

@@ -8,7 +8,7 @@ import relativeDate from './date/relativeDate'
 const makeTemplateDescription = (
   lowestScope: string,
   templateRef: makeTemplateDescription_template$key,
-  viewerRef?: makeTemplateDescription_viewer$key,
+  viewerRef?: makeTemplateDescription_viewer$key | null,
   tier?: TierEnum
 ) => {
   const template = readInlineData(

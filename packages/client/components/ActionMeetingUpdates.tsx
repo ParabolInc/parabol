@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import isTaskPrivate from '../utils/isTaskPrivate'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import {ActionMeetingUpdates_meeting} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
+import {ActionMeetingUpdates_meeting$key} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
 import MeetingContent from './MeetingContent'
@@ -33,11 +33,53 @@ const InnerColumnsWrapper = styled('div')({
 })
 
 interface Props extends ActionMeetingPhaseProps {
-  meeting: ActionMeetingUpdates_meeting
+  meeting: ActionMeetingUpdates_meeting$key
 }
 
 const ActionMeetingUpdates = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ActionMeetingUpdates_meeting on ActionMeeting {
+        ...ActionMeetingUpdatesPrompt_meeting
+        id
+        endedAt
+        showSidebar
+        localPhase {
+          stages {
+            isComplete
+          }
+        }
+        localStage {
+          ...ActionMeetingUpdatesStage @relay(mask: false)
+        }
+        phases {
+          stages {
+            ...ActionMeetingUpdatesStage @relay(mask: false)
+            # required so localPhase has access to isComplete
+            isComplete
+          }
+        }
+        team {
+          id
+          tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+            edges {
+              node {
+                ...TaskColumns_tasks @arguments(meetingId: $meetingId)
+                # grab these so we can sort correctly
+                id
+                status
+                sortOrder
+                tags
+                userId
+              }
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {id: meetingId, endedAt, localStage, showSidebar, team, localPhase} = meeting
@@ -90,44 +132,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(ActionMeetingUpdates, {
-  meeting: graphql`
-    fragment ActionMeetingUpdates_meeting on ActionMeeting {
-      ...ActionMeetingUpdatesPrompt_meeting
-      id
-      endedAt
-      showSidebar
-      localPhase {
-        stages {
-          isComplete
-        }
-      }
-      localStage {
-        ...ActionMeetingUpdatesStage @relay(mask: false)
-      }
-      phases {
-        stages {
-          ...ActionMeetingUpdatesStage @relay(mask: false)
-          # required so localPhase has access to isComplete
-          isComplete
-        }
-      }
-      team {
-        id
-        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-          edges {
-            node {
-              ...TaskColumns_tasks @arguments(meetingId: $meetingId)
-              # grab these so we can sort correctly
-              id
-              status
-              sortOrder
-              tags
-              userId
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default ActionMeetingUpdates

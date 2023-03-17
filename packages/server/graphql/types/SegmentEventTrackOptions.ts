@@ -14,6 +14,7 @@ import SnackbarTypeEnum from './SnackbarTypeEnum'
 import TaskServiceEnum from './TaskServiceEnum'
 import TierEnum from './TierEnum'
 import UpgradeCTALocationEnum from './UpgradeCTALocationEnum'
+import DowngradeCTALocationEnum from './DowngradeCTALocationEnum'
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
   name: 'SegmentEventTrackOptions',
@@ -40,6 +41,7 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     inMeeting: {type: GraphQLBoolean},
     jiraProjectType: {type: GraphQLString},
     upgradeCTALocation: {type: UpgradeCTALocationEnum},
+    downgradeCTALocation: {type: DowngradeCTALocationEnum},
     snackbarType: {type: SnackbarTypeEnum},
     scope: {type: SharingScopeEnum},
     templateName: {type: GraphQLString},

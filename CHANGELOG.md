@@ -5,6 +5,125 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.95.1 2023-Mar-09
+
+### Fixed
+
+- Handle SSE and socket done checks (#7903)
+
+## 6.95.0 2023-Mar-07
+
+### Added
+
+- **recurrence**: Stop Recurrence button (#7869)
+
+### Fixed
+
+- **teams-limit**: add missing billing link to 7 days warning email (#7857)
+- **teams-limit**: fix locked message in usage stats (#7861)
+- **Icebreaker** editing is not working properly on Android (#7431)
+
+### Changed
+
+- Add some more **Legitity tests** (#7863)
+- **metrics**: Add content_group in GA4 page_view event (#7848)
+- **pipeline**: Databases backup and restore from CircleCI pipeline (#7806)
+
+## 6.94.0 2023-Mar-03
+
+### Fixed
+
+- align search bar with meeting cards (#7819)
+
+### Added
+
+- **checkout-flow**: plans UI (#7793)
+- **checkout-flow**: plans functionality (#7799)
+- Add additional retrospective template illustrations (#7849)
+
+### Changed
+
+- Added Tailwind CSS (#7597)
+- add css extract (#7808)
+- **retros-in-disguise**: Added retros in disguise feature flag and empty route (#7807)
+- **docker**: Redis and RethinkDB dataversions fixed for the development environment. (#7810)
+- **docker-compose**: RethinkDB fixed to v2.4.2
+- **relay**: Fix convertToUseFragment bug (#7839)
+- **relay**: createFragmentContainer -> useFragment 2/N (#7841)
+- **relay**: createFragmentContainer -> useFragment 1/N (#7840)
+- **github**: Don't auto-assign at-mentioned users (#7846)
+- Added a tailwind preset file (#7809)
+- **relay**: createFragmentContainer -> useFragment 3/N (#7842)
+- **relay**: createFragmentContainer -> useFragment 4/N (#7844)
+- **relay**: createFragmentContainer -> useFragment 5/N (#7845)
+
+## 6.93.0 2023-Feb-22
+
+### Fixed
+
+- remove font-size 18px declaration on tasks editing status label (#7784)
+- **dashboard**: Meeting card shadow doesn't match card (#7782)
+- **standups**: Autofocus the input in the discussion drawer when opened (#7779)
+- **teams-limit**: fix teams limit check query fails with an error on non-local environment (#7795)
+- **emails**: Upgrade mailgun to 7.0.4 (#7804)
+- **emails**: Generate email summaries with facilitator auth (#7805)
+
+### Added
+
+- **recurrence**: Copy meeting series permalink (#7777)
+- **SAML UI**: Create a verifyDomain mutation (#7686)
+- **SAML UI**: Add UI with disabled state (#7684)
+
+### Changed
+
+- **deps**: bump undici from 5.18.0 to 5.19.1 (#7787)
+- **tiptap**: Upgrade tiptap to pull in bugfixes (#7790)
+- select best platform for the job (#7786)
+- bump node, rethinkdb-ts, typescript, uWS (#7780)
+- **teams-limit**: remove teams limit notifications after upgrade or removing a team (#7781)
+
+## 6.92.0 2023-Feb-15
+
+### Fixed
+
+- fix: show invoice coupons in parabol (#7711)
+- chore: fix case-sensitive (#7749)
+- fix: yarn dev remove graphiql from dll (#7750)
+- fix(recurrence): Don't restart meetings on archived teams (#7747)
+- fix: 'Updated time/Created time' is not instantaneous on task cards (#7254)
+- fix: Fix server error when joining a team by invitation link (#7775)
+
+### Added
+
+- chore(teams-limit): send locked & warning email (#7637)
+- feat(recurrence): Stable link for meeting series (#7707)
+- feat(teams-limit): add 7 days reminder notification and snackbar (#7677)
+- feat(recurrence): Recurrence-specific meeting card (#7716)
+- feat(recurrence): Added advanced recurrence settings (#7585)
+- feat(checkout-flow): left sidebar (#7733)
+- feat: add seasonal retros (#7760)
+- feat(standups): added options menu tooltip (#7768)
+
+### Changed
+
+- chore: Invert meetingHistoryLimit feature flag (#7725)
+- chore: prevent new rethinkdb migrations in the database/migrations
+- chore(teams-limit): avoid showing nagging snackbar if the limit is fixed
+- chore: Switch to review stats package (#7753)
+- chore(metrics): Do not call identify() on feature flag changes (#7752)
+- feat: create bundles without node_modules (#7402)
+- chore: remove user feature flag (#7765)
+- chore: removed beta badge from standups (#7767)
+- chore(teams-limit): Remove scheduled jobs
+- chore(ai-summary): track no stats in Slack summary (#7759)
+- chore(dx): add updateCache function to dataLoader (#7758)
+
+## 6.91.1 2023-Feb-14
+
+### Fixed
+
+- Sometimes meetings could not be closed (#7769)
+
 ## 6.91.0 2023-Feb-08
 
 ### Fixed
@@ -16,17 +135,17 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - chore(deps): bump deps to fix vulns (#7730)
 - chore(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 (#7708)
 - fix: Profile name length should have the upper limit (#7425)
--
+
 ### Added
 
 - chore: Migrate MeetingTemplate to PG (Phase 1 of 3) (#7679)
 - chore(checkout-flow): add checkout feature flag (#7709)
--
+
 ### Changed
 
 - chore: update team invite email (#7710)
 - chore(ai-summary): update meeting summary url (#7705)
--
+
 ## 6.90.0 2023-February-1
 
 ### Fixed
@@ -44,7 +163,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - **ai-summary**: limit access to AI summaries (#7658)
 - Renamed "Timeline" to "History" (#7670)
-- Cleanup private _legacy.graphql types (#7689)
+- Cleanup private \_legacy.graphql types (#7689)
 
 ### Added
 

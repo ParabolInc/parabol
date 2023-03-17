@@ -14,6 +14,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
+import OrgPage from '../OrgBilling/OrgPage'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
@@ -65,7 +66,11 @@ interface Props {
 const query = graphql`
   query OrganizationQuery($orgId: ID!) {
     viewer {
+      featureFlags {
+        checkoutFlow
+      }
       organization(orgId: $orgId) {
+        ...OrgPage_organization
         ...EditableOrgName_organization
         ...OrganizationPage_organization
         orgId: id
@@ -85,6 +90,9 @@ const query = graphql`
         periodStart
         periodEnd
         tier
+        featureFlags {
+          SAMLUI
+        }
       }
     }
   }
@@ -92,11 +100,9 @@ const query = graphql`
 
 const Organization = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<OrganizationQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<OrganizationQuery>(query, queryRef)
   const {viewer} = data
-  const {organization} = viewer
+  const {organization, featureFlags: userFeatureFlags} = viewer
   const {history} = useRouter()
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
@@ -108,9 +114,20 @@ const Organization = (props: Props) => {
   const orgName = (organization && organization.name) || 'Unknown'
   useDocumentTitle(`Organization Settings | ${orgName}`, orgName)
   if (!organization) return <div />
-  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
+  const {
+    orgId,
+    createdAt,
+    isBillingLeader,
+    picture: orgAvatar,
+    tier,
+    featureFlags: orgFeatureFlags
+  } = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
+  const showAuthentication = orgFeatureFlags?.SAMLUI
+  const {checkoutFlow} = userFeatureFlags
+
+  if (checkoutFlow) return <OrgPage organizationRef={organization} />
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>
@@ -143,7 +160,7 @@ const Organization = (props: Props) => {
         </AvatarAndName>
         {!onlyShowMembers && (
           <ToggleNavBlock>
-            <BillingMembersToggle orgId={orgId} />
+            <BillingMembersToggle orgId={orgId} showAuthentication={showAuthentication} />
           </ToggleNavBlock>
         )}
         <OrganizationPage organization={organization} />

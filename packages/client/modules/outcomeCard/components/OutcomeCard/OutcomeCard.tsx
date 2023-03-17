@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
-import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
+import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
@@ -64,7 +64,7 @@ interface Props {
   handleCardUpdate: () => void
   isAgenda: boolean
   isDraggingOver: TaskStatusEnum | undefined
-  task: OutcomeCard_task
+  task: OutcomeCard_task$key
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
   dataCy: string
@@ -80,11 +80,34 @@ const OutcomeCard = memo((props: Props) => {
     handleCardUpdate,
     isAgenda,
     isDraggingOver,
-    task,
+    task: taskRef,
     setEditorState,
     useTaskChild,
     dataCy
   } = props
+  const task = useFragment(
+    graphql`
+      fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+        ...IntegratedTaskContent_task
+        id
+        integration {
+          __typename
+          ...TaskIntegrationLink_integration
+        }
+        status
+        tags
+        team {
+          id
+        }
+        # grab userId to ensure sorting on connections works
+        userId
+        isHighlighted(meetingId: $meetingId)
+        ...EditingStatus_task
+        ...TaskFooter_task
+      }
+    `,
+    taskRef
+  )
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
   const {integration, status, id: taskId, team, isHighlighted} = task
@@ -153,25 +176,4 @@ const OutcomeCard = memo((props: Props) => {
   )
 })
 
-export default createFragmentContainer(OutcomeCard, {
-  task: graphql`
-    fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
-      ...IntegratedTaskContent_task
-      id
-      integration {
-        __typename
-        ...TaskIntegrationLink_integration
-      }
-      status
-      tags
-      team {
-        id
-      }
-      # grab userId to ensure sorting on connections works
-      userId
-      isHighlighted(meetingId: $meetingId)
-      ...EditingStatus_task
-      ...TaskFooter_task
-    }
-  `
-})
+export default OutcomeCard

@@ -66,9 +66,7 @@ const query = graphql`
 
 const ReflectTemplateListPublic = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<ReflectTemplateListPublicQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<ReflectTemplateListPublicQuery>(query, queryRef)
   const {viewer} = data
   const team = viewer.team!
   const {id: teamId, meetingSettings, tier} = team

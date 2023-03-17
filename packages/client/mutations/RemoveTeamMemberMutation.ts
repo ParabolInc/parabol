@@ -9,8 +9,8 @@ import {
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import {RemoveTeamMemberMutation as TRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
-import {RemoveTeamMemberMutation_task} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
-import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
+import {RemoveTeamMemberMutation_task$data} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
+import {RemoveTeamMemberMutation_team$data} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
@@ -92,7 +92,7 @@ const mutation = graphql`
 `
 
 export const removeTeamMemberTeamOnNext: OnNextHandler<
-  RemoveTeamMemberMutation_team,
+  RemoveTeamMemberMutation_team$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
@@ -128,7 +128,7 @@ export const removeTeamMemberTeamOnNext: OnNextHandler<
   }
 }
 
-export const removeTeamMemberTasksUpdater: SharedUpdater<RemoveTeamMemberMutation_task> = (
+export const removeTeamMemberTasksUpdater: SharedUpdater<RemoveTeamMemberMutation_task$data> = (
   payload,
   {store}
 ) => {
@@ -137,7 +137,7 @@ export const removeTeamMemberTasksUpdater: SharedUpdater<RemoveTeamMemberMutatio
   handleUpsertTasks(tasks as any, store)
 }
 
-export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation_team> = (
+export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation_team$data> = (
   payload,
   {atmosphere, store}
 ) => {

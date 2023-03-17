@@ -2,17 +2,17 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
 import {TEMPLATE_PROMPT} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
-import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptList_prompts.graphql'
+import {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {
   isOwner: boolean
-  prompts: TemplatePromptList_prompts
+  prompts: TemplatePromptList_prompts$key
   templateId: string
 }
 
@@ -23,7 +23,20 @@ const PromptList = styled('div')({
 })
 
 const TemplatePromptList = (props: Props) => {
-  const {isOwner, prompts, templateId} = props
+  const {isOwner, prompts: promptsRef, templateId} = props
+  const prompts = useFragment(
+    graphql`
+      fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
+        id
+        sortOrder
+        question
+        groupColor
+        ...TemplatePromptItem_prompt
+        ...TemplatePromptItem_prompts
+      }
+    `,
+    promptsRef
+  )
   const atmosphere = useAtmosphere()
 
   const onDragEnd = (result: DropResult) => {
@@ -97,15 +110,4 @@ const TemplatePromptList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TemplatePromptList, {
-  prompts: graphql`
-    fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
-      id
-      sortOrder
-      question
-      groupColor
-      ...TemplatePromptItem_prompt
-      ...TemplatePromptItem_prompts
-    }
-  `
-})
+export default TemplatePromptList

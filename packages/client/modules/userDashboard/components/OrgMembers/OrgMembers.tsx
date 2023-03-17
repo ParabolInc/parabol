@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
@@ -8,8 +9,13 @@ import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import Panel from '../../../../components/Panel/Panel'
+import {ElementWidth} from '../../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+
+const StyledPanel = styled(Panel)({
+  width: ElementWidth.PANEL_WIDTH
+})
 
 interface Props {
   queryRef: PreloadedQuery<OrgMembersQuery>
@@ -23,10 +29,7 @@ const OrgMembers = (props: Props) => {
         ...OrgMembers_viewer
       }
     `,
-    queryRef,
-    {
-      UNSTABLE_renderPolicy: 'full'
-    }
+    queryRef
   )
   const paginationRes = usePaginationFragment<OrgMembersPaginationQuery, OrgMembers_viewer$key>(
     graphql`
@@ -100,7 +103,7 @@ const OrgMembers = (props: Props) => {
   }
 
   return (
-    <Panel
+    <StyledPanel
       label='Organization Members'
       controls={
         isBillingLeader && (
@@ -118,7 +121,7 @@ const OrgMembers = (props: Props) => {
           />
         )
       })}
-    </Panel>
+    </StyledPanel>
   )
 }
 

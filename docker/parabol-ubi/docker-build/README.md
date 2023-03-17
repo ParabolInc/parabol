@@ -1,4 +1,3 @@
-
 # docker-image-parabol
 
 This repo was created to build a **secure** Parabol base image that is **agnostic to configuration and can be used anywhere**. Once an image is built, it can be pushed to any repository.
@@ -8,7 +7,7 @@ This repo was created to build a **secure** Parabol base image that is **agnosti
 Modify the version export below e.g. update vX.X.X and run the export command and the docker command. The command below will create a temp postgres container (this allows pgtype files to be generated) and then build the docker image with a temp .env file.
 
 - Change `environments/buildenv` connection string names form container names to localhost for local image build.
-- Use `_PARABOL_GIT_REF` to select the reference in Parabol's Git repository. It can be any tag or branch,  but it is recommended to use released tags as `v6.69.0`. By default it buils a local image using only `parabol` as repository.
+- Use `_PARABOL_GIT_REF` to select the reference in Parabol's Git repository. It can be any tag or branch, but it is recommended to use released tags as `v6.69.0`. By default it buils a local image using only `parabol` as repository.
 - Use `_DOCKER_REPOSITORY` to build the image for a remote repository (ex: `gcr.io/parabol-proving-ground/parabol`)
 - Use `_DOCKER_TAG` to define the tag for the new image.
 
@@ -17,7 +16,7 @@ export postgresql_tag=12.10-alpine; \
 export rethinkdb_tag=2.4.0; \
 export redis_tag=6.2.6; \
 export _BUILD_ENV_PATH=environments/local-buildenv \
-export _NODE_VERSION=16.16.0 \
+export _NODE_VERSION=18.14.2 \
 export _DOCKER_REPOSITORY=parabol \
 export _PARABOL_GIT_REF=vX.X.X \
 export _DOCKER_TAG=vX.X.X
@@ -41,9 +40,9 @@ docker push ${_DOCKER_REPOSITORY}:${_DOCKER_TAG}
 
 ## **Run docker image locally**
 
-*Assumes redis, rethinkdb, and postgres already running) to have operational stack*
+_Assumes redis, rethinkdb, and postgres already running) to have operational stack_
 
-The commands below will start a Parabol container on the target tag specified in _DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
+The commands below will start a Parabol container on the target tag specified in \_DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
 
 - Start GraphQL
 
@@ -69,9 +68,9 @@ PLACE HOLDER
 
 ## **Run docker image on GCR**
 
-*Assumes redis, rethinkdb, and postgres already running) to have operational stack*
+_Assumes redis, rethinkdb, and postgres already running) to have operational stack_
 
-The commands below will start a Parabol container on the target tag specified in _DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
+The commands below will start a Parabol container on the target tag specified in \_DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
 
 - Start GraphQL
 

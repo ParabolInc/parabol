@@ -36,9 +36,7 @@ const query = graphql`
 const Organizations = (props: Props) => {
   const {history} = useRouter()
   const {queryRef} = props
-  const data = usePreloadedQuery<OrganizationsQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<OrganizationsQuery>(query, queryRef)
   const {viewer} = data
   const {organizations} = viewer
   const gotoNewTeam = () => {

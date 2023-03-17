@@ -19,9 +19,7 @@ const query = graphql`
 
 function InvitationLink(props: Props) {
   const {queryRef} = props
-  const data = usePreloadedQuery<InvitationLinkQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<InvitationLinkQuery>(query, queryRef)
   const {massInvitation} = data
   // the meeting background is prettier than the plain one, so let's always use it
   return (

@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {Route, RouteComponentProps, Switch, withRouter} from 'react-router'
+import {useFragment} from 'react-relay'
+import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
-import {BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
-import {OrganizationPage_organization} from '../../../../__generated__/OrganizationPage_organization.graphql'
+import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
+import {OrganizationPage_organization$key} from '../../../../__generated__/OrganizationPage_organization.graphql'
 
 interface Props extends RouteComponentProps<{orgId: string}> {
-  organization: OrganizationPage_organization
+  organization: OrganizationPage_organization$key
 }
 
 const OrgBilling = lazy(
@@ -19,11 +19,32 @@ const OrgMembers = lazy(
   () =>
     import(/* webpackChunkName: 'OrgMembersRoot' */ '../../containers/OrgMembers/OrgMembersRoot')
 )
+const OrgAuthentication = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'OrgAuthenticationRoot' */ '../../containers/OrgAuthentication/OrgAuthenticationRoot'
+    )
+)
 
 const OrganizationPage = (props: Props) => {
-  const {match, organization} = props
-  const {isBillingLeader, tier} = organization
+  const {match, organization: organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment OrganizationPage_organization on Organization {
+        ...OrgBillingRoot_organization
+        id
+        isBillingLeader
+        tier
+        featureFlags {
+          SAMLUI
+        }
+      }
+    `,
+    organizationRef
+  )
+  const {isBillingLeader, tier, featureFlags} = organization
   const onlyShowMembers = !isBillingLeader && tier !== 'starter'
+  const SAMLUI = featureFlags?.SAMLUI
   const {
     params: {orgId}
   } = match
@@ -36,7 +57,7 @@ const OrganizationPage = (props: Props) => {
           <Route
             exact
             path={`${match.url}`}
-            render={(p) => <OrgBilling {...p} organization={organization} />}
+            render={() => <Redirect to={`${match.url}/${BILLING_PAGE}`} />}
           />
           <Route
             exact
@@ -48,19 +69,17 @@ const OrganizationPage = (props: Props) => {
             path={`${match.url}/${MEMBERS_PAGE}`}
             render={(p) => <OrgMembers {...p} orgId={orgId} />}
           />
+          {SAMLUI && (
+            <Route
+              exact
+              path={`${match.url}/${AUTHENTICATION_PAGE}`}
+              render={() => <OrgAuthentication />}
+            />
+          )}
         </Switch>
       )}
     </Suspense>
   )
 }
 
-export default createFragmentContainer(withRouter(OrganizationPage), {
-  organization: graphql`
-    fragment OrganizationPage_organization on Organization {
-      ...OrgBillingRoot_organization
-      id
-      isBillingLeader
-      tier
-    }
-  `
-})
+export default withRouter(OrganizationPage)

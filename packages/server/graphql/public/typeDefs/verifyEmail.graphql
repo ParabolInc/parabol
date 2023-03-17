@@ -1,0 +1,11 @@
+extend type Mutation {
+  """
+  Verify an email address and sign in if not already a user
+  """
+  verifyEmail(
+    """
+    The 48-byte url-safe base64 encoded verification token
+    """
+    verificationToken: ID!
+  ): UserLogInPayload!
+}

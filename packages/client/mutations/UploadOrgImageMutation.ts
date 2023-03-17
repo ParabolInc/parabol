@@ -3,10 +3,7 @@ import {commitMutation} from 'react-relay'
 import {UploadableMap} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {BaseLocalHandlers} from '../types/relayMutations'
-import {
-  UploadOrgImageMutation as TUploadOrgImageMutation,
-  UploadOrgImageMutationVariables
-} from '../__generated__/UploadOrgImageMutation.graphql'
+import {UploadOrgImageMutation as TUploadOrgImageMutation} from '../__generated__/UploadOrgImageMutation.graphql'
 
 const mutation = graphql`
   mutation UploadOrgImageMutation($file: File!, $orgId: ID!) {
@@ -21,7 +18,7 @@ const mutation = graphql`
 
 const UploadOrgImageMutation = (
   atmosphere: Atmosphere,
-  variables: Omit<UploadOrgImageMutationVariables, 'file'>,
+  variables: Omit<TUploadOrgImageMutation['variables'], 'file'>,
   {onCompleted, onError}: BaseLocalHandlers,
   uploadables?: UploadableMap
 ) => {

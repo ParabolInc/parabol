@@ -271,7 +271,7 @@ interface JiraPageBean<T> {
   values: T[]
 }
 
-export function isJiraNoAccessError<T>(
+export function isJiraNoAccessError<T extends object>(
   response: T | JiraNoAccessError
 ): response is JiraNoAccessError {
   return 'errorMessages' in response && response.errorMessages.length > 0
@@ -330,7 +330,7 @@ export default abstract class AtlassianManager {
       return new Error('Atlassian is down')
     }
   }
-  private readonly get = async <T>(url: string) => {
+  private readonly get = async <T extends object>(url: string) => {
     const res = await this.fetchWithTimeout(url, {headers: this.headers})
     if (res instanceof Error) {
       return res
@@ -359,7 +359,7 @@ export default abstract class AtlassianManager {
     }
     return json
   }
-  private readonly post = async <T>(url: string, payload: any) => {
+  private readonly post = async <T extends object>(url: string, payload: any) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'POST',
       headers: this.headers,
@@ -707,6 +707,16 @@ export default abstract class AtlassianManager {
     const res = await this.put(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
       payload
+    )
+    // Temporary added for debugging #7896
+    console.log(
+      'updateStoryPoints',
+      {
+        cloudId,
+        fieldId,
+        storyPoints
+      },
+      res
     )
     if (res === null) return
     if (res.message.includes('The app is not installed on this instance')) {

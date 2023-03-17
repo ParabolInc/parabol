@@ -6,36 +6,23 @@ import NotificationTeamsLimitExceeded from '../../database/types/NotificationTea
 import Organization from '../../database/types/Organization'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
-import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import sendToSentry from '../../utils/sendToSentry'
+import removeTeamsLimitObjects from './removeTeamsLimitObjects'
 import sendTeamsLimitEmail from './sendTeamsLimitEmail'
+import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 
 // Uncomment for easier testing
 // const enum Threshold {
 //   MAX_STARTER_TIER_TEAMS = 0,
 //   MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
 //   MIN_STICKY_TEAM_MEETINGS = 1,
-//   STARTER_TIER_LOCK_AFTER_DAYS = 0
+//   STARTER_TIER_LOCK_AFTER_DAYS = 0,
+//   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
 // }
-
-const getBillingLeaderIds = async (orgId: string) => {
-  return r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, role: 'BILLING_LEADER'})
-    .coerceTo('array')('userId')
-    .run()
-}
-
-const getBillingLeaders = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  const billingLeaderIds = (await getBillingLeaderIds(orgId)) as unknown as string[]
-
-  return (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
-}
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
   await r
@@ -92,7 +79,6 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
     .distinct()
     .do((endedMeetingIds: RValue) => {
       return r
-        .db('actionDevelopment')
         .table('MeetingMember')
         .getAll(r.args(endedMeetingIds), {index: 'meetingId'})
         .group('teamId', 'meetingId')
@@ -109,6 +95,20 @@ const isLimitExceeded = async (orgId: string, dataLoader: DataLoaderWorker) => {
         .group('teamId')
         .ungroup()
         .filter((row) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
+        .filter((row) => {
+          const meetingIds = row('reduction')('meetingId')
+          return r
+            .table('NewMeeting')
+            .getAll(r.args(meetingIds))
+            .filter((meeting: RValue) => {
+              return meeting('endedAt').during(
+                r.now().sub(Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME),
+                r.now()
+              )
+            })
+            .count()
+            .gt(0)
+        })
         .count()
         .gt(Threshold.MAX_STARTER_TIER_TEAMS)
     })
@@ -124,7 +124,7 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
   }
 
   if (!(await isLimitExceeded(orgId, dataLoader))) {
-    const billingLeadersIds = await getBillingLeaderIds(orgId)
+    const billingLeadersIds = await dataLoader.get('billingLeadersIdsByOrgId').load(orgId)
     await Promise.all([
       r
         .table('Organization')
@@ -141,9 +141,9 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
         .getAll(r.args(billingLeadersIds), {index: 'userId'})
         .filter({orgId})
         .update({suggestedTier: 'starter'})
-        .run()
+        .run(),
+      removeTeamsLimitObjects(orgId, dataLoader)
     ])
-
     dataLoader.get('organizations').clear(orgId)
   }
 }
@@ -186,7 +186,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
     .run()
   dataLoader.get('organizations').clear(orgId)
 
-  const billingLeaders = await getBillingLeaders(orgId, dataLoader)
+  const billingLeaders = await getBillingLeadersByOrgId(orgId, dataLoader)
   const billingLeadersIds = billingLeaders.map((billingLeader) => billingLeader.id)
 
   // wait for usage stats to be enabled as we dont want to send notifications before it's available

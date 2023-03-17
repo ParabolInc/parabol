@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {CreditCard, Extension, Group} from '@mui/icons-material'
+import {CreditCard, Extension, Group, Key} from '@mui/icons-material'
 import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
@@ -43,6 +43,7 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
     lineHeight: '26px',
     textAlign: 'center',
     textDecoration: 'none',
+    padding: '0px 8px',
     ':hover,:focus': {
       backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_300,
       color: isActive ? '#FFFFFF' : PALETTE.GRAPE_800,
@@ -54,10 +55,11 @@ const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean
 const Icons = {
   group: <Group />,
   extension: <Extension />,
-  credit_card: <CreditCard />
+  credit_card: <CreditCard />,
+  key: <Key />
 } as const
 
-interface Item {
+export interface Item {
   label: string
   icon: keyof typeof Icons
   isActive: boolean

@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useFragment, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {JiraScopingSearchResultsQuery} from '../__generated__/JiraScopingSearchResultsQuery.graphql'
-import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
+import {JiraScopingSearchResults_meeting$key} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
@@ -19,7 +19,7 @@ const ResultScroller = styled('div')({
 
 interface Props {
   queryRef: PreloadedQuery<JiraScopingSearchResultsQuery>
-  meeting: JiraScopingSearchResults_meeting
+  meeting: JiraScopingSearchResults_meeting$key
 }
 
 const query = graphql`
@@ -67,10 +67,27 @@ const query = graphql`
 `
 
 const JiraScopingSearchResults = (props: Props) => {
-  const {queryRef, meeting} = props
-  const data = usePreloadedQuery<JiraScopingSearchResultsQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const {queryRef, meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment JiraScopingSearchResults_meeting on PokerMeeting {
+        ...NewJiraIssueInput_meeting
+        id
+        teamId
+        jiraSearchQuery {
+          isJQL
+          projectKeyFilters
+          queryString
+        }
+        phases {
+          ...useGetUsedServiceTaskIds_phase
+          phaseType
+        }
+      }
+    `,
+    meetingRef
+  )
+  const data = usePreloadedQuery<JiraScopingSearchResultsQuery>(query, queryRef)
   const {viewer} = data
   const atlassian = viewer?.teamMember!.integrations.atlassian ?? null
   const issues = atlassian?.issues ?? null
@@ -155,21 +172,4 @@ const JiraScopingSearchResults = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchResults, {
-  meeting: graphql`
-    fragment JiraScopingSearchResults_meeting on PokerMeeting {
-      ...NewJiraIssueInput_meeting
-      id
-      teamId
-      jiraSearchQuery {
-        isJQL
-        projectKeyFilters
-        queryString
-      }
-      phases {
-        ...useGetUsedServiceTaskIds_phase
-        phaseType
-      }
-    }
-  `
-})
+export default JiraScopingSearchResults

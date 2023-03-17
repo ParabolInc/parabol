@@ -2,7 +2,7 @@ import {ClassNames} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
@@ -18,7 +18,7 @@ import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
-import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
+import {TeamTasksHeader_team$key} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -100,11 +100,34 @@ const Avatars = styled('div')({
 })
 
 interface Props {
-  team: TeamTasksHeader_team
+  team: TeamTasksHeader_team$key
 }
 
 const TeamTasksHeader = (props: Props) => {
-  const {team} = props
+  const {team: teamRef} = props
+  const team = useFragment(
+    graphql`
+      fragment TeamTasksHeader_team on Team {
+        ...DashboardAvatars_team
+        id
+        name
+        organization {
+          id
+          name
+        }
+        teamMemberFilter {
+          preferredName
+        }
+        teamMembers(sortBy: "preferredName") {
+          ...InviteTeamMemberAvatar_teamMembers
+          ...DashboardAvatar_teamMember
+          id
+        }
+        ...TeamDashTeamMemberMenu_team
+      }
+    `,
+    teamRef
+  )
   const {history} = useRouter()
   const {organization, id: teamId, name: teamName, teamMemberFilter, teamMembers} = team
   const teamMemberFilterName =
@@ -125,7 +148,7 @@ const TeamTasksHeader = (props: Props) => {
                   <NavLink
                     className={css(linkStyles)}
                     title={orgName}
-                    to={`/me/organizations/${orgId}`}
+                    to={`/me/organizations/${orgId}/billing`}
                   >
                     {orgName}
                   </NavLink>
@@ -179,25 +202,4 @@ const TeamTasksHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamTasksHeader, {
-  team: graphql`
-    fragment TeamTasksHeader_team on Team {
-      ...DashboardAvatars_team
-      id
-      name
-      organization {
-        id
-        name
-      }
-      teamMemberFilter {
-        preferredName
-      }
-      teamMembers(sortBy: "preferredName") {
-        ...InviteTeamMemberAvatar_teamMembers
-        ...DashboardAvatar_teamMember
-        id
-      }
-      ...TeamDashTeamMemberMenu_team
-    }
-  `
-})
+export default TeamTasksHeader

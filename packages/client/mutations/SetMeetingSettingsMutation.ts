@@ -1,10 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {
-  SetMeetingSettingsMutation as TSetMeetingSettingsMutation,
-  SetMeetingSettingsMutationResponse
-} from '../__generated__/SetMeetingSettingsMutation.graphql'
+import {SetMeetingSettingsMutation as TSetMeetingSettingsMutation} from '../__generated__/SetMeetingSettingsMutation.graphql'
 
 graphql`
   fragment SetMeetingSettingsMutation_team on SetMeetingSettingsPayload {
@@ -33,7 +30,9 @@ const mutation = graphql`
   }
 `
 
-type Settings = NonNullable<SetMeetingSettingsMutationResponse['setMeetingSettings']['settings']>
+type Settings = NonNullable<
+  TSetMeetingSettingsMutation['response']['setMeetingSettings']['settings']
+>
 
 const SetMeetingSettingsMutation: StandardMutation<TSetMeetingSettingsMutation> = (
   atmosphere,

@@ -8,7 +8,6 @@ import {TimestampType} from './EditingStatus'
 const StyledWrapper = styled('span')({
   display: 'block',
   overflow: 'visible',
-  fontSize: 18,
   overflowWrap: 'break-word'
 })
 
@@ -35,6 +34,11 @@ const useTimeFrom = (timestamp: string) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [makeTimeFrom, timeFrom, timestamp])
+  // to update on toggle
+  useEffect(() => {
+    setTimeFrom(makeTimeFrom())
+  }, [timestamp, makeTimeFrom])
+
   return timeFrom
 }
 

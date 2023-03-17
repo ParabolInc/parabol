@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Close as CloseIcon, PersonAdd as PersonAddIcon} from '@mui/icons-material'
+import {Close as CloseIcon, Link, PersonAdd as PersonAddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -15,6 +15,7 @@ import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventM
 import {PALETTE} from '../styles/paletteV3'
 import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
+import makeAppURL from '../utils/makeAppURL'
 import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import {MeetingTypeEnum} from '../__generated__/SendClientSegmentEventMutation.graphql'
 import Menu from './Menu'
@@ -37,9 +38,14 @@ const StyledIcon = styled('div')({
   marginRight: 8
 })
 
+const LinkIcon = styled(Link)({
+  color: PALETTE.SLATE_600,
+  marginRight: 8
+})
+
 const OptionMenuItem = styled('div')({
   ...MenuItemLabelStyle,
-  width: '200px'
+  minWidth: '200px'
 })
 
 const EndMeetingMutationLookup: Record<
@@ -66,6 +72,11 @@ const query = graphql`
         id
         meetingType
         facilitatorUserId
+        ... on TeamPromptMeeting {
+          meetingSeries {
+            cancelledAt
+          }
+        }
       }
     }
   }
@@ -73,23 +84,45 @@ const query = graphql`
 
 const MeetingCardOptionsMenu = (props: Props) => {
   const {menuProps, popTooltip, queryRef} = props
-  const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
   const {id: viewerId, team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const {id: meetingId, meetingType, facilitatorUserId} = meeting!
+  const {id: meetingId, meetingType, facilitatorUserId, meetingSeries} = meeting!
   const isViewerFacilitator = facilitatorUserId === viewerId
   const canEndMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
 
+  const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
+
   const {closePortal} = menuProps
   return (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
+      {hasRecurrenceEnabled && (
+        <MenuItem
+          key='link'
+          label={
+            <OptionMenuItem>
+              <LinkIcon />
+              Copy meeting permalink
+            </OptionMenuItem>
+          }
+          onClick={async () => {
+            popTooltip()
+            closePortal()
+            const copyUrl = makeAppURL(window.location.origin, `meeting-series/${meetingId}`)
+            await navigator.clipboard.writeText(copyUrl)
+
+            SendClientSegmentEventMutation(atmosphere, 'Copied Meeting Series Link', {
+              teamId: team?.id,
+              meetingId: meetingId
+            })
+          }}
+        />
+      )}
       <MenuItem
         key='copy'
         label={

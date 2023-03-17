@@ -1,23 +1,23 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
 import React, {RefObject, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useClickAway from '~/hooks/useClickAway'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {ThreadedItemReply_discussion} from '~/__generated__/ThreadedItemReply_discussion.graphql'
-import {ThreadedItemReply_threadable} from '~/__generated__/ThreadedItemReply_threadable.graphql'
-import {ThreadedItemReply_viewer} from '~/__generated__/ThreadedItemReply_viewer.graphql'
+import {ThreadedItemReply_discussion$key} from '~/__generated__/ThreadedItemReply_discussion.graphql'
+import {ThreadedItemReply_threadable$key} from '~/__generated__/ThreadedItemReply_threadable.graphql'
+import {ThreadedItemReply_viewer$key} from '~/__generated__/ThreadedItemReply_viewer.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
-  threadable: ThreadedItemReply_threadable
+  threadable: ThreadedItemReply_threadable$key
   editorRef: RefObject<HTMLTextAreaElement>
-  discussion: ThreadedItemReply_discussion
-  viewer: ThreadedItemReply_viewer
+  discussion: ThreadedItemReply_discussion$key
+  viewer: ThreadedItemReply_viewer$key
   replyMention?: ReplyMention
   setReplyMention: SetReplyMention
   dataCy: string
@@ -27,13 +27,43 @@ const ThreadedItemReply = (props: Props) => {
   const {
     allowedThreadables,
     replyMention,
-    threadable,
+    threadable: threadableRef,
     editorRef,
-    discussion,
+    discussion: discussionRef,
     setReplyMention,
     dataCy,
-    viewer
+    viewer: viewerRef
   } = props
+  const viewer = useFragment(
+    graphql`
+      fragment ThreadedItemReply_viewer on User {
+        ...DiscussionThreadInput_viewer
+      }
+    `,
+    viewerRef
+  )
+  const threadable = useFragment(
+    graphql`
+      fragment ThreadedItemReply_threadable on Threadable {
+        id
+        replies {
+          id
+          threadSortOrder
+        }
+      }
+    `,
+    threadableRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment ThreadedItemReply_discussion on Discussion {
+        ...DiscussionThreadInput_discussion
+        id
+        replyingToCommentId
+      }
+    `,
+    discussionRef
+  )
   const {id: threadableId, replies} = threadable
   const {id: discussionId, replyingToCommentId} = discussion
   const isReplying = replyingToCommentId === threadableId
@@ -83,26 +113,4 @@ const ThreadedItemReply = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ThreadedItemReply, {
-  viewer: graphql`
-    fragment ThreadedItemReply_viewer on User {
-      ...DiscussionThreadInput_viewer
-    }
-  `,
-  threadable: graphql`
-    fragment ThreadedItemReply_threadable on Threadable {
-      id
-      replies {
-        id
-        threadSortOrder
-      }
-    }
-  `,
-  discussion: graphql`
-    fragment ThreadedItemReply_discussion on Discussion {
-      ...DiscussionThreadInput_discussion
-      id
-      replyingToCommentId
-    }
-  `
-})
+export default ThreadedItemReply

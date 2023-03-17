@@ -171,7 +171,7 @@ export default class LocalCache<T extends keyof CacheType> {
     Object.keys(this.cacheMap).forEach((key) => {
       if (!key.startsWith(`${table}:`)) return
       const doc = this.cacheMap[key]
-      Object.assign(doc, updater)
+      Object.assign(doc as any, updater)
     })
     await this.redisCache.writeTable(table, updater)
   }

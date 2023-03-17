@@ -13,6 +13,7 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
+import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
@@ -24,7 +25,7 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 import updateQualAIMeetingsCount from './helpers/updateQualAIMeetingsCount'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLContext) => {
-  const {dataLoader} = context
+  const {dataLoader, authToken} = context
   const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
@@ -36,8 +37,26 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   const discussionIds = stages.map((stage) => stage.discussionId)
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
+  const hasTopicSummary = reflectionGroups.some((group) => group.summary)
+  if (hasTopicSummary) {
+    const groupsWithMissingTopicSummaries = reflectionGroups.filter((group) => {
+      const reflectionsInGroup = reflections.filter(
+        (reflection) => reflection.reflectionGroupId === group.id
+      )
+      return reflectionsInGroup.length > 1 && !group.summary
+    })
+    if (groupsWithMissingTopicSummaries.length > 0) {
+      const missingGroupIds = groupsWithMissingTopicSummaries.map(({id}) => id).join(', ')
+      const error = new Error('Missing AI topic summary')
+      const viewerId = getUserId(authToken)
+      sendToSentry(error, {
+        userId: viewerId,
+        tags: {missingGroupIds, meetingId}
+      })
+    }
+  }
 
-  await Promise.all([
+  await Promise.allSettled([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     r
       .table('NewMeeting')
@@ -193,7 +212,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: phase && phase.phaseType !== DISCUSS,
+      isKill: !!(phase && phase.phaseType !== DISCUSS),
       removedTaskIds,
       timelineEventId
     }

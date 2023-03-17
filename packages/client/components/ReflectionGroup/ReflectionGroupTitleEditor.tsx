@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
@@ -9,15 +9,15 @@ import {PALETTE} from '../../styles/paletteV3'
 import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
-import {ReflectionGroupTitleEditor_meeting} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
-import {ReflectionGroupTitleEditor_reflectionGroup} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
+import {ReflectionGroupTitleEditor_meeting$key} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
+import {ReflectionGroupTitleEditor_reflectionGroup$key} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
 import StyledError from '../StyledError'
 
 interface Props {
   isExpanded: boolean
-  reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
+  reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup$key
   readOnly: boolean
-  meeting: ReflectionGroupTitleEditor_meeting
+  meeting: ReflectionGroupTitleEditor_meeting$key
   titleInputRef: RefObject<HTMLInputElement>
 }
 
@@ -95,7 +95,33 @@ const getValidationError = (
 const ReflectionGroupTitleEditor = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
-  const {meeting, reflectionGroup, titleInputRef, isExpanded, readOnly} = props
+  const {
+    meeting: meetingRef,
+    reflectionGroup: reflectionGroupRef,
+    titleInputRef,
+    isExpanded,
+    readOnly
+  } = props
+  const reflectionGroup = useFragment(
+    graphql`
+      fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+        id
+        title
+      }
+    `,
+    reflectionGroupRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
+        reflectionGroups {
+          id
+          title
+        }
+      }
+    `,
+    meetingRef
+  )
   const {reflectionGroups} = meeting
   const {id: reflectionGroupId, title} = reflectionGroup
   const dirtyRef = useRef(false)
@@ -171,19 +197,4 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectionGroupTitleEditor, {
-  reflectionGroup: graphql`
-    fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
-      id
-      title
-    }
-  `,
-  meeting: graphql`
-    fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
-      reflectionGroups {
-        id
-        title
-      }
-    }
-  `
-})
+export default ReflectionGroupTitleEditor

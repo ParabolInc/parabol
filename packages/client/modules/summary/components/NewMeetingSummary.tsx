@@ -37,9 +37,7 @@ const query = graphql`
 
 const NewMeetingSummary = (props: Props) => {
   const {urlAction, queryRef} = props
-  const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef)
   const {viewer} = data
   const {newMeeting} = viewer
   const {history} = useRouter()

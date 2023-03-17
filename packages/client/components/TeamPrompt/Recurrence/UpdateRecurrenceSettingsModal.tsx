@@ -43,19 +43,34 @@ const ActionsContainer = styled('div')({
   padding: 16
 })
 
-const UpdateButton = styled(PlainButton)({
+const ActionButton = styled(PlainButton)({
   height: 36,
-  backgroundColor: PALETTE.SKY_500,
-  color: PALETTE.WHITE,
   padding: '0px 16px',
   textAlign: 'center',
-  borderRadius: 32,
-  cursor: 'pointer',
+  borderRadius: 32
+})
+
+const UpdateButton = styled(ActionButton)({
+  backgroundColor: PALETTE.SKY_500,
+  color: PALETTE.WHITE,
   '&:hover': {
     backgroundColor: PALETTE.SKY_600
   },
   ':focus, :focus-visible, :active': {
     outline: `1px solid ${PALETTE.SKY_600}`,
+    outlineOffset: 1
+  }
+})
+
+const StopButton = styled(ActionButton)({
+  color: PALETTE.SKY_500,
+  marginRight: '16px',
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  '&:hover': {
+    backgroundColor: PALETTE.SLATE_100
+  },
+  ':focus, :focus-visible, :active': {
+    outline: `1px solid ${PALETTE.SLATE_300}`,
     outlineOffset: 1
   }
 })
@@ -118,6 +133,17 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
     )
   }
 
+  const onStopRecurrence = () => {
+    if (submitting) return
+    submitMutation()
+
+    UpdateRecurrenceSettingsMutation(
+      atmosphere,
+      {meetingId: meeting.id, recurrenceRule: null},
+      {onError, onCompleted: onRecurrenceSettingsUpdated}
+    )
+  }
+
   return (
     <UpdateRecurrenceSettingsModalRoot>
       <RecurrenceSettings
@@ -129,7 +155,12 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         <CloseIcon />
       </StyledCloseButton>
       <ActionsContainer>
-        <UpdateButton onClick={onUpdateRecurrenceClicked}>Update</UpdateButton>
+        {recurrenceRuleString && (
+          <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
+        )}
+        <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!recurrenceRule}>
+          Update
+        </UpdateButton>
       </ActionsContainer>
       {error && <ErrorContainer>{error.message}</ErrorContainer>}
     </UpdateRecurrenceSettingsModalRoot>
