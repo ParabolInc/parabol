@@ -2,11 +2,9 @@ import getRethink from '../database/rethinkDriver'
 import {RDatum, RValue} from '../database/stricterR'
 import OrganizationUser from '../database/types/OrganizationUser'
 import User from '../database/types/User'
-import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
-import getPg from '../postgres/getPg'
 import {TierEnum} from '../postgres/queries/generated/updateUserQuery'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
-import catchAndLog from '../postgres/utils/catchAndLog'
+import updateUserTiers from '../postgres//queries/updateUserTiers'
 import segmentIo from './segmentIo'
 
 const setUserTierForUserIds = async (userIds: string[]) => {
@@ -59,7 +57,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
       )
     }))
     .run()) as {id: string; tier: TierEnum}[]
-  await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
+  await updateUserTiers({users: userTiers})
 
   const users = await getUsersByIds(userIds)
   users.forEach((user) => {
