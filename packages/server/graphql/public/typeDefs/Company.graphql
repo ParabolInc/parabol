@@ -10,13 +10,7 @@ type Company {
   """
   the number of active teams across all organizations
   """
-  activeTeamCount(
-    """
-    Only include teams that have met since this time.
-    Defaults to 30 days ago
-    """
-    after: DateTime
-  ): Int!
+  activeTeamCount: Int!
 
   """
   the number of active users across all organizations
@@ -52,11 +46,6 @@ type Company {
   Get the list of all organizations that belong to the company
   """
   organizations: [Organization!]!
-
-  """
-  Get the list of all organizations the viewer is in that belong to the company
-  """
-  viewerOrganizations: [Organization!]!
 
   """
   The highest tier than an organization user is being squeezed to upgrade to, "starter" if not squeezed
