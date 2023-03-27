@@ -123,7 +123,9 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     threadablesRef
   )
 
-  const isEmpty = showTranscription ? transcription.length === 0 : threadables.length === 0
+  const isEmpty = showTranscription
+    ? !transcription || transcription.length === 0
+    : threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   if (isEmpty && emptyState) {
     return (
