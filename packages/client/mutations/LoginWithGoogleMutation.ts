@@ -17,7 +17,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...GA4Frag @relay(mask: false)
+      ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     # Validation occurs statically https://github.com/graphql/graphql-js/issues/1334
     # A default value is necessary even in the case of @include(if: false)

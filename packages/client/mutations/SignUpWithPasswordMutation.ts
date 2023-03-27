@@ -23,7 +23,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...GA4Frag @relay(mask: false)
+      ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
       ...AcceptTeamInvitationMutationReply @relay(mask: false)

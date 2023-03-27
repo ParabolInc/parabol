@@ -1,9 +1,23 @@
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from './safeIdentify'
-import {GA4Frag} from '../__generated__/GA4Frag.graphql'
+import {handleSuccessfulLogin_UserLogInPayload} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
 import ReactGA from 'react-ga4'
 
-type Payload = Omit<GA4Frag, ' $refType'>
+import graphql from 'babel-plugin-relay/macro'
+graphql`
+  fragment handleSuccessfulLogin_UserLogInPayload on UserLogInPayload {
+    userId
+    authToken
+    isNewUser
+    user {
+      tms
+      isPatient0
+      ...UserAnalyticsFrag @relay(mask: false)
+    }
+  }
+`
+
+type Payload = Omit<handleSuccessfulLogin_UserLogInPayload, ' $refType'>
 
 const handleSuccessfulLogin = (payload: Payload) => {
   const email = payload?.user?.email
