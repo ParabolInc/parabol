@@ -1,10 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {
-  UpdateCommentContentMutation as TUpdateCommentContentMutation,
-  UpdateCommentContentMutationResponse
-} from '../__generated__/UpdateCommentContentMutation.graphql'
+import {UpdateCommentContentMutation as TUpdateCommentContentMutation} from '../__generated__/UpdateCommentContentMutation.graphql'
 
 graphql`
   fragment UpdateCommentContentMutation_meeting on UpdateCommentContentSuccess {
@@ -29,7 +26,9 @@ const mutation = graphql`
   }
 `
 
-type Comment = NonNullable<UpdateCommentContentMutationResponse['updateCommentContent']>['comment']
+type Comment = NonNullable<
+  TUpdateCommentContentMutation['response']['updateCommentContent']
+>['comment']
 
 const UpdateCommentContentMutation: StandardMutation<TUpdateCommentContentMutation> = (
   atmosphere,

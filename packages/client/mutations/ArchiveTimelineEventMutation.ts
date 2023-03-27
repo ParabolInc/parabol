@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {ArchiveTimelineEventMutation_notification} from '__generated__/ArchiveTimelineEventMutation_notification.graphql'
+import {ArchiveTimelineEventMutation_notification$data} from '__generated__/ArchiveTimelineEventMutation_notification.graphql'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {ArchiveTimelineEventMutation as TArchiveTimelineEventMutation} from '../__generated__/ArchiveTimelineEventMutation.graphql'
@@ -30,7 +30,7 @@ const mutation = graphql`
 `
 
 export const archiveTimelineEventNotificationUpdater: SharedUpdater<
-  ArchiveTimelineEventMutation_notification
+  ArchiveTimelineEventMutation_notification$data
 > = (payload, {store}) => {
   const timelineEvent = payload.getLinkedRecord('timelineEvent')
   if (!timelineEvent) return

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemovePokerTemplateMutation as TRemovePokerTemplateMutation} from '../__generated__/RemovePokerTemplateMutation.graphql'
-import {RemovePokerTemplateMutation_team} from '../__generated__/RemovePokerTemplateMutation_team.graphql'
+import {RemovePokerTemplateMutation_team$data} from '../__generated__/RemovePokerTemplateMutation_team.graphql'
 import handleRemovePokerTemplate from './handlers/handleRemovePokerTemplate'
 
 graphql`
@@ -28,16 +28,15 @@ const mutation = graphql`
   }
 `
 
-export const removePokerTemplateTeamUpdater: SharedUpdater<RemovePokerTemplateMutation_team> = (
-  payload,
-  {store}
-) => {
+export const removePokerTemplateTeamUpdater: SharedUpdater<
+  RemovePokerTemplateMutation_team$data
+> = (payload, {store}) => {
   const templateId = payload.getLinkedRecord('pokerTemplate').getValue('id')
   const teamId = payload.getLinkedRecord('pokerTemplate').getValue('teamId')
   handleRemovePokerTemplate(templateId, teamId, store)
 }
 
-type PokerTemplate = NonNullable<RemovePokerTemplateMutation_team['pokerTemplate']>
+type PokerTemplate = NonNullable<RemovePokerTemplateMutation_team$data['pokerTemplate']>
 
 const RemovePokerTemplateMutation: StandardMutation<TRemovePokerTemplateMutation> = (
   atmosphere,

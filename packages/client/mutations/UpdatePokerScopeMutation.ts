@@ -12,10 +12,7 @@ import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getSearchQueryFromMeeting from '../utils/getSearchQueryFromMeeting'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {
-  UpdatePokerScopeMutation as TUpdatePokerScopeMutation,
-  UpdatePokerScopeMutationResponse
-} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 
 graphql`
@@ -101,7 +98,7 @@ const mutation = graphql`
 `
 
 export type PokerScopeMeeting = NonNullable<
-  UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']
+  TUpdatePokerScopeMutation['response']['updatePokerScope']['meeting']
 >
 
 interface Handlers extends BaseLocalHandlers {

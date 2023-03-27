@@ -4,7 +4,7 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {
   AgendaListAndInput_meeting$key,
-  AgendaListAndInput_meeting
+  AgendaListAndInput_meeting$data
 } from '~/__generated__/AgendaListAndInput_meeting.graphql'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import {AgendaListAndInput_team$key} from '../../../../__generated__/AgendaListAndInput_team.graphql'
@@ -39,7 +39,7 @@ interface Props {
   team: AgendaListAndInput_team$key
 }
 
-const getAgendaItems = (meeting: AgendaListAndInput_meeting | null) => {
+const getAgendaItems = (meeting: AgendaListAndInput_meeting$data | null) => {
   if (!meeting) return null
   const agendaItemsPhase = meeting.phases!.find((phase) => phase.phaseType === 'agendaitems')
   if (!agendaItemsPhase?.stages) return null

@@ -5,6 +5,48 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.96.0 2023-Mar-15
+### Added
+
+- feat(checkout-flow): add teams limit warning (#7879)
+- feat(checkout-flow): credit card UI (#7812)
+- feat(retros-in-disguise): Base activity library + stubbed cards (#7836)
+- feat(checkout-flow): implement billing leader UI (#7910)
+- feat(rid): Basic activity library search (#7891)
+- feat(standups): Persist draft responses to localstorage (#7925)
+- feat(checkout-flow): add downgrade logic (#7830)
+
+### Fixed
+
+- fix: various styles after tailwind migration (#7884)
+- fix: position of notification bell badge (#7907)
+- fix: do not run removeOrgUserTaskUpdater for undefined tasks (#7772)
+- fix: fix usage stats charts on small amount of data (#7873)
+- fix(teams-limit): count only teams that have had at least 1 meeting in the last 30 days (#7918)
+- fix(templates): Fix 'Create new template' button error for retros (#7917)
+- fix: changing width to max-width (#7913)
+- fix: slack stats (#7926)
+
+### Changed
+
+- chore(ai-summary): update logging (#7893)
+- chore(tailwind): Add default colors (#7892)
+- chore: add temporary story points update result logging (#7897)
+- chore: node version bump for security updates (#7901)
+- chore: simplify org plans button logic (#7899)
+- chore(metrics): emit is_patient_0 as user properties for GA4 (#7877)
+- chore: consolidate payload types for user sign-up/log-in activities (#7895)
+- chore(relay): createFragmentContainer -> useFragment 6/N (#7874)
+- chore(relay): createFragmentContainer -> useFragment 7/7 (#7875)
+- chore(pipeline): remove any reference to dev environment (#7920)
+- chore(template-limits): add template limit flag to p0 domains (#7921)
+- chore(relay): Remove 'UNSTABLE_renderPolicy: full' (#7919)
+- chore(dx): Add Parabol employees to reviewers to prevent auto-request-review (#7922)
+- chore(teams-limit): change first warning notification text (#7862)
+- chore(tailwind): Fix rename warning (#7924)
+- chore: add $data suffix to relay data fragments (#7928)
+- chore(upgradeRelay): refactor response and variables from relay mutation types (#7929)
+
 ## 6.95.1 2023-Mar-09
 
 ### Fixed

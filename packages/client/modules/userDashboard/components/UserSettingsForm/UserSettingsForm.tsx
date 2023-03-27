@@ -13,7 +13,7 @@ import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint, Layout} from '../../../../types/constEnums'
 import withForm, {WithFormProps} from '../../../../utils/relay/withForm'
 import Legitity from '../../../../validation/Legitity'
-import {UserProfileQueryResponse} from '../../../../__generated__/UserProfileQuery.graphql'
+import {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.graphql'
 import NotificationErrorMessage from '../../../notifications/components/NotificationErrorMessage'
 
 const SettingsForm = styled('form')({
@@ -62,7 +62,7 @@ const UserAvatarInput = lazy(
 )
 
 interface UserSettingsProps extends WithFormProps<'preferredName'> {
-  viewer: UserProfileQueryResponse['viewer']
+  viewer: UserProfileQuery['response']['viewer']
 }
 
 function UserSettings(props: UserSettingsProps) {

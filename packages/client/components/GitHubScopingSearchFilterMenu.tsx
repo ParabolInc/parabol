@@ -8,10 +8,7 @@ import useGetRepoContributions from '../hooks/useGetRepoContributions'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
-import {
-  GitHubScopingSearchFilterMenuQuery,
-  GitHubScopingSearchFilterMenuQueryResponse
-} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
+import {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -36,7 +33,9 @@ interface Props {
 }
 
 type GitHubSearchQuery = NonNullable<
-  NonNullable<GitHubScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['githubSearchQuery']
+  NonNullable<
+    GitHubScopingSearchFilterMenuQuery['response']['viewer']['meeting']
+  >['githubSearchQuery']
 >
 
 const MAX_REPOS = 10

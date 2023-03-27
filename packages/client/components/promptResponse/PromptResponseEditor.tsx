@@ -3,7 +3,7 @@ import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
 import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import BaseButton from '../BaseButton'
@@ -120,10 +120,19 @@ interface Props {
   handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
   placeholder?: string
+  draftStorageKey?: string
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, content, handleSubmit, readOnly, placeholder, teamId} = props
+  const {
+    autoFocus: autoFocusProp,
+    content,
+    handleSubmit,
+    readOnly,
+    placeholder,
+    teamId,
+    draftStorageKey
+  } = props
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -162,9 +171,15 @@ const PromptResponseEditor = (props: Props) => {
     [setIsEditing, setAutoFocus]
   )
 
-  const onUpdate = useCallback(() => {
-    setEditing(true)
-  }, [setEditing])
+  const onUpdate = useCallback(
+    ({editor: editorState}: {editor: EditorState}) => {
+      setEditing(true)
+      if (draftStorageKey) {
+        window.localStorage.setItem(draftStorageKey, JSON.stringify(editorState.getJSON()))
+      }
+    },
+    [setEditing, draftStorageKey]
+  )
 
   const onSubmit = useCallback(
     (newEditorState: EditorState) => {
@@ -184,6 +199,9 @@ const PromptResponseEditor = (props: Props) => {
   const onCancel = (editor: EditorState) => {
     setEditing(false)
     editor?.commands.setContent(content)
+    if (draftStorageKey) {
+      window.localStorage.setItem(draftStorageKey, JSON.stringify(content))
+    }
   }
 
   const editor = useEditor(
@@ -210,6 +228,24 @@ const PromptResponseEditor = (props: Props) => {
       onUpdate
     ]
   )
+
+  useEffect(() => {
+    // Attempt to reload draft persisted to localstorage.
+    if (!draftStorageKey || readOnly) {
+      return
+    }
+
+    const maybeDraft = window.localStorage.getItem(draftStorageKey)
+    if (!maybeDraft) {
+      return
+    }
+
+    const draftContent: JSONContent = JSON.parse(maybeDraft)
+    if (areEqual(content, draftContent)) return
+
+    setEditing(true)
+    editor?.commands.setContent(draftContent)
+  }, [editor])
 
   const onAddHyperlink = () => {
     if (!editor) {

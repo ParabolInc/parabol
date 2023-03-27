@@ -21,6 +21,14 @@ The recommended way to write a migration is to call `yarn pg:migrate create NAME
 We no longer use pgm because we want every migration to run independently.
 In other words, migration 3 should have a guarantee that migration 2 has already run. PGM doesn't do this.
 
+## Migrating RethinkDB to PG (Massive Inserts)
+To perform massive inserts, like migrating RethinkDB tables to PG, we use pg-promise, which offers a [simple pattern](https://github.com/vitaly-t/pg-promise/wiki/Data-Imports#massive-inserts).
+
+Since most tables can't be read into the memory of our NodeJS container, we have to paginate the data.
+The easiest way to do that is indexing on `updatedAt` in RethinkDB and paginating on that field.
+This is also beneficial because any updates that happen during the migration will end up on the last page.
+Note that is requires every write to the RethinkDB table to update the `updatedAt` field!
+
 ### Queries
 
 - [Queries](./queries/README.md)

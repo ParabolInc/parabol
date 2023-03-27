@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {RemoveOrgUserMutation as TRemoveOrgUserMutation} from '~/__generated__/RemoveOrgUserMutation.graphql'
-import {RemoveOrgUserMutation_team} from '~/__generated__/RemoveOrgUserMutation_team.graphql'
+import {RemoveOrgUserMutation_team$data} from '~/__generated__/RemoveOrgUserMutation_team.graphql'
 import {
   HistoryLocalHandler,
   OnNextHandler,
@@ -14,9 +14,9 @@ import onExOrgRoute from '../utils/onExOrgRoute'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
-import {RemoveOrgUserMutation_organization} from '../__generated__/RemoveOrgUserMutation_organization.graphql'
-import {RemoveOrgUserMutation_task} from '../__generated__/RemoveOrgUserMutation_task.graphql'
+import {RemoveOrgUserMutation_notification$data} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
+import {RemoveOrgUserMutation_organization$data} from '../__generated__/RemoveOrgUserMutation_organization.graphql'
+import {RemoveOrgUserMutation_task$data} from '../__generated__/RemoveOrgUserMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveOrganization from './handlers/handleRemoveOrganization'
 import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
@@ -102,10 +102,9 @@ const mutation = graphql`
   }
 `
 
-export const removeOrgUserOrganizationUpdater: SharedUpdater<RemoveOrgUserMutation_organization> = (
-  payload,
-  {atmosphere, store}
-) => {
+export const removeOrgUserOrganizationUpdater: SharedUpdater<
+  RemoveOrgUserMutation_organization$data
+> = (payload, {atmosphere, store}) => {
   const {viewerId} = atmosphere
   const removedUserId = payload.getLinkedRecord('user').getValue('id')
   const removedOrgUserId = payload.getValue('organizationUserId')
@@ -117,15 +116,14 @@ export const removeOrgUserOrganizationUpdater: SharedUpdater<RemoveOrgUserMutati
   }
 }
 
-export const removeOrgUserNotificationUpdater: SharedUpdater<RemoveOrgUserMutation_notification> = (
-  payload,
-  {store}
-) => {
+export const removeOrgUserNotificationUpdater: SharedUpdater<
+  RemoveOrgUserMutation_notification$data
+> = (payload, {store}) => {
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
   handleAddNotifications(kickOutNotifications, store)
 }
 
-export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team> = (
+export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team$data> = (
   payload,
   {atmosphere, store}
 ) => {
@@ -143,7 +141,7 @@ export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team>
   }
 }
 
-export const removeOrgUserTaskUpdater: SharedUpdater<RemoveOrgUserMutation_task> = (
+export const removeOrgUserTaskUpdater: SharedUpdater<RemoveOrgUserMutation_task$data> = (
   payload,
   {atmosphere, store}
 ) => {
@@ -159,7 +157,7 @@ export const removeOrgUserTaskUpdater: SharedUpdater<RemoveOrgUserMutation_task>
   }
 }
 
-export const removeOrgUserTeamOnNext: OnNextHandler<RemoveOrgUserMutation_team> = (
+export const removeOrgUserTeamOnNext: OnNextHandler<RemoveOrgUserMutation_team$data> = (
   payload,
   context
 ) => {
@@ -187,7 +185,7 @@ export const removeOrgUserTeamOnNext: OnNextHandler<RemoveOrgUserMutation_team> 
 }
 
 export const removeOrgUserOrganizationOnNext: OnNextHandler<
-  RemoveOrgUserMutation_organization,
+  RemoveOrgUserMutation_organization$data,
   OnNextHistoryContext
 > = (payload, context) => {
   // FIXME currently, the server doesn't send this to the user in other tabs, so they don't get redirected in their other tabs
@@ -205,7 +203,7 @@ export const removeOrgUserOrganizationOnNext: OnNextHandler<
 }
 
 export const removeOrgUserNotificationOnNext: OnNextHandler<
-  RemoveOrgUserMutation_notification,
+  RemoveOrgUserMutation_notification$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return

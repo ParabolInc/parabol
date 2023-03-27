@@ -3,7 +3,6 @@ import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import FlatPrimaryButton from '../../../../components/FlatPrimaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -11,9 +10,15 @@ import useTooltip from '../../../../hooks/useTooltip'
 import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
-import {ElementWidth, Threshold} from '../../../../types/constEnums'
+import {ElementWidth, Radius, Threshold} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../__generated__/SendClientSegmentEventMutation.graphql'
 import OrgStats from './OrgStats'
+import useModal from '../../../../hooks/useModal'
+import DowngradeModal from './DowngradeModal'
+import {TeamBenefits} from '../../../../utils/constants'
+import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import BaseButton from '../../../../components/BaseButton'
 import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 
 const StyledPanel = styled(Panel)({
@@ -81,7 +86,7 @@ const Plan = styled('div')<{tier: TierEnum}>(({tier}) => ({
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
   padding: '16px 8px',
-  height: 400,
+  height: 440,
   borderRadius: 4,
   border: `2px solid transparent`,
   '&:hover': {
@@ -129,13 +134,15 @@ const ButtonBlock = styled('div')({
   position: 'relative'
 })
 
-const UpgradeButton = styled(FlatPrimaryButton)<{
+const CTAButton = styled(BaseButton)<{
   buttonStyle: 'disabled' | 'primary' | 'secondary'
 }>(({buttonStyle}) => ({
   width: '80%',
   boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
   position: 'absolute',
   bottom: 0,
+  fontWeight: 600,
+  borderRadius: Radius.BUTTON_PILL,
   background:
     buttonStyle === 'primary'
       ? PALETTE.GRADIENT_TOMATO_600_ROSE_500
@@ -192,7 +199,9 @@ const OrgPlans = (props: Props) => {
     graphql`
       fragment OrgPlans_organization on Organization {
         ...OrgStats_organization
+        ...DowngradeModal_organization
         ...LimitExceededWarning_organization
+        id
         tier
         scheduledLockAt
         lockedAt
@@ -203,7 +212,9 @@ const OrgPlans = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
   )
-  const {tier, scheduledLockAt, lockedAt} = organization
+  const {closePortal: closeModal, openPortal, modalPortal} = useModal()
+  const atmosphere = useAtmosphere()
+  const {id: orgId, tier, scheduledLockAt, lockedAt} = organization
   const showNudge = scheduledLockAt || lockedAt
 
   const plans = [
@@ -221,12 +232,7 @@ const OrgPlans = (props: Props) => {
     },
     {
       tier: 'team',
-      details: [
-        'Everything in Starter',
-        'Premium templates',
-        'Custom templates',
-        'Unlimited teams'
-      ],
+      details: ['Everything in Starter', ...TeamBenefits],
       buttonStyle: getButtonStyle(tier, 'team'),
       buttonLabel: getButtonLabel(tier, 'team')
     },
@@ -245,62 +251,69 @@ const OrgPlans = (props: Props) => {
     } else if (label === 'Select Plan') {
       // TODO: handle select plan when billing is implemented
     } else if (label === 'Downgrade') {
-      // TODO: handle in https://github.com/ParabolInc/parabol/issues/7697
+      openPortal()
+      SendClientSegmentEventMutation(atmosphere, 'Downgrade Clicked', {
+        orgId,
+        downgradeCTALocation: 'billing'
+      })
     }
   }
 
   return (
-    <StyledPanel label='Plans'>
-      <StyledRow>
-        {showNudge && <LimitExceededWarning organizationRef={organization} />}
-        <OrgStats organizationRef={organization} />
-      </StyledRow>
-      <StyledRow>
-        {plans.map((plan) => (
-          <Plan key={plan.tier} tier={plan.tier}>
-            <Content>
-              <HeadingBlock>
-                <PlanTitle>{plan.tier}</PlanTitle>
-                {plan.tier === 'team' ? (
-                  <>
-                    <PlanSubtitle>
-                      {'$6 per active user '}
-                      <StyledIcon
-                        ref={originRef}
-                        onMouseOver={openTooltip}
-                        onMouseOut={closeTooltip}
-                      >
-                        {<Info />}
-                      </StyledIcon>
-                    </PlanSubtitle>
-                    <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
-                    {tooltipPortal(
-                      'Active users are anyone who uses Parabol within a billing period'
-                    )}
-                  </>
-                ) : (
-                  <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
-                )}
-              </HeadingBlock>
-              <UL>
-                {plan.details.map((detail) => (
-                  <LI key={detail}>{detail}</LI>
-                ))}
-              </UL>
-            </Content>
-            <ButtonBlock>
-              <UpgradeButton
-                onClick={() => handleClick(plan.buttonLabel)}
-                buttonStyle={plan.buttonStyle}
-                size='medium'
-              >
-                {plan.buttonLabel}
-              </UpgradeButton>
-            </ButtonBlock>
-          </Plan>
-        ))}
-      </StyledRow>
-    </StyledPanel>
+    <>
+      <StyledPanel label='Plans'>
+        <StyledRow>
+          {showNudge && <LimitExceededWarning organizationRef={organization} />}
+          <OrgStats organizationRef={organization} />
+        </StyledRow>
+        <StyledRow>
+          {plans.map((plan) => (
+            <Plan key={plan.tier} tier={plan.tier}>
+              <Content>
+                <HeadingBlock>
+                  <PlanTitle>{plan.tier}</PlanTitle>
+                  {plan.tier === 'team' ? (
+                    <>
+                      <PlanSubtitle>
+                        {'$6 per active user '}
+                        <StyledIcon
+                          ref={originRef}
+                          onMouseOver={openTooltip}
+                          onMouseOut={closeTooltip}
+                        >
+                          {<Info />}
+                        </StyledIcon>
+                      </PlanSubtitle>
+                      <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+                      {tooltipPortal(
+                        'Active users are anyone who uses Parabol within a billing period'
+                      )}
+                    </>
+                  ) : (
+                    <PlanSubtitle>{plan.subtitle}</PlanSubtitle>
+                  )}
+                </HeadingBlock>
+                <UL>
+                  {plan.details.map((detail) => (
+                    <LI key={detail}>{detail}</LI>
+                  ))}
+                </UL>
+              </Content>
+              <ButtonBlock>
+                <CTAButton
+                  onClick={() => handleClick(plan.buttonLabel)}
+                  buttonStyle={plan.buttonStyle}
+                  size='medium'
+                >
+                  {plan.buttonLabel}
+                </CTAButton>
+              </ButtonBlock>
+            </Plan>
+          ))}
+        </StyledRow>
+      </StyledPanel>
+      {modalPortal(<DowngradeModal closeModal={closeModal} organizationRef={organization} />)}
+    </>
   )
 }
 
