@@ -27,7 +27,6 @@ import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
-import Transcription from './Transcription'
 import RetroDiscussionThreadHeader from './RetroDiscussionThreadHeader'
 
 interface Props extends RetroMeetingPhaseProps {
@@ -271,7 +270,6 @@ const RetroDiscussPhase = (props: Props) => {
                       isReadOnly={allowedThreadables.length === 0}
                       settingsRef={settings}
                       showTranscription={showTranscription}
-                      organizationRef={organization}
                     />
                   }
                 />

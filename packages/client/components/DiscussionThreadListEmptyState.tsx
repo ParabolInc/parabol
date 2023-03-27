@@ -14,7 +14,6 @@ import Legitity from '../validation/Legitity'
 import FlatButton from './FlatButton'
 import StyledError from './StyledError'
 import {DiscussionThreadListEmptyState_settings$key} from '~/__generated__/DiscussionThreadListEmptyState_settings.graphql'
-import {DiscussionThreadListEmptyState_organization$key} from '~/__generated__/DiscussionThreadListEmptyState_organization.graphql'
 
 const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
@@ -82,7 +81,6 @@ interface Props {
   isReadOnly?: boolean
   allowTasks: boolean
   settingsRef?: DiscussionThreadListEmptyState_settings$key
-  organizationRef?: DiscussionThreadListEmptyState_organization$key
   showTranscription?: boolean
 }
 
@@ -119,7 +117,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const settingsId = settings?.id
-  const {videoMeetingURL} = settings
+  const videoMeetingURL = settings?.videoMeetingURL
   const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
   const {validateField, onChange, fields} = useForm({
     url: {
