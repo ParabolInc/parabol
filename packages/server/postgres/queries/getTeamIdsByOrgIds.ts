@@ -11,7 +11,6 @@ const getTeamIdsByOrgIds = async (
     isArchived: !!isArchived
   }
   const teamIds = await getTeamIdsByOrgIdsQuery.run(queryParameters as any, getPg())
-  console.log('teamIds', teamIds)
 
   return teamIds.map((team) => team.id)
 }
