@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react'
-import ReactGA from 'react-ga4'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import DialogContent from './DialogContent'
@@ -16,17 +15,6 @@ const SAMLRedirect = () => {
     const params = new URLSearchParams(location.search)
     const token = params.get('token')
     const error = params.get('error')
-    const userId = params.get('userId')
-    const isNewUser = params.get('isNewUser') === 'true'
-    const isPatient0 = params.get('isPatient0') === 'true'
-    if (isNewUser && !error) {
-      ReactGA.event('sign_up', {
-        userId,
-        user_properties: {
-          is_patient_0: isPatient0
-        }
-      })
-    }
     let isSameOriginPopup = false
     if (window.opener) {
       try {

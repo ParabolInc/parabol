@@ -1,4 +1,5 @@
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import ReactGA from 'react-ga4'
 
 const getTokenFromSSO = (url: string) => {
   // It's possible we prematurely opened a popup named SSO at the URL about:blank to avoid popup blockers
@@ -15,6 +16,19 @@ const getTokenFromSSO = (url: string) => {
       const {token, error} = event.data
       if (!token && !error) return
       if (event.origin !== window.location.origin) return
+
+      const params = new URLSearchParams(popup.location.search)
+      const userId = params.get('userId')
+      const isNewUser = params.get('isNewUser') === 'true'
+      const isPatient0 = params.get('isPatient0') === 'true'
+      if (isNewUser && !error) {
+        ReactGA.event('sign_up', {
+          userId,
+          user_properties: {
+            is_patient_0: isPatient0
+          }
+        })
+      }
 
       window.clearInterval(closeCheckerId)
       popup?.close()
