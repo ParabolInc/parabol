@@ -11,7 +11,10 @@ import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
-import {DiscussionThreadables, Header as DiscussionThreadHeader} from './DiscussionThreadList'
+import {
+  DiscussionThreadables,
+  DefaultHeader as DiscussionThreadHeader
+} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import MeetingContent from './MeetingContent'

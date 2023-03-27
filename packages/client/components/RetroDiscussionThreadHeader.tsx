@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {commitLocalUpdate} from 'relay-runtime'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
+import {DefaultHeader} from './DiscussionThreadList'
 
 const HeaderWrapper = styled('div')({
   display: 'flex',
@@ -102,17 +103,7 @@ const RetroDiscussionThreadHeader = (props: Props) => {
     )
   }
 
-  return (
-    <HeaderWrapper>
-      {/* <ButtonHeader
-        onClick={() => handleHeaderClick('discussion')}
-        isActive={!showTranscription}
-        hasZoomFlag={hasZoomFlag}
-      > */}
-      {'Discussion & Tasks'}
-      {/* </ButtonHeader> */}
-    </HeaderWrapper>
-  )
+  return <DefaultHeader>{'Discussion & Takeaway Tasks'}</DefaultHeader>
 }
 
 export default RetroDiscussionThreadHeader
