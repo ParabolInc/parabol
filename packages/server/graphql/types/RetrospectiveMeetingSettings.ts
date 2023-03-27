@@ -117,6 +117,10 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
         return connectionFromTemplateArray(publicTemplates, first, after)
       }
     },
+    recallBotId: {
+      type: GraphQLID,
+      description: 'The botId for the recall bot in the video meeting'
+    },
     videoMeetingURL: {
       type: GraphQLString,
       description: 'The Zoom meeting URL for the meeting'

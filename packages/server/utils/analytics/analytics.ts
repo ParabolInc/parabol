@@ -53,6 +53,7 @@ export type MeetingSettings = {
   hasIcebreaker?: boolean
   disableAnonymity?: boolean
   videoMeetingURL?: string
+  recallBotId?: string
 }
 
 export type WebSocketProperties = {

@@ -19,7 +19,8 @@ class RecallAIServerManager {
         recording_mode: 'speaker_view',
         meeting_url: videoMeetingURL
       })
-      console.log(data)
+      const {id: botId} = data
+      return botId as string
     } catch (err) {
       console.error(err)
     }

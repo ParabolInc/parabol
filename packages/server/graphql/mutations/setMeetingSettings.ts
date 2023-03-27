@@ -11,6 +11,13 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SetMeetingSettingsPayload from '../types/SetMeetingSettingsPayload'
 
+const getBotId = async (videoMeetingURL?: string) => {
+  if (!videoMeetingURL) return null
+  const manager = new RecallAIServerManager()
+  const botId = await manager.createBot(videoMeetingURL)
+  return botId
+}
+
 const setMeetingSettings = {
   type: new GraphQLNonNull(SetMeetingSettingsPayload),
   description: 'Set default meeting settings',
@@ -57,6 +64,11 @@ const setMeetingSettings = {
       return standardError(new Error('Settings not found'), {userId: viewerId})
     }
     const {teamId, meetingType} = settings
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const organization = await dataLoader.get('organizations').load(team.orgId)
+    const {featureFlags} = organization
+    const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
+    const recallBotId = hasTranscriptFlag ? await getBotId(videoMeetingURL) : null
 
     const meetingSettings = {} as MeetingSettings
     // RESOLUTION
@@ -79,19 +91,17 @@ const setMeetingSettings = {
           meetingSettings.disableAnonymity = disableAnonymity
         }
 
-        if (isNotNull(videoMeetingURL)) {
+        if (recallBotId) {
           updatedSettings.videoMeetingURL = videoMeetingURL
+          updatedSettings.recallBotId = recallBotId
           meetingSettings.videoMeetingURL = videoMeetingURL
+          meetingSettings.recallBotId = recallBotId
         }
 
         return updatedSettings
       })
       .run()
 
-    if (videoMeetingURL) {
-      const manager = new RecallAIServerManager()
-      manager.createBot(videoMeetingURL)
-    }
     const data = {settingsId}
     analytics.meetingSettingsChanged(viewerId, teamId, meetingType, meetingSettings)
     publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
