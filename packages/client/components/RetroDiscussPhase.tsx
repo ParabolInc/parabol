@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
-import {FiberNew as NewIcon, ThumbUp} from '@mui/icons-material'
+import {ThumbUp} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -18,7 +17,6 @@ import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
-import FlatButton from './FlatButton'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -30,6 +28,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 import Transcription from './Transcription'
+import RetroDiscussionThreadHeader from './RetroDiscussionThreadHeader'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting$key
@@ -138,44 +137,6 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
-const HeaderWrapper = styled('div')({
-  display: 'flex',
-  width: '100%'
-})
-
-const Badge = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  height: 10,
-  position: 'relative',
-  width: 10,
-  color: PALETTE.SUCCESS_LIGHT
-})
-
-const ButtonHeader = styled(FlatButton)<{isActive?: boolean; hasZoomFlag: boolean}>(
-  ({isActive, hasZoomFlag}) => ({
-    borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-    margin: '0 0 8px',
-    padding: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
-    textTransform: 'none',
-    color: PALETTE.SLATE_600,
-    fontSize: 12,
-    fontWeight: isActive ? 600 : 400,
-    lineHeight: '18px',
-    userSelect: 'none',
-    width: hasZoomFlag ? '50%' : '100%',
-    textDecoration: isActive ? 'underline' : 'none',
-    borderRadius: 0,
-    ':first-child': {
-      borderRight: `1px solid ${PALETTE.SLATE_300}`
-    }
-  })
-)
-
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
@@ -193,9 +154,6 @@ const RetroDiscussPhase = (props: Props) => {
         organization {
           ...DiscussPhaseSqueeze_organization
           ...DiscussionThreadListEmptyState_organization
-          featureFlags {
-            zoomTranscription
-          }
         }
         showSidebar
         phases {
@@ -214,7 +172,6 @@ const RetroDiscussPhase = (props: Props) => {
     meetingRef
   )
   const [callbackRef, phaseRef] = useCallbackRef()
-  const atmosphere = useAtmosphere()
   const {
     id: meetingId,
     endedAt,
@@ -229,17 +186,6 @@ const RetroDiscussPhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
-  const hasZoomFlag = organization?.featureFlags.zoomTranscription ?? false
-
-  const handleHeaderClick = (header: 'discussion' | 'transcription') => {
-    if (showTranscription && header === 'transcription') return
-    if (!showTranscription && header === 'discussion') return
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-      meeting.setValue(!showTranscription, 'showTranscription')
-    })
-  }
 
   // Uncomment below code to enable Easter Egg:
   // bugs shown on screen when the discussion group title contains "bug"
@@ -314,27 +260,11 @@ const RetroDiscussPhase = (props: Props) => {
                     showTranscription && <Transcription transcription={transcription} />
                   }
                   header={
-                    <HeaderWrapper>
-                      <ButtonHeader
-                        onClick={() => handleHeaderClick('discussion')}
-                        isActive={!showTranscription}
-                        hasZoomFlag={hasZoomFlag}
-                      >
-                        {'Discussion & Tasks'}
-                      </ButtonHeader>
-                      {hasZoomFlag && (
-                        <ButtonHeader
-                          onClick={() => handleHeaderClick('transcription')}
-                          isActive={showTranscription}
-                          hasZoomFlag={hasZoomFlag}
-                        >
-                          {'Transcription'}
-                          <Badge>
-                            <NewIcon />
-                          </Badge>
-                        </ButtonHeader>
-                      )}
-                    </HeaderWrapper>
+                    <RetroDiscussionThreadHeader
+                      meetingId={meetingId}
+                      showTranscription={showTranscription}
+                      organizationRef={organization}
+                    />
                   }
                   emptyState={
                     <DiscussionThreadListEmptyState

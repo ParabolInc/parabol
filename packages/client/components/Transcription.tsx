@@ -5,6 +5,7 @@ import {PALETTE} from '../styles/paletteV3'
 const Wrapper = styled('div')({
   padding: '12px 24px',
   margin: 'auto',
+  height: '100%',
   display: 'flex',
   flexDirection: 'column',
   minHeight: 0,
@@ -62,6 +63,8 @@ JS: Those are some good ideas. Let's put together a plan to execute on them in Q
 TW: Yes, I wanted to bring up the issue of capacity constraints in our manufacturing process. We may need to invest in additional equipment to keep up with demand.
 
 JS: Okay, let's schedule a separate meeting to dive into that issue in more detail. Thanks everyone, that's all for today.
+
+
 `
 
 const Transcription = (props: Props) => {
