@@ -154,6 +154,7 @@ const RetroDiscussPhase = (props: Props) => {
         organization {
           ...DiscussPhaseSqueeze_organization
           ...DiscussionThreadListEmptyState_organization
+          ...RetroDiscussionThreadHeader_organization
         }
         showSidebar
         phases {

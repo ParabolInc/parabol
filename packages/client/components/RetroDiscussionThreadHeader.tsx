@@ -58,7 +58,7 @@ const RetroDiscussionThreadHeader = (props: Props) => {
 
   const organization = useFragment(
     graphql`
-      fragment DiscussionThreadListEmptyState_organization on Organization {
+      fragment RetroDiscussionThreadHeader_organization on Organization {
         featureFlags {
           zoomTranscription
         }
