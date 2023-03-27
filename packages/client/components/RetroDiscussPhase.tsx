@@ -256,9 +256,8 @@ const RetroDiscussPhase = (props: Props) => {
                   allowedThreadables={allowedThreadables}
                   meetingContentRef={phaseRef}
                   discussionId={discussionId!}
-                  transcription={
-                    showTranscription && <Transcription transcription={transcription} />
-                  }
+                  showTranscription={showTranscription}
+                  transcription={transcription}
                   header={
                     <RetroDiscussionThreadHeader
                       meetingId={meetingId}

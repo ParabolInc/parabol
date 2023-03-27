@@ -13,7 +13,8 @@ interface Props {
   width?: string
   header?: ReactNode
   emptyState?: ReactNode
-  transcription?: ReactNode
+  showTranscription?: boolean
+  transcription?: string | null
 }
 
 const DiscussionThreadRoot = (props: Props) => {
@@ -24,7 +25,8 @@ const DiscussionThreadRoot = (props: Props) => {
     width,
     header,
     emptyState,
-    transcription
+    transcription,
+    showTranscription
   } = props
   const queryRef = useQueryLoaderNow<DiscussionThreadQuery>(discussionThreadQuery, {discussionId})
   return (
@@ -38,6 +40,7 @@ const DiscussionThreadRoot = (props: Props) => {
           header={header}
           emptyState={emptyState}
           transcription={transcription}
+          showTranscription={showTranscription}
         />
       )}
     </Suspense>

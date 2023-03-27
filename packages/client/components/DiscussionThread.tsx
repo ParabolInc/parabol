@@ -35,7 +35,8 @@ interface Props {
   queryRef: PreloadedQuery<DiscussionThreadQuery>
   header?: ReactNode
   emptyState?: ReactNode
-  transcription?: ReactNode
+  transcription?: string | null
+  showTranscription?: boolean
 }
 
 const DiscussionThread = (props: Props) => {
@@ -46,7 +47,8 @@ const DiscussionThread = (props: Props) => {
     queryRef,
     header,
     emptyState,
-    transcription
+    transcription,
+    showTranscription
   } = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
@@ -127,6 +129,7 @@ const DiscussionThread = (props: Props) => {
         header={header}
         emptyState={emptyState}
         transcription={transcription}
+        showTranscription={showTranscription}
       />
       {!transcription && (
         <DiscussionThreadInput

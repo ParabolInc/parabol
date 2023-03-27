@@ -86,9 +86,16 @@ interface Props {
   showTranscription?: boolean
 }
 
-const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription?: boolean) => {
+const getMessage = (
+  allowTasks: boolean,
+  hasVideoURL: boolean,
+  isReadOnly: boolean,
+  showTranscription: boolean
+) => {
   if (showTranscription) {
-    return 'Paste your Zoom meeting URL below to transcribe the meeting'
+    return hasVideoURL
+      ? 'Your Zoom transcription will be available here once you end your Parabol meeting'
+      : 'Paste your Zoom meeting URL below and we’ll transcribe your meeting'
   }
   if (isReadOnly) {
     return allowTasks ? 'No comments or tasks were added here' : 'No comments were added here'
@@ -99,11 +106,12 @@ const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks, settingsRef, showTranscription} = props
+  const {isReadOnly, allowTasks, settingsRef, showTranscription = false} = props
   const settings = useFragment(
     graphql`
       fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
         id
+        videoMeetingURL
       }
     `,
     settingsRef ?? null
@@ -111,9 +119,8 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const settingsId = settings?.id
-  // const {videoMeetingURL} = settings
-  // TODO: check if there is already a videoMeetingURL, show the transcription or let the user update the URL
-  const message = getMessage(allowTasks, isReadOnly, showTranscription)
+  const {videoMeetingURL} = settings
+  const message = getMessage(allowTasks, !!videoMeetingURL, !!isReadOnly, showTranscription)
   const {validateField, onChange, fields} = useForm({
     url: {
       getDefault: () => '',
@@ -139,6 +146,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
       {onError, onCompleted}
     )
   }
+  const showVideoURLInput = showTranscription && !videoMeetingURL
 
   return (
     <DiscussionThreadEmptyStateRoot>
@@ -146,7 +154,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
         <EmptyDiscussionImage src={EmptyDiscussionIllustration} />
       </EmptyDiscussionContainer>
       <Message>{message}</Message>
-      {showTranscription && (
+      {showVideoURLInput && (
         <Wrapper>
           <StyledInput
             autoFocus

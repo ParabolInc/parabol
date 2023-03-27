@@ -22,7 +22,7 @@ class RecallAIServerManager {
         bot_name: 'Parabol Notetaker',
         real_time_transcription: {
           partial_results: false,
-          destination_url: 'http://localhost:3000/meetings'
+          destination_url: 'dummyValue'
         },
         transcription_options: {provider: 'assembly_ai'},
         automatic_video_output: {in_call_recording: {kind: 'jpeg', b64_data: 'SGVsbG8gV29ybGQh'}},

@@ -10,6 +10,7 @@ import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
+import Transcription from './Transcription'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -75,7 +76,8 @@ interface Props {
   dataCy: string
   header?: ReactNode
   emptyState?: ReactNode
-  transcription?: ReactNode
+  transcription?: string | null
+  showTranscription?: boolean
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
@@ -89,7 +91,8 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     viewer: viewerRef,
     header,
     transcription,
-    emptyState
+    emptyState,
+    showTranscription
   } = props
   const viewer = useFragment(
     graphql`
@@ -119,9 +122,10 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     `,
     threadablesRef
   )
-  const isEmpty = threadables.length === 0
+
+  const isEmpty = showTranscription ? transcription.length === 0 : threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
-  if (isEmpty && emptyState && !transcription) {
+  if (isEmpty && emptyState) {
     return (
       <EmptyWrapper>
         {header}
@@ -137,20 +141,22 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       {header}
       <PusherDowner />
-      {transcription
-        ? transcription
-        : threadables.map((threadable) => {
-            const {id} = threadable
-            return (
-              <ThreadedItem
-                allowedThreadables={allowedThreadables}
-                viewer={viewer}
-                key={id}
-                threadable={threadable}
-                discussion={discussion}
-              />
-            )
-          })}
+      {transcription ? (
+        <Transcription transcription={transcription} />
+      ) : (
+        threadables.map((threadable) => {
+          const {id} = threadable
+          return (
+            <ThreadedItem
+              allowedThreadables={allowedThreadables}
+              viewer={viewer}
+              key={id}
+              threadable={threadable}
+              discussion={discussion}
+            />
+          )
+        })
+      )}
       <CommentingStatusText preferredNames={preferredNames} />
     </Wrapper>
   )

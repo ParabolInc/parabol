@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsRetrospectiveSettings_settings$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_settings.graphql'
+import {NewMeetingSettingsRetrospectiveSettings_organization$key} from '~/__generated__/NewMeetingSettingsRetrospectiveSettings_organization.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
@@ -23,7 +24,7 @@ const NewMeetingSettingsToggleAnonymityMenuEntry = styled(NewMeetingSettingsTogg
 
 interface Props {
   settingsRef: NewMeetingSettingsRetrospectiveSettings_settings$key
-  organizationRef: any // NewMeetingSettingsRetrospectiveSettings_organization$key
+  organizationRef: NewMeetingSettingsRetrospectiveSettings_organization$key
 }
 
 const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
@@ -58,7 +59,6 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
     organizationRef
   )
   const {zoomTranscription} = organization.featureFlags
-  console.log('🚀 ~ organization.featureFlags:', organization.featureFlags)
 
   return (
     <>
