@@ -131,7 +131,7 @@ const DiscussionThread = (props: Props) => {
         transcription={transcription}
         showTranscription={showTranscription}
       />
-      {!transcription && (
+      {!showTranscription && (
         <DiscussionThreadInput
           allowedThreadables={allowedThreadables}
           dataCy='discuss-input'

@@ -143,7 +143,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       {header}
       <PusherDowner />
-      {transcription ? (
+      {showTranscription && transcription ? (
         <Transcription transcription={transcription} />
       ) : (
         threadables.map((threadable) => {

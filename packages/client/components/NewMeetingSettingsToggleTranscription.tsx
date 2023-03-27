@@ -86,19 +86,20 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
   const {settingsRef, className} = props
   const settings = useFragment(
     graphql`
-      fragment NewMeetingSettingsToggleTranscription_settings on TeamMeetingSettings {
+      fragment NewMeetingSettingsToggleTranscription_settings on RetrospectiveMeetingSettings {
         id
+        videoMeetingURL
       }
     `,
     settingsRef
   )
-  const {id: settingsId} = settings
+  const {id: settingsId, videoMeetingURL} = settings
   const [isChecked, setIsChecked] = useState(false)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const {validateField, onChange, fields} = useForm({
     url: {
-      getDefault: () => '',
+      getDefault: () => videoMeetingURL || '',
       validate: (rawInput: string) => {
         return new Legitity(rawInput).test((maybeUrl) => {
           if (!maybeUrl) return 'No link provided'
@@ -114,6 +115,15 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
     setIsChecked((isChecked) => !isChecked)
   }
 
+  // TODO: add functionality to remove the videoMeetingURL
+  // const removeVideoMeetingURL = () => {
+  //   SetMeetingSettingsMutation(
+  //     atmosphere,
+  //     {videoMeetingURL: null, settingsId},
+  //     {onError, onCompleted}
+  //   )
+  // }
+
   const handleSubmit = () => {
     if (submitting) return
     const {url} = validateField()
@@ -125,26 +135,31 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
       {onError, onCompleted}
     )
   }
+  const showInput = isChecked || videoMeetingURL
 
   return (
     <>
-      {!isChecked && (
+      {!showInput ? (
         <ButtonRow onClick={toggleCheckIn} className={className}>
           <Label>{'Include Zoom Transcription'}</Label>
           <StyledCheckbox active={isChecked} />
         </ButtonRow>
-      )}
-      {isChecked && (
+      ) : (
         <ButtonRow>
           <StyledInput
             placeholder='Paste your Zoom meeting URL'
             onChange={onChange}
             name='url'
             value={urlValue}
+            readOnly={!!videoMeetingURL}
           />
-          <StyledButton onClick={handleSubmit} size='medium'>
-            Submit
-          </StyledButton>
+          {!!videoMeetingURL ? (
+            <StyledCheckbox active />
+          ) : (
+            <StyledButton onClick={handleSubmit} size='medium'>
+              Submit
+            </StyledButton>
+          )}
         </ButtonRow>
       )}
       {fieldError && <StyledError>{fieldError}</StyledError>}

@@ -11,7 +11,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SetMeetingSettingsPayload from '../types/SetMeetingSettingsPayload'
 
-const getBotId = async (videoMeetingURL?: string) => {
+const getBotId = async (videoMeetingURL?: string | null) => {
   if (!videoMeetingURL) return null
   const manager = new RecallAIServerManager()
   const botId = await manager.createBot(videoMeetingURL)
@@ -49,7 +49,7 @@ const setMeetingSettings = {
       settingsId: string
       checkinEnabled?: boolean
       disableAnonymity?: boolean
-      videoMeetingURL?: string
+      videoMeetingURL?: string | null
     },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -91,12 +91,10 @@ const setMeetingSettings = {
           meetingSettings.disableAnonymity = disableAnonymity
         }
 
-        if (recallBotId) {
-          updatedSettings.videoMeetingURL = videoMeetingURL
-          updatedSettings.recallBotId = recallBotId
-          meetingSettings.videoMeetingURL = videoMeetingURL
-          meetingSettings.recallBotId = recallBotId
-        }
+        updatedSettings.videoMeetingURL = videoMeetingURL
+        updatedSettings.recallBotId = recallBotId
+        meetingSettings.videoMeetingURL = videoMeetingURL
+        meetingSettings.recallBotId = recallBotId
 
         return updatedSettings
       })
