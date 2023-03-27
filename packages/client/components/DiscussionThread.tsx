@@ -35,10 +35,19 @@ interface Props {
   queryRef: PreloadedQuery<DiscussionThreadQuery>
   header?: ReactNode
   emptyState?: ReactNode
+  transcription?: ReactNode
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState} = props
+  const {
+    meetingContentRef,
+    allowedThreadables,
+    width,
+    queryRef,
+    header,
+    emptyState,
+    transcription
+  } = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
@@ -117,17 +126,20 @@ const DiscussionThread = (props: Props) => {
         viewer={viewer}
         header={header}
         emptyState={emptyState}
+        transcription={transcription}
       />
-      <DiscussionThreadInput
-        allowedThreadables={allowedThreadables}
-        dataCy='discuss-input'
-        editorRef={editorRef}
-        isDisabled={!!replyingToCommentId}
-        getMaxSortOrder={getMaxSortOrder}
-        discussion={discussion}
-        viewer={viewer}
-        isCreatingPoll={isCreatingPoll}
-      />
+      {!transcription && (
+        <DiscussionThreadInput
+          allowedThreadables={allowedThreadables}
+          dataCy='discuss-input'
+          editorRef={editorRef}
+          isDisabled={!!replyingToCommentId}
+          getMaxSortOrder={getMaxSortOrder}
+          discussion={discussion}
+          viewer={viewer}
+          isCreatingPoll={isCreatingPoll}
+        />
+      )}
     </Wrapper>
   )
 }

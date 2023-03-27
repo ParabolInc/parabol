@@ -119,7 +119,6 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     organizationRef ?? null
   )
   const zoomTranscription = organization?.featureFlags.zoomTranscription ?? false
-  console.log('🚀 ~ zoomTranscription:', zoomTranscription)
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const settingsId = settings?.id

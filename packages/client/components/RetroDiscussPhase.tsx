@@ -29,6 +29,8 @@ import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
+import Transcription from './Transcription'
+
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting$key
 }
@@ -150,27 +152,29 @@ const Badge = styled('div')({
   color: PALETTE.SUCCESS_LIGHT
 })
 
-const ButtonHeader = styled(FlatButton)<{isActive?: boolean}>(({isActive}) => ({
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-  margin: '0 0 8px',
-  padding: '12px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  alignContent: 'center',
-  textTransform: 'none',
-  color: PALETTE.SLATE_600,
-  fontSize: 12,
-  fontWeight: isActive ? 600 : 400,
-  lineHeight: '18px',
-  userSelect: 'none',
-  width: '50%',
-  textDecoration: isActive ? 'underline' : 'none',
-  borderRadius: 0,
-  ':first-child': {
-    borderRight: `1px solid ${PALETTE.SLATE_300}`
-  }
-}))
+const ButtonHeader = styled(FlatButton)<{isActive?: boolean; hasZoomFlag: boolean}>(
+  ({isActive, hasZoomFlag}) => ({
+    borderBottom: `1px solid ${PALETTE.SLATE_300}`,
+    margin: '0 0 8px',
+    padding: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+    textTransform: 'none',
+    color: PALETTE.SLATE_600,
+    fontSize: 12,
+    fontWeight: isActive ? 600 : 400,
+    lineHeight: '18px',
+    userSelect: 'none',
+    width: hasZoomFlag ? '50%' : '100%',
+    textDecoration: isActive ? 'underline' : 'none',
+    borderRadius: 0,
+    ':first-child': {
+      borderRight: `1px solid ${PALETTE.SLATE_300}`
+    }
+  })
+)
 
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
@@ -185,9 +189,13 @@ const RetroDiscussPhase = (props: Props) => {
         id
         endedAt
         showTranscription
+        transcription
         organization {
           ...DiscussPhaseSqueeze_organization
           ...DiscussionThreadListEmptyState_organization
+          featureFlags {
+            zoomTranscription
+          }
         }
         showSidebar
         phases {
@@ -214,12 +222,14 @@ const RetroDiscussPhase = (props: Props) => {
     showSidebar,
     organization,
     showTranscription,
+    transcription,
     settings
   } = meeting
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
+  const hasZoomFlag = organization?.featureFlags.zoomTranscription ?? false
 
   const handleHeaderClick = (header: 'discussion' | 'transcription') => {
     if (showTranscription && header === 'transcription') return
@@ -300,23 +310,30 @@ const RetroDiscussPhase = (props: Props) => {
                   allowedThreadables={allowedThreadables}
                   meetingContentRef={phaseRef}
                   discussionId={discussionId!}
+                  transcription={
+                    showTranscription && <Transcription transcription={transcription} />
+                  }
                   header={
                     <HeaderWrapper>
                       <ButtonHeader
                         onClick={() => handleHeaderClick('discussion')}
                         isActive={!showTranscription}
+                        hasZoomFlag={hasZoomFlag}
                       >
                         {'Discussion & Tasks'}
                       </ButtonHeader>
-                      <ButtonHeader
-                        onClick={() => handleHeaderClick('transcription')}
-                        isActive={showTranscription}
-                      >
-                        {'Transcription'}
-                        <Badge>
-                          <NewIcon />
-                        </Badge>
-                      </ButtonHeader>
+                      {hasZoomFlag && (
+                        <ButtonHeader
+                          onClick={() => handleHeaderClick('transcription')}
+                          isActive={showTranscription}
+                          hasZoomFlag={hasZoomFlag}
+                        >
+                          {'Transcription'}
+                          <Badge>
+                            <NewIcon />
+                          </Badge>
+                        </ButtonHeader>
+                      )}
                     </HeaderWrapper>
                   }
                   emptyState={

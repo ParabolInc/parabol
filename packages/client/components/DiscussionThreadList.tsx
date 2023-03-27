@@ -57,6 +57,7 @@ interface Props {
   dataCy: string
   header?: ReactNode
   emptyState?: ReactNode
+  transcription?: ReactNode
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
@@ -69,6 +70,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     preferredNames,
     viewer: viewerRef,
     header,
+    transcription,
     emptyState
   } = props
   const viewer = useFragment(
@@ -101,7 +103,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   )
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
-  if (isEmpty && emptyState) {
+  if (isEmpty && emptyState && !transcription) {
     return (
       <EmptyWrapper>
         {header}
@@ -117,18 +119,20 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       {header}
       <PusherDowner />
-      {threadables.map((threadable) => {
-        const {id} = threadable
-        return (
-          <ThreadedItem
-            allowedThreadables={allowedThreadables}
-            viewer={viewer}
-            key={id}
-            threadable={threadable}
-            discussion={discussion}
-          />
-        )
-      })}
+      {transcription
+        ? transcription
+        : threadables.map((threadable) => {
+            const {id} = threadable
+            return (
+              <ThreadedItem
+                allowedThreadables={allowedThreadables}
+                viewer={viewer}
+                key={id}
+                threadable={threadable}
+                discussion={discussion}
+              />
+            )
+          })}
       <CommentingStatusText preferredNames={preferredNames} />
     </Wrapper>
   )
