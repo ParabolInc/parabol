@@ -1,0 +1,17 @@
+type SetTeamHealthScorePayload {
+  meetingId: ID!
+  phaseId: ID!
+  stageId: ID!
+}
+
+extend type Mutation {
+  setTeamHealthScore(
+    meetingId: ID!
+
+    phaseId: ID!
+
+    stageId: ID!
+
+    label: String!
+  ): SetTeamHealthScorePayload!
+}

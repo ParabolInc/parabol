@@ -11,7 +11,14 @@ interface Input {
   disableAnonymity?: boolean
 }
 
-const phaseTypes = ['checkin', 'reflect', 'group', 'vote', 'discuss'] as NewMeetingPhaseTypeEnum[]
+const phaseTypes = [
+  'checkin',
+  'TEAM_HEALTH',
+  'reflect',
+  'group',
+  'vote',
+  'discuss'
+] as NewMeetingPhaseTypeEnum[]
 
 export default class MeetingSettingsRetrospective extends MeetingSettings {
   maxVotesPerGroup: number

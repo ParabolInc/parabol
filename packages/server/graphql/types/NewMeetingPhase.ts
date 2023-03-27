@@ -27,6 +27,7 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import NewMeetingStage from './NewMeetingStage'
 import ReflectPhase from './ReflectPhase'
+import TeamHealthPhase from './TeamHealthPhase'
 import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 import UpdatesPhase from './UpdatesPhase'
 
@@ -53,6 +54,7 @@ export const newMeetingPhaseFields = () => ({
 
 const resolveTypeLookup = {
   [CHECKIN]: CheckInPhase,
+  TEAM_HEALTH: TeamHealthPhase,
   [REFLECT]: ReflectPhase,
   [GROUP]: GenericMeetingPhase,
   [VOTE]: GenericMeetingPhase,

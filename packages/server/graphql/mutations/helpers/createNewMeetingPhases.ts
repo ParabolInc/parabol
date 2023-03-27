@@ -19,6 +19,8 @@ import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import ReflectPhase from '../../../database/types/ReflectPhase'
+import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
+import TeamHealthStage from '../../../database/types/TeamHealthStage'
 import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
@@ -91,6 +93,10 @@ const createNewMeetingPhases = async (
             teamId,
             meetingCount,
             stages: [new CheckInStage(facilitatorTeamMemberId)]
+          })
+        case 'TEAM_HEALTH':
+          return new TeamHealthPhase({
+            stages: [new TeamHealthStage('How are you?', ['😀', '😐', '☹️'])]
           })
         case REFLECT:
           return new ReflectPhase(teamId, durations)
