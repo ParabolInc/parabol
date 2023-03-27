@@ -153,7 +153,6 @@ const RetroDiscussPhase = (props: Props) => {
         transcription
         organization {
           ...DiscussPhaseSqueeze_organization
-          ...DiscussionThreadListEmptyState_organization
           ...RetroDiscussionThreadHeader_organization
         }
         showSidebar

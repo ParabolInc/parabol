@@ -99,7 +99,7 @@ const getMessage = (allowTasks: boolean, isReadOnly?: boolean, showTranscription
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isReadOnly, allowTasks, settingsRef, showTranscription, organizationRef} = props
+  const {isReadOnly, allowTasks, settingsRef, showTranscription} = props
   const settings = useFragment(
     graphql`
       fragment DiscussionThreadListEmptyState_settings on RetrospectiveMeetingSettings {
@@ -108,17 +108,6 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     `,
     settingsRef ?? null
   )
-  const organization = useFragment(
-    graphql`
-      fragment DiscussionThreadListEmptyState_organization on Organization {
-        featureFlags {
-          zoomTranscription
-        }
-      }
-    `,
-    organizationRef ?? null
-  )
-  const zoomTranscription = organization?.featureFlags.zoomTranscription ?? false
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const settingsId = settings?.id
