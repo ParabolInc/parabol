@@ -203,10 +203,8 @@ export default {
     if ('recallBotId' in meetingSettings) {
       const {recallBotId} = meetingSettings
       const manager = new RecallAIServerManager()
-      const transcript = await manager.getBotTranscript(recallBotId!)
-      console.log('🚀 ~ transcript,,,,,,,:', transcript)
-      const testTranscription = 'testa!'
-      await r.table('NewMeeting').get(meetingId).update({transcription: testTranscription}).run()
+      const transcription = await manager.getBotTranscript(recallBotId!)
+      await r.table('NewMeeting').get(meetingId).update({transcription}).run()
     }
 
     if (team.isOnboardTeam) {
