@@ -29,7 +29,9 @@ const updateSubscriptionQuantity = async (
   // this means at least one update ran after the last change to the organization was done and thus read the latest data.
   const redisLock = new RedisLockQueue(`updateSubscriptionQuantity:${orgId}`, 5000)
   try {
-    await redisLock.lock(10000)
+    if (!(await redisLock.tryLock(10000))) {
+      return
+    }
 
     const [orgUserCount, teamSubscription] = await Promise.all([
       r
