@@ -3,21 +3,43 @@ import {Frequency, RRule} from 'rrule'
 import {RRuleScalarConfig} from '../resolverTypes'
 
 const isRRuleValid = (rrule: RRule) => {
+  try {
+    // kinda hacky, but that way we're getting rid of most of the RRule quirks
+    // Interval has to be an integer within 1 and 52 range, otherwise RRule may misbehave
+    rrule.options.interval = parseInt(rrule.options.interval.toString())
+
+    const isValidNumber =
+      !isNaN(rrule.options.interval) &&
+      rrule.options.interval !== undefined &&
+      rrule.options.interval !== null
+    if (!isValidNumber) {
+      return {
+        error: 'RRule interval must be an integer'
+      }
+    }
+
+    const isWithinRange = rrule.options.interval >= 1 && rrule.options.interval <= 52
+    if (!isWithinRange) {
+      return {
+        error: 'RRule interval must be between 1 and 52'
+      }
+    }
+  } catch (e) {
+    return {
+      error: `RRule interval must be an integer`
+    }
+  }
+
   if (rrule.options.freq !== Frequency.WEEKLY) {
     return {
       error: 'RRule frequency must be WEEKLY'
     }
   }
 
-  if (isNaN(rrule.options.interval)) {
+  // using count option is not allowed
+  if (rrule.options.count !== null && rrule.options.count >= 0) {
     return {
-      error: 'RRule interval must be a number'
-    }
-  }
-
-  if (rrule.options.interval < 1 || rrule.options.interval > 52) {
-    return {
-      error: 'RRule interval must be between 1 and 52'
+      error: 'RRule count option is not supported'
     }
   }
 

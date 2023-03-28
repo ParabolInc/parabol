@@ -11,7 +11,46 @@ test('Should not allow for NaN interval values', () => {
 
   expect(() => {
     RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule interval must be a number'))
+  }).toThrow(new Error('RRule interval must be an integer'))
+})
+
+test('Should not allow for interval values bigger than 52', () => {
+  const rrule = new RRule({
+    freq: RRule.WEEKLY,
+    interval: 53,
+    dtstart: new Date(),
+    tzid: 'America/Los_Angeles'
+  })
+
+  expect(() => {
+    RRuleScalarType.parseValue?.(rrule.toString())
+  }).toThrow(new Error('RRule interval must be between 1 and 52'))
+})
+
+test('Should not allow for interval values smaller than 1', () => {
+  const rrule = new RRule({
+    freq: RRule.WEEKLY,
+    interval: 0,
+    dtstart: new Date(),
+    tzid: 'America/Los_Angeles'
+  })
+
+  expect(() => {
+    RRuleScalarType.parseValue?.(rrule.toString())
+  }).toThrow(new Error('RRule interval must be between 1 and 52'))
+})
+
+test('Should not allow for negative interval values', () => {
+  const rrule = new RRule({
+    freq: RRule.WEEKLY,
+    interval: -1,
+    dtstart: new Date(),
+    tzid: 'America/Los_Angeles'
+  })
+
+  expect(() => {
+    RRuleScalarType.parseValue?.(rrule.toString())
+  }).toThrow(new Error('RRule interval must be between 1 and 52'))
 })
 
 test('Should allow only WEEKLY frequency', () => {
@@ -50,4 +89,18 @@ test('Should not allow for missing tzid', () => {
   expect(() => {
     RRuleScalarType.parseValue?.(rrule.toString())
   }).toThrow(new Error('RRule must have a tzid'))
+})
+
+test('Should not allow for using count option', () => {
+  const rrule = new RRule({
+    freq: RRule.WEEKLY,
+    interval: 1,
+    count: 0,
+    dtstart: new Date(),
+    tzid: 'America/Los_Angeles'
+  })
+
+  expect(() => {
+    RRuleScalarType.parseValue?.(rrule.toString())
+  }).toThrow(new Error('RRule count option is not supported'))
 })
