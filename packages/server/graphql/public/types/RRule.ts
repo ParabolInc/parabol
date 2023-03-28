@@ -1,57 +1,48 @@
 import {Kind} from 'graphql'
+import isValidDate from 'parabol-client/utils/isValidDate'
 import {Frequency, RRule} from 'rrule'
 import {RRuleScalarConfig} from '../resolverTypes'
 
 const isRRuleValid = (rrule: RRule) => {
-  try {
-    // kinda hacky, but that way we're getting rid of most of the RRule quirks
-    // Interval has to be an integer within 1 and 52 range, otherwise RRule may misbehave
-    rrule.options.interval = parseInt(rrule.options.interval.toString())
-
-    const isValidNumber =
-      !isNaN(rrule.options.interval) &&
-      rrule.options.interval !== undefined &&
-      rrule.options.interval !== null
-    if (!isValidNumber) {
-      return {
-        error: 'RRule interval must be an integer'
-      }
-    }
-
-    const isWithinRange = rrule.options.interval >= 1 && rrule.options.interval <= 52
-    if (!isWithinRange) {
-      return {
-        error: 'RRule interval must be between 1 and 52'
-      }
-    }
-  } catch (e) {
+  const {options} = rrule
+  const {interval, freq, count, tzid, dtstart} = options
+  if (!Number.isSafeInteger(interval)) {
     return {
-      error: `RRule interval must be an integer`
+      error: 'RRule interval must be an integer'
     }
   }
 
-  if (rrule.options.freq !== Frequency.WEEKLY) {
+  const isWithinRange = rrule.options.interval >= 1 && rrule.options.interval <= 52
+  if (!isWithinRange) {
+    return {
+      error: 'RRule interval must be between 1 and 52'
+    }
+  }
+
+  if (freq !== Frequency.WEEKLY) {
     return {
       error: 'RRule frequency must be WEEKLY'
     }
   }
 
   // using count option is not allowed
-  if (rrule.options.count !== null && rrule.options.count >= 0) {
+  if (count !== null) {
     return {
       error: 'RRule count option is not supported'
     }
   }
 
-  if (!rrule.options.tzid) {
+  try {
+    Intl.DateTimeFormat(undefined, {timeZone: tzid!})
+  } catch (e) {
     return {
-      error: 'RRule must have a tzid'
+      error: 'RRule time zone is invalid'
     }
   }
 
-  if (!rrule.options.dtstart) {
+  if (!isValidDate(dtstart)) {
     return {
-      error: 'RRule must have a dtstart'
+      error: 'RRule dtstart is invalid'
     }
   }
 

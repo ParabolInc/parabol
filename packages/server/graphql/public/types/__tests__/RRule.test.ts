@@ -88,7 +88,7 @@ test('Should not allow for missing tzid', () => {
 
   expect(() => {
     RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule must have a tzid'))
+  }).toThrow(new Error('RRule time zone is invalid'))
 })
 
 test('Should not allow for using count option', () => {
