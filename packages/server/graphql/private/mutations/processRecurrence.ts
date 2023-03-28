@@ -101,6 +101,11 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
       // For meetings that should still be active, start the meeting and set its end time.
       // Any subscriptions are handled by the shared meeting start code
       const rrule = RRule.fromString(meetingSeries.recurrenceRule)
+      // technically, RRULE should never return NaN here but there's a bug in the library
+      // https://github.com/jakubroztocil/rrule/issues/321
+      if (isNaN(rrule.options.interval)) {
+        return
+      }
 
       // Only get meetings that should currently be active, i.e. meetings that should have started
       // within the last 24 hours, started after the last meeting in the series, and started before

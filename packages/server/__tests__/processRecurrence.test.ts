@@ -394,7 +394,7 @@ test('Should not hang if the rrule interval is invalid', async () => {
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 2, 9)
   )
   const recurrenceRule = new RRule({
-    freq: RRule.DAILY,
+    freq: RRule.WEEKLY,
     tzid: 'America/Los_Angeles',
     interval: NaN,
     dtstart: startDate
@@ -435,7 +435,7 @@ test('Should not hang if the rrule interval is invalid', async () => {
   expect(update).toEqual({
     data: {
       processRecurrence: {
-        meetingsStarted: 1,
+        meetingsStarted: 0,
         meetingsEnded: 1
       }
     }
@@ -445,15 +445,4 @@ test('Should not hang if the rrule interval is invalid', async () => {
 
   const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
   expect(actualMeeting.endedAt).toBeTruthy()
-
-  const lastMeeting = await r
-    .table('NewMeeting')
-    .filter({meetingType: 'teamPrompt', meetingSeriesId: newMeetingSeriesId})
-    .orderBy(r.desc('createdAt'))
-    .nth(0)
-    .run()
-
-  expect(lastMeeting).toMatchObject({
-    name: expect.stringMatching(/Daily Test Standup.*/)
-  })
 })
