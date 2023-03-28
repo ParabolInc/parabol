@@ -5,25 +5,31 @@ import {RRuleScalarConfig} from '../resolverTypes'
 const isRRuleValid = (rrule: RRule) => {
   if (rrule.options.freq !== Frequency.WEEKLY) {
     return {
-      error: 'Query error: Weekly is the only supported frequency'
+      error: 'RRule frequency must be WEEKLY'
+    }
+  }
+
+  if (isNaN(rrule.options.interval)) {
+    return {
+      error: 'RRule interval must be a number'
     }
   }
 
   if (rrule.options.interval < 1 || rrule.options.interval > 52) {
     return {
-      error: 'Query error: For Frequency.WEEKLY RRule interval must be between 1 and 52'
+      error: 'RRule interval must be between 1 and 52'
     }
   }
 
   if (!rrule.options.tzid) {
     return {
-      error: 'Query error: RRule must have a tzid'
+      error: 'RRule must have a tzid'
     }
   }
 
   if (!rrule.options.dtstart) {
     return {
-      error: 'Query error: RRule must have a dtstart'
+      error: 'RRule must have a dtstart'
     }
   }
 
@@ -47,7 +53,7 @@ const RRuleScalarType: RRuleScalarConfig = {
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
-      throw new Error(`Query error: RRule is not a string, it is a: ${ast.kind}`)
+      throw new Error(`RRule is not a string, it is a: ${ast.kind}`)
     }
     const rrule = RRule.fromString(ast.value)
     const {error} = isRRuleValid(rrule)
