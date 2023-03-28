@@ -421,8 +421,8 @@ test('Should not hang if the rrule interval is invalid', async () => {
     meetingSeriesId: newMeetingSeriesId
   })
 
-  // The last meeting in the series was created just over 24h ago, so the next one should start
-  // soon.
+  // The last meeting in the series was created just over 24h ago, so the next one should start soon
+  // but the rrule is invalid, so it won't happen
   meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
 
   await r.table('NewMeeting').insert(meeting).run()
