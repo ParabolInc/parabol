@@ -56,6 +56,10 @@ const CATEGORY_ID_TO_NAME = {
   strategy: 'Strategy'
 }
 
+type CategoryID = keyof typeof CATEGORY_ID_TO_NAME
+
+// :TODO: (jmtaber129): Fold this into the 'MeetingThemes' to be added in
+// https://github.com/ParabolInc/parabol/pull/7908.
 const CATEGORY_ID_TO_COLOR_CLASS = {
   recommended: 'bg-grape-700',
   retro: 'bg-grape-500',
@@ -101,23 +105,26 @@ export const ActivityLibrary = (props: Props) => {
     resetQuery
   } = useSearchFilter(templates, getTemplateValue)
 
-  const [selectedCategory, setSelectedCategory] =
-    useState<keyof typeof CATEGORY_ID_TO_NAME>('recommended')
+  const [selectedCategory, setSelectedCategory] = useState<CategoryID>('recommended')
 
-  const templatesToRender =
-    searchQuery.length > 0
-      ? filteredTemplates
-      : filteredTemplates.filter((template) =>
-          selectedCategory === 'recommended'
-            ? template.isRecommended
-            : template.category === selectedCategory
-        )
+  const templatesToRender = useMemo(() => {
+    if (searchQuery.length > 0) {
+      // If there's a search query, just use the search filter results
+      return filteredTemplates
+    }
+
+    return filteredTemplates.filter((template) =>
+      selectedCategory === 'recommended'
+        ? template.isRecommended
+        : template.category === selectedCategory
+    )
+  }, [searchQuery, filteredTemplates, selectedCategory])
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
   }
 
-  const onSelectCategory = (category: keyof typeof CATEGORY_ID_TO_NAME) => {
+  const onSelectCategory = (category: CategoryID) => {
     setSelectedCategory(category)
     resetQuery()
   }
@@ -128,7 +135,7 @@ export const ActivityLibrary = (props: Props) => {
       <div>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
         <div className='ml-2 flex'>
-          {Object.keys(CATEGORY_ID_TO_NAME).map((category) => (
+          {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
             <button
               className={clsx(
                 'mr-2 cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
@@ -136,10 +143,10 @@ export const ActivityLibrary = (props: Props) => {
                   ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white']
                   : 'bg-slate-200'
               )}
-              onClick={() => onSelectCategory(category as keyof typeof CATEGORY_ID_TO_NAME)}
+              onClick={() => onSelectCategory(category)}
               key={category}
             >
-              {CATEGORY_ID_TO_NAME[category as keyof typeof CATEGORY_ID_TO_NAME]}
+              {CATEGORY_ID_TO_NAME[category]}
             </button>
           ))}
         </div>
