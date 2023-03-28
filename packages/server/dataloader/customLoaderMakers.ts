@@ -542,3 +542,25 @@ export const activeMeetingsByMeetingSeriesId = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const billingLeadersIdsByOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<string, string[], string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((orgId) => {
+          return r
+            .table('OrganizationUser')
+            .getAll(orgId, {index: 'orgId'})
+            .filter({removedAt: null, role: 'BILLING_LEADER'})
+            .coerceTo('array')('userId')
+            .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}

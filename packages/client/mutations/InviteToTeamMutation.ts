@@ -9,7 +9,7 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
-import {InviteToTeamMutation_notification} from '../__generated__/InviteToTeamMutation_notification.graphql'
+import {InviteToTeamMutation_notification$data} from '../__generated__/InviteToTeamMutation_notification.graphql'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -48,7 +48,7 @@ const mutation = graphql`
 `
 
 const popInvitationReceivedToast = (
-  notification: InviteToTeamMutation_notification['teamInvitationNotification'] | null,
+  notification: InviteToTeamMutation_notification$data['teamInvitationNotification'] | null,
   {atmosphere, history}: OnNextHistoryContext
 ) => {
   if (!notification) return
@@ -73,16 +73,15 @@ const popInvitationReceivedToast = (
   })
 }
 
-export const inviteToTeamNotificationUpdater: SharedUpdater<InviteToTeamMutation_notification> = (
-  payload,
-  {store}
-) => {
+export const inviteToTeamNotificationUpdater: SharedUpdater<
+  InviteToTeamMutation_notification$data
+> = (payload, {store}) => {
   const teamInvitationNotification = payload.getLinkedRecord('teamInvitationNotification')
   handleAddNotifications(teamInvitationNotification, store)
 }
 
 export const inviteToTeamNotificationOnNext: OnNextHandler<
-  InviteToTeamMutation_notification,
+  InviteToTeamMutation_notification$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   const {teamInvitationNotification} = payload

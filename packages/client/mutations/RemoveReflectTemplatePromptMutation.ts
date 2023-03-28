@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemoveReflectTemplatePromptMutation as TRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
-import {RemoveReflectTemplatePromptMutation_team} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
+import {RemoveReflectTemplatePromptMutation_team$data} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 
 graphql`
@@ -23,7 +23,7 @@ const mutation = graphql`
 `
 
 export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<
-  RemoveReflectTemplatePromptMutation_team
+  RemoveReflectTemplatePromptMutation_team$data
 > = (payload, {store}) => {
   const promptId = payload.getLinkedRecord('prompt').getValue('id')
   const teamId = payload.getLinkedRecord('prompt').getValue('teamId')

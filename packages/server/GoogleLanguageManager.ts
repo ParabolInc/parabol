@@ -43,6 +43,24 @@ export interface GoogleAnalyzedEntities {
   language: string
 }
 
+export interface GoogleAnalyzedSentiment {
+  documentSentiment: {
+    magnitude: number
+    score: number
+  }
+  language: string
+  sentences: {
+    text: {
+      content: string
+      beginOffSet: number
+    }
+    sentiment: {
+      magnitude: number
+      score: number
+    }
+  }[]
+}
+
 interface GoogleError {
   code: number
   message: string
@@ -152,5 +170,12 @@ export default class GoogleLanguageManager {
 
   analyzeSyntax(content: string) {
     return this.post<GoogleAnalyzedSyntax | GoogleErrorResponse>('documents:analyzeSyntax', content)
+  }
+
+  analyzeSentiment(content: string) {
+    return this.post<GoogleAnalyzedSentiment | GoogleErrorResponse>(
+      'documents:analyzeSentiment',
+      content
+    )
   }
 }

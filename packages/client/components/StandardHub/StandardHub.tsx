@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import {VerifiedUser as VerifiedUserIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {StandardHub_viewer, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
+import {StandardHub_viewer$key, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
 import Avatar from '../Avatar/Avatar'
 
 const StandardHubRoot = styled('div')({
@@ -81,7 +81,7 @@ const Tier = styled(TierTag)({
 
 interface Props {
   handleMenuClick: () => void
-  viewer: StandardHub_viewer | null
+  viewer: StandardHub_viewer$key | null
 }
 
 const DEFAULT_VIEWER = {
@@ -92,7 +92,18 @@ const DEFAULT_VIEWER = {
 } as const
 
 const StandardHub = (props: Props) => {
-  const {handleMenuClick, viewer} = props
+  const {handleMenuClick, viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment StandardHub_viewer on User {
+        email
+        picture
+        preferredName
+        tier
+      }
+    `,
+    viewerRef
+  )
   const {email, picture, preferredName, tier} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
   const {history} = useRouter()
@@ -125,13 +136,4 @@ const StandardHub = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(StandardHub, {
-  viewer: graphql`
-    fragment StandardHub_viewer on User {
-      email
-      picture
-      preferredName
-      tier
-    }
-  `
-})
+export default StandardHub

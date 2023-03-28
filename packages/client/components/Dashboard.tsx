@@ -118,8 +118,7 @@ const Dashboard = (props: Props) => {
         }
       }
     `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+    queryRef
   )
   const {viewer} = data
   const {teams, featureFlags} = viewer

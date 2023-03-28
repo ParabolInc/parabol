@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLFloat,
   GraphQLID,
   GraphQLInt,
   GraphQLInterfaceType,
@@ -153,6 +154,10 @@ export const newMeetingFields = () => ({
   summary: {
     type: GraphQLString,
     description: `The GPT-3 generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
+  },
+  sentimentScore: {
+    type: GraphQLFloat,
+    description: `The overall sentiment score (range from -1.0 to 1.0) for the meeting. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
   },
   summarySentAt: {
     type: GraphQLISO8601Type,

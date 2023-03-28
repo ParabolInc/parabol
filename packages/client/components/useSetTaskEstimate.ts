@@ -3,7 +3,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import {CompletedHandler} from '../types/relayMutations'
 import {
-  SetTaskEstimateMutationResponse,
+  SetTaskEstimateMutation as TSetTaskEstimateMutation,
   TaskEstimateInput
 } from '../__generated__/SetTaskEstimateMutation.graphql'
 
@@ -16,7 +16,10 @@ const useSetTaskEstimate = () => {
     stageId: string,
     onSuccess?: () => void
   ) => {
-    const handleCompleted: CompletedHandler = (res: SetTaskEstimateMutationResponse, errors) => {
+    const handleCompleted: CompletedHandler = (
+      res: TSetTaskEstimateMutation['response'],
+      errors
+    ) => {
       onCompleted(res as any, errors)
       const {setTaskEstimate} = res
       const {error} = setTaskEstimate

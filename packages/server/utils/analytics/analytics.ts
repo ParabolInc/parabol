@@ -1,4 +1,5 @@
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
+import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
@@ -27,7 +28,8 @@ export type OrgTierChangeEventProperties = {
   orgName: string
   oldTier: string
   newTier: string
-  billingLeaderEmail: string
+  reasonsForLeaving?: ReasonToDowngradeEnum[]
+  otherTool?: string
 }
 
 export type TaskProperties = {
@@ -79,7 +81,10 @@ export type AnalyticsEvent =
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgraded'
+  | 'Downgrade Clicked'
+  | 'Downgrade Continue Clicked'
   | 'Organization Downgraded'
+
   // task
   | 'Task Created'
   | 'Task Published'

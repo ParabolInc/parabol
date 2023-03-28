@@ -10,7 +10,7 @@ import {
   ElementWidth,
   ReflectionStackPerspective
 } from '../../types/constEnums'
-import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
@@ -21,7 +21,7 @@ interface Props {
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   dataCy: string
-  reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
+  reflectionStack: readonly PhaseItemColumn_meeting$data['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
 

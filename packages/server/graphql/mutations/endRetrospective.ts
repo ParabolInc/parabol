@@ -18,6 +18,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import generateWholeMeetingSentimentScore from './helpers/generateWholeMeetingSentimentScore'
 import generateWholeMeetingSummary from './helpers/generateWholeMeetingSummary'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
@@ -28,9 +29,10 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
   const {dataLoader, authToken} = context
   const {id: meetingId, phases, facilitatorUserId, teamId} = meeting
   const r = await getRethink()
-  const [reflectionGroups, reflections] = await Promise.all([
+  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
@@ -56,7 +58,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
     }
   }
 
-  await Promise.all([
+  await Promise.allSettled([
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     r
       .table('NewMeeting')
@@ -77,7 +79,8 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, context: GQLCon
             .count()
             .default(0) as unknown as number,
           topicCount: reflectionGroupIds.length,
-          reflectionCount: reflections.length
+          reflectionCount: reflections.length,
+          sentimentScore
         },
         {nonAtomic: true}
       )

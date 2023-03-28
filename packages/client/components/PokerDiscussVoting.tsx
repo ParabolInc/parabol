@@ -9,7 +9,7 @@ import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import {PokerDiscussVoting_meeting$key} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {
   PokerDiscussVoting_stage$key,
-  PokerDiscussVoting_stage
+  PokerDiscussVoting_stage$data
 } from '../__generated__/PokerDiscussVoting_stage.graphql'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
@@ -87,7 +87,7 @@ const PokerDiscussVoting = (props: Props) => {
   }
 
   const {rows, topLabel} = useMemo(() => {
-    const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
+    const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage$data['scores'][0][]}
     let highScore = 0
     let topLabel = ''
     scores.forEach((score) => {

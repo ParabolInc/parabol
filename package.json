@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.95.1",
+  "version": "6.96.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -92,6 +92,7 @@
     "@typescript-eslint/parser": "5.17.0",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
+    "copy-webpack-plugin": "^11.0.0",
     "eslint-config-prettier": "^8.5.0",
     "graphql": "15.7.2",
     "html-webpack-plugin": "^5.5.0",
@@ -102,6 +103,7 @@
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
     "nx": "14.7.5",
+    "pg-promise": "^11.2.0",
     "postcss": "^8.4.21",
     "postcss-loader": "^7.0.2",
     "prettier": "^2.6.1",

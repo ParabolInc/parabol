@@ -1,13 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import {UserDashTeamMenu_viewer} from '~/__generated__/UserDashTeamMenu_viewer.graphql'
+import {
+  UserDashTeamMenu_viewer$data,
+  UserDashTeamMenu_viewer$key
+} from '~/__generated__/UserDashTeamMenu_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -17,13 +20,29 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  viewer: UserDashTeamMenu_viewer | null
+  viewer: UserDashTeamMenu_viewer$key | null
 }
 
 const UserDashTeamMenu = (props: Props) => {
   const {history} = useRouter()
-  const {menuProps, viewer} = props
-  const oldTeamsRef = useRef<UserDashTeamMenu_viewer['teams']>([])
+  const {menuProps, viewer: viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment UserDashTeamMenu_viewer on User {
+        id
+        teams {
+          id
+          name
+          teamMembers(sortBy: "preferredName") {
+            userId
+            preferredName
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+  const oldTeamsRef = useRef<UserDashTeamMenu_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
@@ -86,18 +105,4 @@ const UserDashTeamMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(UserDashTeamMenu, {
-  viewer: graphql`
-    fragment UserDashTeamMenu_viewer on User {
-      id
-      teams {
-        id
-        name
-        teamMembers(sortBy: "preferredName") {
-          userId
-          preferredName
-        }
-      }
-    }
-  `
-})
+export default UserDashTeamMenu

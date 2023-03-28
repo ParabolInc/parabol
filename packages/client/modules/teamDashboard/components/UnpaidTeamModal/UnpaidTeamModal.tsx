@@ -62,9 +62,7 @@ const query = graphql`
 
 const UnpaidTeamModal = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<UnpaidTeamModalQuery>(query, queryRef, {
-    UNSTABLE_renderPolicy: 'full'
-  })
+  const data = usePreloadedQuery<UnpaidTeamModalQuery>(query, queryRef)
   const {viewer} = data
   const atmosphere = useAtmosphere()
   const {history} = useRouter()

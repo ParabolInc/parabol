@@ -3,7 +3,7 @@ import {Snack} from '../../components/Snackbar'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {
   NotificationEnum,
-  popNotificationToast_notification
+  popNotificationToast_notification$data
 } from '../../__generated__/popNotificationToast_notification.graphql'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
@@ -37,7 +37,7 @@ graphql`
 `
 
 export const popNotificationToastOnNext: OnNextHandler<
-  popNotificationToast_notification,
+  popNotificationToast_notification$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   const {addedNotification} = payload

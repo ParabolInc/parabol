@@ -12,7 +12,7 @@ import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilte
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {
-  UserTasksHeader_viewer,
+  UserTasksHeader_viewer$data,
   UserTasksHeader_viewer$key
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
@@ -122,7 +122,7 @@ const UserTasksHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const oldTeamsRef = useRef<UserTasksHeader_viewer['teams']>([])
+  const oldTeamsRef = useRef<UserTasksHeader_viewer$data['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
