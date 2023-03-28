@@ -65,9 +65,9 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (_source
     .run()) as MeetingTeamPrompt[]
 
   const res = await Promise.all(
-    teamPromptMeetingsToEnd.map(async (meeting) => {
-      return await safeEndTeamPrompt({meeting, now, context, r, subOptions})
-    })
+    teamPromptMeetingsToEnd.map((meeting) =>
+      safeEndTeamPrompt({meeting, now, context, r, subOptions})
+    )
   )
 
   const meetingsEnded = res.filter((res) => !('error' in res)).length
