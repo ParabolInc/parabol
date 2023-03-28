@@ -1,6 +1,11 @@
 /* eslint-env jest */
+import getRedis from '../getRedis'
 import RedisLockQueue from '../RedisLockQueue'
 import sleep from 'parabol-client/utils/sleep'
+
+afterAll(async () => {
+  getRedis().quit()
+})
 
 test('lock calls are queued properly', async () => {
   await Promise.all(
