@@ -5,7 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.96.1 2023-Mar-28
+
+### Fixed
+
+- Stronger RRule validation to prevent NaN interval (#7950)
+
 ## 6.96.0 2023-Mar-15
+
 ### Added
 
 - feat(checkout-flow): add teams limit warning (#7879)
