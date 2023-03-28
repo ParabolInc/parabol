@@ -163,11 +163,19 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   }
 
   const canUpdate = useMemo(() => {
-    if (!isMeetingSeriesActive && !newRecurrenceSettings.rrule) return false
-    if (currentRecurrenceRule !== newRecurrenceSettings.rrule?.toString()) return true
-    if (meeting.meetingSeries?.title !== newRecurrenceSettings.name) return true
+    const isRecurrenceReenabled = !isMeetingSeriesActive && newRecurrenceSettings.rrule
+    if (isRecurrenceReenabled) return true
+
+    const hasRecurrenceSettingsChanged =
+      isMeetingSeriesActive && currentRecurrenceRule !== newRecurrenceSettings.rrule?.toString()
+    if (hasRecurrenceSettingsChanged) return true
+
+    const hasNameChanged =
+      isMeetingSeriesActive && meeting.meetingSeries?.title !== newRecurrenceSettings.name
+    if (hasNameChanged) return true
+
     return false
-  }, [meeting, newRecurrenceSettings, currentRecurrenceRule])
+  }, [meeting, newRecurrenceSettings, currentRecurrenceRule, isMeetingSeriesActive])
 
   return (
     <UpdateRecurrenceSettingsModalRoot>
