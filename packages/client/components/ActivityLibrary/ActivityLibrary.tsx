@@ -10,6 +10,7 @@ import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import clsx from 'clsx'
 import useRouter from '../../hooks/useRouter'
+import {Link} from 'react-router-dom'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -136,11 +137,6 @@ export const ActivityLibrary = (props: Props) => {
     return <Redirect to='/404' />
   }
 
-  const onSelectCategory = (category: CategoryID) => {
-    history.replace(`/activity-library/category/${category}`)
-    resetQuery()
-  }
-
   return (
     <div className='flex h-full bg-white'>
       <ActivityLibrarySideBar />
@@ -148,18 +144,19 @@ export const ActivityLibrary = (props: Props) => {
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
         <div className='ml-2 flex gap-x-2'>
           {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
-            <button
+            <Link
               className={clsx(
                 'cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
                 category === selectedCategory && searchQuery.length === 0
-                  ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white']
+                  ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white focus:text-white']
                   : 'bg-slate-200'
               )}
-              onClick={() => onSelectCategory(category)}
+              to={`/activity-library/category/${category}`}
+              onClick={() => resetQuery()}
               key={category}
             >
               {CATEGORY_ID_TO_NAME[category]}
-            </button>
+            </Link>
           ))}
         </div>
         <div className='flex flex-wrap'>
