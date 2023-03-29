@@ -2,25 +2,19 @@ import clsx from 'clsx'
 import React, {ComponentPropsWithoutRef, PropsWithChildren} from 'react'
 import {MeetingTypeEnum} from '../../__generated__/ActivityLibraryQuery.graphql'
 
-export const ActivityCardImage = (
-  props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>
-) => {
+const ActivityCardImage = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
   const {className, src} = props
 
-  return (
-    <div className='absolute inset-0 top-5 flex'>
-      <img className={clsx('m-auto h-[76px] w-auto object-contain', className)} src={src} />
-    </div>
-  )
+  return <img className={clsx('max-h-16 w-auto object-contain sm:max-h-28', className)} src={src} />
 }
 
-export const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
+const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
   const {children, className, ...rest} = props
 
   return (
     <div
       className={clsx(
-        'z-10 block pr-6 text-sm font-semibold leading-5 text-slate-800 sm:text-base',
+        'px-2 py-1 text-sm font-semibold leading-5 text-slate-800 sm:text-base',
         className
       )}
       {...rest}
@@ -42,35 +36,42 @@ export const MeetingThemes: Record<MeetingTypeEnum, CardTheme> = {
   teamPrompt: {primary: 'bg-aqua-400', secondary: 'bg-[#CBECF0]'}
 }
 
-interface ActivityCardProps {
+export interface ActivityCardProps {
   className?: string
   type: MeetingTypeEnum
-  children: React.ReactNode
+  title: string
+  imageSrc: string
+  badge: React.ReactNode | null
 }
 
 export const ActivityCard = (props: ActivityCardProps) => {
-  const {className, type, children} = props
+  const {className, type, title, imageSrc, badge} = props
   return (
     <div
       className={clsx(
-        'relative flex aspect-[156/120] w-auto flex-col overflow-hidden rounded-lg py-2 px-3 md:aspect-[256/160]',
+        'flex flex-col overflow-hidden rounded-lg',
         MeetingThemes[type].secondary,
         className
       )}
     >
-      <div
-        className={clsx(
-          'absolute top-0 right-0 h-8 w-8 rounded-bl-full',
-          MeetingThemes[type].primary
-        )}
-      />
-      <div
-        className={clsx(
-          'absolute bottom-0 left-0 h-8 w-8 rounded-tr-full',
-          MeetingThemes[type].primary
-        )}
-      />
-      {children}
+      <div className='flex flex-shrink-0'>
+        <ActivityCardTitle>{title}</ActivityCardTitle>
+        <div
+          className={clsx(
+            'ml-auto h-8 w-8 flex-shrink-0 rounded-bl-full',
+            MeetingThemes[type].primary
+          )}
+        />
+      </div>
+      <div className='my-1 flex flex-1 items-center justify-center px-4'>
+        <ActivityCardImage src={imageSrc} />
+      </div>
+      <div className='flex flex-shrink-0'>
+        <div
+          className={clsx('h-8 w-8 flex-shrink-0 rounded-tr-full', MeetingThemes[type].primary)}
+        />
+        <div className='ml-auto'>{badge}</div>
+      </div>
     </div>
   )
 }
