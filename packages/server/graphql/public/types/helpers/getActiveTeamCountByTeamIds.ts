@@ -7,7 +7,7 @@ import {Threshold} from '~/types/constEnums'
 // Active team is the team that completed 3 meetings with more than 1 attendee
 // and have had at least 1 meeting in the last 30 days
 // Warning: the query is very expensive
-// TODO: store all calculations in the database, e.g. meeting.attendeeCount
+// TODO: store all calculations in the database, e.g. meeting.attendeeCount (see #7975)
 const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
   const r = await getRethink()
 

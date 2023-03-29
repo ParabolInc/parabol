@@ -64,7 +64,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     activeTeamCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of teams with 3+ meetings (>1 attendee) that met within last 30 days',
-      resolve: async ({id: orgId}, _args: unknown) => {
+      resolve: async ({id: orgId}) => {
         return getActiveTeamCountByOrgIds(orgId)
       }
     },

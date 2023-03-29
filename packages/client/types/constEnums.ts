@@ -407,7 +407,7 @@ export const enum Threshold {
   UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
 }
 
-// Use these values for easier testing
+// Use these values for easier testing of team limits and usage stats
 export const enum ThresholdTest {
   MIN_STICKY_TEAM_MEETING_ATTENDEES = 0,
   MIN_STICKY_TEAM_MEETINGS = 0,
