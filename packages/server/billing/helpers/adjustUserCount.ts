@@ -1,23 +1,20 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
-import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
 import IUser from '../../postgres/types/IUser'
 import {analytics} from '../../utils/analytics/analytics'
-import {toEpochSeconds} from '../../utils/epochTime'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../utils/isCompanyDomain'
 import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
-import processInvoiceItemHook from './processInvoiceItemHook'
+import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, newUserEmail: string) => {
   const r = await getRethink()
@@ -135,16 +132,11 @@ const auditEventTypeLookup = {
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
 } as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
 
-interface Options {
-  prorationDate?: Date
-}
-
 export default async function adjustUserCount(
   userId: string,
   orgInput: string | string[],
   type: InvoiceItemType,
-  dataLoader: DataLoaderWorker,
-  options: Options = {}
+  dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
@@ -162,33 +154,6 @@ export default async function adjustUserCount(
     .filter((org: RDatum) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
-  const proOrgs = paidOrgs.filter((org) => org.tier === 'team')
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
-  // starter & enterprise tiers do not follow the per-seat model
-  if (proOrgs.length === 0) return
-  if (type === InvoiceItemType.REMOVE_USER) {
-    // if the user is paused, they've already been removed from stripe
-    const user = await getUserById(userId)
-    if (!user || user.inactive) {
-      return
-    }
-  }
-
-  const prorationDate = options.prorationDate ? toEpochSeconds(options.prorationDate) : undefined
-  const hooks = proOrgs.map((org) => {
-    return new InvoiceItemHook({
-      stripeSubscriptionId: org.stripeSubscriptionId!,
-      isProrated: org.tier !== 'enterprise',
-      orgId: org.id,
-      prorationDate,
-      type,
-      userId
-    })
-  })
-
-  await r.table('InvoiceItemHook').insert(hooks).run()
-
-  hooks.forEach((hook) => {
-    processInvoiceItemHook(hook.stripeSubscriptionId).catch()
-  })
+  handleTeamOrgQuantityChanges(paidOrgs, dataLoader).catch(console.error)
 }
