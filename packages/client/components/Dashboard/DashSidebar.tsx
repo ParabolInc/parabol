@@ -79,7 +79,6 @@ const DashSidebar = (props: Props) => {
         ...DashNavList_viewer
         featureFlags {
           checkoutFlow
-          retrosInDisguise
         }
         organizations {
           id

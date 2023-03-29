@@ -58,7 +58,7 @@ export const ActivityLibrary = (props: Props) => {
   const {viewer} = data
   const {featureFlags, availableTemplates} = viewer
 
-  const handleCloseCLick = () => {
+  const handleCloseClick = () => {
     history.goBack()
   }
 
@@ -94,11 +94,11 @@ export const ActivityLibrary = (props: Props) => {
   }
 
   return (
-    <div className='flex h-full w-full flex-col'>
-      <ActivityLibraryHeader className='hidden md:flex' onClose={handleCloseCLick}>
+    <div className='flex h-full w-full flex-col bg-white'>
+      <ActivityLibraryHeader className='hidden md:flex' onClose={handleCloseClick}>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryHeader>
-      <ActivityLibraryMobileHeader className='flex md:hidden' onClose={handleCloseCLick}>
+      <ActivityLibraryMobileHeader className='flex md:hidden' onClose={handleCloseClick}>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryMobileHeader>
 
