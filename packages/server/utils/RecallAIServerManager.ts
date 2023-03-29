@@ -25,7 +25,7 @@ class RecallAIServerManager {
           destination_url: 'http://localhost:3000' // this is required by the API but it's not doing anything and can be any URL. TODO: speak with recall.ai about this & fix
         },
         transcription_options: {provider: 'assembly_ai'},
-        automatic_video_output: {in_call_recording: {kind: 'jpeg', b64_data: 'SGVsbG8gV29ybGQh'}},
+        automatic_video_output: {in_call_recording: {kind: 'jpeg', b64_data: 'SGVsbG8gV29ybGQh'}}, // b64 data is for the bot img. It's also a required field, but can be any string I believe. TODO: speak with recall.ai about removing/changing this requirement
         recording_mode: 'speaker_view',
         meeting_url: videoMeetingURL
       })
