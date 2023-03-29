@@ -1,44 +1,14 @@
 import clsx from 'clsx'
-import React, {PropsWithChildren, ComponentPropsWithoutRef, ReactNode} from 'react'
+import React from 'react'
 import {MeetingTypeEnum} from '../../__generated__/ActivityLibraryQuery.graphql'
 import {ActivityCard} from './ActivityCard'
 
-const Image = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
-  const {className, src} = props
-
-  return (
-    <div className='absolute inset-0 top-5 flex'>
-      <img className={clsx('m-auto h-[76px] w-auto object-contain', className)} src={src} />
-    </div>
-  )
-}
-
-interface TitleProps {
-  children: ReactNode
-}
-
-const Title = (props: TitleProps & ComponentPropsWithoutRef<'div'>) => {
-  const {children, className, ...rest} = props
-
-  return (
-    <div
-      className={clsx(
-        'z-10 block pr-6 text-sm font-semibold leading-5 text-slate-800 sm:text-base',
-        className
-      )}
-      {...rest}
-    >
-      {children}
-    </div>
-  )
-}
-
-interface BadgeProps {
+interface ActivityLibraryCardBadgeProps {
   className?: string
   children?: React.ReactNode
 }
 
-const Badge = (props: BadgeProps) => {
+export const ActivityLibraryCardBadge = (props: ActivityLibraryCardBadgeProps) => {
   const {className, children} = props
 
   return (
@@ -53,13 +23,13 @@ const Badge = (props: BadgeProps) => {
   )
 }
 
-interface CardProps {
+interface ActivityLibraryCardProps {
   className?: string
   type: MeetingTypeEnum
   children: React.ReactNode
 }
 
-const Card = (props: CardProps) => {
+export const ActivityLibraryCard = (props: ActivityLibraryCardProps) => {
   const {className, type, children} = props
 
   return (
@@ -74,9 +44,3 @@ const Card = (props: CardProps) => {
     </ActivityCard>
   )
 }
-
-export const ActivityLibraryCard = Object.assign(Card, {
-  Image,
-  Title,
-  Badge
-})

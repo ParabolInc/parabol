@@ -5,7 +5,7 @@ import {Redirect} from 'react-router'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import {ActivityLibraryHeader, ActivityLibraryMobileHeader} from './ActivityLibraryHeader'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
+import {ActivityLibraryCard, ActivityLibraryCardBadge} from './ActivityLibraryCard'
 
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import {activityIllustrations} from './ActivityIllustrations'
@@ -14,6 +14,7 @@ import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import {ActivityCardImage, ActivityCardTitle} from './ActivityCard'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -131,10 +132,10 @@ export const ActivityLibrary = (props: Props) => {
                     className='focus:rounded-md focus:outline-primary'
                   >
                     <ActivityLibraryCard type={template.type}>
-                      <ActivityLibraryCard.Image src={activityIllustration} />
-                      <ActivityLibraryCard.Title>{template.name}</ActivityLibraryCard.Title>
+                      <ActivityCardImage src={activityIllustration} />
+                      <ActivityCardTitle>{template.name}</ActivityCardTitle>
                       {!template.isFree && (
-                        <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>
+                        <ActivityLibraryCardBadge>Premium</ActivityLibraryCardBadge>
                       )}
                     </ActivityLibraryCard>
                   </Link>

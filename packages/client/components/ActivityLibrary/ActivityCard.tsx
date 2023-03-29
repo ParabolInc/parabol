@@ -1,6 +1,34 @@
 import clsx from 'clsx'
-import React from 'react'
+import React, {ComponentPropsWithoutRef, PropsWithChildren} from 'react'
 import {MeetingTypeEnum} from '../../__generated__/ActivityLibraryQuery.graphql'
+
+export const ActivityCardImage = (
+  props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>
+) => {
+  const {className, src} = props
+
+  return (
+    <div className='absolute inset-0 top-5 flex'>
+      <img className={clsx('m-auto h-[76px] w-auto object-contain', className)} src={src} />
+    </div>
+  )
+}
+
+export const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
+  const {children, className, ...rest} = props
+
+  return (
+    <div
+      className={clsx(
+        'z-10 block pr-6 text-sm font-semibold leading-5 text-slate-800 sm:text-base',
+        className
+      )}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+}
 
 interface CardTheme {
   primary: string
@@ -14,13 +42,13 @@ export const MeetingThemes: Record<MeetingTypeEnum, CardTheme> = {
   teamPrompt: {primary: 'bg-aqua-400', secondary: 'bg-[#CBECF0]'}
 }
 
-interface Props {
+interface ActivityCardProps {
   className?: string
   type: MeetingTypeEnum
   children: React.ReactNode
 }
 
-export const ActivityCard = (props: Props) => {
+export const ActivityCard = (props: ActivityCardProps) => {
   const {className, type, children} = props
   return (
     <div
