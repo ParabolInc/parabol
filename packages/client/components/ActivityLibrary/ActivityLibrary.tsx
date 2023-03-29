@@ -153,6 +153,23 @@ export const ActivityLibrary = (props: Props) => {
       </ActivityLibraryHeader>
       <ActivityLibraryMobileHeader className='flex md:hidden' onClose={handleCloseClick}>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+        <div className='ml-2 flex gap-x-2'>
+          {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
+            <Link
+              className={clsx(
+                'cursor-pointer rounded-full px-4 py-2 text-xs font-semibold text-slate-700',
+                category === selectedCategory && searchQuery.length === 0
+                  ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white focus:text-white']
+                  : 'bg-slate-200'
+              )}
+              to={`/activity-library/category/${category}`}
+              onClick={() => resetQuery()}
+              key={category}
+            >
+              {CATEGORY_ID_TO_NAME[category]}
+            </Link>
+          ))}
+        </div>
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='w-full'>
@@ -209,7 +226,9 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityLibraryCard
                       className='flex-1'
                       key={template.id}
-                      type={template.type}
+                      category={
+                        template.category as Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>
+                      }
                       title={template.name}
                       imageSrc={activityIllustration}
                       badge={
