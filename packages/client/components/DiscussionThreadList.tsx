@@ -28,30 +28,12 @@ const Wrapper = styled('div')({
   overflow: 'auto'
 })
 
-// const EmptyWrapper = styled('div')({
-//   alignItems: 'center',
-//   display: 'flex',
-//   flexDirection: 'column',
-//   justifyContent: 'center',
-//   flex: 1,
-//   padding: '8px 0',
-//   overflow: 'auto'
-// })
-
-// const Wrapper = styled('div')({
-//   flex: 1,
-//   display: 'flex',
-//   flexDirection: 'column',
-//   overflow: 'auto',
-//   padding: '8px 0'
-// })
-
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
 const PusherDowner = styled('div')({
   margin: '0 0 auto'
 })
 
-export const DefaultHeader = styled(LabelHeading)({
+export const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   margin: '0 0 8px',
   padding: '12px',

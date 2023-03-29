@@ -115,15 +115,6 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
     setIsChecked((isChecked) => !isChecked)
   }
 
-  // TODO: add functionality to remove the videoMeetingURL
-  // const removeVideoMeetingURL = () => {
-  //   SetMeetingSettingsMutation(
-  //     atmosphere,
-  //     {videoMeetingURL: null, settingsId},
-  //     {onError, onCompleted}
-  //   )
-  // }
-
   const handleSubmit = () => {
     if (submitting) return
     const {url} = validateField()

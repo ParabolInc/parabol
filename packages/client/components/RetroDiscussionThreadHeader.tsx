@@ -7,7 +7,8 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {commitLocalUpdate} from 'relay-runtime'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
-import {DefaultHeader} from './DiscussionThreadList'
+import {Header} from './DiscussionThreadList'
+import {RetroDiscussionThreadHeader_organization$key} from '~/__generated__/RetroDiscussionThreadHeader_organization.graphql'
 
 const HeaderWrapper = styled('div')({
   display: 'flex',
@@ -50,7 +51,7 @@ const Badge = styled('div')({
 type Props = {
   showTranscription: boolean
   meetingId: string
-  organizationRef?: any // RetroDiscussionThreadHeader_organization$key
+  organizationRef?: RetroDiscussionThreadHeader_organization$key
 }
 
 const RetroDiscussionThreadHeader = (props: Props) => {
@@ -103,7 +104,7 @@ const RetroDiscussionThreadHeader = (props: Props) => {
     )
   }
 
-  return <DefaultHeader>{'Discussion & Takeaway Tasks'}</DefaultHeader>
+  return <Header>{'Discussion & Takeaway Tasks'}</Header>
 }
 
 export default RetroDiscussionThreadHeader
