@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useState} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Redirect} from 'react-router'
+import {Redirect, useHistory} from 'react-router'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import ActivityLibrarySideBar from './ActivityLibrarySideBar'
 import ActivityLibraryCard from './ActivityLibraryCard'
@@ -9,6 +9,7 @@ import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import clsx from 'clsx'
+import useRouter from '../../hooks/useRouter'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -47,9 +48,11 @@ interface Props {
 
 const getTemplateValue = (template: {name: string}) => template.name
 
+const QUICK_START_CATEGORY_ID = 'recommended'
+
 const CATEGORY_ID_TO_NAME = {
-  recommended: 'Quick Start',
-  retro: 'Retrospective',
+  [QUICK_START_CATEGORY_ID]: 'Quick Start',
+  retrospective: 'Retrospective',
   estimation: 'Estimation',
   standup: 'Standup',
   feedback: 'Feedback',
@@ -61,8 +64,8 @@ type CategoryID = keyof typeof CATEGORY_ID_TO_NAME
 // :TODO: (jmtaber129): Fold this into the 'MeetingThemes' to be added in
 // https://github.com/ParabolInc/parabol/pull/7908.
 const CATEGORY_ID_TO_COLOR_CLASS = {
-  recommended: 'bg-grape-700',
-  retro: 'bg-grape-500',
+  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
+  retrospective: 'bg-grape-500',
   estimation: 'bg-tomato-500',
   standup: 'bg-aqua-400',
   feedback: 'bg-jade-400',
@@ -105,7 +108,16 @@ export const ActivityLibrary = (props: Props) => {
     resetQuery
   } = useSearchFilter(templates, getTemplateValue)
 
-  const [selectedCategory, setSelectedCategory] = useState<CategoryID>('recommended')
+  const history = useHistory()
+  const {match} = useRouter<{categoryId?: string}>()
+  const {params} = match
+  const {categoryId: selectedCategory} = params
+
+  useEffect(() => {
+    if (!selectedCategory || !Object.keys(CATEGORY_ID_TO_NAME).includes(selectedCategory)) {
+      history.replace(`/activity-library/category/${QUICK_START_CATEGORY_ID}`)
+    }
+  }, [selectedCategory, history])
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -114,7 +126,7 @@ export const ActivityLibrary = (props: Props) => {
     }
 
     return filteredTemplates.filter((template) =>
-      selectedCategory === 'recommended'
+      selectedCategory === QUICK_START_CATEGORY_ID
         ? template.isRecommended
         : template.category === selectedCategory
     )
@@ -125,7 +137,7 @@ export const ActivityLibrary = (props: Props) => {
   }
 
   const onSelectCategory = (category: CategoryID) => {
-    setSelectedCategory(category)
+    history.replace(`/activity-library/category/${category}`)
     resetQuery()
   }
 
@@ -134,11 +146,11 @@ export const ActivityLibrary = (props: Props) => {
       <ActivityLibrarySideBar />
       <div>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
-        <div className='ml-2 flex'>
+        <div className='ml-2 flex gap-x-2'>
           {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
             <button
               className={clsx(
-                'mr-2 cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
+                'cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
                 category === selectedCategory && searchQuery.length === 0
                   ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white']
                   : 'bg-slate-200'
