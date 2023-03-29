@@ -125,15 +125,19 @@ export const ActivityLibrary = (props: Props) => {
                 const activityIllustration = templateIllustration ?? customTemplateIllustration
 
                 return (
-                  <ActivityLibraryCard key={template.id} type={template.type}>
-                    <ActivityLibraryCard.Image src={activityIllustration} />
-                    <ActivityLibraryCard.Title as={Link} to={`/activity-library/${template.id}`}>
-                      {template.name}
-                    </ActivityLibraryCard.Title>
-                    {!template.isFree && (
-                      <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>
-                    )}
-                  </ActivityLibraryCard>
+                  <Link
+                    key={template.id}
+                    to={`/activity-library/${template.id}`}
+                    className='focus:rounded-md focus:outline-primary'
+                  >
+                    <ActivityLibraryCard type={template.type}>
+                      <ActivityLibraryCard.Image src={activityIllustration} />
+                      <ActivityLibraryCard.Title>{template.name}</ActivityLibraryCard.Title>
+                      {!template.isFree && (
+                        <ActivityLibraryCard.Badge>Premium</ActivityLibraryCard.Badge>
+                      )}
+                    </ActivityLibraryCard>
+                  </Link>
                 )
               })}
             </div>

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React, {PropsWithChildren, ComponentPropsWithoutRef, ElementType, ReactNode} from 'react'
+import React, {PropsWithChildren, ComponentPropsWithoutRef, ReactNode} from 'react'
 import {MeetingTypeEnum} from '../../__generated__/ActivityLibraryQuery.graphql'
 import {ActivityCard} from './ActivityCard'
 
@@ -13,29 +13,23 @@ const Image = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement
   )
 }
 
-interface TitleProps<T extends ElementType> {
-  as?: T
+interface TitleProps {
   children: ReactNode
 }
 
-const Title = <T extends ElementType = 'div'>(
-  props: TitleProps<T> & ComponentPropsWithoutRef<T>
-) => {
-  const {as, children, className, ...rest} = props
-  const Component = as || 'div'
+const Title = (props: TitleProps & ComponentPropsWithoutRef<'div'>) => {
+  const {children, className, ...rest} = props
 
   return (
-    <Component
+    <div
       className={clsx(
-        'z-10 block pr-6 text-sm font-semibold leading-5 text-slate-800 focus:outline-none sm:text-base',
+        'z-10 block pr-6 text-sm font-semibold leading-5 text-slate-800 sm:text-base',
         className
       )}
       {...rest}
     >
-      {/* Extend touch target to entire activity card if it's a link */}
-      {'to' in props && <span className='absolute inset-0' aria-hidden='true' />}
       {children}
-    </Component>
+    </div>
   )
 }
 
