@@ -65,7 +65,7 @@ const Card = (props: CardProps) => {
   return (
     <ActivityCard
       className={clsx(
-        'group transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-xl motion-reduce:transition-none',
+        'group transition-shadow focus-within:ring-2 focus-within:ring-primary hover:shadow-md motion-reduce:transition-none',
         className
       )}
       type={type}
