@@ -36,6 +36,7 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
+import AzureDevOpsWorkItem from './types/AzureDevOpsWorkItem'
 
 const rootTypes = [
   IntegrationProviderOAuth1,
@@ -76,6 +77,7 @@ const rootTypes = [
   TeamPromptMeeting,
   TeamPromptMeetingMember,
   TeamPromptMeetingSettings,
-  Comment
+  Comment,
+  AzureDevOpsWorkItem
 ]
 export default rootTypes
