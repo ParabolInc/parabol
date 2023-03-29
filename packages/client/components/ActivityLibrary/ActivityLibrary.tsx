@@ -104,7 +104,7 @@ export const ActivityLibrary = (props: Props) => {
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full @container lg:mx-[15%]'>
+        <ScrollArea.Viewport className='flex h-full lg:mx-[15%]'>
           {filteredTemplates.length === 0 ? (
             <div className='mx-auto flex max-w-7xl p-2 text-slate-700'>
               <img className='max-w-[128px]' src={halloweenRetrospectiveTemplate} />
@@ -119,7 +119,7 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto grid max-w-7xl grid-cols-2 gap-4 p-4 @2xl:grid-cols-3 @4xl:grid-cols-4 @6xl:grid-cols-5'>
+            <div className='mx-auto grid grid-cols-[repeat(auto-fit,_minmax(min(35%,256px),1fr))] gap-4 p-4'>
               {filteredTemplates.map((template) => {
                 const templateIllustration =
                   activityIllustrations[template.id as keyof typeof activityIllustrations]
