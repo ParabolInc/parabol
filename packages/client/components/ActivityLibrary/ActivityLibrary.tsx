@@ -103,7 +103,7 @@ export const ActivityLibrary = (props: Props) => {
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full xl:mx-[15%]'>
+        <ScrollArea.Viewport className='flex h-full md:mx-[15%]'>
           {filteredTemplates.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />
