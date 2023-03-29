@@ -70,7 +70,8 @@ const OrgMembers = (props: Props) => {
   )
   const {data} = paginationRes
   const {viewer} = data
-  const {organization, checkoutFlow} = viewer
+  const {organization, featureFlags} = viewer
+  const {checkoutFlow} = featureFlags
   if (!organization) return null
   const {organizationUsers, name: orgName, isBillingLeader} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
