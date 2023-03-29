@@ -15,6 +15,7 @@ interface Input {
   meetingSeriesId?: number
   scheduledEndTime?: Date
   summary?: string
+  sentimentScore?: number
 }
 
 const namePrefix = {
@@ -41,6 +42,7 @@ export default abstract class Meeting {
   meetingSeriesId?: number
   scheduledEndTime?: Date | null
   summary?: string
+  sentimentScore?: number
 
   constructor(input: Input) {
     const {
@@ -54,7 +56,8 @@ export default abstract class Meeting {
       showConversionModal,
       meetingSeriesId,
       scheduledEndTime,
-      summary
+      summary,
+      sentimentScore
     } = input
     this.id = id ?? generateUID()
     this.createdBy = facilitatorUserId
@@ -70,5 +73,6 @@ export default abstract class Meeting {
     this.meetingSeriesId = meetingSeriesId
     this.scheduledEndTime = scheduledEndTime
     this.summary = summary
+    this.sentimentScore = sentimentScore
   }
 }
