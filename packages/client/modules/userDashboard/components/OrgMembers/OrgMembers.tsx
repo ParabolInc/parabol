@@ -14,7 +14,7 @@ import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  width: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
+  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
 }))
 
 interface Props {
@@ -108,7 +108,7 @@ const OrgMembers = (props: Props) => {
 
   return (
     <StyledPanel
-      isWide={!!checkoutFlow}
+      isWide={checkoutFlow}
       label='Organization Members'
       controls={
         isBillingLeader && (
