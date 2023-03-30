@@ -2450,6 +2450,16 @@ type ReflectTemplate implements MeetingTemplate {
   The prompts that are part of this template
   """
   prompts: [ReflectPrompt!]!
+
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
+
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
 }
 
 """
@@ -4170,6 +4180,16 @@ type PokerTemplate implements MeetingTemplate {
     """
     dimensionId: ID!
   ): TemplateDimension!
+
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
+
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
 }
 
 """
@@ -4222,6 +4242,16 @@ interface MeetingTemplate {
   """
   type: MeetingTypeEnum!
   updatedAt: DateTime!
+
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
+
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
 }
 
 """
