@@ -216,7 +216,7 @@ const OrgPlanDrawer = (props: Props) => {
               <Subtitle>{'Make the most out of Parabol:'}</Subtitle>
               <UL>
                 <LI>
-                  {'Cover all of your agile meetings -'}
+                  {'Cover all of your agile meetings - '}
                   <Link href={enterpriseResources.retros}>{'retros, '}</Link>
                   <Link href={enterpriseResources.estimation}>{'estimation'}</Link>
                   {' & '}
