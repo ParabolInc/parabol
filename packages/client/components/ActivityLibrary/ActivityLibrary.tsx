@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Redirect, useHistory} from 'react-router'
+import {Redirect} from 'react-router'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
 import ActivityLibrarySideBar from './ActivityLibrarySideBar'
 import ActivityLibraryCard from './ActivityLibraryCard'
@@ -109,16 +109,9 @@ export const ActivityLibrary = (props: Props) => {
     resetQuery
   } = useSearchFilter(templates, getTemplateValue)
 
-  const history = useHistory()
   const {match} = useRouter<{categoryId?: string}>()
   const {params} = match
   const {categoryId: selectedCategory} = params
-
-  useEffect(() => {
-    if (!selectedCategory || !Object.keys(CATEGORY_ID_TO_NAME).includes(selectedCategory)) {
-      history.replace(`/activity-library/category/${QUICK_START_CATEGORY_ID}`)
-    }
-  }, [selectedCategory, history])
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -132,6 +125,10 @@ export const ActivityLibrary = (props: Props) => {
         : template.category === selectedCategory
     )
   }, [searchQuery, filteredTemplates, selectedCategory])
+
+  if (!selectedCategory || !Object.keys(CATEGORY_ID_TO_NAME).includes(selectedCategory)) {
+    return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
+  }
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
