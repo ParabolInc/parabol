@@ -1,8 +1,54 @@
-export const DEFAULT_TEAM_NAMES = ['Bug Writers', 'Long Meeting Lovers', 'Work Procrastinators']
+export const DEFAULT_TEAM_NAMES = [
+  'Bug Writers 🪲',
+  'Long Meeting Lovers ❣️',
+  'Work Procrastinators ⏱️',
+  'Eat Lunch at 11AM 🥪',
+  'Midday Nap 😴',
+  'Show Us Your Cat 🐱',
+  'Comb Your Hair for Zoom 💅',
+  'Pajama Pants🌛',
+  'Highly Caffeinated ☕',
+  'Mute Slack & Chill 😎',
+  'Friday Afternoon Meetings Should Be Illegal 🙈',
+  "MacGuyver's of Fixing Bugs 🛠️",
+  'Verified Swifties 🤠',
+  'Excel is Hell 🔥',
+  'Ice Cold Seltzer ✨',
+  '5 Minutes Late 😏',
+  'Top Chefs 🧑‍🍳',
+  'Clean Code or Bust 🧽',
+  'Google It 👨‍💻',
+  'AI-Generated Image 🦄',
+  'Circling Back ⭕',
+  'As Per My Last Email 😐',
+  'Mute Button 🔕',
+  'Comfy Socks 🧦',
+  'Show Me the Data ‼️',
+  "Shakira's Strawberry Jam 🍓",
+  "5 O'clock Somewhere 🍻",
+  'Trending on TikTok 🕺',
+  'Sourdough Starter 🍞',
+  'Collaboration Station 🤝',
+  'Keyboard Warriors 🤺',
+  'Sprinting Squirrels 🐿️',
+  'Desk Jockeys 🎵',
+  'Agenda Avengers 📝',
+  'More Cheese 🧀',
+  'Make it Work 💁‍♀️',
+  'We ❤️ Dogs',
+  'Extra Guac 🥑',
+  'Copy/Paste 👬',
+  'SEO Optimized 🔍',
+  'Experience Architects 🏰',
+  'User Interfacers 💡',
+  '404 Error 👾',
+  'Commit and Push 🤓',
+  'Crocs 4 Life 🐊',
+  'Special Coffee Mug ☕'
+]
 
 export const makeDefaultTeamName = (teamId: string) => {
   const seed = [...teamId].reduce((prev, cur) => prev + cur.charCodeAt(0), 0)
   const idx = seed % DEFAULT_TEAM_NAMES.length
-  // Guaranteed not out of bounds
-  return DEFAULT_TEAM_NAMES[idx]!
+  return `Team ${DEFAULT_TEAM_NAMES[idx]!}`
 }

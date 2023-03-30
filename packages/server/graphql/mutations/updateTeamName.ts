@@ -10,7 +10,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
-import {DEFAULT_TEAM_NAMES} from 'parabol-client/utils/makeDefaultTeamName'
+import {makeDefaultTeamName} from 'parabol-client/utils/makeDefaultTeamName'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -62,7 +62,7 @@ export default {
       teamId,
       oldName,
       newName,
-      DEFAULT_TEAM_NAMES.includes(oldName)
+      makeDefaultTeamName(teamId) === oldName
     )
 
     const data = {teamId}

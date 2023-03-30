@@ -67,7 +67,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     const validNewTeam = {
       id: teamId,
       orgId,
-      name: `Team ${makeDefaultTeamName(teamId)}`,
+      name: makeDefaultTeamName(teamId),
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
