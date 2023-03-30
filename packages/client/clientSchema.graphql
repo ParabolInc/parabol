@@ -119,3 +119,7 @@ extend type Discussion {
   isAnonymousComment: Boolean!
   replyingToCommentId: String!
 }
+
+extend type Organization {
+  showSidebar: Boolean!
+}
