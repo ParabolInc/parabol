@@ -17,6 +17,7 @@ import getSAMLIdP from '../utils/getSAMLIdP'
 import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
 import getTokenFromSSO from '../utils/getTokenFromSSO'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
+import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
 import Legitity from '../validation/Legitity'
 import {emailRegex} from '../validation/regex'
 import EmailInputField from './EmailInputField'
@@ -172,12 +173,13 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       return false
     }
     submitMutation()
-    const {token, error} = await getTokenFromSSO(url)
+    const {token, error, ga4Args} = await getTokenFromSSO(url)
     if (!token) {
       onError(new Error(error || 'Error logging in'))
       return true
     }
     atmosphere.setAuthToken(token)
+    emitGA4SignUpEvent(ga4Args!)
     if (invitationToken) {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       AcceptTeamInvitationMutation(

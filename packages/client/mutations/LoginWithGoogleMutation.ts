@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
+import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
 import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'

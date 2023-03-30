@@ -6,6 +6,7 @@ import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import getTokenFromSSO from '../utils/getTokenFromSSO'
+import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -26,12 +27,13 @@ const TeamInvitationSSO = (props: Props) => {
     const loginWithSAML = async () => {
       const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)!
       submitMutation()
-      const {token, error} = await getTokenFromSSO(ssoURL)
+      const {token, error, ga4Args} = await getTokenFromSSO(ssoURL)
       if (!token) {
         onError(new Error(error || 'Error logging in'))
         return
       }
       atmosphere.setAuthToken(token)
+      emitGA4SignUpEvent(ga4Args!)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     }
     loginWithSAML().catch()

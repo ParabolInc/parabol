@@ -18,6 +18,23 @@ graphql`
 `
 
 type Payload = Omit<handleSuccessfulLogin_UserLogInPayload, ' $refType'>
+type GA4SignUpEventEmissionRequiredArgs = {
+  isNewUser: boolean
+  userId: string
+  isPatient0: boolean
+}
+
+const emitGA4SignUpEvent = (args: GA4SignUpEventEmissionRequiredArgs) => {
+  const {isNewUser, userId, isPatient0} = args
+  if (isNewUser) {
+    ReactGA.event('sign_up', {
+      userId,
+      user_properties: {
+        is_patient_0: isPatient0
+      }
+    })
+  }
+}
 
 const handleSuccessfulLogin = (payload: Payload) => {
   const email = payload?.user?.email
@@ -25,14 +42,7 @@ const handleSuccessfulLogin = (payload: Payload) => {
   if (!email || !userId) return
   window.localStorage.setItem(LocalStorageKey.EMAIL, email)
   safeIdentify(userId, email)
-  if (payload.isNewUser) {
-    ReactGA.event('sign_up', {
-      userId,
-      user_properties: {
-        is_patient_0: payload.user.isPatient0
-      }
-    })
-  }
+  emitGA4SignUpEvent({...payload, isPatient0: payload.user.isPatient0})
 }
 
-export default handleSuccessfulLogin
+export {GA4SignUpEventEmissionRequiredArgs, emitGA4SignUpEvent, handleSuccessfulLogin}

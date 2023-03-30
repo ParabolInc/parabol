@@ -1,15 +1,21 @@
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import ReactGA from 'react-ga4'
+import {GA4SignUpEventEmissionRequiredArgs} from './handleSuccessfulLogin'
 
-const getTokenFromSSO = (url: string) => {
+type ReturnType = {
+  token?: string
+  error?: string
+  ga4Args?: GA4SignUpEventEmissionRequiredArgs
+}
+
+const getTokenFromSSO = (url: string): ReturnType | Promise<ReturnType> => {
   // It's possible we prematurely opened a popup named SSO at the URL about:blank to avoid popup blockers
   // Calling window.open again will get a reference to that popup
   // Then, we can update the href to the valid URL
   const popup = window.open(url, 'SSO', getOAuthPopupFeatures({width: 385, height: 550, top: 64}))
-  if (!popup) return {token: null, error: 'Failed to open login popup'}
+  if (!popup) return {error: 'Failed to open login popup'}
   popup.location.href = url
   let closeCheckerId: undefined | number
-  return new Promise<{token: string | null; error: string | null}>((resolve) => {
+  return new Promise<ReturnType>((resolve) => {
     const handler = (event: MessageEvent) => {
       // an extension posted to the opener
       if (typeof event.data !== 'object') return
@@ -18,27 +24,19 @@ const getTokenFromSSO = (url: string) => {
       if (event.origin !== window.location.origin) return
 
       const params = new URLSearchParams(popup.location.search)
-      const userId = params.get('userId')
+      const userId = params.get('userId')!
       const isNewUser = params.get('isNewUser') === 'true'
       const isPatient0 = params.get('isPatient0') === 'true'
-      if (isNewUser && !error) {
-        ReactGA.event('sign_up', {
-          userId,
-          user_properties: {
-            is_patient_0: isPatient0
-          }
-        })
-      }
 
       window.clearInterval(closeCheckerId)
       popup?.close()
       window.removeEventListener('message', handler)
-      resolve({token, error})
+      resolve({token, error, ga4Args: {userId, isNewUser, isPatient0}})
     }
 
     closeCheckerId = window.setInterval(() => {
       if (popup?.closed) {
-        resolve({token: null, error: 'Error logging in. Did you close the popup window?'})
+        resolve({error: 'Error logging in. Did you close the popup window?'})
         window.clearInterval(closeCheckerId)
         window.removeEventListener('message', handler)
       }
