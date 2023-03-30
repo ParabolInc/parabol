@@ -169,6 +169,14 @@ export const TeamBenefits = [
   'Priority customer support'
 ]
 
+export const EnterpriseBenefits = [
+  'Enhanced security',
+  'Priority customer support',
+  'SAML Single Sign-On (SSO)',
+  'Uptime SLA',
+  'Jira Server Integration'
+]
+
 export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [
   'Parabol is too expensive',
   'Budget changes',

@@ -6,19 +6,14 @@ import {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanD
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import {Close} from '@mui/icons-material'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {
-  BezierCurve,
-  Breakpoint,
-  DiscussionThreadEnum,
-  RightSidebar,
-  ZIndex
-} from '../../../../types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../../../../types/constEnums'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {desktopSidebarShadow} from '../../../../styles/elevation'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
+import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -63,21 +58,18 @@ const List = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflowY: 'auto',
-  padding: '0px 0px 8px',
+  padding: '16px 0px',
   position: 'relative',
-  width: '100%',
-  minHeight: 0 // required for FF68
+  width: '100%'
 })
 
 const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
-  // padding: `0 0 ${isDesktop ? 58 : 0}px`,
   padding: 16,
   height: '100vh',
   flexDirection: 'column'
-  // width: RightSidebar.WIDTH
 }))
 
 const StyledCloseButton = styled(PlainButton)({
@@ -93,22 +85,23 @@ const StyledLabelHeading = styled(LabelHeading)({
 })
 
 const Subtitle = styled('span')({
-  fontWeight: 600
+  fontWeight: 600,
+  paddingBottom: 8
 })
 
 const UL = styled('ul')({
   margin: 0
 })
 
-const LI = styled('li')({
+const LI = styled('li')<{isBlue?: boolean}>(({isBlue}) => ({
   fontSize: 16,
-  lineHeight: '32px',
-  color: PALETTE.SLATE_900,
+  lineHeight: '28px',
+  color: isBlue ? PALETTE.SKY_500 : PALETTE.SLATE_900,
   textTransform: 'none',
   fontWeight: 400,
   textAlign: 'left',
   listStyleType: 'disc'
-})
+}))
 
 const Link = styled('a')({
   color: PALETTE.SKY_500,
@@ -143,6 +136,12 @@ const agileResources = [
   }
 ]
 
+const featuresLookup = {
+  starter: [],
+  team: TeamBenefits,
+  enterprise: EnterpriseBenefits
+} as const
+
 const OrgPlanDrawer = (props: Props) => {
   const {organizationRef} = props
   const organization = useFragment(
@@ -169,19 +168,29 @@ const OrgPlanDrawer = (props: Props) => {
   }
   return (
     <ResponsiveDashSidebar isOpen={showDrawer} onToggle={toggleSidebar} isRightDrawer>
-      <Drawer isDesktop={true} isOpen={showDrawer}>
+      <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
         <DrawerHeader>
           <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
           <StyledCloseButton onClick={toggleSidebar}>
             <CloseIcon />
           </StyledCloseButton>
         </DrawerHeader>
-        <DrawerContent isDesktop={true}>
+        <DrawerContent isDesktop={isDesktop}>
+          <List>
+            <Subtitle>
+              {'In addition to the Parabol features you’re used to, you now have access to: '}
+            </Subtitle>
+            <UL>
+              {featuresLookup[tier].map((feature) => (
+                <LI key={feature}>{feature}</LI>
+              ))}
+            </UL>
+          </List>
           <List>
             <Subtitle>{'Resources for effective agile teams:'}</Subtitle>
             <UL>
               {agileResources.map((resource) => (
-                <LI key={resource.title}>
+                <LI isBlue key={resource.title}>
                   <Link href={resource.url}>{resource.title}</Link>
                 </LI>
               ))}
