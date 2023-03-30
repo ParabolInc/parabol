@@ -14,7 +14,7 @@ import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 const StyledPanel = styled(Panel)({
-  width: ElementWidth.PANEL_WIDTH
+  maxWidth: ElementWidth.PANEL_WIDTH
 })
 
 interface Props {

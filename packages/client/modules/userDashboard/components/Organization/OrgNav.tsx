@@ -12,7 +12,7 @@ const Wrapper = styled('div')({
   display: 'flex',
   fontSize: 14,
   padding: '16px 0px',
-  width: ElementWidth.PANEL_WIDTH
+  maxWidth: ElementWidth.PANEL_WIDTH
 })
 
 const StyledIcon = styled('div')({

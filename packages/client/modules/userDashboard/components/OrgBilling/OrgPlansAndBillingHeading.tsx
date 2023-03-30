@@ -17,7 +17,7 @@ const Wrapper = styled('div')({
   lineHeight: '24px',
   padding: '16px 0px',
   flexWrap: 'wrap',
-  width: ElementWidth.PANEL_WIDTH,
+  maxWidth: ElementWidth.PANEL_WIDTH,
   position: 'relative'
 })
 
