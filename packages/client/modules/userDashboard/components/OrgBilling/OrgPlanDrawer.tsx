@@ -59,11 +59,22 @@ const CloseIcon = styled(Close)({
   }
 })
 
+const List = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  overflowY: 'auto',
+  padding: '0px 0px 8px',
+  position: 'relative',
+  width: '100%',
+  minHeight: 0 // required for FF68
+})
+
 const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
-  padding: `0 0 ${isDesktop ? 58 : 0}px`,
+  // padding: `0 0 ${isDesktop ? 58 : 0}px`,
+  padding: 16,
   height: '100vh',
   flexDirection: 'column'
   // width: RightSidebar.WIDTH
@@ -81,9 +92,56 @@ const StyledLabelHeading = styled(LabelHeading)({
   textTransform: 'none'
 })
 
+const Subtitle = styled('span')({
+  fontWeight: 600
+})
+
+const UL = styled('ul')({
+  margin: 0
+})
+
+const LI = styled('li')({
+  fontSize: 16,
+  lineHeight: '32px',
+  color: PALETTE.SLATE_900,
+  textTransform: 'none',
+  fontWeight: 400,
+  textAlign: 'left',
+  listStyleType: 'disc'
+})
+
+const Link = styled('a')({
+  color: PALETTE.SKY_500,
+  fontWeight: 600,
+  textDecoration: 'none',
+  '&:hover': {
+    color: PALETTE.SKY_500,
+    textDecoration: 'underline'
+  }
+})
+
 type Props = {
   organizationRef: OrgPlanDrawer_organization$key
 }
+
+const agileResources = [
+  {
+    title: '57 Daily Standup Questions for More Engaging Updates',
+    url: 'https://www.parabol.co/resources/daily-standup-questions/'
+  },
+  {
+    title: '29 Effective Meeting Tips for Advanced Facilitators',
+    url: 'https://www.parabol.co/blog/effective-meeting-tips/'
+  },
+  {
+    title: '50+ Retrospective Questions for your Next Meeting',
+    url: 'https://www.parabol.co/resources/retrospective-questions/'
+  },
+  {
+    title: '8 Agile Estimation Techniques to Try With your Team',
+    url: 'https://www.parabol.co/blog/agile-estimation-techniques/'
+  }
+]
 
 const OrgPlanDrawer = (props: Props) => {
   const {organizationRef} = props
@@ -92,12 +150,12 @@ const OrgPlanDrawer = (props: Props) => {
       fragment OrgPlanDrawer_organization on Organization {
         id
         showDrawer
+        tier
       }
     `,
     organizationRef
   )
-  const {id: orgId, showDrawer} = organization
-  console.log('🚀 ~ showDrawer:', showDrawer)
+  const {id: orgId, tier, showDrawer} = organization
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
@@ -112,18 +170,23 @@ const OrgPlanDrawer = (props: Props) => {
   return (
     <ResponsiveDashSidebar isOpen={showDrawer} onToggle={toggleSidebar} isRightDrawer>
       <Drawer isDesktop={true} isOpen={showDrawer}>
+        <DrawerHeader>
+          <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
+          <StyledCloseButton onClick={toggleSidebar}>
+            <CloseIcon />
+          </StyledCloseButton>
+        </DrawerHeader>
         <DrawerContent isDesktop={true}>
-          <DrawerHeader>
-            <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
-            <StyledCloseButton onClick={toggleSidebar}>
-              <CloseIcon />
-            </StyledCloseButton>
-          </DrawerHeader>
-          {/* {drawerTypeRef.current === 'manageTeam' ? (
-          <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
-        ) : (
-          <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
-        )} */}
+          <List>
+            <Subtitle>{'Resources for effective agile teams:'}</Subtitle>
+            <UL>
+              {agileResources.map((resource) => (
+                <LI key={resource.title}>
+                  <Link href={resource.url}>{resource.title}</Link>
+                </LI>
+              ))}
+            </UL>
+          </List>
         </DrawerContent>
       </Drawer>
     </ResponsiveDashSidebar>
