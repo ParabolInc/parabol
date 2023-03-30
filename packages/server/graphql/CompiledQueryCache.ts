@@ -14,6 +14,7 @@ type ExcludedArgs = {
 
 const compileQuery = tracedCompileQuery(tracer, {
   excludeArgs: {
+    acceptTeamInvitation: ['invitationToken'],
     loginWithPassword: ['password'],
     resetPassword: ['token', 'newPassword'],
     signUpWithPassword: ['password', 'invitationToken'],
