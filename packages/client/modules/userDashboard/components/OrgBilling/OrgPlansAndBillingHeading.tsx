@@ -71,7 +71,7 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         id
         name
         tier
-        showSidebar
+        showDrawer
       }
     `,
     organizationRef
@@ -84,8 +84,8 @@ const OrgPlansAndBillingHeading = (props: Props) => {
     commitLocalUpdate(atmosphere, (store) => {
       const org = store.get(orgId)
       if (!org) return
-      const showSidebar = org.getValue('showSidebar')
-      org.setValue(!showSidebar, 'showSidebar')
+      const showDrawer = org.getValue('showDrawer')
+      org.setValue(!showDrawer, 'showDrawer')
     })
   }
 

@@ -18,14 +18,14 @@ import {desktopSidebarShadow} from '../../../../styles/elevation'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'space-between',
   padding: '16px 8px 16px 16px',
-  width: '100%',
-  border: '2px solid red'
+  width: '100%'
 })
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
@@ -70,16 +70,15 @@ const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  marginLeft: 'auto'
+  height: ICON_SIZE.MD18,
+  display: 'flex',
+  alignItems: 'center'
 })
 
 const StyledLabelHeading = styled(LabelHeading)({
   fontSize: 12,
   lineHeight: '18px',
-  textTransform: 'none',
-  //
-  height: '100%'
+  textTransform: 'none'
 })
 
 type Props = {
@@ -92,13 +91,13 @@ const OrgPlanDrawer = (props: Props) => {
     graphql`
       fragment OrgPlanDrawer_organization on Organization {
         id
-        showSidebar
+        showDrawer
       }
     `,
     organizationRef
   )
-  const {id: orgId, showSidebar} = organization
-  console.log('🚀 ~ showSidebar:', showSidebar)
+  const {id: orgId, showDrawer} = organization
+  console.log('🚀 ~ showDrawer:', showDrawer)
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
@@ -106,17 +105,16 @@ const OrgPlanDrawer = (props: Props) => {
     commitLocalUpdate(atmosphere, (store) => {
       const org = store.get(orgId)
       if (!org) return
-      const showSidebar = org.getValue('showSidebar')
-      org.setValue(!showSidebar, 'showSidebar')
+      const showDrawer = org.getValue('showDrawer')
+      org.setValue(!showDrawer, 'showDrawer')
     })
   }
   return (
-    <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar} isRightDrawer>
-      <Drawer isDesktop={true} isOpen={showSidebar}>
+    <ResponsiveDashSidebar isOpen={showDrawer} onToggle={toggleSidebar} isRightDrawer>
+      <Drawer isDesktop={true} isOpen={showDrawer}>
         <DrawerContent isDesktop={true}>
           <DrawerHeader>
             <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
-            {/* <CloseDrawer teamId={teamId} /> */}
             <StyledCloseButton onClick={toggleSidebar}>
               <CloseIcon />
             </StyledCloseButton>

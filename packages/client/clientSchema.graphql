@@ -121,5 +121,5 @@ extend type Discussion {
 }
 
 extend type Organization {
-  showSidebar: Boolean!
+  showDrawer: Boolean!
 }
