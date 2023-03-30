@@ -166,7 +166,8 @@ export const TeamBenefits = [
   'Premium templates',
   'Custom templates',
   'Unlimited meeting history',
-  'Priority customer support'
+  'Priority customer support',
+  'AI Summaries'
 ]
 
 export const EnterpriseBenefits = [

@@ -14,6 +14,7 @@ import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
+import {upperFirst} from '../../../../utils/upperFirst'
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -63,14 +64,14 @@ const List = styled('div')({
   width: '100%'
 })
 
-const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const DrawerContent = styled('div')({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
   padding: 16,
   height: '100vh',
   flexDirection: 'column'
-}))
+})
 
 const StyledCloseButton = styled(PlainButton)({
   height: ICON_SIZE.MD18,
@@ -82,6 +83,11 @@ const StyledLabelHeading = styled(LabelHeading)({
   fontSize: 12,
   lineHeight: '18px',
   textTransform: 'none'
+})
+
+const Title = styled('span')({
+  fontWeight: 600,
+  fontSize: 20
 })
 
 const Subtitle = styled('span')({
@@ -113,10 +119,6 @@ const Link = styled('a')({
   }
 })
 
-type Props = {
-  organizationRef: OrgPlanDrawer_organization$key
-}
-
 const agileResources = [
   {
     title: '57 Daily Standup Questions for More Engaging Updates',
@@ -136,11 +138,23 @@ const agileResources = [
   }
 ]
 
+const enterpriseResources = {
+  retros: 'https://www.parabol.co/agile/retrospectives/',
+  estimation: 'https://www.parabol.co/agile/sprint-poker/',
+  standups: 'https://www.parabol.co/agile/online-standup-tool/',
+  templates: 'https://www.parabol.co/templates/',
+  integrations: 'https://www.parabol.co/integrations/'
+}
+
 const featuresLookup = {
   starter: [],
   team: TeamBenefits,
   enterprise: EnterpriseBenefits
 } as const
+
+type Props = {
+  organizationRef: OrgPlanDrawer_organization$key
+}
 
 const OrgPlanDrawer = (props: Props) => {
   const {organizationRef} = props
@@ -175,7 +189,8 @@ const OrgPlanDrawer = (props: Props) => {
             <CloseIcon />
           </StyledCloseButton>
         </DrawerHeader>
-        <DrawerContent isDesktop={isDesktop}>
+        <DrawerContent>
+          <Title>{`🎉 Welcome to the ${upperFirst(tier)} Plan!`}</Title>
           <List>
             <Subtitle>
               {'In addition to the Parabol features you’re used to, you now have access to: '}
@@ -196,6 +211,28 @@ const OrgPlanDrawer = (props: Props) => {
               ))}
             </UL>
           </List>
+          {tier === 'enterprise' && (
+            <List>
+              <Subtitle>{'Make the most out of Parabol:'}</Subtitle>
+              <UL>
+                <LI>
+                  {'Cover all of your agile meetings -'}
+                  <Link href={enterpriseResources.retros}>{'retros, '}</Link>
+                  <Link href={enterpriseResources.estimation}>{'estimation'}</Link>
+                  {' & '}
+                  <Link href={enterpriseResources.standups}>{'standups'}</Link>
+                </LI>
+                <LI>
+                  <Link href={enterpriseResources.templates}>{'40+ Meeting Templates'}</Link>
+                </LI>
+                <LI>
+                  <Link href={enterpriseResources.integrations}>
+                    {'Integrate with Jira, Slack & More'}
+                  </Link>
+                </LI>
+              </UL>
+            </List>
+          )}
         </DrawerContent>
       </Drawer>
     </ResponsiveDashSidebar>
