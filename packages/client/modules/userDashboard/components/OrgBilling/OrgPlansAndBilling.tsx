@@ -6,7 +6,7 @@ import PaymentDetails from './PaymentDetails'
 import BillingLeaders from './BillingLeaders'
 import OrgPlans from './OrgPlans'
 import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
-import OrgPlanSidebar from './OrgPlanSidebar'
+import OrgPlanDrawer from './OrgPlanDrawer'
 
 type Props = {
   organizationRef: OrgPlansAndBilling_organization$key
@@ -20,7 +20,7 @@ const OrgPlansAndBilling = (props: Props) => {
         ...OrgPlansAndBillingHeading_organization
         ...OrgPlans_organization
         ...BillingLeaders_organization
-        ...OrgPlanSidebar_organization
+        ...OrgPlanDrawer_organization
       }
     `,
     organizationRef
@@ -32,7 +32,7 @@ const OrgPlansAndBilling = (props: Props) => {
       <OrgPlans organizationRef={organization} />
       <PaymentDetails />
       <BillingLeaders organizationRef={organization} />
-      <OrgPlanSidebar organizationRef={organization} />
+      <OrgPlanDrawer organizationRef={organization} />
     </Suspense>
   )
 }

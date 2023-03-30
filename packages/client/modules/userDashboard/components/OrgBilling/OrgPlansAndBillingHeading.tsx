@@ -81,7 +81,6 @@ const OrgPlansAndBillingHeading = (props: Props) => {
   const tierName = upperFirst(tier)
 
   const handleClick = () => {
-    console.log('handleClick')
     commitLocalUpdate(atmosphere, (store) => {
       const org = store.get(orgId)
       if (!org) return

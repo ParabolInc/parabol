@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
-import {OrgPlanSidebar_organization$key} from '../../../../__generated__/OrgPlanSidebar_organization.graphql'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanDrawer_organization.graphql'
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
+import {Close} from '@mui/icons-material'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {
   BezierCurve,
@@ -15,13 +16,15 @@ import {
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {desktopSidebarShadow} from '../../../../styles/elevation'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'space-between',
   padding: '16px 8px 16px 16px',
-  height: '100%',
+  width: '100%',
   border: '2px solid red'
 })
 
@@ -48,15 +51,28 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   }
 }))
 
+const CloseIcon = styled(Close)({
+  color: PALETTE.SLATE_600,
+  cursor: 'pointer',
+  '&:hover': {
+    opacity: 0.5
+  }
+})
+
 const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
   padding: `0 0 ${isDesktop ? 58 : 0}px`,
   height: '100vh',
-  flexDirection: 'column',
-  width: RightSidebar.WIDTH
+  flexDirection: 'column'
+  // width: RightSidebar.WIDTH
 }))
+
+const StyledCloseButton = styled(PlainButton)({
+  height: 24,
+  marginLeft: 'auto'
+})
 
 const StyledLabelHeading = styled(LabelHeading)({
   fontSize: 12,
@@ -67,34 +83,43 @@ const StyledLabelHeading = styled(LabelHeading)({
 })
 
 type Props = {
-  organizationRef: OrgPlanSidebar_organization$key
+  organizationRef: OrgPlanDrawer_organization$key
 }
 
-const OrgPlanSidebar = (props: Props) => {
+const OrgPlanDrawer = (props: Props) => {
   const {organizationRef} = props
   const organization = useFragment(
     graphql`
-      fragment OrgPlanSidebar_organization on Organization {
+      fragment OrgPlanDrawer_organization on Organization {
+        id
         showSidebar
       }
     `,
     organizationRef
   )
-  const {showSidebar} = organization
+  const {id: orgId, showSidebar} = organization
   console.log('🚀 ~ showSidebar:', showSidebar)
+  const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  const toggleSidebar = () => {}
+  const toggleSidebar = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const org = store.get(orgId)
+      if (!org) return
+      const showSidebar = org.getValue('showSidebar')
+      org.setValue(!showSidebar, 'showSidebar')
+    })
+  }
   return (
     <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar} isRightDrawer>
       <Drawer isDesktop={true} isOpen={showSidebar}>
         <DrawerContent isDesktop={true}>
           <DrawerHeader>
-            <StyledLabelHeading>{'testa'}</StyledLabelHeading>
+            <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
             {/* <CloseDrawer teamId={teamId} /> */}
-            {/* <StyledCloseButton onClick={onToggleDrawer}>
+            <StyledCloseButton onClick={toggleSidebar}>
               <CloseIcon />
-            </StyledCloseButton> */}
+            </StyledCloseButton>
           </DrawerHeader>
           {/* {drawerTypeRef.current === 'manageTeam' ? (
           <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
@@ -107,4 +132,4 @@ const OrgPlanSidebar = (props: Props) => {
   )
 }
 
-export default OrgPlanSidebar
+export default OrgPlanDrawer
