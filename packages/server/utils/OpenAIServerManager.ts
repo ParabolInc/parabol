@@ -20,19 +20,18 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     try {
       const location = summaryLocation ?? 'retro meeting'
-      const prompt = `Below is a comma-separated list of text from a ${location}.
-      Summarize the text for a second-grade student in one or two sentences.
-      If you can't provide a summary, simply say the word "No".
-
-      Text: """
-      ${text}
-      """`
       const response = await this.openAIApi.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'user',
-            content: prompt
+            content: `Below is a comma-separated list of text from a ${location}.
+            Summarize the text for a second-grade student in one or two sentences.
+            If you can't provide a summary, simply say the word "No".
+
+            Text: """
+            ${text}
+            """`
           }
         ],
         temperature: 0.7,
