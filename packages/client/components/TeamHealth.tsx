@@ -65,11 +65,12 @@ const TeamHealth = (props: Props) => {
             }
           >
             {labels?.map((label) => (
-              <div key={label} className='flex h-24 w-24 justify-center p-8'>
+              //center vertically
+              <div key={label} className='flex h-24 w-24 items-center justify-center p-8'>
                 <input name='foo' className='peer hidden' type='radio' id={label} value={label} />
                 <label
                   htmlFor={label}
-                  className='text-4xl drop-shadow-lg sepia hover:text-5xl hover:blur-none hover:sepia-[0.5] peer-checked:text-6xl peer-checked:blur-none peer-checked:sepia-0'
+                  className='text-4xl opacity-75 drop-shadow-lg hover:text-5xl hover:opacity-100 hover:blur-none peer-checked:text-6xl peer-checked:opacity-100 peer-checked:blur-none'
                 >
                   {label}
                 </label>

@@ -7210,6 +7210,11 @@ type Mutation {
     checkinEnabled: Boolean
 
     """
+    true to turn team health phase on, false to turn it off
+    """
+    teamHealthEnabled: Boolean
+
+    """
     disables anonymity of reflections
     """
     disableAnonymity: Boolean

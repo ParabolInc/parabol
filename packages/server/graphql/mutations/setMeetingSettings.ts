@@ -21,6 +21,10 @@ const setMeetingSettings = {
       type: GraphQLBoolean,
       description: 'true to turn icebreaker phase on, false to turn it off'
     },
+    teamHealthEnabled: {
+      type: GraphQLBoolean,
+      description: 'true to turn team health phase on, false to turn it off'
+    },
     disableAnonymity: {
       type: GraphQLBoolean,
       description: 'disables anonymity of reflections'
@@ -31,8 +35,14 @@ const setMeetingSettings = {
     {
       settingsId,
       checkinEnabled,
+      teamHealthEnabled,
       disableAnonymity
-    }: {settingsId: string; checkinEnabled?: boolean; disableAnonymity?: boolean},
+    }: {
+      settingsId: string
+      checkinEnabled?: boolean
+      teamHealthEnabled: boolean
+      disableAnonymity?: boolean
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -61,6 +71,16 @@ const setMeetingSettings = {
             checkinEnabled ? row('phaseTypes').prepend('checkin') : row('phaseTypes')
           )
           meetingSettings.hasIcebreaker = checkinEnabled
+        }
+
+        if (isNotNull(teamHealthEnabled)) {
+          updatedSettings.phaseTypes = r.branch(
+            row('phaseTypes').contains('TEAM_HEALTH'),
+            teamHealthEnabled ? row('phaseTypes') : row('phaseTypes').difference(['TEAM_HEALTH']),
+            row('phaseTypes').contains('checkin'),
+            teamHealthEnabled ? row('phaseTypes').insertAt(1, 'TEAM_HEALTH') : row('phaseTypes'),
+            teamHealthEnabled ? row('phaseTypes').prepend('TEAM_HEALTH') : row('phaseTypes')
+          )
         }
 
         if (isNotNull(disableAnonymity)) {
