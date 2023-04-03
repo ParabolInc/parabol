@@ -25,6 +25,11 @@ import DetailAction from '../DetailAction'
 import RemoveReflectTemplateMutation from '../../mutations/RemoveReflectTemplateMutation'
 import useMutationProps from '../../hooks/useMutationProps'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import GitHubSVG from '../GitHubSVG'
+import JiraSVG from '../JiraSVG'
+import GitLabSVG from '../GitLabSVG'
+import AzureDevOpsSVG from '../AzureDevOpsSVG'
+import JiraServerSVG from '../JiraServerSVG'
 
 const query = graphql`
   query ActivityDetailsQuery {
@@ -199,6 +204,18 @@ const ActivityDetails = (props: Props) => {
                 <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and
                 vote on the hottest topics. As you <b>discuss topics</b>, create{' '}
                 <b>takeaway tasks</b> that can be integrated with your backlog.
+              </div>
+              <div className='mt-[18px] flex items-center'>
+                <div className='flex items-center gap-3'>
+                  <JiraSVG />
+                  <GitHubSVG />
+                  <JiraServerSVG />
+                  <GitLabSVG />
+                  <AzureDevOpsSVG />
+                </div>
+                <div className='ml-4'>
+                  <b>Tip:</b> push takeaway tasks to your backlog
+                </div>
               </div>
               {/* {isOwner && (
                 <RemoveTemplate
