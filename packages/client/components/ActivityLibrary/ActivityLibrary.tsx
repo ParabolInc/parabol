@@ -14,6 +14,7 @@ import useRouter from '../../hooks/useRouter'
 import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import clsx from 'clsx'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -24,6 +25,8 @@ graphql`
     }
     name
     type
+    category
+    isRecommended
     isFree
   }
 `
@@ -51,6 +54,30 @@ interface Props {
 
 const getTemplateValue = (template: {name: string}) => template.name
 
+const QUICK_START_CATEGORY_ID = 'recommended'
+
+const CATEGORY_ID_TO_NAME = {
+  [QUICK_START_CATEGORY_ID]: 'Quick Start',
+  retrospective: 'Retrospective',
+  estimation: 'Estimation',
+  standup: 'Standup',
+  feedback: 'Feedback',
+  strategy: 'Strategy'
+}
+
+type CategoryID = keyof typeof CATEGORY_ID_TO_NAME
+
+// :TODO: (jmtaber129): Fold this into the 'MeetingThemes' to be added in
+// https://github.com/ParabolInc/parabol/pull/7908.
+const CATEGORY_ID_TO_COLOR_CLASS = {
+  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
+  retrospective: 'bg-grape-500',
+  estimation: 'bg-tomato-500',
+  standup: 'bg-aqua-400',
+  feedback: 'bg-jade-400',
+  strategy: 'bg-rose-500'
+}
+
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
@@ -69,6 +96,8 @@ export const ActivityLibrary = (props: Props) => {
         type: 'action',
         name: 'Check-in',
         team: {name: 'Parabol'},
+        category: 'standup',
+        isRecommended: true,
         isFree: true
       } as const,
       {
@@ -76,6 +105,8 @@ export const ActivityLibrary = (props: Props) => {
         type: 'teamPrompt',
         name: 'Standup',
         team: {name: 'Parabol'},
+        category: 'standup',
+        isRecommended: true,
         isFree: true
       } as const,
       ...availableTemplates.edges.map((edge) => edge.node)
@@ -86,8 +117,30 @@ export const ActivityLibrary = (props: Props) => {
   const {
     query: searchQuery,
     filteredItems: filteredTemplates,
-    onQueryChange
+    onQueryChange,
+    resetQuery
   } = useSearchFilter(templates, getTemplateValue)
+
+  const {match} = useRouter<{categoryId?: string}>()
+  const {params} = match
+  const {categoryId: selectedCategory} = params
+
+  const templatesToRender = useMemo(() => {
+    if (searchQuery.length > 0) {
+      // If there's a search query, just use the search filter results
+      return filteredTemplates
+    }
+
+    return filteredTemplates.filter((template) =>
+      selectedCategory === QUICK_START_CATEGORY_ID
+        ? template.isRecommended
+        : template.category === selectedCategory
+    )
+  }, [searchQuery, filteredTemplates, selectedCategory])
+
+  if (!selectedCategory || !Object.keys(CATEGORY_ID_TO_NAME).includes(selectedCategory)) {
+    return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
+  }
 
   if (!featureFlags.retrosInDisguise) {
     return <Redirect to='/404' />
@@ -103,8 +156,26 @@ export const ActivityLibrary = (props: Props) => {
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full md:mx-[15%]'>
-          {filteredTemplates.length === 0 ? (
+        <ScrollArea.Viewport className='flex h-full flex-col md:mx-[15%]'>
+          <div className='ml-2 flex gap-x-2'>
+            {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
+              <Link
+                className={clsx(
+                  'cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
+                  category === selectedCategory && searchQuery.length === 0
+                    ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white focus:text-white']
+                    : 'bg-slate-200'
+                )}
+                to={`/activity-library/category/${category}`}
+                onClick={() => resetQuery()}
+                key={category}
+              >
+                {CATEGORY_ID_TO_NAME[category]}
+              </Link>
+            ))}
+          </div>
+
+          {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />
               <div className='ml-10'>
@@ -119,7 +190,7 @@ export const ActivityLibrary = (props: Props) => {
             </div>
           ) : (
             <div className='mx-auto grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
-              {filteredTemplates.map((template) => {
+              {templatesToRender.map((template) => {
                 const templateIllustration =
                   activityIllustrations[template.id as keyof typeof activityIllustrations]
                 const activityIllustration = templateIllustration ?? customTemplateIllustration
