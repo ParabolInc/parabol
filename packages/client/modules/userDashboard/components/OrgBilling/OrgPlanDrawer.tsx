@@ -211,7 +211,9 @@ const OrgPlanDrawer = (props: Props) => {
             <UL>
               {agileResources.map((resource) => (
                 <LI isBlue key={resource.title}>
-                  <Link href={resource.url}>{resource.title}</Link>
+                  <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
+                    {resource.title}
+                  </Link>
                 </LI>
               ))}
             </UL>
@@ -222,16 +224,40 @@ const OrgPlanDrawer = (props: Props) => {
               <UL>
                 <LI>
                   {'Cover all of your agile meetings - '}
-                  <Link href={enterpriseResources.retros}>{'retros, '}</Link>
-                  <Link href={enterpriseResources.estimation}>{'estimation'}</Link>
+                  <Link href={enterpriseResources.retros} target='_blank' rel='noopener noreferrer'>
+                    {'retros, '}
+                  </Link>
+                  <Link
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    href={enterpriseResources.estimation}
+                  >
+                    {'estimation'}
+                  </Link>
                   {' & '}
-                  <Link href={enterpriseResources.standups}>{'standups'}</Link>
+                  <Link
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    href={enterpriseResources.standups}
+                  >
+                    {'standups'}
+                  </Link>
                 </LI>
                 <LI>
-                  <Link href={enterpriseResources.templates}>{'40+ Meeting Templates'}</Link>
+                  <Link
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    href={enterpriseResources.templates}
+                  >
+                    {'40+ Meeting Templates'}
+                  </Link>
                 </LI>
                 <LI>
-                  <Link href={enterpriseResources.integrations}>
+                  <Link
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    href={enterpriseResources.integrations}
+                  >
                     {'Integrate with Jira, Slack & More'}
                   </Link>
                 </LI>
