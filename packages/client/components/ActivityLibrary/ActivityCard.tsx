@@ -32,7 +32,7 @@ interface CardTheme {
 export const MeetingThemes: Record<MeetingTypeEnum, CardTheme> = {
   action: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
   poker: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
-  retrospective: {primary: 'bg-grape-500', secondary: 'bg-grape-100'},
+  retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
   teamPrompt: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'}
 }
 
