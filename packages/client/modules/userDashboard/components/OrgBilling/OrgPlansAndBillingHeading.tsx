@@ -97,11 +97,11 @@ const OrgPlansAndBillingHeading = (props: Props) => {
         <Subtitle>{` is currently on the `}</Subtitle>
         <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
       </SubtitleBlock>
-      <StyledButton>
+      <StyledButton onClick={handleClick}>
         <StyledIcon>
           <Article />
         </StyledIcon>
-        <Label onClick={handleClick}>{'Plan Details'}</Label>
+        <Label>{'Plan Details'}</Label>
       </StyledButton>
     </Wrapper>
   )
