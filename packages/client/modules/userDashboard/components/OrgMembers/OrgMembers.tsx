@@ -13,9 +13,9 @@ import {ElementWidth} from '../../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH
-})
+const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
+  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
+}))
 
 interface Props {
   queryRef: PreloadedQuery<OrgMembersQuery>
@@ -35,6 +35,9 @@ const OrgMembers = (props: Props) => {
     graphql`
       fragment OrgMembers_viewer on Query @refetchable(queryName: "OrgMembersPaginationQuery") {
         viewer {
+          featureFlags {
+            checkoutFlow
+          }
           organization(orgId: $orgId) {
             ...OrgMemberRow_organization
             name
@@ -67,7 +70,8 @@ const OrgMembers = (props: Props) => {
   )
   const {data} = paginationRes
   const {viewer} = data
-  const {organization} = viewer
+  const {organization, featureFlags} = viewer
+  const {checkoutFlow} = featureFlags
   if (!organization) return null
   const {organizationUsers, name: orgName, isBillingLeader} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
@@ -104,6 +108,7 @@ const OrgMembers = (props: Props) => {
 
   return (
     <StyledPanel
+      isWide={checkoutFlow}
       label='Organization Members'
       controls={
         isBillingLeader && (

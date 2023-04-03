@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.97.0 2023-Mar-30
+
+### Added
+
+- **team-health**: calculate & write sentiment scores for reflections & retro meetings (#7671)
+- remove proration (#7721)
+
+### Changed
+
+- add libvips to dist (#7911)
+- Migrate MeetingTemplate table (Phase 2 of 3) (#7800)
+
 ## 6.96.1 2023-Mar-28
 
 ### Fixed
