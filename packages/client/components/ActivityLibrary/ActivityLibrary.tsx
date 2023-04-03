@@ -155,13 +155,13 @@ export const ActivityLibrary = (props: Props) => {
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
       </ActivityLibraryMobileHeader>
 
-      <ScrollArea.Root className='h-full w-full overflow-hidden'>
-        <ScrollArea.Viewport className='flex h-full flex-col md:mx-[15%]'>
-          <div className='ml-2 flex gap-x-2'>
+      <ScrollArea.Root className='w-full'>
+        <ScrollArea.Viewport className='w-full'>
+          <div className='flex gap-x-2 px-4 md:mx-[15%] md:pb-4'>
             {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
               <Link
                 className={clsx(
-                  'cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
+                  'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
                   category === selectedCategory && searchQuery.length === 0
                     ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white focus:text-white']
                     : 'bg-slate-200'
@@ -174,7 +174,12 @@ export const ActivityLibrary = (props: Props) => {
               </Link>
             ))}
           </div>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation='horizontal' className='hidden' />
+      </ScrollArea.Root>
 
+      <ScrollArea.Root className='h-full w-full overflow-hidden'>
+        <ScrollArea.Viewport className='flex h-full flex-col md:mx-[15%]'>
           {templatesToRender.length === 0 ? (
             <div className='mx-auto flex p-2 text-slate-700'>
               <img className='w-32' src={halloweenRetrospectiveTemplate} />
@@ -189,7 +194,7 @@ export const ActivityLibrary = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className='mx-auto grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
+            <div className='mx-auto mt-1 grid auto-rows-[1fr] grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
               {templatesToRender.map((template) => {
                 const templateIllustration =
                   activityIllustrations[template.id as keyof typeof activityIllustrations]

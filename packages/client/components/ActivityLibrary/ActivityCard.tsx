@@ -5,7 +5,7 @@ import {MeetingTypeEnum} from '../../__generated__/ActivityLibraryQuery.graphql'
 const ActivityCardImage = (props: PropsWithChildren<React.ImgHTMLAttributes<HTMLImageElement>>) => {
   const {className, src} = props
 
-  return <img className={clsx('max-h-16 w-auto object-contain sm:max-h-28', className)} src={src} />
+  return <img className={clsx('h-16 w-auto object-contain sm:h-24', className)} src={src} />
 }
 
 const ActivityCardTitle = (props: ComponentPropsWithoutRef<'div'>) => {
