@@ -181,7 +181,12 @@ const OrgPlanDrawer = (props: Props) => {
     })
   }
   return (
-    <ResponsiveDashSidebar isOpen={showDrawer} onToggle={toggleSidebar} isRightDrawer>
+    <ResponsiveDashSidebar
+      isOpen={showDrawer}
+      onToggle={toggleSidebar}
+      isRightDrawer
+      sidebarWidth={DiscussionThreadEnum.WIDTH}
+    >
       <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
         <DrawerHeader>
           <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
