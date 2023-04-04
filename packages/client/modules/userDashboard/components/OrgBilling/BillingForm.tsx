@@ -27,7 +27,7 @@ const StyledForm = styled('form')({
 })
 
 const PaymentWrapper = styled('div')({
-  height: 160
+  // height: 160
 })
 
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
@@ -58,43 +58,6 @@ export default function BillingForm(props: Props) {
 
   // TODO: implement in: https://github.com/ParabolInc/parabol/issues/7693
   // look at: https://stripe.com/docs/payments/quickstart
-  // const handleSubmit = async () => {
-  //   setIsLoading(false)
-  // }
-
-  // useEffect(() => {
-  //   if (!stripe) {
-  //     return
-  //   }
-
-  //   const clientSecret = new URLSearchParams(window.location.search).get(
-  //     'payment_intent_client_secret'
-  //   )
-  //   console.log('🚀 ~ clientSecret:', clientSecret)
-
-  //   if (!clientSecret) {
-  //     return
-  //   }
-
-  //   stripe.retrievePaymentIntent(clientSecret).then(({paymentIntent}) => {
-  //     console.log('🚀 ~ paymentIntent:', paymentIntent)
-
-  //     switch (paymentIntent?.status) {
-  //       case 'succeeded':
-  //         setMessage('Payment succeeded!')
-  //         break
-  //       case 'processing':
-  //         setMessage('Your payment is processing.')
-  //         break
-  //       case 'requires_payment_method':
-  //         setMessage('Your payment was not successful, please try again.')
-  //         break
-  //       default:
-  //         setMessage('Something went wrong.')
-  //         break
-  //     }
-  //   })
-  // }, [stripe])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -111,22 +74,10 @@ export default function BillingForm(props: Props) {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: 'http://localhost:3000',
-        payment_method_data: {
-          billing_details: {
-            name: 'Dave',
-            address: {
-              line1: '510 Townsend St',
-              line2: '5103 Townsend St',
-              city: 'San Francisco',
-              country: 'US',
-              postal_code: '94107',
-              state: 'CA'
-            }
-          }
-        }
+        return_url: 'http://localhost:3000'
       }
     })
+
     console.log('🚀 ~ error:', error)
 
     // This point will only be reached if there is an immediate error when
@@ -151,12 +102,7 @@ export default function BillingForm(props: Props) {
         <PaymentElement
           id='payment-element'
           options={{
-            layout: 'tabs',
-            fields: {
-              billingDetails: {
-                address: 'never'
-              }
-            }
+            layout: 'tabs'
           }}
         />
       </PaymentWrapper>
