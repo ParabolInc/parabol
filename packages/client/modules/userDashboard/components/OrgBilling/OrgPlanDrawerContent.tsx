@@ -51,7 +51,7 @@ const Link = styled('a')({
   color: PALETTE.SKY_500,
   fontWeight: 600,
   textDecoration: 'none',
-  '&:hover': {
+  '&:hover, &:focus': {
     color: PALETTE.SKY_500,
     textDecoration: 'underline'
   }
