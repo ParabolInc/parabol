@@ -74,6 +74,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     }
 
     EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, history})
+    closeModal()
   }
 
   const fromNow = useMemo(() => {
