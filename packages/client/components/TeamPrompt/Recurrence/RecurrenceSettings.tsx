@@ -221,7 +221,6 @@ export const RecurrenceSettings = (props: Props) => {
       setRecurrenceInterval(interval)
       setIntervalError(error)
     } catch (error) {
-      console.error(error)
       setIntervalError('Interval must be number')
     }
   }
