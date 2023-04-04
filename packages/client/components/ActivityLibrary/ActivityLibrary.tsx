@@ -202,7 +202,10 @@ export const ActivityLibrary = (props: Props) => {
                 return (
                   <Link
                     key={template.id}
-                    to={`/activity-library/details/${template.id}`}
+                    to={{
+                      pathname: `/activity-library/details/${template.id}`,
+                      state: {prevCategory: selectedCategory}
+                    }}
                     className='flex focus:rounded-md focus:outline-primary'
                   >
                     <ActivityLibraryCard

@@ -89,7 +89,7 @@ const ActivityDetails = (props: Props) => {
     (edge) => edge.node.id === templateId && edge.node.type === 'retrospective'
   )?.node
 
-  const history = useHistory()
+  const history = useHistory<{prevCategory?: string}>()
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -141,7 +141,10 @@ const ActivityDetails = (props: Props) => {
     <div className='flex h-full bg-white'>
       <div className='ml-4 mt-4'>
         <div className='flex w-max items-center'>
-          <Link className='mr-4' to='/activity-library'>
+          <Link
+            className='mr-4'
+            to={`/activity-library/category/${history.location.state?.prevCategory ?? category}`}
+          >
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
           <div className='w-max text-xl font-semibold'>Start Activity</div>
