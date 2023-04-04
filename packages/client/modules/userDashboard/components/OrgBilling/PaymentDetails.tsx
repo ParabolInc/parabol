@@ -1,4 +1,7 @@
 import styled from '@emotion/styled'
+import {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
+import graphql from 'babel-plugin-relay/macro'
+import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
@@ -13,6 +16,7 @@ import {ElementWidth} from '../../../../types/constEnums'
 import {CompletedHandler} from '../../../../types/relayMutations'
 import {CreatePaymentIntentMutation as TCreatePaymentIntentMutation} from '../../../../__generated__/CreatePaymentIntentMutation.graphql'
 import BillingForm from './BillingForm'
+import {MONTHLY_PRICE} from '../../../../utils/constants'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -125,10 +129,31 @@ const stripeElementOptions = {
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
-const PaymentDetails = () => {
+type Props = {
+  organizationRef: PaymentDetails_organization$key
+}
+
+const PaymentDetails = (props: Props) => {
+  const {organizationRef} = props
   const [clientSecret, setClientSecret] = useState('')
   const atmosphere = useAtmosphere()
   const {onError} = useMutationProps()
+
+  const organization = useFragment(
+    graphql`
+      fragment PaymentDetails_organization on Organization {
+        tier
+        orgUserCount {
+          activeUserCount
+        }
+      }
+    `,
+    organizationRef
+  )
+  console.log('🚀 ~ organization:', organization)
+  const {orgUserCount} = organization
+  const {activeUserCount} = orgUserCount
+  const price = activeUserCount * MONTHLY_PRICE
 
   useEffect(() => {
     const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
@@ -183,12 +208,12 @@ const PaymentDetails = () => {
               <InfoText>
                 {'Active users are anyone who uses Parabol within a billing period'}
               </InfoText>
-              <Subtitle>{'27'}</Subtitle>
+              <Subtitle>{activeUserCount}</Subtitle>
             </ActiveUserBlock>
             <Divider />
             <TotalBlock>
               <Subtitle>{'Total'}</Subtitle>
-              <Subtitle>{'$162.00'}</Subtitle>
+              <Subtitle>{`$${price}.00`}</Subtitle>
             </TotalBlock>
             <InfoText>{'All prices are in USD'}</InfoText>
           </Content>
