@@ -73,6 +73,10 @@ interface Props {
 }
 
 const TemplateSharing = (props: Props) => {
+  const {isOwner} = props
+
+  if (!isOwner) return null
+
   return (
     <>
       <HR />
