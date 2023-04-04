@@ -173,13 +173,14 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       return false
     }
     submitMutation()
-    const {token, error, ga4Args} = await getTokenFromSSO(url)
-    if (!token) {
-      onError(new Error(error || 'Error logging in'))
+    const response = await getTokenFromSSO(url)
+    if ('error' in response) {
+      onError(new Error(response.error || 'Error logging in'))
       return true
     }
+    const {token, ga4Args} = response
     atmosphere.setAuthToken(token)
-    emitGA4SignUpEvent(ga4Args!)
+    emitGA4SignUpEvent(ga4Args)
     if (invitationToken) {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       AcceptTeamInvitationMutation(

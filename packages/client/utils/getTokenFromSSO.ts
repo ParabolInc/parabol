@@ -1,11 +1,16 @@
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import {GA4SignUpEventEmissionRequiredArgs} from './handleSuccessfulLogin'
 
-type ReturnType = {
-  token?: string
-  error?: string
-  ga4Args?: GA4SignUpEventEmissionRequiredArgs
+type SucessReturnType = {
+  token: string
+  ga4Args: GA4SignUpEventEmissionRequiredArgs
 }
+
+type ErrorReturnType = {
+  error: string
+}
+
+type ReturnType = SucessReturnType | ErrorReturnType
 
 const getTokenFromSSO = (url: string): ReturnType | Promise<ReturnType> => {
   // It's possible we prematurely opened a popup named SSO at the URL about:blank to avoid popup blockers
@@ -24,14 +29,19 @@ const getTokenFromSSO = (url: string): ReturnType | Promise<ReturnType> => {
       if (event.origin !== window.location.origin) return
 
       const params = new URLSearchParams(popup.location.search)
-      const userId = params.get('userId')!
+      const userId = params.get('userId')
       const isNewUser = params.get('isNewUser') === 'true'
       const isPatient0 = params.get('isPatient0') === 'true'
 
       window.clearInterval(closeCheckerId)
       popup?.close()
       window.removeEventListener('message', handler)
-      resolve({token, error, ga4Args: {userId, isNewUser, isPatient0}})
+
+      if (userId) {
+        resolve({token, ga4Args: {userId, isNewUser, isPatient0}})
+      } else {
+        resolve({error: 'userId is null'})
+      }
     }
 
     closeCheckerId = window.setInterval(() => {

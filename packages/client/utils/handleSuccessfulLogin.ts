@@ -42,7 +42,8 @@ const handleSuccessfulLogin = (payload: Payload) => {
   if (!email || !userId) return
   window.localStorage.setItem(LocalStorageKey.EMAIL, email)
   safeIdentify(userId, email)
-  emitGA4SignUpEvent({...payload, isPatient0: payload.user.isPatient0})
+  const isNewUser = payload?.isNewUser ?? false
+  emitGA4SignUpEvent({isNewUser, userId, isPatient0: payload.user.isPatient0})
 }
 
 export {GA4SignUpEventEmissionRequiredArgs, emitGA4SignUpEvent, handleSuccessfulLogin}

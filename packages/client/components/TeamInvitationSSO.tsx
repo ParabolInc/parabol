@@ -27,13 +27,14 @@ const TeamInvitationSSO = (props: Props) => {
     const loginWithSAML = async () => {
       const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)!
       submitMutation()
-      const {token, error, ga4Args} = await getTokenFromSSO(ssoURL)
-      if (!token) {
-        onError(new Error(error || 'Error logging in'))
+      const response = await getTokenFromSSO(ssoURL)
+      if ('error' in response) {
+        onError(new Error(response.error || 'Error logging in'))
         return
       }
+      const {token, ga4Args} = response
       atmosphere.setAuthToken(token)
-      emitGA4SignUpEvent(ga4Args!)
+      emitGA4SignUpEvent(ga4Args)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     }
     loginWithSAML().catch()
