@@ -10,11 +10,15 @@ const generateWholeMeetingSentimentScore = async (
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
   if (facilitator.featureFlags.includes('noAISummary') || reflections.length === 0) return undefined
-  return (
-    reflections
-      .filter(({sentimentScore}) => sentimentScore !== undefined)
-      .reduce((_prev, reflection) => _prev + reflection.sentimentScore!, 0.0) / reflections.length
+  const reflectionsWithSentimentScores = reflections.filter(
+    ({sentimentScore}) => sentimentScore !== undefined
   )
+  return reflectionsWithSentimentScores.length === 0
+    ? undefined
+    : reflectionsWithSentimentScores.reduce(
+        (_prev, reflection) => _prev + reflection.sentimentScore!,
+        0.0
+      ) / reflectionsWithSentimentScores.length
 }
 
 export default generateWholeMeetingSentimentScore
