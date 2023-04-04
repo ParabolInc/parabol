@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useCallback, useEffect} from 'react'
+import React, {useCallback} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useHistory} from 'react-router'
+import {Redirect, useHistory} from 'react-router'
 
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import {Link} from 'react-router-dom'
@@ -91,12 +91,6 @@ const ActivityDetails = (props: Props) => {
 
   const history = useHistory()
 
-  useEffect(() => {
-    if (!selectedTemplate) {
-      history.replace('/activity-library')
-    }
-  })
-
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
 
@@ -117,7 +111,7 @@ const ActivityDetails = (props: Props) => {
   }, [templateId, submitting, submitMutation, onError, onCompleted])
 
   if (!selectedTemplate) {
-    return null
+    return <Redirect to='/activity-library' />
   }
 
   const {name: templateName, prompts} = selectedTemplate
