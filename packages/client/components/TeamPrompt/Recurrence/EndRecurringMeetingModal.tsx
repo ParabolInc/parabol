@@ -1,8 +1,5 @@
 import React, {useMemo, useState} from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import DialogContainer from '../../DialogContainer'
-import {EndRecurringMeetingModal_meeting$key} from '~/__generated__/EndRecurringMeetingModal_meeting.graphql'
-import {useFragment} from 'react-relay'
 import clsx from 'clsx'
 import EndTeamPromptMutation from '../../../mutations/EndTeamPromptMutation'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -37,7 +34,7 @@ const RadioToggle = (props: RadioToggleProps) => {
 }
 
 interface Props {
-  meetingRef: EndRecurringMeetingModal_meeting$key
+  meetingId: string
   recurrenceRule?: string
   closeModal: () => void
 }
@@ -46,17 +43,8 @@ const ACTION_BUTTON_CLASSES =
   'text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
-  const {meetingRef, recurrenceRule, closeModal} = props
-  const meeting = useFragment(
-    graphql`
-      fragment EndRecurringMeetingModal_meeting on NewMeeting {
-        id
-      }
-    `,
-    meetingRef
-  )
+  const {meetingId, recurrenceRule, closeModal} = props
 
-  const {id: meetingId} = meeting
   const {onCompleted, onError} = useMutationProps()
   const {history} = useRouter()
 
@@ -68,7 +56,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
-        {meetingId: meetingId, recurrenceRule: null},
+        {meetingId, recurrenceRule: null},
         {onError, onCompleted}
       )
     }

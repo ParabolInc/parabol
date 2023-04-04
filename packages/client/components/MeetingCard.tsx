@@ -238,7 +238,6 @@ const MeetingCard = (props: Props) => {
             recurrenceRule
           }
         }
-        ...EndRecurringMeetingModal_meeting
       }
     `,
     meetingRef
@@ -344,7 +343,7 @@ const MeetingCard = (props: Props) => {
           {meeting &&
             endRecurringMeetingModal(
               <EndRecurringMeetingModal
-                meetingRef={meeting}
+                meetingId={meetingId}
                 recurrenceRule={isRecurring ? meetingSeries.recurrenceRule : undefined}
                 closeModal={toggleEndRecurringMeetingModal}
               />
