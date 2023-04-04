@@ -1,0 +1,23 @@
+extend type Mutation {
+  """
+  Enabled or disable the icebreaker round
+  """
+  setMeetingSettings(
+    settingsId: ID!
+
+    """
+    true to turn icebreaker phase on, false to turn it off
+    """
+    checkinEnabled: Boolean
+
+    """
+    true to turn team health phase on, false to turn it off
+    """
+    teamHealthEnabled: Boolean
+
+    """
+    disables anonymity of reflections
+    """
+    disableAnonymity: Boolean
+  ): SetMeetingSettingsPayload!
+}

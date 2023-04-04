@@ -46,10 +46,20 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
         ...NewMeetingSettingsToggleCheckIn_settings
         ...NewMeetingSettingsToggleTeamHealth_settings
         ...NewMeetingSettingsToggleAnonymity_settings
+        team {
+          organization {
+            featureFlags {
+              teamHealth
+            }
+          }
+        }
       }
     `,
     settingsRef
   )
+
+  // not the cleanest, but the feature flag is temporary
+  const teamHealth = settings.team.organization.featureFlags.teamHealth
 
   return (
     <>
@@ -63,7 +73,7 @@ const NewMeetingSettingsRetrospectiveSettings = (props: Props) => {
       {menuPortal(
         <div {...menuProps}>
           <NewMeetingSettingsToggleCheckInMenuEntry settingsRef={settings} />
-          <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />
+          {teamHealth && <NewMeetingSettingsToggleTeamHealthMenuEntry settingsRef={settings} />}
           <NewMeetingSettingsToggleAnonymityMenuEntry settingsRef={settings} />
         </div>
       )}

@@ -9,9 +9,12 @@ interface Input {
   totalVotes?: number
   selectedTemplateId?: string
   disableAnonymity?: boolean
+  addTeamHealth?: boolean
 }
 
-const phaseTypes = [
+const phaseTypes = ['checkin', 'reflect', 'group', 'vote', 'discuss'] as NewMeetingPhaseTypeEnum[]
+
+const teamHealthPhaseTypes = [
   'checkin',
   'TEAM_HEALTH',
   'reflect',
@@ -26,8 +29,17 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
   selectedTemplateId: string
   disableAnonymity: boolean
   constructor(input: Input) {
-    const {teamId, id, maxVotesPerGroup, selectedTemplateId, totalVotes, disableAnonymity} = input
-    super({teamId, id, meetingType: 'retrospective', phaseTypes})
+    const {
+      teamId,
+      id,
+      maxVotesPerGroup,
+      selectedTemplateId,
+      totalVotes,
+      disableAnonymity,
+      addTeamHealth
+    } = input
+    const featurePhaseTypes = addTeamHealth ? teamHealthPhaseTypes : phaseTypes
+    super({teamId, id, meetingType: 'retrospective', phaseTypes: featurePhaseTypes})
     this.maxVotesPerGroup =
       maxVotesPerGroup ?? MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
     this.totalVotes = totalVotes ?? MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
