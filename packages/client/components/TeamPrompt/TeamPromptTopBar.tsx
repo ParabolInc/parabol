@@ -13,6 +13,7 @@ import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {HumanReadableRecurrenceRule} from './Recurrence/HumanReadableRecurrenceRule'
 import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
+import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
@@ -102,6 +103,7 @@ const TeamPromptTopBar = (props: Props) => {
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
         ...UpdateRecurrenceSettingsModal_meeting
+        ...EndRecurringMeetingModal_meeting
       }
     `,
     meetingRef
@@ -109,6 +111,8 @@ const TeamPromptTopBar = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
     useModal({id: 'updateRecurrenceSettingsModal'})
+  const {togglePortal: toggleEndRecurringMeetingModal, modalPortal: endRecurringMeetingModal} =
+    useModal({id: 'endRecurringMeetingModal'})
 
   const {viewerId} = atmosphere
   const {id: meetingId, name: meetingName, facilitatorUserId, meetingSeries} = meeting
@@ -151,6 +155,7 @@ const TeamPromptTopBar = (props: Props) => {
             <TeamPromptOptions
               meetingRef={meeting}
               openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
+              openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
             />
           </ButtonContainer>
         </RightSectionContainer>
@@ -160,6 +165,13 @@ const TeamPromptTopBar = (props: Props) => {
           meeting={meeting}
           recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
           closeModal={toggleRecurrenceSettingsModal}
+        />
+      )}
+      {endRecurringMeetingModal(
+        <EndRecurringMeetingModal
+          meetingRef={meeting}
+          recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
+          closeModal={toggleEndRecurringMeetingModal}
         />
       )}
     </MeetingTopBarStyles>
