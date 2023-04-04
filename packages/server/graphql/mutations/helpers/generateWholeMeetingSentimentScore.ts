@@ -9,7 +9,7 @@ const generateWholeMeetingSentimentScore = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  if (!facilitator.featureFlags.includes('aiSummary') || reflections.length === 0) return undefined
+  if (facilitator.featureFlags.includes('noAISummary') || reflections.length === 0) return undefined
   return (
     reflections
       .filter(({sentimentScore}) => sentimentScore !== undefined)

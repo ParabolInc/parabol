@@ -407,6 +407,15 @@ export const enum Threshold {
   UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
 }
 
+// Use these values for easier testing of team limits and usage stats
+export const enum ThresholdTest {
+  MIN_STICKY_TEAM_MEETING_ATTENDEES = 0,
+  MIN_STICKY_TEAM_MEETINGS = 0,
+  MAX_STARTER_TIER_TEAMS = 0,
+  STARTER_TIER_LOCK_AFTER_DAYS = 0,
+  STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
+}
+
 export const enum Times { // ms
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,

@@ -5,7 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
 import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
-import {getUserId, isTeamLead} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -31,7 +31,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isTeamLead(viewerId, teamId))) {
+    if (!(await isTeamLead(viewerId, teamId)) && !isSuperUser(authToken)) {
       return standardError(new Error('Not team lead'), {userId: viewerId})
     }
 
