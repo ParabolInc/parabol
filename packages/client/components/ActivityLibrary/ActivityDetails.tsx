@@ -38,6 +38,7 @@ const query = graphql`
             type
             category
             orgId
+            isFree
             ...RemoveTemplate_teamTemplates
             ...EditableTemplateName_teamTemplates
             ...ReflectTemplateDetailsTemplate @relay(mask: false)
@@ -59,6 +60,20 @@ const query = graphql`
     }
   }
 `
+
+interface DetailsBadgeProps {
+  className?: string
+  children?: React.ReactNode
+}
+
+const DetailsBadge = (props: DetailsBadgeProps) => {
+  const {className, children} = props
+  return (
+    <div className={clsx('w-min rounded-full px-3 py-1 text-xs font-semibold', className)}>
+      {children}
+    </div>
+  )
+}
 
 interface Props {
   queryRef: PreloadedQuery<ActivityDetailsQuery>
@@ -148,9 +163,9 @@ const ActivityDetails = (props: Props) => {
           />
           <div className='mx-auto'>
             <div className='mb-10 pl-14'>
-              <div className='flex h-8 items-center'>
+              <div className='mb-2 flex h-8 items-center'>
                 <EditableTemplateName
-                  className='mb-2 text-[32px]'
+                  className='text-[32px]'
                   key={templateId}
                   name={templateName}
                   templateId={templateId}
@@ -158,13 +173,16 @@ const ActivityDetails = (props: Props) => {
                   isOwner={isOwner}
                 />
               </div>
-              <div
-                className={clsx(
-                  'mb-4 w-min rounded-full px-3 py-1 text-xs font-semibold text-white',
-                  MeetingThemes[category].primary
-                )}
-              >
-                {CATEGORY_ID_TO_NAME[category]}
+              <div className='mb-4 flex gap-2'>
+                <DetailsBadge className={clsx(MeetingThemes[category].primary, 'text-white')}>
+                  {CATEGORY_ID_TO_NAME[category]}
+                </DetailsBadge>
+                {!selectedTemplate.isFree &&
+                  (lowestScope === 'PUBLIC' ? (
+                    <DetailsBadge className='bg-gold-300 text-grape-700'>Premium</DetailsBadge>
+                  ) : (
+                    <DetailsBadge className='bg-grape-700 text-white'>Custom</DetailsBadge>
+                  ))}
               </div>
               <div className='mb-8'>
                 {isOwner ? (
