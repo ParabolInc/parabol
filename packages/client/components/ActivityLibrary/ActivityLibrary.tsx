@@ -155,7 +155,9 @@ export const ActivityLibrary = (props: Props) => {
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex gap-x-2 px-4 md:mx-[15%] md:pb-4'>
-            {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
+            {(
+              Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>
+            ).map((category) => (
               <Link
                 className={clsx(
                   'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
@@ -206,9 +208,7 @@ export const ActivityLibrary = (props: Props) => {
                     <ActivityLibraryCard
                       className='flex-1'
                       key={template.id}
-                      category={
-                        template.category as Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>
-                      }
+                      category={template.category as CategoryID}
                       title={template.name}
                       imageSrc={activityIllustration}
                       badge={
