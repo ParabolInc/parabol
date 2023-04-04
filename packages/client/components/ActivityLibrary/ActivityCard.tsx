@@ -28,23 +28,9 @@ interface CardTheme {
   secondary: string
 }
 
-export const QUICK_START_CATEGORY_ID = 'recommended'
+export type CategoryID = 'retrospective' | 'estimation' | 'standup' | 'feedback' | 'strategy'
 
-export const CATEGORY_ID_TO_NAME = {
-  [QUICK_START_CATEGORY_ID]: 'Quick Start',
-  retrospective: 'Retrospective',
-  estimation: 'Estimation',
-  standup: 'Standup',
-  feedback: 'Feedback',
-  strategy: 'Strategy'
-}
-
-export type CategoryID = keyof typeof CATEGORY_ID_TO_NAME
-
-export const MeetingThemes: Record<
-  Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>,
-  CardTheme
-> = {
+export const MeetingThemes: Record<CategoryID, CardTheme> = {
   standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100'},
   estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100'},
   retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]'},
@@ -54,7 +40,7 @@ export const MeetingThemes: Record<
 
 export interface ActivityCardProps {
   className?: string
-  category: Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>
+  category: CategoryID
   title?: string
   imageSrc: string
   badge: React.ReactNode | null

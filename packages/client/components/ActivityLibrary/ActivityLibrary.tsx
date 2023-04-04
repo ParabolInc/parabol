@@ -15,6 +15,7 @@ import SearchBar from './SearchBar'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import clsx from 'clsx'
+import {CategoryID, MeetingThemes} from './ActivityCard'
 
 graphql`
   fragment ActivityLibrary_template on MeetingTemplate {
@@ -56,7 +57,7 @@ const getTemplateValue = (template: {name: string}) => template.name
 
 const QUICK_START_CATEGORY_ID = 'recommended'
 
-const CATEGORY_ID_TO_NAME = {
+export const CATEGORY_ID_TO_NAME: Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string> = {
   [QUICK_START_CATEGORY_ID]: 'Quick Start',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
@@ -65,18 +66,14 @@ const CATEGORY_ID_TO_NAME = {
   strategy: 'Strategy'
 }
 
-type CategoryID = keyof typeof CATEGORY_ID_TO_NAME
-
-// :TODO: (jmtaber129): Fold this into the 'MeetingThemes' to be added in
-// https://github.com/ParabolInc/parabol/pull/7908.
-const CATEGORY_ID_TO_COLOR_CLASS = {
+const CategoryIDToColorClass = {
   [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
-  retrospective: 'bg-grape-500',
-  estimation: 'bg-tomato-500',
-  standup: 'bg-aqua-400',
-  feedback: 'bg-jade-400',
-  strategy: 'bg-rose-500'
-}
+  ...Object.fromEntries(
+    Object.entries(MeetingThemes).map(([key, value]) => {
+      return [key, value.primary]
+    })
+  )
+} as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
 
 export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
@@ -153,23 +150,6 @@ export const ActivityLibrary = (props: Props) => {
       </ActivityLibraryHeader>
       <ActivityLibraryMobileHeader className='flex md:hidden' onClose={handleCloseClick}>
         <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
-        <div className='ml-2 flex gap-x-2'>
-          {(Object.keys(CATEGORY_ID_TO_NAME) as Array<CategoryID>).map((category) => (
-            <Link
-              className={clsx(
-                'cursor-pointer rounded-full px-4 py-2 text-xs font-semibold text-slate-700',
-                category === selectedCategory && searchQuery.length === 0
-                  ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white focus:text-white']
-                  : 'bg-slate-200'
-              )}
-              to={`/activity-library/category/${category}`}
-              onClick={() => resetQuery()}
-              key={category}
-            >
-              {CATEGORY_ID_TO_NAME[category]}
-            </Link>
-          ))}
-        </div>
       </ActivityLibraryMobileHeader>
 
       <ScrollArea.Root className='w-full'>
@@ -180,7 +160,7 @@ export const ActivityLibrary = (props: Props) => {
                 className={clsx(
                   'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-xs font-semibold text-slate-700',
                   category === selectedCategory && searchQuery.length === 0
-                    ? [CATEGORY_ID_TO_COLOR_CLASS[category], 'text-white focus:text-white']
+                    ? [CategoryIDToColorClass[category], 'text-white focus:text-white']
                     : 'bg-slate-200'
                 )}
                 to={`/activity-library/category/${category}`}

@@ -9,13 +9,7 @@ import IconLabel from '../IconLabel'
 import EditableTemplateName from '../../modules/meeting/components/EditableTemplateName'
 import TemplatePromptList from '../../modules/meeting/components/TemplatePromptList'
 import AddTemplatePrompt from '../../modules/meeting/components/AddTemplatePrompt'
-import {
-  ActivityCard,
-  CATEGORY_ID_TO_NAME,
-  CategoryID,
-  MeetingThemes,
-  QUICK_START_CATEGORY_ID
-} from './ActivityCard'
+import {ActivityCard, CategoryID, MeetingThemes} from './ActivityCard'
 import {activityIllustrations} from './ActivityIllustrations'
 import customTemplateIllustration from '../../../../static/images/illustrations/customTemplate.png'
 import makeTemplateDescription from '../../utils/makeTemplateDescription'
@@ -30,6 +24,7 @@ import JiraSVG from '../JiraSVG'
 import GitLabSVG from '../GitLabSVG'
 import AzureDevOpsSVG from '../AzureDevOpsSVG'
 import JiraServerSVG from '../JiraServerSVG'
+import {CATEGORY_ID_TO_NAME} from './ActivityLibrary'
 
 const query = graphql`
   query ActivityDetailsQuery {
@@ -131,6 +126,8 @@ const ActivityDetails = (props: Props) => {
     activityIllustrations[selectedTemplate.id as keyof typeof activityIllustrations]
   const activityIllustration = templateIllustration ?? customTemplateIllustration
 
+  const category = selectedTemplate.category as CategoryID
+
   return (
     <div className='flex h-full bg-white'>
       <div className='ml-4 mt-4'>
@@ -145,9 +142,7 @@ const ActivityDetails = (props: Props) => {
         <div className='mx-auto flex justify-center'>
           <ActivityCard
             className='h-[200px] w-80'
-            category={
-              selectedTemplate.category as Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>
-            }
+            category={category}
             imageSrc={activityIllustration}
             badge={null}
           />
@@ -166,16 +161,10 @@ const ActivityDetails = (props: Props) => {
               <div
                 className={clsx(
                   'mb-4 w-min rounded-full px-3 py-1 text-xs font-semibold text-white',
-                  MeetingThemes[
-                    selectedTemplate.category as Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>
-                  ].primary
+                  MeetingThemes[category].primary
                 )}
               >
-                {
-                  CATEGORY_ID_TO_NAME[
-                    selectedTemplate.category as Exclude<CategoryID, typeof QUICK_START_CATEGORY_ID>
-                  ]
-                }
+                {CATEGORY_ID_TO_NAME[category]}
               </div>
               <div className='mb-8'>
                 {isOwner ? (
@@ -217,16 +206,6 @@ const ActivityDetails = (props: Props) => {
                   <b>Tip:</b> push takeaway tasks to your backlog
                 </div>
               </div>
-              {/* {isOwner && (
-                <RemoveTemplate
-                  templateId={templateId}
-                  teamId={selectedTemplate.teamId!}
-                  teamTemplates={teamTemplates}
-                  gotoPublicTemplates={() => history.replace('/activity-library')}
-                  type='retrospective'
-                />
-              )} */}
-              {/* {showClone && <CloneTemplate onClick={onClone} canClone={canClone} />} */}
             </div>
             <TemplatePromptList isOwner={isOwner} prompts={prompts!} templateId={templateId} />
             {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts!} />}
