@@ -28,6 +28,8 @@ reviewers:
       - none
     designers:
       - none
+    devops:
+      - none
 
   defaults:
     - developers
