@@ -27,7 +27,8 @@
   ],
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    // .eslint is important! otherwise it'll remove unreachable code on save
+    "source.fixAll.eslint": true
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
@@ -49,6 +50,9 @@
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
   "search.exclude": {
-    "**/__generated__": true
+    "**/__generated__": true,
+    "**/graphql/private/schema.graphql": true,
+    "**/graphql/public/schema.graphql": true,
+    "**/resolverTypes.ts": true
   }
 }

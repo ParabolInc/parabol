@@ -29,5 +29,3 @@ type StartTeamPromptSuccess {
   """
   team: Team!
 }
-
-extend union TeamSubscriptionPayload = StartTeamPromptSuccess

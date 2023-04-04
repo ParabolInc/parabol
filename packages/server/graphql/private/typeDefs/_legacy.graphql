@@ -1086,7 +1086,7 @@ type JiraServerIssue implements TaskIntegration {
   """
   The url to access the issue
   """
-  url: URL!
+  url: String!
 
   """
   The plaintext summary of the jira issue

@@ -1,23 +1,12 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId} from '../../utils/authorization'
-import getPubSub from '../../utils/getPubSub'
-import {GQLContext} from '../graphql'
-import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
-export default {
-  type: new GraphQLNonNull(MeetingSubscriptionPayload),
-  args: {
-    meetingId: {
-      type: new GraphQLNonNull(GraphQLID)
-    }
-  },
-  subscribe: async (
-    _source: unknown,
-    {meetingId}: {meetingId: string},
-    {authToken}: GQLContext
-  ) => {
+import getRethink from '../../../database/rethinkDriver'
+import {getUserId} from '../../../utils/authorization'
+import getPubSub from '../../../utils/getPubSub'
+import {SubscriptionResolvers} from '../resolverTypes'
+
+const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
+  subscribe: async (_source, {meetingId}, {authToken}) => {
     // AUTH
     const r = await getRethink()
     const viewerId = getUserId(authToken)
@@ -32,3 +21,5 @@ export default {
     return getPubSub().subscribe([channelName])
   }
 }
+
+export default meetingSubscription

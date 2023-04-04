@@ -1,13 +1,10 @@
-import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getUserId, isAuthenticated} from '../../utils/authorization'
-import getPubSub from '../../utils/getPubSub'
-import {GQLContext} from '../graphql'
-import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
+import {getUserId, isAuthenticated} from '../../../utils/authorization'
+import getPubSub from '../../../utils/getPubSub'
+import {SubscriptionResolvers} from '../resolverTypes'
 
-export default {
-  type: new GraphQLNonNull(TeamSubscriptionPayload),
-  subscribe: (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
+const teamSubscription: SubscriptionResolvers['teamSubscription'] = {
+  subscribe: async (_source, _args, {authToken}) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
@@ -20,3 +17,4 @@ export default {
     return getPubSub().subscribe(channelNames)
   }
 }
+export default teamSubscription

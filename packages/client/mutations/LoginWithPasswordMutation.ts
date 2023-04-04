@@ -10,7 +10,7 @@ const mutation = graphql`
   mutation LoginWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $isInvitation: Boolean!
   ) {
     loginWithPassword(email: $email, password: $password) {

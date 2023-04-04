@@ -10,7 +10,7 @@ import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirec
 const mutation = graphql`
   mutation LoginWithGoogleMutation(
     $code: ID!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $segmentId: ID
     $isInvitation: Boolean!
   ) {

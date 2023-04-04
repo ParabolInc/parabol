@@ -1,8 +1,9 @@
+import base64url from 'base64url'
+import crypto from 'crypto'
 import faker from 'faker'
 import fetch from 'node-fetch'
 import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import persistFunction from '../graphql/persistFunction'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
 const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
@@ -36,9 +37,19 @@ export const drainRethink = async () => {
   r.getPoolMaster()?.drain()
 }
 
+const persistFunction = (text: string) => {
+  const hasher = crypto.createHash('md5')
+  hasher.update(text)
+  const unsafeId = hasher.digest('base64')
+  const safeId = base64url.fromBase64(unsafeId)
+  const prefix = text[0]
+  const id = `${prefix}_${safeId}`
+  return id
+}
+
 const persistQuery = async (query: string) => {
   const r = await getRethink()
-  const id = await persistFunction(query.trim())
+  const id = persistFunction(query.trim())
   const record = {
     id,
     query,
@@ -80,7 +91,7 @@ const SIGNUP_WITH_PASSWORD_MUTATION = `
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
-    $invitationToken: ID! = ""
+    $invitationToken: ID!
     $segmentId: ID
   ) {
     signUpWithPassword(email: $email, password: $password, invitationToken: $invitationToken, segmentId: $segmentId) {
@@ -124,7 +135,8 @@ export const signUpWithEmail = async (emailInput: string) => {
     variables: {
       email,
       password,
-      segmentId: null
+      segmentId: null,
+      invitationToken: ''
     }
   })
 

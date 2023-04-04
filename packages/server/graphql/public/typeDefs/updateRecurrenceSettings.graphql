@@ -25,5 +25,3 @@ type UpdateRecurrenceSettingsSuccess {
   """
   meeting: TeamPromptMeeting!
 }
-
-extend union TeamSubscriptionPayload = UpdateRecurrenceSettingsSuccess

@@ -35,5 +35,3 @@ type UpsertTeamPromptResponseSuccess {
 }
 
 union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload
-
-extend union MeetingSubscriptionPayload = UpsertTeamPromptResponseSuccess
