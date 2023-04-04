@@ -12,6 +12,30 @@ import UpdateRecurrenceSettingsMutation from '../../../mutations/UpdateRecurrenc
 import {RRule} from 'rrule'
 import {humanReadableCountdown} from '../../../utils/date/relativeDate'
 
+interface RadioToggleProps {
+  checked: boolean
+  value: boolean
+  setChecked: (isChecked: boolean) => void
+  label: string
+}
+
+const RadioToggle = (props: RadioToggleProps) => {
+  const {checked, value, setChecked, label} = props
+  return (
+    <label className='flex items-center'>
+      <input
+        className='h-5 w-5'
+        name='isMeetingOnly'
+        type='radio'
+        checked={checked}
+        value={`${value}`}
+        onChange={() => setChecked(value)}
+      />
+      <div className='ml-4'>{label}</div>
+    </label>
+  )
+}
+
 interface Props {
   meetingRef: EndRecurringMeetingModal_meeting$key
   recurrenceRule?: string
@@ -64,31 +88,21 @@ export const EndRecurringMeetingModal = (props: Props) => {
   return (
     <DialogContainer className='p-4'>
       <div className='mb-4 text-xl font-semibold'>End Meeting</div>
-      <label className='mb-2 flex items-center'>
-        <input
-          className='h-5 w-5'
-          name='isMeetingOnly'
-          type='radio'
+      <div className='mb-4 flex flex-col gap-2'>
+        <RadioToggle
           checked={isMeetingOnly}
-          value={'true'}
-          onChange={() => setIsMeetingOnly(true)}
+          value={true}
+          setChecked={setIsMeetingOnly}
+          label={`End this meeting (will restart ${fromNow ? `in ${fromNow}` : 'soon'})`}
         />
-        <div className='ml-4'>
-          End this meeting (will restart {fromNow ? `in ${fromNow}` : 'soon'})
-        </div>
-      </label>
-      <label className='flex items-center'>
-        <input
-          className='h-5 w-5'
-          name='isMeetingOnly'
-          type='radio'
+        <RadioToggle
           checked={!isMeetingOnly}
-          value={'false'}
-          onChange={() => setIsMeetingOnly(false)}
+          value={false}
+          setChecked={setIsMeetingOnly}
+          label={"End this meeting and don't restart"}
         />
-        <div className='ml-4'>End this meeting and don't restart</div>
-      </label>
-      <div className='mt-4 flex justify-end gap-2.5'>
+      </div>
+      <div className='flex justify-end gap-2.5'>
         <button
           className={clsx(
             'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-100',
