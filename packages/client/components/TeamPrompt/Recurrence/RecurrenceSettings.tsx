@@ -11,6 +11,8 @@ import DropdownMenuToggle from '../../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
 import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
+import Legitity from '../../../validation/Legitity'
+import {isNotNull} from '../../../utils/predicates'
 dayjs.extend(utcPlugin)
 
 export const ALL_DAYS: Day[] = [
@@ -88,13 +90,18 @@ const Input = ({
   children,
   className,
   label,
+  hasError,
   ...rest
-}: PropsWithChildren<{label?: React.ReactNode} & React.InputHTMLAttributes<HTMLInputElement>>) => {
+}: PropsWithChildren<
+  {label?: React.ReactNode; hasError: boolean} & React.InputHTMLAttributes<HTMLInputElement>
+>) => {
   const focusStyles = 'focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
   const activeStyles =
     'active:border-slate-600 active:outline active:outline-slate-600 active:outline-1'
   const baseStyles =
     'form-input text-base font-sans p-2 border border-solid border-slate-500 rounded hover:border-slate-600'
+  const errorStyles =
+    'border-tomato-600 focus:border-tomato-600 focus:ring-tomato-600 active:border-tomato-600 active:outline-tomato-600'
 
   const hasLabel = !!label
   if (!hasLabel)
@@ -103,7 +110,17 @@ const Input = ({
   return (
     <div>
       {label}
-      <input className={clsx('mt-1', className, baseStyles, focusStyles, activeStyles)} {...rest}>
+      <input
+        className={clsx(
+          'mt-1',
+          baseStyles,
+          focusStyles,
+          activeStyles,
+          className,
+          hasError && errorStyles
+        )}
+        {...rest}
+      >
         {children}
       </input>
     </div>
@@ -116,10 +133,35 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={clsx('max-w-xs text-sm italic text-slate-600', className)} {...rest}>
+    <div
+      className={clsx('max-w-xs break-words text-sm italic text-slate-600', className)}
+      {...rest}
+    >
       {children}
     </div>
   )
+}
+
+const Error = ({children, ...rest}: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
+  return (
+    <div className='text-sm text-tomato-500' {...rest}>
+      {children}
+    </div>
+  )
+}
+
+const validateInterval = (interval: number) => {
+  if (!Number.isSafeInteger(interval)) return 'Interval must be number'
+  if (interval < 1 || interval > 52) return 'Interval must be between 1 and 52'
+
+  return undefined
+}
+
+const validateMeetingSeriesName = (name: string) => {
+  const legitity = new Legitity(name)
+  legitity.trim().max(50, 'Meeting series name must be less than 50 characters')
+
+  return legitity.error
 }
 
 export interface RecurrenceSettings {
@@ -137,9 +179,11 @@ export const RecurrenceSettings = (props: Props) => {
   const {parentId, onRecurrenceSettingsUpdated, recurrenceSettings} = props
   const {name: meetingSeriesName, rrule: recurrenceRule} = recurrenceSettings
   const [name, setName] = React.useState(meetingSeriesName)
+  const [nameError, setNameError] = React.useState<string | undefined>()
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     recurrenceRule ? recurrenceRule.options.interval : 1
   )
+  const [intervalError, setIntervalError] = React.useState<string | undefined>()
   const [recurrenceDays, setRecurrenceDays] = React.useState<Day[]>(
     recurrenceRule
       ? recurrenceRule.options.byweekday.map(
@@ -172,9 +216,13 @@ export const RecurrenceSettings = (props: Props) => {
   const handleIntervalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const interval = parseInt(e.target.value)
+      const error = validateInterval(interval)
+
       setRecurrenceInterval(interval)
+      setIntervalError(error)
     } catch (error) {
       console.error(error)
+      setIntervalError('Interval must be number')
     }
   }
 
@@ -187,12 +235,16 @@ export const RecurrenceSettings = (props: Props) => {
   }
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value
+    const res = validateMeetingSeriesName(name)
+
     setName(e.target.value)
+    setNameError(res)
   }
 
   useEffect(() => {
     const rrule =
-      recurrenceDays.length > 0
+      recurrenceDays.length > 0 && !intervalError
         ? new RRule({
             freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
@@ -204,6 +256,7 @@ export const RecurrenceSettings = (props: Props) => {
 
     onRecurrenceSettingsUpdated({name, rrule})
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime, name])
+  const hasErrors = !!nameError || !!intervalError
 
   return (
     <div className='space-y-4 p-4'>
@@ -212,11 +265,14 @@ export const RecurrenceSettings = (props: Props) => {
         <div className='flex items-center gap-2'>
           <Input
             className='h-[34px] w-[210px]'
+            hasError={!!nameError}
             id='series-title'
             type='text'
             placeholder='Standup'
             value={meetingSeriesName}
             onChange={handleNameChange}
+            min={1}
+            max={50}
             label={
               <Label className='block ' htmlFor='series-title'>
                 Series title
@@ -224,7 +280,8 @@ export const RecurrenceSettings = (props: Props) => {
             }
           />
           <Input
-            className='h-[34px] w-[100px]'
+            className={'h-[34px] w-[100px]'}
+            hasError={!!intervalError}
             id='series-interval'
             type='number'
             label={
@@ -239,12 +296,18 @@ export const RecurrenceSettings = (props: Props) => {
           />
           <div className='self-end py-2 text-sm'>{plural(recurrenceInterval, 'week')}</div>
         </div>
-        <Description>
-          The next meeting in this series will be called{' '}
-          <span className='font-semibold'>
-            "{meetingSeriesName || 'Standup'} - {dayjs(recurrenceStartTime).format('MMM DD')}"
-          </span>
-        </Description>
+        {hasErrors ? (
+          [nameError, intervalError]
+            .filter(isNotNull)
+            .map((error) => <Error key={error}>{error}</Error>)
+        ) : (
+          <Description>
+            The next meeting in this series will be called{' '}
+            <span className='font-semibold'>
+              "{meetingSeriesName || 'Standup'} - {dayjs(recurrenceStartTime).format('MMM DD')}"
+            </span>
+          </Description>
+        )}
       </div>
 
       <div className='space-y-1'>
