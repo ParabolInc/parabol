@@ -8,6 +8,7 @@ const createPaymentIntent: MutationResolvers['createPaymentIntent'] = async (_so
 
   // TODO: get the tier amount from the client. Do this is in: https://github.com/ParabolInc/parabol/issues/7693
   const paymentIntent = await manager.createPaymentIntent(1000)
+  console.log('🚀 ~ paymentIntent:', paymentIntent)
 
   const {client_secret: clientSecret} = paymentIntent
   const data = {clientSecret}
