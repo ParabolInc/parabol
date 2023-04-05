@@ -1,6 +1,6 @@
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from './safeIdentify'
-import {handleSuccessfulLogin_UserLogInPayload} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
+import {handleSuccessfulLogin_UserLogInPayload$data} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
 import ReactGA from 'react-ga4'
 
 import graphql from 'babel-plugin-relay/macro'
@@ -17,7 +17,7 @@ graphql`
   }
 `
 
-type Payload = Omit<handleSuccessfulLogin_UserLogInPayload, ' $refType'>
+type Payload = Omit<handleSuccessfulLogin_UserLogInPayload$data, ' $fragmentType'>
 type GA4SignUpEventEmissionRequiredArgs = {
   isNewUser: boolean
   userId: string
