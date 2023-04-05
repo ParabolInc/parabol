@@ -10,7 +10,7 @@ export const DEFAULT_TEAM_NAMES = [
   'Highly Caffeinated ☕',
   'Mute Slack & Chill 😎',
   'Friday Afternoon Meetings Should Be Illegal 🙈',
-  "MacGuyver's of Fixing Bugs 🛠️",
+  'MacGuyvers of Fixing Bugs 🛠️',
   'Verified Swifties 🤠',
   'Excel is Hell 🔥',
   'Ice Cold Seltzer ✨',
