@@ -4,12 +4,20 @@ import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
+import StyledError from '../../../../components/StyledError'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   paddingTop: 16,
+  wrap: 'nowrap',
+  flexDirection: 'column',
   width: '100%'
+})
+
+const ErrorMessage = styled(StyledError)({
+  width: '100%',
+  textAlign: 'center'
 })
 
 const StyledForm = styled('form')({
@@ -37,7 +45,7 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
 export default function BillingForm() {
   const stripe = useStripe()
   const elements = useElements()
-  const [message, setMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
 
@@ -48,9 +56,6 @@ export default function BillingForm() {
 
     const {error} = await stripe.confirmPayment({
       elements,
-      confirmParams: {
-        // return_url: 'http://localhost:3000' // required field but redirect preference disables it
-      },
       redirect: 'if_required' // https://stripe.com/docs/js/payment_intents/confirm_payment#confirm_payment_intent-options-redirect
     })
 
@@ -60,31 +65,21 @@ export default function BillingForm() {
 
     console.log('🚀 ~ error:', error)
 
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
+    // This point will only be reached if there is an immediate error when confirming the payment
     if (error?.type === 'card_error' || error?.type === 'validation_error') {
-      setMessage(error.message)
+      setErrorMessage(error.message)
     } else {
-      setMessage('An unexpected error occurred.')
+      setErrorMessage('An unexpected error occurred.')
     }
 
     setIsLoading(false)
   }
 
-  if (!stripe || !elements) return null
-
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <PaymentElement
-        id='payment-element'
-        options={{
-          layout: 'tabs'
-        }}
-      />
+      <PaymentElement id='payment-element' options={{layout: 'tabs'}} />
       <ButtonBlock>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
           {'Upgrade'}
         </UpgradeButton>
