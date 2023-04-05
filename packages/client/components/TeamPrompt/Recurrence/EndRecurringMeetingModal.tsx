@@ -8,6 +8,7 @@ import useRouter from '../../../hooks/useRouter'
 import UpdateRecurrenceSettingsMutation from '../../../mutations/UpdateRecurrenceSettingsMutation'
 import {RRule} from 'rrule'
 import {humanReadableCountdown} from '../../../utils/date/relativeDate'
+import {CompletedHandler} from '../../../types/relayMutations'
 
 interface RadioToggleProps {
   checked: boolean
@@ -40,7 +41,7 @@ interface Props {
 }
 
 const ACTION_BUTTON_CLASSES =
-  'text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
+  'font-sans text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
   const {meetingId, recurrenceRule, closeModal} = props
@@ -52,17 +53,21 @@ export const EndRecurringMeetingModal = (props: Props) => {
 
   const [isMeetingOnly, setIsMeetingOnly] = useState(true)
 
-  const onConfirm = () => {
+  const handleCompleted: CompletedHandler = () => {
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
         {meetingId, recurrenceRule: null},
         {onError, onCompleted}
       )
+    } else {
+      onCompleted()
     }
-
-    EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, history})
     closeModal()
+  }
+
+  const onConfirm = () => {
+    EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted: handleCompleted, onError, history})
   }
 
   const fromNow = useMemo(() => {
