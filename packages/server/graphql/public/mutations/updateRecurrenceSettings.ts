@@ -16,18 +16,15 @@ export const startNewMeetingSeries = async (
   teamId: string,
   meetingId: string,
   meetingName: string,
-  recurrenceRule: RRule
+  recurrenceRule: RRule,
+  meetingSeriesName?: string | null
 ) => {
   const now = new Date()
   const r = await getRethink()
 
-  // TODO: now, as new meeting series could be created from a new meeting view, let's grab the first part ie. "Standup - Jan 1" will be "Standup"
-  // TODO: this is a temporary solution, we should have a better way to handle this
-  const [cleanMeetingName] = meetingName.split('-')
-
   const newMeetingSeriesParams = {
     meetingType: 'teamPrompt',
-    title: cleanMeetingName.trim(),
+    title: meetingSeriesName || meetingName.split('-')[0].trim(), // if no name is provided, we use the name of the first meeting without the date
     recurrenceRule: recurrenceRule.toString(),
     // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
     duration: 0,
@@ -96,7 +93,7 @@ const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
 
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
   _source,
-  {meetingId, recurrenceRule},
+  {meetingId, recurrenceSettings},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
@@ -120,17 +117,21 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   if (meeting.meetingSeriesId) {
     const meetingSeries = await dataLoader.get('meetingSeries').loadNonNull(meeting.meetingSeriesId)
 
-    if (!recurrenceRule) {
+    if (!recurrenceSettings.rrule) {
       await stopMeetingSeries(meetingSeries)
       analytics.recurrenceStopped(viewerId, meetingSeries)
     } else {
-      await updateMeetingSeries(meetingSeries, recurrenceRule)
+      await updateMeetingSeries(meetingSeries, recurrenceSettings.rrule)
       analytics.recurrenceStarted(viewerId, meetingSeries)
+    }
+
+    if (recurrenceSettings.name) {
+      await updateMeetingSeriesQuery({title: recurrenceSettings.name}, meetingSeries.id)
     }
 
     dataLoader.get('meetingSeries').clear(meetingSeries.id)
   } else {
-    if (!recurrenceRule) {
+    if (!recurrenceSettings.rrule) {
       return standardError(
         new Error('When meeting is not recurring, recurrence rule has to be provided'),
         {userId: viewerId}
@@ -142,7 +143,8 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       teamId,
       meetingId,
       meeting.name,
-      recurrenceRule
+      recurrenceSettings.rrule,
+      recurrenceSettings.name
     )
     analytics.recurrenceStarted(viewerId, newMeetingSeries)
   }

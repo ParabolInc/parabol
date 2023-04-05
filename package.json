@@ -91,6 +91,7 @@
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
+    "@tailwindcss/forms": "^0.5.3",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
     "copy-webpack-plugin": "^11.0.0",

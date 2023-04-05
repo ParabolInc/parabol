@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
 import UpdateRecurrenceSettingsMutation from '~/mutations/UpdateRecurrenceSettingsMutation'
@@ -82,26 +82,39 @@ const ErrorContainer = styled('div')({
 
 interface Props {
   meeting: UpdateRecurrenceSettingsModal_meeting$key
-  recurrenceRule?: string
   closeModal: () => void
 }
 
 export const UpdateRecurrenceSettingsModal = (props: Props) => {
-  const {recurrenceRule: recurrenceRuleString, closeModal, meeting: meetingRef} = props
+  const {closeModal, meeting: meetingRef} = props
 
   const meeting = useFragment(
     graphql`
-      fragment UpdateRecurrenceSettingsModal_meeting on NewMeeting {
+      fragment UpdateRecurrenceSettingsModal_meeting on TeamPromptMeeting {
         id
+        meetingSeries {
+          id
+          title
+          recurrenceRule
+          cancelledAt
+        }
       }
     `,
     meetingRef
   )
 
+  const currentRecurrenceRule = meeting.meetingSeries?.recurrenceRule
   const atmosphere = useAtmosphere()
-  const [recurrenceRule, setRecurrenceRule] = useState<RRule | null>(
-    recurrenceRuleString ? RRule.fromString(recurrenceRuleString) : null
-  )
+  const isMeetingSeriesActive = meeting.meetingSeries?.cancelledAt === null
+  const [newRecurrenceSettings, setNewRecurrenceSettings] = useState<RecurrenceSettings>(() => ({
+    name: meeting.meetingSeries?.title || '',
+    rrule:
+      isMeetingSeriesActive && currentRecurrenceRule
+        ? RRule.fromString(currentRecurrenceRule)
+        : null
+  }))
+  const [validationErrors, setValidationErrors] = useState<string[] | undefined>(undefined)
+
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const onRecurrenceSettingsUpdated: CompletedHandler<
     TUpdateRecurrenceSettingsMutation['response']
@@ -127,7 +140,13 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
 
     UpdateRecurrenceSettingsMutation(
       atmosphere,
-      {meetingId: meeting.id, recurrenceRule: recurrenceRule?.toString()},
+      {
+        meetingId: meeting.id,
+        recurrenceSettings: {
+          rrule: newRecurrenceSettings.rrule?.toString(),
+          name: newRecurrenceSettings.name
+        }
+      },
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
   }
@@ -138,26 +157,50 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
 
     UpdateRecurrenceSettingsMutation(
       atmosphere,
-      {meetingId: meeting.id, recurrenceRule: null},
+      {meetingId: meeting.id, recurrenceSettings: {rrule: null}},
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
   }
+
+  const handleNewRecurrenceSettings = (
+    newRecurrenceSettings: RecurrenceSettings,
+    errors: string[] | undefined
+  ) => {
+    setNewRecurrenceSettings(newRecurrenceSettings)
+    setValidationErrors(errors)
+  }
+
+  const canUpdate = useMemo(() => {
+    if (validationErrors?.length) return false
+    const isRecurrenceReenabled = !isMeetingSeriesActive && newRecurrenceSettings.rrule
+    if (isRecurrenceReenabled) return true
+
+    const hasRecurrenceSettingsChanged =
+      isMeetingSeriesActive && currentRecurrenceRule !== newRecurrenceSettings.rrule?.toString()
+    if (hasRecurrenceSettingsChanged) return true
+
+    const hasNameChanged =
+      isMeetingSeriesActive && meeting.meetingSeries?.title !== newRecurrenceSettings.name
+    if (hasNameChanged) return true
+
+    return false
+  }, [meeting, newRecurrenceSettings, currentRecurrenceRule, isMeetingSeriesActive])
 
   return (
     <UpdateRecurrenceSettingsModalRoot>
       <RecurrenceSettings
         parentId='updateRecurrenceSettingsModal'
-        recurrenceRule={recurrenceRule}
-        onRecurrenceRuleUpdated={setRecurrenceRule}
+        recurrenceSettings={newRecurrenceSettings}
+        onRecurrenceSettingsUpdated={handleNewRecurrenceSettings}
       />
       <StyledCloseButton onClick={closeModal}>
         <CloseIcon />
       </StyledCloseButton>
       <ActionsContainer>
-        {recurrenceRuleString && (
+        {isMeetingSeriesActive && (
           <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
         )}
-        <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!recurrenceRule}>
+        <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!canUpdate}>
           Update
         </UpdateButton>
       </ActionsContainer>
