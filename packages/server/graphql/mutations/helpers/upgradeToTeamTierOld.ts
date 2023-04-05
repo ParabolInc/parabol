@@ -1,4 +1,3 @@
-import {MONTHLY_PRICE} from 'parabol-client/utils/constants'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
@@ -11,7 +10,7 @@ import getCCFromCustomer from './getCCFromCustomer'
 
 const upgradeToTeamTierOld = async (
   orgId: string,
-  paymentMethodId: string,
+  source: string,
   email: string,
   dataLoader: DataLoaderWorker
 ) => {
@@ -30,19 +29,9 @@ const upgradeToTeamTierOld = async (
     .run()
 
   const manager = getStripeManager()
-
-  const customers = await manager.getCustomersByEmail(email)
-  console.log('🚀 ~ customers:', customers)
-  const existingCustomer = customers.data.find((customer) => customer.metadata.orgId === orgId)
-  const customer = existingCustomer ?? (await manager.createCustomer(orgId, email))
-  console.log('🚀 ~ customer:', customer)
-  const {id: customerId} = customer
-  const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
-  console.log('🚀 ~ res:', res)
-
-  // const customer = stripeId
-  //   ? await manager.updatePayment(stripeId, source)
-  //   : await manager.createCustomer(orgId, email, source)
+  const customer = stripeId
+    ? await manager.updatePayment(stripeId, source)
+    : await manager.createCustomer(orgId, email, source)
 
   let subscriptionFields = {}
   if (!stripeSubscriptionId) {
@@ -54,33 +43,33 @@ const upgradeToTeamTierOld = async (
     }
   }
 
-  // await Promise.all([
-  //   r({
-  //     updatedOrg: r
-  //       .table('Organization')
-  //       .get(orgId)
-  //       .update({
-  //         ...subscriptionFields,
-  //         // creditCard: await getCCFromCustomer(customer),
-  //         tier: 'team',
-  //         stripeId: customer.id,
-  //         tierLimitExceededAt: null,
-  //         scheduledLockAt: null,
-  //         lockedAt: null,
-  //         updatedAt: now
-  //       })
-  //   }).run(),
-  //   updateTeamByOrgId(
-  //     {
-  //       isPaid: true,
-  //       tier: 'team'
-  //     },
-  //     orgId
-  //   ),
-  //   removeTeamsLimitObjects(orgId, dataLoader)
-  // ])
+  await Promise.all([
+    r({
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          ...subscriptionFields,
+          creditCard: await getCCFromCustomer(customer),
+          tier: 'team',
+          stripeId: customer.id,
+          tierLimitExceededAt: null,
+          scheduledLockAt: null,
+          lockedAt: null,
+          updatedAt: now
+        })
+    }).run(),
+    updateTeamByOrgId(
+      {
+        isPaid: true,
+        tier: 'team'
+      },
+      orgId
+    ),
+    removeTeamsLimitObjects(orgId, dataLoader)
+  ])
 
-  // await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
 export default upgradeToTeamTierOld

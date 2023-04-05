@@ -5,6 +5,9 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Confetti from '../../../../components/Confetti'
 import StyledError from '../../../../components/StyledError'
+import UpgradeToTeamTierMutation from '../../../../mutations/UpgradeToTeamTierMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -42,36 +45,43 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   }
 }))
 
-export default function BillingForm() {
+type Props = {
+  orgId: string
+}
+
+export default function BillingForm(props: Props) {
+  const {orgId} = props
   const stripe = useStripe()
   const elements = useElements()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!stripe || !elements) return
     setIsLoading(true)
-
-    const {error} = await stripe.confirmPayment({
+    const {paymentIntent, error} = await stripe.confirmPayment({
       elements,
       redirect: 'if_required' // https://stripe.com/docs/js/payment_intents/confirm_payment#confirm_payment_intent-options-redirect
     })
-
-    if (!error) {
+    const {id: paymentIntentId, status} = paymentIntent
+    console.log('🚀 ~ paymentIntent:', paymentIntent)
+    if (!error && status === 'succeeded' && paymentIntentId) {
       setIsPaymentSuccessful(true)
-    }
-
-    console.log('🚀 ~ error:', error)
-
-    // This point will only be reached if there is an immediate error when confirming the payment
-    if (error?.type === 'card_error' || error?.type === 'validation_error') {
+      const handleCompleted = () => {}
+      UpgradeToTeamTierMutation(
+        atmosphere,
+        {orgId, paymentMethodId: paymentIntentId},
+        {onError, onCompleted: handleCompleted}
+      )
+    } else if (error?.type === 'card_error' || error?.type === 'validation_error') {
       setErrorMessage(error.message)
     } else if (error) {
       setErrorMessage('An unexpected error occurred.')
     }
-
     setIsLoading(false)
   }
 

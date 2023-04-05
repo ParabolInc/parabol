@@ -9,6 +9,7 @@ import {GQLContext} from '../graphql'
 import UpgradeToTeamTierPayload from '../types/UpgradeToTeamTierPayload'
 import hideConversionModal from './helpers/hideConversionModal'
 import upgradeToTeamTier from './helpers/upgradeToTeamTier'
+import upgradeToTeamTierOld from './helpers/upgradeToTeamTierOld'
 
 export default {
   type: UpgradeToTeamTierPayload,
@@ -19,13 +20,21 @@ export default {
       description: 'the org requesting the upgrade'
     },
     stripeToken: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The token that came back from stripe'
+    },
+    paymentMethodId: {
+      type: GraphQLID,
+      description: 'The payment method id'
     }
   },
   async resolve(
     _source: unknown,
-    {orgId, stripeToken}: {orgId: string; stripeToken: string},
+    {
+      orgId,
+      stripeToken,
+      paymentMethodId
+    }: {orgId: string; stripeToken?: string; paymentMethodId?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -53,7 +62,11 @@ export default {
     const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer!
     try {
-      await upgradeToTeamTier(orgId, stripeToken, email, dataLoader)
+      if (paymentMethodId) {
+        await upgradeToTeamTier(orgId, paymentMethodId, email, dataLoader)
+      } else if (stripeToken) {
+        await upgradeToTeamTierOld(orgId, stripeToken, email, dataLoader)
+      }
     } catch (e) {
       const param = (e as any)?.param
       const error: any = param ? new Error(param) : e

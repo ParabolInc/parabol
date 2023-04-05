@@ -3,13 +3,7 @@ import {PaymentDetails_organization$key} from '../../../../__generated__/Payment
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Divider} from '@mui/material'
-import {
-  Elements,
-  useElements,
-  useStripe,
-  PaymentElement,
-  LinkAuthenticationElement
-} from '@stripe/react-stripe-js'
+import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
 import React, {useEffect, useState} from 'react'
 import Panel from '../../../../components/Panel/Panel'
@@ -187,7 +181,7 @@ const PaymentDetails = (props: Props) => {
               }}
               stripe={stripePromise}
             >
-              <BillingForm />
+              <BillingForm orgId={orgId} />
             </Elements>
           </Content>
         </Plan>
