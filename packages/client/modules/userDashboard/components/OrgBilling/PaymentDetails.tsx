@@ -148,6 +148,7 @@ const PaymentDetails = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment PaymentDetails_organization on Organization {
+        id
         tier
         orgUserCount {
           activeUserCount
@@ -156,11 +157,12 @@ const PaymentDetails = (props: Props) => {
     `,
     organizationRef
   )
-  const {orgUserCount} = organization
+  const {id: orgId, orgUserCount, tier} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
 
   useEffect(() => {
+    if (tier !== 'starter') return
     const handleCompleted: CompletedHandler<TCreatePaymentIntentMutation['response']> = (res) => {
       const {createPaymentIntent} = res
       const {clientSecret} = createPaymentIntent
@@ -168,8 +170,7 @@ const PaymentDetails = (props: Props) => {
         setClientSecret(clientSecret)
       }
     }
-
-    CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
+    CreatePaymentIntentMutation(atmosphere, {orgId}, {onError, onCompleted: handleCompleted})
   }, [])
 
   if (!clientSecret.length) return null

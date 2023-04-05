@@ -68,7 +68,7 @@ export default function BillingForm() {
     // This point will only be reached if there is an immediate error when confirming the payment
     if (error?.type === 'card_error' || error?.type === 'validation_error') {
       setErrorMessage(error.message)
-    } else {
+    } else if (error) {
       setErrorMessage('An unexpected error occurred.')
     }
 

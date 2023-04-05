@@ -2,7 +2,12 @@ extend type Mutation {
   """
   This creates a payment intent so that we're able to use Stripe Elements in the client
   """
-  createPaymentIntent: CreatePaymentIntentPayload!
+  createPaymentIntent(
+    """
+    The id of the organization that the payment intent is for
+    """
+    orgId: ID!
+  ): CreatePaymentIntentPayload!
 }
 
 """
