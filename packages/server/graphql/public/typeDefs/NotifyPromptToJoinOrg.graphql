@@ -1,0 +1,27 @@
+type NotifyPromptToJoinOrg implements Notification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  The userId that should see this notification
+  """
+  userId: ID!
+
+  """
+  Active domain
+  """
+  activeDomain: String!
+}
