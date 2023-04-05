@@ -172,19 +172,6 @@ const PaymentDetails = (props: Props) => {
     CreatePaymentIntentMutation(atmosphere, {}, {onError, onCompleted: handleCompleted})
   }, [])
 
-  // TODO: add functionality in https://github.com/ParabolInc/parabol/issues/7693
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   // if (submitting) return
-  //   // these 3 calls internally call dispatch (or setState), which are asynchronous in nature.
-  //   // To get the current value of `fields`, we have to wait for the component to rerender
-  //   // the useEffect hook above will continue the process if submitting === true
-
-  //   setDirtyField()
-  //   validateField()
-  //   submitMutation()
-  // }
-
   if (!clientSecret.length) return null
   return (
     <StyledPanel label='Credit Card'>
@@ -199,7 +186,7 @@ const PaymentDetails = (props: Props) => {
               }}
               stripe={stripePromise}
             >
-              <BillingForm clientSecret={clientSecret} />
+              <BillingForm />
             </Elements>
           </Content>
         </Plan>

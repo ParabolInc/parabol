@@ -1,14 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-  LinkAuthenticationElement,
-  CardElement
-} from '@stripe/react-stripe-js'
+import {PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {PALETTE} from '../../../../styles/paletteV3'
+import Confetti from '../../../../components/Confetti'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -26,10 +21,6 @@ const StyledForm = styled('form')({
   alignItems: 'space-between'
 })
 
-const PaymentWrapper = styled('div')({
-  // height: 160
-})
-
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
   background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
   color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
@@ -43,40 +34,29 @@ const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}
   }
 }))
 
-type Props = {
-  clientSecret: string
-}
-
-export default function BillingForm(props: Props) {
+export default function BillingForm() {
   const stripe = useStripe()
   const elements = useElements()
-  const {clientSecret} = props
-
-  const [email, setEmail] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
 
-  // TODO: implement in: https://github.com/ParabolInc/parabol/issues/7693
-  // look at: https://stripe.com/docs/payments/quickstart
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    if (!stripe || !elements) {
-      // Stripe.js has not yet loaded.
-      // Make sure to disable form submission until Stripe.js has loaded.
-      return
-    }
-
+    if (!stripe || !elements) return
     setIsLoading(true)
 
     const {error} = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: 'http://localhost:3000'
-      }
+        // return_url: 'http://localhost:3000' // required field but redirect preference disables it
+      },
+      redirect: 'if_required' // https://stripe.com/docs/js/payment_intents/confirm_payment#confirm_payment_intent-options-redirect
     })
+
+    if (!error) {
+      setIsPaymentSuccessful(true)
+    }
 
     console.log('🚀 ~ error:', error)
 
@@ -85,8 +65,8 @@ export default function BillingForm(props: Props) {
     // your `return_url`. For some payment methods like iDEAL, your customer will
     // be redirected to an intermediate site first to authorize the payment, then
     // redirected to the `return_url`.
-    if (error.type === 'card_error' || error.type === 'validation_error') {
-      // setMessage(error.message)
+    if (error?.type === 'card_error' || error?.type === 'validation_error') {
+      setMessage(error.message)
     } else {
       setMessage('An unexpected error occurred.')
     }
@@ -98,19 +78,18 @@ export default function BillingForm(props: Props) {
 
   return (
     <StyledForm id='payment-form' onSubmit={handleSubmit}>
-      <PaymentWrapper>
-        <PaymentElement
-          id='payment-element'
-          options={{
-            layout: 'tabs'
-          }}
-        />
-      </PaymentWrapper>
+      <PaymentElement
+        id='payment-element'
+        options={{
+          layout: 'tabs'
+        }}
+      />
       <ButtonBlock>
         <UpgradeButton size='medium' isDisabled={isLoading || !stripe || !elements} type={'submit'}>
           {'Upgrade'}
         </UpgradeButton>
       </ButtonBlock>
+      <Confetti active={isPaymentSuccessful} />
     </StyledForm>
   )
 }
